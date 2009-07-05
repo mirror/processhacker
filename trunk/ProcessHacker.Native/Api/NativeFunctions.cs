@@ -1404,19 +1404,19 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtTerminateJobObject(
             [In] IntPtr JobHandle,
-            [In] int ExitStatus
+            [In] NtStatus ExitStatus
             );
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtTerminateProcess(
             [In] [Optional] IntPtr ProcessHandle,
-            [In] int ExitStatus
+            [In] NtStatus ExitStatus
             );
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtTerminateThread(
             [In] [Optional] IntPtr ThreadHandle,
-            [In] int ExitStatus
+            [In] NtStatus ExitStatus
             );
 
         [DllImport("ntdll.dll")]
@@ -1518,11 +1518,40 @@ namespace ProcessHacker.Native.Api
 
         #region Loader
 
+        [DllImport("ntdll.dll", CharSet = CharSet.Unicode)]
+        public static extern NtStatus LdrGetDllHandle(
+            [In] [Optional] string DllPath,
+            [In] [Optional] ref int DllCharacteristics,
+            [In] ref UnicodeString DllName,
+            [Out] out IntPtr DllHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus LdrGetProcedureAddress(
+            [In] IntPtr DllHandle,
+            [In] [Optional] ref AnsiString ProcedureName,
+            [In] [Optional] int ProcedureNumber,
+            [Out] out IntPtr ProcedureAddress
+            );
+
+        [DllImport("ntdll.dll", CharSet = CharSet.Unicode)]
+        public static extern NtStatus LdrLoadDll(
+            [In] [Optional] string DllPath,
+            [In] [Optional] ref int DllCharacteristics,
+            [In] ref UnicodeString DllName,
+            [Out] out IntPtr DllHandle
+            );
+
         [DllImport("ntdll.dll")]
         public static extern NtStatus LdrQueryProcessModuleInformation(
             [In] IntPtr ModuleInformation, // RtlProcessModules*
             [In] int ModuleInformationLength,
             [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus LdrUnloadDll(
+            [In] IntPtr DllHandle
             );
 
         #endregion
@@ -1706,7 +1735,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll")]
         public static extern void RtlExitUserThread(
-            [In] int ExitStatus
+            [In] NtStatus ExitStatus
             );
 
         [DllImport("ntdll.dll")]

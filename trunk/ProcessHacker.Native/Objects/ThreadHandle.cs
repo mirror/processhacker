@@ -720,7 +720,11 @@ namespace ProcessHacker.Native.Objects
 
         public void RemoteCall(IntPtr address, IntPtr[] arguments)
         {
-            NtStatus status;
+            this.RemoteCall(address, arguments, false);
+        }
+
+        public void RemoteCall(IntPtr address, IntPtr[] arguments, bool alreadySuspended)
+        {
             ProcessHandle processHandle;
 
             if (KProcessHacker.Instance != null)
@@ -729,18 +733,23 @@ namespace ProcessHacker.Native.Objects
                 processHandle = new ProcessHandle(this.GetProcessId(), ProcessAccess.VmWrite);
 
             using (processHandle)
-            {
-                if ((status = Win32.RtlRemoteCall(
-                    processHandle,
-                    this,
-                    address,
-                    arguments.Length,
-                    arguments,
-                    false,
-                    false
-                    )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
-            }
+                this.RemoteCall(processHandle, address, arguments, alreadySuspended);
+        }
+
+        public void RemoteCall(ProcessHandle processHandle, IntPtr address, IntPtr[] arguments, bool alreadySuspended)
+        {
+            NtStatus status;
+
+            if ((status = Win32.RtlRemoteCall(
+                processHandle,
+                this,
+                address,
+                arguments.Length,
+                arguments,
+                false,
+                alreadySuspended
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         /// <summary>
@@ -817,7 +826,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void Terminate()
         {
-            this.Terminate(0);
+            this.Terminate(NtStatus.Success);
         }
 
         /// <summary>
@@ -840,8 +849,10 @@ namespace ProcessHacker.Native.Objects
                 }
             }
 
-            if (!Win32.TerminateThread(this, (int)exitStatus))
-                Win32.ThrowLastError();
+            NtStatus status;
+
+            if ((status = Win32.NtTerminateThread(this, exitStatus)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         /// <summary>

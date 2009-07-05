@@ -397,33 +397,34 @@ namespace ProcessHacker.Native.Objects
         { }
 
         /// <summary>
-        /// Allocates a memory region in the process' virtual memory.
-        /// </summary>      
-        /// <param name="address">The base address of the region.</param>
-        /// <param name="size">The size of the region.</param>
-        /// <param name="protection">The protection of the region.</param>
-        /// <returns>The base address of the allocated pages.</returns>
-        public IntPtr AllocMemory(IntPtr address, int size, MemoryProtection protection)
-        {
-            IntPtr newAddress;
-
-            if ((newAddress = Win32.VirtualAllocEx(this, address, size, MemoryState.Commit, protection))
-                == IntPtr.Zero)
-                Win32.ThrowLastError();
-
-            return newAddress;
-        }
-
-        /// <summary>
         /// Allocates a memory region in the process' virtual memory. The function decides where 
         /// to allocate the memory.
         /// </summary>
         /// <param name="size">The size of the region.</param>
         /// <param name="protection">The protection of the region.</param>
         /// <returns>The base address of the allocated pages.</returns>
-        public IntPtr AllocMemory(int size, MemoryProtection protection)
+        public IntPtr AllocateMemory(int size, MemoryProtection protection)
         {
-            return this.AllocMemory(IntPtr.Zero, size, protection);
+            return this.AllocateMemory(IntPtr.Zero, size, protection);
+        }
+
+        /// <summary>
+        /// Allocates a memory region in the process' virtual memory.
+        /// </summary>      
+        /// <param name="baseAddress">The base address of the region.</param>
+        /// <param name="size">The size of the region.</param>
+        /// <param name="protection">The protection of the region.</param>
+        /// <returns>The base address of the allocated pages.</returns>
+        public IntPtr AllocateMemory(IntPtr baseAddress, int size, MemoryProtection protection)
+        {
+            IntPtr newAddress;
+
+            if ((newAddress = 
+                Win32.VirtualAllocEx(this, baseAddress, size, MemoryState.Commit, protection))
+                == IntPtr.Zero)
+                Win32.ThrowLastError();
+
+            return newAddress;
         }
 
         /// <summary>
@@ -737,19 +738,42 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Flushes the process' virtual memory.
+        /// </summary>
+        /// <param name="baseAddress">The base address of the region to flush.</param>
+        /// <param name="size">The size of the region to flush.</param>
+        /// <returns>A NT status value.</returns>
+        public NtStatus FlushMemory(IntPtr baseAddress, int size)
+        {
+            NtStatus status;
+            IntPtr sizeIntPtr = size.ToIntPtr();
+            IoStatusBlock isb;
+
+            if ((status = Win32.NtFlushVirtualMemory(
+                this,
+                ref baseAddress,
+                ref sizeIntPtr,
+                out isb
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return isb.Status;
+        }
+
+        /// <summary>
         /// Frees a memory region in the process' virtual memory.
         /// </summary>
-        /// <param name="address">The address of the region to free.</param>
+        /// <param name="baseAddress">The address of the region to free.</param>
         /// <param name="size">The size to free.</param>
         /// <param name="reserveOnly">Specifies whether or not to only 
         /// reserve the memory instead of freeing it.</param>
-        public void FreeMemory(IntPtr address, int size, bool reserveOnly)
+        public void FreeMemory(IntPtr baseAddress, int size, bool reserveOnly)
         {
-            // size needs to be 0 if we're freeing
+            // Size needs to be 0 if we're freeing.
             if (!reserveOnly)
                 size = 0;
 
-            if (!Win32.VirtualFreeEx(this, address, size,
+            if (!Win32.VirtualFreeEx(this, baseAddress, size,
                 reserveOnly ? MemoryState.Decommit : MemoryState.Release))
                 Win32.ThrowLastError();
         }
@@ -1630,7 +1654,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="timeout">The timeout, in milliseconds, for the process to load the library.</param>
         public void InjectDll(string path, uint timeout)
         {
-            IntPtr stringPage = this.AllocMemory(path.Length * 2 + 2, MemoryProtection.ReadWrite);
+            IntPtr stringPage = this.AllocateMemory(path.Length * 2 + 2, MemoryProtection.ReadWrite);
 
             this.WriteMemory(stringPage, UnicodeEncoding.Unicode.GetBytes(path));
 
@@ -1731,15 +1755,15 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Sets the protection for a page in the process.
         /// </summary>
-        /// <param name="address">The address to modify.</param>
+        /// <param name="baseAddress">The address to modify.</param>
         /// <param name="size">The number of bytes to modify.</param>
         /// <param name="protection">The new memory protection.</param>
         /// <returns>The old memory protection.</returns>
-        public MemoryProtection ProtectMemory(IntPtr address, int size, MemoryProtection protection)
+        public MemoryProtection ProtectMemory(IntPtr baseAddress, int size, MemoryProtection protection)
         {
             MemoryProtection oldProtection;
 
-            if (!Win32.VirtualProtectEx(this,address, size, protection, out oldProtection))
+            if (!Win32.VirtualProtectEx(this, baseAddress, size, protection, out oldProtection))
                 Win32.ThrowLastError();
 
             return oldProtection;
@@ -1763,14 +1787,14 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Reads data from the process' virtual memory.
         /// </summary>
-        /// <param name="offset">The offset at which to begin reading.</param>
+        /// <param name="baseAddress">The offset at which to begin reading.</param>
         /// <param name="length">The length, in bytes, to read.</param>
         /// <returns>An array of bytes.</returns>
-        public byte[] ReadMemory(IntPtr offset, int length)
+        public byte[] ReadMemory(IntPtr baseAddress, int length)
         {
             byte[] buffer = new byte[length];
 
-            this.ReadMemory(offset, buffer, length);
+            this.ReadMemory(baseAddress, buffer, length);
 
             return buffer;
         }
@@ -1778,38 +1802,68 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Reads data from the process' virtual memory.
         /// </summary>
-        /// <param name="offset">The offset at which to begin reading.</param>
+        /// <param name="baseAddress">The offset at which to begin reading.</param>
         /// <param name="buffer">The buffer to write to.</param>
         /// <param name="length">The length to read.</param>
         /// <returns>The number of bytes read.</returns>
-        public unsafe int ReadMemory(IntPtr offset, byte[] buffer, int length)
+        public unsafe int ReadMemory(IntPtr baseAddress, byte[] buffer, int length)
         {
             fixed (byte* bufferPtr = buffer)
-                return this.ReadMemory(offset, bufferPtr, length);
+                return this.ReadMemory(baseAddress, bufferPtr, length);
         }
 
         /// <summary>
         /// Reads data from the process' virtual memory.
         /// </summary>
-        /// <param name="offset">The offset at which to begin reading.</param>
+        /// <param name="baseAddress">The offset at which to begin reading.</param>
         /// <param name="buffer">The buffer to write to.</param>
         /// <param name="length">The length to read.</param>
         /// <returns>The number of bytes read.</returns>
-        public unsafe int ReadMemory(IntPtr offset, void* buffer, int length)
+        public unsafe int ReadMemory(IntPtr baseAddress, void* buffer, int length)
         {
-            int readLen;
+            int retLength;
 
             if (KProcessHacker.Instance != null)
             {
-                KProcessHacker.Instance.KphReadVirtualMemory(this, offset.ToInt32(), buffer, length, out readLen);
+                KProcessHacker.Instance.KphReadVirtualMemory(this, baseAddress.ToInt32(), buffer, length, out retLength);
             }
             else
             {
-                if (!Win32.ReadProcessMemory(this, offset, buffer, length, out readLen))
-                    Win32.ThrowLastError();
+                NtStatus status;
+                IntPtr retLengthIntPtr;
+
+                if ((status = Win32.NtReadVirtualMemory(
+                    this,
+                    baseAddress,
+                    new IntPtr(buffer),
+                    length.ToIntPtr(),
+                    out retLengthIntPtr
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                retLength = retLengthIntPtr.ToInt32();
             }
 
-            return readLen;
+            return retLength;
+        }
+
+        /// <summary>
+        /// Calls the specified function in the context of the process.
+        /// </summary>
+        /// <param name="address">The function to call.</param>
+        /// <param name="arguments">The arguments to pass to the function.</param>
+        public void RemoteCall(IntPtr address, IntPtr[] arguments)
+        {
+            IntPtr rtlExitUserThread = Loader.GetProcedure("ntdll.dll", "RtlExitUserThread");
+
+            // Create a suspended thread at RtlExitUserThread.
+            using (var thandle = this.CreateNativeThread(rtlExitUserThread, IntPtr.Zero, true))
+            {
+                // Do the remote call on this thread.
+                thandle.RemoteCall(this, address, arguments, true);
+                // Resume the thread. It will execute the remote call then exit.
+                thandle.Resume();
+            }
         }
 
         /// <summary>
@@ -1826,7 +1880,7 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Resumes the process. This requires the PROCESS_SUSPEND_RESUME permission.
+        /// Resumes the process. This requires PROCESS_SUSPEND_RESUME access.
         /// </summary>
         public void Resume()
         {
@@ -1954,7 +2008,7 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Suspends the process. This requires the PROCESS_SUSPEND_RESUME permission.
+        /// Suspends the process. This requires PROCESS_SUSPEND_RESUME access.
         /// </summary>
         public void Suspend()
         {
@@ -1976,7 +2030,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void Terminate()
         {
-            this.Terminate(0);
+            this.Terminate(NtStatus.Success);
         }
 
         /// <summary>
@@ -1991,8 +2045,10 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                if (!Win32.TerminateProcess(this, (int)exitStatus))
-                    Win32.ThrowLastError();
+                NtStatus status;
+
+                if ((status = Win32.NtTerminateProcess(this, exitStatus)) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
             }
         }
 
@@ -2045,39 +2101,50 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Writes data to the process' virtual memory.
         /// </summary>
-        /// <param name="offset">The offset at which to begin writing.</param>
+        /// <param name="baseAddress">The offset at which to begin writing.</param>
         /// <param name="data">The data to write.</param>
         /// <returns>The length, in bytes, that was written.</returns>
-        public unsafe int WriteMemory(IntPtr offset, byte[] data)
+        public unsafe int WriteMemory(IntPtr baseAddress, byte[] data)
         {
             fixed (byte* dataPtr = data)
             {
-                return WriteMemory(offset, dataPtr, data.Length);
+                return WriteMemory(baseAddress, dataPtr, data.Length);
             }
         }
 
         /// <summary>
         /// Writes data to the process' virtual memory.
         /// </summary>
-        /// <param name="offset">The offset at which to begin writing.</param>
+        /// <param name="baseAddress">The offset at which to begin writing.</param>
         /// <param name="data">The data to write.</param>
         /// <param name="length">The length to be written.</param>
         /// <returns>The length, in bytes, that was written.</returns>
-        public unsafe int WriteMemory(IntPtr offset, void* data, int length)
+        public unsafe int WriteMemory(IntPtr baseAddress, void* data, int length)
         {
-            int writtenLen;
+            int retLength;
 
             if (KProcessHacker.Instance != null)
             {
-                KProcessHacker.Instance.KphWriteVirtualMemory(this, offset.ToInt32(), data, length, out writtenLen);
+                KProcessHacker.Instance.KphWriteVirtualMemory(this, baseAddress.ToInt32(), data, length, out retLength);
             }
             else
             {
-                if (!Win32.WriteProcessMemory(this, offset, data, length, out writtenLen))
-                    Win32.ThrowLastError();
+                NtStatus status;
+                IntPtr retLengthIntPtr;
+
+                if ((status = Win32.NtWriteVirtualMemory(
+                    this,
+                    baseAddress,
+                    new IntPtr(data),
+                    length.ToIntPtr(),
+                    out retLengthIntPtr
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                retLength = retLengthIntPtr.ToInt32();
             }
 
-            return writtenLen;
+            return retLength;
         }
     }
 

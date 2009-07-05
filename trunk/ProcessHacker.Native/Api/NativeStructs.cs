@@ -29,6 +29,30 @@ using ProcessHacker.Native.Security;
 namespace ProcessHacker.Native.Api
 {
     [StructLayout(LayoutKind.Sequential)]
+    public struct AnsiString : IDisposable
+    {
+        public AnsiString(string str)
+        {
+            this.Buffer = Marshal.StringToHGlobalAnsi(str);
+            this.Length = (ushort)str.Length;
+            this.MaximumLength = (ushort)str.Length;
+        }
+
+        public ushort Length;
+        public ushort MaximumLength;
+        public IntPtr Buffer;
+
+        public void Dispose()
+        {
+            if (this.Buffer != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(this.Buffer);
+                this.Buffer = IntPtr.Zero;
+            }
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct ClientId
     {
         public ClientId(int processId, int threadId)

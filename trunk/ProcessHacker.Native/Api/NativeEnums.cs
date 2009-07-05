@@ -452,6 +452,12 @@ namespace ProcessHacker.Native.Api
         MemoryWorkingSetExInformation
     }
 
+    public enum MemoryMapType : int
+    {
+        Process = 1,
+        System = 2
+    }
+
     [Flags]
     public enum MemoryProtection : uint
     {
