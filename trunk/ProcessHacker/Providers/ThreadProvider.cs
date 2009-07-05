@@ -175,12 +175,12 @@ namespace ProcessHacker
                                     // If the process is CSRSS we should load kernel modules 
                                     // due to the presence of kernel-mode threads.
                                     if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
-                                        _symbols.LoadKernelModules();
+                                        this.LoadKernelSymbols();
                                 }
                             }
                             else
                             {
-                                _symbols.LoadKernelModules();
+                                this.LoadKernelSymbols();
                             }
                         }
                         catch (Exception ex)
