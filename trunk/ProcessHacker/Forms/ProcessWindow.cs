@@ -82,6 +82,8 @@ namespace ProcessHacker
             Program.PWindows.Add(_pid, this);
 
             this.FixTabs();
+
+            _dontCalculate = false;
         }
 
         private void ProcessWindow_Load(object sender, EventArgs e)
@@ -148,6 +150,7 @@ namespace ProcessHacker
             get { return _serviceProps.List; }
         }
 
+        // ==== Performance hacks ====
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
@@ -165,6 +168,16 @@ namespace ProcessHacker
 
             if (!this.IsDisposed)
                 base.WndProc(ref m);
+        }
+
+        private bool _dontCalculate = true;
+
+        protected override void OnResize(EventArgs e)
+        {
+            if (_dontCalculate)
+                return;
+
+            base.OnResize(e);
         }
 
         private void FixTabs()
@@ -288,15 +301,11 @@ namespace ProcessHacker
                 "W: " + Utils.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
 
-
-            //Set the indicator Color.
+            // Set the indicator colors.
             indicatorCpu.Color1 = Properties.Settings.Default.PlotterCPUKernelColor;
             indicatorCpu.Color2 = Properties.Settings.Default.PlotterCPUUserColor;
-
-            //indicatorPvt.Color1 = Properties.Settings.Default.PlotterMemoryWSColor;
-
+            indicatorPvt.Color1 = Properties.Settings.Default.PlotterMemoryWSColor;
             indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;           
-
 
             this.ApplyFont(Properties.Settings.Default.Font);
 

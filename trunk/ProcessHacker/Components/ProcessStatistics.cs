@@ -46,6 +46,18 @@ namespace ProcessHacker.Components
             {
                 labelCPUCyclesText.Text = "N/A";
             }
+
+            _dontCalculate = false;
+        }
+
+        private bool _dontCalculate = true;
+
+        protected override void OnResize(EventArgs e)
+        {
+            if (_dontCalculate)
+                return;
+
+            base.OnResize(e);
         }
 
         public void ClearStatistics()

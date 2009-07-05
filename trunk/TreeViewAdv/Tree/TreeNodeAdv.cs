@@ -367,7 +367,7 @@ namespace Aga.Controls.Tree
 
 		#endregion
 
-		public TreeNodeAdv(object tag): this(null, tag)
+        public TreeNodeAdv(object tag): this(null, tag)
 		{
 		}
 

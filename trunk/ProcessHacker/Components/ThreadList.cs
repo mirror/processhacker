@@ -97,6 +97,18 @@ namespace ProcessHacker.Components
             listThreads.ContextMenu = menuThread;
             GenericViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads, null);
             listThreads_SelectedIndexChanged(null, null);
+
+            _dontCalculate = false;
+        }
+
+        private bool _dontCalculate = true;
+
+        protected override void OnResize(EventArgs e)
+        {
+            if (_dontCalculate)
+                return;
+
+            base.OnResize(e);
         }
 
         private void listThreads_MouseUp(object sender, MouseEventArgs e)

@@ -2922,7 +2922,7 @@ namespace ProcessHacker
             serviceP.RunOnceAsync();
             serviceP.Enabled = true;
 
-            dontCalculate = false;
+            _dontCalculate = false;
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
@@ -2943,7 +2943,7 @@ namespace ProcessHacker
         }
 
         // ==== Performance hacks section ====
-        private bool dontCalculate = true;
+        private bool _dontCalculate = true;
         private int _layoutCount = 0;
 
         protected override void OnLayout(LayoutEventArgs levent)
@@ -2958,7 +2958,7 @@ namespace ProcessHacker
 
         protected override void OnResize(EventArgs e)
         {
-            if (dontCalculate)
+            if (_dontCalculate)
                 return;
 
             //
