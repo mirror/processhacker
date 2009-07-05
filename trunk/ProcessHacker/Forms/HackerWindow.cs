@@ -1335,12 +1335,21 @@ namespace ProcessHacker
             {
                 DebugBuffer buffer = new DebugBuffer();
 
-                buffer.Query(
-                    processSelectedPID,
-                    RtlQueryProcessDebugFlags.HeapSummary |
-                    RtlQueryProcessDebugFlags.HeapEntries |
-                    RtlQueryProcessDebugFlags.HeapTags
-                    );
+                this.Cursor = Cursors.WaitCursor;
+
+                try
+                {
+                    buffer.Query(
+                        processSelectedPID,
+                        RtlQueryProcessDebugFlags.HeapSummary |
+                        RtlQueryProcessDebugFlags.HeapEntries |
+                        RtlQueryProcessDebugFlags.HeapTags
+                        );
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
 
                 HeapsWindow heapsWindow = new HeapsWindow(processSelectedPID, buffer.GetHeaps());
 
