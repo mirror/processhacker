@@ -1190,7 +1190,7 @@ namespace ProcessHacker.Native.Api
     public struct RtlProcessHeaps
     {
         public int NumberOfHeaps;
-        public char Heaps; // RtlHeapInformation[] Heaps
+        // RtlHeapInformation[] Heaps
         // Array of RtlHeapInformation structures follows.
     }
 
@@ -1218,7 +1218,7 @@ namespace ProcessHacker.Native.Api
     public struct RtlProcessLocks
     {
         public int NumberOfLocks;
-        public char Locks; // RtlProcessLockInformation[] Locks
+        // RtlProcessLockInformation[] Locks
         // Array of RtlProcessLockInformation structures follows.
     }
 
@@ -1242,7 +1242,7 @@ namespace ProcessHacker.Native.Api
     public struct RtlProcessModules
     {
         public int NumberOfModules;
-        public char Modules; // RtlProcessModuleInformation[] Modules
+        // RtlProcessModuleInformation[] Modules
         // Array of RtlProcessModuleInformation structures follows.
     }
 

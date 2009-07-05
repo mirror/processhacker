@@ -1333,32 +1333,33 @@ namespace ProcessHacker
         {
             try
             {
-                DebugBuffer buffer = new DebugBuffer();
+                HeapsWindow heapsWindow;
 
-                this.Cursor = Cursors.WaitCursor;
-
-                try
+                using (DebugBuffer buffer = new DebugBuffer())
                 {
-                    buffer.Query(
-                        processSelectedPID,
-                        RtlQueryProcessDebugFlags.HeapSummary |
-                        RtlQueryProcessDebugFlags.HeapEntries |
-                        RtlQueryProcessDebugFlags.HeapTags
-                        );
-                }
-                finally
-                {
-                    this.Cursor = Cursors.Default;
-                }
+                    this.Cursor = Cursors.WaitCursor;
 
-                HeapsWindow heapsWindow = new HeapsWindow(processSelectedPID, buffer.GetHeaps());
+                    try
+                    {
+                        buffer.Query(
+                            processSelectedPID,
+                            RtlQueryProcessDebugFlags.HeapSummary |
+                            RtlQueryProcessDebugFlags.HeapEntries |
+                            RtlQueryProcessDebugFlags.HeapTags
+                            );
+                    }
+                    finally
+                    {
+                        this.Cursor = Cursors.Default;
+                    }
 
-                buffer.Dispose();
+                    heapsWindow = new HeapsWindow(processSelectedPID, buffer.GetHeaps());
+                }
 
                 heapsWindow.TopMost = this.TopMost;
                 heapsWindow.ShowDialog();
             }
-            catch (WindowsException ex)
+            catch (Exception ex)
             {
                 PhUtils.ShowMessage("Error getting heap information", ex);
             }
