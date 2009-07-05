@@ -62,9 +62,9 @@ namespace ProcessHacker
                         "0x" + heap.Address.ToInt32().ToString("x8"),
                         heap.BytesAllocated.ToString("N0") + " B",
                         heap.BytesCommitted.ToString("N0") + " B",
-                        heap.EntryCount.ToString("N0"),
-                        heap.TagCount.ToString("N0"),
-                        heap.PseudoTagCount.ToString("N0")
+                        heap.EntryCount.ToString("N0")
+                        //heap.TagCount.ToString("N0"),
+                        //heap.PseudoTagCount.ToString("N0")
                     })).Tag = heap;
                 // Sum everything up.
                 allocatedTotal += heap.BytesAllocated;
@@ -81,9 +81,9 @@ namespace ProcessHacker
                     "Totals",
                     allocatedTotal.ToString("N0") + " B",
                     committedTotal.ToString("N0") + " B",
-                    entriesTotal.ToString("N0"),
-                    tagsTotal.ToString("N0"),
-                    pseudoTagsTotal.ToString("N0")
+                    entriesTotal.ToString("N0")
+                    //tagsTotal.ToString("N0"),
+                    //pseudoTagsTotal.ToString("N0")
                 })).Tag = new HeapInformation(
                     IntPtr.Zero, allocatedTotal, committedTotal, 
                     tagsTotal, entriesTotal, pseudoTagsTotal

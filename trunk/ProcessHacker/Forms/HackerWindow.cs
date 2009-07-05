@@ -1344,8 +1344,7 @@ namespace ProcessHacker
                         buffer.Query(
                             processSelectedPID,
                             RtlQueryProcessDebugFlags.HeapSummary |
-                            RtlQueryProcessDebugFlags.HeapEntries |
-                            RtlQueryProcessDebugFlags.HeapTags
+                            RtlQueryProcessDebugFlags.HeapEntries
                             );
                     }
                     finally
@@ -1359,7 +1358,7 @@ namespace ProcessHacker
                 heapsWindow.TopMost = this.TopMost;
                 heapsWindow.ShowDialog();
             }
-            catch (Exception ex)
+            catch (WindowsException ex)
             {
                 PhUtils.ShowMessage("Error getting heap information", ex);
             }

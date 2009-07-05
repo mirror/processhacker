@@ -35,8 +35,6 @@
             this.columnUsed = new System.Windows.Forms.ColumnHeader();
             this.columnCommitted = new System.Windows.Forms.ColumnHeader();
             this.columnEntries = new System.Windows.Forms.ColumnHeader();
-            this.columnTags = new System.Windows.Forms.ColumnHeader();
-            this.columnPseudoTags = new System.Windows.Forms.ColumnHeader();
             this.menuHeap = new System.Windows.Forms.ContextMenu();
             this.destroyMenuItem = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
@@ -49,7 +47,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(557, 420);
+            this.buttonClose.Location = new System.Drawing.Point(416, 419);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 0;
@@ -66,14 +64,12 @@
             this.columnAddress,
             this.columnUsed,
             this.columnCommitted,
-            this.columnEntries,
-            this.columnTags,
-            this.columnPseudoTags});
+            this.columnEntries});
             this.listHeaps.FullRowSelect = true;
             this.listHeaps.HideSelection = false;
             this.listHeaps.Location = new System.Drawing.Point(12, 12);
             this.listHeaps.Name = "listHeaps";
-            this.listHeaps.Size = new System.Drawing.Size(620, 402);
+            this.listHeaps.Size = new System.Drawing.Size(479, 401);
             this.listHeaps.TabIndex = 1;
             this.listHeaps.UseCompatibleStateImageBehavior = false;
             this.listHeaps.View = System.Windows.Forms.View.Details;
@@ -96,15 +92,6 @@
             // columnEntries
             // 
             this.columnEntries.Text = "Entries";
-            // 
-            // columnTags
-            // 
-            this.columnTags.Text = "Tags";
-            // 
-            // columnPseudoTags
-            // 
-            this.columnPseudoTags.Text = "Pseudo Tags";
-            this.columnPseudoTags.Width = 80;
             // 
             // menuHeap
             // 
@@ -138,7 +125,7 @@
             this.checkSizesInBytes.Checked = true;
             this.checkSizesInBytes.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkSizesInBytes.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkSizesInBytes.Location = new System.Drawing.Point(12, 424);
+            this.checkSizesInBytes.Location = new System.Drawing.Point(12, 423);
             this.checkSizesInBytes.Name = "checkSizesInBytes";
             this.checkSizesInBytes.Size = new System.Drawing.Size(96, 18);
             this.checkSizesInBytes.TabIndex = 2;
@@ -151,7 +138,7 @@
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(644, 455);
+            this.ClientSize = new System.Drawing.Size(503, 454);
             this.Controls.Add(this.checkSizesInBytes);
             this.Controls.Add(this.listHeaps);
             this.Controls.Add(this.buttonClose);
@@ -177,8 +164,6 @@
         private System.Windows.Forms.ColumnHeader columnUsed;
         private System.Windows.Forms.ColumnHeader columnCommitted;
         private System.Windows.Forms.ColumnHeader columnEntries;
-        private System.Windows.Forms.ColumnHeader columnTags;
-        private System.Windows.Forms.ColumnHeader columnPseudoTags;
         private System.Windows.Forms.ContextMenu menuHeap;
         private System.Windows.Forms.MenuItem destroyMenuItem;
         private wyDay.Controls.VistaMenu vistaMenu;
