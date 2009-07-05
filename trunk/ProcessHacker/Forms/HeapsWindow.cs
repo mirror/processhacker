@@ -24,6 +24,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Ui;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Debugging;
@@ -47,6 +48,7 @@ namespace ProcessHacker
             listHeaps.AddShortcuts();
             listHeaps.ContextMenu = menuHeap;
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHeaps, null);
+            listHeaps.ListViewItemSorter = new SortedListViewComparer(listHeaps);
 
             _pid = pid;
 
@@ -57,7 +59,7 @@ namespace ProcessHacker
                 listHeaps.Items.Add(new ListViewItem(
                     new string[]
                     {
-                        "0x" + heap.Address.ToString("x"),
+                        "0x" + heap.Address.ToInt32().ToString("x8"),
                         heap.BytesAllocated.ToString("N0") + " B",
                         heap.BytesCommitted.ToString("N0") + " B",
                         heap.EntryCount.ToString("N0"),
