@@ -47,6 +47,7 @@
             this.menuMemory = new System.Windows.Forms.ContextMenu();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.selectAllMemoryMenuItem = new System.Windows.Forms.MenuItem();
+            this.dumpMemoryMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -96,7 +97,7 @@
             // changeMemoryProtectionMemoryMenuItem
             // 
             this.vistaMenu.SetImage(this.changeMemoryProtectionMemoryMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
-            this.changeMemoryProtectionMemoryMenuItem.Index = 1;
+            this.changeMemoryProtectionMemoryMenuItem.Index = 2;
             this.changeMemoryProtectionMemoryMenuItem.Text = "Change &Memory Protection...";
             this.changeMemoryProtectionMemoryMenuItem.Click += new System.EventHandler(this.changeMemoryProtectionMemoryMenuItem_Click);
             // 
@@ -111,27 +112,27 @@
             // readWriteAddressMemoryMenuItem
             // 
             this.vistaMenu.SetImage(this.readWriteAddressMemoryMenuItem, global::ProcessHacker.Properties.Resources.pencil_go);
-            this.readWriteAddressMemoryMenuItem.Index = 5;
+            this.readWriteAddressMemoryMenuItem.Index = 6;
             this.readWriteAddressMemoryMenuItem.Text = "Read/Write Address...";
             this.readWriteAddressMemoryMenuItem.Click += new System.EventHandler(this.readWriteAddressMemoryMenuItem_Click);
             // 
             // copyMemoryMenuItem
             // 
             this.vistaMenu.SetImage(this.copyMemoryMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyMemoryMenuItem.Index = 6;
+            this.copyMemoryMenuItem.Index = 7;
             this.copyMemoryMenuItem.Text = "C&opy";
             // 
             // freeMenuItem
             // 
             this.vistaMenu.SetImage(this.freeMenuItem, global::ProcessHacker.Properties.Resources.cross);
-            this.freeMenuItem.Index = 2;
+            this.freeMenuItem.Index = 3;
             this.freeMenuItem.Text = "&Free";
             this.freeMenuItem.Click += new System.EventHandler(this.freeMenuItem_Click);
             // 
             // decommitMenuItem
             // 
             this.vistaMenu.SetImage(this.decommitMenuItem, global::ProcessHacker.Properties.Resources.delete);
-            this.decommitMenuItem.Index = 3;
+            this.decommitMenuItem.Index = 4;
             this.decommitMenuItem.Text = "&Decommit";
             this.decommitMenuItem.Click += new System.EventHandler(this.decommitMenuItem_Click);
             // 
@@ -139,6 +140,7 @@
             // 
             this.menuMemory.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.readWriteMemoryMemoryMenuItem,
+            this.dumpMemoryMenuItem,
             this.changeMemoryProtectionMemoryMenuItem,
             this.freeMenuItem,
             this.decommitMenuItem,
@@ -150,14 +152,21 @@
             // 
             // menuItem2
             // 
-            this.menuItem2.Index = 4;
+            this.menuItem2.Index = 5;
             this.menuItem2.Text = "-";
             // 
             // selectAllMemoryMenuItem
             // 
-            this.selectAllMemoryMenuItem.Index = 7;
+            this.selectAllMemoryMenuItem.Index = 8;
             this.selectAllMemoryMenuItem.Text = "Select &All";
             this.selectAllMemoryMenuItem.Click += new System.EventHandler(this.selectAllMemoryMenuItem_Click);
+            // 
+            // dumpMemoryMenuItem
+            // 
+            this.vistaMenu.SetImage(this.dumpMemoryMenuItem, global::ProcessHacker.Properties.Resources.disk);
+            this.dumpMemoryMenuItem.Index = 1;
+            this.dumpMemoryMenuItem.Text = "Dump...";
+            this.dumpMemoryMenuItem.Click += new System.EventHandler(this.dumpMemoryMenuItem_Click);
             // 
             // MemoryList
             // 
@@ -189,5 +198,6 @@
         private System.Windows.Forms.MenuItem selectAllMemoryMenuItem;
         private System.Windows.Forms.MenuItem freeMenuItem;
         private System.Windows.Forms.MenuItem decommitMenuItem;
+        private System.Windows.Forms.MenuItem dumpMemoryMenuItem;
     }
 }

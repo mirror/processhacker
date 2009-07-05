@@ -111,11 +111,27 @@ namespace ProcessHacker.Native.Api
 
     public enum FileCreationDisposition : uint
     {
+        /// <summary>
+        /// Creates a new file. The function fails if the specified file already exists.
+        /// </summary>
         CreateNew = 1,
+        /// <summary>
+        /// Creates a new file. If the file exists, the function overwrites the file and clears the existing attributes.
+        /// </summary>
         CreateAlways = 2,
+        /// <summary>
+        /// Opens the file. The function fails if the file does not exist. 
+        /// </summary>
         OpenExisting = 3,
+        /// <summary>
+        /// Opens the file, if it exists. If the file does not exist, the function creates the file.
+        /// </summary>
         OpenAlways = 4,
-        TruncateExisting
+        /// <summary>
+        /// Opens the file. Once opened, the file is truncated so that its size is zero bytes. 
+        /// The function fails if the file does not exist.
+        /// </summary>
+        TruncateExisting = 5
     }
 
     [Flags]

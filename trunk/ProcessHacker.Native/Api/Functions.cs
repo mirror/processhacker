@@ -174,8 +174,17 @@ namespace ProcessHacker.Native.Api
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool WriteFile(
             [In] IntPtr FileHandle, 
-            [Out] byte[] Buffer,
+            [In] byte[] Buffer,
             [In] int Bytes, 
+            [Out] [Optional] out int WrittenBytes,
+            [Optional] IntPtr Overlapped
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public unsafe static extern bool WriteFile(
+            [In] IntPtr FileHandle,
+            [In] void* Buffer,
+            [In] int Bytes,
             [Out] [Optional] out int WrittenBytes,
             [Optional] IntPtr Overlapped
             );

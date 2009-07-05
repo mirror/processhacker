@@ -13,6 +13,7 @@ Process Hacker
    * Ability to create services
    * Ability to set DEP status of processes in other sessions
    * Ability to unload modules of processes in other sessions
+   * Ability to dump memory to a file
    * Process heap information
    * Paged and non-paged pool limit display
    * Terminator test: TP1a (TP1, alternative method)

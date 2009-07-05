@@ -406,6 +406,7 @@ namespace ProcessHacker.Components
             {
                 menuMemory.DisableAll();
 
+                dumpMemoryMenuItem.Enabled = true;
                 readWriteAddressMemoryMenuItem.Enabled = true;
 
                 if (listMemory.SelectedIndices.Count > 1)
@@ -440,6 +441,47 @@ namespace ProcessHacker.Components
             MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
 
             MemoryEditor.ReadWriteMemory(_pid, item.Address, item.Size, false);
+        }
+
+        private void dumpMemoryMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            sfd.FileName = "Memory.bin";
+            sfd.Filter = "Binary Files (*.bin)|*.bin|All Files (*.*)|*.*";
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    using (var phandle = new ProcessHandle(_pid, ProcessAccess.VmRead))
+                    using (var fhandle = new FileHandle(sfd.FileName, FileAccess.GenericWrite, FileShareMode.Read))
+                    {
+                        foreach (ListViewItem litem in listMemory.SelectedItems)
+                        {
+                            MemoryItem item = (MemoryItem)litem.Tag;
+
+                            using (MemoryAlloc alloc = new MemoryAlloc(item.Size))
+                            {
+                                try
+                                {
+                                    unsafe
+                                    {
+                                        phandle.ReadMemory(item.Address, alloc, item.Size);
+                                        fhandle.Write(alloc, item.Size);
+                                    }
+                                }
+                                catch (WindowsException)
+                                { }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowMessage("Error dumping the selected memory regions", ex);
+                }
+            }
         }
 
         private void readWriteAddressMemoryMenuItem_Click(object sender, EventArgs e)

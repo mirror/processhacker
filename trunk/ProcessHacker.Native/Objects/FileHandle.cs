@@ -21,9 +21,9 @@
  */
 
 using System;
+using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -54,7 +54,7 @@ namespace ProcessHacker.Native.Objects
         { }
 
         public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode)
-            : this(fileName, desiredAccess, shareMode, FileCreationDisposition.OpenAlways)
+            : this(fileName, desiredAccess, shareMode, FileCreationDisposition.CreateAlways)
         { }
 
         public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode,
@@ -250,6 +250,22 @@ namespace ProcessHacker.Native.Objects
             int bytesWritten;
 
             if (!Win32.WriteFile(this, buffer, buffer.Length, out bytesWritten, IntPtr.Zero))
+                Win32.ThrowLastError();
+
+            return bytesWritten;
+        }
+
+        /// <summary>
+        /// Writes data to the file.
+        /// </summary>
+        /// <param name="buffer">The data.</param>
+        /// <param name="length">The number of bytes to write.</param>
+        /// <returns>The number of bytes written to the file.</returns>
+        public unsafe int Write(void* buffer, int length)
+        {
+            int bytesWritten;
+
+            if (!Win32.WriteFile(this, buffer, length, out bytesWritten, IntPtr.Zero))
                 Win32.ThrowLastError();
 
             return bytesWritten;
