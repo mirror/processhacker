@@ -43,16 +43,17 @@ namespace ProcessHacker.Native.Security
 
         public static Sid FromAccountName(string accountName)
         {
-            MemoryAlloc memory = new MemoryAlloc(Win32.SecurityMaxSidSize);
-            int memorySize = memory.Size;
-            SidNameUse nameUse;
+            using (MemoryAlloc memory = new MemoryAlloc(Win32.SecurityMaxSidSize))
+            {
+                int memorySize = memory.Size;
+                SidNameUse nameUse;
 
-            if (!Win32.LookupAccountName(null, accountName, memory, ref memorySize, 
-                IntPtr.Zero, IntPtr.Zero, out nameUse))
-                Win32.ThrowLastError();
+                if (!Win32.LookupAccountName(null, accountName, memory, ref memorySize,
+                    IntPtr.Zero, IntPtr.Zero, out nameUse))
+                    Win32.ThrowLastError();
 
-            using (memory)
                 return new Sid(memory);
+            }
         }
 
         public static Sid FromPointer(IntPtr sid)
@@ -62,14 +63,15 @@ namespace ProcessHacker.Native.Security
 
         public static Sid GetWellKnownSid(WellKnownSidType sidType)
         {
-            MemoryAlloc memory = new MemoryAlloc(Win32.SecurityMaxSidSize);
-            int memorySize = memory.Size;
+            using (MemoryAlloc memory = new MemoryAlloc(Win32.SecurityMaxSidSize))
+            {
+                int memorySize = memory.Size;
 
-            if (!Win32.CreateWellKnownSid(sidType, IntPtr.Zero, memory, ref memorySize))
-                Win32.ThrowLastError();
+                if (!Win32.CreateWellKnownSid(sidType, IntPtr.Zero, memory, ref memorySize))
+                    Win32.ThrowLastError();
 
-            using (memory)
                 return new Sid(memory);
+            }
         }
 
         public static byte[] GetWellKnownSidIdentifierAuthority(WellKnownSidIdentifierAuthority sidAuthority)

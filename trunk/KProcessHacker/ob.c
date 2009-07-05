@@ -273,22 +273,26 @@ BOOLEAN KphpQueryProcessHandlesEnumCallback(
 {
     PROCESS_HANDLE handleInfo;
     PPROCESS_HANDLE_INFORMATION buffer = Context->Buffer;
-    ULONG i = Context->CurrentIndex;
+    ULONG i;
     
     handleInfo.Handle = Handle;
     handleInfo.Object = ObpDecodeObject(HandleTableEntry->Object);
     handleInfo.GrantedAccess = ObpDecodeGrantedAccess(HandleTableEntry->GrantedAccess);
     handleInfo.HandleAttributes = ObpGetHandleAttributes(HandleTableEntry);
     
+    /* Increment the index regardless of whether the information will be written; 
+       this will allow KphQueryProcessHandles to report the correct return length. */
+    i = Context->CurrentIndex++;
+    
     /* Only write if we have a buffer and have not exceeded the buffer length. */
     if (
         buffer && 
-        (sizeof(ULONG) + i * sizeof(PROCESS_HANDLE)) <= Context->BufferLength
+        (sizeof(ULONG) + Context->CurrentIndex * sizeof(PROCESS_HANDLE)) <= Context->BufferLength
         )
     {
         __try
         {
-            memcpy(&buffer->Handles[i], &handleInfo, sizeof(PROCESS_HANDLE));
+            buffer->Handles[i] = handleInfo;
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
@@ -303,10 +307,6 @@ BOOLEAN KphpQueryProcessHandlesEnumCallback(
         if (Context->Status == STATUS_SUCCESS)
             Context->Status = STATUS_BUFFER_TOO_SMALL;
     }
-    
-    /* Increment the index regardless of whether the information was written; 
-       this will allow KphQueryProcessHandles to report the correct return length. */
-    Context->CurrentIndex++;
     
     return FALSE;
 }

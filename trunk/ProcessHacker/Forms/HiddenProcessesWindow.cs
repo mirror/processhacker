@@ -281,7 +281,7 @@ namespace ProcessHacker
                             }
                         }
                     }
-                    catch (Exception ex)
+                    catch (WindowsException ex)
                     {
                         PhUtils.ShowMessage("Error getting the CSR handle list", ex);
                         return;

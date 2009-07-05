@@ -27,7 +27,7 @@ namespace ProcessHacker.Native
             if (this.Memory == IntPtr.Zero)
                 throw new OutOfMemoryException();
 
-            base.Size = size;
+            this.Size = size;
         }
 
         protected override void Free()
@@ -45,7 +45,7 @@ namespace ProcessHacker.Native
                 throw new OutOfMemoryException();
 
             this.Memory = newMemory;
-            base.Size = newSize;
+            this.Size = newSize;
         }
     }
 }
