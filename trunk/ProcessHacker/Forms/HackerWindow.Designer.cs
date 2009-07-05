@@ -168,6 +168,7 @@
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
+            this.heapsProcessMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -281,6 +282,7 @@
             this.miscellaneousProcessMenuItem.Index = 11;
             this.miscellaneousProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.detachFromDebuggerProcessMenuItem,
+            this.heapsProcessMenuItem,
             this.injectDllProcessMenuItem,
             this.protectionProcessMenuItem,
             this.setTokenProcessMenuItem});
@@ -294,19 +296,19 @@
             // 
             // injectDllProcessMenuItem
             // 
-            this.injectDllProcessMenuItem.Index = 1;
+            this.injectDllProcessMenuItem.Index = 2;
             this.injectDllProcessMenuItem.Text = "Inject DLL...";
             this.injectDllProcessMenuItem.Click += new System.EventHandler(this.injectDllProcessMenuItem_Click);
             // 
             // protectionProcessMenuItem
             // 
-            this.protectionProcessMenuItem.Index = 2;
+            this.protectionProcessMenuItem.Index = 3;
             this.protectionProcessMenuItem.Text = "Protection...";
             this.protectionProcessMenuItem.Click += new System.EventHandler(this.protectionProcessMenuItem_Click);
             // 
             // setTokenProcessMenuItem
             // 
-            this.setTokenProcessMenuItem.Index = 3;
+            this.setTokenProcessMenuItem.Index = 4;
             this.setTokenProcessMenuItem.Text = "Set Token...";
             this.setTokenProcessMenuItem.Click += new System.EventHandler(this.setTokenProcessMenuItem_Click);
             // 
@@ -1220,6 +1222,12 @@
             this.selectAllNetworkMenuItem.Text = "Select &All";
             this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
             // 
+            // heapsProcessMenuItem
+            // 
+            this.heapsProcessMenuItem.Index = 1;
+            this.heapsProcessMenuItem.Text = "Heaps...";
+            this.heapsProcessMenuItem.Click += new System.EventHandler(this.heapsProcessMenuItem_Click);
+            // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1396,6 +1404,7 @@
         private System.Windows.Forms.MenuItem detachFromDebuggerProcessMenuItem;
         private System.Windows.Forms.MenuItem usersMenuItem;
         private System.Windows.Forms.MenuItem createServiceMenuItem;
+        private System.Windows.Forms.MenuItem heapsProcessMenuItem;
     }
 }
 

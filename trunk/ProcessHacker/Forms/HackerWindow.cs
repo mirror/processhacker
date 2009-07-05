@@ -33,6 +33,7 @@ using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Debugging;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
@@ -1325,6 +1326,32 @@ namespace ProcessHacker
                     MessageBox.Show("The process is not being debugged.", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
                     PhUtils.ShowMessage(ex);
+            }
+        }
+
+        private void heapsProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DebugBuffer buffer = new DebugBuffer();
+
+                buffer.Query(
+                    processSelectedPID,
+                    RtlQueryProcessDebugFlags.HeapSummary |
+                    RtlQueryProcessDebugFlags.HeapEntries |
+                    RtlQueryProcessDebugFlags.HeapTags
+                    );
+
+                HeapsWindow heapsWindow = new HeapsWindow(processSelectedPID, buffer.GetHeaps());
+
+                buffer.Dispose();
+
+                heapsWindow.TopMost = this.TopMost;
+                heapsWindow.ShowDialog();
+            }
+            catch (WindowsException ex)
+            {
+                PhUtils.ShowMessage("Error getting heap information", ex);
             }
         }
 

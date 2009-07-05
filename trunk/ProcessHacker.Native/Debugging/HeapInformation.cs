@@ -37,6 +37,22 @@ namespace ProcessHacker.Native.Debugging
             this.PseudoTagCount = heapInfo.NumberOfPseudoTags;
         }
 
+        public HeapInformation(
+            IntPtr address,
+            int bytesAllocated,
+            int bytesCommitted,
+            int tagCount,
+            int entryCount,
+            int pseudoTagCount)
+        {
+            this.Address = address;
+            this.BytesAllocated = bytesAllocated;
+            this.BytesCommitted = bytesCommitted;
+            this.TagCount = tagCount;
+            this.EntryCount = entryCount;
+            this.PseudoTagCount = pseudoTagCount;
+        }
+
         public IntPtr Address { get; private set; }
         public int BytesAllocated { get; private set; }
         public int BytesCommitted { get; private set; }
