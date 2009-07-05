@@ -144,10 +144,10 @@ namespace ProcessHacker.Native.Objects
                     out handle,
                     access,
                     ref oa,
-                    parentProcess != null ? parentProcess : IntPtr.Zero,
+                    parentProcess ?? IntPtr.Zero,
                     inheritHandles,
-                    sectionHandle != null ? sectionHandle : IntPtr.Zero,
-                    debugPort != null ? debugPort : IntPtr.Zero,
+                    sectionHandle ?? IntPtr.Zero,
+                    debugPort ?? IntPtr.Zero,
                     IntPtr.Zero
                     )) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
@@ -1024,7 +1024,7 @@ namespace ProcessHacker.Native.Objects
                     ProcessHandleInformation[] handles = new ProcessHandleInformation[handleCount];
 
                     for (int i = 0; i < handleCount; i++)
-                        handles[i] = data.ReadStruct<ProcessHandleInformation>(4, i);
+                        handles[i] = data.ReadStruct<ProcessHandleInformation>(sizeof(int), i);
 
                     return handles;
                 }

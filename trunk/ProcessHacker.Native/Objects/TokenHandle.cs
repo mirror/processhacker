@@ -240,7 +240,7 @@ namespace ProcessHacker.Native.Objects
 
                 for (int i = 0; i < count; i++)
                 {
-                    var saa = data.ReadStruct<SidAndAttributes>(4, i);
+                    var saa = data.ReadStruct<SidAndAttributes>(sizeof(int), i);
                     sids[i] = new Sid(saa.Sid, saa.Attributes);
                 }
 
@@ -320,7 +320,7 @@ namespace ProcessHacker.Native.Objects
 
                 for (int i = 0; i < count; i++)
                 {
-                    var laa = data.ReadStruct<LuidAndAttributes>(4, i);
+                    var laa = data.ReadStruct<LuidAndAttributes>(sizeof(int), i);
                     privileges[i] = new Privilege(this, laa.Luid, laa.Attributes);
                 }
 

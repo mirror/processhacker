@@ -98,7 +98,7 @@ namespace ProcessHacker.Native.Objects
                         ref maximumSize,
                         pageAttributes,
                         sectionAttributes,
-                        fileHandle != null ? fileHandle : IntPtr.Zero
+                        fileHandle ?? IntPtr.Zero
                         )) >= NtStatus.Error)
                         Win32.ThrowLastError(status);
                 }
@@ -111,7 +111,7 @@ namespace ProcessHacker.Native.Objects
                         IntPtr.Zero,
                         pageAttributes,
                         sectionAttributes,
-                        fileHandle != null ? fileHandle : IntPtr.Zero
+                        fileHandle ?? IntPtr.Zero
                         )) >= NtStatus.Error)
                         Win32.ThrowLastError(status);
                 }

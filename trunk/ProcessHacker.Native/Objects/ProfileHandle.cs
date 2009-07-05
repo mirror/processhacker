@@ -51,7 +51,7 @@ namespace ProcessHacker.Native.Objects
 
                 if ((status = Win32.NtCreateProfile(
                     out handle,
-                    processHandle != null ? processHandle : IntPtr.Zero,
+                    processHandle ?? IntPtr.Zero,
                     rangeBase,
                     new IntPtr(rangeSize),
                     bucketSize,

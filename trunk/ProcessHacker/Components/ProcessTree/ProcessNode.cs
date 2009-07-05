@@ -149,7 +149,7 @@ namespace ProcessHacker
 
         public string Name
         {
-            get { return _pitem.Name != null ? _pitem.Name : ""; }
+            get { return _pitem.Name ?? ""; }
         }
 
         public string DisplayPid

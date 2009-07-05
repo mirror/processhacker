@@ -1229,7 +1229,7 @@ namespace ProcessHacker.Native.Api
         public IntPtr MappedBase;
         public IntPtr ImageBase;
         public int ImageSize;
-        public int Flags;
+        public LdrpDataTableEntryFlags Flags;
         public ushort LoadOrderIndex;
         public ushort InitOrderIndex;
         public ushort LoadCount;

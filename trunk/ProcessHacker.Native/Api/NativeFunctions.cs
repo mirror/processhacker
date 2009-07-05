@@ -1565,12 +1565,13 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr Buffer // RtlDebugInformation*
             );
 
-        [DllImport("ntdll.dll")]
-        public static extern NtStatus RtlQueryProcessModuleInformation(
-            [In] [Optional] IntPtr ProcessHandle,
-            [In] RtlQueryProcessDebugFlags Flags,
-            [In] IntPtr Buffer // RtlDebugInformation*
-            );
+        // Not exported.
+        //[DllImport("ntdll.dll")]
+        //public static extern NtStatus RtlQueryProcessModuleInformation(
+        //    [In] [Optional] IntPtr ProcessHandle,
+        //    [In] RtlQueryProcessDebugFlags Flags,
+        //    [In] IntPtr Buffer // RtlDebugInformation*
+        //    );
 
         #endregion
 

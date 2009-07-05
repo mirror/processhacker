@@ -55,6 +55,10 @@
     <Compile Include="Api\NativeStructs.cs" />
     <Compile Include="Api\NtStatus.cs" />
     <Compile Include="Cryptography.cs" />
+    <Compile Include="Debugging\DebugBuffer.cs" />
+    <Compile Include="Debugging\HeapInformation.cs" />
+    <Compile Include="Debugging\LockInformation.cs" />
+    <Compile Include="Debugging\ModuleInformation.cs" />
     <Compile Include="Lpc\PortMessage.cs" />
     <Compile Include="Memory\MemoryAllocStream.cs" />
     <Compile Include="Memory\PhysicalPages.cs" />

@@ -198,7 +198,7 @@ namespace ProcessHacker.Native
 
             for (int i = 0; i < handleCount; i++)
             {
-                returnHandles[i] = data.ReadStruct<SystemHandleInformation>(4, i);
+                returnHandles[i] = data.ReadStruct<SystemHandleInformation>(sizeof(int), i);
             }
 
             return returnHandles;
@@ -310,7 +310,7 @@ namespace ProcessHacker.Native
 
                 for (int i = 0; i < count; i++)
                 {
-                    var struc = mem.ReadStruct<MibTcpRowOwnerPid>(4, i);
+                    var struc = mem.ReadStruct<MibTcpRowOwnerPid>(sizeof(int), i);
 
                     if (!retDict.ContainsKey(struc.OwningProcessId))
                         retDict.Add(struc.OwningProcessId, new List<NetworkConnection>());
@@ -337,7 +337,7 @@ namespace ProcessHacker.Native
 
                 for (int i = 0; i < count; i++)
                 {
-                    var struc = mem.ReadStruct<MibUdpRowOwnerPid>(4, i);
+                    var struc = mem.ReadStruct<MibUdpRowOwnerPid>(sizeof(int), i);
 
                     if (!retDict.ContainsKey(struc.OwningProcessId))
                         retDict.Add(struc.OwningProcessId, new List<NetworkConnection>());
