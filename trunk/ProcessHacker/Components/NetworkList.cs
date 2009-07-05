@@ -27,7 +27,6 @@ using System.Reflection;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
-using ProcessHacker.Native;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
@@ -355,7 +354,9 @@ namespace ProcessHacker.Components
 
             if (icon != null)
             {
-                imageList.Images.Add(item.Connection.Pid.ToString(), icon);
+                lock (imageList)
+                    imageList.Images.Add(item.Connection.Pid.ToString(), icon);
+
                 litem.ImageKey = item.Connection.Pid.ToString();
             }
             else
