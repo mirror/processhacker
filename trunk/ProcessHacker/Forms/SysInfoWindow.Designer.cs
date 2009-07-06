@@ -81,13 +81,7 @@
             this.labelCachePeak = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.label23 = new System.Windows.Forms.Label();
-            this.labelKPNPF = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.labelKPNPA = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.labelKPNPU = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.labelKPPPU = new System.Windows.Forms.Label();
@@ -96,6 +90,15 @@
             this.labelKPPVU = new System.Windows.Forms.Label();
             this.labelKPPF = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
+            this.labelKPPL = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.labelKPNPL = new System.Windows.Forms.Label();
+            this.labelKPNPF = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.labelKPNPA = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.labelKPNPU = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.label20 = new System.Windows.Forms.Label();
@@ -133,9 +136,6 @@
             this.label41 = new System.Windows.Forms.Label();
             this.labelCPUInterrupts = new System.Windows.Forms.Label();
             this.checkAlwaysOnTop = new System.Windows.Forms.CheckBox();
-            this.labelKPPL = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.labelKPNPL = new System.Windows.Forms.Label();
             this.gboxCPUPlotter.SuspendLayout();
             this.tableGraphs.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -355,7 +355,7 @@
             this.groupBox12.Size = new System.Drawing.Size(80, 62);
             this.groupBox12.TabIndex = 10;
             this.groupBox12.TabStop = false;
-            this.groupBox12.Text = "I/O Bytes";
+            this.groupBox12.Text = "I/O (R+O)";
             // 
             // indicatorIO
             // 
@@ -884,58 +884,6 @@
             this.tableLayoutPanel5.Size = new System.Drawing.Size(189, 138);
             this.tableLayoutPanel5.TabIndex = 1;
             // 
-            // label23
-            // 
-            this.label23.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(3, 106);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(90, 13);
-            this.label23.TabIndex = 9;
-            this.label23.Text = "Non-Paged Frees";
-            // 
-            // labelKPNPF
-            // 
-            this.labelKPNPF.AutoEllipsis = true;
-            this.labelKPNPF.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPNPF.Location = new System.Drawing.Point(104, 105);
-            this.labelKPNPF.Name = "labelKPNPF";
-            this.labelKPNPF.Size = new System.Drawing.Size(82, 15);
-            this.labelKPNPF.TabIndex = 8;
-            this.labelKPNPF.Text = "value";
-            this.labelKPNPF.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label21
-            // 
-            this.label21.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(3, 91);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(92, 13);
-            this.label21.TabIndex = 7;
-            this.label21.Text = "Non-Paged Allocs";
-            // 
-            // labelKPNPA
-            // 
-            this.labelKPNPA.AutoEllipsis = true;
-            this.labelKPNPA.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPNPA.Location = new System.Drawing.Point(104, 90);
-            this.labelKPNPA.Name = "labelKPNPA";
-            this.labelKPNPA.Size = new System.Drawing.Size(82, 15);
-            this.labelKPNPA.TabIndex = 6;
-            this.labelKPNPA.Text = "value";
-            this.labelKPNPA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label11
-            // 
-            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(3, 76);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(95, 13);
-            this.label11.TabIndex = 5;
-            this.label11.Text = "Non-Paged Usage";
-            // 
             // label14
             // 
             this.label14.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -945,17 +893,6 @@
             this.label14.Size = new System.Drawing.Size(67, 13);
             this.label14.TabIndex = 3;
             this.label14.Text = "Paged Frees";
-            // 
-            // labelKPNPU
-            // 
-            this.labelKPNPU.AutoEllipsis = true;
-            this.labelKPNPU.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPNPU.Location = new System.Drawing.Point(104, 75);
-            this.labelKPNPU.Name = "labelKPNPU";
-            this.labelKPNPU.Size = new System.Drawing.Size(82, 15);
-            this.labelKPNPU.TabIndex = 4;
-            this.labelKPNPU.Text = "value";
-            this.labelKPNPU.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label17
             // 
@@ -1040,6 +977,102 @@
             this.label29.Size = new System.Drawing.Size(62, 13);
             this.label29.TabIndex = 3;
             this.label29.Text = "Paged Limit";
+            // 
+            // labelKPPL
+            // 
+            this.labelKPPL.AutoEllipsis = true;
+            this.labelKPPL.AutoSize = true;
+            this.labelKPPL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelKPPL.Location = new System.Drawing.Point(104, 60);
+            this.labelKPPL.Name = "labelKPPL";
+            this.labelKPPL.Size = new System.Drawing.Size(82, 15);
+            this.labelKPPL.TabIndex = 10;
+            this.labelKPPL.Text = "value";
+            this.labelKPPL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label33
+            // 
+            this.label33.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(3, 122);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(85, 13);
+            this.label33.TabIndex = 9;
+            this.label33.Text = "Non-Paged Limit";
+            // 
+            // labelKPNPL
+            // 
+            this.labelKPNPL.AutoEllipsis = true;
+            this.labelKPNPL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelKPNPL.Location = new System.Drawing.Point(104, 120);
+            this.labelKPNPL.Name = "labelKPNPL";
+            this.labelKPNPL.Size = new System.Drawing.Size(82, 18);
+            this.labelKPNPL.TabIndex = 8;
+            this.labelKPNPL.Text = "value";
+            this.labelKPNPL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelKPNPF
+            // 
+            this.labelKPNPF.AutoEllipsis = true;
+            this.labelKPNPF.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelKPNPF.Location = new System.Drawing.Point(104, 105);
+            this.labelKPNPF.Name = "labelKPNPF";
+            this.labelKPNPF.Size = new System.Drawing.Size(82, 15);
+            this.labelKPNPF.TabIndex = 8;
+            this.labelKPNPF.Text = "value";
+            this.labelKPNPF.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label23
+            // 
+            this.label23.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(3, 106);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(90, 13);
+            this.label23.TabIndex = 9;
+            this.label23.Text = "Non-Paged Frees";
+            // 
+            // labelKPNPA
+            // 
+            this.labelKPNPA.AutoEllipsis = true;
+            this.labelKPNPA.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelKPNPA.Location = new System.Drawing.Point(104, 90);
+            this.labelKPNPA.Name = "labelKPNPA";
+            this.labelKPNPA.Size = new System.Drawing.Size(82, 15);
+            this.labelKPNPA.TabIndex = 6;
+            this.labelKPNPA.Text = "value";
+            this.labelKPNPA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label21
+            // 
+            this.label21.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(3, 91);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(92, 13);
+            this.label21.TabIndex = 7;
+            this.label21.Text = "Non-Paged Allocs";
+            // 
+            // labelKPNPU
+            // 
+            this.labelKPNPU.AutoEllipsis = true;
+            this.labelKPNPU.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelKPNPU.Location = new System.Drawing.Point(104, 75);
+            this.labelKPNPU.Name = "labelKPNPU";
+            this.labelKPNPU.Size = new System.Drawing.Size(82, 15);
+            this.labelKPNPU.TabIndex = 4;
+            this.labelKPNPU.Text = "value";
+            this.labelKPNPU.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label11
+            // 
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(3, 76);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(95, 13);
+            this.label11.TabIndex = 5;
+            this.label11.Text = "Non-Paged Usage";
             // 
             // groupBox8
             // 
@@ -1479,39 +1512,6 @@
             this.checkAlwaysOnTop.Text = "Always on Top";
             this.checkAlwaysOnTop.UseVisualStyleBackColor = true;
             this.checkAlwaysOnTop.CheckedChanged += new System.EventHandler(this.checkAlwaysOnTop_CheckedChanged);
-            // 
-            // labelKPPL
-            // 
-            this.labelKPPL.AutoEllipsis = true;
-            this.labelKPPL.AutoSize = true;
-            this.labelKPPL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPPL.Location = new System.Drawing.Point(104, 60);
-            this.labelKPPL.Name = "labelKPPL";
-            this.labelKPPL.Size = new System.Drawing.Size(82, 15);
-            this.labelKPPL.TabIndex = 10;
-            this.labelKPPL.Text = "value";
-            this.labelKPPL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label33
-            // 
-            this.label33.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(3, 122);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(85, 13);
-            this.label33.TabIndex = 9;
-            this.label33.Text = "Non-Paged Limit";
-            // 
-            // labelKPNPL
-            // 
-            this.labelKPNPL.AutoEllipsis = true;
-            this.labelKPNPL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPNPL.Location = new System.Drawing.Point(104, 120);
-            this.labelKPNPL.Name = "labelKPNPL";
-            this.labelKPNPL.Size = new System.Drawing.Size(82, 18);
-            this.labelKPNPL.TabIndex = 8;
-            this.labelKPNPL.Text = "value";
-            this.labelKPNPL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // SysInfoWindow
             // 

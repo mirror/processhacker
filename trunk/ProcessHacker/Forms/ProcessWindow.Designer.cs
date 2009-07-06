@@ -619,7 +619,7 @@ namespace ProcessHacker
             this.groupBoxIO.Size = new System.Drawing.Size(80, 122);
             this.groupBoxIO.TabIndex = 3;
             this.groupBoxIO.TabStop = false;
-            this.groupBoxIO.Text = "I/O Bytes";
+            this.groupBoxIO.Text = "I/O (R+O)";
             // 
             // indicatorIO
             // 
@@ -648,7 +648,7 @@ namespace ProcessHacker
             this.groupBoxPvt.Size = new System.Drawing.Size(80, 122);
             this.groupBoxPvt.TabIndex = 2;
             this.groupBoxPvt.TabStop = false;
-            this.groupBoxPvt.Text = "Pvt Bytes";
+            this.groupBoxPvt.Text = "Pvt. Pages";
             // 
             // indicatorPvt
             // 
