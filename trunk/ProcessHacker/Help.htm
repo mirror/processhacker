@@ -321,8 +321,8 @@ pre {
       <dd>Terminates the process using the NtTerminateProcess function.</dd>
       
       <dt>TP2</dt>
-      <dd>Uses the RtlCreateUserThread function to create a thread in the process which calls 
-      NtTerminateProcess, terminating the process.</dd>
+      <dd>Uses the CreateRemoteThread function to create a thread in the process which calls 
+      ExitProcess, terminating the process.</dd>
       
       <dt>TT1</dt>
       <dd>Terminates the process' threads by using the NtTerminateThread function.</dd>
