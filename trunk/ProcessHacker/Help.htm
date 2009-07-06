@@ -322,13 +322,13 @@ pre {
       
       <dt>TP2</dt>
       <dd>Uses the RtlCreateUserThread function to create a thread in the process which calls 
-      RtlExitUserProcess, terminating the process.</dd>
+      NtTerminateProcess, terminating the process.</dd>
       
       <dt>TT1</dt>
       <dd>Terminates the process' threads by using the NtTerminateThread function.</dd>
       
       <dt>TT2</dt>
-      <dd>Sets the contexts of the process' threads to point to the RtlExitUserProcess function. The 
+      <dd>Sets the contexts of the process' threads to point to the ExitProcess function. The 
       process will be terminated when one of the threads are context switched to.</dd>
       
       <dt>TP1a</dt>

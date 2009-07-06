@@ -280,10 +280,13 @@ namespace ProcessHacker
 
         private void TP2()
         {
-            IntPtr rtlExitUserProcess = Loader.GetProcedure("ntdll.dll", "RtlExitUserProcess");
+            IntPtr ntTerminateProcess = Loader.GetProcedure("ntdll.dll", "NtTerminateProcess");
 
             using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.CreateThread))
-                phandle.CreateNativeThread(rtlExitUserProcess, IntPtr.Zero);
+            {
+                // The second argument (exit status) will have garbage.
+                phandle.CreateNativeThread(ntTerminateProcess, IntPtr.Zero);
+            }
         }
 
         private void TP3()
@@ -329,7 +332,7 @@ namespace ProcessHacker
         private void TT2()
         {
             Context context;
-            IntPtr rtlExitUserProcess = Loader.GetProcedure("ntdll.dll", "RtlExitUserProcess");
+            IntPtr exitProcess = Loader.GetProcedure("kernel32.dll", "ExitProcess");
 
             foreach (var thread in Windows.GetProcessThreads(_pid).Values)
             {
@@ -340,7 +343,7 @@ namespace ProcessHacker
                     {
                         context = thandle.GetContext(ContextFlags.Control);
                         context.ContextFlags = ContextFlags.Control;
-                        context.Eip = rtlExitUserProcess.ToInt32();
+                        context.Eip = exitProcess.ToInt32();
                         thandle.SetContext(context);
                     }
                     catch
