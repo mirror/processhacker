@@ -59,7 +59,7 @@ namespace ProcessHacker.Common.Objects
         /// Represents a callback function for handle table enumeration.
         /// </summary>
         /// <param name="handle">The current handle.</param>
-        /// <param name="obj">The current object.</param>
+        /// <param name="entry">The current object.</param>
         /// <returns>Return true to stop enumerating; otherwise return false.</returns>
         public delegate bool EnumerateHandleTableDelegate(int handle, TEntry entry);
 
