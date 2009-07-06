@@ -280,12 +280,18 @@ namespace ProcessHacker
 
         private void TP2()
         {
-            IntPtr ntTerminateProcess = Loader.GetProcedure("ntdll.dll", "NtTerminateProcess");
-
-            using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.CreateThread))
+            using (ProcessHandle phandle = new ProcessHandle(_pid,
+                ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
             {
-                // The second argument (exit status) will have garbage.
-                phandle.CreateNativeThread(ntTerminateProcess, IntPtr.Zero);
+                if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                {
+                    // Vista and above export.
+                    phandle.CreateNativeThread(Loader.GetProcedure("ntdll.dll", "RtlExitUserProcess"), IntPtr.Zero);
+                }
+                else
+                {
+                    phandle.CreateNativeThread(Loader.GetProcedure("kernel32.dll", "ExitProcess"), IntPtr.Zero);
+                }
             }
         }
 

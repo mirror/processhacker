@@ -490,11 +490,6 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    IntPtr ldrUnloadDll = Win32.GetProcAddress(Win32.GetModuleHandle("ntdll.dll"), "LdrUnloadDll");
-
-                    if (ldrUnloadDll == IntPtr.Zero)
-                        throw new Exception("Could not find LdrUnloadDll in ntdll.dll!");
-
                     using (ProcessHandle phandle = new ProcessHandle(_pid,
                         Program.MinProcessQueryRights | ProcessAccess.VmOperation |
                         ProcessAccess.VmRead | ProcessAccess.VmWrite | ProcessAccess.CreateThread))
@@ -503,12 +498,28 @@ namespace ProcessHacker.Components
 
                         phandle.SetModuleReferenceCount(baseAddress, 1);
 
-                        // Use RtlCreateUserThread to bypass session boundaries. Since 
-                        // LdrUnloadDll is a native function we don't need to notify CSR.
-                        var thread = phandle.CreateNativeThread(ldrUnloadDll, baseAddress);
+                        ThreadHandle thread;
+
+                        if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                        {
+                            // Use RtlCreateUserThread to bypass session boundaries. Since 
+                            // LdrUnloadDll is a native function we don't need to notify CSR.
+                            thread = phandle.CreateNativeThread(
+                                Loader.GetProcedure("ntdll.dll", "LdrUnloadDll"),
+                                baseAddress
+                                );
+                        }
+                        else
+                        {
+                            thread = phandle.CreateThread(
+                                Loader.GetProcedure("kernel32.dll", "FreeLibrary"),
+                                baseAddress
+                                );
+                        }
 
                         thread.Wait(1000 * Win32.TimeMsTo100Ns);
                         thread.GetExitStatus().ThrowIf();
+                        thread.Dispose();
                     }
                 }
                 catch (Exception ex)
