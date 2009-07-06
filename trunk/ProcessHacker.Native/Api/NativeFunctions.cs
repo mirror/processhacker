@@ -1734,6 +1734,11 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlExitUserProcess(
+            [In] NtStatus ExitStatus
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern void RtlExitUserThread(
             [In] NtStatus ExitStatus
             );

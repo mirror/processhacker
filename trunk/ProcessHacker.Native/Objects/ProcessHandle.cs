@@ -1862,18 +1862,19 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="address">The function to call.</param>
         /// <param name="arguments">The arguments to pass to the function.</param>
-        public void RemoteCall(IntPtr address, IntPtr[] arguments)
+        public ThreadHandle RemoteCall(IntPtr address, IntPtr[] arguments)
         {
             IntPtr rtlExitUserThread = Loader.GetProcedure("ntdll.dll", "RtlExitUserThread");
 
             // Create a suspended thread at RtlExitUserThread.
-            using (var thandle = this.CreateNativeThread(rtlExitUserThread, IntPtr.Zero, true))
-            {
-                // Do the remote call on this thread.
-                thandle.RemoteCall(this, address, arguments, true);
-                // Resume the thread. It will execute the remote call then exit.
-                thandle.Resume();
-            }
+            var thandle = this.CreateNativeThread(rtlExitUserThread, IntPtr.Zero, true);
+
+            // Do the remote call on this thread.
+            thandle.RemoteCall(this, address, arguments, true);
+            // Resume the thread. It will execute the remote call then exit.
+            thandle.Resume();
+
+            return thandle;
         }
 
         /// <summary>

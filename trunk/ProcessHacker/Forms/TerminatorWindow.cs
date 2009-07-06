@@ -22,8 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
@@ -46,13 +44,13 @@ namespace ProcessHacker
 
             labelProgress.Text = "";
 
-            this.AddTest("TP1", "Terminates the process using TerminateProcess");
+            this.AddTest("TP1", "Terminates the process using NtTerminateProcess");
             this.AddTest("TP2", "Creates a remote thread in the process which terminates the process");
             this.AddTest("TT1", "Terminates the process' threads");
             this.AddTest("TT2", "Modifies the process' threads with contexts which terminate the process");
             if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
             {
-                this.AddTest("TP1a", "Terminates the process using TerminateProcess (alternative method)");
+                this.AddTest("TP1a", "Terminates the process using NtTerminateProcess (alternative method)");
                 this.AddTest("TT1a", "Terminates the process' threads (alternative method)");
             }
             this.AddTest("CH1", "Closes the process' handles");
@@ -249,9 +247,8 @@ namespace ProcessHacker
         {
             using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.Terminate))
             {
-                // don't use KPH
-                if (!Win32.TerminateProcess(phandle, 0))
-                    Win32.ThrowLastError();
+                // Don't use KPH.
+                Win32.NtTerminateProcess(phandle, NtStatus.Success).ThrowIf();
             }
         }
 
@@ -283,11 +280,10 @@ namespace ProcessHacker
 
         private void TP2()
         {
-            IntPtr kernel32 = Win32.LoadLibrary("kernel32.dll");
-            IntPtr exitProcess = Win32.GetProcAddress(kernel32, "ExitProcess");
+            IntPtr rtlExitUserProcess = Loader.GetProcedure("ntdll.dll", "RtlExitUserProcess");
 
             using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.CreateThread))
-                phandle.CreateThread(exitProcess, IntPtr.Zero).Dispose();
+                phandle.CreateNativeThread(rtlExitUserProcess, IntPtr.Zero);
         }
 
         private void TP3()
@@ -304,8 +300,8 @@ namespace ProcessHacker
             {
                 using (ThreadHandle thandle = new ThreadHandle(thread.ClientId.ThreadId, ThreadAccess.Terminate))
                 {
-                    // don't use KPH
-                    Win32.TerminateThread(thandle, 0);
+                    // Don't use KPH.
+                    Win32.NtTerminateThread(thandle, NtStatus.Success).ThrowIf();
                 }
             }
         }
@@ -333,7 +329,7 @@ namespace ProcessHacker
         private void TT2()
         {
             Context context;
-            IntPtr exitProcess = Win32.GetProcAddress(Win32.GetModuleHandle("kernel32.dll"), "ExitProcess");
+            IntPtr rtlExitUserProcess = Loader.GetProcedure("ntdll.dll", "RtlExitUserProcess");
 
             foreach (var thread in Windows.GetProcessThreads(_pid).Values)
             {
@@ -344,7 +340,7 @@ namespace ProcessHacker
                     {
                         context = thandle.GetContext(ContextFlags.Control);
                         context.ContextFlags = ContextFlags.Control;
-                        context.Eip = exitProcess.ToInt32();
+                        context.Eip = rtlExitUserProcess.ToInt32();
                         thandle.SetContext(context);
                     }
                     catch

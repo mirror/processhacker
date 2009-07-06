@@ -318,26 +318,26 @@ pre {
     <h2>Terminator tests</h2>
     <dl>
       <dt>TP1</dt>
-      <dd>Terminates the process using the TerminateProcess function.</dd>
+      <dd>Terminates the process using the NtTerminateProcess function.</dd>
       
       <dt>TP2</dt>
-      <dd>Uses the CreateRemoteThread function to create a thread in the target process which 
-      terminates the process.</dd>
+      <dd>Uses the RtlCreateUserThread function to create a thread in the process which calls 
+      RtlExitUserProcess, terminating the process.</dd>
       
       <dt>TT1</dt>
-      <dd>Terminates the process' threads by using the TerminateThread function.</dd>
+      <dd>Terminates the process' threads by using the NtTerminateThread function.</dd>
       
       <dt>TT2</dt>
-      <dd>Sets the contexts of the process' threads to point to the ExitProcess function. The 
+      <dd>Sets the contexts of the process' threads to point to the RtlExitUserProcess function. The 
       process will be terminated when one of the threads are context switched to.</dd>
       
       <dt>TP1a</dt>
       <dd>(Vista only.) Uses NtGetNextProcess to open a handle to the process and terminate it 
-      using TerminateProcess.</dd>
+      using NtTerminateProcess.</dd>
       
       <dt>TT1a</dt>
       <dd>(Vista only.) Uses NtGetNextThread to open a handle to each of the process' threads and 
-      terminates them using TerminateThread.</dd>
+      terminates them using NtTerminateThread.</dd>
       
       <dt>CH1</dt>
       <dd>Uses NtDuplicateObject to close the process' handles. This method works best for 
