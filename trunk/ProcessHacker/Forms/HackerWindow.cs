@@ -455,7 +455,7 @@ namespace ProcessHacker
 
         private void cpuHistoryMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.CpuHistoryIconVisible =
+            Properties.Settings.Default.CpuHistoryIconVisible = 
                 cpuHistoryMenuItem.Checked = !cpuHistoryMenuItem.Checked;
             this.ApplyIconVisibilities();
         }
@@ -573,7 +573,7 @@ namespace ProcessHacker
                     {
                         allGood = false;
 
-                        if (MessageBox.Show("Could not close the TCP connection. " +
+                        if (MessageBox.Show("Could not close the TCP connection. " + 
                             "Make sure Process Hacker is running with administrative privileges.", "Process Hacker",
                             MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
                             return;
@@ -878,7 +878,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    if (treeProcesses.SelectedTreeNodes[0].IsLeaf &&
+                    if (treeProcesses.SelectedTreeNodes[0].IsLeaf && 
                         (treeProcesses.Tree.Model as ProcessTreeModel).GetSortColumn() == "")
                         terminateProcessTreeMenuItem.Visible = false;
                     else
@@ -1151,10 +1151,10 @@ namespace ProcessHacker
             SaveFileDialog sfd = new SaveFileDialog();
 
             sfd.Filter = "Dump Files (*.dmp)|*.dmp|All Files (*.*)|*.*";
-            sfd.FileName =
+            sfd.FileName = 
                 processP.Dictionary[processSelectedPID].Name +
                 "_" +
-                DateTime.Now.ToString("yyMMdd") +
+                DateTime.Now.ToString("yyMMdd") + 
                 ".dmp";
 
             if (sfd.ShowDialog() == DialogResult.OK)
@@ -1162,13 +1162,10 @@ namespace ProcessHacker
                 this.Cursor = Cursors.WaitCursor;
 
                 try
-                {                  
+                {
+                    Exception exception = null;
 
-                    if (OSVersion.HasTaskDialogs)
-                    {
-                        Exception exception = null;
-
-                        ThreadStart dumpProcess = () =>
+                    ThreadStart dumpProcess = () =>
                         {
                             try
                             {
@@ -1183,10 +1180,12 @@ namespace ProcessHacker
                             }
                         };
 
+                    if (OSVersion.HasTaskDialogs)
+                    {
                         // Use a task dialog to display a fancy progress bar.
                         TaskDialog td = new TaskDialog();
                         Thread t = new Thread(dumpProcess);
-                        
+
                         td.AllowDialogCancellation = false;
                         td.Buttons = new TaskDialogButton[] { new TaskDialogButton((int)DialogResult.OK, "Close") };
                         td.WindowTitle = "Process Hacker";
@@ -1242,23 +1241,12 @@ namespace ProcessHacker
                         td.Show(this);
                     }
                     else
-                    {                        
-                        ThreadPool.QueueUserWorkItem((o) =>
-                        {
-                            try
-                            {
-                                using (var phandle = new ProcessHandle(processSelectedPID,
-                                    ProcessAccess.DupHandle | ProcessAccess.QueryInformation |
-                                    ProcessAccess.SuspendResume | ProcessAccess.VmRead))
-                                    phandle.WriteDump(sfd.FileName);
-                            }
-                            catch (Exception ex2)
-                            {
-                                PhUtils.ShowMessage(ex2);
-                                return;
-                            }
-                        });
-                        Thread.Sleep(0);
+                    {
+                        // No task dialogs, do the thing on the GUI thread.
+                        dumpProcess();
+
+                        if (exception != null)
+                            PhUtils.ShowMessage(exception);
                     }
                 }
                 catch (Exception ex)
@@ -1276,7 +1264,7 @@ namespace ProcessHacker
         {
             TerminatorWindow w = new TerminatorWindow(processSelectedPID);
 
-            w.Text = "Terminator - " + processP.Dictionary[processSelectedPID].Name +
+            w.Text = "Terminator - " + processP.Dictionary[processSelectedPID].Name + 
                 " (PID " + processSelectedPID.ToString() + ")";
 
             w.TopMost = this.TopMost;
@@ -1443,7 +1431,7 @@ namespace ProcessHacker
                 ProcessStartInfo info = new ProcessStartInfo();
 
                 info.FileName = Application.StartupPath + "\\Injector.exe";
-                info.Arguments = "createprocessc " + processSelectedPID.ToString() + " \"" +
+                info.Arguments = "createprocessc " + processSelectedPID.ToString() + " \"" + 
                     box.Value.Replace("\"", "\\\"") + "\"";
                 info.RedirectStandardOutput = true;
                 info.UseShellExecute = false;
@@ -1477,7 +1465,7 @@ namespace ProcessHacker
 
             p.WaitForExit();
 
-            InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + (p.ExitCode != 0 ? "\r\nReturn code: " + p.ExitCode +
+            InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + (p.ExitCode != 0 ? "\r\nReturn code: " + p.ExitCode + 
                 " (" + Win32.GetErrorMessage(p.ExitCode) + ")" : ""));
 
             infoBox.ShowDialog();
@@ -1572,13 +1560,13 @@ namespace ProcessHacker
             {
                 Logging.Log(ex);
             }
-        }
+        }   
 
         private void selectAllProcessMenuItem_Click(object sender, EventArgs e)
         {
             treeProcesses.Tree.AllNodes.SelectAll();
             treeProcesses.Tree.Invalidate();
-        }
+        } 
 
         #endregion
 
@@ -1612,8 +1600,8 @@ namespace ProcessHacker
                             foreach (var process in treeProcesses.Model.Roots)
                             {
                                 if (
-                                    string.Equals(process.Name, "explorer.exe",
-                                    StringComparison.InvariantCultureIgnoreCase) &&
+                                    string.Equals(process.Name, "explorer.exe", 
+                                    StringComparison.InvariantCultureIgnoreCase) && 
                                     process.ProcessItem.Username == Program.CurrentUsername)
                                 {
                                     treeProcesses.FindTreeNode(process).EnsureVisible2();
@@ -1664,8 +1652,8 @@ namespace ProcessHacker
 
             if (NPMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "New Process",
-                    "The process " + item.Name + " (" + item.Pid.ToString() +
-                    ") was started" + ((parentText != "") ? " by " +
+                    "The process " + item.Name + " (" + item.Pid.ToString() + 
+                    ") was started" + ((parentText != "") ? " by " + 
                     parent.Name + " (PID " + parent.Pid.ToString() + ")" : "") + ".", ToolTipIcon.Info);
         }
 
@@ -1863,7 +1851,7 @@ namespace ProcessHacker
                     {
                         goToProcessServiceMenuItem.Enabled = false;
                     }
-
+                          
                     if ((item.Status.ServiceStatusProcess.ControlsAccepted & ServiceAccept.PauseContinue)
                         == 0)
                     {
@@ -1877,7 +1865,7 @@ namespace ProcessHacker
                     }
 
                     if (item.Status.ServiceStatusProcess.CurrentState == ServiceState.Paused)
-                    {
+                    {                                        
                         startServiceMenuItem.Enabled = false;
                         pauseServiceMenuItem.Enabled = false;
                     }
@@ -2143,7 +2131,7 @@ namespace ProcessHacker
             addMenuItem("Restart", (sender, e) =>
             {
                 if (MessageBox.Show("Are you sure you want to restart your computer?", "Process Hacker",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, 
                     MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                     Win32.ExitWindowsEx(ExitWindowsFlags.Reboot, 0);
             });
@@ -2530,7 +2518,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("The priority could not be set:\n\n" + ex.Message,
+                MessageBox.Show("The priority could not be set:\n\n" + ex.Message, 
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -2592,7 +2580,7 @@ namespace ProcessHacker
 
                         return;
                     }
-                //break;
+                    //break;
 
                 case (int)WindowMessage.SysCommand:
                     {
@@ -2694,7 +2682,7 @@ namespace ProcessHacker
             }
 
             this.Exit();
-        }
+        }     
 
         private void CheckedMenuItem_Click(object sender, EventArgs e)
         {
@@ -3053,7 +3041,7 @@ namespace ProcessHacker
                 toolStrip.Items.Add(targetThreadButton);
 
                 try { TerminalServerHandle.RegisterNotificationsCurrent(this, true); }
-                catch (Exception ex) { Logging.Log(ex); }
+                catch (Exception ex) { Logging.Log(ex); }    
                 try { this.UpdateSessions(); }
                 catch (Exception ex) { Logging.Log(ex); }
 
