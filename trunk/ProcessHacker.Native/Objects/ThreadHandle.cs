@@ -763,6 +763,20 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Resumes the thread.
+        /// </summary>
+        public int Resume()
+        {
+            NtStatus status;
+            int suspendCount;
+
+            if ((status = Win32.NtResumeThread(this, out suspendCount)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return suspendCount;
+        }
+
+        /// <summary>
         /// Sets the thread's context.
         /// </summary>
         /// <param name="context">A CONTEXT struct.</param>
@@ -812,20 +826,6 @@ namespace ProcessHacker.Native.Objects
             int suspendCount;
 
             if ((status = Win32.NtSuspendThread(this, out suspendCount)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
-
-            return suspendCount;
-        }
-
-        /// <summary>
-        /// Resumes the thread.
-        /// </summary>
-        public int Resume()
-        {
-            NtStatus status;
-            int suspendCount;
-
-            if ((status = Win32.NtResumeThread(this, out suspendCount)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return suspendCount;
@@ -922,7 +922,7 @@ namespace ProcessHacker.Native.Objects
                 readMemoryProc = new ReadProcessMemoryProc64(
                     delegate(IntPtr processHandle, ulong baseAddress, byte* buffer, int size, out int bytesRead)
                     {
-                        return KProcessHacker.Instance.KphReadVirtualMemoryUnsafe(
+                        return KProcessHacker.Instance.KphReadVirtualMemorySafe(
                             ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead);
                     });
             }
