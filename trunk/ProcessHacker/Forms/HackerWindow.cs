@@ -81,6 +81,7 @@ namespace ProcessHacker
         Queue<KeyValuePair<string, Icon>> statusMessages = new Queue<KeyValuePair<string, Icon>>();
         List<KeyValuePair<DateTime, string>> _log = new List<KeyValuePair<DateTime, string>>();
 
+        IList<IntPtr> windowHandles = new List<IntPtr>();
         #endregion
 
         #region Properties
@@ -888,6 +889,44 @@ namespace ProcessHacker
                 {
                     Logging.Log(ex);
                 }
+
+                // should  declare a int variable 
+                //callback should return false if find window handle
+                //load 
+                //to do 
+                windowHandles.Clear();
+                Win32.EnumWindows(
+                (hwnd, param) =>
+                {
+                    //IsWindowEnabled?
+                    //GetWindowLong
+                    // hParent is IsWindowVisible?IsWindowEnabled?
+                    //Shell_TrayWnd
+                    //WS_Caption
+                    if ( Win32.IsWindow(hwnd) && Win32.IsWindowVisible(hwnd)) 
+                    {
+                        int pid;
+                        Win32.GetWindowThreadProcessId(hwnd, out pid);
+                        
+                        // todo find main window handle
+                        if (pid == processSelectedPID)
+                        {                           
+                            windowHandles.Add(hwnd);
+                            //return false;
+                        }                                           
+                    }
+                    return true;   
+                },0);
+
+                if (windowHandles.Count > 0)
+                {
+                    // to load 
+                    //GetWindowPlacement
+                    windowProcessMenuItem.Enabled = true;
+
+                }
+                else
+                    windowProcessMenuItem.Enabled = false;               
             }
             else
             {
@@ -3050,6 +3089,20 @@ namespace ProcessHacker
 
                 try { Win32.SetProcessShutdownParameters(0x100, 0); }
                 catch { }
+            }
+        }
+
+        private void bringToFrontProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (windowHandles.Count > 0)
+            {
+                if (Win32.IsWindow(windowHandles[0]))
+                {
+                    // may failed
+                    //should find another way
+                    //todo
+                    Win32.SetForegroundWindow(windowHandles[0]);
+                }
             }
         }
     }
