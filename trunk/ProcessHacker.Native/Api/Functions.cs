@@ -268,6 +268,38 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Images
+
+        [DllImport("imagehlp.dll", SetLastError = true)]
+        public static extern IntPtr CheckSumMappedFile(
+            [In] IntPtr BaseAddress,
+            [In] int FileLength,
+            [Out] out int HeaderSum,
+            [Out] out int CheckSum
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern IntPtr ImageNtHeader(
+            [In] IntPtr ImageBase
+            );
+
+        [DllImport("imagehlp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        public static extern bool MapAndLoad(
+            [In] string ImageName,
+            [In] [Optional] string DllPath,
+            [Out] out LoadedImage LoadedImage,
+            [MarshalAs(UnmanagedType.Bool)]
+            [In] bool DotDll,
+            [In] bool ReadOnly
+            );
+
+        [DllImport("imagehlp.dll", SetLastError = true)]
+        public static extern bool UnMapAndLoad(
+            [In] ref LoadedImage LoadedImage
+            );
+
+        #endregion
+
         #region Jobs
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -1443,12 +1475,30 @@ namespace ProcessHacker.Native.Api
 
         #region Symbols/Stack Walking
 
-        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        [DllImport("dbghelp.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SymInitialize(
+        public static extern bool MiniDumpWriteDump(
             [In] IntPtr ProcessHandle,
-            [In] [Optional] string UserSearchPath,
-            [In] bool InvadeProcess
+            [In] int ProcessId,
+            [In] IntPtr FileHandle,
+            [In] MinidumpType DumpType,
+            [In] IntPtr ExceptionParam,
+            [In] IntPtr UserStreamParam,
+            [In] IntPtr CallbackParam
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool StackWalk64(
+            [In] MachineType MachineType,
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr ThreadHandle,
+            ref StackFrame64 StackFrame,
+            ref Context ContextRecord,
+            [In] [Optional] ReadProcessMemoryProc64 ReadMemoryRoutine,
+            [In] [Optional] FunctionTableAccessProc64 FunctionTableAccessRoutine,
+            [In] [Optional] GetModuleBaseProc64 GetModuleBaseRoutine,
+            [In] [Optional] IntPtr TranslateAddress
             );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
@@ -1457,65 +1507,13 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr ProcessHandle
             );
 
-        [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern SymbolOptions SymGetOptions();
-
-        [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern SymbolOptions SymSetOptions(
-            [In] SymbolOptions SymOptions
-            );
-
-        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SymGetSearchPath(
-            [In] IntPtr ProcessHandle,
-            [Out] StringBuilder SearchPath, 
-            [In] int SearchPathLength
-            );
-
-        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SymSetSearchPath(
-            [In] IntPtr ProcessHandle, 
-            [In] [Optional] string SearchPath
-            );
-
-        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
-        public static extern long SymLoadModule64(
-            [In] IntPtr ProcessHandle,
-            [In] [Optional] IntPtr FileHandle,
-            [In] [Optional] string ImageName,
-            [In] [Optional] string ModuleName,
-            [In] ulong BaseOfDll,
-            [In] int SizeOfDll
-            );
-
-        [DllImport("dbghelp.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SymUnloadModule64(
-            [In] IntPtr ProcessHandle,
-            [In] ulong BaseOfDll
-            );
-
-        [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern IntPtr SymFunctionTableAccess64(
-            [In] IntPtr ProcessHandle,
-            [In] ulong AddrBase
-            );
-
-        [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern ulong SymGetModuleBase64(
-            [In] IntPtr ProcessHandle, 
-            [In] ulong Address
-            );
-
         [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SymEnumSymbols(
             [In] IntPtr ProcessHandle,
             [In] ulong BaseOfDll,
             [In] [Optional] string Mask,
-            [In] SymEnumSymbolsProc EnumSymbolsCallback, 
+            [In] SymEnumSymbolsProc EnumSymbolsCallback,
             [In] [Optional] IntPtr UserContext
             );
 
@@ -1546,6 +1544,12 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern IntPtr SymFunctionTableAccess64(
+            [In] IntPtr ProcessHandle,
+            [In] ulong AddrBase
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SymGetLineFromAddr64(
             [In] IntPtr ProcessHandle,
@@ -1555,17 +1559,57 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool StackWalk64(
-            [In] MachineType MachineType,
+        public static extern ulong SymGetModuleBase64(
             [In] IntPtr ProcessHandle,
-            [In] IntPtr ThreadHandle,
-            ref StackFrame64 StackFrame,
-            ref Context ContextRecord,
-            [In] [Optional] ReadProcessMemoryProc64 ReadMemoryRoutine,
-            [In] [Optional] FunctionTableAccessProc64 FunctionTableAccessRoutine,
-            [In] [Optional] GetModuleBaseProc64 GetModuleBaseRoutine,
-            [In] [Optional] IntPtr TranslateAddress
+            [In] ulong Address
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern SymbolOptions SymGetOptions();
+
+        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymGetSearchPath(
+            [In] IntPtr ProcessHandle,
+            [Out] StringBuilder SearchPath,
+            [In] int SearchPathLength
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymInitialize(
+            [In] IntPtr ProcessHandle,
+            [In] [Optional] string UserSearchPath,
+            [In] bool InvadeProcess
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        public static extern long SymLoadModule64(
+            [In] IntPtr ProcessHandle,
+            [In] [Optional] IntPtr FileHandle,
+            [In] [Optional] string ImageName,
+            [In] [Optional] string ModuleName,
+            [In] ulong BaseOfDll,
+            [In] int SizeOfDll
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern SymbolOptions SymSetOptions(
+            [In] SymbolOptions SymOptions
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymSetSearchPath(
+            [In] IntPtr ProcessHandle, 
+            [In] [Optional] string SearchPath
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymUnloadModule64(
+            [In] IntPtr ProcessHandle,
+            [In] ulong BaseOfDll
             );
 
         [DllImport("symsrv.dll", SetLastError = true)]
@@ -1573,18 +1617,6 @@ namespace ProcessHacker.Native.Api
         public static extern bool SymbolServerSetOptions(
             [In] SymbolServerOption Options,
             [In] ulong Data
-            );
-
-        [DllImport("dbghelp.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool MiniDumpWriteDump(
-            [In] IntPtr ProcessHandle,
-            [In] int ProcessId,
-            [In] IntPtr FileHandle,
-            [In] MinidumpType DumpType,
-            [In] IntPtr ExceptionParam,
-            [In] IntPtr UserStreamParam,
-            [In] IntPtr CallbackParam
             );
 
         #endregion

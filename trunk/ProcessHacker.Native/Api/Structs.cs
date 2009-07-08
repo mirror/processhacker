@@ -148,6 +148,28 @@ namespace ProcessHacker.Native.Api
         public long[] Reserved;
     }
 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct LoadedImage
+    {
+        public IntPtr ModuleName;
+        public IntPtr FileHandle;
+        public IntPtr MappedAddress;
+        public IntPtr FileHeader; // ImageNtHeaders32*
+        public IntPtr LastRvaSection; // ImageSectionHeader*
+        public int NumberOfSections;
+        public IntPtr Sections; // ImageSectionHeader*
+        public int Characteristics;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool SystemImage;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool DosImage;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool ReadOnly;
+        public byte Version;
+        public ListEntry Links;
+        public int SizeOfImage;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct LuidAndAttributes
     {

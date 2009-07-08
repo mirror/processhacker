@@ -304,7 +304,7 @@ namespace ProcessHacker
             // Set the indicator colors.
             indicatorCpu.Color1 = Properties.Settings.Default.PlotterCPUKernelColor;
             indicatorCpu.Color2 = Properties.Settings.Default.PlotterCPUUserColor;
-            indicatorPvt.Color1 = Properties.Settings.Default.PlotterMemoryWSColor;
+            indicatorPvt.Color1 = Properties.Settings.Default.PlotterMemoryPrivateColor;
             indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;           
 
             this.ApplyFont(Properties.Settings.Default.Font);
