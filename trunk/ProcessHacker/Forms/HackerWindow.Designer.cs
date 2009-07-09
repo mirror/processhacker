@@ -62,7 +62,7 @@
             this.bringToFrontProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.restoreProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.minimizeProcessMenuItem = new System.Windows.Forms.MenuItem();
-            this.maxmizeProcessMenuItem = new System.Windows.Forms.MenuItem();
+            this.maximizeProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem15 = new System.Windows.Forms.MenuItem();
             this.closeProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.propertiesProcessMenuItem = new System.Windows.Forms.MenuItem();
@@ -408,7 +408,7 @@
             this.bringToFrontProcessMenuItem,
             this.restoreProcessMenuItem,
             this.minimizeProcessMenuItem,
-            this.maxmizeProcessMenuItem,
+            this.maximizeProcessMenuItem,
             this.menuItem15,
             this.closeProcessMenuItem});
             this.windowProcessMenuItem.Text = "&Window";
@@ -416,7 +416,7 @@
             // bringToFrontProcessMenuItem
             // 
             this.bringToFrontProcessMenuItem.Index = 0;
-            this.bringToFrontProcessMenuItem.Text = "&Bring to front";
+            this.bringToFrontProcessMenuItem.Text = "&Bring to Front";
             this.bringToFrontProcessMenuItem.Click += new System.EventHandler(this.bringToFrontProcessMenuItem_Click);
             // 
             // restoreProcessMenuItem
@@ -429,10 +429,10 @@
             this.minimizeProcessMenuItem.Index = 2;
             this.minimizeProcessMenuItem.Text = "&Minimize";
             // 
-            // maxmizeProcessMenuItem
+            // maximizeProcessMenuItem
             // 
-            this.maxmizeProcessMenuItem.Index = 3;
-            this.maxmizeProcessMenuItem.Text = "Ma&xmize";
+            this.maximizeProcessMenuItem.Index = 3;
+            this.maximizeProcessMenuItem.Text = "Ma&ximize";
             // 
             // menuItem15
             // 
@@ -830,7 +830,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 373);
+            this.statusBar.Location = new System.Drawing.Point(0, 404);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -839,7 +839,7 @@
             this.statusIcon,
             this.statusText});
             this.statusBar.ShowPanels = true;
-            this.statusBar.Size = new System.Drawing.Size(804, 20);
+            this.statusBar.Size = new System.Drawing.Size(804, 22);
             this.statusBar.TabIndex = 5;
             // 
             // statusGeneral
@@ -889,17 +889,17 @@
             this.tabControl.Location = new System.Drawing.Point(3, 3);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(798, 345);
+            this.tabControl.Size = new System.Drawing.Size(798, 376);
             this.tabControl.TabIndex = 6;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControlBig_SelectedIndexChanged);
             // 
             // tabProcesses
             // 
             this.tabProcesses.Controls.Add(this.treeProcesses);
-            this.tabProcesses.Location = new System.Drawing.Point(4, 21);
+            this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(790, 320);
+            this.tabProcesses.Size = new System.Drawing.Size(790, 350);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
@@ -911,7 +911,7 @@
             this.treeProcesses.Location = new System.Drawing.Point(3, 3);
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.Provider = null;
-            this.treeProcesses.Size = new System.Drawing.Size(784, 314);
+            this.treeProcesses.Size = new System.Drawing.Size(784, 344);
             this.treeProcesses.TabIndex = 4;
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
             this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
@@ -920,10 +920,10 @@
             // tabServices
             // 
             this.tabServices.Controls.Add(this.listServices);
-            this.tabServices.Location = new System.Drawing.Point(4, 21);
+            this.tabServices.Location = new System.Drawing.Point(4, 22);
             this.tabServices.Name = "tabServices";
             this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(790, 320);
+            this.tabServices.Size = new System.Drawing.Size(790, 348);
             this.tabServices.TabIndex = 1;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -935,7 +935,7 @@
             this.listServices.Location = new System.Drawing.Point(3, 3);
             this.listServices.Name = "listServices";
             this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(784, 314);
+            this.listServices.Size = new System.Drawing.Size(784, 342);
             this.listServices.TabIndex = 0;
             this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
             this.listServices.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listServices_KeyDown);
@@ -943,10 +943,10 @@
             // tabNetwork
             // 
             this.tabNetwork.Controls.Add(this.listNetwork);
-            this.tabNetwork.Location = new System.Drawing.Point(4, 21);
+            this.tabNetwork.Location = new System.Drawing.Point(4, 22);
             this.tabNetwork.Name = "tabNetwork";
             this.tabNetwork.Padding = new System.Windows.Forms.Padding(3);
-            this.tabNetwork.Size = new System.Drawing.Size(790, 320);
+            this.tabNetwork.Size = new System.Drawing.Size(790, 348);
             this.tabNetwork.TabIndex = 2;
             this.tabNetwork.Text = "Network";
             this.tabNetwork.UseVisualStyleBackColor = true;
@@ -958,7 +958,7 @@
             this.listNetwork.Location = new System.Drawing.Point(3, 3);
             this.listNetwork.Name = "listNetwork";
             this.listNetwork.Provider = null;
-            this.listNetwork.Size = new System.Drawing.Size(784, 314);
+            this.listNetwork.Size = new System.Drawing.Size(784, 342);
             this.listNetwork.TabIndex = 0;
             this.listNetwork.DoubleClick += new System.EventHandler(this.listNetwork_DoubleClick);
             this.listNetwork.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listNetwork_KeyDown);
@@ -1255,7 +1255,7 @@
             this.panelHack.Location = new System.Drawing.Point(0, 25);
             this.panelHack.Name = "panelHack";
             this.panelHack.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.panelHack.Size = new System.Drawing.Size(804, 348);
+            this.panelHack.Size = new System.Drawing.Size(804, 379);
             this.panelHack.TabIndex = 5;
             // 
             // menuNetwork
@@ -1281,9 +1281,9 @@
             // 
             // HackerWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 393);
+            this.ClientSize = new System.Drawing.Size(804, 426);
             this.Controls.Add(this.panelHack);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.statusBar);
@@ -1460,7 +1460,7 @@
         private System.Windows.Forms.MenuItem bringToFrontProcessMenuItem;
         private System.Windows.Forms.MenuItem restoreProcessMenuItem;
         private System.Windows.Forms.MenuItem minimizeProcessMenuItem;
-        private System.Windows.Forms.MenuItem maxmizeProcessMenuItem;
+        private System.Windows.Forms.MenuItem maximizeProcessMenuItem;
         private System.Windows.Forms.MenuItem menuItem15;
         private System.Windows.Forms.MenuItem closeProcessMenuItem;
     }
