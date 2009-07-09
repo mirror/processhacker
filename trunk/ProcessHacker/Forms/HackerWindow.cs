@@ -47,44 +47,123 @@ namespace ProcessHacker
 
         private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
 
+        // This entire file is a big monolithic mess.
+
         #region Variables
 
+        // One-instance windows.
         public HelpWindow HelpWindow;
         public HandleFilterWindow HandleFilterWindow;
         public HiddenProcessesWindow HiddenProcessesWindow;
         public LogWindow LogWindow;
-        public MiniSysInfo MiniSysInfoWindow;
+        public MiniSysInfo MiniSysInfoWindow; // Not used (yet)
 
+        /// <summary>
+        /// The thread for the System Information window. This is to avoid 
+        /// freezing the main window every second to update the graphs.
+        /// </summary>
         Thread sysInfoThread;
+        /// <summary>
+        /// The System Information window. No methods should be called on 
+        /// it directly because it belongs to another thread.
+        /// </summary>
         public SysInfoWindow SysInfoWindow;
+        // The three main providers. They should be accessed using 
+        // Program.ProcessProvider, ServiceProvider and NetworkProvider, 
+        // rsepectively. However, these three variables are remnants of 
+        // the old PH.
+        /// <summary>
+        /// The processes/system provider.
+        /// </summary>
         ProcessSystemProvider processP;
+        /// <summary>
+        /// The services provider.
+        /// </summary>
         ServiceProvider serviceP;
+        /// <summary>
+        /// The network connections provider.
+        /// </summary>
         NetworkProvider networkP;
 
+        /// <summary>
+        /// The UAC shield bitmap. Used for the various menu items which 
+        /// require UAC elevation.
+        /// </summary>
         Bitmap uacShieldIcon;
+        /// <summary>
+        /// A black icon which all notification icons are set to initially 
+        /// before their first paint.
+        /// </summary>
         Icon blackIcon;
+        /// <summary>
+        /// A dummy UsageIcon to avoid null instance checks in the icon-related 
+        /// functions.
+        /// </summary>
         UsageIcon dummyIcon;
+        /// <summary>
+        /// The list of notification icons.
+        /// </summary>
         List<UsageIcon> notifyIcons = new List<UsageIcon>();
+        /// <summary>
+        /// The CPU history icon, with a history of CPU usage.
+        /// </summary>
         CpuHistoryIcon cpuHistoryIcon;
+        /// <summary>
+        /// The CPU usage icon, which indicates the current CPU usage (no history). 
+        /// Dedicated to those Process Explorer users who don't like the 
+        /// CPU history icon.
+        /// </summary>
         CpuUsageIcon cpuUsageIcon;
+        /// <summary>
+        /// The I/O history icon.
+        /// </summary>
         IoHistoryIcon ioHistoryIcon;
+        /// <summary>
+        /// The commit history icon.
+        /// </summary>
         CommitHistoryIcon commitHistoryIcon;
+        /// <summary>
+        /// The physical memory history icon.
+        /// </summary>
         PhysMemHistoryIcon physMemHistoryIcon;
 
+        /// <summary>
+        /// A dictionary relating services to processes. Each key is a PID and 
+        /// each value is a list of service names hosted in that particular process.
+        /// </summary>
         Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
 
+        /// <summary>
+        /// The number of selected processes. Not used.
+        /// </summary>
         int processSelectedItems;
-        int processSelectedPID;
+        /// <summary>
+        /// The selected PID.
+        /// </summary>
+        int processSelectedPid;
 
-        List<Control> listControls = new List<Control>();
-
+        /// <summary>
+        /// A queue of status messages, processed by the message timer.
+        /// </summary>
         Queue<KeyValuePair<string, Icon>> statusMessages = new Queue<KeyValuePair<string, Icon>>();
+        /// <summary>
+        /// The PH log, with events such as process creation/termination and various 
+        /// service events.
+        /// </summary>
         List<KeyValuePair<DateTime, string>> _log = new List<KeyValuePair<DateTime, string>>();
 
+        /// <summary>
+        /// A list of window handles owned by the currently selected process. 
+        /// Only populated when the user right-clicks exactly one process.
+        /// </summary>
         IList<IntPtr> windowHandles = new List<IntPtr>();
+
         #endregion
 
         #region Properties
+
+        // The following two properties were used by the Window menu system. 
+        // Not very useful, but still needed for now.
 
         public MenuItem WindowMenuItem
         {
@@ -96,29 +175,17 @@ namespace ProcessHacker
             get { return vistaMenu; }
         }
 
-        public ProcessSystemProvider ProcessProvider
-        {
-            get { return processP; }
-        }
-
+        // Mostly used by Save.cs.
         public ProcessTree ProcessTree
         {
             get { return treeProcesses; }
         }
 
-        public ServiceProvider ServiceProvider
-        {
-            get { return serviceP; }
-        }
+        // The two properties below aren't used at all.
 
         public ListView ServiceList
         {
             get { return listServices.List; }
-        }
-
-        public NetworkProvider NetworkProvider
-        {
-            get { return networkP; }
         }
 
         public ListView NetworkList
@@ -126,11 +193,17 @@ namespace ProcessHacker
             get { return listNetwork.List; }
         }
 
+        /// <summary>
+        /// Provides a list of service names hosted by a process.
+        /// </summary>
         public IDictionary<int, List<string>> ProcessServices
         {
             get { return processServices; }
         }
 
+        /// <summary>
+        /// The PH log.
+        /// </summary>
         public IList<KeyValuePair<DateTime, string>> Log
         {
             get { return _log; }
@@ -786,19 +859,26 @@ namespace ProcessHacker
         {
             virtualizationProcessMenuItem.Checked = false;
 
+            // Menu item fixup...
             if (treeProcesses.SelectedTreeNodes.Count == 0)
             {
+                // If nothing is selected, disable everything.
+                // The Select All menu item will be enabled later if 
+                // we have at least one process in the tree.
                 menuProcess.DisableAll();
             }
             else if (treeProcesses.SelectedTreeNodes.Count == 1)
             {
+                // All actions should work with one process selected.
                 menuProcess.EnableAll();
 
+                // Singular nouns.
                 priorityMenuItem.Text = "&Priority";
                 terminateMenuItem.Text = "&Terminate Process";
                 suspendMenuItem.Text = "&Suspend Process";
                 resumeMenuItem.Text = "&Resume Process";
 
+                // Check the appropriate priority level menu item.
                 realTimeMenuItem.Checked = false;
                 highMenuItem.Checked = false;
                 aboveNormalMenuItem.Checked = false;
@@ -808,7 +888,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    using (var phandle = new ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
+                    using (var phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
                     {
                         switch (phandle.GetPriorityClass())
                         {
@@ -844,9 +924,10 @@ namespace ProcessHacker
                     priorityMenuItem.Enabled = false;
                 }
 
+                // Check the virtualization menu item.
                 try
                 {
-                    using (var phandle = new ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
+                    using (var phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
                     {
                         try
                         {
@@ -865,9 +946,10 @@ namespace ProcessHacker
                     virtualizationProcessMenuItem.Enabled = false;
                 }
 
+                // Enable/disable DLL injection based on the process' session ID.
                 try
                 {
-                    if (processP.Dictionary[processSelectedPID].SessionId != Program.CurrentSessionId)
+                    if (processP.Dictionary[processSelectedPid].SessionId != Program.CurrentSessionId)
                         injectDllProcessMenuItem.Enabled = false;
                     else
                         injectDllProcessMenuItem.Enabled = true;
@@ -877,6 +959,9 @@ namespace ProcessHacker
                     Logging.Log(ex);
                 }
 
+                // Disable Terminate Process Tree if the selected process doesn't 
+                // have any children. Note that this may also happen if the user 
+                // is sorting the list (!).
                 try
                 {
                     if (treeProcesses.SelectedTreeNodes[0].IsLeaf && 
@@ -890,52 +975,54 @@ namespace ProcessHacker
                     Logging.Log(ex);
                 }
 
-                // should  declare a int variable 
-                //callback should return false if find window handle
-                //load 
-                //to do 
+                // Find the process' windows (if any).
                 windowHandles.Clear();
                 Win32.EnumWindows(
-                (hwnd, param) =>
-                {
-                    //IsWindowEnabled?
-                    //GetWindowLong
-                    // hParent is IsWindowVisible?IsWindowEnabled?
-                    //Shell_TrayWnd
-                    //WS_Caption
-                    if ( Win32.IsWindow(hwnd) && Win32.IsWindowVisible(hwnd)) 
+                    (hwnd, param) =>
                     {
-                        int pid;
-                        Win32.GetWindowThreadProcessId(hwnd, out pid);
-                        
-                        // todo find main window handle
-                        if (pid == processSelectedPID)
-                        {                           
-                            windowHandles.Add(hwnd);
-                            //return false;
-                        }                                           
-                    }
-                    return true;   
-                },0);
+                        // IsWindowEnabled?
+                        // GetWindowLong
+                        // hParent is IsWindowVisible?IsWindowEnabled?
+                        // Shell_TrayWnd
+                        // WS_Caption
+                        if (Win32.IsWindow(hwnd) && Win32.IsWindowVisible(hwnd))
+                        {
+                            int pid;
+                            Win32.GetWindowThreadProcessId(hwnd, out pid);
 
+                            // TODO: Find main window handle
+                            if (pid == processSelectedPid)
+                            {
+                                windowHandles.Add(hwnd);
+                                // return false;
+                            }
+                        }
+                        return true;
+                    }, 0);
+
+                // Enable the Window submenu if we found windows owned 
+                // by the process. Otherwise, disable the submenu.
                 if (windowHandles.Count > 0)
                 {
-                    // to load 
-                    //GetWindowPlacement
+                    // GetWindowPlacement
                     windowProcessMenuItem.Enabled = true;
-
                 }
                 else
-                    windowProcessMenuItem.Enabled = false;               
+                {
+                    windowProcessMenuItem.Enabled = false;
+                }
             }
             else
             {
+                // Assume most process actions will not work with more than one process.
                 menuProcess.DisableAll();
 
+                // Use plural nouns.
                 terminateMenuItem.Text = "&Terminate Processes";
                 suspendMenuItem.Text = "&Suspend Processes";
                 resumeMenuItem.Text = "&Resume Processes";
 
+                // Enable a specific set of actions.
                 terminateMenuItem.Enabled = true;
                 suspendMenuItem.Enabled = true;
                 resumeMenuItem.Enabled = true;
@@ -943,14 +1030,15 @@ namespace ProcessHacker
                 copyProcessMenuItem.Enabled = true;
             }
 
-            if (processSelectedPID < 0 && treeProcesses.SelectedNodes.Count == 1)
+            // Special case for DPCs and Interrupts.
+            if (processSelectedPid < 0 && treeProcesses.SelectedNodes.Count == 1)
             {
-                // probably DPCs or Interrupts
                 priorityMenuItem.Text = "&Priority";
                 menuProcess.DisableAll();
                 propertiesProcessMenuItem.Enabled = true;
             }
 
+            // Enable/disable the Select All menu item.
             if (treeProcesses.Model.Nodes.Count == 0)
             {
                 selectAllProcessMenuItem.Enabled = false;
@@ -1062,7 +1150,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (var phandle = new ProcessHandle(processSelectedPID,
+                    using (var phandle = new ProcessHandle(processSelectedPid,
                         Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                     {
                         string currentDirectory = phandle.GetPebString(PebOffset.CurrentDirectoryPath);
@@ -1070,7 +1158,7 @@ namespace ProcessHacker
 
                         try
                         {
-                            using (var phandle2 = new ProcessHandle(processSelectedPID, ProcessAccess.Terminate))
+                            using (var phandle2 = new ProcessHandle(processSelectedPid, ProcessAccess.Terminate))
                                 phandle2.Terminate();
                         }
                         catch (Exception ex)
@@ -1135,7 +1223,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
+                using (var phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
                 {
                     using (var thandle = phandle.GetToken(TokenAccess.GenericWrite))
                     {
@@ -1152,12 +1240,12 @@ namespace ProcessHacker
         private void propertiesProcessMenuItem_Click(object sender, EventArgs e)
         {
             // user hasn't got any processes selected
-            if (processSelectedPID == -1)
+            if (processSelectedPid == -1)
                 return;
 
             try
             {
-                ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[processSelectedPID],
+                ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[processSelectedPid],
                     new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                 {
                     Program.FocusWindow(f);
@@ -1172,7 +1260,7 @@ namespace ProcessHacker
 
         private void affinityProcessMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessAffinity affForm = new ProcessAffinity(processSelectedPID);
+            ProcessAffinity affForm = new ProcessAffinity(processSelectedPid);
 
             try
             {
@@ -1191,7 +1279,7 @@ namespace ProcessHacker
 
             sfd.Filter = "Dump Files (*.dmp)|*.dmp|All Files (*.*)|*.*";
             sfd.FileName = 
-                processP.Dictionary[processSelectedPID].Name +
+                processP.Dictionary[processSelectedPid].Name +
                 "_" +
                 DateTime.Now.ToString("yyMMdd") + 
                 ".dmp";
@@ -1208,7 +1296,7 @@ namespace ProcessHacker
                         {
                             try
                             {
-                                using (var phandle = new ProcessHandle(processSelectedPID,
+                                using (var phandle = new ProcessHandle(processSelectedPid,
                                     ProcessAccess.DupHandle | ProcessAccess.QueryInformation |
                                     ProcessAccess.SuspendResume | ProcessAccess.VmRead))
                                     phandle.WriteDump(sfd.FileName);
@@ -1301,10 +1389,10 @@ namespace ProcessHacker
 
         private void terminatorProcessMenuItem_Click(object sender, EventArgs e)
         {
-            TerminatorWindow w = new TerminatorWindow(processSelectedPID);
+            TerminatorWindow w = new TerminatorWindow(processSelectedPid);
 
-            w.Text = "Terminator - " + processP.Dictionary[processSelectedPID].Name + 
-                " (PID " + processSelectedPID.ToString() + ")";
+            w.Text = "Terminator - " + processP.Dictionary[processSelectedPid].Name + 
+                " (PID " + processSelectedPid.ToString() + ")";
 
             w.TopMost = this.TopMost;
             w.ShowDialog();
@@ -1316,7 +1404,7 @@ namespace ProcessHacker
         {
             try
             {
-                Properties.Settings.Default.RunAsCommand = processP.Dictionary[processSelectedPID].FileName;
+                Properties.Settings.Default.RunAsCommand = processP.Dictionary[processSelectedPid].FileName;
 
                 RunWindow run = new RunWindow();
 
@@ -1336,7 +1424,7 @@ namespace ProcessHacker
                 RunWindow run = new RunWindow();
 
                 run.TopMost = this.TopMost;
-                run.UsePID(processSelectedPID);
+                run.UsePID(processSelectedPid);
                 run.ShowDialog();
             }
             catch (Exception ex)
@@ -1353,7 +1441,7 @@ namespace ProcessHacker
         {
             try
             {
-                using (var phandle = new ProcessHandle(processSelectedPID, ProcessAccess.QueryInformation | ProcessAccess.SuspendResume))
+                using (var phandle = new ProcessHandle(processSelectedPid, ProcessAccess.QueryInformation | ProcessAccess.SuspendResume))
                 {
                     using (var dhandle = phandle.GetDebugObject())
                         phandle.RemoveDebug(dhandle);
@@ -1381,7 +1469,7 @@ namespace ProcessHacker
                     try
                     {
                         buffer.Query(
-                            processSelectedPID,
+                            processSelectedPid,
                             RtlQueryProcessDebugFlags.HeapSummary |
                             RtlQueryProcessDebugFlags.HeapEntries
                             );
@@ -1391,7 +1479,7 @@ namespace ProcessHacker
                         this.Cursor = Cursors.Default;
                     }
 
-                    heapsWindow = new HeapsWindow(processSelectedPID, buffer.GetHeaps());
+                    heapsWindow = new HeapsWindow(processSelectedPid, buffer.GetHeaps());
                 }
 
                 heapsWindow.TopMost = this.TopMost;
@@ -1413,7 +1501,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (var phandle = new ProcessHandle(processSelectedPID,
+                    using (var phandle = new ProcessHandle(processSelectedPid,
                         ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
                     {
                         phandle.InjectDll(ofd.FileName, 5000);
@@ -1428,7 +1516,7 @@ namespace ProcessHacker
 
         private void protectionProcessMenuItem_Click(object sender, EventArgs e)
         {
-            var protectProcessWindow = new ProtectProcessWindow(processSelectedPID);
+            var protectProcessWindow = new ProtectProcessWindow(processSelectedPid);
 
             protectProcessWindow.TopMost = this.TopMost;
             protectProcessWindow.ShowDialog();
@@ -1445,7 +1533,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    KProcessHacker.Instance.SetProcessToken(picker.SelectedPid, processSelectedPID);
+                    KProcessHacker.Instance.SetProcessToken(picker.SelectedPid, processSelectedPid);
                 }
                 catch (Exception ex)
                 {
@@ -1470,7 +1558,7 @@ namespace ProcessHacker
                 ProcessStartInfo info = new ProcessStartInfo();
 
                 info.FileName = Application.StartupPath + "\\Injector.exe";
-                info.Arguments = "createprocessc " + processSelectedPID.ToString() + " \"" + 
+                info.Arguments = "createprocessc " + processSelectedPid.ToString() + " \"" + 
                     box.Value.Replace("\"", "\\\"") + "\"";
                 info.RedirectStandardOutput = true;
                 info.UseShellExecute = false;
@@ -1495,7 +1583,7 @@ namespace ProcessHacker
             ProcessStartInfo info = new ProcessStartInfo();
 
             info.FileName = Application.StartupPath + "\\Injector.exe";
-            info.Arguments = "cmdline " + processSelectedPID.ToString();
+            info.Arguments = "cmdline " + processSelectedPid.ToString();
             info.RedirectStandardOutput = true;
             info.UseShellExecute = false;
             info.CreateNoWindow = true;
@@ -1519,7 +1607,7 @@ namespace ProcessHacker
             ProcessStartInfo info = new ProcessStartInfo();
 
             info.FileName = Application.StartupPath + "\\Injector.exe";
-            info.Arguments = "exitprocess " + processSelectedPID.ToString();
+            info.Arguments = "exitprocess " + processSelectedPid.ToString();
             info.RedirectStandardOutput = true;
             info.UseShellExecute = false;
             info.CreateNoWindow = true;
@@ -1593,7 +1681,7 @@ namespace ProcessHacker
         {
             try
             {
-                processP.QueueFileProcessing(processSelectedPID);
+                processP.QueueFileProcessing(processSelectedPid);
             }
             catch (Exception ex)
             {
@@ -2117,11 +2205,11 @@ namespace ProcessHacker
 
             if (processSelectedItems == 1)
             {
-                processSelectedPID = treeProcesses.SelectedNodes[0].Pid;
+                processSelectedPid = treeProcesses.SelectedNodes[0].Pid;
             }
             else
             {
-                processSelectedPID = -1;
+                processSelectedPid = -1;
             }
         }
 
@@ -2552,7 +2640,7 @@ namespace ProcessHacker
         {
             try
             {
-                using (var phandle = new ProcessHandle(processSelectedPID, ProcessAccess.SetInformation))
+                using (var phandle = new ProcessHandle(processSelectedPid, ProcessAccess.SetInformation))
                     phandle.SetPriorityClass(priority);
             }
             catch (Exception ex)
@@ -2829,9 +2917,6 @@ namespace ProcessHacker
 
         private void LoadControls()
         {
-            listControls.Add(treeProcesses.Tree);
-            listControls.Add(listServices);
-
             GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
             GenericViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
             GenericViewMenu.AddMenuItems(copyNetworkMenuItem.MenuItems, listNetwork.List, null);

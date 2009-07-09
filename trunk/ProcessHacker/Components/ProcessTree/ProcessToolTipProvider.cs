@@ -138,11 +138,11 @@ namespace ProcessHacker
                     {
                         foreach (string service in Program.HackerWindow.ProcessServices[pNode.Pid])
                         {
-                            if (Program.HackerWindow.ServiceProvider.Dictionary.ContainsKey(service))
+                            if (Program.ServiceProvider.Dictionary.ContainsKey(service))
                             {
-                                if (Program.HackerWindow.ServiceProvider.Dictionary[service].Status.DisplayName != "")
+                                if (Program.ServiceProvider.Dictionary[service].Status.DisplayName != "")
                                     servicesText += "    " + service + " (" +
-                                    Program.HackerWindow.ServiceProvider.Dictionary[service].Status.DisplayName + ")\n";
+                                    Program.ServiceProvider.Dictionary[service].Status.DisplayName + ")\n";
                                 else
                                     servicesText += "    " + service + "\n";
                             }

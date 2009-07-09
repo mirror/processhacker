@@ -56,7 +56,7 @@ namespace ProcessHacker.Components
 
             PID = -1;
 
-            _provider = Program.HackerWindow.ServiceProvider;
+            _provider = Program.ServiceProvider;
 
             if (services.Length == 1)
             {

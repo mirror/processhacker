@@ -41,7 +41,7 @@ namespace ProcessHacker
     public static class Program
     {
         /// <summary>
-        /// The main Process Hacker window instance
+        /// The main Process Hacker window instance.
         /// </summary>
         public static HackerWindow HackerWindow;
         public static IntPtr HackerWindowHandle;

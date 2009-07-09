@@ -430,8 +430,8 @@ namespace ProcessHacker
             Program.HackerWindow.ApplyIconVisibilities();
             Program.HackerWindow.LoadFixMenuItems();
             Program.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
 
             HighlightingContext.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             HighlightingContext.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNew;
@@ -441,8 +441,8 @@ namespace ProcessHacker
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemoved;
 
             Program.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.SharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.SecondarySharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
 
