@@ -619,6 +619,17 @@ namespace ProcessHacker.Native.Api
         public string ClassName;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct WindowPlacement
+    {
+        public int length;
+        public int flags;
+        public ShowWindowType showCmd;
+        public Point ptMinPosition;
+        public Point ptMaxPosition;
+        public Rectangle rcNormalPosition;
+    }
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WintrustCatalogInfo
     {
