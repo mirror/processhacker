@@ -1889,6 +1889,24 @@ namespace ProcessHacker.Native.Api
 
         #region Strings
 
+        #region ANSI
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAnsiStringToUnicodeString(
+            ref UnicodeString DestinationString,
+            [In] ref AnsiString SourceString,
+            [In] bool AllocateDestinationString
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlFreeAnsiString(
+            [In] ref AnsiString AnsiString
+            );
+
+        #endregion
+
+        #region Unicode
+
         [DllImport("ntdll.dll")]
         public static extern int RtlCompareUnicodeString(
             [In] ref UnicodeString String1,
@@ -1896,10 +1914,19 @@ namespace ProcessHacker.Native.Api
             [In] bool CaseInSensitive
             );
 
-        [DllImport("ntdll.dll", CharSet = CharSet.Unicode)]
+        [DllImport("ntdll.dll")]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool RtlCreateUnicodeString(
             [Out] out UnicodeString DestinationString,
+            [MarshalAs(UnmanagedType.LPWStr)]
+            [In] string SourceString
+            );
+
+        [DllImport("ntdll.dll")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RtlCreateUnicodeStringFromAsciiz(
+            [Out] out UnicodeString DestinationString,
+            [MarshalAs(UnmanagedType.LPStr)]
             [In] string SourceString
             );
 
@@ -1940,10 +1967,26 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlUnicodeStringToAnsiString(
+            ref AnsiString DestinationString,
+            [In] ref UnicodeString SourceString,
+            [In] bool AllocateDestinationString
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlUpcaseUnicodeStringToAnsiString(
+            ref AnsiString DestinationString,
+            [In] ref UnicodeString SourceString,
+            [In] bool AllocateDestinationString
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus RtlValidateUnicodeString(
             [In] int Flags,
             [In] ref UnicodeString String
             );
+
+        #endregion
 
         #endregion
 

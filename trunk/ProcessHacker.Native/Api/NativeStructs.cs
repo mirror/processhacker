@@ -33,9 +33,11 @@ namespace ProcessHacker.Native.Api
     {
         public AnsiString(string str)
         {
-            this.Buffer = Marshal.StringToHGlobalAnsi(str);
-            this.Length = (ushort)str.Length;
-            this.MaximumLength = (ushort)str.Length;
+            UnicodeString unicodeStr;
+
+            unicodeStr = new UnicodeString(str);
+            this = unicodeStr.ToAnsiString();
+            unicodeStr.Dispose();
         }
 
         public ushort Length;
@@ -44,11 +46,22 @@ namespace ProcessHacker.Native.Api
 
         public void Dispose()
         {
-            if (this.Buffer != IntPtr.Zero)
-            {
-                Marshal.FreeHGlobal(this.Buffer);
-                this.Buffer = IntPtr.Zero;
-            }
+            if (this.Buffer == IntPtr.Zero)
+                return;
+
+            Win32.RtlFreeAnsiString(ref this);
+            this.Buffer = IntPtr.Zero;
+        }
+
+        public UnicodeString ToUnicodeString()
+        {
+            NtStatus status;
+            UnicodeString unicodeStr = new UnicodeString();
+
+            if ((status = Win32.RtlAnsiStringToUnicodeString(ref unicodeStr, ref this, true)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return unicodeStr;
         }
     }
 
@@ -2116,9 +2129,7 @@ namespace ProcessHacker.Native.Api
             if (!Win32.RtlCreateUnicodeString(out newString, str))
                 throw new OutOfMemoryException();
 
-            this.Length = newString.Length;
-            this.MaximumLength = newString.MaximumLength;
-            this.Buffer = newString.Buffer;
+            this = newString;
         }
 
         public ushort Length;
@@ -2234,9 +2245,31 @@ namespace ProcessHacker.Native.Api
             return this.StartsWith(unicodeString, false);
         }
 
+        public AnsiString ToAnsiString()
+        {
+            NtStatus status;
+            AnsiString ansiStr = new AnsiString();
+
+            if ((status = Win32.RtlUnicodeStringToAnsiString(ref ansiStr, ref this, true)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return ansiStr;
+        }
+
         public override string ToString()
         {
             return this.Read();
+        }
+
+        public AnsiString ToUpperAnsiString()
+        {
+            NtStatus status;
+            AnsiString ansiStr = new AnsiString();
+
+            if ((status = Win32.RtlUpcaseUnicodeStringToAnsiString(ref ansiStr, ref this, true)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return ansiStr;
         }
     }
 
