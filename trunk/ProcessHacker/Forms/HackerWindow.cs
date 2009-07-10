@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   main Process Hacker window
  * 
- * Copyright (C) 2008 Dean
+ * Copyright (C) 2008-2009 Dean
  * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
@@ -153,10 +153,10 @@ namespace ProcessHacker
         List<KeyValuePair<DateTime, string>> _log = new List<KeyValuePair<DateTime, string>>();
 
         /// <summary>
-        /// A list of window handles owned by the currently selected process. 
+        /// windowhandle owned by the currently selected process. 
         /// Only populated when the user right-clicks exactly one process.
         /// </summary>
-        IList<IntPtr> windowHandles = new List<IntPtr>();
+        WindowHandle windowHandle = WindowHandle.Zero;
 
         #endregion
 
@@ -529,7 +529,7 @@ namespace ProcessHacker
 
         private void cpuHistoryMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.CpuHistoryIconVisible = 
+            Properties.Settings.Default.CpuHistoryIconVisible =
                 cpuHistoryMenuItem.Checked = !cpuHistoryMenuItem.Checked;
             this.ApplyIconVisibilities();
         }
@@ -647,7 +647,7 @@ namespace ProcessHacker
                     {
                         allGood = false;
 
-                        if (MessageBox.Show("Could not close the TCP connection. " + 
+                        if (MessageBox.Show("Could not close the TCP connection. " +
                             "Make sure Process Hacker is running with administrative privileges.", "Process Hacker",
                             MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
                             return;
@@ -964,7 +964,7 @@ namespace ProcessHacker
                 // is sorting the list (!).
                 try
                 {
-                    if (treeProcesses.SelectedTreeNodes[0].IsLeaf && 
+                    if (treeProcesses.SelectedTreeNodes[0].IsLeaf &&
                         (treeProcesses.Tree.Model as ProcessTreeModel).GetSortColumn() == "")
                         terminateProcessTreeMenuItem.Visible = false;
                     else
@@ -975,41 +975,52 @@ namespace ProcessHacker
                     Logging.Log(ex);
                 }
 
-                // Find the process' windows (if any).
-                windowHandles.Clear();
+                // Find the process' window (if any).
+                windowHandle = WindowHandle.Zero;
                 Win32.EnumWindows(
                     (hwnd, param) =>
                     {
-                        // IsWindowEnabled?
-                        // GetWindowLong
-                        // hParent is IsWindowVisible?IsWindowEnabled?
-                        // Shell_TrayWnd
-                        // WS_Caption
-                        if (Win32.IsWindow(hwnd) && Win32.IsWindowVisible(hwnd))
+                        WindowHandle handle = new WindowHandle(hwnd);                   
+                        // GetWindowLong                     
+                        // Shell_TrayWnd                   
+                        if (handle.IsWindow() && handle.IsVisible() && handle.IsParent())
                         {
                             int pid;
                             Win32.GetWindowThreadProcessId(hwnd, out pid);
 
-                            // TODO: Find main window handle
                             if (pid == processSelectedPid)
                             {
-                                windowHandles.Add(hwnd);
-                                // return false;
+                                windowHandle = handle;
+                                return false;
                             }
                         }
                         return true;
                     }, 0);
 
-                // Enable the Window submenu if we found windows owned 
+                // Enable the Window submenu if we found window owned 
                 // by the process. Otherwise, disable the submenu.
-                if (windowHandles.Count > 0)
+                if (windowHandle.Equals(WindowHandle.Zero))
                 {
-                    // GetWindowPlacement
-                    windowProcessMenuItem.Enabled = true;
+                    windowProcessMenuItem.Enabled = false;
                 }
                 else
                 {
-                    windowProcessMenuItem.Enabled = false;
+                    windowProcessMenuItem.Enabled = true;
+                    windowProcessMenuItem.EnableAll();
+                    switch (windowHandle.GetWindowPlacement().ShowState)
+                    {
+                        case ShowWindowType.ShowMinimized:
+                            minimizeProcessMenuItem.Enabled = false;                          
+                            break;
+
+                        case ShowWindowType.ShowMaximized:
+                            maximizeProcessMenuItem.Enabled = false;                       
+                            break;
+
+                        case ShowWindowType.ShowNormal:
+                            restoreProcessMenuItem.Enabled = false; 
+                            break;                       
+                    }                    
                 }
             }
             else
@@ -1278,10 +1289,10 @@ namespace ProcessHacker
             SaveFileDialog sfd = new SaveFileDialog();
 
             sfd.Filter = "Dump Files (*.dmp)|*.dmp|All Files (*.*)|*.*";
-            sfd.FileName = 
+            sfd.FileName =
                 processP.Dictionary[processSelectedPid].Name +
                 "_" +
-                DateTime.Now.ToString("yyMMdd") + 
+                DateTime.Now.ToString("yyMMdd") +
                 ".dmp";
 
             if (sfd.ShowDialog() == DialogResult.OK)
@@ -1391,12 +1402,61 @@ namespace ProcessHacker
         {
             TerminatorWindow w = new TerminatorWindow(processSelectedPid);
 
-            w.Text = "Terminator - " + processP.Dictionary[processSelectedPid].Name + 
+            w.Text = "Terminator - " + processP.Dictionary[processSelectedPid].Name +
                 " (PID " + processSelectedPid.ToString() + ")";
 
             w.TopMost = this.TopMost;
             w.ShowDialog();
         }
+
+        #region Window
+
+        private void bringToFrontProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!windowHandle.Equals(WindowHandle.Zero) && windowHandle.IsWindow())
+            {
+                WindowPlacement placement = windowHandle.GetWindowPlacement();
+
+                if (placement.ShowState == ShowWindowType.ShowMinimized)
+                    Win32.ShowWindow(windowHandle, ShowWindowType.Restore);
+                else
+                    Win32.SetForegroundWindow(windowHandle);
+            }
+        }
+
+        private void restoreProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!windowHandle.Equals(WindowHandle.Zero) && windowHandle.IsWindow())
+            {
+                Win32.ShowWindow(windowHandle, ShowWindowType.Restore);
+            }
+        }
+
+        private void minimizeProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!windowHandle.Equals(WindowHandle.Zero) && windowHandle.IsWindow())
+            {
+                Win32.ShowWindow(windowHandle, ShowWindowType.ShowMinimized);
+            }
+        }
+
+        private void maximizeProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!windowHandle.Equals(WindowHandle.Zero) && windowHandle.IsWindow())
+            {
+                Win32.ShowWindow(windowHandle, ShowWindowType.ShowMaximized);
+            }
+        }
+
+        private void closeProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!windowHandle.Equals(WindowHandle.Zero) && windowHandle.IsWindow())
+            {
+                windowHandle.Close();
+            }
+        }
+
+        #endregion
 
         #region Run As
 
@@ -1558,7 +1618,7 @@ namespace ProcessHacker
                 ProcessStartInfo info = new ProcessStartInfo();
 
                 info.FileName = Application.StartupPath + "\\Injector.exe";
-                info.Arguments = "createprocessc " + processSelectedPid.ToString() + " \"" + 
+                info.Arguments = "createprocessc " + processSelectedPid.ToString() + " \"" +
                     box.Value.Replace("\"", "\\\"") + "\"";
                 info.RedirectStandardOutput = true;
                 info.UseShellExecute = false;
@@ -1592,7 +1652,7 @@ namespace ProcessHacker
 
             p.WaitForExit();
 
-            InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + (p.ExitCode != 0 ? "\r\nReturn code: " + p.ExitCode + 
+            InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + (p.ExitCode != 0 ? "\r\nReturn code: " + p.ExitCode +
                 " (" + Win32.GetErrorMessage(p.ExitCode) + ")" : ""));
 
             infoBox.ShowDialog();
@@ -1687,13 +1747,13 @@ namespace ProcessHacker
             {
                 Logging.Log(ex);
             }
-        }   
+        }
 
         private void selectAllProcessMenuItem_Click(object sender, EventArgs e)
         {
             treeProcesses.Tree.AllNodes.SelectAll();
             treeProcesses.Tree.Invalidate();
-        } 
+        }
 
         #endregion
 
@@ -1727,8 +1787,8 @@ namespace ProcessHacker
                             foreach (var process in treeProcesses.Model.Roots)
                             {
                                 if (
-                                    string.Equals(process.Name, "explorer.exe", 
-                                    StringComparison.InvariantCultureIgnoreCase) && 
+                                    string.Equals(process.Name, "explorer.exe",
+                                    StringComparison.InvariantCultureIgnoreCase) &&
                                     process.ProcessItem.Username == Program.CurrentUsername)
                                 {
                                     treeProcesses.FindTreeNode(process).EnsureVisible2();
@@ -1779,8 +1839,8 @@ namespace ProcessHacker
 
             if (NPMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "New Process",
-                    "The process " + item.Name + " (" + item.Pid.ToString() + 
-                    ") was started" + ((parentText != "") ? " by " + 
+                    "The process " + item.Name + " (" + item.Pid.ToString() +
+                    ") was started" + ((parentText != "") ? " by " +
                     parent.Name + " (PID " + parent.Pid.ToString() + ")" : "") + ".", ToolTipIcon.Info);
         }
 
@@ -1978,7 +2038,7 @@ namespace ProcessHacker
                     {
                         goToProcessServiceMenuItem.Enabled = false;
                     }
-                          
+
                     if ((item.Status.ServiceStatusProcess.ControlsAccepted & ServiceAccept.PauseContinue)
                         == 0)
                     {
@@ -1992,7 +2052,7 @@ namespace ProcessHacker
                     }
 
                     if (item.Status.ServiceStatusProcess.CurrentState == ServiceState.Paused)
-                    {                                        
+                    {
                         startServiceMenuItem.Enabled = false;
                         pauseServiceMenuItem.Enabled = false;
                     }
@@ -2258,7 +2318,7 @@ namespace ProcessHacker
             addMenuItem("Restart", (sender, e) =>
             {
                 if (MessageBox.Show("Are you sure you want to restart your computer?", "Process Hacker",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, 
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
                     MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                     Win32.ExitWindowsEx(ExitWindowsFlags.Reboot, 0);
             });
@@ -2645,7 +2705,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("The priority could not be set:\n\n" + ex.Message, 
+                MessageBox.Show("The priority could not be set:\n\n" + ex.Message,
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -2710,7 +2770,7 @@ namespace ProcessHacker
 
                         return;
                     }
-                    //break;
+                //break;
 
                 case (int)WindowMessage.SysCommand:
                     {
@@ -2812,7 +2872,7 @@ namespace ProcessHacker
             }
 
             this.Exit();
-        }     
+        }
 
         private void CheckedMenuItem_Click(object sender, EventArgs e)
         {
@@ -3168,27 +3228,13 @@ namespace ProcessHacker
                 toolStrip.Items.Add(targetThreadButton);
 
                 try { TerminalServerHandle.RegisterNotificationsCurrent(this, true); }
-                catch (Exception ex) { Logging.Log(ex); }    
+                catch (Exception ex) { Logging.Log(ex); }
                 try { this.UpdateSessions(); }
                 catch (Exception ex) { Logging.Log(ex); }
 
                 try { Win32.SetProcessShutdownParameters(0x100, 0); }
                 catch { }
             }
-        }
-
-        private void bringToFrontProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            if (windowHandles.Count > 0)
-            {
-                if (Win32.IsWindow(windowHandles[0]))
-                {
-                    // may failed
-                    //should find another way
-                    //todo
-                    Win32.SetForegroundWindow(windowHandles[0]);
-                }
-            }
-        }
+        }       
     }
 }

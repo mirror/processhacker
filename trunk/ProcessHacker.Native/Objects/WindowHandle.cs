@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Text;
 using ProcessHacker.Native.Api;
+using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -82,6 +83,14 @@ namespace ProcessHacker.Native.Objects
             return new WindowHandle(Win32.GetParent(this));
         }
 
+        public WindowPlacement GetWindowPlacement()
+        {
+            WindowPlacement placement = new WindowPlacement();
+            placement.Length = Marshal.SizeOf(placement);
+            Win32.GetWindowPlacement(this, ref placement);
+            return placement;
+        }
+
         public Rectangle GetRectangle()
         {
             Rect rect;
@@ -105,6 +114,11 @@ namespace ProcessHacker.Native.Objects
         public bool IsHung()
         {
             return Win32.IsHungAppWindow(this);
+        }
+
+        public bool IsParent()
+        {
+            return this.GetParent().Equals(WindowHandle.Zero);
         }
 
         public bool IsWindow()
