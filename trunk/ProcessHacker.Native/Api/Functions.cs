@@ -2473,18 +2473,18 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "CreateWindowEx", CharSet = CharSet.Auto)]
         public static extern IntPtr CreateWindow(
-            [In] int exStyle,
-            [In] [MarshalAs(UnmanagedType.LPTStr)] string className,
-            [In] [MarshalAs(UnmanagedType.LPTStr)] string windowName,
-            [In] WindowStyles style,
-            [In] int x,
-            [In] int y,
-            [In] int width,
-            [In] int height,
-            [In] IntPtr parent,
-            [In] IntPtr menuHandle,
-            [In] IntPtr instanceHandle,
-            [In] IntPtr zero
+            [In] int ExStyle,
+            [In] [MarshalAs(UnmanagedType.LPTStr)] string ClassName,
+            [In] [MarshalAs(UnmanagedType.LPTStr)] string WindowName,
+            [In] WindowStyles Style,
+            [In] int X,
+            [In] int Y,
+            [In] int Width,
+            [In] int Height,
+            [In] IntPtr Parent,
+            [In] IntPtr MenuHandle,
+            [In] IntPtr InstanceHandle,
+            [In] IntPtr Zero
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -2493,8 +2493,8 @@ namespace ProcessHacker.Native.Api
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int InternalGetWindowText(
             [In] IntPtr hWnd, 
-            [Out] StringBuilder str, 
-            int maxCount
+            [Out] StringBuilder String, 
+            [In] int MaxCount
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
@@ -2518,6 +2518,21 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr hWnd,
             ref WindowPlacement WindowPlacement
             );
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr FindWindow(
+            [In] string ClassName,
+            [In] string WindowName
+            );
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetDesktopWindow();
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetShellWindow();
 
         #endregion
     }
