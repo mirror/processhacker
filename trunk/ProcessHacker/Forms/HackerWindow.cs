@@ -1452,7 +1452,8 @@ namespace ProcessHacker
         {
             if (!windowHandle.Equals(WindowHandle.Zero) && windowHandle.IsWindow())
             {
-                windowHandle.Close();
+                Win32.PostMessage(windowHandle,WindowMessage.Close,0,0);
+                //windowHandle.Close();
             }
         }
 
