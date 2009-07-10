@@ -2512,11 +2512,13 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr hWnd
             );
 
-        [DllImport("user32.dll",SetLastError = true)]
+        [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowPlacement(
             [In] IntPtr hWnd,
-            ref WindowPlacement lpwndpl);
+            ref WindowPlacement WindowPlacement
+            );
+
         #endregion
     }
 }

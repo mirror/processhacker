@@ -410,6 +410,11 @@ namespace ProcessHacker.Native.Api
         public int Top;
         public int Right;
         public int Bottom;
+
+        public Rectangle ToRectangle()
+        {
+            return Rectangle.FromLTRB(this.Left, this.Top, this.Right, this.Bottom);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -622,12 +627,12 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct WindowPlacement
     {
-        public int length;
-        public int flags;
-        public ShowWindowType showCmd;
-        public Point ptMinPosition;
-        public Point ptMaxPosition;
-        public Rectangle rcNormalPosition;
+        public int Length;
+        public WindowPlacementFlags Flags;
+        public ShowWindowType ShowState;
+        public Point MinPosition;
+        public Point MaxPosition;
+        public Rect NormalPosition;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]

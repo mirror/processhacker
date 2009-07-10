@@ -908,6 +908,14 @@ namespace ProcessHacker.Native.Api
         App = 0x8000
     }
 
+    [Flags]
+    public enum WindowPlacementFlags : int
+    {
+        SetMinPosition = 0x1,
+        RestoreToMaximized = 0x2,
+        AsyncWindowPlacement = 0x4
+    }
+
     public enum WindowStyles : uint
     {
         Overlapped = 0x00000000,
