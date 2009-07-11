@@ -2251,7 +2251,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("user32.dll")]
-        public static extern int EnumWindows(
+        public static extern bool EnumWindows(
             [In] [MarshalAs(UnmanagedType.FunctionPtr)] EnumWindowsProc Callback,
             [In] int param
             );

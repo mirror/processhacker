@@ -977,16 +977,15 @@ namespace ProcessHacker
 
                 // Find the process' window (if any).
                 windowHandle = WindowHandle.Zero;
-                Win32.EnumWindows(
-                    (hwnd, param) =>
+                WindowHandle.Enumerate(
+                    (handle) =>
                     {
-                        WindowHandle handle = new WindowHandle(hwnd);                   
-                        // GetWindowLong                     
-                        // Shell_TrayWnd                   
+                        // GetWindowLong
+                        // Shell_TrayWnd
                         if (handle.IsWindow() && handle.IsVisible() && handle.IsParent())
                         {
                             int pid;
-                            Win32.GetWindowThreadProcessId(hwnd, out pid);
+                            Win32.GetWindowThreadProcessId(handle, out pid);
 
                             if (pid == processSelectedPid)
                             {
@@ -995,11 +994,11 @@ namespace ProcessHacker
                             }
                         }
                         return true;
-                    }, 0);
+                    });
 
                 // Enable the Window submenu if we found window owned 
                 // by the process. Otherwise, disable the submenu.
-                if (windowHandle.Equals(WindowHandle.Zero))
+                if (windowHandle.IsInvalid)
                 {
                     windowProcessMenuItem.Enabled = false;
                 }
@@ -1007,7 +1006,8 @@ namespace ProcessHacker
                 {
                     windowProcessMenuItem.Enabled = true;
                     windowProcessMenuItem.EnableAll();
-                    switch (windowHandle.GetWindowPlacement().ShowState)
+
+                    switch (windowHandle.GetPlacement().ShowState)
                     {
                         case ShowWindowType.ShowMinimized:
                             minimizeProcessMenuItem.Enabled = false;                          
@@ -1020,7 +1020,7 @@ namespace ProcessHacker
                         case ShowWindowType.ShowNormal:
                             restoreProcessMenuItem.Enabled = false; 
                             break;                       
-                    }                    
+                    }
                 }
             }
             else
@@ -1409,56 +1409,6 @@ namespace ProcessHacker
             w.ShowDialog();
         }
 
-        #region Window
-
-        private void bringToFrontProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!windowHandle.Equals(WindowHandle.Zero) && windowHandle.IsWindow())
-            {
-                WindowPlacement placement = windowHandle.GetWindowPlacement();
-
-                if (placement.ShowState == ShowWindowType.ShowMinimized)
-                    Win32.ShowWindow(windowHandle, ShowWindowType.Restore);
-                else
-                    Win32.SetForegroundWindow(windowHandle);
-            }
-        }
-
-        private void restoreProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!windowHandle.Equals(WindowHandle.Zero) && windowHandle.IsWindow())
-            {
-                Win32.ShowWindow(windowHandle, ShowWindowType.Restore);
-            }
-        }
-
-        private void minimizeProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!windowHandle.Equals(WindowHandle.Zero) && windowHandle.IsWindow())
-            {
-                Win32.ShowWindow(windowHandle, ShowWindowType.ShowMinimized);
-            }
-        }
-
-        private void maximizeProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!windowHandle.Equals(WindowHandle.Zero) && windowHandle.IsWindow())
-            {
-                Win32.ShowWindow(windowHandle, ShowWindowType.ShowMaximized);
-            }
-        }
-
-        private void closeProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!windowHandle.Equals(WindowHandle.Zero) && windowHandle.IsWindow())
-            {
-                Win32.PostMessage(windowHandle,WindowMessage.Close,0,0);
-                //windowHandle.Close();
-            }
-        }
-
-        #endregion
-
         #region Run As
 
         private void launchAsUserProcessMenuItem_Click(object sender, EventArgs e)
@@ -1718,6 +1668,56 @@ namespace ProcessHacker
         private void idleMenuItem_Click(object sender, EventArgs e)
         {
             SetProcessPriority(ProcessPriorityClass.Idle);
+        }
+
+        #endregion
+
+        #region Window
+
+        private void bringToFrontProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
+            {
+                WindowPlacement placement = windowHandle.GetPlacement();
+
+                if (placement.ShowState == ShowWindowType.ShowMinimized)
+                    windowHandle.Show(ShowWindowType.Restore);
+                else
+                    windowHandle.SetForeground();
+            }
+        }
+
+        private void restoreProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
+            {
+                windowHandle.Show(ShowWindowType.Restore);
+            }
+        }
+
+        private void minimizeProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
+            {
+                windowHandle.Show(ShowWindowType.ShowMinimized);
+            }
+        }
+
+        private void maximizeProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
+            {
+                windowHandle.Show(ShowWindowType.ShowMaximized);
+            }
+        }
+
+        private void closeProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
+            {
+                windowHandle.PostMessage(WindowMessage.Close, 0, 0);
+                //windowHandle.Close();
+            }
         }
 
         #endregion
