@@ -423,9 +423,9 @@ namespace ProcessHacker.Components
                 {
                     lock (listNetwork)
                     {
-                        int index = listNetwork.Items[item.Id].Index;
-                        bool selected = listNetwork.Items[item.Id].Selected;
-                        int selectedCount = listNetwork.SelectedItems.Count;
+                        if (!listNetwork.Items.ContainsKey(item.Id))
+                            return;
+
                         ListViewItem litem = listNetwork.Items[item.Id];
                         bool imageStillUsed = false;
 

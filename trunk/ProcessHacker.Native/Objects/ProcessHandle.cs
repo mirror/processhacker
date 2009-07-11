@@ -1202,6 +1202,23 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the process' default heap.
+        /// </summary>
+        /// <returns>A pointer to a heap.</returns>
+        public unsafe IntPtr GetHeap()
+        {
+            IntPtr heap;
+
+            this.ReadMemory(
+                this.GetBasicInformation().PebBaseAddress.Increment(Win32.PebProcessHeapOffset),
+                &heap,
+                IntPtr.Size
+                );
+
+            return heap;
+        }
+
+        /// <summary>
         /// Gets the file name of the process' image. This requires the
         /// PROCESS_QUERY_LIMITED_INFORMATION permission.
         /// </summary>

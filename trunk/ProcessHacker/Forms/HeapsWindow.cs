@@ -68,11 +68,23 @@ namespace ProcessHacker
 
             _pid = pid;
 
+            IntPtr defaultHeap = IntPtr.Zero;
+
+            try
+            {
+                using (var phandle = new ProcessHandle(
+                    pid,
+                    Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                    defaultHeap = phandle.GetHeap();
+            }
+            catch (WindowsException)
+            { }
+
             int allocatedTotal = 0, committedTotal = 0, entriesTotal = 0, tagsTotal = 0, pseudoTagsTotal = 0;
 
             foreach (HeapInformation heap in heaps)
             {
-                listHeaps.Items.Add(new ListViewItem(
+                ListViewItem litem = listHeaps.Items.Add(new ListViewItem(
                     new string[]
                     {
                         "0x" + heap.Address.ToInt32().ToString("x8"),
@@ -81,7 +93,13 @@ namespace ProcessHacker
                         heap.EntryCount.ToString("N0")
                         //heap.TagCount.ToString("N0"),
                         //heap.PseudoTagCount.ToString("N0")
-                    })).Tag = heap;
+                    }));
+
+                litem.Tag = heap;
+                // Make the default heap bold.
+                if (heap.Address == defaultHeap)
+                    litem.Font = new Font(litem.Font, FontStyle.Bold);
+
                 // Sum everything up.
                 allocatedTotal += heap.BytesAllocated;
                 committedTotal += heap.BytesCommitted;
