@@ -1085,7 +1085,6 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the exit time of the process.
         /// </summary>
-        /// <returns></returns>
         public long GetExitTime()
         {
             return this.GetTimes()[1];

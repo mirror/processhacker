@@ -21,8 +21,8 @@ namespace ProcessHacker
 
             Program.PWindows.Remove(_pid);
 
-            if (_process != null)
-                _process.Close();
+            if (_processHandle != null)
+                _processHandle.Dispose();
 
             if (_threadP != null)
             {

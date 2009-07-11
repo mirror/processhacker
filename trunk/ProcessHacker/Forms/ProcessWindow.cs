@@ -46,7 +46,7 @@ namespace ProcessHacker
             new ProcessHacker.Native.Threading.Event();
         private ProcessItem _processItem;
         private int _pid;
-        private Process _process;
+        private ProcessHandle _processHandle;
         private Bitmap _processImage;
 
         private ThreadProvider _threadP;
@@ -243,10 +243,10 @@ namespace ProcessHacker
 
         private void LoadStage1()
         {
-            // May fail if the process is hidden
+            // May fail.
             try
             {
-                _process = Process.GetProcessById(_pid);
+                _processHandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
             }
             catch
             { }
@@ -1306,25 +1306,28 @@ namespace ProcessHacker
 
         private void timerUpdate_Tick(object sender, EventArgs e)
         {
-            if (_process != null)
+            if (_processHandle != null)
             {
                 try
                 {
-                    if (_process.HasExited)
+                    if (_processHandle.GetExitTime() != 0)
                     {
                         timerUpdate.Enabled = false;
 
-                        try
-                        {
-                            using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                            {
-                                this.Text += " (exited with code " + phandle.GetExitCode() + ")";
-                            }
-                        }
-                        catch
-                        { }
+                        NtStatus exitStatus = _processHandle.GetExitStatus();
+                        string exitString = exitStatus.ToString();
+                        long exitLong;
 
-                        return;
+                        // If we have a NT status string, display it. 
+                        // Otherwise, display the NT status value in hex.
+                        if (!long.TryParse(exitString, out exitLong))
+                        {
+                            this.Text += " (exited with status " + exitString + ")";
+                        }
+                        else
+                        {
+                            this.Text += " (exited with status 0x" + exitLong.ToString("x8") + ")";
+                        }
                     }
                 }
                 catch
@@ -1333,16 +1336,12 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle
-                    = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
-                {
-                    _realCurrentDirectory  =
-                        phandle.GetPebString(PebOffset.CurrentDirectoryPath);
+                _realCurrentDirectory  =
+                    _processHandle.GetPebString(PebOffset.CurrentDirectoryPath);
 
-                    // we don't want to set the text if the user is selecting something in the textbox!
-                    if (!fileCurrentDirectory.TextBoxFocused)
-                        fileCurrentDirectory.Text = _realCurrentDirectory;
-                }
+                // we don't want to set the text if the user is selecting something in the textbox!
+                if (!fileCurrentDirectory.TextBoxFocused)
+                    fileCurrentDirectory.Text = _realCurrentDirectory;
             }
             catch
             { }

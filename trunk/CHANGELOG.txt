@@ -1,5 +1,9 @@
 Process Hacker
 
+1.3.9.5
+ * NEW/IMPROVED:
+   * Better process window exit status display
+
 1.3.9.0
  * NEW/IMPROVED:
    * #2812814 - "Auto-scroll option should be remembered"
