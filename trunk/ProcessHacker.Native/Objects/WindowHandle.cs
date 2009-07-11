@@ -86,6 +86,11 @@ namespace ProcessHacker.Native.Objects
             return Win32.DestroyWindow(this);
         }
 
+        public bool EndTask(bool force)
+        {
+            return Win32.EndTask(this, false, force);
+        }
+
         public bool EnumerateChildren(EnumerateWindowsDelegate callback)
         {
             return Win32.EnumChildWindows(this, (hWnd, param) => callback(new WindowHandle(hWnd)), 0);

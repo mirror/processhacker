@@ -2116,6 +2116,13 @@ namespace ProcessHacker.Native.Api
         #region Windows
 
         [DllImport("user32.dll")]
+        public static extern bool EndTask(
+            [In] IntPtr hWnd,
+            [In] bool ShutDown,
+            [In] bool Force
+            );
+
+        [DllImport("user32.dll")]
         public static extern bool UpdateWindow(
             [In] IntPtr hWnd
             );

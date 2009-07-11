@@ -427,14 +427,20 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The base address of the allocated pages.</returns>
         public IntPtr AllocateMemory(IntPtr baseAddress, int size, MemoryProtection protection)
         {
-            IntPtr newAddress;
+            NtStatus status;
+            IntPtr sizeIntPtr = size.ToIntPtr();
 
-            if ((newAddress = 
-                Win32.VirtualAllocEx(this, baseAddress, size, MemoryState.Commit, protection))
-                == IntPtr.Zero)
-                Win32.ThrowLastError();
+            if ((status = Win32.NtAllocateVirtualMemory(
+                this,
+                ref baseAddress,
+                IntPtr.Zero,
+                ref sizeIntPtr,
+                MemoryFlags.Commit,
+                protection
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
 
-            return newAddress;
+            return baseAddress;
         }
 
         /// <summary>
@@ -779,13 +785,20 @@ namespace ProcessHacker.Native.Objects
         /// reserve the memory instead of freeing it.</param>
         public void FreeMemory(IntPtr baseAddress, int size, bool reserveOnly)
         {
+            NtStatus status;
+            IntPtr sizeIntPtr = size.ToIntPtr();
+
             // Size needs to be 0 if we're freeing.
             if (!reserveOnly)
-                size = 0;
+                sizeIntPtr = IntPtr.Zero;
 
-            if (!Win32.VirtualFreeEx(this, baseAddress, size,
-                reserveOnly ? MemoryState.Decommit : MemoryState.Release))
-                Win32.ThrowLastError();
+            if ((status = Win32.NtFreeVirtualMemory(
+                this,
+                ref baseAddress,
+                ref sizeIntPtr,
+                reserveOnly ? MemoryFlags.Decommit : MemoryFlags.Release
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         /// <summary>
@@ -1771,10 +1784,18 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The old memory protection.</returns>
         public MemoryProtection ProtectMemory(IntPtr baseAddress, int size, MemoryProtection protection)
         {
+            NtStatus status;
+            IntPtr sizeIntPtr = size.ToIntPtr();
             MemoryProtection oldProtection;
 
-            if (!Win32.VirtualProtectEx(this, baseAddress, size, protection, out oldProtection))
-                Win32.ThrowLastError();
+            if ((status = Win32.NtProtectVirtualMemory(
+                this,
+                ref baseAddress,
+                ref sizeIntPtr,
+                protection,
+                out oldProtection
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
 
             return oldProtection;
         }
@@ -1782,14 +1803,23 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets information about the memory region starting at the specified address.
         /// </summary>
-        /// <param name="address">The address to query.</param>
+        /// <param name="baseAddress">The address to query.</param>
         /// <returns>A MEMORY_BASIC_INFORMATION structure.</returns>
-        public MemoryBasicInformation QueryMemory(IntPtr address)
+        public MemoryBasicInformation QueryMemory(IntPtr baseAddress)
         {
-            MemoryBasicInformation mbi = new MemoryBasicInformation();
+            NtStatus status;
+            MemoryBasicInformation mbi;
+            IntPtr retLength;
 
-            if (Win32.VirtualQueryEx(this, address, out mbi, Marshal.SizeOf(mbi)) == 0)
-                Win32.ThrowLastError();
+            if ((status = Win32.NtQueryVirtualMemory(
+                this,
+                baseAddress,
+                MemoryInformationClass.MemoryBasicInformation,
+                out mbi,
+                Marshal.SizeOf(typeof(MemoryBasicInformation)).ToIntPtr(),
+                out retLength
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
 
             return mbi;
         }

@@ -1093,6 +1093,16 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryVirtualMemory(
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr BaseAddress,
+            [In] MemoryInformationClass MemoryInformationClass,
+            [Out] out MemoryBasicInformation Buffer,
+            [In] IntPtr MemoryInformationLength,
+            [Out] [Optional] out IntPtr ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtQueryVolumeInformationFile(
             [In] IntPtr FileHandle,
             [Out] out IoStatusBlock IoStatusBlock,
