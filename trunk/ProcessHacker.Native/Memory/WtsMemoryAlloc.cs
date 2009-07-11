@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.ComponentModel;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native
@@ -48,11 +49,13 @@ namespace ProcessHacker.Native
             Win32.WTSFreeMemory(this);
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public override void Resize(int newSize)
         {
             throw new NotSupportedException();
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public override int Size
         {
             get

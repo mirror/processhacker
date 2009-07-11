@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.ComponentModel;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
@@ -45,11 +46,21 @@ namespace ProcessHacker.Native
                 Win32.ThrowLastError(status);
         }
 
+        /// <summary>
+        /// Flushes the section view.
+        /// </summary>
+        /// <returns>A NT status value.</returns>
         public NtStatus Flush()
         {
             return ProcessHandle.Current.FlushMemory(this, this.Size);
         }
 
+        /// <summary>
+        /// Determines whether the image section is the same as 
+        /// another file section.
+        /// </summary>
+        /// <param name="mappedAsFile">A section mapped as a file.</param>
+        /// <returns>Whether the two sections are the same.</returns>
         public bool IsSameFile(SectionView mappedAsFile)
         {
             if ((uint)Win32.NtAreMappedFilesTheSame(this, mappedAsFile) == this.Memory.ToUInt32())
@@ -58,6 +69,7 @@ namespace ProcessHacker.Native
                 return false;
         }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public override void Resize(int newSize)
         {
             throw new NotSupportedException();

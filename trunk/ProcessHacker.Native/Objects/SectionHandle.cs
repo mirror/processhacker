@@ -192,19 +192,20 @@ namespace ProcessHacker.Native.Objects
             return sii;
         }
 
-        public SectionView MapView(int size, MemoryProtection protection)
+        public SectionView MapView(int sectionOffset, int size, MemoryProtection protection)
         {
-            return this.MapView(IntPtr.Zero, new IntPtr(size), protection);
+            return this.MapView(IntPtr.Zero, sectionOffset, new IntPtr(size), protection);
         }
 
-        public SectionView MapView(IntPtr baseAddress, IntPtr size, MemoryProtection protection)
+        public SectionView MapView(IntPtr baseAddress, long sectionOffset, IntPtr size, MemoryProtection protection)
         {
-            return this.MapView(ProcessHandle.Current, baseAddress, size, protection);
+            return this.MapView(ProcessHandle.Current, baseAddress, sectionOffset, size, protection);
         }
 
         public SectionView MapView(
             ProcessHandle processHandle,
             IntPtr baseAddress,
+            long sectionOffset,
             IntPtr size,
             MemoryProtection protection
             )
@@ -213,7 +214,7 @@ namespace ProcessHacker.Native.Objects
                 processHandle,
                 baseAddress,
                 size,
-                0,
+                sectionOffset,
                 size,
                 SectionInherit.ViewShare,
                 0,
@@ -234,6 +235,8 @@ namespace ProcessHacker.Native.Objects
         {
             NtStatus status;
 
+            // sectionOffset requires 2 << 15 = 0x10000 = 65536 alignment.
+            // viewSize will be rounded up to the page size.
             if ((status = Win32.NtMapViewOfSection(
                 this,
                 processHandle,

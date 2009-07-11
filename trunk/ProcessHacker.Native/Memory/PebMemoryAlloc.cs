@@ -21,8 +21,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native
@@ -44,17 +43,18 @@ namespace ProcessHacker.Native
             this.Size = size;
         }
 
-        public override void Resize(int newSize)
-        {
-            throw new NotSupportedException();
-        }
-
         protected override void Free()
         {
             NtStatus status;
 
             if ((status = Win32.RtlFreeToPeb(this, this.Size)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override void Resize(int newSize)
+        {
+            throw new NotSupportedException();
         }
     }
 }
