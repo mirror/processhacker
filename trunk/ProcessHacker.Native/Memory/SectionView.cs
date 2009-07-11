@@ -41,13 +41,13 @@ namespace ProcessHacker.Native
         {
             NtStatus status;
 
-            if ((status = Win32.NtUnmapViewOfSection(ProcessHandle.GetCurrent(), this)) >= NtStatus.Error)
+            if ((status = Win32.NtUnmapViewOfSection(ProcessHandle.Current, this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
         public NtStatus Flush()
         {
-            return ProcessHandle.GetCurrent().FlushMemory(this, this.Size);
+            return ProcessHandle.Current.FlushMemory(this, this.Size);
         }
 
         public bool IsSameFile(SectionView mappedAsFile)

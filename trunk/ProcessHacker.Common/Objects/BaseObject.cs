@@ -410,19 +410,23 @@ namespace ProcessHacker.Common.Objects
                 if (!_owned)
                     return 0;
 
+                // Statistics.
                 Interlocked.Add(ref _dereferencedCount, count);
 
                 // Decrease the reference count.
                 int newRefCount = Interlocked.Add(ref _refCount, -count);
 
-                // Should not happen.
+                // Should not ever happen.
                 if (newRefCount < 0)
                     throw new InvalidOperationException("Reference count cannot be negative.");
 
-                // Free the object if the reference count is 0.
+                // Dispose the object if the reference count is 0.
                 if (newRefCount == 0 && !_disposed)
                 {
+                    // If the dispose object method throws an exception, nothing bad 
+                    // should happen if it does not invalidate any state.
                     this.DisposeObject(managed);
+                    // Prevent the object from being disposed twice.
                     _disposed = true;
                     Interlocked.Increment(ref _freedCount);
                 }

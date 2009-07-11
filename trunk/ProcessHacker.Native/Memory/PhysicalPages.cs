@@ -5,18 +5,63 @@ using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Memory
 {
+    /// <summary>
+    /// Represents an allocation of physical pages.
+    /// </summary>
     public sealed class PhysicalPages : BaseObject
     {
         private ProcessHandle _processHandle;
         private int _count;
         private IntPtr[] _pfnArray;
 
+        /// <summary>
+        /// Allocates physical pages.
+        /// </summary>
+        /// <param name="pageCount">The number of pages to allocate.</param>
+        public PhysicalPages(int pageCount)
+            : this(pageCount, true)
+        { }
+
+        /// <summary>
+        /// Allocates physical pages.
+        /// </summary>
+        /// <param name="count">
+        /// The number of bytes to allocate, or the number of pages to allocate 
+        /// if <paramref name="pages" /> is true. If a number of bytes is used, 
+        /// it will be rounded up to the system page size.</param>
+        /// <param name="pages">
+        /// Whether <paramref name="count" /> specifies bytes or pages.
+        /// </param>
+        public PhysicalPages(int count, bool pages)
+            : this(ProcessHandle.Current, count, pages)
+        { }
+
+        /// <summary>
+        /// Allocates physical pages.
+        /// </summary>
+        /// <param name="processHandle">The process to allocate the pages in.</param>
+        /// <param name="pageCount">The number of pages to allocate.</param>
+        public PhysicalPages(ProcessHandle processHandle, int pageCount)
+            : this(processHandle, pageCount, true)
+        { }
+
+        /// <summary>
+        /// Allocates physical pages.
+        /// </summary>
+        /// <param name="processHandle">The process to allocate the pages in.</param>
+        /// <param name="count">
+        /// The number of bytes to allocate, or the number of pages to allocate 
+        /// if <paramref name="pages" /> is true. If a number of bytes is used, 
+        /// it will be rounded up to the system page size.</param>
+        /// <param name="pages">
+        /// Whether <paramref name="count" /> specifies bytes or pages.
+        /// </param>
         public PhysicalPages(ProcessHandle processHandle, int count, bool pages)
         {
             if (pages)
                 _count = count;
             else
-                _count = (count - 1) / Windows.PageSize + 1;
+                _count = Windows.BytesToPages(count);
 
             IntPtr pageCount = new IntPtr(_count);
 
@@ -45,39 +90,43 @@ namespace ProcessHacker.Native.Memory
                 throw new Exception("Could not free all pages.");
         }
 
-        public PhysicalPagesMapping Map(IntPtr address, MemoryProtection protection)
+        public PhysicalPagesMapping Map(MemoryProtection protection)
         {
-            return new PhysicalPagesMapping(this, address, protection);
+            return this.Map(IntPtr.Zero, protection);
         }
 
-        internal void Map(IntPtr address, MemoryProtection protection, bool unmap)
+        public PhysicalPagesMapping Map(IntPtr address, MemoryProtection protection)
         {
-            if (!unmap)
-            {
-                IntPtr allocAddress = Win32.VirtualAllocEx(
-                    ProcessHandle.GetCurrent(),
-                    address,
-                    _count * Windows.PageSize,
-                    MemoryState.Reserve | MemoryState.Physical,
-                    protection
-                    );
+            // Reserve an address range.
+            IntPtr allocAddress = ProcessHandle.Current.AllocateMemory(
+                address,
+                _count * Windows.PageSize,
+                MemoryFlags.Reserve | MemoryFlags.Physical,
+                protection
+                );
 
-                if (!Win32.MapUserPhysicalPages(
-                    allocAddress,
-                    new IntPtr(_count),
-                    _pfnArray
-                    ))
-                    Win32.ThrowLastError();
-            }
-            else
-            {
-                if (!Win32.MapUserPhysicalPages(
-                    address,
-                    new IntPtr(_count),
-                    _pfnArray
-                    ))
-                    Win32.ThrowLastError();
-            }
+            // Map the physical memory into the address range.
+            if (!Win32.MapUserPhysicalPages(
+                allocAddress,
+                new IntPtr(_count),
+                _pfnArray
+                ))
+                Win32.ThrowLastError();
+
+            return new PhysicalPagesMapping(this, allocAddress);
+        }
+
+        internal void Unmap(IntPtr address)
+        {
+            // Unmap the physical memory from the address range.
+            if (!Win32.MapUserPhysicalPages(
+                 address,
+                 new IntPtr(_count),
+                 null
+                 ))
+                Win32.ThrowLastError();
+
+            ProcessHandle.Current.FreeMemory(address, 0, false);
         }
     }
 }

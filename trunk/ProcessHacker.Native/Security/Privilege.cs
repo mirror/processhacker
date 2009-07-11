@@ -33,6 +33,18 @@ namespace ProcessHacker.Native.Security
     /// </summary>
     public sealed class Privilege : BaseObject
     {
+        public static Privilege Enable(string name)
+        {
+            using (var thandle = ProcessHandle.Current.GetToken(TokenAccess.AdjustPrivileges))
+            {
+                var privilege = new Privilege(thandle, name);
+
+                privilege.Enable();
+
+                return privilege;
+            }
+        }
+
         private TokenHandle _tokenHandle;
         private Luid _luid;
         private SePrivilegeAttributes _attributes;

@@ -60,7 +60,7 @@ namespace ProcessHacker.Native.Objects
 
         public static TokenHandle OpenCurrentPrimary(TokenAccess access)
         {
-            return new TokenHandle(ProcessHandle.GetCurrent(), access);
+            return new TokenHandle(ProcessHandle.Current, access);
         }
 
         public static TokenHandle OpenSelf(TokenAccess access)

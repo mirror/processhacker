@@ -7,16 +7,16 @@ namespace ProcessHacker.Native.Memory
     {
         private PhysicalPages _physicalPages;
 
-        internal PhysicalPagesMapping(PhysicalPages physicalPages, IntPtr address, MemoryProtection protection)
+        internal PhysicalPagesMapping(PhysicalPages physicalPages, IntPtr baseAddress)
         {
             _physicalPages = physicalPages;
             _physicalPages.Reference();
-            _physicalPages.Map(address, protection, false);
+            this.Memory = baseAddress;
         }
 
         protected override void Free()
         {
-            _physicalPages.Map(this, 0, true);
+            _physicalPages.Unmap(this);
             _physicalPages.Dereference();
         }
     }

@@ -590,7 +590,7 @@ namespace ProcessHacker.Native.Objects
         {
             IntPtr newHandle;
 
-            Win32.DuplicateObject(ProcessHandle.GetCurrent(), handle, ProcessHandle.GetCurrent(), out newHandle,
+            Win32.DuplicateObject(ProcessHandle.Current, handle, ProcessHandle.Current, out newHandle,
                 (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             this.Handle = newHandle;
         }
@@ -605,7 +605,7 @@ namespace ProcessHacker.Native.Objects
         {
             IntPtr newHandle;
 
-            Win32.DuplicateObject(processHandle, handle, ProcessHandle.GetCurrent(), out newHandle,
+            Win32.DuplicateObject(processHandle, handle, ProcessHandle.Current, out newHandle,
                 (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             this.Handle = newHandle;
         }
@@ -618,7 +618,7 @@ namespace ProcessHacker.Native.Objects
         {
             IntPtr newHandle;
 
-            Win32.DuplicateObject(ProcessHandle.GetCurrent(), this, ProcessHandle.GetCurrent(), out newHandle,
+            Win32.DuplicateObject(ProcessHandle.Current, this, ProcessHandle.Current, out newHandle,
                 (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             this.SwapHandle(newHandle);
         }
@@ -630,7 +630,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A handle.</returns>
         public NativeHandle<TAccess> Duplicate(TAccess access)
         {
-            return new NativeHandle<TAccess>(ProcessHandle.GetCurrent(), this, access);
+            return new NativeHandle<TAccess>(ProcessHandle.Current, this, access);
         }
     }
 

@@ -90,7 +90,7 @@ namespace ProcessHacker.Native.Objects
                     fhandle
                     ))
                 {
-                    ProcessHandle phandle = Create(access, ProcessHandle.GetCurrent(), inheritHandles, shandle);
+                    ProcessHandle phandle = Create(access, ProcessHandle.Current, inheritHandles, shandle);
 
                     threadHandle = ThreadHandle.CreateUserThread(
                         phandle,
@@ -415,7 +415,20 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The base address of the allocated pages.</returns>
         public IntPtr AllocateMemory(int size, MemoryProtection protection)
         {
-            return this.AllocateMemory(IntPtr.Zero, size, protection);
+            return this.AllocateMemory(size, MemoryFlags.Commit, protection);
+        }
+
+        /// <summary>
+        /// Allocates a memory region in the process' virtual memory. The function decides where 
+        /// to allocate the memory.
+        /// </summary>
+        /// <param name="size">The size of the region.</param>
+        /// <param name="type">The type of allocation.</param>
+        /// <param name="protection">The protection of the region.</param>
+        /// <returns>The base address of the allocated pages.</returns>
+        public IntPtr AllocateMemory(int size, MemoryFlags type, MemoryProtection protection)
+        {
+            return this.AllocateMemory(IntPtr.Zero, size, type, protection);
         }
 
         /// <summary>
@@ -423,9 +436,10 @@ namespace ProcessHacker.Native.Objects
         /// </summary>      
         /// <param name="baseAddress">The base address of the region.</param>
         /// <param name="size">The size of the region.</param>
+        /// <param name="type">The type of allocation.</param>
         /// <param name="protection">The protection of the region.</param>
         /// <returns>The base address of the allocated pages.</returns>
-        public IntPtr AllocateMemory(IntPtr baseAddress, int size, MemoryProtection protection)
+        public IntPtr AllocateMemory(IntPtr baseAddress, int size, MemoryFlags type, MemoryProtection protection)
         {
             NtStatus status;
             IntPtr sizeIntPtr = size.ToIntPtr();
@@ -435,7 +449,7 @@ namespace ProcessHacker.Native.Objects
                 ref baseAddress,
                 IntPtr.Zero,
                 ref sizeIntPtr,
-                MemoryFlags.Commit,
+                type,
                 protection
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);

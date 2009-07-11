@@ -27,7 +27,7 @@ namespace ProcessHacker.Native.Api
             if (KProcessHacker.Instance == null)
             {
                 if ((status = Win32.NtDuplicateObject(
-                    process, handle, ProcessHandle.GetCurrent(), out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
+                    process, handle, ProcessHandle.Current, out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
                     Win32.ThrowLastError();
 
                 objectHandle = new GenericHandle(objectHandleI);
@@ -132,7 +132,7 @@ namespace ProcessHacker.Native.Api
                 NtStatus status;
 
                 if ((status = Win32.NtDuplicateObject(
-                    process, handle, ProcessHandle.GetCurrent(), out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
+                    process, handle, ProcessHandle.Current, out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
                     Win32.ThrowLastError();
 
                 objectHandle = new GenericHandle(objectHandleI);

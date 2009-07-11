@@ -199,7 +199,7 @@ namespace ProcessHacker.Native.Objects
 
         public SectionView MapView(IntPtr baseAddress, IntPtr size, MemoryProtection protection)
         {
-            return this.MapView(ProcessHandle.GetCurrent(), baseAddress, size, protection);
+            return this.MapView(ProcessHandle.Current, baseAddress, size, protection);
         }
 
         public SectionView MapView(

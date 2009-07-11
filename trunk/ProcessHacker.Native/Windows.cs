@@ -107,6 +107,11 @@ namespace ProcessHacker.Native
             }
         }
 
+        public static int BytesToPages(int bytes)
+        {
+            return (bytes - 1) / PageSize + 1;
+        }
+
         public static void EnumKernelModules(EnumKernelModulesDelegate enumCallback)
         {
             int requiredSize = 0;
