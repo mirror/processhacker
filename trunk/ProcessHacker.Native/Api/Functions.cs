@@ -1379,6 +1379,14 @@ namespace ProcessHacker.Native.Api
 
         #region Shell
 
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+        public static extern int ShellAbout(
+            [In] [Optional] IntPtr hWnd,
+            [In] string App,
+            [In] [Optional] string OtherStuff,
+            [In] [Optional] IntPtr IconHandle
+            );
+
         [DllImport("shell32.dll", EntryPoint = "#61", CharSet = CharSet.Unicode)]
         public static extern int RunFileDlg(
             [In] IntPtr hWnd,
