@@ -22,13 +22,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using ProcessHacker.Native.Api;
 using System.Runtime.InteropServices;
+using System.Text;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native
 {
+    /// <summary>
+    /// Provides utility methods for managing files.
+    /// </summary>
     public static class FileUtils
     {
         static FileUtils()

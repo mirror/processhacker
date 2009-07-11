@@ -65,6 +65,7 @@
     <Compile Include="Memory\PhysicalPages.cs" />
     <Compile Include="Memory\PhysicalPagesMapping.cs" />
     <Compile Include="Memory\Section.cs" />
+    <Compile Include="NativeUtils.cs" />
     <Compile Include="NProcessHacker.cs" />
     <Compile Include="Objects\PortComHandle.cs" />
     <Compile Include="Objects\IoCompletionHandle.cs" />

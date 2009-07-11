@@ -35,6 +35,9 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native
 {
+    /// <summary>
+    /// Provides methods for manipulating the operating system.
+    /// </summary>
     public static class Windows
     {
         public delegate bool EnumKernelModulesDelegate(KernelModule kernelModule);

@@ -2550,5 +2550,22 @@ namespace ProcessHacker.Native.Api
         public static extern IntPtr GetShellWindow();
 
         #endregion
+
+        #region Window Stations
+
+        [DllImport("winsta.dll", SetLastError = true)]
+        public static extern bool WinStationRevertFromServicesSession();
+
+        [DllImport("winsta.dll", SetLastError = true)]
+        public static extern bool WinStationSwitchToServicesSession();
+
+        [DllImport("winsta.dll", SetLastError = true)]
+        public static extern bool WinStationTerminateProcess(
+            [In] IntPtr ServerHandle,
+            [In] int ProcessId,
+            [In] int ExitCode
+            );
+
+        #endregion
     }
 }

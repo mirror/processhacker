@@ -31,13 +31,23 @@ namespace ProcessHacker.Native.Objects
 {
     public sealed class TerminalServerHandle : NativeHandle
     {
+        private static readonly TerminalServerHandle _current = new TerminalServerHandle(IntPtr.Zero, false);
+
+        /// <summary>
+        /// Gets a handle to the local terminal server.
+        /// </summary>
+        public static TerminalServerHandle Current
+        {
+            get { return _current; }
+        }
+
         /// <summary>
         /// Gets a handle to the local terminal server.
         /// </summary>
         /// <returns>A terminal server handle.</returns>
         public static TerminalServerHandle GetCurrent()
         {
-            return new TerminalServerHandle(IntPtr.Zero, false);
+            return Current;
         }
 
         /// <summary>
