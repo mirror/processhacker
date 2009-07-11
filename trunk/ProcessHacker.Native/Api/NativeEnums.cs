@@ -662,6 +662,13 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
+    public enum RtlAcquirePrivilegeFlags : int
+    {
+        Revert = 0x1,
+        Process = 0x2
+    }
+
+    [Flags]
     public enum RtlDuplicateUnicodeStringFlags : int
     {
         NullTerminate = 0x1,

@@ -1669,6 +1669,32 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Privileges
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAcquirePrivilege(
+            [In] uint[] Privilege,
+            [In] int NumPriv,
+            [In] RtlAcquirePrivilegeFlags Flags,
+            [Out] out IntPtr ReturnedState
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAdjustPrivilege(
+            [In] uint Privilege,
+            [In] bool Enable,
+            [In] bool Client,
+            [MarshalAs(UnmanagedType.I1)]
+            [Out] bool WasEnabled
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlReleasePrivilege(
+            [In] IntPtr StatePointer
+            );
+
+        #endregion
+
         #region Processes and Threads
 
         [DllImport("ntdll.dll")]

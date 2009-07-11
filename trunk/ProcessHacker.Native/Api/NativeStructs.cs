@@ -694,17 +694,24 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Explicit, Size = 8)]
     public struct LargeInteger
     {
+        public static implicit operator long(LargeInteger li)
+        {
+            return li.QuadPart;
+        }
+
+        public LargeInteger(long quadPart)
+        {
+            this.LowPart = 0;
+            this.HighPart = 0;
+            this.QuadPart = quadPart;
+        }
+
         [FieldOffset(0)]
         public long QuadPart;
         [FieldOffset(0)]
         public uint LowPart;
         [FieldOffset(4)]
         public int HighPart;
-
-        public static implicit operator long(LargeInteger li)
-        {
-            return li.QuadPart;
-        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -739,7 +746,7 @@ namespace ProcessHacker.Native.Api
     /// is unique on the currently running system.
     /// </summary>
     [StructLayout(LayoutKind.Explicit, Pack = 4)]
-    public struct Luid
+    public struct Luid : IEquatable<Luid>, IEquatable<long>
     {
         public static readonly Luid Empty = new Luid();
         public static readonly Luid System = new Luid(0x3e7, 0);
@@ -802,9 +809,29 @@ namespace ProcessHacker.Native.Api
             return luid;
         }
 
+        public bool Equals(Luid other)
+        {
+            return this.QuadPart == other.QuadPart;
+        }
+
+        public bool Equals(long other)
+        {
+            return this.QuadPart == other;
+        }
+
+        public long ToLong()
+        {
+            return this.QuadPart;
+        }
+
         public override string ToString()
         {
             return this.QuadPart.ToString("x");
+        }
+
+        public uint ToUInt32()
+        {
+            return this.LowPart;
         }
     }
 
