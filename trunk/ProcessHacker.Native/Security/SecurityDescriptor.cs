@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using ProcessHacker.Native.Api;
 using ProcessHacker.Common.Objects;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Security
 {

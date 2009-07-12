@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -100,6 +101,19 @@ namespace ProcessHacker.Common
             }
 
             return na;
+        }
+
+        public static int CountBits(this long value)
+        {
+            int count = 0;
+
+            while (value != 0)
+            {
+                count++;
+                value &= value - 1;
+            }
+
+            return count;
         }
 
         /// <summary>
@@ -723,6 +737,27 @@ namespace ProcessHacker.Common
         public static void ShowFileInExplorer(string fileName)
         {
             Process.Start("explorer.exe", "/select," + fileName);
+        }
+
+        /// <summary>
+        /// Returns a sorted list of the names in a given enum type.
+        /// </summary>
+        /// <param name="enumType">The enum type to process.</param>
+        /// <returns>A list of key-value pairs, sorted based on the number of bits in the value.</returns>
+        public static List<KeyValuePair<string, long>> SortFlagNames(Type enumType)
+        {
+            List<KeyValuePair<string, long>> nameList = new List<KeyValuePair<string, long>>();
+
+            foreach (string name in Enum.GetNames(enumType))
+            {
+                long nameLong = Convert.ToInt64(Enum.Parse(enumType, name));
+
+                nameList.Add(new KeyValuePair<string, long>(name, nameLong));
+            }
+
+            nameList.Sort((kvp1, kvp2) => kvp2.Value.CountBits().CompareTo(kvp1.Value.CountBits()));
+
+            return nameList;
         }
 
         public static int WindowsToNativeBasePriority(System.Diagnostics.ProcessPriorityClass priority)

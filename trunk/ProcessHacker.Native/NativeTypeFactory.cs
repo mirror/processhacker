@@ -21,14 +21,21 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Text;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native
 {
     public static class NativeTypeFactory
     {
+        private class FlagName
+        {
+            public string Name { get; set; }
+            public long Value { get; set; }
+            public bool Enabled { get; set; }
+        }
+
         public enum ObjectType
         {
             Adapter,
@@ -90,6 +97,8 @@ namespace ProcessHacker.Native
                     return typeof(FileAccess);
                 case ObjectType.Job:
                     return typeof(JobObjectAccess);
+                case ObjectType.Key:
+                    return typeof(KeyAccess);
                 case ObjectType.KeyedEvent:
                     return typeof(KeyedEventAccess);
                 case ObjectType.Mutant:
@@ -135,7 +144,66 @@ namespace ProcessHacker.Native
             throw new NotSupportedException();
         }
 
-        #endregion  
+        #endregion   
+
+        public static string GetAccessString(Type accessType, object access)
+        {
+            StringBuilder accessSb = new StringBuilder();
+            long accessLong = Convert.ToInt64(access);
+            var accessTypeNames = Utils.SortFlagNames(accessType).
+                ConvertAll<FlagName>((kvp) => new FlagName() { Name = kvp.Key, Value = kvp.Value, Enabled = true });
+            var srNames = Utils.SortFlagNames(typeof(StandardRights)).
+                ConvertAll<FlagName>((kvp) => new FlagName() { Name = kvp.Key, Value = kvp.Value, Enabled = true });
+
+            // Get the strings for the matching bits in the given enum type.
+            foreach (var fn in accessTypeNames)
+            {
+                if (
+                    fn.Enabled && 
+                    (accessLong & fn.Value) == fn.Value
+                    )
+                {
+                    accessSb.Append(fn.Name + ", ");
+                    // Disable equal or more specific flag names in the lists.
+                    accessTypeNames.ForEach((fn2) =>
+                    {
+                        if ((fn.Value | fn2.Value) == fn.Value)
+                            fn2.Enabled = false;
+                    });
+                    srNames.ForEach((fn2) =>
+                    {
+                        if ((fn.Value | fn2.Value) == fn.Value)
+                            fn2.Enabled = false;
+                    });
+                }
+            }
+
+            // Get the strings for the matching bits in standard rights.
+            foreach (var fn in srNames)
+            {
+                if (
+                    fn.Enabled &&
+                    (accessLong & fn.Value) == fn.Value
+                    )
+                {
+                    accessSb.Append(fn.Name + ", ");
+                    // Disable equal or more specific flag names in the lists.
+                    srNames.ForEach((fn2) =>
+                    {
+                        if ((fn.Value | fn2.Value) == fn.Value)
+                            fn2.Enabled = false;
+                    });
+                }
+            }
+
+            string accessString = accessSb.ToString();
+
+            // Removing trailing ", ".
+            if (accessString.EndsWith(", "))
+                return accessString.Remove(accessString.Length - 2, 2);
+            else
+                return accessString;
+        }
 
         public static Type GetAccessType(string typeName)
         {

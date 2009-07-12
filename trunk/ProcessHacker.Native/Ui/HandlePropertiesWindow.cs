@@ -56,14 +56,19 @@ namespace ProcessHacker.Native.Ui
             textAddress.Text = "0x" + handle.Object.ToString("x");
             textGrantedAccess.Text = "0x" + handle.GrantedAccess.ToString("x");
 
-            try
+            if (handle.GrantedAccess != 0)
             {
-                Type accessEnumType = NativeTypeFactory.GetAccessType(handleInfo.TypeName);
+                try
+                {
+                    Type accessEnumType = NativeTypeFactory.GetAccessType(handleInfo.TypeName);
 
-                textGrantedAccess.Text += " (" + Enum.Parse(accessEnumType, handle.GrantedAccess.ToString()).ToString() + ")";
+                    textGrantedAccess.Text += " (" +
+                        NativeTypeFactory.GetAccessString(accessEnumType, handle.GrantedAccess) +
+                        ")";
+                }
+                catch (NotSupportedException)
+                { }
             }
-            catch
-            { }
 
             var basicInfo = handle.GetBasicInfo();
 
