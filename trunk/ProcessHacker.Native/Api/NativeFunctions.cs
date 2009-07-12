@@ -1568,6 +1568,344 @@ namespace ProcessHacker.Native.Api
 
         #region Run-Time Library
 
+        #region Access Control
+
+        #region Access Control Entries
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAddAccessAllowedAce(
+            [In] IntPtr Acl,
+            [In] int AceRevision,
+            [In] int AccessMask,
+            [In] IntPtr Sid // Sid*
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAddAccessAllowedAceEx(
+            [In] IntPtr Acl,
+            [In] int AceRevision,
+            [In] AceFlags AceFlags,
+            [In] int AccessMask,
+            [In] IntPtr Sid // Sid*
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAddAccessDeniedAce(
+            [In] IntPtr Acl,
+            [In] int AceRevision,
+            [In] int AccessMask,
+            [In] IntPtr Sid // Sid*
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAddAccessDeniedAceEx(
+            [In] IntPtr Acl,
+            [In] int AceRevision,
+            [In] AceFlags AceFlags,
+            [In] int AccessMask,
+            [In] IntPtr Sid // Sid*
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAddAce(
+            [In] IntPtr Acl,
+            [In] int AceRevision,
+            [In] int StartingAceIndex,
+            [In] IntPtr AceList, // Ace**
+            [In] int AceListLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAddAuditAccessAce(
+            [In] IntPtr Acl,
+            [In] int AceRevision,
+            [In] int AccessMask,
+            [In] IntPtr Sid, // Sid*
+            [In] bool AuditSuccess,
+            [In] bool AuditFailure
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAddAuditAccessAceEx(
+            [In] IntPtr Acl,
+            [In] int AceRevision,
+            [In] AceFlags AceFlags,
+            [In] int AccessMask,
+            [In] IntPtr Sid, // Sid*
+            [In] bool AuditSuccess,
+            [In] bool AuditFailure
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAddCompoundAce(
+            [In] IntPtr Acl,
+            [In] int AceRevision,
+            [In] AceType AceType,
+            [In] int AccessMask,
+            [In] IntPtr ServerSid, // Sid*
+            [In] IntPtr ClientSid
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDeleteAce(
+            [In] IntPtr Acl,
+            [In] int AceIndex
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern bool RtlFirstFreeAce(
+            [In] IntPtr Acl,
+            [Out] out IntPtr FirstFree
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlGetAce(
+            [In] IntPtr Acl,
+            [In] int AceIndex,
+            [Out] out IntPtr Ace // Ace**
+            );
+
+        #endregion
+
+        #region Access Control Lists
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCreateAcl(
+            [In] IntPtr Acl, // Acl*
+            [In] int AclLength,
+            [In] int AclRevision
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlQueryInformationAcl(
+            [In] IntPtr Acl,
+            [In] IntPtr AclInformation,
+            [In] int AclInformationLength,
+            [In] AclInformationClass AclInformationClass
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlQueryInformationAcl(
+            [In] IntPtr Acl,
+            [Out] out AclRevisionInformation AclInformation,
+            [In] int AclInformationLength,
+            [In] AclInformationClass AclInformationClass
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlQueryInformationAcl(
+            [In] IntPtr Acl,
+            [Out] out AclSizeInformation AclInformation,
+            [In] int AclInformationLength,
+            [In] AclInformationClass AclInformationClass
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetInformationAcl(
+            [In] IntPtr Acl,
+            [In] IntPtr AclInformation,
+            [In] int AclInformationLength,
+            [In] AclInformationClass AclInformationClass
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern bool RtlValidAcl(
+            [In] IntPtr Acl
+            );
+
+        #endregion
+
+        #region Access Masks
+
+        [DllImport("ntdll.dll")]
+        public static extern bool RtlAreAllAccessesGranted(
+            [In] int GrantedAccess,
+            [In] int DesiredAccess
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern bool RtlAreAnyAccessesGranted(
+            [In] int GrantedAccess,
+            [In] int DesiredAccess
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlMapGenericMask(
+            ref int AccessMask,
+            [In] ref GenericMapping GenericMapping
+            );
+
+        #endregion
+
+        #region Security Descriptors
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAbsoluteToSelfRelativeSD(
+            [In] IntPtr AbsoluteSecurityDescriptor,
+            [In] IntPtr SelfRelativeSecurityDescriptor,
+            ref int BufferLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCreateSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor, // SecurityDescriptor*
+            [In] int Revision
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCreateSecurityDescriptorRelative(
+            [In] IntPtr SecurityDescriptor, // SecurityDescriptorRelative*
+            [In] int Revision
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlGetControlSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor,
+            [Out] out SecurityDescriptorControlFlags Control,
+            [Out] out int Revision
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlGetDaclSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor,
+            [MarshalAs(UnmanagedType.U1)]
+            [Out] out bool DaclPresent,
+            [Out] out IntPtr Dacl, // Acl**
+            [MarshalAs(UnmanagedType.U1)]
+            [Out] out bool DaclDefaulted
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlGetGroupSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor,
+            [Out] out IntPtr Group, // Sid**
+            [MarshalAs(UnmanagedType.U1)]
+            [Out] out bool GroupDefaulted
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlGetOwnerSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor,
+            [Out] out IntPtr Owner, // Sid**
+            [MarshalAs(UnmanagedType.U1)]
+            [Out] out bool OwnerDefaulted
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlGetSaclSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor,
+            [MarshalAs(UnmanagedType.U1)]
+            [Out] out bool SaclPresent,
+            [Out] out IntPtr Sacl, // Acl**
+            [MarshalAs(UnmanagedType.U1)]
+            [Out] out bool SaclDefaulted
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern bool RtlGetSecurityDescriptorRMControl(
+            [In] IntPtr SecurityDescriptor,
+            [Out] out byte RMControl
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlLengthSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlMakeSelfRelativeSD(
+            [In] IntPtr AbsoluteSecurityDescriptor,
+            [In] IntPtr SelfRelativeSecurityDescriptor,
+            ref int BufferLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSelfRelativeToAbsoluteSD(
+            [In] IntPtr SelfRelativeSecurityDescriptor,
+            [In] IntPtr AbsoluteSecurityDescriptor,
+            ref int AbsoluteSecurityDescriptorSize,
+            [In] IntPtr Dacl, // Acl*
+            ref int DaclSize,
+            [In] IntPtr Sacl, // Acl*
+            ref int SaclSize,
+            [In] IntPtr Owner, // Sid*
+            ref int OwnerSize,
+            [In] IntPtr PrimaryGroup, // Sid*
+            ref int PrimaryGroupSize
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSelfRelativeToAbsoluteSD2(
+            [In] IntPtr SelfRelativeSecurityDescriptor,
+            ref int BufferSize
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetAttributesSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor,
+            [In] SecurityDescriptorControlFlags Control,
+            ref int Revision
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetControlSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor,
+            [In] SecurityDescriptorControlFlags ControlBitsOfInterest,
+            [In] SecurityDescriptorControlFlags ControlBitsToSet
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetDaclSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor,
+            [In] bool DaclPresent,
+            [In] IntPtr Dacl, // Acl*
+            [In] bool DaclDefaulted
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetGroupSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor,
+            [In] IntPtr Group, // Sid*
+            [In] bool GroupDefaulted
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetOwnerSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor,
+            [In] IntPtr Owner, // Sid*
+            [In] bool OwnerDefaulted
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetSaclSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor,
+            [In] bool SaclPresent,
+            [In] IntPtr Sacl, // Acl*
+            [In] bool SaclDefaulted
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlSetSecurityDescriptorRMControl(
+            [In] IntPtr SecurityDescriptor,
+            [In] [Optional] ref byte RMControl
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern bool RtlValidRelativeSecurityDescriptor(
+            [In] IntPtr SecurityDescriptorInput,
+            [In] int SecurityDescriptorLength,
+            [In] SecurityInformation RequiredInformation
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern bool RtlValidSecurityDescriptor(
+            [In] IntPtr SecurityDescriptor
+            );
+
+        #endregion
+
+        #endregion
+
         #region Debugging
 
         [DllImport("ntdll.dll")]
@@ -1832,7 +2170,7 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
-        #region Security ID Routines
+        #region Security IDs
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus RtlAllocateAndInitializeSid(

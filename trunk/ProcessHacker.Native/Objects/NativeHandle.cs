@@ -292,7 +292,7 @@ namespace ProcessHacker.Native.Objects
                 )) != 0)
                 Win32.ThrowLastError(result);
 
-            return new SecurityDescriptor(new LocalMemoryAlloc(securityDescriptor));
+            return new AbsoluteSecurityDescriptor(new LocalMemoryAlloc(securityDescriptor));
         }
 
         /// <summary>
@@ -355,25 +355,25 @@ namespace ProcessHacker.Native.Objects
             bool present, dummy;
             SecurityInformation si = SecurityInformation.Group | SecurityInformation.Owner;
 
-            owner = securityDescriptor.GetOwner(out dummy);  
-            group = securityDescriptor.GetGroup(out dummy);
-            dacl = securityDescriptor.GetDacl(out present, out dummy);
-            if (present)
-                si |= SecurityInformation.Dacl;
-            sacl = securityDescriptor.GetSacl(out present, out dummy);
-            if (present)
-                si |= SecurityInformation.Sacl;
+            //owner = securityDescriptor.GetOwner(out dummy);  
+            //group = securityDescriptor.GetGroup(out dummy);
+            //dacl = securityDescriptor.GetDacl(out present, out dummy);
+            //if (present)
+            //    si |= SecurityInformation.Dacl;
+            //sacl = securityDescriptor.GetSacl(out present, out dummy);
+            //if (present)
+            //    si |= SecurityInformation.Sacl;
 
-            if ((result = Win32.SetSecurityInfo(
-                this,
-                objectType,
-                si,
-                owner,
-                group,
-                dacl,
-                sacl
-                )) != 0)
-                Win32.ThrowLastError(result);
+            //if ((result = Win32.SetSecurityInfo(
+            //    this,
+            //    objectType,
+            //    si,
+            //    owner,
+            //    group,
+            //    dacl,
+            //    sacl
+            //    )) != 0)
+            //    Win32.ThrowLastError(result);
         }
 
         protected void SetSecurity(SeObjectType objectType, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
@@ -382,21 +382,21 @@ namespace ProcessHacker.Native.Objects
             IntPtr owner, group, dacl, sacl;
             bool dummy;
 
-            owner = securityDescriptor.GetOwner(out dummy);
-            group = securityDescriptor.GetGroup(out dummy);
-            dacl = securityDescriptor.GetDacl(out dummy, out dummy);
-            sacl = securityDescriptor.GetSacl(out dummy, out dummy);
+            //owner = securityDescriptor.GetOwner(out dummy);
+            //group = securityDescriptor.GetGroup(out dummy);
+            //dacl = securityDescriptor.GetDacl(out dummy, out dummy);
+            //sacl = securityDescriptor.GetSacl(out dummy, out dummy);
 
-            if ((result = Win32.SetSecurityInfo(
-                this,
-                objectType,
-                securityInformation,
-                owner,
-                group,
-                dacl,
-                sacl
-                )) != 0)
-                Win32.ThrowLastError(result);
+            //if ((result = Win32.SetSecurityInfo(
+            //    this,
+            //    objectType,
+            //    securityInformation,
+            //    owner,
+            //    group,
+            //    dacl,
+            //    sacl
+            //    )) != 0)
+            //    Win32.ThrowLastError(result);
         }
 
         /// <summary>

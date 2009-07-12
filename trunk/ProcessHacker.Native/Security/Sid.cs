@@ -317,6 +317,11 @@ namespace ProcessHacker.Native.Security
             get { return _systemName; }
         }
 
+        public Sid Clone()
+        {
+            return new Sid(this);
+        }
+
         public bool DomainEquals(Sid obj)
         {
             bool equal;
@@ -397,6 +402,11 @@ namespace ProcessHacker.Native.Security
 
             using (str)
                 return str.Read();
+        }
+
+        public bool IsValid()
+        {
+            return Win32.RtlValidSid(this);
         }
 
         public bool PrefixEquals(Sid obj)

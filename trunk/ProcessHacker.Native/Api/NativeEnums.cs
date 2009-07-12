@@ -27,6 +27,64 @@ using System.Collections.Generic;
 namespace ProcessHacker.Native.Api
 {
     [Flags]
+    public enum AceFlags : byte
+    {
+        ObjectInherit = 0x1,
+        ContainerInherit = 0x2,
+        NoPropagateInherit = 0x4,
+        InheritOnly = 0x8,
+        Inherited = 0x10,
+        Valid = 0x1f,
+
+        // For SystemAudit and SystemAlarm ACEs.
+        SuccessfulAccess = 0x40,
+        FailedAccess = 0x80
+    }
+
+    public enum AceType : byte
+    {
+        Mininum = 0x0,
+        AccessAllowed = 0x0,
+        AccessDenied = 0x1,
+        SystemAudit = 0x2,
+        SystemAlarm = 0x3,
+        MaximumV2 = 0x3,
+
+        AccessAllowedCompound = 0x4,
+        MaximumV3 = 0x4,
+
+        MinimumObject = 0x5,
+        AccessAllowedObject = 0x5,
+        AccessDeniedObject = 0x6,
+        SystemAuditObject = 0x7,
+        SystemAlarmObject = 0x8,
+        MaximumObject = 0x8,
+        MaximumV4 = 0x8,
+        Maximum = 0x8,
+
+        AccessAllowedCallback = 0x9,
+        AccessDeniedCallback = 0xa,
+        AccessAllowedCallbackObject = 0xb,
+        AccessDeniedCallbackObject = 0xc,
+        SystemAuditCallback = 0xd,
+        SystemAlarmCallback = 0xe,
+        SystemAuditCallbackObject = 0xf,
+        SystemAlarmCallbackObject = 0x10,
+        MaximumV5 = 0x10
+    }
+
+    public enum AclInformationClass : int
+    {
+        AclRevisionInformation = 1,
+        AclSizeInformation
+    }
+
+    public enum CompoundAceType : ushort
+    {
+        Impersonation = 1
+    }
+
+    [Flags]
     public enum ContextFlags : int
     {
         I386 = 0x00010000,
@@ -481,6 +539,13 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
+    public enum ObjectAceFlags : uint
+    {
+        ObjectTypePresent = 0x1,
+        InheritedObjectTypePresent = 0x2
+    }
+
+    [Flags]
     public enum ObjectFlags : uint
     {
         Inherit = 0x2,
@@ -737,6 +802,26 @@ namespace ProcessHacker.Native.Api
     {
         ViewShare = 1,
         ViewUnmap = 2
+    }
+
+    public enum SecurityDescriptorControlFlags : ushort
+    {
+        OwnerDefaulted = 0x0001,
+        GroupDefaulted = 0x0002,
+        DaclPresent = 0x0004,
+        DaclDefaulted = 0x0008,
+        SaclPresent = 0x0010,
+        SaclDefaulted = 0x0020,
+        DaclUntrusted = 0x0040,
+        ServerSecurity = 0x0080,
+        DaclAutoInheritReq = 0x0100,
+        SaclAutoInheritReq = 0x0200,
+        DaclAutoInherited = 0x0400,
+        SaclAutoInherited = 0x0800,
+        DaclProtected = 0x1000,
+        SaclProtected = 0x2000,
+        RmControlValid = 0x4000,
+        SelfRelative = 0x8000
     }
 
     public enum SecurityImpersonationLevel : int

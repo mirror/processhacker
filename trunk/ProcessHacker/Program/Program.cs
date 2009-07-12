@@ -35,6 +35,7 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker
 {
@@ -106,6 +107,8 @@ namespace ProcessHacker
         [STAThread]
         public static void Main(string[] args)
         {
+            SecurityDescriptor testSd = new AbsoluteSecurityDescriptor();
+
             Dictionary<string, string> pArgs = null;
 
             Application.EnableVisualStyles();

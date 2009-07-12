@@ -288,11 +288,11 @@ namespace ProcessHacker.Native
             Marshal.WriteIntPtr(this, offset, i);
         }
 
-        public void WriteMemory(int destOffset, MemoryAlloc memory, int srcOffset, int length)
+        public void WriteMemory(int destOffset, IntPtr data, int srcOffset, int length)
         {
             ProcessHacker.Native.Api.Win32.RtlMoveMemory(
                 _memory.Increment(destOffset),
-                memory.Memory.Increment(srcOffset),
+                data.Increment(srcOffset),
                 length.ToIntPtr()
                 );
         }

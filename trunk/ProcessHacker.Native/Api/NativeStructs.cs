@@ -29,6 +29,76 @@ using ProcessHacker.Native.Security;
 namespace ProcessHacker.Native.Api
 {
     [StructLayout(LayoutKind.Sequential)]
+    public struct AccessAllowedAceStruct
+    {
+        public AceHeader Header;
+        public int Mask;
+        public int SidStart;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AccessAllowedObjectAceStruct
+    {
+        public AceHeader Header;
+        public int Mask;
+        public ObjectAceFlags Flags;
+        public Guid ObjectType;
+        public Guid InheritedObjectType;
+        public int SidStart;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AccessDeniedAceStruct
+    {
+        public AceHeader Header;
+        public int Mask;
+        public int SidStart;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AccessDeniedObjectAceStruct
+    {
+        public AceHeader Header;
+        public int Mask;
+        public ObjectAceFlags Flags;
+        public Guid ObjectType;
+        public Guid InheritedObjectType;
+        public int SidStart;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AceHeader
+    {
+        public AceType AceType;
+        public AceFlags AceFlags;
+        public ushort AceSize;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AclRevisionInformation
+    {
+        public int AclRevision;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AclSizeInformation
+    {
+        public int AceCount;
+        public int AclBytesInUse;
+        public int AclBytesFree;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AclStruct
+    {
+        public byte AclRevision;
+        public byte Sbz1;
+        public ushort AclSize;
+        public ushort AceCount;
+        public ushort Sbz2;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct AnsiString : IDisposable
     {
         public AnsiString(string str)
@@ -79,6 +149,16 @@ namespace ProcessHacker.Native.Api
 
         public int ProcessId { get { return this.UniqueProcess.ToInt32(); } }
         public int ThreadId { get { return this.UniqueThread.ToInt32(); } }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CompoundAccessAllowedAceStruct
+    {
+        public AceHeader Header;
+        public int Mask;
+        public CompoundAceType CompoundAceType;
+        public ushort Reserved;
+        public int SidStart;
     }
 
     // x86 only
@@ -689,6 +769,14 @@ namespace ProcessHacker.Native.Api
     public struct KeyWriteTimeInformation
     {
         public LargeInteger LastWriteTime;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KnownAceStruct
+    {
+        public AceHeader Header;
+        public int Mask;
+        public int SidStart;
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 8)]
@@ -1406,6 +1494,30 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct SecurityDescriptorStruct
+    {
+        public byte Revision;
+        public byte Sbz1;
+        public SecurityDescriptorControlFlags Control;
+        public IntPtr Owner; // Sid*
+        public IntPtr Group; // Sid*
+        public IntPtr Sacl; // Acl*
+        public IntPtr Dacl; // Acl*
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SecurityDescriptorRelativeStruct
+    {
+        public byte Revision;
+        public byte Sbz1;
+        public SecurityDescriptorControlFlags Control;
+        public int Owner;
+        public int Group;
+        public int Sacl;
+        public int Dacl; 
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct SecurityQualityOfService
     {
         public SecurityQualityOfService(
@@ -1461,6 +1573,22 @@ namespace ProcessHacker.Native.Api
     public struct SidIdentifierAuthority
     {
         public unsafe fixed byte Value[6];
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SystemAlarmAceStruct
+    {
+        public AceHeader Header;
+        public int Mask;
+        public int SidStart;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SystemAuditAceStruct
+    {
+        public AceHeader Header;
+        public int Mask;
+        public int SidStart;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2209,6 +2337,11 @@ namespace ProcessHacker.Native.Api
             return this.Equals(unicodeString, false);
         }
 
+        public override int GetHashCode()
+        {
+            return this.Hash();
+        }
+
         public int Hash(HashStringAlgorithm algorithm, bool caseInsensitive)
         {
             NtStatus status;
@@ -2229,11 +2362,6 @@ namespace ProcessHacker.Native.Api
         public int Hash()
         {
             return this.Hash(HashStringAlgorithm.Default);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Hash();
         }
 
         public string Read()

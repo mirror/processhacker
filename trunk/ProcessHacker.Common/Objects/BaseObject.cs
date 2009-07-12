@@ -84,6 +84,23 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         public static int DereferencedCount { get { return _dereferencedCount; } }
 
+        public static T SwapRef<T>(ref T reference, T newObj)
+            where T : class, IRefCounted
+        {
+            T oldObj;
+
+            // Swap the reference.
+            oldObj = Interlocked.Exchange<T>(ref reference, newObj);
+            // Reference the new object.
+            if (newObj != null)
+                newObj.Reference();
+            // Dereference the old object.
+            if (oldObj != null)
+                oldObj.Dereference();
+
+            return oldObj;
+        }
+
 #if DEBUG
         /// <summary>
         /// A stack trace collected when the object is created.

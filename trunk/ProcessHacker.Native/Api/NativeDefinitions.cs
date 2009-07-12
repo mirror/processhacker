@@ -29,6 +29,8 @@ namespace ProcessHacker.Native.Api
 
     public static partial class Win32
     {
+        public const int AclRevision = 2;
+        public const int AclRevisionDs = 4;
         public const int ExceptionMaximumParameters = 15;
         public const int FlsMaximumAvailable = 128;
 #if _WIN64
@@ -44,7 +46,6 @@ namespace ProcessHacker.Native.Api
         public const int PortMessageMaxDataLength = 0x130;
         public const int PortMessageMaxLength = 0x148;
         public const int ProcessHandleTracingMaxStacks = 16;
-        public const int SecurityDescriptorMinLength = 20;
         public const int SecurityDescriptorRevision = 1;
         public const int SidMaxSubAuthorities = 15;
         public const int SidRecommendedSubAuthorities = 1;
@@ -52,11 +53,13 @@ namespace ProcessHacker.Native.Api
         public const int SizeOf80387Registers = 80;
         public const int TimeMsTo100Ns = 10000;
 
+        public static readonly IntPtr KnownAceSidStartOffset = Marshal.OffsetOf(typeof(KnownAceStruct), "SidStart");
         public static readonly IntPtr PebLdrOffset = Marshal.OffsetOf(typeof(Peb), "Ldr");
         public static readonly IntPtr PebProcessHeapOffset = Marshal.OffsetOf(typeof(Peb), "ProcessHeap");
         public static readonly IntPtr PebProcessParametersOffset = Marshal.OffsetOf(typeof(Peb), "ProcessParameters");
         public static readonly int ProcessHandleTracingQueryHandleTraceOffset =
             Marshal.OffsetOf(typeof(ProcessHandleTracingQuery), "HandleTrace").ToInt32();
+        public static readonly int SecurityDescriptorMinLength = Marshal.SizeOf(typeof(SecurityDescriptorStruct));
         public static readonly int SecurityMaxSidSize =
             Marshal.SizeOf(typeof(SidStruct)) - sizeof(int) + (SidMaxSubAuthorities * sizeof(int));
     }
