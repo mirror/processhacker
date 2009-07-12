@@ -69,6 +69,7 @@
     <Compile Include="NProcessHacker.cs" />
     <Compile Include="Objects\PortComHandle.cs" />
     <Compile Include="Objects\IoCompletionHandle.cs" />
+    <Compile Include="Objects\PrivateNamespaceHandle.cs" />
     <Compile Include="Objects\TerminalServerHandle.cs" />
     <Compile Include="Objects\WindowHandle.cs" />
     <Compile Include="Security\IoCompletionAccess.cs" />
@@ -143,7 +144,7 @@
     <Compile Include="Security\EventPairAccess.cs" />
     <Compile Include="Security\KeyedEventAccess.cs" />
     <Compile Include="Security\ProfileAccess.cs" />
-    <Compile Include="Security\SecurityDescriptor.cs" />
+    <Compile Include="Security\AccessControl\SecurityDescriptor.cs" />
     <Compile Include="Security\SymbolicLinkAccess.cs" />
     <Compile Include="Security\TimerAccess.cs" />
     <Compile Include="Security\SemaphoreAccess.cs" />

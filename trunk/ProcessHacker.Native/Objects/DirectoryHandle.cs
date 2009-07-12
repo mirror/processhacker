@@ -27,7 +27,10 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public sealed class DirectoryHandle : GenericHandle
+    /// <summary>
+    /// Represents a directory object, which contains a collection of objects.
+    /// </summary>
+    public class DirectoryHandle : NativeHandle<DirectoryAccess>
     {
         public struct ObjectEntry
         {
@@ -68,7 +71,10 @@ namespace ProcessHacker.Native.Objects
             return new DirectoryHandle(handle, true);
         }
 
-        private DirectoryHandle(IntPtr handle, bool owned)
+        protected DirectoryHandle()
+        { }
+
+        protected DirectoryHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 

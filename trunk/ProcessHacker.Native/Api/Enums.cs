@@ -23,7 +23,6 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Api
 {
@@ -363,17 +362,9 @@ namespace ProcessHacker.Native.Api
         NonPagedPoolCacheAlignedMustS
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    public struct ProfileInformation
+    public enum PrivateNamespaceFlags : int
     {
-        public int Size;
-        public int Flags;
-        public string UserName;
-        public string ProfilePath;
-        public string DefaultPath;
-        public string ServerName;
-        public string PolicyPath;
-        public int ProfileHandle;
+        Destroy = 0x1
     }
 
     [Flags]

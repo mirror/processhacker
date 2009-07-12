@@ -654,6 +654,46 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Private Namespaces
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool AddSIDToBoundaryDescriptor(
+            ref IntPtr BoundaryDescriptor,
+            [In] IntPtr RequiredSid
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool ClosePrivateNamespace(
+            [In] IntPtr PrivateNamespaceHandle,
+            [In] PrivateNamespaceFlags Flags
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr CreateBoundaryDescriptor(
+            [In] string Name,
+            [In] int Flags
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr CreatePrivateNamespace(
+            [In] IntPtr PrivateNamespaceAttributes,
+            [In] IntPtr BoundaryDescriptor,
+            [In] string AliasPrefix
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern void DeleteBoundaryDescriptor(
+            [In] IntPtr BoundaryDescriptor
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr OpenPrivateNamespace(
+            [In] IntPtr BoundaryDescriptor,
+            [In] string AliasPrefix
+            );
+
+        #endregion
+
         #region Processes
 
         [DllImport("kernel32.dll", SetLastError = true)]

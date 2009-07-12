@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker.Native.Security
 {

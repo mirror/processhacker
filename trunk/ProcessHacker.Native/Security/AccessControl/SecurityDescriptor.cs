@@ -2,7 +2,7 @@
 using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 
-namespace ProcessHacker.Native.Security
+namespace ProcessHacker.Native.Security.AccessControl
 {
     public class SecurityDescriptor : BaseObject
     {

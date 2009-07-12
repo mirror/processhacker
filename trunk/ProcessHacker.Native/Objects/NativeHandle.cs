@@ -24,6 +24,7 @@ using System;
 using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker.Native.Objects
 {

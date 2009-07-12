@@ -380,6 +380,19 @@ namespace ProcessHacker.Native.Api
         public int dwThreadId;
     }
 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct ProfileInformation
+    {
+        public int Size;
+        public int Flags;
+        public string UserName;
+        public string ProfilePath;
+        public string DefaultPath;
+        public string ServerName;
+        public string PolicyPath;
+        public int ProfileHandle;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct QueryServiceConfig
     {
