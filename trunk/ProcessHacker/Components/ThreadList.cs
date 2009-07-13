@@ -125,8 +125,6 @@ namespace ProcessHacker.Components
 
         private void listThreads_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            this.Cursor = Cursors.WaitCursor;
-
             if (listThreads.SelectedItems.Count == 1)
             {
                 try
@@ -134,7 +132,6 @@ namespace ProcessHacker.Components
                     int tid = int.Parse(listThreads.SelectedItems[0].Name);
                     var thread = Windows.GetProcessThreads(_pid)[tid];
                     ProcessThread processThread = null;
-                    string fileName;
 
                     try
                     {
@@ -143,23 +140,8 @@ namespace ProcessHacker.Components
                     catch
                     { }
 
-                    if (!_provider.Symbols.Busy)
-                    {
-                        try
-                        {
-                            _provider.Symbols.GetSymbolFromAddress(_provider.Dictionary[tid].StartAddressI.ToUInt64(), out fileName);
-                            fileModule.Text = fileName;
-                            fileModule.Enabled = true;
-                        }
-                        catch
-                        {
-                            fileModule.Enabled = false;
-                        }
-                    }
-                    else
-                    {
-                        fileModule.Enabled = false;
-                    }
+                    fileModule.Text = _provider.Dictionary[tid].FileName;
+                    fileModule.Enabled = !string.IsNullOrEmpty(fileModule.Text);
 
                     if (processThread != null)
                     {
@@ -210,8 +192,6 @@ namespace ProcessHacker.Components
 
             if (this.SelectedIndexChanged != null)
                 this.SelectedIndexChanged(sender, e);
-
-            this.Cursor = Cursors.Default;
         }
 
         private void ThreadList_KeyDown(object sender, KeyEventArgs e)

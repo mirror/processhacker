@@ -4,6 +4,7 @@ Process Hacker
  * NEW/IMPROVED:
    * Better process window exit status display
    * Better handle granted access display
+   * Thread list is more responsive
 
 1.3.9.0
  * NEW/IMPROVED:

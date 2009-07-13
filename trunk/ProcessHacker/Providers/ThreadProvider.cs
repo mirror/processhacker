@@ -51,6 +51,7 @@ namespace ProcessHacker
         public string Priority;
         public IntPtr StartAddressI;
         public string StartAddress;
+        public string FileName;
         public SymbolResolveLevel StartAddressLevel;
         public KWaitReason WaitReason;
         public bool IsGuiThread;
@@ -65,6 +66,7 @@ namespace ProcessHacker
         {
             public int Tid;
             public string Symbol;
+            public string FileName;
             public SymbolResolveLevel ResolveLevel;
         }
 
@@ -97,6 +99,7 @@ namespace ProcessHacker
                         if (message.Symbol != null)
                         {
                             this.Dictionary[message.Tid].StartAddress = message.Symbol;
+                            this.Dictionary[message.Tid].FileName = message.FileName;
                             this.Dictionary[message.Tid].StartAddressLevel = message.ResolveLevel;
                             this.Dictionary[message.Tid].JustResolved = true;
                         }
@@ -276,7 +279,16 @@ namespace ProcessHacker
 
                 try
                 {
-                    result.Symbol = _symbols.GetSymbolFromAddress(startAddress, out result.ResolveLevel);
+                    SymbolFlags flags;
+                    string fileName;
+
+                    result.Symbol = _symbols.GetSymbolFromAddress(
+                        startAddress,
+                        out result.ResolveLevel,
+                        out flags,
+                        out fileName
+                        );
+                    result.FileName = fileName;
                     _messageQueue.Enqueue(result);
                 }
                 catch
