@@ -25,6 +25,7 @@ using System;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker.Native.Api
 {
@@ -937,7 +938,16 @@ namespace ProcessHacker.Native.Api
         public ObjectAttributes(
             string objectName,
             ObjectFlags attributes,
-            DirectoryHandle rootDirectory
+            DirectoryHandle rootDirectory)
+            : this(objectName, attributes, rootDirectory, null, null)
+        { }
+
+        public ObjectAttributes(
+            string objectName,
+            ObjectFlags attributes,
+            DirectoryHandle rootDirectory,
+            SecurityDescriptor securityDescriptor,
+            SecurityQualityOfService? securityQos
             )
         {
             this.Length = Marshal.SizeOf(typeof(ObjectAttributes));
@@ -946,19 +956,32 @@ namespace ProcessHacker.Native.Api
             this.SecurityDescriptor = IntPtr.Zero;
             this.SecurityQualityOfService = IntPtr.Zero;
 
+            // Object name
             if (objectName != null)
             {
                 UnicodeString unicodeString = new UnicodeString(objectName);
-                IntPtr unicodeStringMemory = Marshal.AllocHGlobal(Marshal.SizeOf(unicodeString));
+                IntPtr unicodeStringMemory = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UnicodeString)));
 
                 Marshal.StructureToPtr(unicodeString, unicodeStringMemory, false);
                 this.ObjectName = unicodeStringMemory;
             }
 
+            // Object flags
             this.Attributes = attributes;
 
+            // Root directory
             if (rootDirectory != null)
                 this.RootDirectory = rootDirectory;
+
+            // Security descriptor
+            this.SecurityDescriptor = securityDescriptor ?? IntPtr.Zero;
+
+            // Security QOS
+            if (securityQos.HasValue)
+            {
+                this.SecurityQualityOfService = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(SecurityQualityOfService)));
+                Marshal.StructureToPtr(securityQos.Value, this.SecurityQualityOfService, false);
+            }
         }
 
         public int Length;
@@ -970,16 +993,24 @@ namespace ProcessHacker.Native.Api
 
         public void Dispose()
         {
-            if (this.ObjectName == IntPtr.Zero)
-                return;
+            // Object name
+            if (this.ObjectName != IntPtr.Zero)
+            {
+                UnicodeString unicodeString =
+                    (UnicodeString)Marshal.PtrToStructure(this.ObjectName, typeof(UnicodeString));
 
-            UnicodeString unicodeString =
-                (UnicodeString)Marshal.PtrToStructure(this.ObjectName, typeof(UnicodeString));
+                unicodeString.Dispose();
+                Marshal.FreeHGlobal(this.ObjectName);
 
-            unicodeString.Dispose();
-            Marshal.FreeHGlobal(this.ObjectName);
+                this.ObjectName = IntPtr.Zero;
+            }
 
-            this.ObjectName = IntPtr.Zero;
+            // Security QOS
+            if (this.SecurityQualityOfService != null)
+            {
+                Marshal.FreeHGlobal(this.SecurityQualityOfService);
+                this.SecurityQualityOfService = IntPtr.Zero;
+            }
         }
     }
 
