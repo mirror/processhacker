@@ -39,13 +39,17 @@ namespace ProcessHacker.Native.Security
         { }
 
         public PrivilegeSet(IEnumerable<Privilege> privileges)
+            : this(privileges, PrivilegeSetFlags.AllNecessary)
+        { }
+
+        public PrivilegeSet(IEnumerable<Privilege> privileges, PrivilegeSetFlags flags)
         {
             if (privileges != null)
                 _privileges = new List<Privilege>(privileges);
             else
                 _privileges = new List<Privilege>();
 
-            _flags = PrivilegeSetFlags.AllNecessary;
+            _flags = flags;
         }
 
         public PrivilegeSet(IntPtr memory)

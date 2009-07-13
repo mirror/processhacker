@@ -46,6 +46,38 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtAccessCheck(
+            [In] IntPtr SecurityDescriptor,
+            [In] IntPtr ClientToken,
+            [In] int DesiredAccess,
+            [In] ref GenericMapping GenericMapping,
+            [In] [Optional] IntPtr PrivilegeSet, // out PrivilegeSet*
+            ref int PrivilegeSetLength,
+            [Out] out int GrantedAccess,
+            [Out] out NtStatus AccessStatus
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtAdjustGroupsToken(
+            [In] IntPtr TokenHandle,
+            [In] bool ResetToDefault,
+            [In] ref TokenGroups NewState,
+            [In] [Optional] int BufferLength,
+            [In] [Optional] IntPtr PreviousState, // out TokenGroups*
+            [In] [Optional] IntPtr ReturnLength // out int*
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtAdjustPrivilegesToken(
+            [In] IntPtr TokenHandle,
+            [In] bool DisableAllPrivileges,
+            [In] [Optional] ref TokenPrivileges NewState,
+            [In] [Optional] int BufferLength,
+            [In] [Optional] IntPtr PreviousState, // out TokenPrivileges*
+            [In] [Optional] IntPtr ReturnLength // out int*
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtAlertThread(
             [In] IntPtr ThreadHandle
             );
@@ -440,6 +472,23 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateToken(
+            [Out] out IntPtr TokenHandle,
+            [In] TokenAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] TokenType TokenType,
+            [In] ref Luid AuthenticationId,
+            [In] ref long ExpirationTime,
+            [In] ref TokenUser User,
+            [In] ref TokenGroups Groups,
+            [In] ref TokenPrivileges Privileges,
+            [In] [Optional] ref TokenOwner Owner,
+            [In] ref TokenPrimaryGroup PrimaryGroup,
+            [In] [Optional] ref TokenDefaultDacl DefaultDacl,
+            [In] ref TokenSource TokenSource
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtCreateWaitablePort(
             [Out] out IntPtr PortHandle,
             [In] ref ObjectAttributes ObjectAttributes,
@@ -520,6 +569,16 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtExtendSection(
             [In] IntPtr SectionHandle,
             ref long NewSectionSize
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtFilterToken(
+            [In] IntPtr ExistingTokenHandle,
+            [In] int Flags,
+            [In] [Optional] ref TokenGroups SidsToDisable,
+            [In] [Optional] ref TokenPrivileges PrivilegesToDelete,
+            [In] [Optional] ref TokenGroups RestrictedSids,
+            [Out] out IntPtr NewTokenHandle
             );
 
         [DllImport("ntdll.dll")]
@@ -785,6 +844,14 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtPrivilegeCheck(
+            [In] IntPtr ClientToken,
+            [In] IntPtr RequiredPrivileges, // PrivilegeSet*
+            [MarshalAs(UnmanagedType.U1)]
+            [Out] out bool Result
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtProtectVirtualMemory(
             [In] IntPtr ProcessHandle,
             ref IntPtr BaseAddress,
@@ -951,6 +1018,15 @@ namespace ProcessHacker.Native.Api
             [In] ThreadInformationClass ThreadInformationClass,
             void* ThreadInformation,
             [In] int ThreadInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationToken(
+            [In] IntPtr TokenHandle,
+            [In] TokenInformationClass TokenInformationClass,
+            [In] IntPtr TokenInformation,
+            [In] int TokenInformationLength,
             [Out] [Optional] out int ReturnLength
             );
 
@@ -1329,6 +1405,14 @@ namespace ProcessHacker.Native.Api
             [In] ThreadInformationClass ThreadInformationClass,
             [In] ref int ThreadInformation,
             [In] int ThreadInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetInformationToken(
+            [In] IntPtr TokenHandle,
+            [In] TokenInformationClass TokenInformationClass,
+            [In] IntPtr TokenInformation,
+            [In] int TokenInformationLength
             );
 
         [DllImport("ntdll.dll")]

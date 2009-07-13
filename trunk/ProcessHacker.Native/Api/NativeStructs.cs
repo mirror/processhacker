@@ -2218,6 +2218,17 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct TokenDefaultDacl
+    {
+        public TokenDefaultDacl(Acl defaultDacl)
+        {
+            this.DefaultDacl = defaultDacl;
+        }
+
+        public IntPtr DefaultDacl; // Acl*
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct TokenGroups
     {
         public TokenGroups(Sid[] sids)

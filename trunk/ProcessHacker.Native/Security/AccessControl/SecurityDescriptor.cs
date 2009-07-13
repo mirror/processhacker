@@ -23,6 +23,7 @@
 using System;
 using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Security.AccessControl
 {
@@ -245,6 +246,27 @@ namespace ProcessHacker.Native.Security.AccessControl
                 return (this.ControlFlags & SecurityDescriptorControlFlags.SelfRelative) ==
                     SecurityDescriptorControlFlags.SelfRelative;
             }
+        }
+
+        public NtStatus CheckAccess(TokenHandle tokenHandle, int desiredAccess, GenericMapping genericMapping, out int grantedAccess)
+        {
+            NtStatus status;
+            NtStatus accessStatus;
+            int privilegeSetLength = 0;
+
+            if ((status = Win32.NtAccessCheck(
+                this,
+                tokenHandle,
+                desiredAccess,
+                ref genericMapping,
+                IntPtr.Zero,
+                ref privilegeSetLength,
+                out grantedAccess,
+                out accessStatus
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return accessStatus;
         }
 
         public bool IsValid()

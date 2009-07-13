@@ -168,6 +168,24 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
+        public bool CheckPrivileges(PrivilegeSet privileges)
+        {
+            NtStatus status;
+            bool result;
+
+            using (var privilegesMemory = privileges.ToMemory())
+            {
+                if ((status = Win32.NtPrivilegeCheck(
+                    this,
+                    privilegesMemory,
+                    out result
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                return result;
+            }
+        }
+
         /// <summary>
         /// Duplicates the token.
         /// </summary>
