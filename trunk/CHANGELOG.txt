@@ -5,6 +5,8 @@ Process Hacker
    * Better process window exit status display
    * Better handle granted access display
    * Thread list is more responsive
+ * FIXED:
+   * Properties menu item for handles was disabled most of the time
 
 1.3.9.0
  * NEW/IMPROVED:

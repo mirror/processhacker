@@ -309,13 +309,6 @@ namespace ProcessHacker.Components
             {
                 menuHandle.EnableAll();
 
-                propertiesHandleMenuItem.Enabled = false;
-
-                string type = listHandles.SelectedItems[0].SubItems[0].Text;
-
-                if (HasHandleProperties(type))
-                    propertiesHandleMenuItem.Enabled = true;
-
                 HandleItem item = (HandleItem)listHandles.SelectedItems[0].Tag;
 
                 protectedMenuItem.Checked = (item.Handle.Flags & HandleFlags.ProtectFromClose) != 0;
@@ -328,17 +321,6 @@ namespace ProcessHacker.Components
                 protectedMenuItem.Enabled = false;
                 inheritMenuItem.Enabled = false;
             }
-        }
-
-        public static bool HasHandleProperties(string type)
-        {
-            if (type == "Token" || type == "Process" || type == "File" || 
-                type == "Job" || 
-                type == "Event" || type == "Mutant" || type == "Section" || 
-                type == "Semaphore")
-                return true;
-            else
-                return false;
         }
 
         public static void ShowHandleProperties(SystemHandleInformation handleInfo)

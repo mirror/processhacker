@@ -28,6 +28,7 @@ using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
 using ProcessHacker.Components;
 using ProcessHacker.FormHelper;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -98,12 +99,7 @@ namespace ProcessHacker
             {
                 menuHandle.EnableAll();
 
-                propertiesMenuItem.Enabled = false;
-
                 string type = listHandles.SelectedItems[0].SubItems[1].Text;
-
-                if (HandleList.HasHandleProperties(type))
-                    propertiesMenuItem.Enabled = true;
 
                 if (type == "DLL" || type == "Mapped File")
                     closeMenuItem.Enabled = false;
@@ -242,8 +238,11 @@ namespace ProcessHacker
         {
             string type = listHandles.SelectedItems[0].SubItems[1].Text;
 
-            if (!HandleList.HasHandleProperties(type))
+            if (type == "DLL" || type == "Mapped File")
+            {
+                FileUtils.ShowProperties(listHandles.SelectedItems[0].SubItems[2].Text);
                 return;
+            }
 
             try
             {
