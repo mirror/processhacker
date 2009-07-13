@@ -107,8 +107,6 @@ namespace ProcessHacker
         [STAThread]
         public static void Main(string[] args)
         {
-            SecurityDescriptor testSd = new AbsoluteSecurityDescriptor();
-
             Dictionary<string, string> pArgs = null;
 
             Application.EnableVisualStyles();

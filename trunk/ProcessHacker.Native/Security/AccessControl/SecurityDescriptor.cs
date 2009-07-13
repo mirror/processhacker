@@ -4,18 +4,47 @@ using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Security.AccessControl
 {
-    public abstract class SecurityDescriptor : BaseObject
+    public sealed class SecurityDescriptor : BaseObject
     {
         public static implicit operator IntPtr(SecurityDescriptor securityDescriptor)
         {
             return securityDescriptor.Memory;
         }
 
-        private IntPtr _memory;
+        private MemoryAlloc _memory;
+        private bool _memoryOwned = true;
         private Acl _dacl;
         private Acl _sacl;
         private Sid _owner;
         private Sid _group;
+
+        public SecurityDescriptor()
+        {
+            NtStatus status;
+
+            _memory = new MemoryAlloc(Win32.SecurityDescriptorMinLength);
+
+            if ((status = Win32.RtlCreateSecurityDescriptor(
+                _memory,
+                Win32.SecurityDescriptorRevision
+                )) >= NtStatus.Error)
+            {
+                _memory.Dispose();
+                this.DisableOwnership(false);
+                Win32.ThrowLastError(status);
+            }
+        }
+
+        public SecurityDescriptor(IntPtr memory)
+            : this(new MemoryAlloc(memory, false), false)
+        { }
+
+        public SecurityDescriptor(MemoryAlloc memory, bool owned)
+        {
+            _memory = memory;
+            _memoryOwned = owned;
+            this.Read();
+        }
 
         protected override void DisposeObject(bool disposing)
         {
@@ -27,6 +56,8 @@ namespace ProcessHacker.Native.Security.AccessControl
                 _owner.Dereference();
             if (_group != null)
                 _group.Dereference();
+            if (_memory != null && _memoryOwned)
+                _memory.Dispose();
         }
 
         public SecurityDescriptorControlFlags ControlFlags
@@ -59,7 +90,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             }
         }
 
-        public virtual Acl Dacl
+        public Acl Dacl
         {
             get { return _dacl; }
             set
@@ -87,7 +118,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             }
         }
 
-        public virtual Sid Group
+        public Sid Group
         {
             get { return _group; }
             set
@@ -114,13 +145,23 @@ namespace ProcessHacker.Native.Security.AccessControl
             }
         }
 
+        public int Length
+        {
+            get { return Win32.RtlLengthSecurityDescriptor(this); }
+        }
+
         public IntPtr Memory
         {
             get { return _memory; }
-            protected set { _memory = value; }
         }
 
-        public virtual Sid Owner
+        protected MemoryAlloc MemoryAlloc
+        {
+            get { return _memory; }
+            set { _memory = value; }
+        }
+
+        public Sid Owner
         {
             get { return _owner; }
             set
@@ -147,7 +188,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             }
         }
 
-        public virtual Acl Sacl
+        public Acl Sacl
         {
             get { return _sacl; }
             set
@@ -175,27 +216,21 @@ namespace ProcessHacker.Native.Security.AccessControl
             }
         }
 
-        protected void SwapDacl(Acl dacl)
+        public bool SelfRelative
         {
-            BaseObject.SwapRef<Acl>(ref _dacl, dacl);
+            get
+            {
+                return (this.ControlFlags & SecurityDescriptorControlFlags.SelfRelative) ==
+                    SecurityDescriptorControlFlags.SelfRelative;
+            }
         }
 
-        protected void SwapGroup(Sid group)
+        public bool IsValid()
         {
-            BaseObject.SwapRef<Sid>(ref _group, group);
+            return Win32.RtlValidSecurityDescriptor(this);
         }
 
-        protected void SwapOwner(Sid owner)
-        {
-            BaseObject.SwapRef<Sid>(ref _owner, owner);
-        }
-
-        protected void SwapSacl(Acl sacl)
-        {
-            BaseObject.SwapRef<Acl>(ref _sacl, sacl);
-        }
-
-        protected virtual void Read()
+        private void Read()
         {
             NtStatus status;
             bool present, defaulted;
@@ -211,7 +246,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 Win32.ThrowLastError(status);
 
             if (present)
-                this.SwapDacl(new Acl(dacl));
+                this.SwapDacl(new Acl(dacl, true));
             else
                 this.SwapDacl(null);
 
@@ -225,7 +260,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 Win32.ThrowLastError(status);
 
             if (present)
-                this.SwapSacl(new Acl(sacl));
+                this.SwapSacl(new Acl(sacl, true));
             else
                 this.SwapSacl(null);
 
@@ -238,7 +273,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 Win32.ThrowLastError(status);
 
             if (group != IntPtr.Zero)
-                this.SwapGroup(Sid.FromPointer(group));
+                this.SwapGroup(new Sid(group));
             else
                 this.SwapGroup(null);
 
@@ -251,9 +286,29 @@ namespace ProcessHacker.Native.Security.AccessControl
                 Win32.ThrowLastError(status);
 
             if (owner != IntPtr.Zero)
-                this.SwapOwner(Sid.FromPointer(owner));
+                this.SwapOwner(new Sid(owner));
             else
                 this.SwapOwner(null);
+        }
+
+        private void SwapDacl(Acl dacl)
+        {
+            BaseObject.SwapRef<Acl>(ref _dacl, dacl);
+        }
+
+        private void SwapGroup(Sid group)
+        {
+            BaseObject.SwapRef<Sid>(ref _group, group);
+        }
+
+        private void SwapOwner(Sid owner)
+        {
+            BaseObject.SwapRef<Sid>(ref _owner, owner);
+        }
+
+        private void SwapSacl(Acl sacl)
+        {
+            BaseObject.SwapRef<Acl>(ref _sacl, sacl);
         }
     }
 }

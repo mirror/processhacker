@@ -45,14 +45,31 @@ namespace ProcessHacker.Native.Security.AccessControl
         { }
 
         public Ace(IntPtr memory)
+            : this(memory, false)
+        { }
+
+        public Ace(IntPtr memory, bool copy)
+            : base(copy)
         {
-            _memory = new MemoryAlloc(memory, false);
+            if (copy)
+            {
+                Ace existingAce = new Ace(memory);
+
+                _memory = new MemoryAlloc(existingAce.Size);
+                _memory.WriteMemory(0, existingAce, 0, existingAce.Size);
+            }
+            else
+            {
+                _memory = new MemoryAlloc(memory, false);
+            }
+
             this.Read();
         }
 
         protected override void DisposeObject(bool disposing)
         {
-            _memory.Dispose();
+            if (_memory != null)
+                _memory.Dispose();
         }
 
         public AceFlags Flags
@@ -63,6 +80,12 @@ namespace ProcessHacker.Native.Security.AccessControl
         public IntPtr Memory
         {
             get { return _memory; }
+        }
+
+        protected MemoryAlloc MemoryAlloc
+        {
+            get { return _memory; }
+            set { _memory = value; }
         }
 
         public int Size

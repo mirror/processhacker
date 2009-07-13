@@ -20,11 +20,14 @@ namespace ProcessHacker.Native.Security.AccessControl
         {
             NtStatus status;
 
+            // Reserve 8 bytes for the ACL header.
             if (size < 8)
                 throw new ArgumentException("Size must be greater than or equal to 8 bytes.");
 
+            // Allocate the number of size.
             _memory = new MemoryAlloc(size);
 
+            // Initialize the ACL.
             if ((status = Win32.RtlCreateAcl(
                 _memory,
                 size,
@@ -38,13 +41,45 @@ namespace ProcessHacker.Native.Security.AccessControl
         }
 
         public Acl(IntPtr memory)
+            : this(memory, false)
+        { }
+
+        public Acl(IntPtr memory, bool copy)
+            : base(copy)
         {
-            _memory = new MemoryAlloc(memory, false);
+            if (copy)
+            {
+                Acl existingAcl = new Acl(memory);
+
+                // Allocate memory for the new ACL.
+                _memory = new MemoryAlloc(existingAcl.Size);
+                // Copy the ACL.
+                _memory.WriteMemory(0, existingAcl, 0, existingAcl.Size);
+            }
+            else
+            {
+                _memory = new MemoryAlloc(memory, false);
+            }
+        }
+
+        public Acl(IntPtr memory, int newSize)
+        {
+            Acl existingAcl = new Acl(memory);
+
+            // Can't create an ACL smaller than the existing one.
+            if (newSize < existingAcl.Size)
+                throw new ArgumentException("Cannot create a new ACL smaller than the existing ACL.");
+
+            // Allocate some memory.
+            _memory = new MemoryAlloc(newSize);
+            // Copy the existing ACL.
+            _memory.WriteMemory(0, existingAcl, 0, existingAcl.Size);
         }
 
         protected override void DisposeObject(bool disposing)
         {
-            _memory.Dispose();
+            if (_memory != null)
+                _memory.Dispose();
         }
 
         public Ace this[int index]

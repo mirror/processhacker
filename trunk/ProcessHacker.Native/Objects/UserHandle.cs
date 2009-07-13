@@ -37,14 +37,9 @@ namespace ProcessHacker.Native.Objects
             : base(handle, owned)
         { }
 
-        public override SecurityDescriptor GetSecurity()
+        public override SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
         {
-            return this.GetSecurity(SeObjectType.WindowObject);
-        }
-
-        public override void SetSecurity(SecurityDescriptor securityDescriptor)
-        {
-            this.SetSecurity(SeObjectType.WindowObject, securityDescriptor);
+            return this.GetSecurity(SeObjectType.WindowObject, securityInformation);
         }
 
         public override void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)

@@ -72,7 +72,6 @@
     <Compile Include="Objects\PrivateNamespaceHandle.cs" />
     <Compile Include="Objects\TerminalServerHandle.cs" />
     <Compile Include="Objects\WindowHandle.cs" />
-    <Compile Include="Security\AccessControl\AbsoluteSecurityDescriptor.cs" />
     <Compile Include="Security\AccessControl\Ace.cs" />
     <Compile Include="Security\AccessControl\Acl.cs" />
     <Compile Include="Security\AccessControl\KnownAce.cs" />

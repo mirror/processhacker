@@ -273,12 +273,12 @@ namespace ProcessHacker.Native.Objects
             return null;
         }
 
-        public virtual SecurityDescriptor GetSecurity()
+        public virtual SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
         {
-            return this.GetSecurity(SeObjectType.KernelObject);
+            return this.GetSecurity(SeObjectType.KernelObject, securityInformation);
         }
 
-        protected SecurityDescriptor GetSecurity(SeObjectType objectType)
+        protected SecurityDescriptor GetSecurity(SeObjectType objectType, SecurityInformation securityInformation)
         {
             int result;
             IntPtr dummy, securityDescriptor;
@@ -286,13 +286,13 @@ namespace ProcessHacker.Native.Objects
             if ((result = Win32.GetSecurityInfo(
                 this,
                 objectType,
-                0,
+                securityInformation,
                 out dummy, out dummy, out dummy, out dummy,
                 out securityDescriptor
                 )) != 0)
                 Win32.ThrowLastError(result);
 
-            return new AbsoluteSecurityDescriptor(new LocalMemoryAlloc(securityDescriptor));
+            return new SecurityDescriptor(new LocalMemoryAlloc(securityDescriptor), true);
         }
 
         /// <summary>
@@ -338,65 +338,38 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
-        public virtual void SetSecurity(SecurityDescriptor securityDescriptor)
-        {
-            this.SetSecurity(SeObjectType.KernelObject, securityDescriptor);
-        }
-
         public virtual void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
         {
             this.SetSecurity(SeObjectType.KernelObject, securityInformation, securityDescriptor);
         }
 
-        protected void SetSecurity(SeObjectType objectType, SecurityDescriptor securityDescriptor)
-        {
-            int result;
-            IntPtr owner, group, dacl, sacl;
-            bool present, dummy;
-            SecurityInformation si = SecurityInformation.Group | SecurityInformation.Owner;
-
-            //owner = securityDescriptor.GetOwner(out dummy);  
-            //group = securityDescriptor.GetGroup(out dummy);
-            //dacl = securityDescriptor.GetDacl(out present, out dummy);
-            //if (present)
-            //    si |= SecurityInformation.Dacl;
-            //sacl = securityDescriptor.GetSacl(out present, out dummy);
-            //if (present)
-            //    si |= SecurityInformation.Sacl;
-
-            //if ((result = Win32.SetSecurityInfo(
-            //    this,
-            //    objectType,
-            //    si,
-            //    owner,
-            //    group,
-            //    dacl,
-            //    sacl
-            //    )) != 0)
-            //    Win32.ThrowLastError(result);
-        }
-
         protected void SetSecurity(SeObjectType objectType, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
         {
             int result;
-            IntPtr owner, group, dacl, sacl;
-            bool dummy;
+            IntPtr dacl = IntPtr.Zero;
+            IntPtr group = IntPtr.Zero;
+            IntPtr owner = IntPtr.Zero;
+            IntPtr sacl = IntPtr.Zero;
 
-            //owner = securityDescriptor.GetOwner(out dummy);
-            //group = securityDescriptor.GetGroup(out dummy);
-            //dacl = securityDescriptor.GetDacl(out dummy, out dummy);
-            //sacl = securityDescriptor.GetSacl(out dummy, out dummy);
+            if ((securityInformation & SecurityInformation.Dacl) == SecurityInformation.Dacl)
+                dacl = securityDescriptor.Dacl ?? IntPtr.Zero;
+            if ((securityInformation & SecurityInformation.Group) == SecurityInformation.Group)
+                group = securityDescriptor.Group;
+            if ((securityInformation & SecurityInformation.Owner) == SecurityInformation.Owner)
+                owner = securityDescriptor.Owner;
+            if ((securityInformation & SecurityInformation.Sacl) == SecurityInformation.Sacl)
+                sacl = securityDescriptor.Sacl ?? IntPtr.Zero;
 
-            //if ((result = Win32.SetSecurityInfo(
-            //    this,
-            //    objectType,
-            //    securityInformation,
-            //    owner,
-            //    group,
-            //    dacl,
-            //    sacl
-            //    )) != 0)
-            //    Win32.ThrowLastError(result);
+            if ((result = Win32.SetSecurityInfo(
+                this,
+                objectType,
+                securityInformation,
+                owner,
+                group,
+                dacl,
+                sacl
+                )) != 0)
+                Win32.ThrowLastError(result);
         }
 
         /// <summary>

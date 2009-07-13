@@ -24,6 +24,7 @@ using System;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -133,6 +134,11 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
+        public override SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
+        {
+            return this.GetSecurity(SeObjectType.Service, securityInformation);
+        }
+
         /// <summary>
         /// Gets the status of the service.
         /// </summary>
@@ -146,6 +152,11 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
 
             return status;
+        }
+
+        public override void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
+        {
+            this.SetSecurity(SeObjectType.Service, securityInformation, securityDescriptor);
         }
 
         /// <summary>

@@ -8,8 +8,7 @@ namespace ProcessHacker.Native.Security
 {
     public interface ISecurable
     {
-        SecurityDescriptor GetSecurity();
-        void SetSecurity(SecurityDescriptor securityDescriptor);
+        SecurityDescriptor GetSecurity(SecurityInformation securityInformation);
         void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor);
     }
 }

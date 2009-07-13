@@ -1256,6 +1256,16 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct RtlAceData
+    {
+        public AceType AceType;
+        public AceFlags InheritFlags;
+        public AceFlags AceFlags;
+        public int Mask;
+        public IntPtr Sid; // Sid**
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct RtlDebugInformation
     {
         public IntPtr SectionHandleClient;

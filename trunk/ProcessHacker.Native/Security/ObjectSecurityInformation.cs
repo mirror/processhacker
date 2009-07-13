@@ -97,7 +97,7 @@ namespace ProcessHacker.Native.Security
         {
             try
             {
-                var sd = ProcessHandle.Current.GetSecurity();
+                var sd = ProcessHandle.Current.GetSecurity(RequestedInformation);
 
                 sd.Reference(); // prevent the memory from being freed
                 SecurityDescriptor = sd;
@@ -118,7 +118,7 @@ namespace ProcessHacker.Native.Security
             {
                 ProcessHandle.Current.SetSecurity(
                     SecurityInformation, 
-                    new AbsoluteSecurityDescriptor(SecurityDescriptor)
+                    new SecurityDescriptor(SecurityDescriptor)
                     );
             }
             catch (WindowsException ex)
