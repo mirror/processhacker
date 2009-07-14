@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <title>The Definitive Native API Guide</title>
+    <style type="text/css">
+#footer {
+  font-size: 8pt;
+}
+
+pre {
+  background-color: #ccc;
+  border: dotted 1px #666;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+h2 {
+  margin-top: 1.3em;
+  margin-bottom: 0.3em;
+  border-top: dotted 3px #333;
+}
+
+h3 {
+  font-size: 14pt;
+  margin-bottom: 0.3em;
+}
+
+h4 {
+  font-size: 12pt;
+  margin: 0 0 0 2em;
+}
+    </style>
+  </head>
+  <body>
+    <h1 style="font-size: 30pt;">The Definitive Native API Guide</h1>
+    <p>Written by wj32.</p>
+    
+    <h1>Native API</h1>
+    
+    <h2>NtAlertThread</h2>
+    <p>Alerts the specified thread, causing it to resume execution if it is in an alertable Wait state. 
+    Otherwise, the thread is set to an alerted state.</p>
+    <p>If the specified thread is in a Wait state, it will be unwaited with a status of <code>STATUS_ALERTED</code>. 
+    If the function is being called from user-mode, it cannot unwait a kernel-mode wait operation.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtAlertThread(
+    __in HANDLE ThreadHandle
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ThreadHandle</h4>
+    <p>The thread to alert. The handle must have <code>THREAD_ALERT</code> access.</p>
+    <h3>Code paths</h3>
+    <p>Vista SP1: <code>NtAlertThread</code> ... <code>KeAlertThread</code> ... <code>KiUnwaitThread</code> ... <code>KiReadyThread</code></p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
+    
+    <h2>NtClose</h2>
+    <p>Closes a handle.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtClose(
+    __in HANDLE Handle
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>Handle</h4>
+    <p>The handle to close. If the object referenced by the handle is temporary and has no references, it will be freed.</p>
+    <h3>Code paths</h3>
+    <p>Vista SP1: <code>NtClose</code> ... <code>ObpCloseHandle</code> ... <code>ObpCloseHandleTableEntry</code> ... <code>ExDestroyHandle</code> ... <code>ExpFreeHandleTableEntry</code></p>
+    <h3>Exported by</h3>
+    <p>ntdll, ntoskrnl</p>
+    
+    <p id="footer">Copyright (c) 2009 wj32. Licensed under the GFDL 1.3.</p>
+  </body>
+</html>
