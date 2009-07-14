@@ -71,11 +71,15 @@ IF NOT DEFINED N_ (START "" /B /WAIT "..\..\Build\7za\7za.exe" a -tzip -mx=9^
 
 :CLEANUP
 
+:: Copy some PDBs over
+FOR %%a IN (
+    "KProcessHacker\i386\kprocesshacker.pdb" 
+    "NProcessHacker\Release\NProcessHacker.pdb"
+	) DO COPY "..\..\..\%%a" >NUL
+
 :: Make a PDB zip
 "..\..\Build\7za\7za.exe" a -tzip -mx=9 "processhacker-pdb.zip"^
  "*.pdb"^
- "..\..\..\KProcessHacker\i386\kprocesshacker.pdb"^
- "..\..\..\NProcessHacker\Release\NProcessHacker.pdb"^
  >NUL&&(ECHO:PDB ZIP created successfully!)
 
 :END
