@@ -40,6 +40,20 @@ h4 {
     
     <h1>Native API</h1>
     
+    <h2>CLIENT_ID</h2>
+    <p>A structure identifying a process or thread.</p>
+    <pre>
+typedef struct _CLIENT_ID
+{
+    HANDLE UniqueProcess;
+    HANDLE UniqueThread;
+} CLIENT_ID, *PCLIENT_ID;</pre>
+    <h3>Fields</h3>
+    <h4>UniqueProcess</h4>
+    <p>A handle to the process, usually a process ID (PID).</p>
+    <h4>UniqueThread</h4>
+    <p>A handle to the thread, usually a thread ID (TID).</p>
+    
     <h2>NtAlertThread</h2>
     <p>Alerts the specified thread, causing it to resume execution if it is in an alertable Wait state. 
     Otherwise, the thread is set to an alerted state.</p>
@@ -54,9 +68,27 @@ NtAlertThread(
     );</pre>
     <h3>Arguments</h3>
     <h4>ThreadHandle</h4>
-    <p>The thread to alert. The handle must have <code>THREAD_ALERT</code> access.</p>
+    <p>A handle to the thread to alert. The handle must have <code>THREAD_ALERT</code> access.</p>
     <h3>Code paths</h3>
-    <p>Vista SP1: <code>NtAlertThread</code> ... <code>KeAlertThread</code> ... <code>KiUnwaitThread</code> ... <code>KiReadyThread</code></p>
+    <p><code>NtAlertThread</code> ... <code>KeAlertThread</code> ... <code>KiUnwaitThread</code> ... <code>KiReadyThread</code></p>
+    <h3>Exported by</h3>
+    <p>ntdll; <code>KeAlertThread</code> and <code>ZwAlertThread</code> are exported by ntoskrnl</p>
+    
+    <h2>NtAlertResumeThread</h2>
+    <p>Alerts the specified thread (see <code>NtAlertThread</code>) and resumes it.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtAlertResumeThread(
+    __in HANDLE ThreadHandle,
+    __out_opt PULONG PreviousSuspendCount
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ThreadHandle</h4>
+    <p>A handle to the thread to alert and resume. The handle must have <code>THREAD_SUSPEND_RESUME</code> access.</p>
+    <h3>Code paths</h3>
+    <p><code>NtAlertResumeThread</code> ... <code>KeAlertResumeThread</code> ... <code>KiUnwaitThread</code> ... <code>KiReadyThread</code></p>
     <h3>Exported by</h3>
     <p>ntdll</p>
     
@@ -73,9 +105,369 @@ NtClose(
     <h4>Handle</h4>
     <p>The handle to close. If the object referenced by the handle is temporary and has no references, it will be freed.</p>
     <h3>Code paths</h3>
-    <p>Vista SP1: <code>NtClose</code> ... <code>ObpCloseHandle</code> ... <code>ObpCloseHandleTableEntry</code> ... <code>ExDestroyHandle</code> ... <code>ExpFreeHandleTableEntry</code></p>
+    <p><code>NtClose</code> ... <code>ObpCloseHandle</code> ... <code>ObpCloseHandleTableEntry</code> ... <code>ExDestroyHandle</code> ... <code>ExpFreeHandleTableEntry</code></p>
     <h3>Exported by</h3>
     <p>ntdll, ntoskrnl</p>
+    
+    <h2>NtCreateProcess</h2>
+    <p>Creates a process.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtCreateProcess(
+    __out PHANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in_opt POBJECT_ATTRIBUTES ObjectAttributes,
+    __in HANDLE ParentProcess,
+    __in BOOLEAN InheritObjectTable,
+    __in_opt HANDLE SectionHandle,
+    __in_opt HANDLE DebugPort,
+    __in_opt HANDLE ExceptionPort
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ProcessHandle</h4>
+    <p>A variable that receives a handle to the new process.</p>
+    <h4>DesiredAccess</h4>
+    <p>The desired access to the new process.</p>
+    <h4>ObjectAttributes</h4>
+    <p>See <code>OBJECT_ATTRIBUTES</code>.</p>
+    <h4>ParentProcess</h4>
+    <p>A handle to a parent process. If no section (in <code>SectionHandle</code>) was specified, the new process 
+    will inherit the address space, handles and other characteristics of the parent process. If a section was 
+    specified, the new process will receive a new address space created from the section but will still inherit 
+    handles (if specified in <code>InheritObjectTable</code>) and other characteristics. The parent process 
+    must be specified unless the new process is the first process to be created on the system (the System process).</p>
+    <h4>InheritObjectTable</h4>
+    <p>Whether <code>ObInitProcess</code> will duplicate handles with the <code>OBJ_INHERIT</code> attribute from 
+    the parent process into the new process.</p>
+    <h4>SectionHandle</h4>
+    <p>A handle to a section which will be used to create the new process' address space. The handle must have 
+    <code>SECTION_MAP_EXECUTE</code> access.</p>
+    <h4>DebugPort</h4>
+    <p>A handle to a debug object which the process will be assigned to. The handle must have <code>DEBUG_PROCESS_ASSIGN</code> 
+    access.</p>
+    <h4>ExceptionPort</h4>
+    <p>A handle to a LPC port which will be notified when an exception occurs in the process.</p>
+    <h3>Code paths</h3>
+    <p><code>NtCreateProcess</code> ... <code>NtCreateProcessEx</code> ... <code>PspCreateProcess</code> ... 
+    <code>PspAllocateProcess</code> ... <code>KeInitializeProcess</code></p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
+    <h3>Notes</h3>
+    <p>The new process does not have any threads. You can create one using <code>NtCreateThread</code> or 
+    <code>RtlCreateUserThread</code>.</p>
+    
+    <h2>NtCreateProcessEx</h2>
+    <p>Creates a process.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtCreateProcessEx(
+    __out PHANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in_opt POBJECT_ATTRIBUTES ObjectAttributes,
+    __in HANDLE ParentProcess,
+    __in ULONG Flags,
+    __in_opt HANDLE SectionHandle,
+    __in_opt HANDLE DebugPort,
+    __in_opt HANDLE ExceptionPort,
+    __in ULONG JobMemberLevel
+    );</pre>
+    <h3>Arguments</h3>
+    <p>See <code>NtCreateProcess</code>.</p>
+    <h4>Flags</h4>
+    <p>A combination of flags which control the creation of the new process:</p>
+    <pre>
+#define PROCESS_CREATE_FLAGS_BREAKAWAY 0x00000001
+#define PROCESS_CREATE_FLAGS_NO_DEBUG_INHERIT 0x00000002
+#define PROCESS_CREATE_FLAGS_INHERIT_HANDLES 0x00000004
+#define PROCESS_CREATE_FLAGS_OVERRIDE_ADDRESS_SPACE 0x00000008
+#define PROCESS_CREATE_FLAGS_LARGE_PAGES 0x00000010</pre>
+    <h4>JobMemberLevel</h4>
+    <p>The member level within a job set.</p>
+    <h3>Code paths</h3>
+    <p><code>NtCreateProcessEx</code> ... <code>PspCreateProcess</code> ... <code>PspAllocateProcess</code> ... 
+    <code>KeInitializeProcess</code></p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
+    
+    <h2>NtOpenProcess</h2>
+    <p>Opens a process.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtOpenProcess(
+    __out PHANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in_opt PCLIENT_ID ClientId
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ProcessHandle</h4>
+    <p>A variable which receives a handle to a process.</p>
+    <h4>DesiredAccess</h4>
+    <p>The desired access to the process.</p>
+    <h4>ObjectAttributes</h4>
+    <p>See <code>OBJECT_ATTRIBUTES</code>. The <code>ObjectName</code> field must be NULL.</p>
+    <h4>ClientId</h4>
+    <p>A <code>CLIENT_ID</code> specifying the process to open. If the <code>UniqueThread</code> field 
+    is not 0, the function will open the process belonging to the thread specified by the thread ID in 
+    <code>UniqueThread</code>. Otherwise, the function will open the process specified by the process ID 
+    in the <code>UniqueProcess</code> field.</p>
+    <h3>Code paths</h3>
+    <p><code>NtOpenProcess</code> ... <code>PsOpenProcess</code> ... <code>ObOpenObjectByPointer</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll, ntoskrnl</p>
+    
+    <h2>NtQueueApcThread</h2>
+    <p>Queues a user-mode APC to the specified thread. The APC will execute when the thread performs an alertable wait or 
+    calls <code>NtTestAlert</code>.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtQueueApcThread(
+    __in HANDLE ThreadHandle,
+    __in PPS_APC_ROUTINE ApcRoutine,
+    __in_opt PVOID ApcArgument1,
+    __in_opt PVOID ApcArgument2,
+    __in_opt PVOID ApcArgument3
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ThreadHandle</h4>
+    <p>A handle to a thread. The handle must have <code>THREAD_SET_CONTEXT</code> access.</p>
+    <h4>ApcRoutine.</h4>
+    <p>An APC routine to execute:</p>
+    <pre>
+typedef
+VOID
+(*PPS_APC_ROUTINE)(
+    __in_opt PVOID ApcArgument1,
+    __in_opt PVOID ApcArgument2,
+    __in_opt PVOID ApcArgument3
+    );</pre>
+    <h4>ApcArgument1..3</h4>
+    <p>The arguments to pass to the APC routine.</p>
+    <h3>Code paths</h3>
+    <p><code>NtQueueApcThread</code> ... <code>KeInsertQueueApc</code> ... <code>KiInsertQueueApc</code> ... <code>InsertHeadList</code></p>
+    <h3>Exported by</h3>
+    <p>ntdll; <code>KeInsertQueueApc</code> is exported by ntoskrnl</p>
+    
+    <h2>NtRegisterThreadTerminatePort</h2>
+    <p>Registers a port which will be notified when the current thread terminates.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtRegisterThreadTerminatePort(
+    __in HANDLE PortHandle
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>PortHandle</h4>
+    <p>A handle to the LPC port to be notified when the current thread terminates. The port will be added to a singly linked list 
+    of ports which will all be notified when the thread terminates.</p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
+    
+    <h2>NtResumeProcess</h2>
+    <p>Resumes each thread in a process.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtResumeProcess(
+    __in HANDLE ProcessHandle
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ProcessHandle</h4>
+    <p>A handle to the process to resume. The handle must have <code>PROCESS_SUSPEND_RESUME</code> access.</p>
+    <h3>Code paths</h3>
+    <p><code>NtResumeProcess</code> ... <code>PsResumeProcess</code> ... <code>KeResumeThread</code> ... 
+    <code>KiWaitTest</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll; <code>PsResumeProcess</code> is exported by ntoskrnl</p>
+    
+    <h2>NtResumeThread</h2>
+    <p>Resumes the specified thread. The thread is not actually resumed until the suspend count reaches 0 
+    (i.e. the thread has been resumed the same number of times it has been suspended).</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtResumeThread(
+    __in HANDLE ThreadHandle,
+    __out_opt PULONG PreviousSuspendCount
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ThreadHandle</h4>
+    <p>A handle to the thread to resume. The handle must have <code>THREAD_SUSPEND_RESUME</code> access.</p>
+    <h4>PreviousSuspendCount</h4>
+    <p>A variable that receives the previous suspend count (the number of times the thread has been suspended 
+    minus the number of times the thread has been resumed).</p>
+    <h3>Code paths</h3>
+    <p><code>NtResumeThread</code> ... <code>KeResumeThread</code> ... <code>KiWaitTest</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
+    
+    <h2>NtSuspendProcess</h2>
+    <p>Suspends each thread in a process.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtSuspendProcess(
+    __in HANDLE ProcessHandle
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ProcessHandle</h4>
+    <p>A handle to the process to suspend. The handle must have <code>PROCESS_SUSPEND_RESUME</code> access.</p>
+    <h3>Code paths</h3>
+    <p><code>NtSuspendProcess</code> ... <code>PsSuspendProcess</code> ... <code>PsSuspendThread</code> ... 
+    <code>KeSuspendThread</code> ... <code>KiInsertQueueApc</code> ... <code>KiSuspendThread</code> ... 
+    <code>KeWaitForSingleObject</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll; <code>PsSuspendProcess</code> is exported by ntoskrnl</p>
+    
+    <h2>NtSuspendThread</h2>
+    <p>Suspends the specified thread.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtSuspendThread(
+    __in HANDLE ThreadHandle,
+    __out_opt PULONG PreviousSuspendCount
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ThreadHandle</h4>
+    <p>A handle to the thread to suspend. The handle must have <code>THREAD_SUSPEND_RESUME</code> access.</p>
+    <h4>PreviousSuspendCount</h4>
+    <p>A variable that receives the previous suspend count (the number of times the thread has been suspended 
+    minus the number of times the thread has been resumed).</p>
+    <h3>Code paths</h3>
+    <p><code>NtSuspendThread</code> ... <code>PsSuspendThread</code> ... <code>KeSuspendThread</code> ... 
+    <code>KiInsertQueueApc</code> ... <code>KiSuspendThread</code> ... <code>KeWaitForSingleObject</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
+    
+    <h2>NtTestAlert</h2>
+    <p>Checks whether the current thread is alerted. If it is, the thread's alerted state will be cleared and 
+    <code>STATUS_ALERTED</code> will be returned. Otherwise, <code>STATUS_SUCCESS</code> will be returned.</p>
+    <p>If the function is being called from user-mode, any user-mode APCs will be called when the system service exits.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtTestAlert(
+    VOID
+    );</pre>
+    <h3>Code paths</h3>
+    <p><code>NtTestAlert</code> ... <code>KeTestAlertThread</code></p>
+    <h3>Exported by</h3>
+    <p>ntdll; <code>KeTestAlertThread</code> is exported by ntoskrnl</p>
+    
+    <h2>NtTerminateProcess</h2>
+    <p>Terminates the specified process.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtTerminateProcess(
+    __in_opt HANDLE ProcessHandle,
+    __in NTSTATUS ExitStatus
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ProcessHandle</h4>
+    <p>A handle to the process to terminate. The handle must have <code>PROCESS_TERMINATE</code> access. If this argument 
+    is NULL, the current process will be terminated.</p>
+    <h4>ExitStatus</h4>
+    <p>A NT status value that will be saved.</p>
+    <h3>Code paths</h3>
+    <p><code>NtTerminateProcess</code> ... <code>PspTerminateAllThreads</code> ... <code>PspTerminateThreadByPointer</code> ... 
+    <code>KeInsertQueueApc</code> ... <code>PspExitNormalApc</code> ... <code>PsExitSpecialApc</code> ... 
+    <code>PspExitThread</code> ... <code>PspExitProcess</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll; <code>ZwTerminateProcess</code> is exported by ntoskrnl</p>
+    
+    <h2>NtTerminateThread</h2>
+    <p>Terminates the specified thread.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtTerminateThread(
+    __in_opt HANDLE ThreadHandle,
+    __in NTSTATUS ExitStatus
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ThreadHandle</h4>
+    <p>A handle to the thread to terminate. The handle must have <code>THREAD_TERMINATE</code> access. If this argument 
+    is NULL, the current thread will be terminated. If the thread is the last in the process, the function will return 
+    <code>STATUS_CANT_TERMINATE_SELF</code>. The reason for this is that user-mode libraries (such as ntdll) are required to 
+    call <code>NtTerminateProcess</code> if this function fails with <code>STATUS_CANT_TERMINATE_SELF</code>.</p>
+    <h4>ExitStatus</h4>
+    <p>A NT status value that will be saved.</p>
+    <h3>Code paths</h3>
+    <p><code>NtTerminateThread</code> ... <code>PspTerminateThreadByPointer</code> ... <code>KeInsertQueueApc</code> ... 
+    <code>PspExitNormalApc</code> ... <code>PsExitSpecialApc</code> ... <code>PspExitThread</code> ... 
+    <code>KeTerminateThread</code> ... <code>KiInsertQueue</code> ... [<code>PspReaper</code>] <code>KeDeleteThread</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
+    
+    <h2>RtlCreateUserThread</h2>
+    <p>Creates a new thread.</p>
+    <pre>
+NTSYSAPI
+NTSTATUS
+NTAPI
+RtlCreateUserThread(
+    __in HANDLE Process,
+    __in_opt PSECURITY_DESCRIPTOR ThreadSecurityDescriptor,
+    __in BOOLEAN CreateSuspended,
+    __in_opt ULONG ZeroBits,
+    __in_opt SIZE_T MaximumStackSize,
+    __in_opt SIZE_T CommittedStackSize,
+    __in PUSER_THREAD_START_ROUTINE StartAddress,
+    __in_opt PVOID Parameter,
+    __out_opt PHANDLE Thread,
+    __out_opt PCLIENT_ID ClientId
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>Process</h4>
+    <p>A handle to the process in which the thread will be created. The handle must have <code>PROCESS_CREATE_THREAD</code> and 
+    <code>PROCESS_VM_OPERATION</code> access.</p>
+    <h4>ThreadSecurityDescriptor</h4>
+    <p>A security descriptor for the new thread.</p>
+    <h4>CreateSuspended</h4>
+    <p>Whether the thread should be suspended when it is created. You can resume the thread using <code>NtResumeThread</code>.</p>
+    <h4>ZeroBits</h4>
+    <p>The number of bits that must be clear when the thread stack is allocated. This value cannot be greater than 21.</p>
+    <h4>MaximumStackSize</h4>
+    <p>The maximum size of the thread stack.</p>
+    <h4>CommittedStackSize</h4>
+    <p>The number of bytes of initially committed thread stack.</p>
+    <h4>StartAddress</h4>
+    <p>The function to call in the new thread:</p>
+    <pre>
+typedef
+NTSTATUS
+(*PUSER_THREAD_START_ROUTINE)(
+    PVOID ThreadParameter
+    );</pre>
+    <h4>Parameter</h4>
+    <p>A value to pass to the function specified by <code>StartAddress</code>.</p>
+    <h4>Thread</h4>
+    <p>A variable which receives a handle to the new thread. The handle will have <code>THREAD_ALL_ACCESS</code> access.</p>
+    <h4>ClientId</h4>
+    <p>A variable which receives the client ID of the new thread.</p>
+    <h3>Code paths</h3>
+    <p><code>RtlCreateUserThread</code> ... <code>NtCreateThread</code> ... <code>PspCreateThread</code> ... 
+    <code>PspAllocateThread</code> ... <code>KeInitThread</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
     
     <p id="footer">Copyright (c) 2009 wj32. Licensed under the GFDL 1.3.</p>
   </body>

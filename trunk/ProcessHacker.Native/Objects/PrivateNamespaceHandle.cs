@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
@@ -77,6 +78,10 @@ namespace ProcessHacker.Native.Objects
         private IntPtr _descriptor;
 
         public BoundaryDescriptor(string name)
+            : this(name, null)
+        { }
+
+        public BoundaryDescriptor(string name, IEnumerable<Sid> sids)
         {
             _descriptor = Win32.CreateBoundaryDescriptor(name, 0);
 
@@ -84,6 +89,12 @@ namespace ProcessHacker.Native.Objects
             {
                 this.DisableOwnership(false);
                 Win32.ThrowLastError();
+            }
+
+            if (sids != null)
+            {
+                foreach (Sid sid in sids)
+                    this.Add(sid);
             }
         }
 
