@@ -77,6 +77,7 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)\ProcessHacker\$(OutDir)"
-copy "$(TargetPath)" "$(SolutionDir)\ProcessHacker\$(OutDir)"</PostBuildEvent>
+copy "$(TargetPath)" "$(SolutionDir)\ProcessHacker\$(OutDir)"
+copy "$(TargetDir)\Assistant.pdb" "$(SolutionDir)\ProcessHacker\$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
