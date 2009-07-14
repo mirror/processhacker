@@ -34,9 +34,9 @@ typedef struct _PH_QUERY_FILE_OBJECT_BUFFER
     POBJECT_NAME_INFORMATION Name;
 } PH_QUERY_FILE_OBJECT_BUFFER, *PPH_QUERY_FILE_OBJECT_BUFFER;
 
-NTSTATUS PhObjInit();
+NTSTATUS PHAPI PhObjInit();
 
-NPHAPI NTSTATUS PhQueryNameFileObject(
+NPHAPI NTSTATUS PHAPI PhQueryNameFileObject(
     HANDLE FileHandle,
     POBJECT_NAME_INFORMATION FileObjectNameInformation,
     ULONG FileObjectNameInformationLength,

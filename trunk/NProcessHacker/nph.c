@@ -22,9 +22,10 @@
 
 #include "nph.h"
 #include "kph.h"
+#include "obj.h"
 #include "verify.h"
 
-PVOID PhAlloc(SIZE_T Size)
+PVOID PHAPI PhAlloc(SIZE_T Size)
 {
     PVOID memory;
     
@@ -34,7 +35,7 @@ PVOID PhAlloc(SIZE_T Size)
     return memory;
 }
 
-PVOID PhRealloc(PVOID Memory, SIZE_T Size)
+PVOID PHAPI PhRealloc(PVOID Memory, SIZE_T Size)
 {
     PVOID memory;
 
@@ -44,17 +45,17 @@ PVOID PhRealloc(PVOID Memory, SIZE_T Size)
     return memory;
 }
 
-VOID PhFree(PVOID Memory)
+VOID PHAPI PhFree(PVOID Memory)
 {
     free(Memory);
 }
 
-PVOID PhGetProcAddress(PWSTR LibraryName, PSTR ProcName)
+PVOID PHAPI PhGetProcAddress(PWSTR LibraryName, PSTR ProcName)
 {
     return GetProcAddress(GetModuleHandle(LibraryName), ProcName);
 }
 
-VOID PhVoid()
+VOID PHAPI PhVoid()
 {
     return;
 }
@@ -68,7 +69,7 @@ BOOL WINAPI DllMain(
     switch (fdwReason)
     {
     case DLL_PROCESS_ATTACH:
-        if (!NT_SUCCESS(PhvInit()))
+        if (!NT_SUCCESS(PhVerifyInit()))
             return FALSE;
         if (!NT_SUCCESS(PhObjInit()))
             return FALSE;

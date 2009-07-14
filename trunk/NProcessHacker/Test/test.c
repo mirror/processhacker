@@ -23,7 +23,7 @@ int wmain(int argc, WCHAR *argv[])
 
     KphHookInit();
     processHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-    ReadProcessMemory(processHandle, 0x10000, memory, 0x1000, NULL);
+    ReadProcessMemory(processHandle, (PVOID)0x10000, memory, 0x1000, NULL);
 
     return 0;
 }

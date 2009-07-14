@@ -82,10 +82,7 @@ typedef BOOL (WINAPI *_CryptCATAdminReleaseContext)(
     DWORD dwFlags
     );
 
-NTSTATUS PhvInit();
-VERIFY_RESULT PhvStatusToVerifyResult(LONG Status);
-VERIFY_RESULT PhvVerifyFileBasic(PWSTR FileName);
-VERIFY_RESULT PhvVerifyFileCat(PWSTR FileName);
-NPHAPI VERIFY_RESULT PhvVerifyFile(PWSTR FileName);
+NTSTATUS PHAPI PhVerifyInit();
+NPHAPI VERIFY_RESULT PHAPI PhVerifyFile(PWSTR FileName);
 
 #endif

@@ -44,9 +44,12 @@
 #define FILE_WRITE_ACCESS (0x0002)
 #endif
 
+#ifndef CTL_CODE
 #define CTL_CODE(DeviceType, Function, Method, Access) ( \
     ((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method))
 #define KPH_CTL_CODE(x) CTL_CODE(KPH_DEVICE_TYPE, 0x800 + x, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#endif
+
 #define KPH_READ KPH_CTL_CODE(0)
 #define KPH_WRITE KPH_CTL_CODE(1)
 #define KPH_GETFILEOBJECTNAME KPH_CTL_CODE(2)
@@ -105,85 +108,85 @@ typedef struct _PROCESS_HANDLE_INFORMATION
     PROCESS_HANDLE Handles[1];
 } PROCESS_HANDLE_INFORMATION, *PPROCESS_HANDLE_INFORMATION;
 
-NTSTATUS KphInit();
+NTSTATUS PHAPI KphInit();
 
-NPHAPI NTSTATUS KphConnect(
+NPHAPI NTSTATUS PHAPI KphConnect(
     __out PHANDLE KphHandle
     );
 
-NPHAPI NTSTATUS KphDisconnect(
+NPHAPI NTSTATUS PHAPI KphDisconnect(
     __in HANDLE KphHandle
     );
 
-NPHAPI NTSTATUS KphGetFeatures(
+NPHAPI NTSTATUS PHAPI KphGetFeatures(
     __in HANDLE KphHandle,
     __out PULONG Features
     );
 
-NPHAPI NTSTATUS KphRead(
+NPHAPI NTSTATUS PHAPI KphRead(
     __in HANDLE KphHandle,
     __in PVOID Address,
     __out_bcount(BufferLength) PVOID Buffer,
     __in ULONG BufferLength
     );
 
-NPHAPI NTSTATUS KphWrite(
+NPHAPI NTSTATUS PHAPI KphWrite(
     __in HANDLE KphHandle,
     __in PVOID Address,
     __in_bcount(Length) PVOID Buffer,
     __in ULONG Length
     );
 
-NPHAPI NTSTATUS KphOpenProcess(
+NPHAPI NTSTATUS PHAPI KphOpenProcess(
     __in HANDLE KphHandle,
     __out PHANDLE ProcessHandle,
     __in HANDLE ProcessId,
     __in ACCESS_MASK DesiredAccess
     );
 
-NPHAPI NTSTATUS KphOpenThread(
+NPHAPI NTSTATUS PHAPI KphOpenThread(
     __in HANDLE KphHandle,
     __out PHANDLE ThreadHandle,
     __in HANDLE ThreadId,
     __in ACCESS_MASK DesiredAccess
     );
 
-NPHAPI NTSTATUS KphOpenProcessToken(
+NPHAPI NTSTATUS PHAPI KphOpenProcessToken(
     __in HANDLE KphHandle,
     __out PHANDLE TokenHandle,
     __in HANDLE ProcessHandle,
     __in ACCESS_MASK DesiredAccess
     );
 
-NPHAPI NTSTATUS KphGetProcessProtected(
+NPHAPI NTSTATUS PHAPI KphGetProcessProtected(
     __in HANDLE KphHandle,
     __in ULONG_PTR ProcessId,
     __out PBOOLEAN IsProtected
     );
 
-NPHAPI NTSTATUS KphSetProcessProtected(
+NPHAPI NTSTATUS PHAPI KphSetProcessProtected(
     __in HANDLE KphHandle,
     __in ULONG_PTR ProcessId,
     __in BOOLEAN IsProtected
     );
 
-NPHAPI NTSTATUS KphTerminateProcess(
+NPHAPI NTSTATUS PHAPI KphTerminateProcess(
     __in HANDLE KphHandle,
     __in HANDLE ProcessHandle,
     __in NTSTATUS ExitStatus
     );
 
-NPHAPI NTSTATUS KphSuspendProcess(
+NPHAPI NTSTATUS PHAPI KphSuspendProcess(
     __in HANDLE KphHandle,
     __in HANDLE ProcessHandle
     );
 
-NPHAPI NTSTATUS KphResumeProcess(
+NPHAPI NTSTATUS PHAPI KphResumeProcess(
     __in HANDLE KphHandle,
     __in HANDLE ProcessHandle
     );
 
-NPHAPI NTSTATUS KphReadVirtualMemory(
+NPHAPI NTSTATUS PHAPI KphReadVirtualMemory(
     __in HANDLE KphHandle,
     __in HANDLE ProcessHandle,
     __in PVOID BaseAddress,
@@ -192,7 +195,7 @@ NPHAPI NTSTATUS KphReadVirtualMemory(
     __out_opt PULONG ReturnLength
     );
 
-NPHAPI NTSTATUS KphWriteVirtualMemory(
+NPHAPI NTSTATUS PHAPI KphWriteVirtualMemory(
     __in HANDLE KphHandle,
     __in HANDLE ProcessHandle,
     __in PVOID BaseAddress,
@@ -201,38 +204,38 @@ NPHAPI NTSTATUS KphWriteVirtualMemory(
     __out_opt PULONG ReturnLength
     );
 
-NPHAPI NTSTATUS KphOpenProcessJob(
+NPHAPI NTSTATUS PHAPI KphOpenProcessJob(
     __in HANDLE KphHandle,
     __out PHANDLE JobHandle,
     __in HANDLE ProcessHandle,
     __in ACCESS_MASK DesiredAccess
     );
 
-NPHAPI NTSTATUS KphGetContextThread(
+NPHAPI NTSTATUS PHAPI KphGetContextThread(
     __in HANDLE KphHandle,
     __in HANDLE ThreadHandle,
     __inout PCONTEXT ThreadContext
     );
 
-NPHAPI NTSTATUS KphSetContextThread(
+NPHAPI NTSTATUS PHAPI KphSetContextThread(
     __in HANDLE KphHandle,
     __in HANDLE ThreadHandle,
     __in PCONTEXT ThreadContext
     );
 
-NPHAPI NTSTATUS KphTerminateThread(
+NPHAPI NTSTATUS PHAPI KphTerminateThread(
     __in HANDLE KphHandle,
     __in HANDLE ThreadHandle,
     __in NTSTATUS ExitStatus
     );
 
-NPHAPI NTSTATUS KphSetHandleGrantedAccess(
+NPHAPI NTSTATUS PHAPI KphSetHandleGrantedAccess(
     __in HANDLE KphHandle,
     __in HANDLE Handle,
     __in ACCESS_MASK GrantedAccess
     );
 
-NPHAPI NTSTATUS KphProtectAdd(
+NPHAPI NTSTATUS PHAPI KphProtectAdd(
     __in HANDLE KphHandle,
     __in HANDLE ProcessHandle,
     __in BOOLEAN AllowKernelMode,
@@ -240,12 +243,12 @@ NPHAPI NTSTATUS KphProtectAdd(
     __in ACCESS_MASK ThreadAllowMask
     );
 
-NPHAPI NTSTATUS KphProtectRemove(
+NPHAPI NTSTATUS PHAPI KphProtectRemove(
     __in HANDLE KphHandle,
     __in HANDLE ProcessHandle
     );
 
-NPHAPI NTSTATUS KphProtectQuery(
+NPHAPI NTSTATUS PHAPI KphProtectQuery(
     __in HANDLE KphHandle,
     __in HANDLE ProcessHandle,
     __out PBOOLEAN AllowKernelMode,
@@ -253,7 +256,7 @@ NPHAPI NTSTATUS KphProtectQuery(
     __out PACCESS_MASK ThreadAllowMask
     );
 
-NPHAPI NTSTATUS KphUnsafeReadVirtualMemory(
+NPHAPI NTSTATUS PHAPI KphUnsafeReadVirtualMemory(
     __in HANDLE KphHandle,
     __in HANDLE ProcessHandle,
     __in PVOID BaseAddress,
@@ -262,13 +265,13 @@ NPHAPI NTSTATUS KphUnsafeReadVirtualMemory(
     __out_opt PULONG ReturnLength
     );
 
-NPHAPI NTSTATUS KphSetExecuteOptions(
+NPHAPI NTSTATUS PHAPI KphSetExecuteOptions(
     __in HANDLE KphHandle,
     __in HANDLE ProcessHandle,
     __in ULONG ExecuteOptions
     );
 
-NPHAPI NTSTATUS KphQueryProcessHandles(
+NPHAPI NTSTATUS PHAPI KphQueryProcessHandles(
     __in HANDLE KphHandle,
     __in HANDLE ProcessHandle,
     __out_bcount_opt(BufferLength) PVOID Buffer,
@@ -276,7 +279,7 @@ NPHAPI NTSTATUS KphQueryProcessHandles(
     __out_opt PULONG ReturnLength
     );
 
-NPHAPI NTSTATUS KphOpenThreadProcess(
+NPHAPI NTSTATUS PHAPI KphOpenThreadProcess(
     __in HANDLE KphHandle,
     __out PHANDLE ProcessHandle,
     __in HANDLE ThreadHandle,

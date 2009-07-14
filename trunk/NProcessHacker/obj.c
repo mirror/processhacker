@@ -21,7 +21,7 @@
 
 #include "obj.h"
 
-ULONG PhpQueryFileObjectThreadStart(
+ULONG PHAPI PhpQueryFileObjectThreadStart(
     PVOID Parameter
     );
 
@@ -35,7 +35,7 @@ HANDLE QueryFileObjectCompletedEvent = NULL;
 HANDLE QueryFileObjectFileHandle;
 PH_QUERY_FILE_OBJECT_BUFFER QueryFileObjectBuffer;
 
-NTSTATUS PhObjInit()
+NTSTATUS PHAPI PhObjInit()
 {
     if (!(NtQueryObject = (_NtQueryObject)
         PhGetProcAddress(L"ntdll.dll", "NtQueryObject")))
@@ -46,7 +46,7 @@ NTSTATUS PhObjInit()
     return STATUS_SUCCESS;
 }
 
-NTSTATUS PhQueryNameFileObject(
+NTSTATUS PHAPI PhQueryNameFileObject(
     HANDLE FileHandle,
     POBJECT_NAME_INFORMATION FileObjectNameInformation,
     ULONG FileObjectNameInformationLength,
@@ -60,8 +60,6 @@ NTSTATUS PhQueryNameFileObject(
     /* Create a query thread if we don't have one. */
     if (!QueryFileObjectThreadHandle)
     {
-        ULONG threadId;
-
         QueryFileObjectThreadHandle = CreateThread(
             NULL, 0, (LPTHREAD_START_ROUTINE)PhpQueryFileObjectThreadStart, NULL, 0, NULL);
 
@@ -109,7 +107,8 @@ NTSTATUS PhQueryNameFileObject(
         return status;
     }
     /* Kill the worker thread if it took too long. */
-    else if (waitResult == WAIT_TIMEOUT)
+    /* else if (waitResult == WAIT_TIMEOUT) */
+    else
     {
         /* Kill the thread. */
         if (TerminateThread(QueryFileObjectThreadHandle, 1))
@@ -126,7 +125,7 @@ NTSTATUS PhQueryNameFileObject(
     }
 }
 
-ULONG PhpQueryFileObjectThreadStart(
+ULONG PHAPI PhpQueryFileObjectThreadStart(
     PVOID Parameter
     )
 {

@@ -50,7 +50,7 @@ DECLARE_NT_HOOK(NtTerminateProcess, NTTERMINATEPROCESS_ARGS);
 DECLARE_NT_HOOK(NtTerminateThread, NTTERMINATETHREAD_ARGS);
 DECLARE_NT_HOOK(NtWriteVirtualMemory, NTWRITEVIRTUALMEMORY_ARGS);
 
-VOID KphHookInit()
+VOID PHAPI KphHookInit()
 {
     if (KphHookInitialized)
         return;
@@ -72,7 +72,7 @@ VOID KphHookInit()
     KphHookInitialized = TRUE;
 }
 
-VOID KphHookDeinit()
+VOID PHAPI KphHookDeinit()
 {
     if (!KphHookInitialized)
         return;

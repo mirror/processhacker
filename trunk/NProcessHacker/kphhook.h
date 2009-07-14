@@ -26,7 +26,7 @@
 #include "hook.h"
 #include "kph.h"
 
-NPHAPI VOID KphHookInit();
-NPHAPI VOID KphHookDeinit();
+NPHAPI VOID PHAPI KphHookInit();
+NPHAPI VOID PHAPI KphHookDeinit();
 
 #endif

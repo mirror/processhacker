@@ -30,7 +30,7 @@ namespace ProcessHacker.Native
     [SuppressUnmanagedCodeSecurity]
     public static class NProcessHacker
     {
-        public enum WS_INFORMATION_CLASS
+        public enum WsInformationClass
         {
             WsCount = 0,
             WsPrivateCount,
@@ -40,7 +40,7 @@ namespace ProcessHacker.Native
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct WS_ALL_COUNTS
+        public struct WsAllCounts
         {
             public int Count;
             public int PrivateCount;
@@ -48,31 +48,31 @@ namespace ProcessHacker.Native
             public int ShareableCount;
         }
 
-        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("nprocesshacker.dll")]
         public static extern void KphHookDeinit();
 
-        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("nprocesshacker.dll")]
         public static extern void KphHookInit();
 
-        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
-        public static extern NtStatus PhpQueryProcessWs(
+        [DllImport("nprocesshacker.dll", SetLastError = true)]
+        public static extern NtStatus PhQueryProcessWs(
             [In] IntPtr ProcessHandle,
-            [In] WS_INFORMATION_CLASS WsInformationClass,
+            [In] WsInformationClass WsInformationClass,
             [Out] out int WsInformation,
             [In] int WsInformationLength,
             [Out] out int ReturnLength
             );
 
-        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
-        public static extern NtStatus PhpQueryProcessWs(
+        [DllImport("nprocesshacker.dll", SetLastError = true)]
+        public static extern NtStatus PhQueryProcessWs(
             [In] IntPtr ProcessHandle,
-            [In] WS_INFORMATION_CLASS WsInformationClass,
-            [Out] out WS_ALL_COUNTS WsInformation,
+            [In] WsInformationClass WsInformationClass,
+            [Out] out WsAllCounts WsInformation,
             [In] int WsInformationLength,
             [Out] out int ReturnLength
             );
 
-        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+        [DllImport("nprocesshacker.dll", SetLastError = true)]
         public static extern NtStatus PhQueryNameFileObject(
             [In] IntPtr FileHandle,
             [In] IntPtr FileObjectNameInformation,
@@ -80,10 +80,10 @@ namespace ProcessHacker.Native
             [Out] [Optional] out int ReturnLength
             );
 
-        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("nprocesshacker.dll")]
         public static extern void PhVoid();
 
-        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern VerifyResult PhvVerifyFile(string FileName);
+        [DllImport("nprocesshacker.dll", CharSet = CharSet.Unicode)]
+        public static extern VerifyResult PhVerifyFile(string FileName);
     }
 }

@@ -57,12 +57,14 @@
 #define NPHAPI __declspec(dllimport)
 #endif
 
+#define PHAPI __stdcall
+
 #define EXCEPTION_NO_MEMORY STATUS_NO_MEMORY
 
-NPHAPI PVOID PhAlloc(SIZE_T Size);
-NPHAPI PVOID PhRealloc(PVOID Memory, SIZE_T Size);
-NPHAPI VOID PhFree(PVOID Memory);
-PVOID PhGetProcAddress(PWSTR LibraryName, PSTR ProcName);
-NPHAPI VOID PhVoid();
+NPHAPI PVOID PHAPI PhAlloc(SIZE_T Size);
+NPHAPI PVOID PHAPI PhRealloc(PVOID Memory, SIZE_T Size);
+NPHAPI VOID PHAPI PhFree(PVOID Memory);
+PVOID PHAPI PhGetProcAddress(PWSTR LibraryName, PSTR ProcName);
+NPHAPI VOID PHAPI PhVoid();
 
 #endif

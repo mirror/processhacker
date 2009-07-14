@@ -19,35 +19,30 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _PROCESS_H
-#define _PROCESS_H
+#ifndef _SECEDIT_H
+#define _SECEDIT_H
 
 #include "nph.h"
-#include <psapi.h>
 
-typedef enum _WS_INFORMATION_CLASS
-{
-    WsCount = 0,
-    WsPrivateCount,
-    WsSharedCount,
-    WsShareableCount,
-    WsAllCounts
-} WS_INFORMATION_CLASS, *PWS_INFORMATION_CLASS;
-
-typedef struct _WS_ALL_COUNTS
-{
-    ULONG Count;
-    ULONG PrivateCount;
-    ULONG SharedCount;
-    ULONG ShareableCount;
-} WS_ALL_COUNTS, *PWS_ALL_COUNTS;
-
-NPHAPI NTSTATUS PHAPI PhQueryProcessWs(
-    HANDLE ProcessHandle,
-    WS_INFORMATION_CLASS WsInformationClass,
-    PVOID WsInformation,
-    ULONG WsInformationLength,
-    PULONG ReturnLength
+typedef HRESULT (__stdcall *_QueryInterface)(
+    PVOID This,
+    REFIID Id,
+    PVOID *Object
     );
+
+typedef ULONG (__stdcall *_AddRef)(
+    PVOID This
+    );
+
+typedef ULONG (__stdcall *_Release)(
+    PVOID This
+    );
+
+typedef struct _ISECURITY_INFORMATION
+{
+    _QueryInterface QueryInterface;
+    _AddRef AddRef;
+    _Release Release;
+} ISECURITY_INFORMATION, *PISECURITY_INFORMATION;
 
 #endif

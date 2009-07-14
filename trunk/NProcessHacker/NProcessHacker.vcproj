@@ -114,10 +114,11 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="0"
 				PreprocessorDefinitions="NPH_EXPORTS"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				CallingConvention="0"
 				CompileAs="1"
 			/>
 			<Tool
@@ -193,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\secedit.c"
+				>
+			</File>
+			<File
 				RelativePath=".\verify.c"
 				>
 			</File>
@@ -228,6 +233,10 @@
 			</File>
 			<File
 				RelativePath=".\process.h"
+				>
+			</File>
+			<File
+				RelativePath=".\secedit.h"
 				>
 			</File>
 			<File

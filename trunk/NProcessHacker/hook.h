@@ -57,17 +57,17 @@ typedef struct _PH_HOOK
     CHAR Bytes[5];
 } PH_HOOK, *PPH_HOOK;
 
-NPHAPI VOID PhInitializeHook(
+NPHAPI VOID PHAPI PhInitializeHook(
     PPH_HOOK Hook,
     PVOID Function,
     PVOID Target
     );
 
-NPHAPI NTSTATUS PhHook(
+NPHAPI NTSTATUS PHAPI PhHook(
     PPH_HOOK Hook
     );
 
-NPHAPI NTSTATUS PhUnhook(
+NPHAPI NTSTATUS PHAPI PhUnhook(
     PPH_HOOK Hook
     );
 

@@ -21,6 +21,10 @@
 
 #include "verify.h"
 
+VERIFY_RESULT PHAPI PhpStatusToVerifyResult(LONG Status);
+VERIFY_RESULT PHAPI PhpVerifyFileBasic(PWSTR FileName);
+VERIFY_RESULT PHAPI PhpVerifyFileCat(PWSTR FileName);
+
 _CryptCATAdminCalcHashFromFileHandle CryptCATAdminCalcHashFromFileHandle;
 _CryptCATAdminAcquireContext CryptCATAdminAcquireContext;
 _CryptCATAdminEnumCatalogFromHash CryptCATAdminEnumCatalogFromHash;
@@ -28,7 +32,7 @@ _CryptCATCatalogInfoFromContext CryptCATCatalogInfoFromContext;
 _CryptCATAdminReleaseCatalogContext CryptCATAdminReleaseCatalogContext;
 _CryptCATAdminReleaseContext CryptCATAdminReleaseContext;
 
-NTSTATUS PhvInit()
+NTSTATUS PHAPI PhVerifyInit()
 {
     LoadLibrary(L"wintrust.dll");
 
@@ -48,7 +52,7 @@ NTSTATUS PhvInit()
     return STATUS_SUCCESS;
 }
 
-VERIFY_RESULT PhvStatusToVerifyResult(LONG Status)
+VERIFY_RESULT PHAPI PhpStatusToVerifyResult(LONG Status)
 {
     switch (Status)
     {
@@ -69,7 +73,7 @@ VERIFY_RESULT PhvStatusToVerifyResult(LONG Status)
     }
 }
 
-VERIFY_RESULT PhvVerifyFileBasic(PWSTR FileName)
+VERIFY_RESULT PHAPI PhpVerifyFileBasic(PWSTR FileName)
 {
     WINTRUST_DATA trustData = { 0 };
     WINTRUST_FILE_INFO fileInfo = { 0 };
@@ -84,10 +88,10 @@ VERIFY_RESULT PhvVerifyFileBasic(PWSTR FileName)
     trustData.dwUnionChoice = WTD_CHOICE_FILE;
     trustData.pFile = &fileInfo;
 
-    return PhvStatusToVerifyResult(WinVerifyTrust(NULL, &actionGenericVerifyV2, &trustData));
+    return PhpStatusToVerifyResult(WinVerifyTrust(NULL, &actionGenericVerifyV2, &trustData));
 }
 
-VERIFY_RESULT PhvVerifyFileCat(PWSTR FileName)
+VERIFY_RESULT PHAPI PhpVerifyFileCat(PWSTR FileName)
 {
     LONG status = TRUST_E_NOSIGNATURE;
     WINTRUST_DATA trustData = { 0 };
@@ -178,18 +182,18 @@ VERIFY_RESULT PhvVerifyFileCat(PWSTR FileName)
     CryptCATAdminReleaseContext(catAdminHandle, 0);
     CloseHandle(fileHandle);
 
-    return PhvStatusToVerifyResult(status);
+    return PhpStatusToVerifyResult(status);
 }
 
-VERIFY_RESULT PhvVerifyFile(PWSTR FileName)
+VERIFY_RESULT PHAPI PhVerifyFile(PWSTR FileName)
 {
     VERIFY_RESULT result = VrNoSignature;
     
-    result = PhvVerifyFileBasic(FileName);
+    result = PhpVerifyFileBasic(FileName);
 
     if (result == VrNoSignature)
     {
-        result = PhvVerifyFileCat(FileName);
+        result = PhpVerifyFileCat(FileName);
     }
 
     return result;

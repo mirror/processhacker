@@ -22,7 +22,7 @@
 
 #include "hook.h"
 
-VOID PhInitializeHook(
+VOID PHAPI PhInitializeHook(
     PPH_HOOK Hook,
     PVOID Function,
     PVOID Target
@@ -33,7 +33,7 @@ VOID PhInitializeHook(
     Hook->Target = Target;
 }
 
-NTSTATUS PhHook(
+NTSTATUS PHAPI PhHook(
     PPH_HOOK Hook
     )
 {
@@ -67,13 +67,12 @@ NTSTATUS PhHook(
     return status;
 }
 
-NTSTATUS PhUnhook(
+NTSTATUS PHAPI PhUnhook(
     PPH_HOOK Hook
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
     ULONG oldProtection;
-    PCHAR function;
 
     /* Change the page protection of the target page so we can write to it. */
     if (!VirtualProtect(Hook->Function, 5, PAGE_EXECUTE_READWRITE, &oldProtection))

@@ -191,7 +191,7 @@ namespace ProcessHacker
             get { return Utils.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PeakWorkingSetSize); }
         }
 
-        private int GetWorkingSetNumber(NProcessHacker.WS_INFORMATION_CLASS WsInformationClass)
+        private int GetWorkingSetNumber(NProcessHacker.WsInformationClass WsInformationClass)
         {
             NtStatus status;
             int wsInfo;
@@ -202,7 +202,7 @@ namespace ProcessHacker
                 using (var phandle = new ProcessHandle(_pitem.Pid, 
                     ProcessAccess.QueryInformation | ProcessAccess.VmRead))
                 {
-                    if ((status = NProcessHacker.PhpQueryProcessWs(phandle, WsInformationClass, out wsInfo,
+                    if ((status = NProcessHacker.PhQueryProcessWs(phandle, WsInformationClass, out wsInfo,
                         4, out retLen)) < NtStatus.Error)
                         return wsInfo * Program.ProcessProvider.System.PageSize;
                 }
@@ -215,12 +215,12 @@ namespace ProcessHacker
 
         public int WorkingSetNumber
         {
-            get { return this.GetWorkingSetNumber(NProcessHacker.WS_INFORMATION_CLASS.WsCount); }
+            get { return this.GetWorkingSetNumber(NProcessHacker.WsInformationClass.WsCount); }
         }
 
         public int PrivateWorkingSetNumber
         {
-            get { return this.GetWorkingSetNumber(NProcessHacker.WS_INFORMATION_CLASS.WsPrivateCount); }
+            get { return this.GetWorkingSetNumber(NProcessHacker.WsInformationClass.WsPrivateCount); }
         }
 
         public string PrivateWorkingSet
@@ -230,7 +230,7 @@ namespace ProcessHacker
 
         public int SharedWorkingSetNumber
         {
-            get { return this.GetWorkingSetNumber(NProcessHacker.WS_INFORMATION_CLASS.WsSharedCount); }
+            get { return this.GetWorkingSetNumber(NProcessHacker.WsInformationClass.WsSharedCount); }
         }
 
         public string SharedWorkingSet
@@ -240,7 +240,7 @@ namespace ProcessHacker
 
         public int ShareableWorkingSetNumber
         {
-            get { return this.GetWorkingSetNumber(NProcessHacker.WS_INFORMATION_CLASS.WsShareableCount); }
+            get { return this.GetWorkingSetNumber(NProcessHacker.WsInformationClass.WsShareableCount); }
         }
 
         public string ShareableWorkingSet
