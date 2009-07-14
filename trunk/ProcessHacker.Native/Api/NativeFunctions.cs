@@ -2448,6 +2448,89 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Threading
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCreateTimer(
+            [In] IntPtr TimerQueueHandle,
+            [Out] out IntPtr Handle,
+            [In] WaitOrTimerCallbackDelegate Function,
+            [In] IntPtr Context,
+            [In] int DueTime,
+            [In] int Period,
+            [In] WtFlags Flags
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCreateTimerQueue(
+            [Out] out IntPtr TimerQueueHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDeleteTimer(
+            [In] IntPtr TimerQueueHandle,
+            [In] IntPtr TimerToCancel,
+            [In] IntPtr Event
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDeleteTimerQueue(
+            [In] IntPtr TimerQueueHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDeleteTimerQueueEx(
+            [In] IntPtr TimerQueueHandle,
+            [In] IntPtr Event
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDeregisterWait(
+            [In] IntPtr WaitHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDeregisterWaitEx(
+            [In] IntPtr WaitHandle,
+            [In] IntPtr Event
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlQueueWorkItem(
+            [MarshalAs(UnmanagedType.FunctionPtr)]
+            [In] WorkerCallbackDelegate Function,
+            [In] IntPtr Context,
+            [In] WtFlags Flags
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlRegisterWait(
+            [Out] out IntPtr WaitHandle,
+            [In] IntPtr Handle,
+            [MarshalAs(UnmanagedType.FunctionPtr)]
+            [In] WaitOrTimerCallbackDelegate Function,
+            [In] IntPtr Context,
+            [In] int Milliseconds,
+            [In] WtFlags Flags
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetIoCompletionCallback(
+            [In] IntPtr FileHandle,
+            [In] ApcCallbackDelegate CompletionProc,
+            [In] WtFlags Flags
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlUpdateTimer(
+            [In] IntPtr TimerQueueHandle,
+            [In] IntPtr TimerHandle,
+            [In] int DueTime,
+            [In] int Period
+            );
+
+        #endregion
+
         #endregion
     }
 }

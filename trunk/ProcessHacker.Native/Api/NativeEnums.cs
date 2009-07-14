@@ -1178,4 +1178,19 @@ namespace ProcessHacker.Native.Api
         WinNewEnterpriseReadonlyControllersSid = 77,
         WinBuiltinCertSvcDComAccessGroup = 78
     }
+
+    [Flags]
+    public enum WtFlags : uint
+    {
+        ExecuteDefault = 0x0,
+        ExecuteInIoThread = 0x1,
+        ExecuteInUiThread = 0x2,
+        ExecuteInWaitThread = 0x4,
+        ExecuteOnlyOnce = 0x8,
+        ExecuteLongFunction = 0x10,
+        ExecuteInTimerThread = 0x20,
+        ExecuteInPersistentIoThread = 0x40,
+        ExecuteInPersistentThread = 0x80,
+        TransferImpersonation = 0x100
+    }
 }

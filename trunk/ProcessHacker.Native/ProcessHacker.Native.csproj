@@ -164,6 +164,7 @@
     <Compile Include="Security\ThreadAccess.cs" />
     <Compile Include="Security\TokenAccess.cs" />
     <Compile Include="Security\WindowStationAccess.cs" />
+    <Compile Include="Threading\NativeThreadPool.cs" />
     <Compile Include="Threading\Semaphore.cs" />
     <Compile Include="Threading\Timer.cs" />
     <Compile Include="Threading\Waiter.cs" />
