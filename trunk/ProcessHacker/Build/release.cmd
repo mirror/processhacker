@@ -20,17 +20,16 @@ DEL/f/a "ProcessHacker.exe.config" "processhacker-*-setup.exe"^
 :: Check if ILMerge is present in the default installation location or in PATH
 SET ILMergePath="%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe"
 IF NOT EXIST %ILMergePath% (FOR %%a IN (ILMerge.exe) DO IF %%~$PATH:a' NEQ ' (
-		SET ILMergePath="%%~$PATH:a") ELSE (SET "N_=T"
-			ECHO:ILMerge IS NOT INSTALLED!!!&&(GOTO CLEANUP)))
+	SET ILMergePath="%%~$PATH:a") ELSE (SET "N_=T"
+		ECHO:ILMerge IS NOT INSTALLED!!!&&(GOTO CLEANUP)))
 
 SET RequiredDLLs="Aga.Controls.dll" "ProcessHacker.Common.dll"^
  "ProcessHacker.Native.dll"
 
 :: Create a temporary directory for the merged files
-mkdir tmp
+MD tmp >NUL 2>&1
 
 :: Merge DLLs with "Assistant.exe"
-
 %ILMergePath% /t:exe /out:"tmp\Assistant.exe" "Assistant.exe"^
  %RequiredDLLs% && ECHO:DLLs merged successfully with Assistant.exe!
 
@@ -39,11 +38,16 @@ mkdir tmp
  %RequiredDLLs% && ECHO:DLLs merged successfully with ProcessHacker.exe!
 
 :: Delete the existing EXEs and PDBs
-del ProcessHacker.exe Assistant.exe *.pdb
-:: Copy the merged files (two EXEs and two PDBs) back into this directory
-move tmp\* .\
+DEL ProcessHacker.exe Assistant.exe *.pdb >NUL 2>&1
 
-DEL/f/a %RequiredDLLs% "ProcessHacker.Common.xml" "ProcessHacker.Native.xml" >NUL 2>&1
+:: Copy the merged files (2 EXEs and 2 PDBs) back into this directory
+MOVE tmp\* .\ >NUL 2>&1
+
+DEL/f/a %RequiredDLLs% "ProcessHacker.Common.xml"^
+ "ProcessHacker.Native.xml" >NUL 2>&1
+
+:: Delete the temporary directory
+RD tmp >NUL 2>&1
 
 :: Set the path of Inno Setup and compile installer
 SET "U_=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
@@ -57,9 +61,6 @@ FOR /f "delims=" %%a IN (
 IF DEFINED InnoSetupPath ("%InnoSetupPath%\iscc.exe" /Q /O"..\..\bin\Release"^
  "..\..\Build\Installer\Process_Hacker_installer.iss"&&(
 	ECHO:Installer compiled successfully!)) ELSE (ECHO:%M_%)
-
-:: Delete the temporary directory
-rmdir tmp
 
 :: ZIP the files
 IF NOT DEFINED N_ (START "" /B /WAIT "..\..\Build\7za\7za.exe" a -tzip -mx=9^
@@ -79,8 +80,7 @@ FOR %%a IN (
 
 :: Make a PDB zip
 "..\..\Build\7za\7za.exe" a -tzip -mx=9 "processhacker-pdb.zip"^
- "*.pdb"^
- >NUL&&(ECHO:PDB ZIP created successfully!)
+ "*.pdb" >NUL&&(ECHO:PDB ZIP created successfully!)
 
 :END
 GOTO :EOF
