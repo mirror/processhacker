@@ -2095,6 +2095,79 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Heaps
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlAllocateHeap(
+            [In] IntPtr HeapHandle,
+            [In] HeapFlags Flags,
+            [In] IntPtr Size
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlCreateHeap(
+            [In] HeapFlags Flags,
+            [In] [Optional] IntPtr HeapBase,
+            [In] [Optional] IntPtr ReserveSize,
+            [In] [Optional] IntPtr CommitSize,
+            [In] [Optional] IntPtr Lock,
+            [In] [Optional] IntPtr Parameters
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlDestroyHeap(
+            [In] IntPtr HeapHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        [return: MarshalAs(UnmanagedType.U1)]
+        public static extern bool RtlFreeHeap(
+            [In] IntPtr HeapHandle,
+            [In] HeapFlags Flags,
+            [In] IntPtr BaseAddress
+            );
+
+        [DllImport("ntdll.dll")]
+        [return: MarshalAs(UnmanagedType.U1)]
+        public static extern bool RtlLockHeap(
+            [In] IntPtr HeapHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlProtectHeap(
+            [In] IntPtr HeapHandle,
+            [In] bool MakeReadOnly
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlReAllocateHeap(
+            [In] IntPtr HeapHandle,
+            [In] HeapFlags Flags,
+            [In] IntPtr BaseAddress,
+            [In] IntPtr Size
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlSizeHeap(
+            [In] IntPtr HeapHandle,
+            [In] HeapFlags Flags,
+            [In] IntPtr BaseAddress
+            );
+
+        [DllImport("ntdll.dll")]
+        [return: MarshalAs(UnmanagedType.U1)]
+        public static extern bool RtlUnlockHeap(
+            [In] IntPtr HeapHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlZeroHeap(
+            [In] IntPtr HeapHandle,
+            [In] HeapFlags Flags
+            );
+
+        #endregion
+
         #region Memory
 
         [DllImport("ntdll.dll")]

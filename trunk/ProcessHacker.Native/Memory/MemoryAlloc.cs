@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using ProcessHacker.Common.Objects;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native
 {
@@ -33,10 +34,15 @@ namespace ProcessHacker.Native
     /// </summary>
     public class MemoryAlloc : BaseObject
     {
+        // A private heap just for the client.
+        private static Heap _privateHeap = new Heap(HeapFlags.Class1 | HeapFlags.Growable);
+        private static Heap _processHeap = Heap.GetDefault();
         private static Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
 
-        private IntPtr _memory;
-        private int _size;
+        public static IntPtr PrivateHeap
+        {
+            get { return _privateHeap.Address; }
+        }
 
         public static implicit operator int(MemoryAlloc memory)
         {
@@ -62,6 +68,9 @@ namespace ProcessHacker.Native
         {
             return (int*)memory.Memory;
         }
+
+        private IntPtr _memory;
+        private int _size;
 
         /// <summary>
         /// Creates a new, invalid memory allocation. 
@@ -91,7 +100,7 @@ namespace ProcessHacker.Native
         /// <param name="size">The amount of memory, in bytes, to allocate.</param>
         public MemoryAlloc(int size)
         {
-            _memory = Marshal.AllocHGlobal(size);
+            _memory = _privateHeap.Allocate(0, size);
             _size = size;
         }
 
@@ -102,7 +111,7 @@ namespace ProcessHacker.Native
 
         protected virtual void Free()
         {
-            Marshal.FreeHGlobal(this);
+            _privateHeap.Free(0, this);
         }
 
         /// <summary>
@@ -254,7 +263,7 @@ namespace ProcessHacker.Native
         /// <param name="newSize">The new size of the allocation.</param>
         public virtual void Resize(int newSize)
         {
-            _memory = Marshal.ReAllocHGlobal(_memory, new IntPtr(newSize));
+            _memory = _privateHeap.Reallocate(0, _memory, newSize);
             _size = newSize;
         }
 

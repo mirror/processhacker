@@ -791,6 +791,7 @@ namespace ProcessHacker
             info.AppendLine("OS Version: " + Environment.OSVersion.VersionString);
             info.AppendLine("Elevation: " + ElevationType.ToString());
             info.AppendLine("Working set: " + Utils.GetNiceSizeName(Environment.WorkingSet));
+            info.AppendLine("Private heap: 0x" + MemoryAlloc.PrivateHeap.ToString("x"));
 
             if (KProcessHacker.Instance == null)
                 info.AppendLine("KProcessHacker: not running");

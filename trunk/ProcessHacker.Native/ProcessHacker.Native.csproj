@@ -61,6 +61,7 @@
     <Compile Include="Debugging\ModuleInformation.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Lpc\PortMessage.cs" />
+    <Compile Include="Memory\Heap.cs" />
     <Compile Include="Memory\MemoryAllocStream.cs" />
     <Compile Include="Memory\PhysicalPages.cs" />
     <Compile Include="Memory\PhysicalPagesMapping.cs" />
@@ -138,7 +139,6 @@
     <Compile Include="Objects\TokenHandle.cs" />
     <Compile Include="Objects\TokenWithLinkedToken.cs" />
     <Compile Include="Objects\NativeHandle.cs" />
-    <Compile Include="Memory\HeapMemoryAlloc.cs" />
     <Compile Include="Memory\LsaMemoryAlloc.cs" />
     <Compile Include="Memory\MemoryAlloc.cs" />
     <Compile Include="Memory\WtsMemoryAlloc.cs" />

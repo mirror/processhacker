@@ -464,26 +464,38 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr HeapCreate(
+            [In] HeapFlags Flags,
+            [In] IntPtr InitialSize,
+            [In] IntPtr MaximumSize
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool HeapDestroy(
+            [In] IntPtr Heap
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool HeapFree(
-            [In] IntPtr Heap, 
-            [In] int Flags, 
+            [In] IntPtr Heap,
+            [In] HeapFlags Flags, 
             [In] IntPtr Memory
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr HeapAlloc(
             [In] IntPtr Heap,
-            [In] int Flags,
-            [In] int Bytes
+            [In] HeapFlags Flags,
+            [In] IntPtr Bytes
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr HeapReAlloc(
             [In] IntPtr Heap,
-            [In] int Flags,
+            [In] HeapFlags Flags,
             [In] IntPtr Memory,
-            [In] int Bytes
+            [In] IntPtr Bytes
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
