@@ -152,7 +152,6 @@ namespace ProcessHacker
             this.listHandles = new ProcessHacker.Components.HandleList();
             this.tabJob = new System.Windows.Forms.TabPage();
             this.tabServices = new System.Windows.Forms.TabPage();
-            this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.tabControl.SuspendLayout();
@@ -1072,12 +1071,6 @@ namespace ProcessHacker
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
             // 
-            // timerUpdate
-            // 
-            this.timerUpdate.Enabled = true;
-            this.timerUpdate.Interval = 2000;
-            this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
-            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
@@ -1184,7 +1177,6 @@ namespace ProcessHacker
         private System.Windows.Forms.GroupBox groupBox3;
         private ProcessHacker.Components.Plotter plotterIO;
         private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Timer timerUpdate;
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.TextBox textStartTime;
         private ProcessHacker.Components.FileNameBox fileCurrentDirectory;

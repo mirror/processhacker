@@ -98,6 +98,7 @@ namespace ProcessHacker
         public static TokenElevationType ElevationType;
         public static SharedThreadProvider SharedThreadProvider;
         public static SharedThreadProvider SecondarySharedThreadProvider;
+        public static ProcessHacker.Native.Threading.Waiter SharedWaiter;
         private static object CollectWorkerThreadsLock = new object();
 
         /// <summary>
@@ -270,6 +271,9 @@ namespace ProcessHacker
                 ProcessProvider.Dictionary.ContainsKey(pid) ? 
                 ProcessProvider.Dictionary[pid].Name :
                 null;
+
+            // Create the shared waiter.
+            SharedWaiter = new ProcessHacker.Native.Threading.Waiter();
 
             new HackerWindow();
             Application.Run();

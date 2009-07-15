@@ -38,14 +38,17 @@ namespace ProcessHacker.Native.Threading
         {
             public event ObjectSignaledDelegate ObjectSignaled;
 
+            private Waiter _owner;
             private bool _terminating = false;
             private Thread _thread;
             private bool _threadInitialized = false;
             private ThreadHandle _threadHandle;
             private List<ISynchronizable> _waitObjects = new List<ISynchronizable>();
 
-            public WaiterThread()
+            public WaiterThread(Waiter owner)
             {
+                _owner = owner;
+
                 // Create the waiter thread.
                 _thread = new Thread(this.WaiterThreadStart);
                 _thread.IsBackground = true;
@@ -76,6 +79,10 @@ namespace ProcessHacker.Native.Threading
                     // Close the thread handle.
                     _threadHandle.Dispose();
                 }
+
+                // Avoid hanging on to objects.
+                lock (_waitObjects)
+                    _waitObjects.Clear();
             }
 
             public int Count
@@ -206,6 +213,9 @@ namespace ProcessHacker.Native.Threading
 
                         // Call the object-signaled event.
                         OnObjectSignaled(signaledObject);
+
+                        // Balance the threads (which may involve terminating the current one).
+                        _owner.BalanceWaiterThreads();
                     }
                 }
             }
@@ -273,7 +283,7 @@ namespace ProcessHacker.Native.Threading
             this.CreateWaiterThread(obj);
         }  
 
-        private void BalanceWaiterThreads()
+        internal void BalanceWaiterThreads()
         {
             lock (_waitObjects)
             {
@@ -293,7 +303,7 @@ namespace ProcessHacker.Native.Threading
 
         private WaiterThread CreateWaiterThread(ISynchronizable obj)
         {
-            WaiterThread waiterThread = new WaiterThread();
+            WaiterThread waiterThread = new WaiterThread(this);
 
             waiterThread.ObjectSignaled += this.OnObjectSignaled;
 
@@ -331,7 +341,8 @@ namespace ProcessHacker.Native.Threading
         /// Removes an object the waiter is waiting on.
         /// </summary>
         /// <param name="obj">An object which is currently being waited on.</param>
-        public void Remove(ISynchronizable obj)
+        /// <returns>Whether the object was successfully removed.</returns>
+        public bool Remove(ISynchronizable obj)
         {
             foreach (var waiterThread in this.GetWaiterThreads())
             {
@@ -341,12 +352,12 @@ namespace ProcessHacker.Native.Threading
                         _waitObjects.Remove(obj);
 
                     this.BalanceWaiterThreads();
-                    return;
+                    return true;
                 }
             }
 
             // We couldn't remove the object.
-            throw new ArgumentException("The object is not being waited on.");
+            return false;
         }
     }
 }

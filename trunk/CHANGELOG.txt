@@ -5,6 +5,7 @@ Process Hacker
    * Better process window exit status display
    * Better handle granted access display
    * Thread list is more responsive
+   * Process exit notification (in the process window) is now instant
  * FIXED:
    * Properties menu item for handles was disabled most of the time
    * Handle names could not be viewed properly without KPH and 

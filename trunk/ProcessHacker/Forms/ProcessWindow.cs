@@ -244,12 +244,27 @@ namespace ProcessHacker
         private void LoadStage1()
         {
             // May fail.
-            try
+            if (_pid > 4)
             {
-                _processHandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
+                try
+                {
+                    _processHandle = new ProcessHandle(
+                        _pid,
+                        (ProcessAccess)StandardRights.Synchronize |
+                        Program.MinProcessQueryRights |
+                        Program.MinProcessReadMemoryRights
+                        );
+                }
+                catch (WindowsException)
+                { }
             }
-            catch
-            { }
+
+            // Get the shared waiter to wait on the process.
+            if (_processHandle != null)
+            {
+                Program.SharedWaiter.Add(_processHandle);
+                Program.SharedWaiter.ObjectSignaled += SharedWaiter_ObjectSignaled;
+            }
 
             this.UpdateProcessProperties();
 
@@ -263,7 +278,6 @@ namespace ProcessHacker
             else
             {
                 this.Text = _processItem.Name + " (PID " + _pid.ToString() + ")";
-                timerUpdate.Enabled = true;
             }
 
             // add our handler to the process provider
@@ -377,7 +391,9 @@ namespace ProcessHacker
             if (_processStats != null)
                 _processStats.Dispose();
 
-            timerUpdate.Enabled = false;
+            // Remove the process handle from the shared waiter.
+            if (_processHandle != null)
+                Program.SharedWaiter.Remove(_processHandle);
 
             if (_processImage != null)
             {
@@ -1302,49 +1318,34 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Timers
+        #region Waiters
 
-        private void timerUpdate_Tick(object sender, EventArgs e)
+        private void SharedWaiter_ObjectSignaled(ISynchronizable obj)
         {
-            if (_processHandle != null)
+            // Check if the object is our process handle.
+            if (obj == _processHandle)
             {
-                try
+                if (this.IsHandleCreated)
                 {
-                    if (_processHandle.GetExitTime() != 0)
-                    {
-                        timerUpdate.Enabled = false;
-
-                        NtStatus exitStatus = _processHandle.GetExitStatus();
-                        string exitString = exitStatus.ToString();
-                        long exitLong;
-
-                        // If we have a NT status string, display it. 
-                        // Otherwise, display the NT status value in hex.
-                        if (!long.TryParse(exitString, out exitLong))
+                    this.BeginInvoke(new MethodInvoker(() =>
                         {
-                            this.Text += " (exited with status " + exitString + ")";
-                        }
-                        else
-                        {
-                            this.Text += " (exited with status 0x" + exitLong.ToString("x8") + ")";
-                        }
-                    }
+                            NtStatus exitStatus = _processHandle.GetExitStatus();
+                            string exitString = exitStatus.ToString();
+                            long exitLong;
+
+                            // If we have a NT status string, display it. 
+                            // Otherwise, display the NT status value in hex.
+                            if (!long.TryParse(exitString, out exitLong))
+                            {
+                                this.Text += " (exited with status " + exitString + ")";
+                            }
+                            else
+                            {
+                                this.Text += " (exited with status 0x" + exitLong.ToString("x8") + ")";
+                            }
+                        }));
                 }
-                catch
-                { }
             }
-
-            try
-            {
-                _realCurrentDirectory  =
-                    _processHandle.GetPebString(PebOffset.CurrentDirectoryPath);
-
-                // we don't want to set the text if the user is selecting something in the textbox!
-                if (!fileCurrentDirectory.TextBoxFocused)
-                    fileCurrentDirectory.Text = _realCurrentDirectory;
-            }
-            catch
-            { }
         }
 
         #endregion
