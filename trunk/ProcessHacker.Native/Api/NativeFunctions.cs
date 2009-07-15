@@ -456,6 +456,21 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateThreadEx(
+            [Out] out IntPtr ThreadHandle,
+            [In] ThreadAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr StartAddress,
+            [In] IntPtr Parameter,
+            [In] int Flags,
+            [In] [Optional] int Reserved,
+            [In] [Optional] int StackCommit,
+            [In] [Optional] int StackReserve,
+            [In] [Optional] IntPtr Unknown
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtCreateTimer(
             [Out] out IntPtr TimerHandle,
             [In] TimerAccess DesiredAccess,

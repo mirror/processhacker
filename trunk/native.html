@@ -17,7 +17,17 @@ p {
   margin-bottom: 0.5em;
 }
 
+.unsure {
+  color: #aa0000;
+}
+
+.warning {
+  color: #770000;
+  font-style: italic;
+}
+
 h2 {
+  font-size: 20pt;
   margin-top: 1.3em;
   margin-bottom: 0.3em;
   border-top: dotted 3px #333;
@@ -40,6 +50,24 @@ h4 {
     
     <h1>Native API</h1>
     
+    <h2>Debug Object Access</h2>
+    <pre>
+#define DEBUG_READ_EVENT 0x0001
+#define DEBUG_PROCESS_ASSIGN 0x0002
+#define DEBUG_SET_INFORMATION 0x0004
+#define DEBUG_QUERY_INFORMATION 0x0008
+#define DEBUG_ALL_ACCESS STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | DEBUG_READ_EVENT | 
+    DEBUG_PROCESS_ASSIGN | DEBUG_SET_INFORMATION | DEBUG_QUERY_INFORMATION</pre>
+    
+    <h2>Directory Object Access</h2>
+    <pre>
+#define DIRECTORY_QUERY 0x0001
+#define DIRECTORY_TRAVERSE 0x0002
+#define DIRECTORY_CREATE_OBJECT 0x0004
+#define DIRECTORY_CREATE_SUBDIRECTORY 0x0008
+
+#define DIRECTORY_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED | 0xf)</pre>
+    
     <h2>CLIENT_ID</h2>
     <p>A structure identifying a process or thread.</p>
     <pre>
@@ -53,6 +81,152 @@ typedef struct _CLIENT_ID
     <p>A handle to the process, usually a process ID (PID).</p>
     <h4>UniqueThread</h4>
     <p>A handle to the thread, usually a thread ID (TID).</p>
+    
+    <h2>CURDIR</h2>
+    <p>A structure describing the current directory of a process.</p>
+    <pre>
+typedef struct _CURDIR
+{
+    UNICODE_STRING DosPath;
+    HANDLE Handle;
+} CURDIR, *PCURDIR;</pre>
+    <h3>Fields</h3>
+    <h4>DosPath</h4>
+    <p>A string containing the current directory name. This path is usually in DOS path format 
+    (e.g. <code>C:\Path\...</code>).</p>
+    <h4>Handle</h4>
+    <p>A handle to the current directory of the process.</p>
+    
+    <h2>INITIAL_TEB</h2>
+    <p>A structure describing the initial contents of a TIB.</p>
+    <pre>
+typedef struct _INITIAL_TEB
+{
+    struct
+    {
+        PVOID OldStackBase;
+        PVOID OldStackLimit;
+    } OldInitialTeb;
+    PVOID StackBase;
+    PVOID StackLimit;
+    PVOID StackAllocationBase;
+} INITIAL_TEB, *PINITIAL_TEB;</pre>
+    <h3>Fields</h3>
+    <h4>OldStackBase</h4>
+    <p>Reserved for internal use by the operating system, possibly during stack expansion. Initialize this to zero.</p>
+    <h4>OldStackLimit</h4>
+    <p>Reserved for internal use by the operating system, possibly during stack expansion. Initialize this to zero.</p>
+    <h4>StackBase</h4>
+    <p>The top of the stack, considering that the stack grows downward.</p>
+    <h4>StackLimit</h4>
+    <p>The bottom limit of the committed stack. This value is always greater than or equal to 
+    <code>StackAllocationBase</code>.</p>
+    <h4>StackAllocationBase</h4>
+    <p>The bottom of the stack, including the reserved/free space below <code>StackLimit</code>.</p>
+    <h3>Notes</h3>
+    <p>The definition of INITIAL_TEB at NTinternals is incorrect. See 
+    <a href="http://www.reactos.org/serendipity/index.php?/archives/15-They-lied-to-you-about-INITIAL_TEB!.html">this blog post</a> 
+    for more details.</p>
+    
+    <h2>RTL_DRIVE_LETTER_CURDIR</h2>
+    <p>Unknown.</p>
+    <pre>
+typedef struct _RTL_DRIVE_LETTER_CURDIR
+{
+    USHORT Flags;
+    USHORT Length;
+    ULONG TimeStamp;
+    STRING DosPath;
+} RTL_DRIVE_LETTER_CURDIR, *PRTL_DRIVE_LETTER_CURDIR;</pre>
+    <h3>Fields</h3>
+    <h4>Flags</h4>
+    <p>Possible values are:</p>
+    <pre>
+#define RTL_USER_PROC_CURDIR_CLOSE 0x00000002
+#define RTL_USER_PROC_CURDIR_INHERIT 0x00000003</pre>
+    <h4>Length</h4>
+    <p>Unknown.</p>
+    <h4>TimeStamp</h4>
+    <p>Unknown.</p>
+    <h4>DosPath</h4>
+    <p>Unknown.</p>
+    
+    <h2>RTL_USER_PROCESS_PARAMETERS</h2>
+    <p>A structure describing startup parameters for a process.</p>
+    <pre>
+#define RTL_MAX_DRIVE_LETTERS 32
+#define RTL_DRIVE_LETTER_VALID (USHORT)0x0001
+
+typedef struct _RTL_USER_PROCESS_PARAMETERS
+{
+    ULONG MaximumLength;
+    ULONG Length;
+
+    ULONG Flags;
+    ULONG DebugFlags;
+
+    HANDLE ConsoleHandle;
+    ULONG  ConsoleFlags;
+    HANDLE StandardInput;
+    HANDLE StandardOutput;
+    HANDLE StandardError;
+
+    CURDIR CurrentDirectory;
+    UNICODE_STRING DllPath;
+    UNICODE_STRING ImagePathName;
+    UNICODE_STRING CommandLine;
+    PVOID Environment;
+
+    ULONG StartingX;
+    ULONG StartingY;
+    ULONG CountX;
+    ULONG CountY;
+    ULONG CountCharsX;
+    ULONG CountCharsY;
+    ULONG FillAttribute;
+
+    ULONG WindowFlags;
+    ULONG ShowWindowFlags;
+    UNICODE_STRING WindowTitle;
+    UNICODE_STRING DesktopInfo;
+    UNICODE_STRING ShellInfo;
+    UNICODE_STRING RuntimeData;
+    RTL_DRIVE_LETTER_CURDIR CurrentDirectores[RTL_MAX_DRIVE_LETTERS];
+} RTL_USER_PROCESS_PARAMETERS, *PRTL_USER_PROCESS_PARAMETERS;</pre>
+    
+    <h2>STRING, ANSI_STRING</h2>
+    <p>A structure describing a counted ANSI string.</p>
+    <pre>
+typedef struct _STRING
+{
+    USHORT Length;
+    USHORT MaximumLength;
+    PCHAR Buffer;
+} STRING, *PSTRING, ANSI_STRING, *PANSI_STRING;</pre>
+    <h3>Fields</h3>
+    <h4>Length</h4>
+    <p>The length, in bytes, of the string (excluding the null terminator, if present).</p>
+    <h4>MaximumLength</h4>
+    <p>The number of bytes allocated for the string in <code>Buffer</code>.</p>
+    <h4>Buffer</h4>
+    <p>A buffer containing the string.</p>
+    
+    <h2>UNICODE_STRING</h2>
+    <p>A structure describing a counted Unicode string.</p>
+    <pre>
+typedef struct _UNICODE_STRING
+{
+    USHORT Length;
+    USHORT MaximumLength;
+    PWSTR Buffer;
+} UNICODE_STRING, *PUNICODE_STRING;</pre>
+    <h3>Fields</h3>
+    <h4>Length</h4>
+    <p>The length, in bytes, of the string (excluding the null terminator, if present).</p>
+    <h4>MaximumLength</h4>
+    <p>The number of bytes allocated for the string in <code>Buffer</code>.</p>
+    <h4>Buffer</h4>
+    <p>A buffer containing the string.</p>
     
     <h2>NtAlertThread</h2>
     <p>Alerts the specified thread, causing it to resume execution if it is in an alertable Wait state. 
@@ -73,6 +247,11 @@ NtAlertThread(
     <p><code>NtAlertThread</code> ... <code>KeAlertThread</code> ... <code>KiUnwaitThread</code> ... <code>KiReadyThread</code></p>
     <h3>Exported by</h3>
     <p>ntdll; <code>KeAlertThread</code> and <code>ZwAlertThread</code> are exported by ntoskrnl</p>
+    <h3>Notes</h3>
+    <p>If this function is called from user-mode, it will set the specified thread's <em>user-mode alert state</em> to 
+    alerted. This will not affect kernel-mode code. The same is true when the function is called from kernel-mode.</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>NtAlertResumeThread</h2>
     <p>Alerts the specified thread (see <code>NtAlertThread</code>) and resumes it.</p>
@@ -91,6 +270,10 @@ NtAlertResumeThread(
     <p><code>NtAlertResumeThread</code> ... <code>KeAlertResumeThread</code> ... <code>KiUnwaitThread</code> ... <code>KiReadyThread</code></p>
     <h3>Exported by</h3>
     <p>ntdll</p>
+    <h3>Notes</h3>
+    <p>See notes in <code>NtAlertThread</code>.</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>NtClose</h2>
     <p>Closes a handle.</p>
@@ -108,9 +291,66 @@ NtClose(
     <p><code>NtClose</code> ... <code>ObpCloseHandle</code> ... <code>ObpCloseHandleTableEntry</code> ... <code>ExDestroyHandle</code> ... <code>ExpFreeHandleTableEntry</code></p>
     <h3>Exported by</h3>
     <p>ntdll, ntoskrnl</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
+    
+    <h2>NtCreateDebugObject</h2>
+    <p>Creates a debug object.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtCreateDebugObject(
+    __out PHANDLE DebugObjectHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in ULONG Flags
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>DebugObjectHandle</h4>
+    <p>A variable that receives a handle to the new debug object.</p>
+    <h4>DesiredAccess</h4>
+    <p>The desired access to the new debug object. See <strong>Debug Object Access</strong>.</p>
+    <h4>ObjectAttributes</h4>
+    <p>See <code>OBJECT_ATTRIBUTES</code>.</p>
+    <h4>Flags</h4>
+    <p>The only flag currently defined is:</p>
+    <pre>
+#define DEBUG_KILL_ON_CLOSE 0x1</pre>
+    <h3>Code paths</h3>
+    <p><code>NtCreateDebugObject</code> ... <code>ObCreateObject</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
+    <h3>Documented by</h3>
+    <p>NT headers</p>
+    
+    <h2>NtCreateDirectoryObject</h2>
+    <p>Creates a directory object.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtCreateDirectoryObject(
+    __out PHANDLE DirectoryHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in POBJECT_ATTRIBUTES ObjectAttributes
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>DirectoryHandle</h4>
+    <p>A variable that receives a handle to the new directory object.</p>
+    <h4>DesiredAccess</h4>
+    <p>The desired access to the new directory object. See <strong>Directory Object Access</strong>.</p>
+    <h4>ObjectAttributes</h4>
+    <p>See <code>OBJECT_ATTRIBUTES</code>.</p>
+    <h3>Code paths</h3>
+    <p><code>NtCreateDirectoryObject</code> ... <code>ObCreateObject</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll; <code>ZwCreateDirectoryObject</code> is exported by ntoskrnl</p>
+    <h3>Documented by</h3>
+    <p>NT headers</p>
     
     <h2>NtCreateProcess</h2>
-    <p>Creates a process.</p>
+    <p>Creates a process (with no threads).</p>
     <pre>
 NTSYSCALLAPI
 NTSTATUS
@@ -157,9 +397,11 @@ NtCreateProcess(
     <h3>Notes</h3>
     <p>The new process does not have any threads. You can create one using <code>NtCreateThread</code> or 
     <code>RtlCreateUserThread</code>.</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>NtCreateProcessEx</h2>
-    <p>Creates a process.</p>
+    <p>Creates a process (with no threads).</p>
     <pre>
 NTSYSCALLAPI
 NTSTATUS
@@ -192,6 +434,110 @@ NtCreateProcessEx(
     <code>KeInitializeProcess</code></p>
     <h3>Exported by</h3>
     <p>ntdll</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
+    
+    <h2>NtCreateThread</h2>
+    <p>Creates a thread.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtCreateThread(
+    __out PHANDLE ThreadHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in_opt POBJECT_ATTRIBUTES ObjectAttributes,
+    __in HANDLE ProcessHandle,
+    __out PCLIENT_ID ClientId,
+    __in PCONTEXT ThreadContext,
+    __in PINITIAL_TEB InitialTeb,
+    __in BOOLEAN CreateSuspended
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ThreadHandle</h4>
+    <p>A variable which receives a handle to the new thread.</p>
+    <h4>DesiredAccess</h4>
+    <p>The desired access to the new thread.</p>
+    <h4>ObjectAttributes</h4>
+    <p>See <code>OBJECT_ATTRIBUTES</code>.</p>
+    <h4>ProcessHandle</h4>
+    <p>A handle to the process in which the thread is to be created. The handle must have 
+    <code>PROCESS_CREATE_THREAD</code> access.</p>
+    <h4>ClientId</h4>
+    <p>A variable which receives the client ID of the new thread.</p>
+    <h4>ThreadContext</h4>
+    <p>The initial context for the thread.</p>
+    <h4>InitialTeb</h4>
+    <p>A structure which describes the initial state of the thread's TIB. See <code>INITIAL_TEB</code>.</p>
+    <h4>CreateSuspended</h4>
+    <p>Whether the thread should be suspended when it is created. You can resume the thread using <code>NtResumeThread</code>.</p>
+    <h3>Code paths</h4>
+    <p><code>NtCreateThread</code> ... <code>PspCreateThread</code> ... <code>PspAllocateThread</code> ... 
+    <code>KeInitThread</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
+    <h3>Notes</h3>
+    <p>In the arguments, <code>InitialTeb</code> actually specifies the initial Thread Information Block (TIB) for the thread. 
+    The TIB is stored in the Thread Environment Block (TEB) of the thread, and can be referenced by the <code>fs</code> 
+    segment register. The name TIB is pre-NT; see 
+    <a href="http://www.microsoft.com/msj/archive/s2ce.aspx">Under The Hood -- MSJ, May 1996</a>. See <code>NT_TIB</code> for 
+    more information on the TIB.</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
+    
+    <h2 class="unsure">NtCreateThreadEx</h2>
+    <p class="warning">The documentation for this function has been produced by reverse-engineering and may be incorrect.</p>   
+    <p>Creates a thread.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtCreateThreadEx(
+    __out PHANDLE ThreadHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in_opt POBJECT_ATTRIBUTES ObjectAttributes,
+    __in HANDLE ProcessHandle,
+    __in PVOID StartAddress,
+    __in PVOID Parameter,
+    __in ULONG Flags,
+    __in_opt ULONG Reserved,
+    __in_opt ULONG StackCommit,
+    __in_opt ULONG StackReserve,
+    __in_opt PVOID Unknown
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>ThreadHandle</h4>
+    <p>A variable which receives a handle to the new thread.</p>
+    <h4>DesiredAccess</h4>
+    <p>The desired access to the new thread.</p>
+    <h4>ObjectAttributes</h4>
+    <p>See <code>OBJECT_ATTRIBUTES</code>.</p>
+    <h4>ProcessHandle</h4>
+    <p>A handle to the process in which the thread is to be created. The handle must have 
+    <code>PROCESS_CREATE_THREAD</code> access.</p>
+    <h4>StartAddress</h4>
+    <p>The function to call in the new thread.</p>
+    <h4>Parameter</h4>
+    <p>The parameter to pass to the function.</p>
+    <h4>Flags</h4>
+    <p>Flags which control the creation of the thread:</p>
+    <pre>
+#define THREAD_CREATE_FLAGS_SUSPENDED 0x1</pre>
+    <h4>Reserved</h4>
+    <p>This value is ignored by the operating system.</p>
+    <h4>StackCommit</h4>
+    <p>The number of bytes to commit in the thread stack.</p>
+    <h4>StackReserve</h4>
+    <p>The number of bytes to reserve for the thread stack.</p>
+    <h4>Unknown</h4>
+    <p>An optional structure which is passed to <code>PspBuildCreateProcessContext</code>.</p>
+    <h3>Code paths</h4>
+    <p><code>NtCreateThreadEx</code> ... <code>PspCreateThread</code> ... <code>PspAllocateThread</code> ... 
+    <code>KeInitThread</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
+    <h3>Documented by</h3>
+    <p>wj32</p>
     
     <h2>NtOpenProcess</h2>
     <p>Opens a process.</p>
@@ -221,6 +567,8 @@ NtOpenProcess(
     <p><code>NtOpenProcess</code> ... <code>PsOpenProcess</code> ... <code>ObOpenObjectByPointer</code> ...</p>
     <h3>Exported by</h3>
     <p>ntdll, ntoskrnl</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>NtQueueApcThread</h2>
     <p>Queues a user-mode APC to the specified thread. The APC will execute when the thread performs an alertable wait or 
@@ -255,6 +603,8 @@ VOID
     <p><code>NtQueueApcThread</code> ... <code>KeInsertQueueApc</code> ... <code>KiInsertQueueApc</code> ... <code>InsertHeadList</code></p>
     <h3>Exported by</h3>
     <p>ntdll; <code>KeInsertQueueApc</code> is exported by ntoskrnl</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>NtRegisterThreadTerminatePort</h2>
     <p>Registers a port which will be notified when the current thread terminates.</p>
@@ -271,6 +621,8 @@ NtRegisterThreadTerminatePort(
     of ports which will all be notified when the thread terminates.</p>
     <h3>Exported by</h3>
     <p>ntdll</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>NtResumeProcess</h2>
     <p>Resumes each thread in a process.</p>
@@ -289,6 +641,8 @@ NtResumeProcess(
     <code>KiWaitTest</code> ...</p>
     <h3>Exported by</h3>
     <p>ntdll; <code>PsResumeProcess</code> is exported by ntoskrnl</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>NtResumeThread</h2>
     <p>Resumes the specified thread. The thread is not actually resumed until the suspend count reaches 0 
@@ -311,6 +665,8 @@ NtResumeThread(
     <p><code>NtResumeThread</code> ... <code>KeResumeThread</code> ... <code>KiWaitTest</code> ...</p>
     <h3>Exported by</h3>
     <p>ntdll</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>NtSuspendProcess</h2>
     <p>Suspends each thread in a process.</p>
@@ -330,6 +686,8 @@ NtSuspendProcess(
     <code>KeWaitForSingleObject</code> ...</p>
     <h3>Exported by</h3>
     <p>ntdll; <code>PsSuspendProcess</code> is exported by ntoskrnl</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>NtSuspendThread</h2>
     <p>Suspends the specified thread.</p>
@@ -352,22 +710,8 @@ NtSuspendThread(
     <code>KiInsertQueueApc</code> ... <code>KiSuspendThread</code> ... <code>KeWaitForSingleObject</code> ...</p>
     <h3>Exported by</h3>
     <p>ntdll</p>
-    
-    <h2>NtTestAlert</h2>
-    <p>Checks whether the current thread is alerted. If it is, the thread's alerted state will be cleared and 
-    <code>STATUS_ALERTED</code> will be returned. Otherwise, <code>STATUS_SUCCESS</code> will be returned.</p>
-    <p>If the function is being called from user-mode, any user-mode APCs will be called when the system service exits.</p>
-    <pre>
-NTSYSCALLAPI
-NTSTATUS
-NTAPI
-NtTestAlert(
-    VOID
-    );</pre>
-    <h3>Code paths</h3>
-    <p><code>NtTestAlert</code> ... <code>KeTestAlertThread</code></p>
-    <h3>Exported by</h3>
-    <p>ntdll; <code>KeTestAlertThread</code> is exported by ntoskrnl</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>NtTerminateProcess</h2>
     <p>Terminates the specified process.</p>
@@ -391,6 +735,8 @@ NtTerminateProcess(
     <code>PspExitThread</code> ... <code>PspExitProcess</code> ...</p>
     <h3>Exported by</h3>
     <p>ntdll; <code>ZwTerminateProcess</code> is exported by ntoskrnl</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>NtTerminateThread</h2>
     <p>Terminates the specified thread.</p>
@@ -416,9 +762,92 @@ NtTerminateThread(
     <code>KeTerminateThread</code> ... <code>KiInsertQueue</code> ... [<code>PspReaper</code>] <code>KeDeleteThread</code> ...</p>
     <h3>Exported by</h3>
     <p>ntdll</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
+    
+    <h2>NtTestAlert</h2>
+    <p>Checks whether the current thread is alerted. If it is, the thread's alerted state will be cleared and 
+    <code>STATUS_ALERTED</code> will be returned. Otherwise, <code>STATUS_SUCCESS</code> will be returned.</p>
+    <p>If the function is being called from user-mode, any user-mode APCs will be called when the system service exits.</p>
+    <pre>
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+NtTestAlert(
+    VOID
+    );</pre>
+    <h3>Code paths</h3>
+    <p><code>NtTestAlert</code> ... <code>KeTestAlertThread</code></p>
+    <h3>Exported by</h3>
+    <p>ntdll; <code>KeTestAlertThread</code> is exported by ntoskrnl</p>
+    <h3>Notes</h3>
+    <p>See notes in <code>NtAlertThread</code>.</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
+    
+    <h2>RtlCreateUserProcess</h2>
+    <p>Creates a process and an initial thread.</p>
+    <pre>
+NTSYSAPI
+NTSTATUS
+NTAPI
+RtlCreateUserProcess(
+    __in PUNICODE_STRING NtImagePathName,
+    __in ULONG Attributes,
+    __in PRTL_USER_PROCESS_PARAMETERS ProcessParameters,
+    __in_opt PSECURITY_DESCRIPTOR ProcessSecurityDescriptor,
+    __in_opt PSECURITY_DESCRIPTOR ThreadSecurityDescriptor,
+    __in_opt HANDLE ParentProcess,
+    __in BOOLEAN InheritHandles,
+    __in_opt HANDLE DebugPort,
+    __in_opt HANDLE ExceptionPort,
+    __out PRTL_USER_PROCESS_INFORMATION ProcessInformation
+    );</pre>
+    <h3>Arguments</h3>
+    <h4>NtImagePathName</h4>
+    <p>A <code>UNICODE_STRING</code> which specifies the image file (EXE) from which to create the process. The file name 
+    must be in native format, e.g. <code>\SystemRoot\notepad.exe</code>.</p>
+    <h4>Attributes</h4>
+    <p>The object attributes to use when opening the image file, e.g. <code>OBJ_INHERIT</code>.</p>
+    <h4>ProcessParameters</h4>
+    <p>See <code>RTL_USER_PROCESS_PARAMETERS</code>.</p>
+    <h4>ProcessSecurityDescriptor</h4>
+    <p>A security descriptor for the new process.</p>
+    <h4>ThreadSecurityDescriptor</h4>
+    <p>A security descriptor for the initial thread in the new process.</p>
+    <h4>ParentProcess</h4>
+    <p>A process from which to inherit handles and other characteristics. <code>RtlCreateUserProcess</code> will also 
+    duplicate standard handles (input, output and error) from the parent process to the new process.</p>
+    <h4>InheritHandles</h4>
+    <p>Whether <code>NtCreateProcess</code> should duplicate handles with the <code>OBJ_INHERIT</code> attribute.</p>
+    <h4>DebugPort</h4>
+    <p>A handle to a debug object which the process will be assigned to. The handle must have <code>DEBUG_PROCESS_ASSIGN</code> 
+    access.</p>
+    <h4>ExceptionPort</h4>
+    <p>A handle to a LPC port which will be notified when an exception occurs in the process.</p>
+    <h4>ProcessInformation</h4>
+    <p>A <code>RTL_USER_PROCESS_INFORMATION</code> structure which will receive information about the new process:</p>
+    <pre>
+typedef struct _RTL_USER_PROCESS_INFORMATION
+{
+    ULONG Length;
+    HANDLE Process;
+    HANDLE Thread;
+    CLIENT_ID ClientId;
+    SECTION_IMAGE_INFORMATION ImageInformation;
+} RTL_USER_PROCESS_INFORMATION, *PRTL_USER_PROCESS_INFORMATION;</pre>
+    <h3>Code paths</h3>
+    <p><code>RtlCreateUserProcess</code> ... <code>NtCreateProcess</code> ...</p>
+    <h3>Exported by</h3>
+    <p>ntdll</p>
+    <h3>Notes</h3>
+    <p>This <code>RtlCreateUserProcess</code> does not notify CSR of the new process, so the process' use of the 
+    Windows API is limited.</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <h2>RtlCreateUserThread</h2>
-    <p>Creates a new thread.</p>
+    <p>Creates a thread.</p>
     <pre>
 NTSYSAPI
 NTSTATUS
@@ -464,10 +893,16 @@ NTSTATUS
     <h4>ClientId</h4>
     <p>A variable which receives the client ID of the new thread.</p>
     <h3>Code paths</h3>
-    <p><code>RtlCreateUserThread</code> ... <code>NtCreateThread</code> ... <code>PspCreateThread</code> ... 
-    <code>PspAllocateThread</code> ... <code>KeInitThread</code> ...</p>
+    <p><code>RtlCreateUserThread</code> ... <code>NtCreateThread</code> ...</p>
     <h3>Exported by</h3>
     <p>ntdll</p>
+    <h3>Notes</h3>
+    <p>This function is not limited to creating threads in processes within the current session, a limitation present in 
+    the <code>CreateRemoteThread</code> Windows API function. This is due to the fact that <code>RtlCreateUserThread</code> 
+    does not attempt to notify CSR of the new thread, removing the session limitation but also limiting your use of the 
+    Windows API.</p>
+    <h3>Documented by</h3>
+    <p>NT headers.</p>
     
     <p id="footer">Copyright (c) 2009 wj32. Licensed under the GFDL 1.3.</p>
   </body>
