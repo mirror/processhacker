@@ -161,6 +161,11 @@ namespace ProcessHacker.Native.Objects
             return Win32.GetCurrentThreadId();
         }
 
+        public static ThreadHandle OpenCurrent(ThreadAccess access)
+        {
+            return new ThreadHandle(GetCurrentId(), access);
+        }
+
         public static void RegisterTerminationPort(PortHandle portHandle)
         {
             NtStatus status;

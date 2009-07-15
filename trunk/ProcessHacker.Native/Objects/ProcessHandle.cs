@@ -270,6 +270,16 @@ namespace ProcessHacker.Native.Objects
             return processHandles.ToArray();
         }
 
+        /// <summary>
+        /// Opens a handle to the current process.
+        /// </summary>
+        /// <param name="access">The desired access to the current process.</param>
+        /// <returns>A handle.</returns>
+        public static ProcessHandle OpenCurrent(ProcessAccess access)
+        {
+            return new ProcessHandle(GetCurrentId(), access);
+        }
+
         private ProcessHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }

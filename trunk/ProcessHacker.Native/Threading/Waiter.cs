@@ -23,62 +23,58 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Threading
 {
     public delegate void ObjectSignaledDelegate(ISynchronizable obj);
 
-    public sealed class Waiter : IDisposable
+    public sealed class Waiter : BaseObject
     {
-        private class WaiterThread : IDisposable
+        private class WaiterThread : BaseObject
         {
             public event ObjectSignaledDelegate ObjectSignaled;
 
-            private bool _disposed = false;
-            private object _disposeLock = new object();
             private bool _terminating = false;
             private Thread _thread;
+            private bool _threadInitialized = false;
+            private ThreadHandle _threadHandle;
             private List<ISynchronizable> _waitObjects = new List<ISynchronizable>();
-            private Event _waitChangedEvent = new Event(true, false);
 
             public WaiterThread()
             {
+                // Create the waiter thread.
                 _thread = new Thread(this.WaiterThreadStart);
                 _thread.IsBackground = true;
                 _thread.SetApartmentState(ApartmentState.STA);
                 _thread.Start();
-            }
 
-            ~WaiterThread()
-            {
-                this.Dispose(false);
-            }
-
-            public void Dispose()
-            {
-                this.Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            private void Dispose(bool disposing)
-            {
-                if (disposing)
-                    Monitor.Enter(_disposeLock);
-
-                try
+                // Wait for the thread to initialize.
+                lock (_thread)
                 {
-                    if (!_disposed)
+                    if (!_threadInitialized)
+                        Monitor.Wait(_thread);
+                }
+            }
+
+            protected override void DisposeObject(bool disposing)
+            {
+                lock (_thread)
+                {
+                    if (_threadInitialized)
                     {
+                        // Terminate the waiter thread.
                         this.Terminate();
-                        _waitChangedEvent.Dispose();
-                        _disposed = true;
                     }
                 }
-                finally
+
+                if (_threadHandle != null)
                 {
-                    Monitor.Exit(_disposeLock);
+                    // Close the thread handle.
+                    _threadHandle.Dispose();
                 }
             }
 
@@ -105,7 +101,7 @@ namespace ProcessHacker.Native.Threading
                 lock (_waitObjects)
                 {
                     // Check if we already have the maximum number of wait objects.
-                    if (_waitObjects.Count >= Win32.MaximumWaitObjects - 1)
+                    if (_waitObjects.Count >= Win32.MaximumWaitObjects)
                         return false;
 
                     _waitObjects.Add(obj);
@@ -116,7 +112,7 @@ namespace ProcessHacker.Native.Threading
 
             public void NotifyChange()
             {
-                _waitChangedEvent.Set();
+                _threadHandle.Alert();
             }
 
             private void OnObjectSignaled(ISynchronizable obj)
@@ -146,31 +142,68 @@ namespace ProcessHacker.Native.Threading
 
             private void WaiterThreadStart()
             {
-                ISynchronizable[] waitObjects;
+                ISynchronizable[] waitObjects = null;
+
+                // Open a handle to the current thread.
+                _threadHandle = ThreadHandle.OpenCurrent(ThreadAccess.Alert);
+                // Signal that the thread has been initialized.
+                lock (_thread)
+                {
+                    _threadInitialized = true;
+                    Monitor.PulseAll(_thread);
+                }
 
                 while (!_terminating)
                 {
+                    bool doWait;
+
                     lock (_waitObjects)
                     {
-                        waitObjects = new ISynchronizable[_waitObjects.Count + 1];
-                        waitObjects[0] = _waitChangedEvent.Handle;
-                        Array.Copy(_waitObjects.ToArray(), 0, waitObjects, 1, _waitObjects.Count);
+                        // Check if we have any objects to wait for. If we do, use WaitAny. 
+                        // Otherwise, wait forever (alertably).
+                        if (_waitObjects.Count > 0)
+                        {
+                            waitObjects = _waitObjects.ToArray();
+                            doWait = true;
+                        }
+                        else
+                        {
+                            doWait = false;
+                        }
                     }
 
-                    NtStatus waitStatus = NativeHandle.WaitAny(waitObjects);
+                    NtStatus waitStatus;
 
-                    if (waitStatus == NtStatus.Wait0)
+                    if (doWait)
+                    {
+                        // Wait for the objects, (almost) forever.
+                        waitStatus = NativeHandle.WaitAny(waitObjects, true, long.MinValue, false);
+                    }
+                    else
+                    {
+                        // Wait forever.
+                        waitStatus = ThreadHandle.Sleep(true, long.MinValue, false);
+                    }
+
+                    if (waitStatus == NtStatus.Alerted)
                     {
                         // The wait was changed. Go back to refresh the wait objects array.
-                        // The event is also signaled to notify that the thread should terminate.
+                        // The thread is also alerted to notify that the thread should terminate.
                         continue;
                     }
-                    else if (waitStatus > NtStatus.Wait0 && waitStatus <= NtStatus.Wait63)
+                    else if (waitStatus >= NtStatus.Wait0 && waitStatus <= NtStatus.Wait63)
                     {
                         // One of the objects was signaled.
                         ISynchronizable signaledObject = waitObjects[(int)(waitStatus - NtStatus.Wait0)];
+
                         // Remove the object now that it is signaled.
-                        _waitObjects.Remove(signaledObject);
+                        lock (_waitObjects)
+                        {
+                            // Just in case someone already removed the object.
+                            if (_waitObjects.Contains(signaledObject))
+                                _waitObjects.Remove(signaledObject);
+                        }
+
                         // Call the object-signaled event.
                         OnObjectSignaled(signaledObject);
                     }
@@ -183,8 +216,6 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         public event ObjectSignaledDelegate ObjectSignaled;
 
-        private bool _disposed = false;
-        private object _disposeLock = new object();
         private List<WaiterThread> _waiterThreads = new List<WaiterThread>();
         private List<ISynchronizable> _waitObjects = new List<ISynchronizable>();
 
@@ -196,41 +227,12 @@ namespace ProcessHacker.Native.Threading
 
         }
 
-        ~Waiter()
+        protected override void DisposeObject(bool disposing)
         {
-            this.Dispose(false);
-        }
-
-        /// <summary>
-        /// Releases resources used by the waiter.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
-                Monitor.Enter(_disposeLock);
-
-            try
-            {
-                if (!_disposed)
-                {
-                    // Tell the waiter threads to terminate.
-                    foreach (var waiterThread in _waiterThreads)
-                        waiterThread.Terminate();
-                    _waiterThreads.Clear();
-
-                    _disposed = true;
-                }
-            }
-            finally
-            {
-                Monitor.Exit(_disposeLock);
-            }
+            // Tell the waiter threads to terminate.
+            foreach (var waiterThread in _waiterThreads)
+                waiterThread.Terminate();
+            _waiterThreads.Clear();
         }
 
         public int Count
@@ -309,7 +311,7 @@ namespace ProcessHacker.Native.Threading
             lock (_waiterThreads)
             {
                 _waiterThreads.Remove(waiterThread);
-                waiterThread.Terminate();
+                waiterThread.Dispose();
             }
         }
 
