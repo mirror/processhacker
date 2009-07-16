@@ -713,7 +713,7 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
-        public void QueueApc(Action<IntPtr> action, IntPtr parameter)
+        public void QueueApc(ApcRoutine action, IntPtr parameter)
         {
             if (!Win32.QueueUserAPC(action, this, parameter))
                 Win32.ThrowLastError();

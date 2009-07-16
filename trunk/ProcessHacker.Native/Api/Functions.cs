@@ -1885,7 +1885,7 @@ namespace ProcessHacker.Native.Api
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool QueueUserAPC(
             [MarshalAs(UnmanagedType.FunctionPtr)]
-            [In] Action<IntPtr> APC,
+            [In] ApcRoutine APC,
             [In] IntPtr ThreadHandle,
             [In] IntPtr Data
             );
