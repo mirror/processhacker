@@ -99,6 +99,8 @@ namespace ProcessHacker
         public static SharedThreadProvider SharedThreadProvider;
         public static SharedThreadProvider SecondarySharedThreadProvider;
         public static ProcessHacker.Native.Threading.Waiter SharedWaiter;
+
+        private static bool CollectGarbageEnabled = false;
         private static object CollectWorkerThreadsLock = new object();
 
         /// <summary>
@@ -746,6 +748,9 @@ namespace ProcessHacker
 
         public static void CollectGarbage()
         {
+            if (!CollectGarbageEnabled)
+                return;
+
             /* Garbage collections */
             GC.Collect();
             GC.WaitForPendingFinalizers();
