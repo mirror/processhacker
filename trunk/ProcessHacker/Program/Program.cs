@@ -100,7 +100,6 @@ namespace ProcessHacker
         public static SharedThreadProvider SecondarySharedThreadProvider;
         public static ProcessHacker.Native.Threading.Waiter SharedWaiter;
 
-        private static bool CollectGarbageEnabled = false;
         private static object CollectWorkerThreadsLock = new object();
 
         /// <summary>
@@ -748,25 +747,13 @@ namespace ProcessHacker
 
         public static void CollectGarbage()
         {
-            if (!CollectGarbageEnabled)
-                return;
-
-            /* Garbage collections */
+            // Garbage collections
             GC.Collect();
             GC.WaitForPendingFinalizers();
             GC.Collect();
-
-            /* Compact the native heaps */
-            IntPtr[] heaps = new IntPtr[128];
-            int count = Win32.GetProcessHeaps(heaps.Length, heaps);
-
-            if (count <= heaps.Length)
-            {
-                for (int i = 0; i < count; i++)
-                    Win32.HeapCompact(heaps[i], false);
-            }
-
-            /* Terminate any unused threadpool threads */
+            // Compact the native heaps
+            CompactNativeHeaps();
+            // Terminate any unused threadpool threads
             CollectWorkerThreads();
         }
 
@@ -785,6 +772,12 @@ namespace ProcessHacker
                 ThreadPool.SetMaxThreads(0, 0);
                 ThreadPool.SetMaxThreads(workerThreads, completionPortThreads);
             }
+        }
+
+        public static void CompactNativeHeaps()
+        {
+            foreach (var heap in Heap.GetHeaps())
+                heap.Compact(0);
         }
 
         public static string GetDiagnosticInformation()

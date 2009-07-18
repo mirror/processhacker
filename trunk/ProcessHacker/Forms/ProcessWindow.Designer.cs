@@ -62,9 +62,6 @@ namespace ProcessHacker
             if (_serviceProps != null)
                 _serviceProps.Dispose();
 
-            // A temporary fix for any handle/memory leaks
-            Program.CollectGarbage();
-
             base.Dispose(disposing);
         }
 

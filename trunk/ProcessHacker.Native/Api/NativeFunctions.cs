@@ -2105,6 +2105,12 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlCompactHeap(
+            [In] IntPtr HeapHandle,
+            [In] HeapFlags Flags
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern IntPtr RtlCreateHeap(
             [In] HeapFlags Flags,
             [In] [Optional] IntPtr HeapBase,
@@ -2125,6 +2131,12 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr HeapHandle,
             [In] HeapFlags Flags,
             [In] IntPtr BaseAddress
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlGetProcessHeaps(
+            [In] int NumberOfHeaps,
+            IntPtr[] ProcessHeaps
             );
 
         [DllImport("ntdll.dll")]

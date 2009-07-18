@@ -15,6 +15,29 @@ namespace ProcessHacker.Native
             return new Heap(Win32.GetProcessHeap());
         }
 
+        public static Heap[] GetHeaps()
+        {
+            IntPtr[] heapAddresses = new IntPtr[64];
+            int retHeaps;
+
+            retHeaps = Win32.RtlGetProcessHeaps(heapAddresses.Length, heapAddresses);
+
+            // Reallocate the buffer if it wasn't large enough.
+            if (retHeaps > heapAddresses.Length)
+            {
+                heapAddresses = new IntPtr[retHeaps];
+                retHeaps = Win32.RtlGetProcessHeaps(heapAddresses.Length, heapAddresses);
+            }
+
+            int numberOfHeaps = Math.Min(heapAddresses.Length, retHeaps);
+            Heap[] heaps = new Heap[numberOfHeaps];
+
+            for (int i = 0; i < numberOfHeaps; i++)
+                heaps[i] = new Heap(heapAddresses[i]);
+
+            return heaps;
+        }
+
         private IntPtr _heap;
 
         private Heap(IntPtr heap)
@@ -54,6 +77,11 @@ namespace ProcessHacker.Native
                 throw new OutOfMemoryException();
 
             return memory;
+        }
+
+        public int Compact(HeapFlags flags)
+        {
+            return Win32.RtlCompactHeap(_heap, flags).ToInt32();
         }
 
         public void Destroy()
