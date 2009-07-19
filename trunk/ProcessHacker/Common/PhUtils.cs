@@ -22,13 +22,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.UI;
-using System.Drawing;
 
 namespace ProcessHacker.Common
 {
@@ -103,6 +103,53 @@ namespace ProcessHacker.Common
                 return Color.Black;
             else
                 return Color.White;
+        }
+
+        public static void OpenKeyInRegedit(string keyName)
+        {
+            OpenKeyInRegedit(null, keyName);
+        }
+
+        public static void OpenKeyInRegedit(IWin32Window window, string keyName)
+        {
+            string lastKey = keyName;
+
+            // Expand the abbreviations.
+            if (lastKey.ToLowerInvariant().StartsWith("hkcu"))
+                lastKey = "HKEY_CURRENT_USER" + lastKey.Substring(4);
+            else if (lastKey.ToLowerInvariant().StartsWith("hku"))
+                lastKey = "HKEY_USERS" + lastKey.Substring(3);
+            else if (lastKey.ToLowerInvariant().StartsWith("hkcr"))
+                lastKey = "HKEY_CLASSES_ROOT" + lastKey.Substring(4);
+            else if (lastKey.ToLowerInvariant().StartsWith("hklm"))
+                lastKey = "HKEY_LOCAL_MACHINE" + lastKey.Substring(4);
+
+            using (var regeditKey =
+                Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
+                    @"Software\Microsoft\Windows\CurrentVersion\Applets\Regedit",
+                    true
+                    ))
+            {
+                if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                    regeditKey.SetValue("LastKey", "Computer\\" + lastKey);
+                else
+                    regeditKey.SetValue("LastKey", lastKey);
+            }
+
+            if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited)
+            {
+                Program.StartProgramAdmin(
+                    Environment.SystemDirectory + "\\..\\regedit.exe",
+                    "",
+                    null,
+                    ShowWindowType.Normal,
+                    window != null ? window.Handle : IntPtr.Zero
+                    );
+            }
+            else
+            {
+                System.Diagnostics.Process.Start(Environment.SystemDirectory + "\\..\\regedit.exe");
+            }
         }
 
         /// <summary>

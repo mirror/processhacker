@@ -339,6 +339,7 @@ namespace ProcessHacker.Components
                             // Objects with separate property windows:
                             case "file":
                             case "job":
+                            case "key":
                             case "token":
                             case "process":
                                 {
@@ -365,6 +366,18 @@ namespace ProcessHacker.Components
                                                                     phandle, handle, 
                                                                     (int)JobObjectAccess.Query);
                                                             (new JobWindow(JobObjectHandle.FromHandle(dupHandle))).ShowDialog();
+                                                        }
+                                                        break;
+                                                    case "key":
+                                                        {
+                                                            try
+                                                            {
+                                                                PhUtils.OpenKeyInRegedit(Form.ActiveForm, name);
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                PhUtils.ShowMessage("Error opening the registry editor", ex);
+                                                            }
                                                         }
                                                         break;
                                                     case "token":

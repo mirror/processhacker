@@ -6,6 +6,7 @@ Process Hacker
    * Better handle granted access display
    * Thread list is more responsive
    * Process exit notification (in the process window) is now instant
+   * Ability to open key handles in regedit
  * FIXED:
    * Properties menu item for handles was disabled most of the time
    * Handle names could not be viewed properly without KPH and 
