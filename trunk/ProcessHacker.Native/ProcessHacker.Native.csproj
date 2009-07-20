@@ -68,6 +68,8 @@
     <Compile Include="Memory\Section.cs" />
     <Compile Include="NativeUtils.cs" />
     <Compile Include="NProcessHacker.cs" />
+    <Compile Include="Objects\DriverHandle.cs" />
+    <Compile Include="Objects\DeviceHandle.cs" />
     <Compile Include="Objects\PortComHandle.cs" />
     <Compile Include="Objects\IoCompletionHandle.cs" />
     <Compile Include="Objects\PrivateNamespaceHandle.cs" />

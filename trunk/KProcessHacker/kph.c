@@ -161,6 +161,51 @@ NTSTATUS KphAttachProcessId(
     return status;
 }
 
+/* KphCaptureUnicodeString
+ * 
+ * Captures a UNICODE_STRING. This function will not throw exceptions.
+ */
+NTSTATUS KphCaptureUnicodeString(
+    __in PUNICODE_STRING UnicodeString,
+    __out PUNICODE_STRING CapturedUnicodeString
+    )
+{
+    __try
+    {
+        CapturedUnicodeString->Length = UnicodeString->Length;
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        return GetExceptionCode();
+    }
+    
+    CapturedUnicodeString->MaximumLength = CapturedUnicodeString->Length;
+    CapturedUnicodeString->Buffer = ExAllocatePoolWithTag(
+        PagedPool,
+        CapturedUnicodeString->Length,
+        TAG_CAPTURED_UNICODE_STRING
+        );
+    
+    if (!CapturedUnicodeString->Buffer)
+        return STATUS_INSUFFICIENT_RESOURCES;
+    
+    __try
+    {
+        memcpy(
+            CapturedUnicodeString->Buffer,
+            UnicodeString->Buffer,
+            CapturedUnicodeString->Length
+            );
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        KphFreeCapturedUnicodeString(CapturedUnicodeString);
+        return GetExceptionCode();
+    }
+    
+    return STATUS_SUCCESS;
+}
+
 /* KphDetachProcess
  * 
  * Detaches from the currently attached process.
@@ -171,6 +216,32 @@ VOID KphDetachProcess(
 {
     if (AttachState->Attached)
         KeUnstackDetachProcess(&AttachState->ApcState);
+}
+
+/* KphFreeCapturedUnicodeString
+ * 
+ * Frees a UNICODE_STRING captured by KphCaptureUnicodeString.
+ */
+VOID KphFreeCapturedUnicodeString(
+    __in PUNICODE_STRING CapturedUnicodeString
+    )
+{
+    ExFreePoolWithTag(
+        CapturedUnicodeString->Buffer,
+        TAG_CAPTURED_UNICODE_STRING
+        );
+}
+
+/* KphProbeForReadUnicodeString
+ * 
+ * Probes a UNICODE_STRING structure for reading.
+ */
+VOID KphProbeForReadUnicodeString(
+    __in PUNICODE_STRING UnicodeString
+    )
+{
+    ProbeForRead(UnicodeString, sizeof(UNICODE_STRING), 1);
+    ProbeForRead(UnicodeString->Buffer, UnicodeString->Length, 1);
 }
 
 /* OpenProcess

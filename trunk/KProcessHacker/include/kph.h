@@ -33,6 +33,8 @@
 #include "trace.h"
 #include "zw.h"
 
+#define TAG_CAPTURED_UNICODE_STRING ('UChP')
+
 #ifdef EXT
 #undef EXT
 #endif
@@ -51,6 +53,23 @@ EXT _PsResumeProcess PsResumeProcess EQNULL;
 EXT _PsSuspendProcess PsSuspendProcess EQNULL;
 EXT _PsTerminateProcess __PsTerminateProcess EQNULL;
 EXT PVOID __PspTerminateThreadByPointer EQNULL;
+
+/* Driver information */
+
+typedef enum _DRIVER_INFORMATION_CLASS
+{
+    DriverBasicInformation,
+    DriverNameInformation,
+    DriverServiceKeyNameInformation,
+    MaxDriverInfoClass
+} DRIVER_INFORMATION_CLASS;
+
+typedef struct _DRIVER_BASIC_INFORMATION
+{
+    ULONG Flags;
+    PVOID DriverStart;
+    ULONG DriverSize;
+} DRIVER_BASIC_INFORMATION, *PDRIVER_BASIC_INFORMATION;
 
 typedef struct _KPH_ATTACH_STATE
 {
@@ -101,8 +120,21 @@ NTSTATUS KphAttachProcessId(
     __out PKPH_ATTACH_STATE AttachState
     );
 
+NTSTATUS KphCaptureUnicodeString(
+    __in PUNICODE_STRING UnicodeString,
+    __out PUNICODE_STRING CapturedUnicodeString
+    );
+
 VOID KphDetachProcess(
     __in PKPH_ATTACH_STATE AttachState
+    );
+
+VOID KphFreeCapturedUnicodeString(
+    __in PUNICODE_STRING CapturedUnicodeString
+    );
+
+VOID KphProbeForReadUnicodeString(
+    __in PUNICODE_STRING UnicodeString
     );
 
 NTSTATUS OpenProcess(
@@ -181,6 +213,26 @@ NTSTATUS KphGetThreadWin32Thread(
     __in KPROCESSOR_MODE AccessMode
     );
 
+NTSTATUS KphOpenDevice(
+    __out PHANDLE DeviceHandle,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphOpenDriver(
+    __out PHANDLE DriverHandle,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphOpenNamedObject(
+    __out PHANDLE ObjectHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in POBJECT_TYPE ObjectType,
+    __in KPROCESSOR_MODE AccessMode
+    );
+
 NTSTATUS KphOpenProcess(
     __out PHANDLE ProcessHandle,
     __in ACCESS_MASK DesiredAccess,
@@ -216,6 +268,15 @@ NTSTATUS KphOpenThreadProcess(
     __in HANDLE ThreadHandle,
     __in ACCESS_MASK DesiredAccess,
     __out PHANDLE ProcessHandle,
+    __in KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphQueryInformationDriver(
+    __in HANDLE DriverHandle,
+    __in DRIVER_INFORMATION_CLASS DriverInformationClass,
+    __out_bcount_opt(DriverInformationLength) PVOID DriverInformation,
+    __in_opt ULONG DriverInformationLength,
+    __out_opt PULONG ReturnLength,
     __in KPROCESSOR_MODE AccessMode
     );
 

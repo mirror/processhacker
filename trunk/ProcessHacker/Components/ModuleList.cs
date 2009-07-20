@@ -307,6 +307,9 @@ namespace ProcessHacker.Components
                 {
                     menuModule.DisableAll();
 
+                    if (KProcessHacker.Instance != null)
+                        unloadMenuItem.Enabled = true;
+
                     inspectModuleMenuItem.Enabled = true;
                     searchModuleMenuItem.Enabled = true;
                     copyFileNameMenuItem.Enabled = true;
@@ -452,18 +455,66 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    string fileName = ((ModuleItem)listModules.SelectedItems[0].Tag).FileName;
+                    var moduleItem = (ModuleItem)listModules.SelectedItems[0].Tag;
+                    string serviceName = null;
+
+                    // Try to find the name of the service key for the driver by 
+                    // looping through the objects in the Driver directory and 
+                    // opening each one.
+                    using (var dhandle = new DirectoryHandle("\\Driver", DirectoryAccess.Query))
+                    {
+                        foreach (var obj in dhandle.GetObjects())
+                        {
+                            try
+                            {
+                                using (var driverHandle = new DriverHandle("\\Driver\\" + obj.Name))
+                                {
+                                    if (driverHandle.GetBasicInformation().DriverStart == moduleItem.BaseAddress)
+                                    {
+                                        serviceName = driverHandle.GetServiceKeyName();
+                                        break;
+                                    }
+                                }
+                            }
+                            catch
+                            { }
+                        }
+                    }
+
+                    // If we didn't find the service name, use the driver base name.
+                    if (serviceName == null)
+                    {
+                        if (moduleItem.Name.ToLower().EndsWith(".sys"))
+                            serviceName = moduleItem.Name.Remove(moduleItem.Name.Length - 4, 4);
+                        else
+                            serviceName = moduleItem.Name;
+                    }
+
                     RegistryKey servicesKey =
                         Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Services", true);
-                    string serviceName = Utils.MakeRandomString(8);
-                    RegistryKey serviceKey = servicesKey.CreateSubKey(serviceName);
+                    bool serviceKeyCreated;
+                    RegistryKey serviceKey;
 
-                    serviceKey.SetValue("ErrorControl", 1, RegistryValueKind.DWord);
-                    serviceKey.SetValue("ImagePath", "\\??\\" + fileName, RegistryValueKind.ExpandString);
-                    serviceKey.SetValue("Start", 1, RegistryValueKind.DWord);
-                    serviceKey.SetValue("Type", 1, RegistryValueKind.DWord);
-                    serviceKey.Close();
-                    servicesKey.Flush();
+                    // Check if the service key exists so that we don't delete it 
+                    // later if it does.
+                    if (Array.Exists<string>(servicesKey.GetSubKeyNames(),
+                        (keyName) => (string.Compare(keyName, serviceName, true) == 0)))
+                    {
+                        serviceKeyCreated = false;
+                    }
+                    else
+                    {
+                        serviceKeyCreated = true;
+                        // Create the service key.
+                        serviceKey = servicesKey.CreateSubKey(serviceName);
+
+                        serviceKey.SetValue("ErrorControl", 1, RegistryValueKind.DWord);
+                        serviceKey.SetValue("ImagePath", "\\??\\" + moduleItem.FileName, RegistryValueKind.ExpandString);
+                        serviceKey.SetValue("Start", 1, RegistryValueKind.DWord);
+                        serviceKey.SetValue("Type", 1, RegistryValueKind.DWord);
+                        serviceKey.Close();
+                        servicesKey.Flush();
+                    }
 
                     try
                     {
@@ -471,19 +522,19 @@ namespace ProcessHacker.Components
                     }
                     finally
                     {
-                        servicesKey.DeleteSubKeyTree(serviceName);
+                        if (serviceKeyCreated)
+                            servicesKey.DeleteSubKeyTree(serviceName);
+
                         servicesKey.Close();
                     }
+
+                    listModules.SelectedItems.Clear();
                 }
-                catch (System.Security.SecurityException ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show("Could not unload the driver. Make sure Process Hacker " +
                         "is running with administrative privileges. Error:\n\n" +
                         ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                catch (Exception ex)
-                {
-                    PhUtils.ShowMessage(ex);
                 }
             }
             else
@@ -521,6 +572,8 @@ namespace ProcessHacker.Components
                         thread.GetExitStatus().ThrowIf();
                         thread.Dispose();
                     }
+
+                    listModules.SelectedItems.Clear();
                 }
                 catch (Exception ex)
                 {

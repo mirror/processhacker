@@ -308,7 +308,8 @@ namespace ProcessHacker.Native.Objects
 
         /// <summary>
         /// Makes the object referenced by the handle temporary. The object 
-        /// will be deleted once the last handle to it is closed.
+        /// will be deleted once the last handle to it is closed. This function 
+        /// requires Delete access.
         /// </summary>
         public virtual void MakeObjectTemporary()
         {

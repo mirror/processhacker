@@ -22,5 +22,29 @@ namespace ProcessHacker.Native
             // Flush the APC queue.
             ThreadHandle.TestAlert();
         }
+
+        public static string FormatNativeKeyName(string nativeKeyName)
+        {
+            const string hklmString = "\\registry\\machine";
+            const string hkcrString = "\\registry\\machine\\software\\classes";
+            string hkcuString = "\\registry\\user\\" +
+                System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower();
+            string hkcucrString = "\\registry\\user\\" +
+                System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower() + "_classes";
+            const string hkuString = "\\registry\\user";
+
+            if (nativeKeyName.ToLower().StartsWith(hkcrString))
+                return "HKCR" + nativeKeyName.Substring(hkcrString.Length);
+            else if (nativeKeyName.ToLower().StartsWith(hklmString))
+                return "HKLM" + nativeKeyName.Substring(hklmString.Length);
+            else if (nativeKeyName.ToLower().StartsWith(hkcucrString))
+                return "HKCU\\Software\\Classes" + nativeKeyName.Substring(hkcucrString.Length);
+            else if (nativeKeyName.ToLower().StartsWith(hkcuString))
+                return "HKCU" + nativeKeyName.Substring(hkcuString.Length);
+            else if (nativeKeyName.ToLower().StartsWith(hkuString))
+                return "HKU" + nativeKeyName.Substring(hkuString.Length);
+            else
+                return nativeKeyName;
+        }
     }
 }

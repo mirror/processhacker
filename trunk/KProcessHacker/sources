@@ -16,6 +16,7 @@ SOURCES= \
     sync.c \
     trace.c \
     \
+    io.c \
     mm.c \
     ob.c \
     ps.c \

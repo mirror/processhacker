@@ -50,8 +50,8 @@ namespace ProcessHacker.Native
         /// </summary>
         private enum Control : uint
         {
-            Read = 0,
-            Write,
+            Reserved1 = 0,
+            Reserved2,
             GetFileObjectName,
             KphOpenProcess,
             KphOpenThread,
@@ -87,7 +87,10 @@ namespace ProcessHacker.Native
             KphQueryProcessHandles,
             KphOpenThreadProcess,
             KphCaptureStackBackTraceThread,
-            KphDangerousTerminateThread
+            KphDangerousTerminateThread,
+            KphOpenDevice,
+            KphOpenDriver,
+            KphQueryInformationDriver
         }
 
         [Flags]
@@ -439,6 +442,32 @@ namespace ProcessHacker.Native
             return *(int*)outData;
         }
 
+        public int KphOpenDevice(ObjectAttributes objectAttributes)
+        {
+            byte* inData = stackalloc byte[8];
+            int deviceHandle;
+
+            *(int*)inData = (int)&deviceHandle;
+            *(int*)(inData + 4) = (int)&objectAttributes;
+
+            _fileHandle.IoControl(CtlCode(Control.KphOpenDevice), inData, 8, null, 0);
+
+            return deviceHandle;
+        }
+
+        public int KphOpenDriver(ObjectAttributes objectAttributes)
+        {
+            byte* inData = stackalloc byte[8];
+            int driverHandle;
+
+            *(int*)inData = (int)&driverHandle;
+            *(int*)(inData + 4) = (int)&objectAttributes;
+
+            _fileHandle.IoControl(CtlCode(Control.KphOpenDriver), inData, 8, null, 0);
+
+            return driverHandle;
+        }
+
         public int KphOpenProcess(int pid, ProcessAccess desiredAccess)
         {
             byte* inData = stackalloc byte[8];
@@ -502,6 +531,33 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(CtlCode(Control.KphOpenThreadProcess), inData, 8, outData, 4);
 
             return *(int*)outData;
+        }
+
+        public void KphQueryInformationDriver(
+            DriverHandle driverHandle,
+            DriverInformationClass driverInformationClass,
+            IntPtr driverInformation,
+            int driverInformationLength,
+            out int returnLength
+            )
+        {
+            byte* inData = stackalloc byte[0x14];
+            int returnLengthLocal;
+
+            *(int*)inData = driverHandle;
+            *(int*)(inData + 0x4) = (int)driverInformationClass;
+            *(int*)(inData + 0x8) = driverInformation.ToInt32();
+            *(int*)(inData + 0xc) = driverInformationLength;
+            *(int*)(inData + 0x10) = (int)&returnLengthLocal;
+
+            try
+            {
+                _fileHandle.IoControl(CtlCode(Control.KphQueryInformationDriver), inData, 0x14, null, 0);
+            }
+            finally
+            {
+                returnLength = returnLengthLocal;
+            }
         }
 
         public void KphQueryProcessHandles(ProcessHandle processHandle, IntPtr buffer, int bufferLength, out int returnLength)
@@ -722,24 +778,6 @@ namespace ProcessHacker.Native
                 (byte*)&processHandleInt, 4, null, 0);
         }
 
-        public byte[] Read(int address, int length)
-        {
-            byte[] buffer = new byte[length];
-
-            _fileHandle.IoControl(CtlCode(Control.Read), (byte*)&address, 4, buffer);
-
-            return buffer;
-        }
-
-        public byte[] Read(uint address, int length)
-        {
-            byte[] buffer = new byte[length];
-
-            _fileHandle.IoControl(CtlCode(Control.Read), (byte*)&address, 4, buffer);
-
-            return buffer;
-        }
-
         public void SetExecuteOptions(ProcessHandle processHandle, MemExecuteOptions executeOptions)
         {
             byte* inData = stackalloc byte[8];
@@ -781,16 +819,6 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(CtlCode(Control.SetProcessToken), inData, 8, null, 0); 
         }
 
-        public int Write(int address, byte[] data)
-        {
-            MemoryAlloc inData = new MemoryAlloc(data.Length + 4);
-
-            inData.WriteInt32(0, address);
-            inData.WriteBytes(4, data);
-
-            return _fileHandle.IoControl(CtlCode(Control.Write), inData, data.Length + 4, null, 0);
-        }
-
         public NtStatus ZwQueryObject(
             ProcessHandle processHandle,
             IntPtr handle,
@@ -826,6 +854,22 @@ namespace ProcessHacker.Native
         }
     }
 
+    public enum DriverInformationClass
+    {
+        DriverBasicInformation = 0,
+        DriverNameInformation,
+        DriverServiceKeyNameInformation
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DriverBasicInformation
+    {
+        public int Flags;
+        public IntPtr DriverStart;
+        public int DriverSize;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct ProcessHandleInformation
     {
         public IntPtr Handle;

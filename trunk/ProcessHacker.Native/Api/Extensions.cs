@@ -261,26 +261,7 @@ namespace ProcessHacker.Native.Api
                         break;
 
                     case "Key":
-                        const string hklmString = "\\registry\\machine";
-                        const string hkcrString = "\\registry\\machine\\software\\classes";
-                        string hkcuString = "\\registry\\user\\" +
-                            System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower();
-                        string hkcucrString = "\\registry\\user\\" +
-                            System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower() + "_classes";
-                        const string hkuString = "\\registry\\user";
-
-                        if (info.OrigName.ToLower().StartsWith(hkcrString))
-                            info.BestName = "HKCR" + info.OrigName.Substring(hkcrString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hklmString))
-                            info.BestName = "HKLM" + info.OrigName.Substring(hklmString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkcucrString))
-                            info.BestName = "HKCU\\Software\\Classes" + info.OrigName.Substring(hkcucrString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkcuString))
-                            info.BestName = "HKCU" + info.OrigName.Substring(hkcuString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkuString))
-                            info.BestName = "HKU" + info.OrigName.Substring(hkuString.Length);
-                        else
-                            info.BestName = info.OrigName;
+                        info.BestName = NativeUtils.FormatNativeKeyName(info.OrigName);
 
                         break;
 

@@ -2,11 +2,12 @@ Process Hacker
 
 1.3.9.5
  * NEW/IMPROVED:
+   * Ability to unload drivers
    * Better process window exit status display
    * Better handle granted access display
+   * Ability to open key handles in regedit
    * Thread list is more responsive
    * Process exit notification (in the process window) is now instant
-   * Ability to open key handles in regedit
  * FIXED:
    * Properties menu item for handles was disabled most of the time
    * Handle names could not be viewed properly without KPH and 

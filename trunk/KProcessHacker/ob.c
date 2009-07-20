@@ -165,6 +165,101 @@ BOOLEAN KphEnumProcessHandleTable(
     return result;
 }
 
+/* KphOpenNamedObject
+ * 
+ * Opens a named object.
+ */
+NTSTATUS KphOpenNamedObject(
+    __out PHANDLE ObjectHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in POBJECT_TYPE ObjectType,
+    __in KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    HANDLE objectHandle;
+    UNICODE_STRING capturedObjectName;
+    OBJECT_ATTRIBUTES objectAttributes = { 0 };
+    
+    if (!ObjectAttributes)
+        return STATUS_INVALID_PARAMETER;
+    
+    /* Probe user input. */
+    if (AccessMode != KernelMode)
+    {
+        __try
+        {
+            ProbeForWrite(ObjectHandle, sizeof(HANDLE), 1);
+            ProbeForRead(ObjectAttributes, sizeof(OBJECT_ATTRIBUTES), 1);
+            
+            if (ObjectAttributes->ObjectName)
+                KphProbeForReadUnicodeString(ObjectAttributes->ObjectName);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            return GetExceptionCode();
+        }
+    }
+    
+    __try
+    {
+        /* Verify parameters. */
+        if (!ObjectAttributes->ObjectName)
+            return STATUS_INVALID_PARAMETER;
+        
+        /* Copy the object attributes structure. */
+        memcpy(&objectAttributes, ObjectAttributes, sizeof(OBJECT_ATTRIBUTES));
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        return GetExceptionCode();
+    }
+    
+    /* Capture the ObjectName string. */
+    status = KphCaptureUnicodeString(
+        ObjectAttributes->ObjectName,
+        &capturedObjectName
+        );
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    /* Set the new string in the object attributes. */
+    objectAttributes.ObjectName = &capturedObjectName;
+    /* Make sure the SecurityDescriptor and SecurityQualityOfService fields are NULL 
+     * since we haven't probed them.
+     */
+    objectAttributes.SecurityDescriptor = NULL;
+    objectAttributes.SecurityQualityOfService = NULL;
+    
+    /* Open the object. */
+    status = ObOpenObjectByName(
+        &objectAttributes,
+        ObjectType,
+        KernelMode,
+        NULL,
+        DesiredAccess,
+        NULL,
+        &objectHandle
+        );
+    
+    /* Free the captured ObjectName. */
+    KphFreeCapturedUnicodeString(&capturedObjectName);
+    
+    /* Pass the handle back. */
+    __try
+    {
+        *ObjectHandle = objectHandle;
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        status = GetExceptionCode();
+    }
+    
+    return status;
+}
+
 /* KphQueryProcessHandles
  * 
  * Queries a process handle table.

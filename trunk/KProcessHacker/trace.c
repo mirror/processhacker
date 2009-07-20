@@ -216,6 +216,7 @@ NTSTATUS KphQueryTraceDatabase(
     }
     
     /* First entry to write to. */
+    /* Note that this is completely safe if Buffer is NULL. */
     nextEntry = Buffer;
     
     /* Enumerate the trace blocks. */
@@ -237,6 +238,8 @@ NTSTATUS KphQueryTraceDatabase(
             /* If we got an error last time we tried to write to the buffer, 
              * don't try again this time. */
             NT_SUCCESS(status) && 
+            /* Make sure the buffer isn't NULL. */
+            Buffer && 
             /* Make sure we don't exceed the buffer length. */
             ((ULONG_PTR)nextEntry - (ULONG_PTR)Buffer) <= BufferLength
             )
@@ -252,6 +255,10 @@ NTSTATUS KphQueryTraceDatabase(
             {
                 status = GetExceptionCode();
             }
+        }
+        else
+        {
+            status = STATUS_BUFFER_TOO_SMALL;
         }
     }
     
