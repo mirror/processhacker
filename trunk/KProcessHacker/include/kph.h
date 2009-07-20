@@ -219,6 +219,13 @@ NTSTATUS KphOpenDevice(
     __in KPROCESSOR_MODE AccessMode
     );
 
+NTSTATUS KphOpenDirectoryObject(
+    __out PHANDLE DirectoryObjectHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in KPROCESSOR_MODE AccessMode
+    );
+
 NTSTATUS KphOpenDriver(
     __out PHANDLE DriverHandle,
     __in POBJECT_ATTRIBUTES ObjectAttributes,

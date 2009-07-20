@@ -457,6 +457,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "KphOpenDriver";
         case KPH_QUERYINFORMATIONDRIVER:
             return "KphQueryInformationDriver";
+        case KPH_OPENDIRECTORYOBJECT:
+            return "KphOpenDirectoryObject";
         default:
             return "Unknown";
     }
@@ -1676,6 +1678,30 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 args->DriverInformation,
                 args->DriverInformationLength,
                 args->ReturnLength,
+                UserMode
+                );
+        }
+        break;
+        
+        /* KphOpenDirectoryObject
+         * 
+         * Opens a directory object.
+         */
+        case KPH_OPENDIRECTORYOBJECT:
+        {
+            struct
+            {
+                PHANDLE DirectoryObjectHandle;
+                ACCESS_MASK DesiredAccess;
+                POBJECT_ATTRIBUTES ObjectAttributes;
+            } *args = dataBuffer;
+            
+            CHECK_IN_LENGTH;
+            
+            status = KphOpenDirectoryObject(
+                args->DirectoryObjectHandle,
+                args->DesiredAccess,
+                args->ObjectAttributes,
                 UserMode
                 );
         }

@@ -165,6 +165,26 @@ BOOLEAN KphEnumProcessHandleTable(
     return result;
 }
 
+/* KphOpenDirectoryObject
+ * 
+ * Opens a directory object.
+ */
+NTSTATUS KphOpenDirectoryObject(
+    __out PHANDLE DirectoryObjectHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in KPROCESSOR_MODE AccessMode
+    )
+{
+    return KphOpenNamedObject(
+        DirectoryObjectHandle,
+        DesiredAccess,
+        ObjectAttributes,
+        NULL,
+        AccessMode
+        );
+}
+
 /* KphOpenNamedObject
  * 
  * Opens a named object.

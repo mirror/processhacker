@@ -84,7 +84,7 @@
 #define KPH_OPENDEVICE KPH_CTL_CODE(38)
 #define KPH_OPENDRIVER KPH_CTL_CODE(39)
 #define KPH_QUERYINFORMATIONDRIVER KPH_CTL_CODE(40)
-#define KPH_OPENDIRECTORY KPH_CTL_CODE(41)
+#define KPH_OPENDIRECTORYOBJECT KPH_CTL_CODE(41)
 
 #define GET_BIT(integer, bit) (((integer) >> (bit)) & 0x1)
 #define SET_BIT(integer, bit) ((integer) |= 1 << (bit))

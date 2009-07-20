@@ -90,7 +90,8 @@ namespace ProcessHacker.Native
             KphDangerousTerminateThread,
             KphOpenDevice,
             KphOpenDriver,
-            KphQueryInformationDriver
+            KphQueryInformationDriver,
+            KphOpenDirectoryObject
         }
 
         [Flags]
@@ -453,6 +454,20 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(CtlCode(Control.KphOpenDevice), inData, 8, null, 0);
 
             return deviceHandle;
+        }
+
+        public int KphOpenDirectoryObject(DirectoryAccess access, ObjectAttributes objectAttributes)
+        {
+            byte* inData = stackalloc byte[0xc];
+            int directoryObjectHandle;
+
+            *(int*)inData = (int)&directoryObjectHandle;
+            *(int*)(inData + 0x4) = (int)access;
+            *(int*)(inData + 0x8) = (int)&objectAttributes;
+
+            _fileHandle.IoControl(CtlCode(Control.KphOpenDirectoryObject), inData, 0xc, null, 0);
+
+            return directoryObjectHandle;
         }
 
         public int KphOpenDriver(ObjectAttributes objectAttributes)
