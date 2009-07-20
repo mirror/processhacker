@@ -1,6 +1,6 @@
 /*
  * Process Hacker Driver - 
- *   run-time library
+ *   stack tracing
  * 
  * Copyright (C) 2009 wj32
  * 
@@ -20,8 +20,8 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RTL_H
-#define _RTL_H
+#ifndef _TRACE_H
+#define _TRACE_H
 
 #include "types.h"
 
@@ -55,8 +55,8 @@ NTSYSAPI ULONG NTAPI RtlWalkFrameChain(
 typedef struct _RTL_TRACE_BLOCK
 {
     ULONG Magic;
-    ULONG Count;
-    ULONG Size;
+    ULONG Count; /* Reference count */
+    ULONG Size; /* Size, in PVOIDs, of the trace */
     
     SIZE_T UserCount;
     SIZE_T UserSize;
@@ -104,6 +104,18 @@ BOOLEAN RtlTraceDatabaseAdd(
     __out_opt PRTL_TRACE_BLOCK *TraceBlock
     );
 
+/* RtlTraceDatabaseEnumerate
+ * 
+ * Enumerates the trace blocks in the specified trace database.
+ * 
+ * Database: The trace database to process.
+ * Enumerate: A context structure for the enumeration. Zero the 
+ * structure if you are using it for the first time.
+ * TraceBlock: The trace block that was found by the function.
+ * 
+ * Return value: TRUE if a trace block was found, FALSE if there 
+ * are no more trace blocks.
+ */
 BOOLEAN RtlTraceDatabaseEnumerate(
     __in PRTL_TRACE_DATABASE Database,
     __inout PRTL_TRACE_ENUMERATE Enumerate,
@@ -125,6 +137,52 @@ VOID RtlTraceDatabaseLock(
 
 VOID RtlTraceDatabaseUnlock(
     __in PRTL_TRACE_DATABASE Database
+    );
+
+/* KPH trace interface */
+
+typedef enum _KPH_CAPTURE_AND_ADD_STACK_TYPE
+{
+    KphCaptureAndAddKModeStack,
+    KphCaptureAndAddUModeStack,
+    KphCaptureAndAddBothStacks,
+    KphCaptureAndAddMaximum
+} KPH_CAPTURE_AND_ADD_STACK_TYPE, *PKPH_CAPTURE_AND_ADD_STACK_TYPE;
+
+typedef struct _KPH_TRACE_DATABASE
+{
+    PRTL_TRACE_DATABASE Database;
+} KPH_TRACE_DATABASE, *PKPH_TRACE_DATABASE;
+
+typedef struct _KPH_TRACEDB_INFORMATION
+{
+    ULONG NextEntryOffset;
+    ULONG Count;
+    ULONG TraceSize;
+    PVOID Trace[1];
+} KPH_TRACEDB_INFORMATION, *PKPH_TRACEDB_INFORMATION;
+
+NTSTATUS KphTraceDatabaseInitialization();
+
+BOOLEAN KphCaptureAndAddStack(
+    __in PKPH_TRACE_DATABASE Database,
+    __in KPH_CAPTURE_AND_ADD_STACK_TYPE Type,
+    __out_opt PRTL_TRACE_BLOCK *TraceBlock
+    );
+
+ULONG KphCaptureStackBackTrace(
+    __in ULONG FramesToSkip,
+    __in ULONG FramesToCapture,
+    __in_opt ULONG Flags,
+    __out_ecount(FramesToCapture) PVOID *BackTrace,
+    __out_opt PULONG BackTraceHash
+    );
+
+NTSTATUS KphCreateTraceDatabase(
+    __out PKPH_TRACE_DATABASE *Database,
+    __in_opt SIZE_T MaximumSize,
+    __in ULONG Flags,
+    __in ULONG Tag
     );
 
 #endif

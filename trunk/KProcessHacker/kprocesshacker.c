@@ -28,12 +28,6 @@
 #include "include/ps.h"
 #include "include/version.h"
 
-typedef struct _KPH_CLIENT_ENTRY
-{
-    LIST_ENTRY ListEntry;
-    HANDLE ProcessId;
-} KPH_CLIENT_ENTRY, *PKPH_CLIENT_ENTRY;
-
 static LIST_ENTRY ClientListHead;
 static KSPIN_LOCK ClientListLock;
 static NPAGED_LOOKASIDE_LIST ClientLookasideList;
@@ -57,7 +51,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     PDEVICE_OBJECT deviceObject = NULL;
     UNICODE_STRING deviceName, dosDeviceName;
     
-    /* Initialize version information */
+    /* Initialize version information. */
     status = KvInit();
     
     if (!NT_SUCCESS(status))
@@ -68,13 +62,28 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
         return status;
     }
     
-    /* Initialize NT KPH */
+    /* Initialize NT KPH. */
     status = KphNtInit();
     
     if (!NT_SUCCESS(status))
         return status;
     
-    /* Initialize client list structures */
+    /* Initialize the KPH object manager. */
+    status = KphRefInit();
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    /* Initialize trace databases. */
+    status = KphTraceDatabaseInitialization();
+    
+    if (!NT_SUCCESS(status))
+    {
+        KphRefDeinit();
+        return status;
+    }
+    
+    /* Initialize client list structures. */
     InitializeListHead(&ClientListHead);
     KeInitializeSpinLock(&ClientListLock);
     ExInitializeNPagedLookasideList(
@@ -137,6 +146,9 @@ VOID DriverUnload(PDRIVER_OBJECT DriverObject)
     }
     
     ExReleaseFastMutex(&ProtectionMutex);
+    
+    /* Free all objects in the object manager. */
+    KphRefDeinit();
     
     dprintf("Driver unloaded\n");
 }
@@ -203,7 +215,9 @@ VOID InitProtection()
     ExReleaseFastMutex(&ProtectionMutex);
 }
 
-BOOLEAN AddClientEntry(HANDLE ProcessId)
+BOOLEAN AddClientEntry(
+    __in HANDLE ProcessId
+    )
 {
     KIRQL oldIrql;
     PKPH_CLIENT_ENTRY entry = ExAllocateFromNPagedLookasideList(&ClientLookasideList);
@@ -211,6 +225,7 @@ BOOLEAN AddClientEntry(HANDLE ProcessId)
     if (!entry)
         return FALSE;
     
+    /* Insert the entry into the client list. */
     KeAcquireSpinLock(&ClientListLock, &oldIrql);
     InsertHeadList(&ClientListHead, &entry->ListEntry);
     KeReleaseSpinLock(&ClientListLock, oldIrql);
@@ -218,7 +233,10 @@ BOOLEAN AddClientEntry(HANDLE ProcessId)
     return TRUE;
 }
 
-BOOLEAN IsProcessClient(HANDLE ProcessId)
+BOOLEAN FindClientEntry(
+    __in HANDLE ProcessId,
+    __out_opt PKPH_CLIENT_ENTRY ClientEntryCopy
+    )
 {
     KIRQL oldIrql;
     PLIST_ENTRY entry = ClientListHead.Flink;
@@ -232,6 +250,9 @@ BOOLEAN IsProcessClient(HANDLE ProcessId)
         
         if (clientEntry->ProcessId == ProcessId)
         {
+            if (ClientEntryCopy)
+                memcpy(ClientEntryCopy, clientEntry, sizeof(KPH_CLIENT_ENTRY));
+            
             KeReleaseSpinLock(&ClientListLock, oldIrql);
             
             return TRUE;
@@ -245,7 +266,9 @@ BOOLEAN IsProcessClient(HANDLE ProcessId)
     return FALSE;
 }
 
-BOOLEAN RemoveClientEntry(HANDLE ProcessId)
+BOOLEAN RemoveClientEntry(
+    __in HANDLE ProcessId
+    )
 {
     KIRQL oldIrql;
     PLIST_ENTRY entry = ClientListHead.Flink;
@@ -292,8 +315,9 @@ NTSTATUS GetObjectName(PFILE_OBJECT FileObject, PVOID Buffer, ULONG BufferLength
     }
     else
     {
-        /* it's a UNICODE_STRING. we need to subtract the space 
-        Length and MaximumLength take up. */
+        /* It's a UNICODE_STRING. we need to subtract the space 
+         * Length and MaximumLength take up.
+         */
         (PCHAR)name += 4;
         BufferLength -= 4;
     }
@@ -1448,7 +1472,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             InitProtection();
             
             /* Don't protect the same process twice. */
-            if (KphProtectFindEntry(processObject, NULL))
+            if (KphProtectFindEntry(processObject, NULL, NULL))
             {
                 status = STATUS_NOT_SUPPORTED;
                 goto IoControlEnd;
@@ -1564,7 +1588,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            if (!KphProtectCopyEntry(processObject, &processEntry))
+            if (!KphProtectFindEntry(processObject, NULL, &processEntry))
             {
                 status = STATUS_UNSUCCESSFUL;
                 goto IoControlEnd;

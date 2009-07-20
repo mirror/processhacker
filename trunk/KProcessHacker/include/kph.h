@@ -25,11 +25,12 @@
 
 #include "kprocesshacker.h"
 #include "debug.h"
+#include "ref.h"
 #include "version.h"
 
 #include "mm.h"
 #include "ps.h"
-#include "rtl.h"
+#include "trace.h"
 #include "zw.h"
 
 #ifdef EXT
@@ -50,14 +51,6 @@ EXT _PsResumeProcess PsResumeProcess EQNULL;
 EXT _PsSuspendProcess PsSuspendProcess EQNULL;
 EXT _PsTerminateProcess __PsTerminateProcess EQNULL;
 EXT PVOID __PspTerminateThreadByPointer EQNULL;
-
-typedef enum _KPH_CAPTURE_AND_ADD_STACK_TYPE
-{
-    KphCaptureAndAddKModeStack,
-    KphCaptureAndAddUModeStack,
-    KphCaptureAndAddBothStacks,
-    KphCaptureAndAddMaximum
-} KPH_CAPTURE_AND_ADD_STACK_TYPE, *PKPH_CAPTURE_AND_ADD_STACK_TYPE;
 
 typedef struct _KPH_ATTACH_STATE
 {
@@ -132,20 +125,6 @@ BOOLEAN KphAcquireProcessRundownProtection(
 NTSTATUS KphAssignImpersonationToken(
     __in HANDLE ThreadHandle,
     __in HANDLE TokenHandle
-    );
-
-BOOLEAN KphCaptureAndAddStack(
-    __in PRTL_TRACE_DATABASE Database,
-    __in KPH_CAPTURE_AND_ADD_STACK_TYPE Type,
-    __out_opt PRTL_TRACE_BLOCK *TraceBlock
-    );
-
-ULONG KphCaptureStackBackTrace(
-    __in ULONG FramesToSkip,
-    __in ULONG FramesToCapture,
-    __in_opt ULONG Flags,
-    __out_ecount(FramesToCapture) PVOID *BackTrace,
-    __out_opt PULONG BackTraceHash
     );
 
 NTSTATUS KphCaptureStackBackTraceThread(

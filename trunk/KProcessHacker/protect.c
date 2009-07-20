@@ -329,55 +329,19 @@ PKPH_PROCESS_ENTRY KphProtectAddEntry(
     return entry;
 }
 
-/* KphProtectCopyEntry
- * 
- * Copies process protection data for the specified process.
- * 
- * Thread safety: Full
- * IRQL: <= DISPATCH_LEVEL
- */
-BOOLEAN KphProtectCopyEntry(
-    __in PEPROCESS Process,
-    __out PKPH_PROCESS_ENTRY ProcessEntry
-    )
-{
-    KIRQL oldIrql;
-    PLIST_ENTRY entry = ProtectedProcessListHead.Flink;
-    
-    KeAcquireSpinLock(&ProtectedProcessListLock, &oldIrql);
-    
-    while (entry != &ProtectedProcessListHead)
-    {
-        PKPH_PROCESS_ENTRY processEntry = 
-            CONTAINING_RECORD(entry, KPH_PROCESS_ENTRY, ListEntry);
-        
-        if (processEntry->Process == Process)
-        {
-            memcpy(ProcessEntry, processEntry, sizeof(KPH_PROCESS_ENTRY));
-            KeReleaseSpinLock(&ProtectedProcessListLock, oldIrql);
-            
-            return TRUE;
-        }
-        
-        entry = entry->Flink;
-    }
-    
-    KeReleaseSpinLock(&ProtectedProcessListLock, oldIrql);
-    
-    return FALSE;
-}
-
 /* KphProtectFindEntry
  * 
  * Finds process protection data.
  * 
- * Thread safety: Limited. The returned pointer is not guaranteed to 
- * point to a valid process entry.
+ * Thread safety: Full/Limited. The returned pointer is not guaranteed to 
+ * point to a valid process entry. However, the copied entry is safe to 
+ * read.
  * IRQL: <= DISPATCH_LEVEL
  */
 PKPH_PROCESS_ENTRY KphProtectFindEntry(
     __in PEPROCESS Process,
-    __in HANDLE Tag
+    __in HANDLE Tag,
+    __out_opt PKPH_PROCESS_ENTRY ProcessEntryCopy
     )
 {
     KIRQL oldIrql;
@@ -395,6 +359,10 @@ PKPH_PROCESS_ENTRY KphProtectFindEntry(
             (Tag != NULL && processEntry->Tag == Tag)
             )
         {
+            /* Copy the entry if requested. */
+            if (ProcessEntryCopy)
+                memcpy(ProcessEntryCopy, processEntry, sizeof(KPH_PROCESS_ENTRY));
+            
             KeReleaseSpinLock(&ProtectedProcessListLock, oldIrql);
             
             return processEntry;
@@ -420,7 +388,7 @@ BOOLEAN KphProtectRemoveByProcess(
     __in PEPROCESS Process
     )
 {
-    PKPH_PROCESS_ENTRY entry = KphProtectFindEntry(Process, NULL);
+    PKPH_PROCESS_ENTRY entry = KphProtectFindEntry(Process, NULL, NULL);
     
     if (!entry)
         return FALSE;
@@ -447,7 +415,7 @@ ULONG KphProtectRemoveByTag(
     PKPH_PROCESS_ENTRY entry;
     
     /* Keep removing entries until we can't find any more. */
-    while (entry = KphProtectFindEntry(NULL, Tag))
+    while (entry = KphProtectFindEntry(NULL, Tag, NULL))
     {
         KphpProtectRemoveEntry(entry);
         count++;
@@ -492,7 +460,7 @@ BOOLEAN KphpIsAccessAllowed(
         KPH_PROCESS_ENTRY processEntry;
         
         /* Search for and copy the corresponding process protection entry. */
-        if (KphProtectCopyEntry(processObject, &processEntry))
+        if (KphProtectFindEntry(processObject, NULL, &processEntry))
         {
             ACCESS_MASK mask = 
                 isThread ? processEntry.ThreadAllowMask : processEntry.ProcessAllowMask;
@@ -531,7 +499,7 @@ BOOLEAN KphpIsAccessAllowed(
  */
 BOOLEAN KphpIsCurrentProcessProtected()
 {
-    return KphProtectFindEntry(PsGetCurrentProcess(), NULL) != NULL;
+    return KphProtectFindEntry(PsGetCurrentProcess(), NULL, NULL) != NULL;
 }
 
 /* KphpProtectRemoveEntry

@@ -97,8 +97,27 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphDispatchRead(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 
-BOOLEAN AddClientEntry(HANDLE ProcessId);
-BOOLEAN IsProcessClient(HANDLE ProcessId);
-BOOLEAN RemoveClientEntry(HANDLE ProcessId);
+/* Clients */
+
+#include "include/handle.h"
+
+typedef struct _KPH_CLIENT_ENTRY
+{
+    LIST_ENTRY ListEntry;
+    HANDLE ProcessId;
+} KPH_CLIENT_ENTRY, *PKPH_CLIENT_ENTRY;
+
+BOOLEAN AddClientEntry(
+    __in HANDLE ProcessId
+    );
+
+BOOLEAN FindClientEntry(
+    __in HANDLE ProcessId,
+    __out_opt PKPH_CLIENT_ENTRY ClientEntryCopy
+    );
+
+BOOLEAN RemoveClientEntry(
+    __in HANDLE ProcessId
+    );
 
 #endif

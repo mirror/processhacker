@@ -78,14 +78,10 @@ PKPH_PROCESS_ENTRY KphProtectAddEntry(
     __in ACCESS_MASK ThreadAllowMask
     );
 
-BOOLEAN KphProtectCopyEntry(
-    __in PEPROCESS Process,
-    __out PKPH_PROCESS_ENTRY ProcessEntry
-    );
-
 PKPH_PROCESS_ENTRY KphProtectFindEntry(
     __in PEPROCESS Process,
-    __in HANDLE Tag
+    __in HANDLE Tag,
+    __out_opt PKPH_PROCESS_ENTRY ProcessEntryCopy
     );
 
 BOOLEAN KphProtectRemoveByProcess(

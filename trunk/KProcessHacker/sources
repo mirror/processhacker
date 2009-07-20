@@ -8,13 +8,17 @@ LIBS=%BUILD%\lib
 SOURCES= \
     kprocesshacker.c \
     version.c \
+    \
     kph.c \
+    handle.c \
     hook.c \
     protect.c \
     sync.c \
+    trace.c \
+    \
     mm.c \
     ob.c \
     ps.c \
-    rtl.c \
+    ref.c \
     se.c \
     resource.rc
