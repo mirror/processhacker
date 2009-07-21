@@ -244,6 +244,35 @@ VOID KphProbeForReadUnicodeString(
     ProbeForRead(UnicodeString->Buffer, UnicodeString->Length, 1);
 }
 
+/* KphProbeSystemAddressRange
+ * 
+ * Probes an address range in kernel-mode memory for reading.
+ */
+VOID KphProbeSystemAddressRange(
+    __in PVOID BaseAddress,
+    __in ULONG Length
+    )
+{
+    ULONG_PTR page, pageEnd;
+    
+    /* HACK HACK HACK HACK HACK HACK */
+    /* Check the address range by checking each page. */
+    /* Round down the base address to the page size. Note: please make sure you are 
+     * not using a dumbass compiler which optimizes the following line by removing 
+     * the divide and multiply.
+     */
+    page = (ULONG_PTR)BaseAddress / PAGE_SIZE * PAGE_SIZE;
+    /* BaseAddress + Length - 1 is the last address we will be reading. */
+    pageEnd = ((ULONG_PTR)BaseAddress + Length - 1) / PAGE_SIZE * PAGE_SIZE;
+    
+    for (; page <= pageEnd; page += PAGE_SIZE)
+    {
+        /* Check the page. */
+        if (!MmIsAddressValid((PVOID)page))
+            ExRaiseStatus(STATUS_ACCESS_VIOLATION);
+    }
+}
+
 /* OpenProcess
  * 
  * Opens the process with the specified PID.

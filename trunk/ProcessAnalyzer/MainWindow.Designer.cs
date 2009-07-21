@@ -40,6 +40,7 @@
             this.columnAddress = new System.Windows.Forms.ColumnHeader();
             this.columnSymbol = new System.Windows.Forms.ColumnHeader();
             this.listHandleTraces = new System.Windows.Forms.ListView();
+            this.columnIndex = new System.Windows.Forms.ColumnHeader();
             this.columnHandle = new System.Windows.Forms.ColumnHeader();
             this.columnType = new System.Windows.Forms.ColumnHeader();
             this.columnTid = new System.Windows.Forms.ColumnHeader();
@@ -47,10 +48,17 @@
             this.buttonSnapshot = new System.Windows.Forms.Button();
             this.buttonDisableHandleTracing = new System.Windows.Forms.Button();
             this.buttonEnableHandleTracing = new System.Windows.Forms.Button();
-            this.columnIndex = new System.Windows.Forms.ColumnHeader();
+            this.tabHiddenObjects = new System.Windows.Forms.TabPage();
+            this.labelObjectsScanProgress = new System.Windows.Forms.Label();
+            this.buttonScanHiddenObjects = new System.Windows.Forms.Button();
+            this.listHiddenObjects = new System.Windows.Forms.ListView();
+            this.columnObjectType = new System.Windows.Forms.ColumnHeader();
+            this.columnObjectId = new System.Windows.Forms.ColumnHeader();
+            this.columnObjectInfo = new System.Windows.Forms.ColumnHeader();
             this.menuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabHandleTracing.SuspendLayout();
+            this.tabHiddenObjects.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -96,6 +104,7 @@
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabHandleTracing);
+            this.tabControl.Controls.Add(this.tabHiddenObjects);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Location = new System.Drawing.Point(0, 24);
             this.tabControl.Name = "tabControl";
@@ -167,6 +176,10 @@
             this.listHandleTraces.View = System.Windows.Forms.View.Details;
             this.listHandleTraces.SelectedIndexChanged += new System.EventHandler(this.listHandleTraces_SelectedIndexChanged);
             // 
+            // columnIndex
+            // 
+            this.columnIndex.Text = "Index";
+            // 
             // columnHandle
             // 
             this.columnHandle.Text = "Handle";
@@ -218,9 +231,72 @@
             this.buttonEnableHandleTracing.UseVisualStyleBackColor = true;
             this.buttonEnableHandleTracing.Click += new System.EventHandler(this.buttonEnableHandleTracing_Click);
             // 
-            // columnIndex
+            // tabHiddenObjects
             // 
-            this.columnIndex.Text = "Index";
+            this.tabHiddenObjects.Controls.Add(this.labelObjectsScanProgress);
+            this.tabHiddenObjects.Controls.Add(this.buttonScanHiddenObjects);
+            this.tabHiddenObjects.Controls.Add(this.listHiddenObjects);
+            this.tabHiddenObjects.Location = new System.Drawing.Point(4, 22);
+            this.tabHiddenObjects.Name = "tabHiddenObjects";
+            this.tabHiddenObjects.Padding = new System.Windows.Forms.Padding(3);
+            this.tabHiddenObjects.Size = new System.Drawing.Size(687, 443);
+            this.tabHiddenObjects.TabIndex = 1;
+            this.tabHiddenObjects.Text = "Hidden Objects";
+            this.tabHiddenObjects.UseVisualStyleBackColor = true;
+            // 
+            // labelObjectsScanProgress
+            // 
+            this.labelObjectsScanProgress.AutoSize = true;
+            this.labelObjectsScanProgress.Location = new System.Drawing.Point(87, 11);
+            this.labelObjectsScanProgress.Name = "labelObjectsScanProgress";
+            this.labelObjectsScanProgress.Size = new System.Drawing.Size(41, 13);
+            this.labelObjectsScanProgress.TabIndex = 4;
+            this.labelObjectsScanProgress.Text = "Ready.";
+            // 
+            // buttonScanHiddenObjects
+            // 
+            this.buttonScanHiddenObjects.Enabled = false;
+            this.buttonScanHiddenObjects.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonScanHiddenObjects.Location = new System.Drawing.Point(6, 6);
+            this.buttonScanHiddenObjects.Name = "buttonScanHiddenObjects";
+            this.buttonScanHiddenObjects.Size = new System.Drawing.Size(75, 23);
+            this.buttonScanHiddenObjects.TabIndex = 3;
+            this.buttonScanHiddenObjects.Text = "Scan";
+            this.buttonScanHiddenObjects.UseVisualStyleBackColor = true;
+            this.buttonScanHiddenObjects.Click += new System.EventHandler(this.buttonScanHiddenObjects_Click);
+            // 
+            // listHiddenObjects
+            // 
+            this.listHiddenObjects.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHiddenObjects.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnObjectType,
+            this.columnObjectId,
+            this.columnObjectInfo});
+            this.listHiddenObjects.FullRowSelect = true;
+            this.listHiddenObjects.HideSelection = false;
+            this.listHiddenObjects.Location = new System.Drawing.Point(6, 35);
+            this.listHiddenObjects.MultiSelect = false;
+            this.listHiddenObjects.Name = "listHiddenObjects";
+            this.listHiddenObjects.Size = new System.Drawing.Size(675, 402);
+            this.listHiddenObjects.TabIndex = 2;
+            this.listHiddenObjects.UseCompatibleStateImageBehavior = false;
+            this.listHiddenObjects.View = System.Windows.Forms.View.Details;
+            // 
+            // columnObjectType
+            // 
+            this.columnObjectType.Text = "Type";
+            this.columnObjectType.Width = 100;
+            // 
+            // columnObjectId
+            // 
+            this.columnObjectId.Text = "ID";
+            // 
+            // columnObjectInfo
+            // 
+            this.columnObjectInfo.Text = "Information";
+            this.columnObjectInfo.Width = 300;
             // 
             // MainWindow
             // 
@@ -233,11 +309,12 @@
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MainWindow";
             this.Text = "Process Analyzer";
-            this.Shown += new System.EventHandler(this.MainWindow_Shown);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.tabControl.ResumeLayout(false);
             this.tabHandleTracing.ResumeLayout(false);
+            this.tabHiddenObjects.ResumeLayout(false);
+            this.tabHiddenObjects.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -264,6 +341,13 @@
         private System.Windows.Forms.ColumnHeader columnSymbol;
         private System.Windows.Forms.ColumnHeader columnHandleName;
         private System.Windows.Forms.ColumnHeader columnIndex;
+        private System.Windows.Forms.TabPage tabHiddenObjects;
+        private System.Windows.Forms.ListView listHiddenObjects;
+        private System.Windows.Forms.ColumnHeader columnObjectType;
+        private System.Windows.Forms.ColumnHeader columnObjectId;
+        private System.Windows.Forms.ColumnHeader columnObjectInfo;
+        private System.Windows.Forms.Button buttonScanHiddenObjects;
+        private System.Windows.Forms.Label labelObjectsScanProgress;
     }
 }
 

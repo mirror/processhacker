@@ -117,7 +117,7 @@ namespace ProcessHacker.Native
             unchecked
             {
                 if (IntPtr.Size == sizeof(Int32))
-                    return new IntPtr(ptr.ToInt32() + value);
+                    return new IntPtr((int)(ptr.ToInt32() + value));
                 else
                     return new IntPtr(ptr.ToInt64() + value);
             }

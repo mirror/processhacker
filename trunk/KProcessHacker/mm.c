@@ -150,57 +150,39 @@ NTSTATUS KphUnsafeReadVirtualMemory(
         }
     }
     
+    /* Make sure we have something to copy. */
+    if (BufferLength == 0)
+    {
+        __try
+        {
+            *ReturnLength = 0;
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            return GetExceptionCode();
+        }
+        
+        return STATUS_SUCCESS;
+    }
+    
     /* Select the appropriate copy method. */
     if (((ULONG_PTR)BaseAddress + BufferLength) > (ULONG_PTR)MmHighestUserAddress)
     {
         /* Kernel memory unsafe copy. */
-        ULONG i;
-        PMDL mdl;
-        PVOID mappedAddress = NULL;
-        BOOLEAN locked = FALSE;
-        
-        /* Allocate a MDL. */
-        mdl = IoAllocateMdl(BaseAddress, BufferLength, FALSE, FALSE, NULL);
         
         __try
         {
-            /* Check the address range. */
-            /* HACK HACK HACK HACK HACK HACK */
-            for (i = 0; i < BufferLength; i++)
-            {
-                if (!MmIsAddressValid((PVOID)((ULONG_PTR)BaseAddress + i)))
-                    ExRaiseStatus(STATUS_ACCESS_VIOLATION);
-            }
+            /* Probe the address range. */
+            KphProbeSystemAddressRange(BaseAddress, BufferLength);
             
-            /* Probe, lock and map the pages. */
-            MmProbeAndLockPages(mdl, KernelMode, IoReadAccess);
-            locked = TRUE;
-            mappedAddress = MmMapLockedPagesSpecifyCache(
-                mdl,
-                KernelMode,
-                MmNonCached,
-                NULL,
-                FALSE,
-                HighPagePriority
-                );
             /* Copy the data. */
-            memcpy(Buffer, mappedAddress, BufferLength);
+            memcpy(Buffer, BaseAddress, BufferLength);
             returnLength = BufferLength;
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
             status = GetExceptionCode();
         }
-        
-        /* Unmap the pages if necessary. */
-        if (mappedAddress)
-            MmUnmapLockedPages(mappedAddress, mdl);
-        /* Unlock the pages if necessary. */
-        if (locked)
-            MmUnlockPages(mdl);
-        
-        /* Free the allocated MDL. */
-        IoFreeMdl(mdl);
         
         if (ReturnLength)
         {

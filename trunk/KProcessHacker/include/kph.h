@@ -137,6 +137,11 @@ VOID KphProbeForReadUnicodeString(
     __in PUNICODE_STRING UnicodeString
     );
 
+VOID KphProbeSystemAddressRange(
+    __in PVOID BaseAddress,
+    __in ULONG Length
+    );
+
 NTSTATUS OpenProcess(
     __out PHANDLE ProcessHandle,
     __in ACCESS_MASK DesiredAccess,
