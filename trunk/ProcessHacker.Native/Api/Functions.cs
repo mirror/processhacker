@@ -1195,8 +1195,8 @@ namespace ProcessHacker.Native.Api
             [In] string AccountName,
             [In] [Optional] IntPtr Sid,
             ref int SidSize,
-            [In] IntPtr ReferencedDomainName,
-            [In] IntPtr ReferencedDomainNameSize,
+            [Out] [Optional] StringBuilder ReferencedDomainName,
+            ref int ReferencedDomainNameSize,
             [Out] out SidNameUse Use
             );
 

@@ -24,6 +24,7 @@ using System;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -32,6 +33,107 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public sealed class TokenHandle : NativeHandle<TokenAccess>, IEquatable<TokenHandle>
     {
+        private static readonly TokenSource _phTokenSource = new TokenSource("PROCHACK", Luid.Allocate());
+
+        public static TokenHandle Create(
+            TokenAccess access,
+            TokenType tokenType,
+            Sid user,
+            Sid[] groups,
+            PrivilegeSet privileges
+            )
+        {
+            using (var administratorsSid = Sid.GetWellKnownSid(WellKnownSidType.WinBuiltinAdministratorsSid))
+            using (var thandle = TokenHandle.OpenCurrentPrimary(TokenAccess.Query))
+                return Create(access, 0, thandle, tokenType, user, groups, privileges, administratorsSid, administratorsSid);
+        }
+
+        public static TokenHandle Create(
+            TokenAccess access,
+            ObjectFlags objectFlags,
+            TokenHandle existingTokenHandle,
+            TokenType tokenType,
+            Sid user,
+            Sid[] groups,
+            PrivilegeSet privileges,
+            Sid owner,
+            Sid primaryGroup
+            )
+        {
+            var statistics = existingTokenHandle.GetStatistics();
+
+            return Create(
+                access,
+                null,
+                objectFlags,
+                null,
+                tokenType,
+                statistics.AuthenticationId,
+                statistics.ExpirationTime,
+                user,
+                groups,
+                privileges,
+                owner,
+                primaryGroup,
+                null,
+                _phTokenSource
+                );
+        }
+
+        public static TokenHandle Create(
+            TokenAccess access,
+            string name,
+            ObjectFlags objectFlags,
+            DirectoryHandle rootDirectory,
+            TokenType tokenType,
+            Luid authenticationId,
+            long expirationTime,
+            Sid user,
+            Sid[] groups,
+            PrivilegeSet privileges,
+            Sid owner,
+            Sid primaryGroup,
+            Acl defaultDacl,
+            TokenSource source
+            )
+        {
+            NtStatus status;
+            TokenUser tokenUser = new TokenUser(user);
+            TokenGroups tokenGroups = new TokenGroups(groups);
+            TokenPrivileges tokenPrivileges = new TokenPrivileges(privileges);
+            TokenOwner tokenOwner = new TokenOwner(owner);
+            TokenPrimaryGroup tokenPrimaryGroup = new TokenPrimaryGroup(primaryGroup);
+            TokenDefaultDacl tokenDefaultDacl = new TokenDefaultDacl(defaultDacl);
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+            IntPtr handle;
+
+            try
+            {
+                if ((status = Win32.NtCreateToken(
+                    out handle,
+                    access,
+                    ref oa,
+                    tokenType,
+                    ref authenticationId,
+                    ref expirationTime,
+                    ref tokenUser,
+                    ref tokenGroups,
+                    ref tokenPrivileges,
+                    ref tokenOwner,
+                    ref tokenPrimaryGroup,
+                    ref tokenDefaultDacl,
+                    ref source
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+            finally
+            {
+                oa.Dispose();
+            }
+
+            return new TokenHandle(handle, true);
+        }
+
         /// <summary>
         /// Creates a token handle using an existing handle. 
         /// The handle will not be closed automatically.

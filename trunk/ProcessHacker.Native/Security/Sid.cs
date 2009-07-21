@@ -46,10 +46,12 @@ namespace ProcessHacker.Native.Security
             using (MemoryAlloc memory = new MemoryAlloc(Win32.SecurityMaxSidSize))
             {
                 int memorySize = memory.Size;
+                StringBuilder domainSb = new StringBuilder(0x400);
+                int domainSbSize = domainSb.Capacity;
                 SidNameUse nameUse;
 
                 if (!Win32.LookupAccountName(null, accountName, memory, ref memorySize,
-                    IntPtr.Zero, IntPtr.Zero, out nameUse))
+                    domainSb, ref domainSbSize, out nameUse))
                     Win32.ThrowLastError();
 
                 return new Sid(memory);

@@ -2222,7 +2222,7 @@ namespace ProcessHacker.Native.Api
     {
         public TokenDefaultDacl(Acl defaultDacl)
         {
-            this.DefaultDacl = defaultDacl;
+            this.DefaultDacl = defaultDacl ?? IntPtr.Zero;
         }
 
         public IntPtr DefaultDacl; // Acl*
@@ -2251,7 +2251,7 @@ namespace ProcessHacker.Native.Api
     {
         public TokenOwner(Sid owner)
         {
-            this.Owner = owner;
+            this.Owner = owner ?? IntPtr.Zero;
         }
 
         public IntPtr Owner;
@@ -2262,7 +2262,7 @@ namespace ProcessHacker.Native.Api
     {
         public TokenPrimaryGroup(Sid primaryGroup)
         {
-            this.PrimaryGroup = primaryGroup;
+            this.PrimaryGroup = primaryGroup ?? IntPtr.Zero;
         }
 
         public IntPtr PrimaryGroup;
