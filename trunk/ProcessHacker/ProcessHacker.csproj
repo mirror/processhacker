@@ -289,10 +289,6 @@
       <DependentUpon>ProcessAffinity.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="Forms\DisassemblyWindow.resx">
-      <DependentUpon>DisassemblyWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </None>
     <EmbeddedResource Include="Forms\ErrorDialog.resx">
       <DependentUpon>ErrorDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -360,10 +356,6 @@
     <None Include="app.config" />
     <None Include="Resources\folder_explore.png" />
     <None Include="Resources\pencil_go.png" />
-    <None Include="Asm\Disassembler.cs" />
-    <None Include="Asm\AsmMisc.cs" />
-    <None Include="Asm\AsmData.cs" />
-    <None Include="Asm\AsmDefinitions.cs" />
     <Compile Include="Common\Extensions.cs" />
     <Compile Include="Components\EventPairProperties.cs">
       <SubType>UserControl</SubType>
@@ -688,12 +680,6 @@
     <Compile Include="Forms\ProcessAffinity.Designer.cs">
       <DependentUpon>ProcessAffinity.cs</DependentUpon>
     </Compile>
-    <None Include="Forms\DisassemblyWindow.cs">
-      <SubType>Form</SubType>
-    </None>
-    <None Include="Forms\DisassemblyWindow.Designer.cs">
-      <DependentUpon>DisassemblyWindow.cs</DependentUpon>
-    </None>
     <Compile Include="Forms\ErrorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
