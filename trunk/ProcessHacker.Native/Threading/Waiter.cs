@@ -321,6 +321,7 @@ namespace ProcessHacker.Native.Threading
             lock (_waiterThreads)
             {
                 _waiterThreads.Remove(waiterThread);
+                waiterThread.ObjectSignaled -= this.OnObjectSignaled;
                 waiterThread.Dispose();
             }
         }
