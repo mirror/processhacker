@@ -99,25 +99,25 @@ namespace ProcessHacker.Components
             ProcessItem item = Program.ProcessProvider.Dictionary[_pid];
 
             labelCPUPriority.Text = item.Process.BasePriority.ToString();
-            labelCPUKernelTime.Text = Utils.GetNiceTimeSpan(new TimeSpan(item.Process.KernelTime));
-            labelCPUUserTime.Text = Utils.GetNiceTimeSpan(new TimeSpan(item.Process.UserTime));
-            labelCPUTotalTime.Text = Utils.GetNiceTimeSpan(new TimeSpan(item.Process.KernelTime + item.Process.UserTime));
+            labelCPUKernelTime.Text = Utils.FormatTimeSpan(new TimeSpan(item.Process.KernelTime));
+            labelCPUUserTime.Text = Utils.FormatTimeSpan(new TimeSpan(item.Process.UserTime));
+            labelCPUTotalTime.Text = Utils.FormatTimeSpan(new TimeSpan(item.Process.KernelTime + item.Process.UserTime));
 
-            labelMemoryPB.Text = Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes);
-            labelMemoryWS.Text = Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.WorkingSetSize);
-            labelMemoryPWS.Text = Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakWorkingSetSize);
-            labelMemoryVS.Text = Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.VirtualSize);
-            labelMemoryPVS.Text = Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakVirtualSize);
-            labelMemoryPU.Text = Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.PagefileUsage);
-            labelMemoryPPU.Text = Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakPagefileUsage);
+            labelMemoryPB.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.PrivateBytes);
+            labelMemoryWS.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.WorkingSetSize);
+            labelMemoryPWS.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.PeakWorkingSetSize);
+            labelMemoryVS.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.VirtualSize);
+            labelMemoryPVS.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.PeakVirtualSize);
+            labelMemoryPU.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.PagefileUsage);
+            labelMemoryPPU.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.PeakPagefileUsage);
             labelMemoryPF.Text = ((ulong)item.Process.VirtualMemoryCounters.PageFaultCount).ToString("N0");
 
             labelIOReads.Text = ((ulong)item.Process.IoCounters.ReadOperationCount).ToString("N0");
-            labelIOReadBytes.Text = Utils.GetNiceSizeName(item.Process.IoCounters.ReadTransferCount);
+            labelIOReadBytes.Text = Utils.FormatSize(item.Process.IoCounters.ReadTransferCount);
             labelIOWrites.Text = ((ulong)item.Process.IoCounters.WriteOperationCount).ToString("N0");
-            labelIOWriteBytes.Text = Utils.GetNiceSizeName(item.Process.IoCounters.WriteTransferCount);
+            labelIOWriteBytes.Text = Utils.FormatSize(item.Process.IoCounters.WriteTransferCount);
             labelIOOther.Text = ((ulong)item.Process.IoCounters.OtherOperationCount).ToString("N0");
-            labelIOOtherBytes.Text = Utils.GetNiceSizeName(item.Process.IoCounters.OtherTransferCount);
+            labelIOOtherBytes.Text = Utils.FormatSize(item.Process.IoCounters.OtherTransferCount);
 
             labelOtherHandles.Text = ((ulong)item.Process.HandleCount).ToString("N0");
 

@@ -305,14 +305,14 @@ namespace ProcessHacker
             plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
             plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
             plotterMemory.GetToolTip = i =>
-                "Pvt. Memory: " + Utils.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
-                "Working Set: " + Utils.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
+                "Pvt. Memory: " + Utils.FormatSize(plotterMemory.LongData1[i]) + "\n" +
+                "Working Set: " + Utils.FormatSize(plotterMemory.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
             plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
             plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
             plotterIO.GetToolTip = i =>
-                "R+O: " + Utils.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
-                "W: " + Utils.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
+                "R+O: " + Utils.FormatSize(plotterIO.LongData1[i]) + "\n" +
+                "W: " + Utils.FormatSize(plotterIO.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
 
             // Set the indicator colors.
@@ -521,7 +521,7 @@ namespace ProcessHacker
             {
                 DateTime startTime = DateTime.FromFileTime(_processItem.Process.CreateTime);
 
-                textStartTime.Text = Utils.GetNiceRelativeDateTime(startTime) +
+                textStartTime.Text = Utils.FormatRelativeDateTime(startTime) +
                     " (" + startTime.ToString() + ")";
             }
             catch (Exception ex)
@@ -904,12 +904,12 @@ namespace ProcessHacker
                 " (K: " + (procKernel * 100).ToString("F2") +
                 "%, U: " + (procUser * 100).ToString("F2") + "%)";
 
-            string pvtString = Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes);
+            string pvtString = Utils.FormatSize(item.Process.VirtualMemoryCounters.PrivateBytes);
             plotterMemory.Text = "Pvt: " + pvtString + 
-                ", WS: " + Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.WorkingSetSize);
+                ", WS: " + Utils.FormatSize(item.Process.VirtualMemoryCounters.WorkingSetSize);
 
-            string ioROString = Utils.GetNiceSizeName(ioRO);
-            plotterIO.Text = "R+O: " + ioROString + ", W: " + Utils.GetNiceSizeName(ioW);
+            string ioROString = Utils.FormatSize(ioRO);
+            plotterIO.Text = "R+O: " + ioROString + ", W: " + Utils.FormatSize(ioW);
 
             plotterCPUUsage.MoveGrid();
             plotterCPUUsage.Draw();

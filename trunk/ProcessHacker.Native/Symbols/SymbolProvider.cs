@@ -322,7 +322,7 @@ namespace ProcessHacker.Native.Symbols
 
         public string GetSymbolFromAddress(ulong address, out SymbolResolveLevel level, out SymbolFlags flags, out string fileName, out string symbolName, out ulong displacement)
         {
-            // Assume failure.
+            // Assume failure (and stop the compiler from complaining).
             if (address == 0)
             {
                 level = SymbolResolveLevel.Invalid;
@@ -330,6 +330,7 @@ namespace ProcessHacker.Native.Symbols
                 fileName = null;
             }
 
+            // Allocate some memory for the symbol information.
             using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + _maxNameLen))
             {
                 var info = new SymbolInfo();

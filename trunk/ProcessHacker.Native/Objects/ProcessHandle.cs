@@ -34,12 +34,14 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle to a Windows process.
     /// </summary>
-    /// <remarks>The idea of a ProcessHandle class is 
+    /// <remarks>
+    /// The idea of a ProcessHandle class is 
     /// different to the <see cref="System.Diagnostics.Process"/> class; 
     /// instead of opening the process with the right permissions every 
     /// time a query or set function is called, this lets the users control 
     /// when they want to open handles with certain permissions. This 
-    /// means that handles can be cached (by the users).</remarks>
+    /// means that handles can be cached (by the users).
+    /// </remarks>
     public sealed class ProcessHandle : NativeHandle<ProcessAccess>, IWithToken
     {
         /// <summary>
@@ -79,7 +81,8 @@ namespace ProcessHacker.Native.Objects
             using (var fhandle = new FileHandle(
                 fileName,
                 (FileAccess)StandardRights.Synchronize | FileAccess.Execute | FileAccess.ReadData,
-                FileShareMode.Delete | FileShareMode.Read, FileCreationDisposition.OpenAlways
+                FileShareMode.Delete | FileShareMode.Read,
+                FileCreationDisposition.OpenAlways
                 ))
             {
                 using (var shandle = 
@@ -594,7 +597,9 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Disables the collection of handle stack traces.
+        /// Disables the collection of handle stack traces. This requires 
+        /// PROCESS_SET_INFORMATION access. Note that this function is only 
+        /// available on Windows Vista and above.
         /// </summary>
         public void DisableHandleTracing()
         {
@@ -2229,6 +2234,9 @@ namespace ProcessHacker.Native.Objects
         }
     }
 
+    /// <summary>
+    /// Represents a stack trace collected during a handle trace event.
+    /// </summary>
     public class ProcessHandleTrace
     {
         private ClientId _clientId;
@@ -2254,27 +2262,42 @@ namespace ProcessHacker.Native.Objects
             Array.Copy(entry.Stacks, 0, _stack, 0, zeroIndex);
         }
 
+        /// <summary>
+        /// The client ID of the thread which produced the event.
+        /// </summary>
         public ClientId ClientId
         {
             get { return _clientId; }
         }
 
+        /// <summary>
+        /// The handle value associated with the event.
+        /// </summary>
         public IntPtr Handle
         {
             get { return _handle; }
         }
 
+        /// <summary>
+        /// A stack trace of the thread at the time of the event.
+        /// </summary>
         public IntPtr[] Stack
         {
             get { return _stack; }
         }
 
+        /// <summary>
+        /// The type of handle trace event.
+        /// </summary>
         public HandleTraceType Type
         {
             get { return _type; }
         }
     }
 
+    /// <summary>
+    /// Represents a collection of handle trace events.
+    /// </summary>
     public class ProcessHandleTraceCollection : ReadOnlyCollection<ProcessHandleTrace>
     {
         private IntPtr _handle;
@@ -2304,12 +2327,18 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
+        /// <summary>
+        /// A unique handle representing the collection.
+        /// </summary>
         public IntPtr Handle
         {
             get { return _handle; }
         }
     }
 
+    /// <summary>
+    /// Represents a module loaded by a process.
+    /// </summary>
     public class ProcessModule
     {
         public ProcessModule(
@@ -2329,11 +2358,29 @@ namespace ProcessHacker.Native.Objects
             this.FileName = fileName;
         }
 
+        /// <summary>
+        /// The base address of the module.
+        /// </summary>
         public IntPtr BaseAddress { get; private set; }
+        /// <summary>
+        /// The size of the module.
+        /// </summary>
         public int Size { get; private set; }
+        /// <summary>
+        /// The entry point of the module (usually its DllMain function).
+        /// </summary>
         public IntPtr EntryPoint { get; private set; }
+        /// <summary>
+        /// The flags set by the NT loader for this module.
+        /// </summary>
         public LdrpDataTableEntryFlags Flags { get; private set; }
+        /// <summary>
+        /// The base name of the module (e.g. module.dll).
+        /// </summary>
         public string BaseName { get; private set; }
+        /// <summary>
+        /// The file name of the module (e.g. C:\Windows\system32\module.dll).
+        /// </summary>
         public string FileName { get; private set; }
     }
 

@@ -27,6 +27,11 @@ namespace ProcessHacker.Common
 {
     public static class LongExtensions
     {
+        /// <summary>
+        /// Gets the largest value in the specified array of longs.
+        /// </summary>
+        /// <param name="source">The source array.</param>
+        /// <returns>The largest value in the specified array.</returns>
         public static long Max(this IEnumerable<long> source)
         {
             if (source == null)
@@ -52,6 +57,15 @@ namespace ProcessHacker.Common
             return max;
         }
 
+        /// <summary>
+        /// Takes a number of elements from the specified array.
+        /// </summary>
+        /// <param name="source">The list to process.</param>
+        /// <param name="count">The number of elements to take.</param>
+        /// <returns>
+        /// A new list containing the first <paramref name="count" /> 
+        /// elements from the specified array.
+        /// </returns>
         public static IList<long> Take(this IList<long> source, int count)
         {
             if (source == null)

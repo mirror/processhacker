@@ -191,8 +191,8 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    item.SubItems[1].Text = Utils.GetNiceSizeName(heap.BytesAllocated);
-                    item.SubItems[2].Text = Utils.GetNiceSizeName(heap.BytesCommitted);
+                    item.SubItems[1].Text = Utils.FormatSize(heap.BytesAllocated);
+                    item.SubItems[2].Text = Utils.FormatSize(heap.BytesCommitted);
                 }
             }
         }

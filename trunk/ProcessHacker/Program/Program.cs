@@ -497,7 +497,7 @@ namespace ProcessHacker
 
                 if (pArgs.ContainsKey("-rect"))
                 {
-                    Rectangle rect = Utils.RectangleFromString(pArgs["-rect"]);
+                    Rectangle rect = Utils.GetRectangle(pArgs["-rect"]);
 
                     options.Location = new Point(rect.X + 20, rect.Y + 20);
                     options.StartPosition = FormStartPosition.Manual;
@@ -788,7 +788,7 @@ namespace ProcessHacker
             info.AppendLine("CLR Version: " + Environment.Version.ToString());
             info.AppendLine("OS Version: " + Environment.OSVersion.VersionString);
             info.AppendLine("Elevation: " + ElevationType.ToString());
-            info.AppendLine("Working set: " + Utils.GetNiceSizeName(Environment.WorkingSet));
+            info.AppendLine("Working set: " + Utils.FormatSize(Environment.WorkingSet));
             info.AppendLine("Private heap: 0x" + MemoryAlloc.PrivateHeap.ToString("x"));
 
             if (KProcessHacker.Instance == null)

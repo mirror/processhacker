@@ -46,7 +46,7 @@ namespace ProcessHacker
             this.Update(this.MinMaxValue - this.Provider.Performance.AvailablePages, 0);
             this.Redraw();
 
-            this.Text = "Physical Memory: " + Utils.GetNiceSizeName(
+            this.Text = "Physical Memory: " + Utils.FormatSize(
                 (long)(this.MinMaxValue - this.Provider.Performance.AvailablePages) *
                 this.Provider.System.PageSize);
         }

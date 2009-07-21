@@ -135,7 +135,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        processThread = Utils.GetThreadById(Process.GetProcessById(_pid), tid);
+                        processThread = Utils.GetThreadFromId(Process.GetProcessById(_pid), tid);
                     }
                     catch
                     { }
@@ -156,9 +156,9 @@ namespace ProcessHacker.Components
                                 labelState.Text = processThread.ThreadState.ToString();
                             }
 
-                            labelKernelTime.Text = Utils.GetNiceTimeSpan(processThread.PrivilegedProcessorTime);
-                            labelUserTime.Text = Utils.GetNiceTimeSpan(processThread.UserProcessorTime);
-                            labelTotalTime.Text = Utils.GetNiceTimeSpan(processThread.TotalProcessorTime);
+                            labelKernelTime.Text = Utils.FormatTimeSpan(processThread.PrivilegedProcessorTime);
+                            labelUserTime.Text = Utils.FormatTimeSpan(processThread.UserProcessorTime);
+                            labelTotalTime.Text = Utils.FormatTimeSpan(processThread.TotalProcessorTime);
                         }
                         catch
                         {

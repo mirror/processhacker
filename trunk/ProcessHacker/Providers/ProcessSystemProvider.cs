@@ -876,7 +876,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.CreateTime = Utils.DateTimeFromFileTime(processInfo.CreateTime);
+                        item.CreateTime = Utils.GetDateTimeFromLongTime(processInfo.CreateTime);
                     }
                     catch
                     { }
@@ -1184,9 +1184,9 @@ namespace ProcessHacker
             try
             {
                 _mostUsageHistory.Update(true, newdictionary[this.PIDWithMostIoActivity].Name + ": " +
-                    "R+O: " + Utils.GetNiceSizeName(
+                    "R+O: " + Utils.FormatSize(
                     newdictionary[this.PIDWithMostIoActivity].LongHistoryManager[ProcessStats.IoReadOther][0]) +
-                    ", W: " + Utils.GetNiceSizeName(
+                    ", W: " + Utils.FormatSize(
                     newdictionary[this.PIDWithMostIoActivity].LongHistoryManager[ProcessStats.IoWrite][0]));
             }
             catch

@@ -46,7 +46,7 @@ namespace ProcessHacker
             this.Update(this.Provider.Performance.CommittedPages, 0);
             this.Redraw();
 
-            this.Text = "Commit: " + Utils.GetNiceSizeName(
+            this.Text = "Commit: " + Utils.FormatSize(
                 (long)this.Provider.Performance.CommittedPages * this.Provider.System.PageSize);
         }
     }

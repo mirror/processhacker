@@ -45,7 +45,7 @@ namespace ProcessHacker
                 ProcessNode pNode = _tree.FindNode(node);
 
                 string cmdText = (pNode.ProcessItem.CmdLine != null ?
-                        (Utils.MakeEllipsis(pNode.ProcessItem.CmdLine.Replace("\0", ""), 100) + "\n") : "");
+                        (Utils.CreateEllipsis(pNode.ProcessItem.CmdLine.Replace("\0", ""), 100) + "\n") : "");
 
                 string fileText = "";
 

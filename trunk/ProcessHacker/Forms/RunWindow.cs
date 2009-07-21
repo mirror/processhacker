@@ -175,7 +175,7 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    string serviceName = Utils.MakeRandomString(8);
+                    string serviceName = Utils.CreateRandomString(8);
 
                     using (var manager = new ServiceManagerHandle(ScManagerAccess.CreateService))
                     {

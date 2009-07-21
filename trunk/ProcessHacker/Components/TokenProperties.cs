@@ -148,8 +148,8 @@ namespace ProcessHacker.Components
                         textImpersonationLevel.Text = statistics.ImpersonationLevel.ToString();
                         textTokenId.Text = "0x" + statistics.TokenId.ToString();
                         textAuthenticationId.Text = "0x" + statistics.AuthenticationId.ToString();
-                        textMemoryUsed.Text = Utils.GetNiceSizeName(statistics.DynamicCharged);
-                        textMemoryAvailable.Text = Utils.GetNiceSizeName(statistics.DynamicAvailable);
+                        textMemoryUsed.Text = Utils.FormatSize(statistics.DynamicCharged);
+                        textMemoryAvailable.Text = Utils.FormatSize(statistics.DynamicAvailable);
                     }
                     catch (Exception ex)
                     {

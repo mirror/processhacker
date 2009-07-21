@@ -127,6 +127,10 @@ namespace ProcessHacker.Native.Debugging
             }
         }
 
+        /// <summary>
+        /// Reads the debug information structure from the buffer.
+        /// </summary>
+        /// <returns>A RtlDebugInformation structure.</returns>
         private RtlDebugInformation GetDebugInformation()
         {
             MemoryAlloc data = new MemoryAlloc(_buffer, false);

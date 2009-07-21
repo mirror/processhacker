@@ -23,7 +23,7 @@ namespace ProcessHacker.Components
             var basicInfo = _sectionHandle.GetBasicInformation();
 
             labelAttributes.Text = basicInfo.SectionAttributes.ToString();
-            labelSize.Text = Utils.GetNiceSizeName(basicInfo.SectionSize);
+            labelSize.Text = Utils.FormatSize(basicInfo.SectionSize);
         }
     }
 }

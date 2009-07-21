@@ -5,7 +5,7 @@ using ProcessHacker.Native.Security;
 namespace ProcessHacker.Native
 {
     /// <summary>
-    /// Represents a section.
+    /// Represents a section, a memory mapping.
     /// </summary>
     public sealed class Section : NativeObject<SectionHandle>
     {

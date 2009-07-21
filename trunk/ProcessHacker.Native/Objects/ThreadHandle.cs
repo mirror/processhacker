@@ -151,21 +151,38 @@ namespace ProcessHacker.Native.Objects
             return Current;
         }
 
+        /// <summary>
+        /// Gets the client ID of the current thread.
+        /// </summary>
+        /// <returns>A client ID.</returns>
         public static ClientId GetCurrentCid()
         {
             return new ClientId(ProcessHandle.GetCurrentId(), ThreadHandle.GetCurrentId());
         }
 
+        /// <summary>
+        /// Gets the ID of the current thread.
+        /// </summary>
+        /// <returns>A thread ID.</returns>
         public static int GetCurrentId()
         {
             return Win32.GetCurrentThreadId();
         }
 
+        /// <summary>
+        /// Opens the current thread.
+        /// </summary>
+        /// <param name="access">The desired access to the thread.</param>
+        /// <returns>A handle to the current thread.</returns>
         public static ThreadHandle OpenCurrent(ThreadAccess access)
         {
             return new ThreadHandle(GetCurrentId(), access);
         }
 
+        /// <summary>
+        /// Registers a port which will be notified when the current thread terminates.
+        /// </summary>
+        /// <param name="portHandle">A handle to a port.</param>
         public static void RegisterTerminationPort(PortHandle portHandle)
         {
             NtStatus status;
@@ -174,11 +191,26 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(status);
         }
 
+        /// <summary>
+        /// Sleeps the current thread.
+        /// </summary>
+        /// <param name="timeout">The timeout, in 100ns units.</param>
+        /// <param name="relative">Whether the timeout value is relative.</param>
+        /// <returns>A NT status value.</returns>
         public static NtStatus Sleep(long time, bool relative)
         {
             return Sleep(false, time, relative);
         }
 
+        /// <summary>
+        /// Sleeps the current thread.
+        /// </summary>
+        /// <param name="alertable">
+        /// Whether user-mode APCs can be delivered during the wait.
+        /// </param>
+        /// <param name="timeout">The timeout, in 100ns units.</param>
+        /// <param name="relative">Whether the timeout value is relative.</param>
+        /// <returns>A NT status value.</returns>
         public static NtStatus Sleep(bool alertable, long time, bool relative)
         {
             if (time == 0)
@@ -192,14 +224,27 @@ namespace ProcessHacker.Native.Objects
             return Win32.NtDelayExecution(alertable, ref realTime);
         }
 
-        public static void TestAlert()
+        /// <summary>
+        /// Checks whether the current thread is in an alerted state and 
+        /// executes any pending user-mode APCs.
+        /// </summary>
+        /// <returns>
+        /// NtStatus.Alerted if the current thread was in an alerted state, 
+        /// otherwise NtStatus.Success.
+        /// </returns>
+        public static NtStatus TestAlert()
         {
             NtStatus status;
 
             if ((status = Win32.NtTestAlert()) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+
+            return status;
         }
 
+        /// <summary>
+        /// Switches to another thread.
+        /// </summary>
         public static void Yield()
         {
             Win32.NtYieldExecution();
@@ -643,6 +688,11 @@ namespace ProcessHacker.Native.Objects
             return this.GetInformationIntPtr(ThreadInformationClass.ThreadQuerySetWin32StartAddress);
         }
 
+        /// <summary>
+        /// Causes the thread to impersonate a client thread.
+        /// </summary>
+        /// <param name="clientThreadHandle">A handle to a client thread.</param>
+        /// <param name="impersonationLevel">The impersonation level to request.</param>
         public void Impersonate(ThreadHandle clientThreadHandle, SecurityImpersonationLevel impersonationLevel)
         {
             NtStatus status;
@@ -653,6 +703,9 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(status);
         }
 
+        /// <summary>
+        /// Causes the thread to impersonate the anonymous account.
+        /// </summary>
         public void ImpersonateAnonymous()
         {
             NtStatus status;
@@ -713,12 +766,25 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
+        /// <summary>
+        /// Adds an user-mode asynchronous procedure call (APC) to the thread's APC queue.
+        /// This requires THREAD_SET_CONTEXT access.
+        /// </summary>
+        /// <param name="action">The delegate to execute..</param>
+        /// <param name="parameter">The parameter to pass to the procedure.</param>
         public void QueueApc(ApcRoutine action, IntPtr parameter)
         {
             if (!Win32.QueueUserAPC(action, this, parameter))
                 Win32.ThrowLastError();
         }
 
+        /// <summary>
+        /// Queues a user-mode asynchronous procedure call (APC) to the thread.
+        /// </summary>
+        /// <param name="address">The address of the function to execute.</param>
+        /// <param name="param1">The first parameter to pass to the function.</param>
+        /// <param name="param2">The second parameter to pass to the function.</param>
+        /// <param name="param3">The third parameter to pass to the function.</param>
         public void QueueApc(IntPtr address, IntPtr param1, IntPtr param2, IntPtr param3)
         {
             NtStatus status;
@@ -798,6 +864,10 @@ namespace ProcessHacker.Native.Objects
             }
         }   
 
+        /// <summary>
+        /// Sets whether the thread is critical.
+        /// </summary>
+        /// <param name="critical">Whether the thread should be critical.</param>
         public void SetCritical(bool critical)
         {
             this.SetInformationInt32(ThreadInformationClass.ThreadBreakOnTermination, critical ? 1 : 0);

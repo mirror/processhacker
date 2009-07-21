@@ -50,9 +50,9 @@ namespace ProcessHacker
 
             this.Redraw();
 
-            string text = "R: " + Utils.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoRead]) +
-                "\nW: " + Utils.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoWrite]) +
-                "\nO: " + Utils.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoOther]);
+            string text = "R: " + Utils.FormatSize(this.Provider.LongDeltas[SystemStats.IoRead]) +
+                "\nW: " + Utils.FormatSize(this.Provider.LongDeltas[SystemStats.IoWrite]) +
+                "\nO: " + Utils.FormatSize(this.Provider.LongDeltas[SystemStats.IoOther]);
 
             if (this.Provider.Dictionary.ContainsKey(this.Provider.PIDWithMostIoActivity))
             {

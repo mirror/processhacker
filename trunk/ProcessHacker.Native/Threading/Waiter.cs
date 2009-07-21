@@ -32,6 +32,9 @@ namespace ProcessHacker.Native.Threading
 {
     public delegate void ObjectSignaledDelegate(ISynchronizable obj);
 
+    /// <summary>
+    /// Provides methods for waiting on dispatcher objects.
+    /// </summary>
     public sealed class Waiter : BaseObject
     {
         private class WaiterThread : BaseObject

@@ -54,6 +54,26 @@ h4 {
     
     <h1>NT Concepts</h1>
     
+    <h3>Alertable</h3>
+    <p>A thread contains fields for two alertable states, one for kernel-mode and one for user-mode. 
+    When a caller from one of these modes alerts a thread (e.g. using <code>NtAlertThread</code>), 
+    the thread is put into an alerted state for the mode, and one of several things happen:</p>
+    <ul>
+      <li>If the thread is performing a kernel-mode alertable wait and it has just been alerted from 
+      user-mode, nothing will happen.</li>
+      <li>If the thread is performing a kernel-mode alertable wait and it has just been alerted from 
+      kernel-mode, the wait will be interrupted and the wait function will return 
+      <code>STATUS_ALERTED</code>.</li>
+      <li>If the thread is performing a user-mode alertable wait and it has just been alerted from 
+      user-mode, the wait will be interrupted as above.</li>
+      <li>If the thread is performing a user-mode alertable wait and it has just been alerted from 
+      kernel-mode, the wait will be interrupted as above.</li>
+    </ul>
+    <p>Note that if the thread is alerted and then performs an alertable wait, it will be interrupted 
+    immediately without performing the wait.</p>
+    <p>The thread can also call <code>NtTestAlert</code> to check if it is alerted. In all of these 
+    cases, the thread will be reset to a non-alerted state if it is alerted.</p>
+    
     <h3>ALPC Port</h3>
     <p>Local Inter-process Communication (LPC) ports are an interprocess communication (IPC) method. 
     A server process creates a port object and waits for a client to connect to the port. Once 
@@ -86,8 +106,8 @@ h4 {
     <p>User-mode APCs are queued using <code>NtQueueApcThread</code>. They will not be called 
     unless an <em>alertable</em> wait is being performed or <code>NtTestAlert</code> is called in the 
     target thread. In those cases, a flag will be set in the target thread's APC state indicating that 
-    one or more user-mode APCs are pending and the wait operation will be interrupted. When the system 
-    call returns to user-mode, any pending user-mode APCs will be called.</p>
+    one or more user-mode APCs are pending and the wait operation, if any, will be interrupted. When the 
+    system call returns to user-mode, any pending user-mode APCs will be called.</p>
     <p>A special use of user-mode APCs is thread termination, where a thread termination APC 
     (<code>PspExitNormalApc</code>) is inserted into the target thread. <code>KiInsertQueueApc</code> 
     contains a special case for thread termination and inserts the APC at the beginning of the 

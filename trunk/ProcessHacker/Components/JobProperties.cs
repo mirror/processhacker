@@ -89,28 +89,28 @@ namespace ProcessHacker.Components
                 if ((flags & JobObjectLimitFlags.DieOnUnhandledException) != 0)
                     this.AddLimit("Die on Unhandled Exception", "Enabled");
                 if ((flags & JobObjectLimitFlags.JobMemory) != 0)
-                    this.AddLimit("Job Memory", Utils.GetNiceSizeName(extendedLimits.JobMemoryLimit));
+                    this.AddLimit("Job Memory", Utils.FormatSize(extendedLimits.JobMemoryLimit));
                 if ((flags & JobObjectLimitFlags.JobTime) != 0)
                     this.AddLimit("Job Time",
-                        Utils.GetNiceTimeSpan(new TimeSpan(extendedLimits.BasicLimitInformation.PerJobUserTimeLimit)));
+                        Utils.FormatTimeSpan(new TimeSpan(extendedLimits.BasicLimitInformation.PerJobUserTimeLimit)));
                 if ((flags & JobObjectLimitFlags.KillOnJobClose) != 0)
                     this.AddLimit("Kill on Job Close", "Enabled");
                 if ((flags & JobObjectLimitFlags.PriorityClass) != 0)
                     this.AddLimit("Priority Class",
                         ((System.Diagnostics.ProcessPriorityClass)extendedLimits.BasicLimitInformation.PriorityClass).ToString());
                 if ((flags & JobObjectLimitFlags.ProcessMemory) != 0)
-                    this.AddLimit("Process Memory", Utils.GetNiceSizeName(extendedLimits.ProcessMemoryLimit));
+                    this.AddLimit("Process Memory", Utils.FormatSize(extendedLimits.ProcessMemoryLimit));
                 if ((flags & JobObjectLimitFlags.ProcessTime) != 0)
                     this.AddLimit("Process Time",
-                        Utils.GetNiceTimeSpan(new TimeSpan(extendedLimits.BasicLimitInformation.PerProcessUserTimeLimit)));
+                        Utils.FormatTimeSpan(new TimeSpan(extendedLimits.BasicLimitInformation.PerProcessUserTimeLimit)));
                 if ((flags & JobObjectLimitFlags.SchedulingClass) != 0)
                     this.AddLimit("Scheduling Class", extendedLimits.BasicLimitInformation.SchedulingClass.ToString());
                 if ((flags & JobObjectLimitFlags.SilentBreakawayOk) != 0)
                     this.AddLimit("Silent Breakaway OK", "Enabled");
                 if ((flags & JobObjectLimitFlags.WorkingSet) != 0)
                 {
-                    this.AddLimit("Minimum Working Set", Utils.GetNiceSizeName(extendedLimits.BasicLimitInformation.MinimumWorkingSetSize));
-                    this.AddLimit("Maximum Working Set", Utils.GetNiceSizeName(extendedLimits.BasicLimitInformation.MaximumWorkingSetSize));
+                    this.AddLimit("Minimum Working Set", Utils.FormatSize(extendedLimits.BasicLimitInformation.MinimumWorkingSetSize));
+                    this.AddLimit("Maximum Working Set", Utils.FormatSize(extendedLimits.BasicLimitInformation.MaximumWorkingSetSize));
                 }
 
                 if ((uiRestrictions & JobObjectBasicUiRestrictions.Desktop) != 0)
@@ -166,21 +166,21 @@ namespace ProcessHacker.Components
                 labelGeneralTotalProcesses.Text = accounting.BasicInfo.TotalProcesses.ToString("N0");
                 labelGeneralTerminatedProcesses.Text = accounting.BasicInfo.TotalTerminatedProcesses.ToString("N0");
 
-                labelTimeUserTime.Text = Utils.GetNiceTimeSpan(new TimeSpan(accounting.BasicInfo.TotalUserTime));
-                labelTimeKernelTime.Text = Utils.GetNiceTimeSpan(new TimeSpan(accounting.BasicInfo.TotalKernelTime));   
-                labelTimeUserTimePeriod.Text = Utils.GetNiceTimeSpan(new TimeSpan(accounting.BasicInfo.ThisPeriodTotalUserTime));
-                labelTimeKernelTimePeriod.Text = Utils.GetNiceTimeSpan(new TimeSpan(accounting.BasicInfo.ThisPeriodTotalKernelTime));
+                labelTimeUserTime.Text = Utils.FormatTimeSpan(new TimeSpan(accounting.BasicInfo.TotalUserTime));
+                labelTimeKernelTime.Text = Utils.FormatTimeSpan(new TimeSpan(accounting.BasicInfo.TotalKernelTime));   
+                labelTimeUserTimePeriod.Text = Utils.FormatTimeSpan(new TimeSpan(accounting.BasicInfo.ThisPeriodTotalUserTime));
+                labelTimeKernelTimePeriod.Text = Utils.FormatTimeSpan(new TimeSpan(accounting.BasicInfo.ThisPeriodTotalKernelTime));
 
                 labelMemoryPageFaults.Text = accounting.BasicInfo.TotalPageFaultCount.ToString("N0");
-                labelMemoryPeakProcessUsage.Text = Utils.GetNiceSizeName(limits.PeakProcessMemoryUsed);
-                labelMemoryPeakJobUsage.Text = Utils.GetNiceSizeName(limits.PeakJobMemoryUsed);
+                labelMemoryPeakProcessUsage.Text = Utils.FormatSize(limits.PeakProcessMemoryUsed);
+                labelMemoryPeakJobUsage.Text = Utils.FormatSize(limits.PeakJobMemoryUsed);
 
                 labelIOReads.Text = accounting.IoInfo.ReadOperationCount.ToString("N0");
-                labelIOReadBytes.Text = Utils.GetNiceSizeName(accounting.IoInfo.ReadTransferCount);
+                labelIOReadBytes.Text = Utils.FormatSize(accounting.IoInfo.ReadTransferCount);
                 labelIOWrites.Text = accounting.IoInfo.WriteOperationCount.ToString("N0");
-                labelIOWriteBytes.Text = Utils.GetNiceSizeName(accounting.IoInfo.WriteTransferCount);
+                labelIOWriteBytes.Text = Utils.FormatSize(accounting.IoInfo.WriteTransferCount);
                 labelIOOther.Text = accounting.IoInfo.OtherOperationCount.ToString("N0");
-                labelIOOtherBytes.Text = Utils.GetNiceSizeName(accounting.IoInfo.OtherTransferCount);
+                labelIOOtherBytes.Text = Utils.FormatSize(accounting.IoInfo.OtherTransferCount);
             }
             catch
             { }

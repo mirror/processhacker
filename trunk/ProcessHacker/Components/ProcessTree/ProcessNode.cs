@@ -175,20 +175,20 @@ namespace ProcessHacker
 
         public string PvtMemory
         {
-            get { return Utils.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PrivateBytes); }
+            get { return Utils.FormatSize(_pitem.Process.VirtualMemoryCounters.PrivateBytes); }
         }
 
         public string WorkingSet
         {
             get
             {
-                return Utils.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.WorkingSetSize);
+                return Utils.FormatSize(_pitem.Process.VirtualMemoryCounters.WorkingSetSize);
             }
         }
 
         public string PeakWorkingSet
         {
-            get { return Utils.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PeakWorkingSetSize); }
+            get { return Utils.FormatSize(_pitem.Process.VirtualMemoryCounters.PeakWorkingSetSize); }
         }
 
         private int GetWorkingSetNumber(NProcessHacker.WsInformationClass WsInformationClass)
@@ -225,7 +225,7 @@ namespace ProcessHacker
 
         public string PrivateWorkingSet
         {
-            get { return Utils.GetNiceSizeName(this.PrivateWorkingSetNumber); }
+            get { return Utils.FormatSize(this.PrivateWorkingSetNumber); }
         }
 
         public int SharedWorkingSetNumber
@@ -235,7 +235,7 @@ namespace ProcessHacker
 
         public string SharedWorkingSet
         {
-            get { return Utils.GetNiceSizeName(this.SharedWorkingSetNumber); }
+            get { return Utils.FormatSize(this.SharedWorkingSetNumber); }
         }
 
         public int ShareableWorkingSetNumber
@@ -245,27 +245,27 @@ namespace ProcessHacker
 
         public string ShareableWorkingSet
         {
-            get { return Utils.GetNiceSizeName(this.ShareableWorkingSetNumber); }
+            get { return Utils.FormatSize(this.ShareableWorkingSetNumber); }
         }
 
         public string VirtualSize
         {
-            get { return Utils.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.VirtualSize); }
+            get { return Utils.FormatSize(_pitem.Process.VirtualMemoryCounters.VirtualSize); }
         }
 
         public string PeakVirtualSize
         {
-            get { return Utils.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PeakVirtualSize); }
+            get { return Utils.FormatSize(_pitem.Process.VirtualMemoryCounters.PeakVirtualSize); }
         }
 
         public string PagefileUsage
         {
-            get { return Utils.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PagefileUsage); }
+            get { return Utils.FormatSize(_pitem.Process.VirtualMemoryCounters.PagefileUsage); }
         }
 
         public string PeakPagefileUsage
         {
-            get { return Utils.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PeakPagefileUsage); }
+            get { return Utils.FormatSize(_pitem.Process.VirtualMemoryCounters.PeakPagefileUsage); }
         }
 
         public string PageFaults
@@ -325,7 +325,7 @@ namespace ProcessHacker
                 if (Pid < 4)
                     return "";
                 else
-                    return Utils.GetStringPriority(_pitem.Process.BasePriority);
+                    return Utils.FormatPriority(_pitem.Process.BasePriority);
             }
         }
 
@@ -500,7 +500,7 @@ namespace ProcessHacker
                 if (this.IoTotalNumber == 0)
                     return "";
                 else
-                    return Utils.GetNiceSizeName(this.IoTotalNumber) + "/s";
+                    return Utils.FormatSize(this.IoTotalNumber) + "/s";
             }
         }
 
@@ -523,7 +523,7 @@ namespace ProcessHacker
                 if (this.IoReadOtherNumber == 0)
                     return "";
                 else
-                    return Utils.GetNiceSizeName(this.IoReadOtherNumber) + "/s";
+                    return Utils.FormatSize(this.IoReadOtherNumber) + "/s";
             }
         }
 
@@ -546,7 +546,7 @@ namespace ProcessHacker
                 if (this.IoWriteNumber == 0)
                     return "";
                 else
-                    return Utils.GetNiceSizeName(this.IoWriteNumber) + "/s";
+                    return Utils.FormatSize(this.IoWriteNumber) + "/s";
             }
         }
 
@@ -613,23 +613,23 @@ namespace ProcessHacker
                 if (Pid < 4 || _pitem.CreateTime.Year == 1)
                     return "";
                 else
-                    return Utils.GetNiceRelativeDateTime(_pitem.CreateTime);
+                    return Utils.FormatRelativeDateTime(_pitem.CreateTime);
             }
         }
 
         public string TotalCpuTime
         {
-            get { return Utils.GetNiceTimeSpan(new TimeSpan(_pitem.Process.KernelTime + _pitem.Process.UserTime)); }
+            get { return Utils.FormatTimeSpan(new TimeSpan(_pitem.Process.KernelTime + _pitem.Process.UserTime)); }
         }
 
         public string KernelCpuTime
         {
-            get { return Utils.GetNiceTimeSpan(new TimeSpan(_pitem.Process.KernelTime)); }
+            get { return Utils.FormatTimeSpan(new TimeSpan(_pitem.Process.KernelTime)); }
         }
 
         public string UserCpuTime
         {
-            get { return Utils.GetNiceTimeSpan(new TimeSpan(_pitem.Process.UserTime)); }
+            get { return Utils.FormatTimeSpan(new TimeSpan(_pitem.Process.UserTime)); }
         }
     }
 }

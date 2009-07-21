@@ -31,6 +31,9 @@ using System.Windows.Forms;
 
 namespace ProcessHacker.Common
 {
+    /// <summary>
+    /// Provides methods for manipulating various types of data.
+    /// </summary>
     public static class Utils
     {
         #region Constants
@@ -78,8 +81,19 @@ namespace ProcessHacker.Common
 
         #endregion
 
+        /// <summary>
+        /// The maximum unit specifier to use when formatting sizes.
+        /// </summary>
         public static int UnitSpecifier = 4;
 
+        /// <summary>
+        /// Flattens an array of arrays into a single array.
+        /// </summary>
+        /// <typeparam name="T">The type of each element in the arrays.</typeparam>
+        /// <param name="ap">
+        /// An array of arrays. If an array in the array is null, it will be ignored.
+        /// </param>
+        /// <returns>An array containing elements from each array.</returns>
         public static T[] Concat<T>(params T[][] ap)
         {
             int tl = 0;
@@ -103,6 +117,11 @@ namespace ProcessHacker.Common
             return na;
         }
 
+        /// <summary>
+        /// Counts the number of bits in the specified number.
+        /// </summary>
+        /// <param name="value">The number to process.</param>
+        /// <returns>The number of bits in the specified number.</returns>
         public static int CountBits(this long value)
         {
             int count = 0;
@@ -117,75 +136,11 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Swaps the order of the bytes in the argument.
+        /// Creates an array of bytes from the specified byte pointer.
         /// </summary>
-        /// <param name="v">The number to change.</param>
-        /// <returns>A number.</returns>
-        public static int ByteSwap(int v)
-        {
-            byte b1 = (byte)v;
-            byte b2 = (byte)(v >> 8);
-            byte b3 = (byte)(v >> 16);
-            byte b4 = (byte)(v >> 24);
-
-            return b4 | (b3 << 8) | (b2 << 16) | (b1 << 24);
-        }
-
-        /// <summary>
-        /// Swaps the order of the bytes.
-        /// </summary>
-        /// <returns>A number.</returns>
-        public static int SwapBytes(this int v)
-        {
-            return ByteSwap(v);
-        }
-
-        /// <summary>
-        /// Swaps the order of the bytes in the argument.
-        /// </summary>
-        /// <param name="v">The number to change.</param>
-        /// <returns>A number.</returns>
-        public static uint ByteSwap(uint v)
-        {
-            byte b1 = (byte)v;
-            byte b2 = (byte)(v >> 8);
-            byte b3 = (byte)(v >> 16);
-            byte b4 = (byte)(v >> 24);
-
-            return (uint)(b4 | (b3 << 8) | (b2 << 16) | (b1 << 24));
-        }
-
-        /// <summary>
-        /// Swaps the order of the bytes.
-        /// </summary>
-        /// <returns>A number.</returns>
-        public static uint SwapBytes(this uint v)
-        {
-            return ByteSwap(v);
-        }
-
-        /// <summary>
-        /// Swaps the order of the bytes in the argument.
-        /// </summary>
-        /// <param name="v">The number to change.</param>
-        /// <returns>A number.</returns>
-        public static ushort ByteSwap(ushort v)
-        {
-            byte b1 = (byte)v;
-            byte b2 = (byte)(v >> 8);
-
-            return (ushort)(b2 | (b1 << 8));
-        }
-
-        /// <summary>
-        /// Swaps the order of the bytes.
-        /// </summary>
-        /// <returns>A number.</returns>
-        public static ushort SwapBytes(this ushort v)
-        {
-            return ByteSwap(v);
-        }
-
+        /// <param name="ptr">A pointer to an array of bytes.</param>
+        /// <param name="length">The length of the array.</param>
+        /// <returns>A new byte array.</returns>
         public unsafe static byte[] Create(byte* ptr, int length)
         {
             byte[] array = new byte[length];
@@ -194,6 +149,36 @@ namespace ProcessHacker.Common
                 array[i] = ptr[i];
 
             return array;
+        }
+
+        /// <summary>
+        /// Adds an ellipsis to a string if it is longer than the specified length.
+        /// </summary>
+        /// <param name="s">The string.</param>
+        /// <param name="len">The maximum length.</param>
+        /// <returns>The modified string.</returns>
+        public static string CreateEllipsis(string s, int len)
+        {
+            if (s.Length <= len)
+                return s;
+            else
+                return s.Substring(0, len - 4) + " ...";
+        }
+
+        /// <summary>
+        /// Creates a string containing random uppercase characters.
+        /// </summary>
+        /// <param name="length">The number of characters to generate.</param>
+        /// <returns>The generated string.</returns>
+        public static string CreateRandomString(int length)
+        {
+            Random r = new Random((int)(DateTime.Now.ToFileTime() & 0xffffffff));
+            StringBuilder sb = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+                sb.Append((char)('A' + r.Next(25)));
+
+            return sb.ToString();
         }
 
         /// <summary>
@@ -207,20 +192,6 @@ namespace ProcessHacker.Common
             //}
 
             items.Clear();
-        }
-
-        /// <summary>
-        /// Converts a 32-bit Unix time value into a DateTime object.
-        /// </summary>
-        /// <param name="time">The Unix time value.</param>
-        public static DateTime DateTimeFromUnixTime(uint time)
-        {
-            return new DateTime(1970, 1, 1, 0, 0, 0).Add(new TimeSpan(0, 0, 0, (int)time));
-        }
-
-        public static DateTime DateTimeFromFileTime(long time)
-        {
-            return new DateTime(1601, 1, 1).AddTicks(time).ToLocalTime();
         }
 
         /// <summary>
@@ -241,6 +212,12 @@ namespace ProcessHacker.Common
             DisableAllMenuItems(menu);
         }
 
+        /// <summary>
+        /// Duplicates the specified array.
+        /// </summary>
+        /// <typeparam name="T">The type of array to duplicate.</typeparam>
+        /// <param name="array">The array to duplicate.</param>
+        /// <returns>A copy of the specified array.</returns>
         public static T[] Duplicate<T>(this T[] array)
         {
             T[] newArray = new T[array.Length];
@@ -268,16 +245,40 @@ namespace ProcessHacker.Common
             EnableAllMenuItems(menu);
         }
 
+        /// <summary>
+        /// Compares two arrays and determines whether they are equal.
+        /// </summary>
+        /// <typeparam name="T">The type of each element in the arrays.</typeparam>
+        /// <param name="array">The first array.</param>
+        /// <param name="other">The second array.</param>
+        /// <returns>Whether the two arrays are considered to be equal.</returns>
         public static bool Equals<T>(T[] array, T[] other)
         {
             return Equals(array, other, 0);
         }
 
+        /// <summary>
+        /// Compares two arrays and determines whether they are equal.
+        /// </summary>
+        /// <typeparam name="T">The type of each element in the arrays.</typeparam>
+        /// <param name="array">The first array.</param>
+        /// <param name="other">The second array.</param>
+        /// <param name="startIndex">The index from which to begin comparing.</param>
+        /// <returns>Whether the two arrays are considered to be equal.</returns>
         public static bool Equals<T>(T[] array, T[] other, int startIndex)
         {
             return Equals(array, other, startIndex, array.Length);
         }
 
+        /// <summary>
+        /// Compares two arrays and determines whether they are equal.
+        /// </summary>
+        /// <typeparam name="T">The type of each element in the arrays.</typeparam>
+        /// <param name="array">The first array.</param>
+        /// <param name="other">The second array.</param>
+        /// <param name="startIndex">The index from which to begin comparing.</param>
+        /// <param name="length">The number of elements to compare.</param>
+        /// <returns>Whether the two arrays are considered to be equal.</returns>
         public static bool Equals<T>(T[] array, T[] other, int startIndex, int length)
         {
             for (int i = startIndex; i < startIndex + length; i++)
@@ -305,17 +306,30 @@ namespace ProcessHacker.Common
         /// </summary>
         /// <param name="box">The combobox to modify.</param>
         /// <param name="t">The type of the enum.</param>
-        public static void Fill(ComboBox box, Type t)
+        public static void Fill(this ComboBox box, Type t)
         {
             foreach (string s in Enum.GetNames(t))
                 box.Items.Add(s);
         }
 
+        /// <summary>
+        /// Moves the specified rectangle to fit inside the working area 
+        /// of the display containing the specified control.
+        /// </summary>
+        /// <param name="rect">The rectangle to process.</param>
+        /// <param name="c">The control from which to get the display.</param>
+        /// <returns>A new rectangle with its location modified.</returns>
         public static Rectangle FitRectangle(Rectangle rect, Control c)
         {
             return FitRectangle(rect, Screen.GetWorkingArea(c));
         }
 
+        /// <summary>
+        /// Moves the specified rectangle to fit inside the specified bounds.
+        /// </summary>
+        /// <param name="rect">The rectangle to process.</param>
+        /// <param name="bounds">The bounds in which the rectangle should be.</param>
+        /// <returns>A new rectangle with its location modified.</returns>
         public static Rectangle FitRectangle(Rectangle rect, Rectangle bounds)
         {
             if (rect.X < bounds.Left)
@@ -331,13 +345,24 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Formats a <see cref="DateTime"/> object into a string representation using the format "dd/MM/yy hh:mm:ss".
+        /// Gets the string representation of a priority number.
         /// </summary>
-        /// <param name="time">The <see cref="DateTime"/> object to format.</param>
-        /// <returns></returns>
-        public static string GetNiceDateTime(DateTime time)
-        {         
-            return time.ToString("dd/MM/yy hh:mm:ss");
+        /// <param name="priority">A priority number.</param>
+        /// <returns>A string.</returns>
+        public static string FormatPriority(int priority)
+        {
+            if (priority >= 24)
+                return "Realtime";
+            else if (priority >= 13)
+                return "High";
+            else if (priority >= 10)
+                return "Above Normal";
+            else if (priority >= 8)
+                return "Normal";
+            else if (priority >= 6)
+                return "Below Normal";
+            else
+                return "Idle";
         }
 
         /// <summary>
@@ -345,26 +370,38 @@ namespace ProcessHacker.Common
         /// </summary>
         /// <param name="time">A DateTime.</param>
         /// <returns>A string.</returns>
-        public static string GetNiceRelativeDateTime(DateTime time)
+        public static string FormatRelativeDateTime(DateTime time)
         {
+            // Get the time span from the time to now.
             TimeSpan span = DateTime.Now.Subtract(time);
+            // The partial number of weeks.
             double weeks = span.TotalDays / 7;
+            // The partial number of fortnights.
             double fortnights = weeks / 2;
+            // ...
             double months = span.TotalDays * 12 / 365;
             double years = months / 12;
             double centuries = years / 100;
             string str = "";
 
+            // Start from the most general time unit and see if they can be used 
+            // without any fractional component.
+            // x centur(y|ies)
             if (centuries >= 1)
                 str = (int)centuries + " " + ((int)centuries == 1 ? "century" : "centuries");
+            // x year(s)
             else if (years >= 1)
                 str = (int)years + " " + ((int)years == 1 ? "year" : "years");
+            // x month(s)
             else if (months >= 1)
                 str = (int)months + " " + ((int)months == 1 ? "month" : "months");
+            // x fortnight(s)
             else if (fortnights >= 1)
                 str = (int)fortnights + " " + ((int)fortnights == 1 ? "fortnight" : "fortnights");
+            // x week(s)
             else if (weeks >= 1)
                 str = (int)weeks + " " + ((int)weeks == 1 ? "week" : "weeks");
+            // x day(s) (and y hour(s))
             else if (span.TotalDays >= 1)
             {
                 str = (int)span.TotalDays + " " + ((int)span.TotalDays == 1 ? "day" : "days");
@@ -373,6 +410,7 @@ namespace ProcessHacker.Common
                     str += " and " + span.Hours + " " +
                         (span.Hours == 1 ? "hour" : "hours");
             }
+            // x hour(s) (and y minute(s))
             else if (span.Hours >= 1)
             {
                 str = span.Hours + " " + (span.Hours == 1 ? "hour" : "hours");
@@ -381,6 +419,7 @@ namespace ProcessHacker.Common
                     str += " and " + span.Minutes + " " +
                         (span.Minutes == 1 ? "minute" : "minutes");
             }
+            // x minute(s) (and y second(s))
             else if (span.Minutes >= 1)
             {
                 str = span.Minutes + " " + (span.Minutes == 1 ? "minute" : "minutes");
@@ -389,17 +428,19 @@ namespace ProcessHacker.Common
                     str += " and " + span.Seconds + " " +
                         (span.Seconds == 1 ? "second" : "seconds");
             }
+            // x second(s)
             else if (span.Seconds >= 1)
                 str = span.Seconds + " " + (span.Seconds == 1 ? "second" : "seconds");
+            // x millisecond(s)
             else if (span.Milliseconds >= 1)
                 str = span.Milliseconds + " " + (span.Milliseconds == 1 ? "millisecond" : "milliseconds");
             else
                 str = "a very short time";
 
-            // 1 minute -> a minute
+            // Turn 1 into "a", e.g. 1 minute -> a minute
             if (str.StartsWith("1 "))
             {
-                // a hour -> an hour
+                // Special vowel case: a hour -> an hour
                 if (str[2] != 'h')
                     str = "a " + str.Substring(2);
                 else
@@ -413,16 +454,16 @@ namespace ProcessHacker.Common
         /// Formats a size into a string representation, postfixing it with the correct unit.
         /// </summary>
         /// <param name="size">The size to format.</param>
-        public static string GetNiceSizeName(int size)
+        public static string FormatSize(int size)
         {
-            return GetNiceSizeName((uint)size);
+            return FormatSize((uint)size);
         }
 
         /// <summary>
         /// Formats a size into a string representation, postfixing it with the correct unit.
         /// </summary>
         /// <param name="size">The size to format.</param>
-        public static string GetNiceSizeName(uint size)
+        public static string FormatSize(uint size)
         {
             int i = 0;
             double s = (double)size;
@@ -440,19 +481,19 @@ namespace ProcessHacker.Common
         /// Formats a size into a string representation, postfixing it with the correct unit.
         /// </summary>
         /// <param name="size">The size to format.</param>
-        public static string GetNiceSizeName(long size)
+        public static string FormatSize(long size)
         {
-            return GetNiceSizeName((ulong)size);
+            return FormatSize((ulong)size);
         }
 
         /// <summary>
         /// Formats a size into a string representation, postfixing it with the correct unit.
         /// </summary>
         /// <param name="size">The size to format.</param>
-        public static string GetNiceSizeName(ulong size)
+        public static string FormatSize(ulong size)
         {
             int i = 0;
-            decimal s = (decimal)size;
+            double s = (double)size;
 
             while (s > 1024 && i < SizeUnitNames.Length && i < UnitSpecifier)
             {
@@ -468,7 +509,7 @@ namespace ProcessHacker.Common
         /// </summary>
         /// <param name="time">The <see cref="TimeSpan"/> to format.</param>
         /// <returns></returns>
-        public static string GetNiceTimeSpan(TimeSpan time)
+        public static string FormatTimeSpan(TimeSpan time)
         {
             return String.Format("{0:d2}:{1:d2}:{2:d2}.{3:d3}",
                 time.Hours,
@@ -478,24 +519,37 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Gets the string representation of a priority number.
+        /// Converts a 64-bit Windows time value to a DateTime object.
         /// </summary>
-        /// <param name="priority">A priority number.</param>
-        /// <returns>A string.</returns>
-        public static string GetStringPriority(int priority)
+        /// <param name="time">The Windows time value.</param>
+        public static DateTime GetDateTimeFromLongTime(long time)
         {
-            if (priority >= 24)
-                return "Realtime";
-            else if (priority >= 13)
-                return "High";
-            else if (priority >= 10)
-                return "Above Normal";
-            else if (priority >= 8)
-                return "Normal";
-            else if (priority >= 6)
-                return "Below Normal";
-            else
-                return "Idle";
+            return (new DateTime(1601, 1, 1)).AddTicks(time).ToLocalTime();
+        }
+
+        /// <summary>
+        /// Converts a 32-bit Unix time value into a DateTime object.
+        /// </summary>
+        /// <param name="time">The Unix time value.</param>
+        public static DateTime GetDateTimeFromUnixTime(uint time)
+        {
+            return (new DateTime(1970, 1, 1, 0, 0, 0)).Add(new TimeSpan(0, 0, 0, (int)time));
+        }
+
+        /// <summary>
+        /// Parses a string and produces a rectangle.
+        /// </summary>
+        /// <param name="s">
+        /// A string describing a rectangle in the following format: 
+        /// x,y,width,height (with no spaces).
+        /// </param>
+        /// <returns>A rectangle.</returns>
+        public static Rectangle GetRectangle(string s)
+        {
+            var split = s.Split(',');
+
+            return new Rectangle(int.Parse(split[0]), int.Parse(split[1]),
+                int.Parse(split[2]), int.Parse(split[3]));
         }
         
         /// <summary>
@@ -504,7 +558,7 @@ namespace ProcessHacker.Common
         /// <param name="p">The process which the thread belongs to.</param>
         /// <param name="id">The ID of the thread.</param>
         /// <returns></returns>
-        public static ProcessThread GetThreadById(Process p, int id)
+        public static ProcessThread GetThreadFromId(Process p, int id)
         {
             foreach (ProcessThread t in p.Threads)
                 if (t.Id == id)
@@ -535,20 +589,6 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Adds an ellipsis to a string if it is longer than the specified length.
-        /// </summary>
-        /// <param name="s">The string.</param>
-        /// <param name="len">The maximum length.</param>
-        /// <returns>The modified string.</returns>
-        public static string MakeEllipsis(string s, int len)
-        {
-            if (s.Length <= len)
-                return s;
-            else
-                return s.Substring(0, len - 4) + " ...";
-        }
-
-        /// <summary>
         /// Makes a character printable by converting unprintable characters to a dot ('.').
         /// </summary>
         /// <param name="c">The character to convert.</param>
@@ -572,17 +612,6 @@ namespace ProcessHacker.Common
 
             for (int i = 0; i < s.Length; i++)
                 sb.Append(MakePrintable(s[i]));
-
-            return sb.ToString();
-        }
-
-        public static string MakeRandomString(int length)
-        {
-            Random r = new Random((int)(DateTime.Now.ToFileTime() & 0xffffffff));
-            StringBuilder sb = new StringBuilder(length);
-
-            for (int i = 0; i < length; i++)
-                sb.Append((char)('A' + r.Next(25)));
 
             return sb.ToString();
         }
@@ -685,14 +714,6 @@ namespace ProcessHacker.Common
             return str.ToString();
         }
 
-        public static Rectangle RectangleFromString(string s)
-        {
-            var split = s.Split(',');
-
-            return new Rectangle(int.Parse(split[0]), int.Parse(split[1]), 
-                int.Parse(split[2]), int.Parse(split[3]));
-        }
-
         /// <summary>
         /// Selects all of the specified items.
         /// </summary>
@@ -703,6 +724,10 @@ namespace ProcessHacker.Common
                 item.Selected = true;
         }
 
+        /// <summary>
+        /// Selects all of the items in the specified ListView.
+        /// </summary>
+        /// <param name="items">The ListView to process.</param>
         public static void SelectAll(this ListView items)
         {
             for (int i = 0; i < items.VirtualListSize; i++)
@@ -734,6 +759,10 @@ namespace ProcessHacker.Common
             SetDoubleBuffered(c, c.GetType(), value);
         }
 
+        /// <summary>
+        /// Shows a file in Windows Explorer.
+        /// </summary>
+        /// <param name="fileName">The file to show.</param>
         public static void ShowFileInExplorer(string fileName)
         {
             Process.Start("explorer.exe", "/select," + fileName);
@@ -758,6 +787,49 @@ namespace ProcessHacker.Common
             nameList.Sort((kvp1, kvp2) => kvp2.Value.CountBits().CompareTo(kvp1.Value.CountBits()));
 
             return nameList;
+        }
+
+        /// <summary>
+        /// Swaps the order of the bytes.
+        /// </summary>
+        /// <param name="v">The number to change.</param>
+        /// <returns>A number.</returns>
+        public static int SwapBytes(this int v)
+        {
+            byte b1 = (byte)v;
+            byte b2 = (byte)(v >> 8);
+            byte b3 = (byte)(v >> 16);
+            byte b4 = (byte)(v >> 24);
+
+            return b4 | (b3 << 8) | (b2 << 16) | (b1 << 24);
+        }
+
+        /// <summary>
+        /// Swaps the order of the bytes.
+        /// </summary>
+        /// <param name="v">The number to change.</param>
+        /// <returns>A number.</returns>
+        public static uint SwapBytes(this uint v)
+        {
+            byte b1 = (byte)v;
+            byte b2 = (byte)(v >> 8);
+            byte b3 = (byte)(v >> 16);
+            byte b4 = (byte)(v >> 24);
+
+            return (uint)(b4 | (b3 << 8) | (b2 << 16) | (b1 << 24));
+        }
+
+        /// <summary>
+        /// Swaps the order of the bytes.
+        /// </summary>
+        /// <param name="v">The number to change.</param>
+        /// <returns>A number.</returns>
+        public static ushort SwapBytes(this ushort v)
+        {
+            byte b1 = (byte)v;
+            byte b2 = (byte)(v >> 8);
+
+            return (ushort)(b2 | (b1 << 8));
         }
 
         public static int WindowsToNativeBasePriority(System.Diagnostics.ProcessPriorityClass priority)

@@ -142,7 +142,7 @@ namespace ProcessHacker
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Number of Sections", 
                 _peFile.COFFHeader.NumberOfSections.ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Time/Date Stamp", 
-                Utils.DateTimeFromUnixTime(_peFile.COFFHeader.TimeDateStamp).ToString() }));
+                Utils.GetDateTimeFromUnixTime(_peFile.COFFHeader.TimeDateStamp).ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Pointer to Symbol Table", 
                 "0x" + _peFile.COFFHeader.PointerToSymbolTable.ToString("x8") }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Number of Symbols", 
