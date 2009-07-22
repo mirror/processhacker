@@ -140,7 +140,7 @@ namespace ProcessHacker
         /// <summary>
         /// The selected PID.
         /// </summary>
-        int processSelectedPid;
+        int processSelectedPid = -1;
 
         /// <summary>
         /// A queue of status messages, processed by the message timer.
@@ -179,6 +179,11 @@ namespace ProcessHacker
         public ProcessTree ProcessTree
         {
             get { return treeProcesses; }
+        }
+
+        public int SelectedPid
+        {
+            get { return processSelectedPid; }
         }
 
         // The two properties below aren't used at all.

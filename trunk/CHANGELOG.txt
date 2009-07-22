@@ -4,6 +4,7 @@ Process Hacker
  * NEW/IMPROVED:
    * Ability to unload drivers
    * Improved user prompts
+   * Ability to save details for processes
    * Improved handle granted access display
    * Improved process window exit status display
    * Ability to open key handles in regedit

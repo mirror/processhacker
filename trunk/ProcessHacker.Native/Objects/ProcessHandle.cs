@@ -1308,6 +1308,28 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets I/O statistics for the process.
+        /// </summary>
+        /// <returns>A IoCounters structure.</returns>
+        public IoCounters GetIoStatistics()
+        {
+            NtStatus status;
+            IoCounters counters;
+            int retLength;
+
+            if ((status = Win32.NtQueryInformationProcess(
+                this,
+                ProcessInformationClass.ProcessIoCounters,
+                out counters,
+                Marshal.SizeOf(typeof(IoCounters)),
+                out retLength
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return counters;
+        }
+
+        /// <summary>
         /// Opens the job object associated with the process.
         /// </summary>
         /// <returns>A job object handle.</returns>
@@ -1406,6 +1428,28 @@ namespace ProcessHacker.Native.Objects
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets memory statistics for the process.
+        /// </summary>
+        /// <returns>A VmCounters structure.</returns>
+        public VmCounters GetMemoryStatistics()
+        {
+            NtStatus status;
+            VmCounters counters;
+            int retLength;
+
+            if ((status = Win32.NtQueryInformationProcess(
+                this,
+                ProcessInformationClass.ProcessVmCounters,
+                out counters,
+                Marshal.SizeOf(typeof(VmCounters)),
+                out retLength
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return counters;
         }
 
         /// <summary>

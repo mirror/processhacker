@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
-namespace ProcessHacker.Native.Api
+namespace ProcessHacker.Native
 {
     public static class SystemHandleInformationExtensions
     {
