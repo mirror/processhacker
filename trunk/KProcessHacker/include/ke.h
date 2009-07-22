@@ -25,6 +25,8 @@
 
 #include "types.h"
 
+NTKERNELAPI KPROCESSOR_MODE NTAPI KeGetPreviousMode();
+
 /* APCs */
 
 typedef enum _KAPC_ENVIRONMENT
@@ -35,7 +37,7 @@ typedef enum _KAPC_ENVIRONMENT
     InsertApcEnvironment
 } KAPC_ENVIRONMENT, *PKAPC_ENVIRONMENT;
 
-typedef VOID (*PKKERNEL_ROUTINE)(
+typedef VOID (NTAPI *PKKERNEL_ROUTINE)(
     PKAPC Apc,
     PKNORMAL_ROUTINE *NormalRoutine,
     PVOID *NormalContext,
@@ -43,17 +45,17 @@ typedef VOID (*PKKERNEL_ROUTINE)(
     PVOID *SystemArgument2
     );
 
-typedef VOID (*PKRUNDOWN_ROUTINE)(
+typedef VOID (NTAPI *PKRUNDOWN_ROUTINE)(
     PKAPC Apc
     );
 
-typedef VOID (*PKNORMAL_ROUTINE)(
+typedef VOID (NTAPI *PKNORMAL_ROUTINE)(
     PVOID NormalContext,
     PVOID SystemArgument1,
     PVOID SystemArgument2
     );
 
-NTKERNELAPI VOID KeInitializeApc(
+NTKERNELAPI VOID NTAPI KeInitializeApc(
     PKAPC Apc,
     PKTHREAD Thread,
     KAPC_ENVIRONMENT Environment,
@@ -64,7 +66,7 @@ NTKERNELAPI VOID KeInitializeApc(
     PVOID NormalContext
     );
 
-NTKERNELAPI BOOLEAN KeInsertQueueApc(
+NTKERNELAPI BOOLEAN NTAPI KeInsertQueueApc(
     PRKAPC Apc,
     PVOID SystemArgument1,
     PVOID SystemArgument2,

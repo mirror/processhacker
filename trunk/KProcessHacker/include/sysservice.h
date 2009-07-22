@@ -26,6 +26,7 @@
 #include "kph.h"
 
 NTSTATUS KphSsLogInit();
-NTSTATUS KphSsLogDeinit();
+NTSTATUS KphSsLogStart();
+NTSTATUS KphSsLogStop();
 
 #endif

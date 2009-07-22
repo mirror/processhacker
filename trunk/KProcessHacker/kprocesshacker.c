@@ -94,6 +94,12 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     if (!NT_SUCCESS(status))
         return status;
     
+    /* Initialize system service logging. */
+    status = KphSsLogInit();
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
     /* Initialize the KPH object manager. */
     status = KphRefInit();
     
@@ -199,7 +205,7 @@ NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         Irp->IoStatus.Status = STATUS_INSUFFICIENT_RESOURCES;
         return STATUS_INSUFFICIENT_RESOURCES;
     }
-    KphSsLogInit();
+    
     dprintf("Client (PID %d) connected\n", PsGetCurrentProcessId());
     dprintf("Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
     
@@ -222,7 +228,7 @@ NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     /* Remove the client entry. */
     RemoveClientEntry(PsGetCurrentProcessId());
-    KphSsLogDeinit();
+    
     dprintf("Client (PID %d) disconnected\n", PsGetCurrentProcessId());
     
     return status;

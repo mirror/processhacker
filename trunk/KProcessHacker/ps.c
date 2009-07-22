@@ -24,7 +24,7 @@
 #include "include/ke.h"
 #include "include/ps.h"
 
-VOID KphpCaptureStackBackTraceThreadSpecialApc(
+VOID NTAPI KphpCaptureStackBackTraceThreadSpecialApc(
     PKAPC Apc,
     PKNORMAL_ROUTINE *NormalRoutine,
     PVOID *NormalContext,
@@ -32,7 +32,7 @@ VOID KphpCaptureStackBackTraceThreadSpecialApc(
     PVOID *SystemArgument2
     );
 
-VOID KphpExitSpecialApc(
+VOID NTAPI KphpExitSpecialApc(
     PKAPC Apc,
     PKNORMAL_ROUTINE *NormalRoutine,
     PVOID *NormalContext,
@@ -289,7 +289,7 @@ NTSTATUS KphpCaptureStackBackTraceThread(
  * 
  * The special APC routine which captures a thread stack trace.
  */
-VOID KphpCaptureStackBackTraceThreadSpecialApc(
+VOID NTAPI KphpCaptureStackBackTraceThreadSpecialApc(
     PKAPC Apc,
     PKNORMAL_ROUTINE *NormalRoutine,
     PVOID *NormalContext,
@@ -392,7 +392,7 @@ NTSTATUS KphDangerousTerminateThread(
     return status;
 }
 
-VOID KphpExitSpecialApc(
+VOID NTAPI KphpExitSpecialApc(
     PKAPC Apc,
     PKNORMAL_ROUTINE *NormalRoutine,
     PVOID *NormalContext,

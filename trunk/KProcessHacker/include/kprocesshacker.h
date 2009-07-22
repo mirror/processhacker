@@ -103,7 +103,7 @@ NTSTATUS KphUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 
 /* Clients */
 
-#include "include/handle.h"
+#include "include/ref.h"
 
 typedef struct _KPH_CLIENT_ENTRY
 {
