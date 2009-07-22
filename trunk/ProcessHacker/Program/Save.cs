@@ -331,7 +331,6 @@ namespace ProcessHacker
                 sb.AppendLine("Modules section failed! " + ex.Message);
             }
 
-            sb.AppendLine();
             sb.AppendLine("Token:");
             sb.AppendLine();
 
@@ -398,10 +397,18 @@ namespace ProcessHacker
 
                         sb.Append("[0x" + handle.Handle.ToString("x") + ", ");
 
-                        var info = handle.GetHandleInfo(phandle);
+                        try
+                        {
+                            var info = handle.GetHandleInfo(phandle);
 
-                        sb.Append(info.TypeName + "] ");
-                        sb.AppendLine(!string.IsNullOrEmpty(info.BestName) ? info.BestName : "(no name)");
+                            sb.Append(info.TypeName + "] ");
+                            sb.AppendLine(!string.IsNullOrEmpty(info.BestName) ? info.BestName : "(no name)");
+                        }
+                        catch (Exception ex2)
+                        {
+                            sb.Append(handle.ObjectTypeNumber.ToString() + "] ");
+                            sb.AppendLine("Error: " + ex2.Message);
+                        }
                     }
                 }
             }
