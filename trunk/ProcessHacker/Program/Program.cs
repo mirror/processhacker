@@ -279,13 +279,12 @@ namespace ProcessHacker
         private static void ShowCommandLineUsage()
         {
             PhUtils.ShowInformation(
-                "Usage: processhacker [-m]\n" +
+                "Usage:\n" +
                 "\t-m\tStarts Process Hacker hidden.\n" +
                 "\t-v\tStarts Process Hacker visible.\n" +
                 "\t-nokph\tDisables KProcessHacker. Use this if you are encountering BSODs.\n" + 
-                "\t-a\tAggressive mode.\n" + 
                 "\t-o\tShows Options.\n" +
-                "\t-t n\tShows the specified tab. 0 is Processes, and 1 is Services."
+                "\t-t n\tShows the specified tab. 0 is Processes, 1 is Services and 2 is Network."
                 );
         }
 
@@ -538,6 +537,8 @@ namespace ProcessHacker
                     SelectTab = "Processes";
                 else if (pArgs["-t"] == "1")
                     SelectTab = "Services";
+                else if (pArgs["-t"] == "2")
+                    SelectTab = "Network";
             }
 
             return false;
