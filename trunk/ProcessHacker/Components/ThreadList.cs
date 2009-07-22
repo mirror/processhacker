@@ -59,6 +59,10 @@ namespace ProcessHacker.Components
             // If KProcessHacker isn't available, hide Force Terminate.
             if (KProcessHacker.Instance == null)
                 forceTerminateThreadMenuItem.Visible = false;
+            // Terminating a system thread is the same as Force Terminate, 
+            // so hide it if we're viewing PID 4.
+            if (_pid == 4)
+                forceTerminateThreadMenuItem.Visible = false;
 
             _highlightingContext = new HighlightingContext(listThreads);
             var comparer = (SortedListViewComparer)
@@ -453,8 +457,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                MessageBox.Show("The priority could not be set:\n\n" + ex.Message, 
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to set the priority of the thread", ex);
             }
         }
 
@@ -570,11 +573,10 @@ namespace ProcessHacker.Components
                 KProcessHacker.Instance == null
                 )
             {
-                MessageBox.Show(
+                PhUtils.ShowError(
                     "Process Hacker cannot view system thread stacks without KProcessHacker. " + 
                     "Make sure Process Hacker has administrative privileges and KProcessHacker " + 
-                    "supports your operating system.",
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error
+                    "supports your operating system."
                     );
 
                 return;
@@ -583,10 +585,12 @@ namespace ProcessHacker.Components
             // Suspending PH threads is not a good idea :(
             if (_pid == Win32.GetCurrentProcessId())
             {
-                if (MessageBox.Show(
-                    "Inspecting Process Hacker's threads may lead to instability. Are you sure you want to continue?",
-                    "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
-                    == DialogResult.No)
+                if (!PhUtils.ShowConfirmMessage(
+                    "inspect",
+                    "Process Hacker's threads",
+                    "Inspecting Process Hacker's threads may lead to instability.",
+                    true
+                    ))
                     return;
             }
 
@@ -640,10 +644,12 @@ namespace ProcessHacker.Components
                 _pid == 4
                 )
             {
-                if (MessageBox.Show("Are you sure you want to terminate the selected system thread(s)? " +
-                    "This operation may cause the system to crash.", "Process Hacker",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
-                    MessageBoxDefaultButton.Button2) == DialogResult.No)
+                if (!PhUtils.ShowConfirmMessage(
+                    "terminate",
+                    "the selected system thread(s)",
+                    "Terminating system threads may cause the system to crash.",
+                    true
+                    ))
                     return;
 
                 foreach (ListViewItem item in listThreads.SelectedItems)
@@ -657,16 +663,19 @@ namespace ProcessHacker.Components
                     }
                     catch (Exception ex)
                     {
-                        PhUtils.ShowMessage("Error terminating thread " + tid.ToString(), ex);
+                        PhUtils.ShowException("Unable to terminate the thread " + tid.ToString(), ex);
                     }
                 }
 
                 return;
             }
 
-            if (MessageBox.Show("Are you sure you want to terminate the selected thread(s)?",
-                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, 
-                MessageBoxDefaultButton.Button2) == DialogResult.No)
+            if (!PhUtils.ShowConfirmMessage(
+                "terminate",
+                "the selected thread(s)",
+                "Terminating a thread may cause the process to stop working.",
+                false
+                ))
                 return;
 
             if (Program.ElevationType == TokenElevationType.Limited && 
@@ -705,10 +714,10 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    DialogResult result = MessageBox.Show("Could not terminate thread with ID " + item.SubItems[0].Text + ":\n\n" +
-                            ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (result == DialogResult.Cancel)
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to terminate the thread with ID " + item.SubItems[0].Text,
+                        ex
+                        ))
                         return;
                 }
             }
@@ -716,10 +725,12 @@ namespace ProcessHacker.Components
 
         private void forceTerminateThreadMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to force terminate the selected thread(s)? " +
-                "This operation may cause the system to crash.", "Process Hacker",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
-                MessageBoxDefaultButton.Button2) == DialogResult.No)
+            if (!PhUtils.ShowConfirmMessage(
+                "force terminate",
+                "the selected thread(s)",
+                "Forcefully terminating threads may cause the system to crash.",
+                true
+                ))
                 return;
 
             foreach (ListViewItem item in listThreads.SelectedItems)
@@ -733,7 +744,11 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowMessage("Error terminating thread " + tid.ToString(), ex);
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to force terminate the thread with ID " + item.SubItems[0].Text,
+                        ex
+                        ))
+                        return;
                 }
             }
         }
@@ -786,10 +801,10 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    DialogResult result = MessageBox.Show("Could not suspend thread with ID " + item.SubItems[0].Text + ":\n\n" +
-                            ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (result == DialogResult.Cancel)
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to suspend the thread with ID " + item.SubItems[0].Text,
+                        ex
+                        ))
                         return;
                 }
             }
@@ -842,10 +857,10 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    DialogResult result = MessageBox.Show("Could not resume thread with ID " + item.SubItems[0].Text + ":\n\n" +
-                            ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (result == DialogResult.Cancel)
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to resume the thread with ID " + item.SubItems[0].Text,
+                        ex
+                        ))
                         return;
                 }
             }
@@ -855,8 +870,7 @@ namespace ProcessHacker.Components
         {
             if (!Program.Structs.ContainsKey("TEB"))
             {
-                MessageBox.Show("The struct 'TEB' has not been loaded. Make sure structs.txt was loaded successfully.",
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowError("The struct 'TEB' has not been loaded. Make sure structs.txt was loaded successfully.");
                 return;
             }
 
@@ -884,7 +898,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to inspect the TEB of the thread", ex);
             }
         }
 
@@ -1211,13 +1225,12 @@ namespace ProcessHacker.Components
                 }
                 else
                 {
-                    MessageBox.Show("The thread does not appear to be waiting.", "Process Hacker",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    PhUtils.ShowInformation("The thread does not appear to be waiting.");
                 }
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to analyze the thread", ex);
             }
         }
 

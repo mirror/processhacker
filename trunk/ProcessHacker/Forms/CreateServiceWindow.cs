@@ -79,7 +79,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage("Error creating the service", ex);
+                PhUtils.ShowException("Unable to create the service", ex);
             }
         }
 

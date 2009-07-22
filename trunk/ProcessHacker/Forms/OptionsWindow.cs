@@ -199,9 +199,7 @@ namespace ProcessHacker
             }
             catch
             {
-                MessageBox.Show("The entered value is not valid.", "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
+                PhUtils.ShowError("The entered value is not valid.");
                 textUpdateInterval.Select();
             }
         }
@@ -214,9 +212,7 @@ namespace ProcessHacker
             }
             catch
             {
-                MessageBox.Show("The entered value is not valid.", "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
+                PhUtils.ShowError("The entered value is not valid.");
                 textIconMenuProcesses.Select();
             }
         }
@@ -411,8 +407,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Could not replace Task Manager with Process Hacker: " + ex.Message,
-                        "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    PhUtils.ShowException("Unable to replace Task Manager with Process Hacker", ex);
                 }
             }
         }
@@ -450,8 +445,7 @@ namespace ProcessHacker
             Program.ApplyFont(Properties.Settings.Default.Font);
 
             if (_oldDbghelp != textDbghelpPath.Text)
-                MessageBox.Show("One or more options you have changed require a restart of Process Hacker.",
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                PhUtils.ShowInformation("One or more options you have changed require a restart of Process Hacker.");
         }
 
         private void buttonOK_Click(object sender, EventArgs e)

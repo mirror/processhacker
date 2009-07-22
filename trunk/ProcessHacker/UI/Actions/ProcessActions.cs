@@ -246,6 +246,11 @@ namespace ProcessHacker.UI.Actions
             return false;
         }
 
+        private static string GetName(int[] pids, string[] names, int index)
+        {
+            return "the process \"" + names[index] + "\" with PID " + pids[index].ToString();
+        }
+
         public static bool Terminate(IWin32Window window, int[] pids, string[] names, bool prompt)
         {
             bool allGood = true;
@@ -271,11 +276,10 @@ namespace ProcessHacker.UI.Actions
                 {
                     allGood = false;
 
-                    DialogResult r = MessageBox.Show(window, "Could not terminate process \"" + names[i] +
-                        "\" with PID " + pids[i].ToString() + ":\n\n" +
-                        ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (r == DialogResult.Cancel)
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to terminate " + GetName(pids, names, i),
+                        ex
+                        ))
                         return false;
                 }
             }
@@ -332,9 +336,10 @@ namespace ProcessHacker.UI.Actions
             {
                 good = false;
 
-                DialogResult r = MessageBox.Show(window, "Could not terminate process \"" + processes[pid].Name +
-                    "\" with PID " + pid.ToString() + ":\n\n" +
-                    ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException(
+                    "Unable to terminate the process \"" + processes[pid].Name + "\" with PID " + pid.ToString(),
+                    ex
+                    );
             }
 
             return good;
@@ -361,11 +366,10 @@ namespace ProcessHacker.UI.Actions
                 }
                 catch (Exception ex)
                 {
-                    DialogResult r = MessageBox.Show(window, "Could not suspend process \"" + names[i] +
-                        "\" with PID " + pids[i].ToString() + ":\n\n" +
-                        ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (r == DialogResult.Cancel)
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to suspend " + GetName(pids, names, i),
+                        ex
+                        ))
                         return;
                 }
             }
@@ -392,11 +396,10 @@ namespace ProcessHacker.UI.Actions
                 }
                 catch (Exception ex)
                 {
-                    DialogResult r = MessageBox.Show(window, "Could not resume process \"" + names[i] +
-                        "\" with PID " + pids[i].ToString() + ":\n\n" +
-                        ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (r == DialogResult.Cancel)
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to resume " + GetName(pids, names, i),
+                        ex
+                        ))
                         return;
                 }
             }
@@ -423,11 +426,10 @@ namespace ProcessHacker.UI.Actions
                 }
                 catch (Exception ex)
                 {
-                    DialogResult r = MessageBox.Show(window, "Could not reduce the working set of process \"" + names[i] +
-                        "\" with PID " + pids[i].ToString() + ":\n\n" +
-                        ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (r == DialogResult.Cancel)
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to reduce the working set of " + GetName(pids, names, i),
+                        ex
+                        ))
                         return;
                 }
             }

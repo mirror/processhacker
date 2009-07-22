@@ -35,7 +35,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to perform the operation", ex);
             }
         }
 

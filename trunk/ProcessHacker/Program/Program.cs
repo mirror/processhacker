@@ -119,16 +119,14 @@ namespace ProcessHacker
             }
             catch
             {
-                MessageBox.Show(
-                    "Usage: processhacker [-m]\n" +
-                    "\t-m\tStarts Process Hacker hidden.\n" +
-                    "\t-v\tStarts Process Hacker visible.\n" +
-                    "\t-nokph\tDisables KProcessHacker. Use this if you are encountering BSODs.\n" + 
-                    "\t-a\tAggressive mode.\n" + 
-                    "\t-o\tShows Options.\n" +
-                    "\t-t n\tShows the specified tab. 0 is Processes, and 1 is Services.",
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ShowCommandLineUsage();
                 pArgs = new Dictionary<string, string>();
+            }
+
+            if (pArgs.ContainsKey("-h") || pArgs.ContainsKey("-help") || pArgs.ContainsKey("-?"))
+            {
+                ShowCommandLineUsage();
+                return;
             }
 
             // In case the settings file is corrupt PH won't crash here - it will be dealt with later.
@@ -157,8 +155,7 @@ namespace ProcessHacker
                     catch (Exception ex)
                     {
                         Logging.Log(ex);
-                        MessageBox.Show("Process Hacker could not upgrade its settings from a previous version.", "Process Hacker",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        PhUtils.ShowWarning("Process Hacker could not upgrade its settings from a previous version.");
                     }
 
                     Properties.Settings.Default.NeedsUpgrade = false;
@@ -171,8 +168,7 @@ namespace ProcessHacker
 
             if (Environment.Version.Major < 2)
             {
-                MessageBox.Show("You must have .NET Framework 2.0 or higher to use Process Hacker.", "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowError("You must have .NET Framework 2.0 or higher to use Process Hacker.");
 
                 Application.Exit();
             }
@@ -280,6 +276,19 @@ namespace ProcessHacker
             Application.Run();
         }
 
+        private static void ShowCommandLineUsage()
+        {
+            PhUtils.ShowInformation(
+                "Usage: processhacker [-m]\n" +
+                "\t-m\tStarts Process Hacker hidden.\n" +
+                "\t-v\tStarts Process Hacker visible.\n" +
+                "\t-nokph\tDisables KProcessHacker. Use this if you are encountering BSODs.\n" + 
+                "\t-a\tAggressive mode.\n" + 
+                "\t-o\tShows Options.\n" +
+                "\t-t n\tShows the specified tab. 0 is Processes, and 1 is Services."
+                );
+        }
+
         private static void LoadProviders()
         {
             ProcessProvider = new ProcessSystemProvider();
@@ -354,9 +363,7 @@ namespace ProcessHacker
                                 catch (Exception ex2)
                                 {
                                     taskDialog.SetProgressBarMarquee(false, 1000);
-                                    MessageBox.Show("The settings could not be reset:\r\n\r\n" + ex2.ToString(),
-                                        "Process Hacker",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    PhUtils.ShowException("Unable to reset the settings", ex2);
                                     return true;
                                 }
 
@@ -420,7 +427,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowMessage(ex);
+                    PhUtils.ShowException("Unable to complete the operation", ex);
                 }
 
                 return true;
@@ -446,8 +453,7 @@ namespace ProcessHacker
 
                 if (!ProcessProvider.Dictionary.ContainsKey(pid))
                 {
-                    MessageBox.Show("The process (PID " + pid.ToString() + ") does not exist.",
-                        "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    PhUtils.ShowError("The process (PID " + pid.ToString() + ") does not exist.");
                     Environment.Exit(0);
                     return true;
                 }
@@ -476,7 +482,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowMessage(ex);
+                    PhUtils.ShowException("Unable to show token properties", ex);
                 }
 
                 return true;
@@ -695,8 +701,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to start the process", ex);
             }
         }
 

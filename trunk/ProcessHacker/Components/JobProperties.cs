@@ -227,7 +227,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to terminate the job", ex);
             }
         }
     }

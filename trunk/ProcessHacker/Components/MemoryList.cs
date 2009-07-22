@@ -479,7 +479,7 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowMessage("Error dumping the selected memory regions", ex);
+                    PhUtils.ShowException("Unable to dump the selected memory regions", ex);
                 }
             }
         }
@@ -504,8 +504,7 @@ namespace ProcessHacker.Components
                 }
                 catch
                 {
-                    MessageBox.Show("Invalid address!", "Process Hacker", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
+                    PhUtils.ShowError("You have entered an invalid address.");
 
                     return;
                 }
@@ -539,7 +538,7 @@ namespace ProcessHacker.Components
 
                 if (!found)
                 {
-                    MessageBox.Show("Memory address not found!", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    PhUtils.ShowError("Unable to find the memory address.");
                     return;
                 }
 
@@ -555,9 +554,12 @@ namespace ProcessHacker.Components
 
         private void freeMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to free this memory region?",
-                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
-                == DialogResult.Yes)
+            if (PhUtils.ShowConfirmMessage(
+                "free",
+                "the memory region",
+                "Freeing memory regions may cause the process to crash.",
+                true
+                ))
             {
                 try
                 {
@@ -571,16 +573,19 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Message Box", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    PhUtils.ShowException("Unable to free the memory region", ex);
                 }
             }
         }
 
         private void decommitMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to decommit this memory region?",
-               "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
-               == DialogResult.Yes)
+            if (PhUtils.ShowConfirmMessage(
+                "decommit",
+                "the memory region",
+                "Decommitting memory regions may cause the process to crash.",
+                true
+                ))
             {
                 try
                 {
@@ -594,7 +599,7 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Message Box", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    PhUtils.ShowException("Unable to decommit the memory region", ex);
                 }
             }
         }

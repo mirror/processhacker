@@ -144,7 +144,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowMessage(ex);
+                    PhUtils.ShowException("Unable to save the log", ex);
                 }
             }
         }

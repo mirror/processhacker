@@ -89,7 +89,7 @@ namespace ProcessHacker.UI.Actions
                 }
                 else
                 {
-                    PhUtils.ShowMessage("Error", ex);
+                    PhUtils.ShowException("Unable to " + actionName + " the session", ex);
                 }
             }
         }

@@ -401,8 +401,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not change service configuration:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to change service configuration", ex);
             }
         }
 
@@ -435,7 +434,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to show dependents for the service", ex);
             }
         }
 
@@ -458,7 +457,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to show dependencies of the service", ex);
             }
         }
 

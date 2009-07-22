@@ -376,7 +376,7 @@ namespace ProcessHacker.Components
                                                             }
                                                             catch (Exception ex)
                                                             {
-                                                                PhUtils.ShowMessage("Error opening the registry editor", ex);
+                                                                PhUtils.ShowException("Unable to open the Registry Editor", ex);
                                                             }
                                                         }
                                                         break;
@@ -411,7 +411,7 @@ namespace ProcessHacker.Components
                                             }
                                             catch (Exception ex)
                                             {
-                                                PhUtils.ShowMessage(ex);
+                                                PhUtils.ShowException("Unable to show object properties", ex);
                                             }
                                         };
 
@@ -473,7 +473,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to show handle properties", ex);
             }
         }
 
@@ -499,11 +499,10 @@ namespace ProcessHacker.Components
                     {
                         allGood = false;
 
-                        var result = MessageBox.Show(
-                            "Could not close handle \"" + item.SubItems[1].Text + "\":\n\n" + ex.Message,
-                             "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                        if (result == DialogResult.Cancel)
+                        if (!PhUtils.ShowContinueMessage(
+                            "Unable to close the handle \"" + item.SubItems[1].Text + "\"",
+                            ex
+                            ))
                             return;
                     }
                 }
@@ -533,7 +532,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to set handle attributes", ex);
             }
         }
 
@@ -554,7 +553,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to set handle attributes", ex);
             }
         }
 
@@ -571,7 +570,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to show handle properties", ex);
             }
         }
     }

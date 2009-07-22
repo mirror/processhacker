@@ -1021,7 +1021,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to change process protection", ex);
             }
         }
 
@@ -1052,8 +1052,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not inspect the PEB:\n\n" + ex.Message,
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to inspect the PEB", ex);
             }
         }
 
@@ -1071,13 +1070,11 @@ namespace ProcessHacker
             }
             catch (KeyNotFoundException)
             {
-                MessageBox.Show("The process could not be found.", "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowError("The process could not be found.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not inspect the process:\n\n" + ex.Message,
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to inspect the parent process", ex);
             }
         }
 
@@ -1153,8 +1150,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error inspecting:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to inspect the image file", ex);
             }
         }
 

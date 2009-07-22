@@ -29,6 +29,7 @@ using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.UI;
+using ProcessHacker.Components;
 
 namespace ProcessHacker.Common
 {
@@ -40,11 +41,20 @@ namespace ProcessHacker.Common
             "smss.exe", "wininit.exe", "winlogon.exe"
         };
 
+        /// <summary>
+        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ListView.
+        /// </summary>
+        /// <param name="lv">The ListView to modify.</param>
         public static void AddShortcuts(this ListView lv)
         {
             lv.AddShortcuts(null);
         }
 
+        /// <summary>
+        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ListView.
+        /// </summary>
+        /// <param name="lv">The ListView to modify.</param>
+        /// <param name="retrieveVirtualItem">A virtual item handler, if any.</param>
         public static void AddShortcuts(this ListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
         {
             lv.KeyDown +=
@@ -71,6 +81,11 @@ namespace ProcessHacker.Common
                 };
         }
 
+        /// <summary>
+        /// Gets whether the specified process is a system process.
+        /// </summary>
+        /// <param name="pid">The PID of a process to check.</param>
+        /// <returns>Whether the process is a system process.</returns>
         public static bool IsDangerousPid(int pid)
         {
             if (pid == 4)
@@ -97,6 +112,31 @@ namespace ProcessHacker.Common
             return false;
         }
 
+        /// <summary>
+        /// Formats an error message.
+        /// </summary>
+        /// <param name="operation">
+        /// The operation being performed, e.g. "Unable to X"
+        /// </param>
+        /// <param name="ex">The exception to use.</param>
+        /// <returns>A formatted error message.</returns>
+        private static string FormatException(string operation, Exception ex)
+        {
+            if (!string.IsNullOrEmpty(operation))
+                return operation + ": " + ex.Message;
+            else
+                return ex.Message;
+        }
+
+        /// <summary>
+        /// Gets an appropriate foreground color to be displayed on top of a 
+        /// specified background color.
+        /// </summary>
+        /// <param name="backColor">The background color.</param>
+        /// <returns>
+        /// Black if the background color's brightness is above 0.4, otherwise 
+        /// White.
+        /// </returns>
         public static Color GetForeColor(Color backColor)
         {
             if (backColor.GetBrightness() > 0.4)
@@ -105,11 +145,28 @@ namespace ProcessHacker.Common
                 return Color.White;
         }
 
+        /// <summary>
+        /// Opens a registry key in the Registry Editor.
+        /// </summary>
+        /// <param name="keyName">
+        /// The path to the registry key, in either abbreviated (HKCU, HKLM, etc.) 
+        /// or full (HKEY_CURRENT_USER, etc.) format.
+        /// </param>
         public static void OpenKeyInRegedit(string keyName)
         {
             OpenKeyInRegedit(null, keyName);
         }
 
+        /// <summary>
+        /// Opens a registry key in the Registry Editor.
+        /// </summary>
+        /// <param name="window">
+        /// The window in which the elevation dialog, if any, should be centered.
+        /// </param>
+        /// <param name="keyName">
+        /// The path to the registry key, in either abbreviated (HKCU, HKLM, etc.) 
+        /// or full (HKEY_CURRENT_USER, etc.) format.
+        /// </param>
         public static void OpenKeyInRegedit(IWin32Window window, string keyName)
         {
             string lastKey = keyName;
@@ -124,6 +181,8 @@ namespace ProcessHacker.Common
             else if (lastKey.ToLowerInvariant().StartsWith("hklm"))
                 lastKey = "HKEY_LOCAL_MACHINE" + lastKey.Substring(4);
 
+            // Set the last opened key in regedit config. Note that if we are on 
+            // Vista, we need to append "Computer\" to the beginning.
             using (var regeditKey =
                 Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
                     @"Software\Microsoft\Windows\CurrentVersion\Applets\Regedit",
@@ -136,6 +195,11 @@ namespace ProcessHacker.Common
                     regeditKey.SetValue("LastKey", lastKey);
             }
 
+            // If we have UAC and we aren't elevated, request that regedit be elevated 
+            // and pass the window handle. This is so that we get the elevation 
+            // dialog in the center of the specified window because it looks nice.
+            // Also, this makes sure we don't throw an exception if the user denies 
+            // elevation.
             if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited)
             {
                 Program.StartProgramAdmin(
@@ -182,19 +246,141 @@ namespace ProcessHacker.Common
             SetShieldIconInternal(button, visible);
         }
 
+        /// <summary>
+        /// Sets the theme of a control.
+        /// </summary>
+        /// <param name="control">The control to modify.</param>
+        /// <param name="theme">A name of a theme.</param>
         public static void SetTheme(this Control control, string theme)
         {
             Win32.SetWindowTheme(control.Handle, theme, null);
         }
 
-        public static void ShowMessage(Exception ex)
+        /// <summary>
+        /// Asks if the user wants to perform an action.
+        /// </summary>
+        /// <param name="verb">
+        /// The action to be performed, e.g. "Terminate"
+        /// </param>
+        /// <param name="obj">
+        /// The object for the action to be performed on, e.g. "the selected process"
+        /// </param>
+        /// <param name="message">
+        /// Additional information to show to the user, e.g. "Terminating a process will ..."
+        /// </param>
+        /// <param name="warning">Whether the message is a warning.</param>
+        /// <returns>Whether the user wants to continue with the operation.</returns>
+        public static bool ShowConfirmMessage(string verb, string obj, string message, bool warning)
         {
-            MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // Make the sure the verb is all lowercase.
+            verb = verb.ToLower();
+
+            // "terminate" -> "Terminate"
+            string verbCaps = char.ToUpper(verb[0]) + verb.Substring(1);
+            // "terminate", "the process" -> "terminate the process"
+            string action = verb + " " + obj;
+
+            // Example:
+            // __________________________________________________
+            // | Process Hacker                             _ O x|
+            // |                                                 |
+            // |    /\     Do you want to terminate the process? |
+            // |   /||\                                          |
+            // |  /_||_\   Terminating a process may result in...|
+            // |           Are you sure you want to continue?    |
+            // |                                                 |
+            // |                       | Terminate |  | Cancel | | 
+            // |_________________________________________________|
+
+            if (OSVersion.HasTaskDialogs)
+            {
+                TaskDialog td = new TaskDialog();
+
+                td.WindowTitle = "Process Hacker";
+                td.MainIcon = warning ? TaskDialogIcon.Warning : TaskDialogIcon.None;
+                td.MainInstruction = "Do you want to " + action + "?";
+
+                if (!string.IsNullOrEmpty(message))
+                    td.Content = message + " Are you sure you want to continue?";
+
+                td.Buttons = new TaskDialogButton[]
+                {
+                    new TaskDialogButton((int)DialogResult.Yes, verbCaps),
+                    new TaskDialogButton((int)DialogResult.No, "Cancel")
+                };
+                td.DefaultButton = (int)DialogResult.No;
+
+                return td.Show(Form.ActiveForm) == (int)DialogResult.Yes;
+            }
+            else
+            {
+                return MessageBox.Show(
+                    message + "Are you sure you want to " + action + "?",
+                    "Process Hacker",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning
+                    ) == DialogResult.Yes;
+            }
         }
 
-        public static void ShowMessage(string operation, Exception ex)
+        /// <summary>
+        /// Notifies the user of an error and asks whether the operation should 
+        /// continue.
+        /// </summary>
+        /// <param name="operation">
+        /// The operation being performed, e.g. "Unable to X"
+        /// </param>
+        /// <param name="ex">The exception to notify the user of.</param>
+        /// <returns>
+        /// True if the user wants to continue the operation, otherwise false.
+        /// </returns>
+        public static bool ShowContinueMessage(string operation, Exception ex)
         {
-            MessageBox.Show(operation + ": " + ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return MessageBox.Show(
+                FormatException(operation, ex),
+                "Process Hacker",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Error
+                ) == DialogResult.OK;
+        }
+
+        /// <summary>
+        /// Displays an error message to the user.
+        /// </summary>
+        /// <param name="message">The message to show.</param>
+        public static void ShowError(string message)
+        {
+            MessageBox.Show(message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        /// <summary>
+        /// Notifies the user of an error.
+        /// </summary>
+        /// <param name="operation">
+        /// The operation being performed, e.g. "Unable to X"
+        /// </param>
+        /// <param name="ex">The exception to notify the user of.</param>
+        public static void ShowException(string operation, Exception ex)
+        {
+            MessageBox.Show(FormatException(operation, ex), "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        /// <summary>
+        /// Displays information to the user.
+        /// </summary>
+        /// <param name="message">The message to show.</param>
+        public static void ShowInformation(string message)
+        {
+            MessageBox.Show(message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Displays a warning to the user.
+        /// </summary>
+        /// <param name="message">The message to show.</param>
+        public static void ShowWarning(string message)
+        {
+            MessageBox.Show(message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

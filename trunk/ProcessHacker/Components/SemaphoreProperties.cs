@@ -34,13 +34,15 @@ namespace ProcessHacker.Components
             try
             {
                 _semaphoreHandle.ChangeAccess((SemaphoreAccess)StandardRights.Synchronize);
+                // Try to acquire the semaphore. We don't want to wait on it though, 
+                // so we specify a timeout of 0.
                 if (_semaphoreHandle.Wait(0) != NtStatus.Success)
                     throw new Exception("Could not acquire the semaphore.");
                 this.UpdateInfo();
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to acquire the semaphore", ex);
             }
         }
 
@@ -54,7 +56,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to release the semaphore", ex);
             }
         }
     }

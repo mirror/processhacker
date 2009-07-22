@@ -67,7 +67,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to show properties for the file", ex);
             }
         }
 
@@ -79,8 +79,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to show the file", ex);
             }
         }
 

@@ -167,7 +167,7 @@ namespace ProcessHacker
                 _data = new byte[_length];
 
                 if (phandle.ReadMemory(_address, _data, _length) == 0)
-                    Win32.ThrowLastError();
+                    throw new Exception("Unknown error.");
 
                 hexBoxMemory.ByteProvider = new Be.Windows.Forms.DynamicByteProvider(_data);
             }
@@ -183,10 +183,7 @@ namespace ProcessHacker
                 }
 
                 if (phandle.WriteMemory(_address, _data) == 0)
-                {
-                    MessageBox.Show("Could not write to process memory:\n\n" + Win32.GetLastErrorMessage(),
-                        "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                    throw new Exception("Unknown error.");
             }
         }
 
@@ -287,10 +284,9 @@ namespace ProcessHacker
                 _data = null;
                 ReadMemory();
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("Error reading process memory.",
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to read process memory", ex);
             }
         }
 
@@ -302,8 +298,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error writing to process memory:\n\n" + ex.Message,
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to write to process memory", ex);
             }
         }
 

@@ -24,12 +24,12 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Ui;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
-using ProcessHacker.Common.Ui;
 
 namespace ProcessHacker.Components
 {
@@ -299,8 +299,10 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    if (MessageBox.Show("Could not enable " + item.Text + ":\n\n" + ex.Message, "Process Hacker",
-                        MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to enable " + item.Text,
+                        ex
+                        ))
                         return;
                 }
             }
@@ -312,8 +314,10 @@ namespace ProcessHacker.Components
             {
                 if (item.SubItems[1].Text == "Default Enabled")
                 {
-                    if (MessageBox.Show("Could not disable " + item.Text + ":\n\nInvalid operation.", "Process Hacker",
-                        MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to disable " + item.Text,
+                        new Exception("Invalid operation.")
+                        ))
                         return;
 
                     continue;
@@ -329,8 +333,10 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    if (MessageBox.Show("Could not disable " + item.Text + ":\n\n" + ex.Message, "Process Hacker",
-                        MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to disable " + item.Text,
+                        ex
+                        ))
                         return;
                 }
             }
@@ -338,8 +344,13 @@ namespace ProcessHacker.Components
 
         private void removeMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to remove the selected privilege(s)? This action is permanent.",
-                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+            if (PhUtils.ShowConfirmMessage(
+                "remove",
+                "the selected privilege(s)",
+                "Removing privileges may reduce the functionality of the process, " + 
+                "and is permanent for the lifetime of the process.",
+                false
+                ))
             {
                 foreach (ListViewItem item in listPrivileges.SelectedItems)
                 {
@@ -352,8 +363,10 @@ namespace ProcessHacker.Components
                     }
                     catch (Exception ex)
                     {
-                        if (MessageBox.Show("Could not remove " + item.Text + ":\n\n" + ex.Message, "Process Hacker",
-                             MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
+                        if (!PhUtils.ShowContinueMessage(
+                            "Unable to remove " + item.Text,
+                            ex
+                            ))
                             return;
                     }
                 }

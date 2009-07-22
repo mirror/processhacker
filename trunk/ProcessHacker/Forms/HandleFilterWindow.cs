@@ -136,11 +136,10 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    var result = MessageBox.Show(
-                        "Could not close handle \"" + listHandles.Items[index].SubItems[2].Text + "\":\n\n" + ex.Message,
-                         "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (result == DialogResult.Cancel)
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to close the handle \"" + listHandles.Items[index].SubItems[2].Text + "\"",
+                        ex
+                        ))
                         return;
                 }
             }
@@ -229,8 +228,7 @@ namespace ProcessHacker
             }
             else
             {
-                MessageBox.Show("The process does not exist.", "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowError("The process does not exist.");
             }
         }
 
@@ -252,7 +250,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to show handle properties", ex);
             }
         }
 

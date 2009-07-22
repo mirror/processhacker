@@ -69,7 +69,7 @@ namespace ProcessHacker
                 }
                 catch (IOException ex)
                 {
-                    PhUtils.ShowMessage(ex);
+                    PhUtils.ShowException("Unable to save the process list", ex);
                 }
             }
         }

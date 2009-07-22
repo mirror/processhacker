@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -382,18 +383,19 @@ namespace ProcessHacker
 
         private void buttonRun_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to run the tests?", "Process Hacker",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
+            if (!PhUtils.ShowConfirmMessage("run", "the tests", null, false))
                 return;
 
             foreach (string test in _tests)
             {
                 if (test == "TT4")
                 {
-                    if (MessageBox.Show("Are you sure you want to run the TT4 test? This may " +
-                        "cause your computer to crash.", "Process Hacker",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
-                        MessageBoxDefaultButton.Button2) == DialogResult.No)
+                    if (!PhUtils.ShowConfirmMessage(
+                        "run",
+                        "the TT4 test",
+                        "This test may cause the system to crash.",
+                        true
+                        ))
                         continue;
                 }
 
@@ -404,8 +406,7 @@ namespace ProcessHacker
 
         private void listTests_DoubleClick(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to run the selected test?", "Process Hacker",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
+            if (!PhUtils.ShowConfirmMessage("run", "the selected test", null, false))
                 return;
 
             this.RunTest(listTests.SelectedItems[0].Name);

@@ -66,7 +66,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to get process affinity", ex);
 
                 this.Close();
                 return;
@@ -98,7 +98,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to set process affinity", ex);
             }
         }
     }

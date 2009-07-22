@@ -352,7 +352,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to search for the module", ex);
             }
         }
 
@@ -379,8 +379,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to show the file", ex);
             }
         }
 
@@ -412,8 +411,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error inspecting:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to inspect the module", ex);
             }
         }
 
@@ -446,9 +444,14 @@ namespace ProcessHacker.Components
 
         private void unloadMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to unload this " + 
-                (_pid != 4 ? "module" : "driver") + "?", "Process Hacker",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.No)
+            if (!PhUtils.ShowConfirmMessage(
+                "Unload",
+                _pid != 4 ? "the selected module" : "the selected driver",
+                _pid != 4 ? 
+                "Unloading a module may cause the process to crash." : 
+                "Unloading a driver may cause system instability.",
+                true
+                ))
                 return;
 
             if (_pid == 4)
@@ -532,7 +535,7 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Could not unload the driver. Make sure Process Hacker " +
+                    MessageBox.Show("Unable to unload the driver. Make sure Process Hacker " +
                         "is running with administrative privileges. Error:\n\n" +
                         ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -577,7 +580,7 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowMessage(ex);
+                    PhUtils.ShowException("Unable to unload the module", ex);
                 }
             }
         }

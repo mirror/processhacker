@@ -151,9 +151,12 @@ namespace ProcessHacker
 
         private void destroyMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to destroy the selected heap?", "Process Hacker",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
-                MessageBoxDefaultButton.Button2) == DialogResult.No)
+            if (!PhUtils.ShowConfirmMessage(
+                "destroy",
+                "the selected heap",
+                "Destroying a heap may cause the process to crash.",
+                true
+                ))
                 return;
 
             try
@@ -174,7 +177,7 @@ namespace ProcessHacker
             }
             catch (WindowsException ex)
             {
-                PhUtils.ShowMessage("Error destroying the heap", ex);
+                PhUtils.ShowException("Unable to destroy the heap", ex);
             }
         }
 

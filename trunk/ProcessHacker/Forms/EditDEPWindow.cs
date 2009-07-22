@@ -91,7 +91,7 @@ namespace ProcessHacker
                 depStatus = DepStatus.Enabled | DepStatus.AtlThunkEmulationDisabled;
             else
             {
-                MessageBox.Show("Invalid value!", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowError("Invalid value.");
                 return;
             }
 
@@ -108,16 +108,18 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to set the DEP status", ex);
             }
         }
 
         private void SetDepStatusNoKph()
         {
             if (comboStatus.SelectedItem.ToString().StartsWith("Enabled"))
-                if (
-                    MessageBox.Show("Are you sure you want to set the DEP status of the process? This action is permanent.",
-                    "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
+                if (!PhUtils.ShowConfirmMessage(
+                    "set",
+                    "the DEP status",
+                    "Enabling DEP in a process is a permanent action.",
+                    false))
                     return;
 
             DepFlags flags = DepFlags.Enable;
@@ -130,7 +132,7 @@ namespace ProcessHacker
                 flags = DepFlags.Enable | DepFlags.DisableAtlThunkEmulation;
             else
             {
-                MessageBox.Show("Invalid value!", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowError("Invalid value.");
                 return;
             }
 
@@ -154,7 +156,7 @@ namespace ProcessHacker
 
                     if (exitCode == 0)
                     {
-                        throw new Exception("Error setting the DEP policy.");
+                        throw new Exception("Unspecified error.");
                     }
                 }
 
@@ -163,7 +165,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to set the DEP status", ex);
             }
         }
 

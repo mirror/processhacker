@@ -203,9 +203,7 @@ namespace ProcessHacker
         {
             this.Invoke(new MethodInvoker(delegate
             {
-                MessageBox.Show("Error searching:\n\n" + message,
-                            "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                PhUtils.ShowError("Unable to search memory: " + message);
                 _searchThread = null;
                 Searcher_SearchFinished();
             }));
@@ -547,8 +545,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error filtering:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to filter the search results", ex);
             }
         }
 

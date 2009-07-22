@@ -78,9 +78,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("There was an error setting memory protection:\n\n" +
-                            ex.Message, "Process Hacker",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        PhUtils.ShowException("Unable to set memory protection", ex);
                         return;
                     }
                 }
@@ -89,8 +87,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error setting memory protection:\n\n" + ex.Message, "Process Hacker",
-                 MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to set memory protection", ex);
             }
         }
 

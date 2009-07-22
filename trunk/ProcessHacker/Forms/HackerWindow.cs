@@ -342,7 +342,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to load structs", ex);
             }
         }
 
@@ -501,13 +501,11 @@ namespace ProcessHacker
                             break;
                     }
 
-                    MessageBox.Show("The file \"" + ofd.FileName + "\" " + message +
-                        ".", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    PhUtils.ShowInformation("The file \"" + ofd.FileName + "\" " + message + ".");
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
+                    PhUtils.ShowException("Unable to verify the file", ex);
                 }
             }
         }
@@ -780,8 +778,7 @@ namespace ProcessHacker
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("Could not inspect the process:\n\n" + ex.Message,
-                                "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            PhUtils.ShowException("Unable to inspect the process", ex);
                         }
                     });
                     propertiesItem.Text = "Properties...";
@@ -1156,8 +1153,14 @@ namespace ProcessHacker
 
         private void restartProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to restart the process?", "Process Hacker",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+            if (PhUtils.ShowConfirmMessage(
+                "restart",
+                "the selected process",
+                "The process will be restarted with the same command line and " + 
+                "working directory, but if it is running under a different user it " + 
+                "will be restarted under the current user.",
+                true
+                ))
             {
                 try
                 {
@@ -1174,8 +1177,7 @@ namespace ProcessHacker
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("Could not terminate the process: " + ex.Message, "Process Hacker",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            PhUtils.ShowException("Unable to terminate the process", ex);
                             return;
                         }
 
@@ -1195,15 +1197,13 @@ namespace ProcessHacker
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("Could not start the command '" + cmdLine + "': " + ex.Message, "Process Hacker",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            PhUtils.ShowException("Unable to start the command '" + cmdLine + "'", ex);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Could not restart the process: " + ex.Message, "Process Hacker",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    PhUtils.ShowException("Unable to restart the process", ex);
                 }
             }
         }
@@ -1227,9 +1227,13 @@ namespace ProcessHacker
 
         private void virtualizationProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to set virtualization for this process?",
-                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
-                MessageBoxDefaultButton.Button2) == DialogResult.No)
+            if (!PhUtils.ShowConfirmMessage(
+                "set",
+                "virtualization for the process",
+                "Enabling or disabling virtualization for a process may " + 
+                "alter its functionality and produce undesirable effects.",
+                false
+                ))
                 return;
 
             try
@@ -1244,7 +1248,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to set process virtualization", ex);
             }
         }
 
@@ -1264,8 +1268,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not inspect the process:\n\n" + ex.Message,
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to inspect the process", ex);
             }
         }
 
@@ -1384,12 +1387,12 @@ namespace ProcessHacker
                         dumpProcess();
 
                         if (exception != null)
-                            PhUtils.ShowMessage(exception);
+                            PhUtils.ShowException("Unable to create the dump file", exception);
                     }
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowMessage(ex);
+                    PhUtils.ShowException("Unable to create the dump file", ex);
                 }
                 finally
                 {
@@ -1461,9 +1464,9 @@ namespace ProcessHacker
             catch (WindowsException ex)
             {
                 if (ex.Status == NtStatus.PortNotSet)
-                    MessageBox.Show("The process is not being debugged.", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    PhUtils.ShowInformation("The process is not being debugged.");
                 else
-                    PhUtils.ShowMessage(ex);
+                    PhUtils.ShowException("Unable to detach the process", ex);
             }
         }
 
@@ -1498,7 +1501,7 @@ namespace ProcessHacker
             }
             catch (WindowsException ex)
             {
-                PhUtils.ShowMessage("Error getting heap information", ex);
+                PhUtils.ShowException("Unable to get heap information", ex);
             }
         }
 
@@ -1520,7 +1523,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowMessage(ex);
+                    PhUtils.ShowException("Unable to inject the DLL", ex);
                 }
             }
         }
@@ -1548,91 +1551,8 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowMessage(ex);
+                    PhUtils.ShowException("Unable to set the process token", ex);
                 }
-            }
-        }
-
-        #endregion
-
-        #region Injector
-
-        private void startProcessProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            PromptBox box = new PromptBox();
-
-            box.TextBox.AutoCompleteSource = AutoCompleteSource.FileSystem;
-            box.TextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-
-            if (box.ShowDialog() == DialogResult.OK)
-            {
-                ProcessStartInfo info = new ProcessStartInfo();
-
-                info.FileName = Application.StartupPath + "\\Injector.exe";
-                info.Arguments = "createprocessc " + processSelectedPid.ToString() + " \"" +
-                    box.Value.Replace("\"", "\\\"") + "\"";
-                info.RedirectStandardOutput = true;
-                info.UseShellExecute = false;
-                info.CreateNoWindow = true;
-
-                Process p = Process.Start(info);
-
-                p.WaitForExit();
-
-                if (p.ExitCode != 0)
-                {
-                    InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + "\r\nReturn code: " + p.ExitCode +
-                        " (" + Win32.GetErrorMessage(p.ExitCode) + ")");
-
-                    infoBox.ShowDialog();
-                }
-            }
-        }
-
-        private void getCommandLineProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            ProcessStartInfo info = new ProcessStartInfo();
-
-            info.FileName = Application.StartupPath + "\\Injector.exe";
-            info.Arguments = "cmdline " + processSelectedPid.ToString();
-            info.RedirectStandardOutput = true;
-            info.UseShellExecute = false;
-            info.CreateNoWindow = true;
-
-            Process p = Process.Start(info);
-
-            p.WaitForExit();
-
-            InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + (p.ExitCode != 0 ? "\r\nReturn code: " + p.ExitCode +
-                " (" + Win32.GetErrorMessage(p.ExitCode) + ")" : ""));
-
-            infoBox.ShowDialog();
-        }
-
-        private void exitProcessProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Are you sure you want to terminate the selected process?", "Process Hacker",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.No)
-                return;
-
-            ProcessStartInfo info = new ProcessStartInfo();
-
-            info.FileName = Application.StartupPath + "\\Injector.exe";
-            info.Arguments = "exitprocess " + processSelectedPid.ToString();
-            info.RedirectStandardOutput = true;
-            info.UseShellExecute = false;
-            info.CreateNoWindow = true;
-
-            Process p = Process.Start(info);
-
-            p.WaitForExit();
-
-            if (p.ExitCode != 0)
-            {
-                InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + "\r\nReturn code: " + p.ExitCode +
-                    " (" + Win32.GetErrorMessage(p.ExitCode) + ")");
-
-                infoBox.ShowDialog();
             }
         }
 
@@ -1734,7 +1654,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Unable to search for the process", ex);
             }
         }
 
@@ -2316,23 +2236,17 @@ namespace ProcessHacker
             addMenuItem("-", null);
             addMenuItem("Restart", (sender, e) =>
             {
-                if (MessageBox.Show("Are you sure you want to restart your computer?", "Process Hacker",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
-                    MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                if (PhUtils.ShowConfirmMessage("restart", "the computer", null, false))
                     Win32.ExitWindowsEx(ExitWindowsFlags.Reboot, 0);
             });
             addMenuItem("Shutdown", (sender, e) =>
             {
-                if (MessageBox.Show("Are you sure you want to shutdown your computer?", "Process Hacker",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
-                    MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                if (PhUtils.ShowConfirmMessage("shutdown", "the computer", null, false))
                     Win32.ExitWindowsEx(ExitWindowsFlags.Shutdown, 0);
             });
             addMenuItem("Poweroff", (sender, e) =>
             {
-                if (MessageBox.Show("Are you sure you want to poweroff your computer?", "Process Hacker",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
-                    MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                if (PhUtils.ShowConfirmMessage("poweroff", "the computer", null, false))
                     Win32.ExitWindowsEx(ExitWindowsFlags.Poweroff, 0);
             });
         }
@@ -2542,7 +2456,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                PhUtils.ShowException("Unable to save settings", ex);
             }
         }
 
@@ -2640,7 +2554,7 @@ namespace ProcessHacker
                                 }
                                 catch (Exception ex)
                                 {
-                                    PhUtils.ShowMessage("Error sending message", ex);
+                                    PhUtils.ShowException("Unable to send the message", ex);
                                     return false;
                                 }
                             };
@@ -2649,7 +2563,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        PhUtils.ShowMessage(ex);
+                        PhUtils.ShowException("Unable to show the message window", ex);
                     }
                 };
                 userMenuItem.MenuItems.Add(currentMenuItem);
@@ -2668,7 +2582,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        PhUtils.ShowMessage(ex);
+                        PhUtils.ShowException("Unable to show session properties", ex);
                     }
                 };
                 userMenuItem.MenuItems.Add(currentMenuItem);
@@ -2704,8 +2618,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("The priority could not be set:\n\n" + ex.Message,
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to set process priority", ex);
             }
         }
 

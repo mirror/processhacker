@@ -52,8 +52,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error loading the specified file:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to load the specified file", ex);
 
                 this.Close();
             }

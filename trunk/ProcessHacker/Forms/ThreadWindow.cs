@@ -135,8 +135,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not open process:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to open the process", ex);
 
                 this.Close();
 
@@ -165,8 +164,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not open thread:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                PhUtils.ShowException("Unable to open the thread", ex);
 
                 this.Close();
 
@@ -398,10 +396,11 @@ namespace ProcessHacker
                     tokForm.ShowDialog();
                 }
             }
+            catch (ObjectDisposedException)
+            { }
             catch (Exception ex)
             {
-                if (!ex.Message.StartsWith("Cannot access a disposed object"))
-                    PhUtils.ShowMessage(ex);
+                PhUtils.ShowException("Could not view the thread token", ex);
             }
         }
     }
