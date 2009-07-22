@@ -65,7 +65,7 @@ NTSTATUS KphHook(
 {
     NTSTATUS status = STATUS_SUCCESS;
     MAPPED_MDL mappedMdl;
-    PCHAR function;
+    PUCHAR function;
     
     status = KphpCreateMappedMdl(
         Hook->Function,
@@ -76,7 +76,7 @@ NTSTATUS KphHook(
     if (!NT_SUCCESS(status))
         return status;
     
-    function = (PCHAR)mappedMdl.Address;
+    function = (PUCHAR)mappedMdl.Address;
     
     /* Acquire a lock on all other processors. */
     if (KphAcquireProcessorLock(&HookProcessorLock))
@@ -85,7 +85,7 @@ NTSTATUS KphHook(
          * DISPATCH_LEVEL because we are using the mapped MDL.
          */
         /* Copy the original five bytes (for unhooking). */
-        memcpy(Hook->Bytes, function, 5);
+        memcpy(Hook->Bytes, function, 10);
         /* Hook the function by writing a jump instruction. */
         Hook->Hooked = TRUE;
         /* jmp Target */
@@ -203,6 +203,10 @@ NTSTATUS NTAPI KphObOpenCall(
     }
 }
 
+/* KphInitializeObOpenHook
+ * 
+ * Initializes a hook structure.
+ */
 VOID KphInitializeObOpenHook(
     __inout PKPH_OB_OPEN_HOOK ObOpenHook,
     __in POBJECT_TYPE ObjectType,

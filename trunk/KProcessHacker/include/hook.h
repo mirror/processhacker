@@ -46,8 +46,8 @@ typedef struct _KPH_HOOK
     PVOID Target;
     /* Whether the function is hooked. */
     BOOLEAN Hooked;
-    /* The original first 5 bytes. */
-    CHAR Bytes[5];
+    /* The original first 10 bytes. */
+    CHAR Bytes[10];
 } KPH_HOOK, *PKPH_HOOK;
 
 typedef struct _KPH_OB_OPEN_HOOK

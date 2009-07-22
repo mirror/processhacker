@@ -28,6 +28,7 @@
 #include "ref.h"
 #include "version.h"
 
+#include "ke.h"
 #include "mm.h"
 #include "ps.h"
 #include "trace.h"
@@ -47,12 +48,15 @@
 #define EQNULL
 #endif
 
+EXT PKSERVICE_TABLE_DESCRIPTOR __KeServiceDescriptorTable EQNULL;
+EXT PVOID __KiFastCallEntry EQNULL;
 EXT _NtClose __NtClose EQNULL;
 EXT _PsGetProcessJob PsGetProcessJob EQNULL;
 EXT _PsResumeProcess PsResumeProcess EQNULL;
 EXT _PsSuspendProcess PsSuspendProcess EQNULL;
 EXT _PsTerminateProcess __PsTerminateProcess EQNULL;
 EXT PVOID __PspTerminateThreadByPointer EQNULL;
+EXT _NtClose __ZwClose EQNULL;
 
 /* Driver information */
 

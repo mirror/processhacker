@@ -26,6 +26,7 @@
 #include "include/kph.h"
 #include "include/protect.h"
 #include "include/ps.h"
+#include "include/sysservice.h"
 #include "include/version.h"
 
 #define CHECK_IN_LENGTH \
@@ -83,6 +84,12 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     
     /* Initialize NT KPH. */
     status = KphNtInit();
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    /* Initialize hooking. */
+    status = KphHookInit();
     
     if (!NT_SUCCESS(status))
         return status;
@@ -192,7 +199,7 @@ NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         Irp->IoStatus.Status = STATUS_INSUFFICIENT_RESOURCES;
         return STATUS_INSUFFICIENT_RESOURCES;
     }
-    
+    KphSsLogInit();
     dprintf("Client (PID %d) connected\n", PsGetCurrentProcessId());
     dprintf("Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
     
@@ -215,7 +222,7 @@ NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     /* Remove the client entry. */
     RemoveClientEntry(PsGetCurrentProcessId());
-    
+    KphSsLogDeinit();
     dprintf("Client (PID %d) disconnected\n", PsGetCurrentProcessId());
     
     return status;
@@ -1765,7 +1772,7 @@ NTSTATUS KphDispatchRead(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 
 NTSTATUS KphUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
-    DbgPrint("KProcessHacker: Unsupported function called\n");
+    dfprintf("Unsupported function called.\n");
     
-    return STATUS_NOT_IMPLEMENTED;
+    return STATUS_NOT_SUPPORTED;
 }

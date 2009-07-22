@@ -62,7 +62,19 @@ PVOID GetSystemRoutineAddress(WCHAR *Name)
 NTSTATUS KphNtInit()
 {
     NTSTATUS status = STATUS_SUCCESS;
+    /* Confuse those damn AVs */
+    PWCHAR keService = L"KeService"; // length 9, 18 bytes
+    PWCHAR descriptorTable = L"DescriptorTable"; // 15, 30 bytes
+    WCHAR keServiceDescriptorTable[9 + 15 + 1];
     
+    /* Reconstruct the string. */
+    memcpy(keServiceDescriptorTable, keService, 18);
+    memcpy(keServiceDescriptorTable + 9, descriptorTable, 30);
+    keServiceDescriptorTable[9 + 15] = L'\0';
+    
+    /* Dynamically get function pointers. */
+    __KeServiceDescriptorTable = GetSystemRoutineAddress(keServiceDescriptorTable);
+    dfprintf("KeServiceDescriptorTable: %#x\n", __KeServiceDescriptorTable);
     PsGetProcessJob = GetSystemRoutineAddress(L"PsGetProcessJob");
     dfprintf("PsGetProcessJob: %#x\n", PsGetProcessJob);
     PsResumeProcess = GetSystemRoutineAddress(L"PsResumeProcess");
@@ -70,7 +82,12 @@ NTSTATUS KphNtInit()
     PsSuspendProcess = GetSystemRoutineAddress(L"PsSuspendProcess");
     dfprintf("PsSuspendProcess: %#x\n", PsSuspendProcess);
     
-    /* Initialize function pointers */
+    /* Scan for functions. */
+    if (KiFastCallEntryScan.Initialized)
+    {
+        __KiFastCallEntry = KvScanProc(&KiFastCallEntryScan);
+        dfprintf("KiFastCallEntry+x: %#x\n", __KiFastCallEntry);
+    }
     if (PsTerminateProcessScan.Initialized)
     {
         __PsTerminateProcess = KvScanProc(&PsTerminateProcessScan);

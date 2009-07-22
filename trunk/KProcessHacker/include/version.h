@@ -47,7 +47,7 @@
 typedef struct _KV_SCANPROC
 {
     BOOLEAN Initialized;
-    PCHAR Bytes;
+    PUCHAR Bytes;
     ULONG Length;
     ULONG_PTR StartAddress;
     ULONG ScanLength;
@@ -102,6 +102,7 @@ EXT ULONG OffOtiOpenProcedure;
 
 /* Functions
  */
+EXT KV_SCANPROC KiFastCallEntryScan SCANNULL;
 EXT KV_SCANPROC PsExitSpecialApcScan SCANNULL;
 EXT KV_SCANPROC PsTerminateProcessScan SCANNULL;
 EXT KV_SCANPROC PspTerminateThreadByPointerScan SCANNULL;

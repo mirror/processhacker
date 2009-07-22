@@ -23,7 +23,7 @@
 #ifndef _SYNC_H
 #define _SYNC_H
 
-#include "kprocesshacker.h"
+#include "kph.h"
 
 #define TAG_SYNC_DPC ('DShP')
 

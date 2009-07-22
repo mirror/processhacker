@@ -14,6 +14,7 @@ SOURCES= \
     hook.c \
     protect.c \
     sync.c \
+    sysservice.c \
     trace.c \
     \
     io.c \

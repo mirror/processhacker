@@ -23,7 +23,7 @@
 #ifndef _HANDLE_H
 #define _HANDLE_H
 
-#include "kprocesshacker.h"
+#include "kph.h"
 #include "ref.h"
 
 typedef struct _KPH_HANDLE_TABLE

@@ -25,29 +25,15 @@
 
 #include "types.h"
 
-/* FUNCTION DEFS */
+/* APCs */
 
-enum _KAPC_ENVIRONMENT;
-
-NTKERNELAPI VOID KeInitializeApc(
-    PKAPC Apc,
-    PKTHREAD Thread,
-    enum _KAPC_ENVIRONMENT Environment,
-    PKKERNEL_ROUTINE KernelRoutine,
-    PKRUNDOWN_ROUTINE RundownRoutine,
-    PKNORMAL_ROUTINE NormalRoutine,
-    KPROCESSOR_MODE ProcessorMode,
-    PVOID NormalContext
-    );
-
-NTKERNELAPI BOOLEAN KeInsertQueueApc(
-    PRKAPC Apc,
-    PVOID SystemArgument1,
-    PVOID SystemArgument2,
-    KPRIORITY Increment
-    );
-
-/* FUNCTION TYPEDEFS */
+typedef enum _KAPC_ENVIRONMENT
+{
+    OriginalApcEnvironment,
+    AttachedApcEnvironment,
+    CurrentApcEnvironment,
+    InsertApcEnvironment
+} KAPC_ENVIRONMENT, *PKAPC_ENVIRONMENT;
 
 typedef VOID (*PKKERNEL_ROUTINE)(
     PKAPC Apc,
@@ -67,14 +53,43 @@ typedef VOID (*PKNORMAL_ROUTINE)(
     PVOID SystemArgument2
     );
 
-/* ENUMS */
+NTKERNELAPI VOID KeInitializeApc(
+    PKAPC Apc,
+    PKTHREAD Thread,
+    KAPC_ENVIRONMENT Environment,
+    PKKERNEL_ROUTINE KernelRoutine,
+    PKRUNDOWN_ROUTINE RundownRoutine,
+    PKNORMAL_ROUTINE NormalRoutine,
+    KPROCESSOR_MODE ProcessorMode,
+    PVOID NormalContext
+    );
 
-typedef enum _KAPC_ENVIRONMENT
+NTKERNELAPI BOOLEAN KeInsertQueueApc(
+    PRKAPC Apc,
+    PVOID SystemArgument1,
+    PVOID SystemArgument2,
+    KPRIORITY Increment
+    );
+
+/* System services */
+
+/* Exported by ntoskrnl as KeServiceDescriptorTable. */
+typedef struct _KSERVICE_TABLE_DESCRIPTOR
 {
-    OriginalApcEnvironment,
-    AttachedApcEnvironment,
-    CurrentApcEnvironment,
-    InsertApcEnvironment
-} KAPC_ENVIRONMENT, *PKAPC_ENVIRONMENT;
+    /* A pointer to an array of ULONG_PTRs - addresses of 
+     * system services.
+     */
+    PULONG_PTR Base;
+    /* A pointer to an array of ULONGs which contain counters for 
+     * the system services.
+     */
+    PULONG Count;
+    /* The number of system services. */
+    ULONG Limit;
+    /* A pointer to an array of UCHARs which contain 
+     * the number of arguments (in bytes) for each system service.
+     */
+    PUCHAR Number;
+} KSERVICE_TABLE_DESCRIPTOR, *PKSERVICE_TABLE_DESCRIPTOR;
 
 #endif

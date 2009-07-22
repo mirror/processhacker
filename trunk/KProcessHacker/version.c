@@ -37,6 +37,31 @@
  */
 static char StandardPrologue[] = { 0x8b, 0xff, 0x55, 0x8b, 0xec };
 
+/* KiFastCallEntry */
+/* Note that we only use one array because this function 
+ * almost never changes.
+ * 
+ * Also note that this scan will get the address of 
+ * inc [PrcbData+PbSystemCalls]
+ * within KiFastCallEntry, not the start of KiFastCallEntry. 
+ * 
+ * The reason for this is that KiFastCallEntry starts 
+ * on the DPC stack and switches to the appropriate thread 
+ * stack. By hooking KiFastCallEntry at this particular address 
+ * we can avoid having to do that work.
+ */
+static char KiFastCallEntry[] =
+{
+    0x64, 0xff, 0x05, 0xb0, 0x07, 0x00, 0x00, 0x8b,
+    0xf2, 0x33, 0xc9, 0x8b, 0x57, 0x0c, 0x8b, 0x3f
+};
+/* Below is the scan to find the start of KiFastCallEntry. */
+/* static char KiFastCallEntry[] =
+{
+    0xb9, 0x23, 0x00, 0x00, 0x00, 0x6a, 0x30, 0x0f,
+    0xa1, 0x8e, 0xd9, 0x8e, 0xc1, 0x64, 0x8b, 0x0d
+}; */
+
 /* PsExitSpecialApc */
 static char PsExitSpecialApc51[] =
 {
@@ -100,6 +125,8 @@ NTSTATUS KvInit()
     NTSTATUS status = STATUS_SUCCESS;
     ULONG majorVersion, minorVersion, servicePack, buildNumber;
     
+    /* Get Windows version information. */
+    
     RtlWindowsVersion.dwOSVersionInfoSize = sizeof(RtlWindowsVersion);
     status = RtlGetVersion((PRTL_OSVERSIONINFOW)&RtlWindowsVersion);
     
@@ -123,6 +150,19 @@ NTSTATUS KvInit()
      */
     if (!__NtClose)
         return STATUS_NOT_SUPPORTED;
+    
+    /* We also need the address of ZwClose to get KiFastCallEntry. */
+    __ZwClose = GetSystemRoutineAddress(L"ZwClose");
+    
+    if (!__ZwClose)
+        return STATUS_NOT_SUPPORTED;
+    
+    /* Initialize the KiFastCallEntry scan. */
+    INIT_SCAN(
+        KiFastCallEntryScan,
+        KiFastCallEntry,
+        16, (ULONG_PTR)__ZwClose, SCAN_LENGTH, 0
+        );
     
     /* Windows XP */
     if (majorVersion == 5 && minorVersion == 1)
@@ -302,7 +342,7 @@ PVOID KvScanProc(
     PKV_SCANPROC ScanProc
     )
 {
-    PCHAR bytes = ScanProc->Bytes;
+    PUCHAR bytes = ScanProc->Bytes;
     ULONG length = ScanProc->Length;
     ULONG_PTR endAddress = ScanProc->StartAddress + ScanProc->ScanLength;
     ULONG_PTR i;
