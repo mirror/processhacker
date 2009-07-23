@@ -42,18 +42,16 @@ static char StandardPrologue[] = { 0x8b, 0xff, 0x55, 0x8b, 0xec };
  * almost never changes.
  * 
  * Also note that this scan will get the address of 
- * inc [PrcbData+PbSystemCalls]
+ * mov      esi, edx
  * within KiFastCallEntry, not the start of KiFastCallEntry. 
- * 
- * The reason for this is that KiFastCallEntry starts 
- * on the DPC stack and switches to the appropriate thread 
- * stack. By hooking KiFastCallEntry at this particular address 
- * we can avoid having to do that work.
+ * We will then subtract 7 to get the address of 
+ * inc      dword ptr fs:PbSystemCalls
+ * See sysservice.c for more details.
  */
 static char KiFastCallEntry[] =
 {
-    0x64, 0xff, 0x05, 0xb0, 0x07, 0x00, 0x00, 0x8b,
-    0xf2, 0x33, 0xc9, 0x8b, 0x57, 0x0c, 0x8b, 0x3f
+    0x8b, 0xf2, 0x33, 0xc9, 0x8b, 0x57, 0x0c, 0x8b,
+    0x3f, 0x8a, 0x0c, 0x10, 0x8b, 0x14, 0x87, 0x2b
 };
 /* Below is the scan to find the start of KiFastCallEntry. */
 /* static char KiFastCallEntry[] =
@@ -161,7 +159,7 @@ NTSTATUS KvInit()
     INIT_SCAN(
         KiFastCallEntryScan,
         KiFastCallEntry,
-        16, (ULONG_PTR)__ZwClose, SCAN_LENGTH, 0
+        16, (ULONG_PTR)__ZwClose, SCAN_LENGTH, -7
         );
     
     /* Windows XP */

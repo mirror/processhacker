@@ -16,11 +16,15 @@ following files contain "ported" ReactOS code (with modifications):
    * KphOpenProcessTokenEx
 
 == CODE STRUCTURE ==
+ * handle.c
+   - Contains handle table code.
  * hook.c
    - Contains hooking code. Currently you may hook any kernel-mode 
      function and object type open procedures.
+ * io.c
+   - Contains I/O-related code, such as device and driver functions.
  * kph.c
-   - Contains support routines
+   - Contains support routines.
  * kprocesshacker.c
    - Contains interfacing code, mainly consisting of the I/O control 
      handler.
@@ -35,10 +39,24 @@ following files contain "ported" ReactOS code (with modifications):
  * ps.c
    - Contains process- and thread-related code, such as opening and 
      terminating.
+ * ref.c
+   - Contains the KPH object manager.
  * se.c
    - Contains security-related code. Only function there is 
      KphOpenProcessTokenEx.
  * sync.c
-   - "Processor lock" code. Explained in the code comments.
+   - Various synchronization functions.
+ * sysservice.c
+   - System service logging.
+ * trace.c
+   - Stack trace code.
  * version.c
    - Contains Windows-version-specific data.
+
+== POOL TAGS ==
+PhCU: Captured Unicode string. kph.h
+PhOb: Object manager object. refp.h
+PhPC: Pool-based virtual memory copying. mm.h
+PhPr: Protection entry. protect.h
+PhSD: Processor lock DPC storage. sync.h
+PhSt: Stack back trace. ps.h

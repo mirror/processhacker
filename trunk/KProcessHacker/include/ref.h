@@ -23,15 +23,7 @@
 #ifndef _REF_H
 #define _REF_H
 
-#include "kprocesshacker.h"
-
-#define TAG_KPHOBJ ('bOhP')
-
-#define KphObjectToObjectHeader(Object) ((PKPH_OBJECT_HEADER)CONTAINING_RECORD((PCHAR)(Object), KPH_OBJECT_HEADER, Body))
-#define KphObjectHeaderToObject(ObjectHeader) (&((PKPH_OBJECT_HEADER)(ObjectHeader))->Body)
-#define KphpAddObjectHeaderSize(Size) ((Size) + sizeof(KPH_OBJECT_HEADER) - sizeof(ULONG))
-
-struct _KPH_OBJECT_TYPE;
+#include "kph.h"
 
 /* Object flags */
 #define KPHOBJ_RAISE_ON_FAIL 0x00000001
@@ -46,36 +38,8 @@ typedef VOID (NTAPI *PKPH_TYPE_DELETE_PROCEDURE)(
     __in SIZE_T Size
     );
 
-typedef struct _KPH_OBJECT_HEADER
-{
-    /* The reference count of the object. */
-    LONG RefCount;
-    /* The flags that were used to create the object. */
-    ULONG Flags;
-    /* The size of the object, excluding the header. */
-    SIZE_T Size;
-    /* The type of the object. */
-    struct _KPH_OBJECT_TYPE *Type;
-    /* A linked list entry for an optional object manager object list. 
-     * For example, this may be used to free all objects when the 
-     * driver exits.
-     */
-    LIST_ENTRY GlobalObjectListEntry;
-    /* A linked list entry for use by clients. For example, this may 
-     * be used to dereference all objects when a driver client 
-     * disconnects.
-     */
-    LIST_ENTRY LocalObjectListEntry;
-    
-    /* The body of the object. For use by the KphObject(Header)ToObject(Header) macros. */
-    ULONG Body;
-} KPH_OBJECT_HEADER, *PKPH_OBJECT_HEADER;
-
 typedef struct _KPH_OBJECT_TYPE
 {
-    /* A fast mutex protecting the type (not used). */
-    FAST_MUTEX Mutex;
-    
     /* The default pool type for objects of this type, used when the 
      * pool type is not specified when an object is created. */
     POOL_TYPE DefaultPoolType;
@@ -119,6 +83,10 @@ BOOLEAN KphDereferenceObjectEx(
     );
 
 PKPH_OBJECT_TYPE KphGetTypeObject(
+    __in PVOID Object
+    );
+
+BOOLEAN KphIsDestroyedObject(
     __in PVOID Object
     );
 

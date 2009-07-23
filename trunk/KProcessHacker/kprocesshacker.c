@@ -48,11 +48,15 @@
         goto IoControlEnd; \
     }
 
+static PKPH_OBJECT_TYPE ClientEntryType;
 static LIST_ENTRY ClientListHead;
-static KSPIN_LOCK ClientListLock;
-static NPAGED_LOOKASIDE_LIST ClientLookasideList;
+static FAST_MUTEX ClientListMutex;
+
 static BOOLEAN ProtectionInitialized = FALSE;
 static FAST_MUTEX ProtectionMutex;
+
+static ULONG SsStartCount = 0;
+static FAST_MUTEX SsMutex;
 
 #ifdef ALLOC_PRAGMA
 #pragma alloc_text(PAGE, DriverEntry)
@@ -117,19 +121,24 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     
     /* Initialize client list structures. */
     InitializeListHead(&ClientListHead);
-    KeInitializeSpinLock(&ClientListLock);
-    ExInitializeNPagedLookasideList(
-        &ClientLookasideList,
-        NULL,
-        NULL,
-        0,
-        sizeof(KPH_CLIENT_ENTRY),
-        TAG_CLIENT_ENTRY,
-        0
+    ExInitializeFastMutex(&ClientListMutex);
+    
+    status = KphCreateObjectType(
+        &ClientEntryType,
+        PagedPool,
+        ClientEntryDeleteProcedure
         );
+    
+    if (!NT_SUCCESS(status))
+    {
+        KphRefDeinit();
+        return status;
+    }
     
     /* Initialize process protection. */
     ExInitializeFastMutex(&ProtectionMutex);
+    /* Initialize the system service logging mutex. */
+    ExInitializeFastMutex(&SsMutex);
     
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
@@ -166,9 +175,6 @@ VOID DriverUnload(PDRIVER_OBJECT DriverObject)
     IoDeleteSymbolicLink(&dosDeviceName);
     IoDeleteDevice(DriverObject->DeviceObject);
     
-    /* Destroy client list structures */
-    ExDeleteNPagedLookasideList(&ClientLookasideList);
-    
     ExAcquireFastMutex(&ProtectionMutex);
     
     if (ProtectionInitialized)
@@ -199,8 +205,10 @@ NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     }
 #endif
     
-    /* Add a client entry. */
-    if (!AddClientEntry(PsGetCurrentProcessId()))
+    /* Add a client entry. Note that we don't dereference it because 
+     * we keep one reference for it being on the client list.
+     */
+    if (!CreateClientEntry(NULL))
     {
         Irp->IoStatus.Status = STATUS_INSUFFICIENT_RESOURCES;
         return STATUS_INSUFFICIENT_RESOURCES;
@@ -215,6 +223,7 @@ NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
+    PKPH_CLIENT_ENTRY clientEntry;
     
     ExAcquireFastMutex(&ProtectionMutex);
     
@@ -226,8 +235,11 @@ NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     ExReleaseFastMutex(&ProtectionMutex);
     
-    /* Remove the client entry. */
-    RemoveClientEntry(PsGetCurrentProcessId());
+    /* Get the current client entry and dereference it twice to remove it. */
+    clientEntry = ReferenceClientEntry(NULL);
+    
+    if (clientEntry)
+        KphDereferenceObjectEx(clientEntry, 2, NULL);
     
     dprintf("Client (PID %d) disconnected\n", PsGetCurrentProcessId());
     
@@ -247,89 +259,137 @@ VOID InitProtection()
     ExReleaseFastMutex(&ProtectionMutex);
 }
 
-BOOLEAN AddClientEntry(
-    __in HANDLE ProcessId
+VOID SsRef(LONG count)
+{
+    LONG oldRefCount;
+    
+    ASSERT(count >= 0);
+    
+    if (count == 0)
+        return;
+    
+    ExAcquireFastMutex(&SsMutex);
+    
+    /* Add references. */
+    oldRefCount = InterlockedExchangeAdd(&SsStartCount, count);
+    ASSERT(oldRefCount >= 0);
+    
+    /* Start system service logging if this was the first bunch of references. */
+    if (oldRefCount == 0)
+        KphSsLogStart();
+    
+    ExReleaseFastMutex(&SsMutex);
+}
+
+VOID SsUnref(LONG count)
+{
+    LONG oldRefCount;
+    
+    ASSERT(count >= 0);
+    
+    if (count == 0)
+        return;
+    
+    ExAcquireFastMutex(&SsMutex);
+    
+    oldRefCount = InterlockedExchangeAdd(&SsStartCount, -count);
+    ASSERT(oldRefCount > 0);
+    
+    if (oldRefCount - count == 0)
+        KphSsLogStop();
+    
+    ExReleaseFastMutex(&SsMutex);
+}
+
+VOID NTAPI ClientEntryDeleteProcedure(
+    __in PVOID Object,
+    __in ULONG Flags,
+    __in SIZE_T Size
     )
 {
-    KIRQL oldIrql;
-    PKPH_CLIENT_ENTRY entry = ExAllocateFromNPagedLookasideList(&ClientLookasideList);
+    PKPH_CLIENT_ENTRY entry = (PKPH_CLIENT_ENTRY)Object;
     
-    if (!entry)
-        return FALSE;
+    /* Lower the SS start count. */
+    SsUnref(entry->SsStartCount);
+    
+    /* Remove the entry from the client list. */
+    ExAcquireFastMutex(&ClientListMutex);
+    RemoveEntryList(&entry->ClientListEntry);
+    ExReleaseFastMutex(&ClientListMutex);
+}
+
+PKPH_CLIENT_ENTRY CreateClientEntry(
+    __in_opt HANDLE ProcessId
+    )
+{
+    PKPH_CLIENT_ENTRY entry;
+    
+    /* If the PID wasn't specified, use the current one. */
+    if (!ProcessId)
+        ProcessId = PsGetCurrentProcessId();
+    
+    if (!NT_SUCCESS(KphCreateObject(
+        &entry,
+        sizeof(KPH_CLIENT_ENTRY),
+        0,
+        ClientEntryType,
+        0
+        )))
+        return NULL;
+    
+    /* Initialize the entry. */
+    entry->ProcessId = ProcessId;
+    entry->SsStartCount = 0;
     
     /* Insert the entry into the client list. */
-    KeAcquireSpinLock(&ClientListLock, &oldIrql);
-    InsertHeadList(&ClientListHead, &entry->ListEntry);
-    KeReleaseSpinLock(&ClientListLock, oldIrql);
+    ExAcquireFastMutex(&ClientListMutex);
+    InsertHeadList(&ClientListHead, &entry->ClientListEntry);
+    ExReleaseFastMutex(&ClientListMutex);
     
-    return TRUE;
+    return entry;
 }
 
-BOOLEAN FindClientEntry(
-    __in HANDLE ProcessId,
-    __out_opt PKPH_CLIENT_ENTRY ClientEntryCopy
+PKPH_CLIENT_ENTRY ReferenceClientEntry(
+    __in_opt HANDLE ProcessId
     )
 {
-    KIRQL oldIrql;
     PLIST_ENTRY entry = ClientListHead.Flink;
     
-    KeAcquireSpinLock(&ClientListLock, &oldIrql);
+    /* If the PID wasn't specified, use the current one. */
+    if (!ProcessId)
+        ProcessId = PsGetCurrentProcessId();
     
+    ExAcquireFastMutex(&ClientListMutex);
+    
+    /* Find the client entry. */
     while (entry != &ClientListHead)
     {
         PKPH_CLIENT_ENTRY clientEntry = 
-            CONTAINING_RECORD(entry, KPH_CLIENT_ENTRY, ListEntry);
+            CONTAINING_RECORD(entry, KPH_CLIENT_ENTRY, ClientListEntry);
         
         if (clientEntry->ProcessId == ProcessId)
         {
-            if (ClientEntryCopy)
-                memcpy(ClientEntryCopy, clientEntry, sizeof(KPH_CLIENT_ENTRY));
+            PKPH_CLIENT_ENTRY returnEntry = NULL;
             
-            KeReleaseSpinLock(&ClientListLock, oldIrql);
+            /* Make sure the entry is not currently being destroyed. */
+            if (!KphIsDestroyedObject(clientEntry))
+            {
+                /* Reference and return the entry. */
+                KphReferenceObject(clientEntry);
+                returnEntry = clientEntry;
+            }
             
-            return TRUE;
+            ExReleaseFastMutex(&ClientListMutex);
+            
+            return returnEntry;
         }
         
         entry = entry->Flink;
     }
     
-    KeReleaseSpinLock(&ClientListLock, oldIrql);
+    ExReleaseFastMutex(&ClientListMutex);
     
-    return FALSE;
-}
-
-BOOLEAN RemoveClientEntry(
-    __in HANDLE ProcessId
-    )
-{
-    KIRQL oldIrql;
-    PLIST_ENTRY entry = ClientListHead.Flink;
-    
-    KeAcquireSpinLock(&ClientListLock, &oldIrql);
-    
-    while (entry != &ClientListHead)
-    {
-        PKPH_CLIENT_ENTRY clientEntry = 
-            CONTAINING_RECORD(entry, KPH_CLIENT_ENTRY, ListEntry);
-        
-        if (clientEntry->ProcessId == ProcessId)
-        {
-            RemoveEntryList(&clientEntry->ListEntry);
-            ExFreeToNPagedLookasideList(
-                &ClientLookasideList,
-                clientEntry
-                );
-            KeReleaseSpinLock(&ClientListLock, oldIrql);
-            
-            return TRUE;
-        }
-        
-        entry = entry->Flink;
-    }
-    
-    KeReleaseSpinLock(&ClientListLock, oldIrql);
-    
-    return FALSE;
+    return NULL;
 }
 
 /* from YAPM */
@@ -472,6 +532,10 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "KphQueryInformationDriver";
         case KPH_OPENDIRECTORYOBJECT:
             return "KphOpenDirectoryObject";
+        case KPH_SSREF:
+            return "SsRef";
+        case KPH_SSUNREF:
+            return "SsUnref";
         default:
             return "Unknown";
     }
@@ -1717,6 +1781,70 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 args->ObjectAttributes,
                 UserMode
                 );
+        }
+        break;
+        
+        /* SsRef
+         * 
+         * Adds a system service logging reference.
+         */
+        case KPH_SSREF:
+        {
+            PKPH_CLIENT_ENTRY clientEntry = ReferenceClientEntry(NULL);
+            
+            if (!clientEntry)
+            {
+                status = STATUS_INTERNAL_ERROR;
+                goto IoControlEnd;
+            }
+            
+            KphAcquireGuardedLock(&clientEntry->SsLock);
+            
+            if (clientEntry->SsStartCount < KPH_CLIENT_SSMAXCOUNT)
+            {
+                clientEntry->SsStartCount++;
+                SsRef(1);
+            }
+            else
+            {
+                status = STATUS_UNSUCCESSFUL;
+            }
+            
+            KphReleaseGuardedLock(&clientEntry->SsLock);
+            
+            KphDereferenceObject(clientEntry);
+        }
+        break;
+        
+        /* SsUnref
+         * 
+         * Removes a system service logging reference.
+         */
+        case KPH_SSUNREF:
+        {
+            PKPH_CLIENT_ENTRY clientEntry = ReferenceClientEntry(NULL);
+            
+            if (!clientEntry)
+            {
+                status = STATUS_INTERNAL_ERROR;
+                goto IoControlEnd;
+            }
+            
+            KphAcquireGuardedLock(&clientEntry->SsLock);
+            
+            if (clientEntry->SsStartCount > 0)
+            {
+                clientEntry->SsStartCount--;
+                SsUnref(1);
+            }
+            else
+            {
+                status = STATUS_UNSUCCESSFUL;
+            }
+            
+            KphReleaseGuardedLock(&clientEntry->SsLock);
+            
+            KphDereferenceObject(clientEntry);
         }
         break;
         

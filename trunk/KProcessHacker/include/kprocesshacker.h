@@ -23,15 +23,10 @@
 #ifndef KPROCESSHACKER_H
 #define KPROCESSHACKER_H
 
-#include <ntifs.h>
-
-#define BOOL ULONG
+#include "include/kph.h"
 
 /* KPH Configuration */
 //#define KPH_REQUIRE_DEBUG_PRIVILEGE
-
-#define TAG_KPH ('gThP')
-#define TAG_CLIENT_ENTRY ('lChP')
 
 /* I like 0x9999. */
 #define KPH_DEVICE_TYPE (0x9999)
@@ -85,13 +80,8 @@
 #define KPH_OPENDRIVER KPH_CTL_CODE(39)
 #define KPH_QUERYINFORMATIONDRIVER KPH_CTL_CODE(40)
 #define KPH_OPENDIRECTORYOBJECT KPH_CTL_CODE(41)
-
-#define GET_BIT(integer, bit) (((integer) >> (bit)) & 0x1)
-#define SET_BIT(integer, bit) ((integer) |= 1 << (bit))
-#define CLEAR_BIT(integer, bit) ((integer) &= ~(1 << (bit)))
-
-#define KPH_TIMEOUT_TO_SEC ((LONGLONG) 1 * 10 * 1000 * 1000)
-#define KPH_REL_TIMEOUT_IN_SEC(Time) (Time * -1 * KPH_TIMEOUT_TO_SEC)
+#define KPH_SSREF KPH_CTL_CODE(42)
+#define KPH_SSUNREF KPH_CTL_CODE(43)
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath);
 VOID DriverUnload(PDRIVER_OBJECT DriverObject);
@@ -104,24 +94,31 @@ NTSTATUS KphUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 /* Clients */
 
 #include "include/ref.h"
+#include "include/sync.h"
+
+#define KPH_CLIENT_SSMAXCOUNT 1000
 
 typedef struct _KPH_CLIENT_ENTRY
 {
-    LIST_ENTRY ListEntry;
+    LIST_ENTRY ClientListEntry;
     HANDLE ProcessId;
+    KPH_GUARDED_LOCK SsLock;
+    /* The number of times the client has "started" the system service logger. */
+    LONG SsStartCount;
 } KPH_CLIENT_ENTRY, *PKPH_CLIENT_ENTRY;
 
-BOOLEAN AddClientEntry(
+VOID NTAPI ClientEntryDeleteProcedure(
+    __in PVOID Object,
+    __in ULONG Flags,
+    __in SIZE_T Size
+    );
+
+PKPH_CLIENT_ENTRY CreateClientEntry(
     __in HANDLE ProcessId
     );
 
-BOOLEAN FindClientEntry(
-    __in HANDLE ProcessId,
-    __out_opt PKPH_CLIENT_ENTRY ClientEntryCopy
-    );
-
-BOOLEAN RemoveClientEntry(
-    __in HANDLE ProcessId
+PKPH_CLIENT_ENTRY ReferenceClientEntry(
+    __in_opt HANDLE ProcessId
     );
 
 #endif

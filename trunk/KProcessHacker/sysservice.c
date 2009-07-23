@@ -20,6 +20,15 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* ================ IMPORTANT ================
+ * Please read the comments in KphpSsNewKiFastCallEntry to find out how 
+ * KiFastCallEntry can be hooked.
+ * 
+ * Note that the ONLY SUPPORTED METHOD of hooking is KiFastCallEntry, 
+ * which means you MUST be using a CPU which supports sysenter.
+ * ===========================================
+ */
+
 #include "include/sysservicep.h"
 #include "include/hook.h"
 
@@ -55,6 +64,10 @@ NTSTATUS KphSsLogInit()
 NTSTATUS KphSsLogStart()
 {
     NTSTATUS status = STATUS_SUCCESS;
+    
+    /* Make sure we have the KiFastCallEntry+x address. */
+    if (!__KiFastCallEntry)
+        return STATUS_NOT_SUPPORTED;
     
     ExAcquireFastMutex(&KphSsMutex);
     
@@ -244,11 +257,20 @@ VOID NTAPI KphpClientEntryDeleteProcedure(
 NTSTATUS KphpCreateProcessEntry(
     __out PKPHPSS_PROCESS_ENTRY *ProcessEntry,
     __in PKPHPSS_CLIENT_ENTRY ClientEntry,
-    __in PEPROCESS TargetProcess
+    __in PEPROCESS TargetProcess,
+    __in ULONG Flags
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
     PKPHPSS_PROCESS_ENTRY processEntry;
+    
+    /* Check if the flags are valid. */
+    if ((Flags & KPHSS_LOG_VALID_FLAGS) != Flags)
+        return STATUS_INVALID_PARAMETER_4;
+    
+    /* If the caller didn't specify any mode flags, assume both modes. */
+    if (!(Flags & (KPHSS_LOG_USER_MODE | KPHSS_LOG_KERNEL_MODE)))
+        Flags |= KPHSS_LOG_USER_MODE | KPHSS_LOG_KERNEL_MODE;
     
     status = KphCreateObject(
         &processEntry,
@@ -264,6 +286,7 @@ NTSTATUS KphpCreateProcessEntry(
     KphReferenceObject(ClientEntry);
     processEntry->Client = ClientEntry;
     processEntry->TargetProcess = TargetProcess;
+    processEntry->Flags = Flags;
     
     ExAcquireFastMutex(&KphSsMutex);
     InsertHeadList(&KphSsProcessListHead, &processEntry->ProcessListEntry);
@@ -305,11 +328,12 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     __in PKTHREAD Thread
     )
 {
+    KPROCESSOR_MODE previousMode;
     PEPROCESS process;
     PLIST_ENTRY currentListEntry;
     BOOLEAN processEntryFound = FALSE;
     
-    
+    previousMode = KeGetPreviousMode();
     
     /* First, some checks.
      *   * We can't operate at IRQL > APC_LEVEL because 
@@ -328,7 +352,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
         return;
     
     /* Probe the arguments if we from user-mode. */
-    if (KeGetPreviousMode() != KernelMode)
+    if (previousMode != KernelMode)
     {
         __try
         {
@@ -354,11 +378,13 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     {
         PKPHPSS_PROCESS_ENTRY processEntry = KPHPSS_PROCESS_ENTRY(currentListEntry);
         
-        if (processEntry->TargetProcess == process)
+        if (KphpIsProcessEntryRelevant(processEntry, process, previousMode))
         {
             processEntryFound = TRUE;
             break;
         }
+        
+        currentListEntry = currentListEntry->Flink;
     }
     
     ExReleaseFastMutex(&KphSsMutex);
@@ -375,9 +401,28 @@ VOID NTAPI KphpSsLogSystemServiceCall(
  */
 __declspec(naked) VOID NTAPI KphpSsNewKiFastCallEntry()
 {
-    /* The hook location for KiFastCallEntry has been chosen so that
-     * we don't have to switch the appropriate thread stack because 
-     * KiFastCallEntry has already done it for us.
+    /* KiFastCallEntry handles system service calls. User-mode applications 
+     * will perform system calls like this:
+     * 
+     * Nt*:
+     * mov      eax, SystemServiceNumber
+     * mov      edx, 0x7ffe0300 <-- at 0x7ffe0300 we have a pointer to KiFastSystemCall
+     * call     [edx]
+     * ret
+     * 
+     * At KiFastSystemCall:
+     * mov      edx, esp
+     * sysenter
+     */
+    /* This means that in KiFastCallEntry, eax will contain the system service 
+     * number while edx will contain a pointer to the arguments for the system 
+     * service. KiFastCallEntry will fill in edi with the service table, and 
+     * esi will contain the caller KTHREAD.
+     * 
+     * We cannot hook KiFastCallEntry from the beginning because it starts on the DPC 
+     * stack. KiFastCallEntry switches to the proper thread stack, and we want to 
+     * hook it just after it switches to the stack. That way we can avoid having to 
+     * manually switch the thread stack ourselves.
      * 
      * At this point: 
      *   * eax contains the system service number.
@@ -411,10 +456,11 @@ __declspec(naked) VOID NTAPI KphpSsNewKiFastCallEntry()
         push    eax
         
         /* Since we overwrite the inc instruction when we did the hook, 
-         * perform the job now.
+         * perform the job now - we have to increment the system calls 
+         * counter.
          */
         lea     ebx, KphSsKiFastCallEntryHook /* get a pointer to the hook structure */
-        mov     ebx, dword ptr [ebx+KPH_HOOK.Bytes+3] /* get the PbSystemCalls offset from the original instruction */
+        mov     ebx, dword ptr [ebx+KPH_HOOK.Bytes+3] /* get the PbSystemCalls offset from the original inc instruction */
         inc     dword ptr fs:[ebx] /* increment PbSystemCalls in the PRCB */
         
         /* Get the number of arguments for this system service. */

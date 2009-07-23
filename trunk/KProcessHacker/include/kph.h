@@ -23,7 +23,7 @@
 #ifndef _KPH_H
 #define _KPH_H
 
-#include "kprocesshacker.h"
+#include "types.h"
 #include "debug.h"
 #include "ref.h"
 #include "version.h"
@@ -33,6 +33,13 @@
 #include "ps.h"
 #include "trace.h"
 #include "zw.h"
+
+#define GET_BIT(integer, bit) (((integer) >> (bit)) & 0x1)
+#define SET_BIT(integer, bit) ((integer) |= 1 << (bit))
+#define CLEAR_BIT(integer, bit) ((integer) &= ~(1 << (bit)))
+
+#define KPH_TIMEOUT_TO_SEC ((LONGLONG) 1 * 10 * 1000 * 1000)
+#define KPH_REL_TIMEOUT_IN_SEC(Time) (Time * -1 * KPH_TIMEOUT_TO_SEC)
 
 #define TAG_CAPTURED_UNICODE_STRING ('UChP')
 

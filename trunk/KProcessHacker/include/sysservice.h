@@ -25,6 +25,11 @@
 
 #include "kph.h"
 
+/* If neither mode flags are specified, both modes are assumed. */
+#define KPHSS_LOG_USER_MODE 0x00000001
+#define KPHSS_LOG_KERNEL_MODE 0x00000002
+#define KPHSS_LOG_VALID_FLAGS 0x00000003
+
 NTSTATUS KphSsLogInit();
 NTSTATUS KphSsLogStart();
 NTSTATUS KphSsLogStop();

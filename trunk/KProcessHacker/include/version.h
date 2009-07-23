@@ -23,7 +23,6 @@
 #ifndef _VERSION_H
 #define _VERSION_H
 
-#include "kprocesshacker.h"
 #include "kph.h"
 
 #define WINDOWS_XP 51

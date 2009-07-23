@@ -20,16 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "include/ref.h"
-
-PKPH_OBJECT_HEADER KphpAllocateObject(
-    __in SIZE_T ObjectSize,
-    __in POOL_TYPE PoolType
-    );
-
-VOID KphpFreeObject(
-    __in PKPH_OBJECT_HEADER ObjectHeader
-    );
+#include "include/refp.h"
 
 /* A list of all objects created by the object manager. */
 LIST_ENTRY KphObjectListHead;
@@ -168,6 +159,7 @@ NTSTATUS KphCreateObject(
     }
     
     /* Initialize the object header. */
+    KphInitializeGuardedLock(&objectHeader->Lock, FALSE);
     objectHeader->RefCount = 1 + AdditionalReferences;
     objectHeader->Flags = Flags;
     objectHeader->Size = ObjectSize;
@@ -210,7 +202,6 @@ NTSTATUS KphCreateObjectType(
         return status;
     
     /* Initialize the type object. */
-    ExInitializeFastMutex(&objectType->Mutex);
     objectType->DefaultPoolType = DefaultPoolType;
     objectType->DeleteProcedure = DeleteProcedure;
     objectType->NumberOfObjects = 0;
@@ -251,8 +242,16 @@ BOOLEAN KphDereferenceObjectEx(
     if (RefCount < 0)
         ExRaiseStatus(STATUS_INVALID_PARAMETER_2);
     
-    /* Get a pointer to the object header of the object. */
     objectHeader = KphObjectToObjectHeader(Object);
+    
+    /* We must lock the object to signal to others that the object is 
+     * being destroyed. This is useful when our client is using a 
+     * linked list to store a list of objects and the delete procedure 
+     * removes the object from the linked list. In this case the client 
+     * must know when an object is about to be freed (but not freed yet).
+     */
+    /* Acquire the lock to make sure people don't read the wrong signal state. */
+    KphAcquireGuardedLock(&objectHeader->Lock);
     
     /* Decrease the reference count. */
     oldRefCount = InterlockedExchangeAdd(&objectHeader->RefCount, -RefCount);
@@ -260,15 +259,12 @@ BOOLEAN KphDereferenceObjectEx(
     /* Free the object if it has 0 references. */
     if (oldRefCount - RefCount == 0)
     {
-        /* Call the delete procedure if we have one. */
-        if (objectHeader->Type->DeleteProcedure)
-        {
-            objectHeader->Type->DeleteProcedure(
-                Object,
-                objectHeader->Flags,
-                objectHeader->Size
-                );
-        }
+        /* Signal the lock to indicate that we're freeing the object. */
+        KphSignalGuardedLock(&objectHeader->Lock);
+        /* We don't need the lock anymore. If someone calls dereference 
+         * more times than they're supposed to, that's their problem.
+         */
+        KphReleaseGuardedLock(&objectHeader->Lock);
         
         /* Object type statistics. */
         InterlockedDecrement(&objectHeader->Type->NumberOfObjects);
@@ -281,6 +277,11 @@ BOOLEAN KphDereferenceObjectEx(
         /* Free the object. */
         KphpFreeObject(objectHeader);
         freed = TRUE;
+    }
+    else
+    {
+        /* Release the lock (we didn't signal it). */
+        KphReleaseGuardedLock(&objectHeader->Lock);
     }
     
     /* Pass the old reference count back. */
@@ -301,6 +302,38 @@ PKPH_OBJECT_TYPE KphGetTypeObject(
     return KphObjectToObjectHeader(Object)->Type;
 }
 
+/* KphIsDestroyedObject
+ * 
+ * Determines whether the specified object is being 
+ * freed (or is freed).
+ */
+BOOLEAN KphIsDestroyedObject(
+    __in PVOID Object
+    )
+{
+    PKPH_OBJECT_HEADER objectHeader;
+    BOOLEAN signaled;
+    
+    objectHeader = KphObjectToObjectHeader(Object);
+    
+    /* We have to lock the object so that we don't 
+     * read the signal state just after the dereference 
+     * routine has decided to free the object but before 
+     * it has actually signaled the lock.
+     */
+    if (KphAcquireSignaledGuardedLock(&objectHeader->Lock))
+    {
+        /* The lock is signaled. Release and return TRUE. */
+        KphReleaseGuardedLock(&objectHeader->Lock);
+        return TRUE;
+    }
+    else
+    {
+        /* The lock isn't signaled. Return FALSE. */
+        return FALSE;
+    }
+}
+
 /* KphReferenceObject
  * 
  * References the specified object.
@@ -311,7 +344,6 @@ VOID KphReferenceObject(
 {
     PKPH_OBJECT_HEADER objectHeader;
     
-    /* Get a pointer to the object header of the object. */
     objectHeader = KphObjectToObjectHeader(Object);
     /* Increment the reference count. */
     InterlockedIncrement(&objectHeader->RefCount);
@@ -334,7 +366,6 @@ VOID KphReferenceObjectEx(
     if (RefCount < 0)
         ExRaiseStatus(STATUS_INVALID_PARAMETER_2);
     
-    /* Get a pointer to the object header of the object. */
     objectHeader = KphObjectToObjectHeader(Object);
     /* Increase the reference count. */
     oldRefCount = InterlockedExchangeAdd(&objectHeader->RefCount, RefCount);
@@ -365,7 +396,8 @@ PKPH_OBJECT_HEADER KphpAllocateObject(
 
 /* KphpFreeObject
  * 
- * Frees the allocated storage for an object.
+ * Calls the delete procedure for an object and frees its 
+ * allocated storage.
  * 
  * ObjectHeader: A pointer to the object header of an allocated object.
  */
@@ -373,6 +405,16 @@ VOID KphpFreeObject(
     __in PKPH_OBJECT_HEADER ObjectHeader
     )
 {
+    /* Call the delete procedure if we have one. */
+    if (ObjectHeader->Type->DeleteProcedure)
+    {
+        ObjectHeader->Type->DeleteProcedure(
+            KphObjectHeaderToObject(ObjectHeader),
+            ObjectHeader->Flags,
+            ObjectHeader->Size
+            );
+    }
+    
     ExFreePoolWithTag(
         ObjectHeader,
         TAG_KPHOBJ

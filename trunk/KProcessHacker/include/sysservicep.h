@@ -55,6 +55,7 @@ typedef struct _KPHPSS_PROCESS_ENTRY
     
     PKPHPSS_CLIENT_ENTRY Client;
     PEPROCESS TargetProcess;
+    ULONG Flags;
 } KPHPSS_PROCESS_ENTRY, *PKPHPSS_PROCESS_ENTRY;
 
 NTSTATUS KphpCreateClientEntry(
@@ -68,7 +69,8 @@ NTSTATUS KphpCreateClientEntry(
 NTSTATUS KphpCreateProcessEntry(
     __out PKPHPSS_PROCESS_ENTRY *ProcessEntry,
     __in PKPHPSS_CLIENT_ENTRY ClientEntry,
-    __in PEPROCESS TargetProcess
+    __in PEPROCESS TargetProcess,
+    __in ULONG Flags
     );
 
 VOID NTAPI KphpClientEntryDeleteProcedure(
@@ -92,5 +94,26 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     );
 
 VOID NTAPI KphpSsNewKiFastCallEntry();
+
+/* KphpIsProcessEntryRelevant
+ * 
+ * Returns whether a system service call should be logged based on 
+ * a process entry.
+ */
+FORCEINLINE BOOLEAN KphpIsProcessEntryRelevant(
+    __in PKPHPSS_PROCESS_ENTRY ProcessEntry,
+    __in PEPROCESS Process,
+    __in KPROCESSOR_MODE PreviousMode
+    )
+{
+    return
+        /* Check if the process entry is referring to the caller. */
+        ProcessEntry->TargetProcess == Process && 
+        /* Check the mode. */
+        (
+            ((ProcessEntry->Flags & KPHSS_LOG_USER_MODE) && (PreviousMode == UserMode)) || 
+            ((ProcessEntry->Flags & KPHSS_LOG_KERNEL_MODE) && (PreviousMode == KernelMode))
+        );
+}
 
 #endif

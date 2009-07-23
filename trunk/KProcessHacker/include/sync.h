@@ -25,6 +25,195 @@
 
 #include "kph.h"
 
+/* Guarded Locks */
+/* Guarded locks are small spinlocks. Code within 
+ * synchronized regions run at APC_LEVEL. They also contain 
+ * a signal which can used to implement rundown routines.
+ */
+
+#define KPH_GUARDED_LOCK_ACTIVE 0x80000000
+#define KPH_GUARDED_LOCK_SIGNALED 0x40000000
+#define KPH_GUARDED_LOCK_FLAGS 0xc0000000
+
+typedef struct _KPH_GUARDED_LOCK
+{
+    LONG Value;
+} KPH_GUARDED_LOCK, *PKPH_GUARDED_LOCK;
+
+VOID KphAcquireGuardedLock(
+    __inout PKPH_GUARDED_LOCK Lock
+    );
+
+VOID KphReleaseGuardedLock(
+    __inout PKPH_GUARDED_LOCK Lock
+    );
+
+/* KphInitializeGuardedLock
+ * 
+ * Initializes a guarded lock.
+ * 
+ * IRQL: Any
+ */
+FORCEINLINE VOID KphInitializeGuardedLock(
+    __out PKPH_GUARDED_LOCK Lock,
+    __in BOOLEAN Signaled
+    )
+{
+    Lock->Value = 0;
+    
+    if (Signaled)
+        Lock->Value |= KPH_GUARDED_LOCK_SIGNALED;
+}
+
+/* KphClearGuardedLock
+ * 
+ * Clears the signal state of a guarded lock.
+ * 
+ * IRQL: Any
+ */
+FORCEINLINE VOID KphClearGuardedLock(
+    __in PKPH_GUARDED_LOCK Lock
+    )
+{
+    InterlockedAnd(&Lock->Value, ~KPH_GUARDED_LOCK_SIGNALED);
+}
+
+/* KphSignalGuardedLock
+ * 
+ * Signals a guarded lock.
+ * 
+ * IRQL: Any
+ */
+FORCEINLINE VOID KphSignalGuardedLock(
+    __in PKPH_GUARDED_LOCK Lock
+    )
+{
+    InterlockedOr(&Lock->Value, KPH_GUARDED_LOCK_SIGNALED);
+}
+
+/* KphSignaledGuardedLock
+ * 
+ * Determines whether a guarded lock is signaled.
+ * 
+ * IRQL: Any
+ */
+FORCEINLINE BOOLEAN KphSignaledGuardedLock(
+    __in PKPH_GUARDED_LOCK Lock
+    )
+{
+    return !!(Lock->Value & KPH_GUARDED_LOCK_SIGNALED);
+}
+
+/* KphAcquireAndClearGuardedLock
+ * 
+ * Acquires a guarded lock, clear its signal, and raises the IRQL to APC_LEVEL.
+ * 
+ * IRQL: <= APC_LEVEL
+ */
+FORCEINLINE VOID KphAcquireAndClearGuardedLock(
+    __inout PKPH_GUARDED_LOCK Lock
+    )
+{
+    KphAcquireGuardedLock(Lock);
+    KphClearGuardedLock(Lock);
+}
+
+/* KphAcquireAndSignalGuardedLock
+ * 
+ * Acquires a guarded lock, signals it, and raises the IRQL to APC_LEVEL.
+ * 
+ * IRQL: <= APC_LEVEL
+ */
+FORCEINLINE VOID KphAcquireAndSignalGuardedLock(
+    __inout PKPH_GUARDED_LOCK Lock
+    )
+{
+    KphAcquireGuardedLock(Lock);
+    KphSignalGuardedLock(Lock);
+}
+
+/* KphAcquireNonSignaledGuardedLock
+ * 
+ * Acquires a guarded lock and raises the IRQL to APC_LEVEL, 
+ * making sure the lock is not signaled. If it is, the 
+ * lock is not acquired.
+ * 
+ * Return value: whether the lock was acquired.
+ * IRQL: <= APC_LEVEL
+ */
+FORCEINLINE BOOLEAN KphAcquireNonSignaledGuardedLock(
+    __inout PKPH_GUARDED_LOCK Lock
+    )
+{
+    KphAcquireGuardedLock(Lock);
+    
+    if (Lock->Value & KPH_GUARDED_LOCK_SIGNALED)
+    {
+        KphReleaseGuardedLock(Lock);
+        return FALSE;
+    }
+    
+    return TRUE;
+}
+
+/* KphAcquireSignaledGuardedLock
+ * 
+ * Acquires a guarded lock and raises the IRQL to APC_LEVEL, 
+ * making sure the lock is signaled. If it is not, the 
+ * lock is not acquired.
+ * 
+ * Return value: whether the lock was acquired.
+ * IRQL: <= APC_LEVEL
+ */
+FORCEINLINE BOOLEAN KphAcquireSignaledGuardedLock(
+    __inout PKPH_GUARDED_LOCK Lock
+    )
+{
+    KphAcquireGuardedLock(Lock);
+    
+    if (!(Lock->Value & KPH_GUARDED_LOCK_SIGNALED))
+    {
+        KphReleaseGuardedLock(Lock);
+        return FALSE;
+    }
+    
+    return TRUE;
+}
+
+/* KphReleaseAndClearGuardedLock
+ * 
+ * Releases a guarded lock, clears its signal, and restores the old IRQL.
+ * 
+ * IRQL: = APC_LEVEL
+ */
+FORCEINLINE VOID KphReleaseAndClearGuardedLock(
+    __inout PKPH_GUARDED_LOCK Lock
+    )
+{
+    KphClearGuardedLock(Lock);
+    KphReleaseGuardedLock(Lock);
+}
+
+/* KphReleaseAndSignalGuardedLock
+ * 
+ * Releases a guarded lock, signals it, and restores the old IRQL.
+ * 
+ * IRQL: = APC_LEVEL
+ */
+FORCEINLINE VOID KphReleaseAndSignalGuardedLock(
+    __inout PKPH_GUARDED_LOCK Lock
+    )
+{
+    KphSignalGuardedLock(Lock);
+    KphReleaseGuardedLock(Lock);
+}
+
+/* Processor Locks */
+/* Processor locks prevent code from executing on all other 
+ * processors. Code within synchronized regions run at 
+ * DISPATCH_LEVEL.
+ */
+
 #define TAG_SYNC_DPC ('DShP')
 
 typedef struct _KPH_PROCESSOR_LOCK

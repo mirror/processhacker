@@ -14,6 +14,7 @@ Process Hacker
    * Properties menu item for handles was disabled most of the time
    * Handle names could not be viewed properly without KPH and 
      on systems without the VC++ 9 runtime
+   * Minor KPH pool leak
 
 1.3.9.0
  * NEW/IMPROVED:
