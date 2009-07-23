@@ -33,65 +33,52 @@ ULONG KphpCountBits(
  * 
  * IRQL: <= APC_LEVEL
  */
-VOID KphAcquireGuardedLock(
+VOID FASTCALL KphfAcquireGuardedLock(
     __inout PKPH_GUARDED_LOCK Lock
     )
 {
     KIRQL oldIrql;
-    ULONG oldValue;
-    ULONG newValue;
+    
+    ASSERT(KeGetCurrentIrql() <= APC_LEVEL);
     
     /* Raise to APC_LEVEL. */
     oldIrql = KeRaiseIrql(APC_LEVEL, &oldIrql);
     
-    /* Now we spin until we can acquire the lock. */
-    while (TRUE)
+    /* Try to acquire the lock outside of the loop first. */
+    if (InterlockedBitTestAndSet(&Lock->Value, KPH_GUARDED_LOCK_ACTIVE_SHIFT))
     {
-        oldValue = Lock->Value;
-        
-        /* Is it locked, if so, spin. If not, we try to 
-         * acquire the lock.
-         */
-        if (oldValue & KPH_GUARDED_LOCK_ACTIVE)
-        {
-            continue;
-        }
-        else
-        {
-            /* We will embed the old IRQL in the value. */
-            newValue =
-                (ULONG)oldIrql | 
-                (oldValue & KPH_GUARDED_LOCK_SIGNALED) | /* preserve the signal */
-                KPH_GUARDED_LOCK_ACTIVE;
-            
-            if (InterlockedCompareExchange(
-                &Lock->Value,
-                newValue,
-                oldValue
-                ) == oldValue)
-                break;
-        }
+        /* Lock was already acquired by someone else - slow path. */
+        while (InterlockedBitTestAndSet(&Lock->Value, KPH_GUARDED_LOCK_ACTIVE_SHIFT))
+            PAUSE();
     }
+    
+    /* Now that we have the lock, we must save the old IRQL. */
+    /* Clear the old IRQL. */
+    Lock->Value &= KPH_GUARDED_LOCK_FLAGS;
+    /* Set the new IRQL. */
+    Lock->Value |= oldIrql;
 }
 
 /* KphReleaseGuardedLock
  * 
  * Releases a guarded lock and restores the old IRQL.
  * 
- * IRQL: = APC_LEVEL
+ * IRQL: >= APC_LEVEL
  */
-VOID KphReleaseGuardedLock(
+VOID FASTCALL KphfReleaseGuardedLock(
     __inout PKPH_GUARDED_LOCK Lock
     )
 {
-    ULONG oldValue;
+    KIRQL oldIrql;
     
-    /* Unlock the guarded lock. */
-    oldValue = InterlockedAnd(&Lock->Value, ~KPH_GUARDED_LOCK_ACTIVE);
-    ASSERT(oldValue & KPH_GUARDED_LOCK_ACTIVE);
+    ASSERT(KeGetCurrentIrql() >= APC_LEVEL);
     
-    /* Restore the IRQL. */
-    KeLowerIrql((KIRQL)(oldValue & ~KPH_GUARDED_LOCK_FLAGS));
+    /* Get the old IRQL. */
+    oldIrql = (KIRQL)(Lock->Value & ~KPH_GUARDED_LOCK_FLAGS);
+    /* Unlock the lock. */
+    InterlockedBitTestAndReset(&Lock->Value, KPH_GUARDED_LOCK_ACTIVE_SHIFT);
+    /* Restore the old IRQL. */
+    KeLowerIrql(oldIrql);
 }
 
 VOID KphpProcessorLockDpc(

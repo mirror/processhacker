@@ -32,7 +32,9 @@
  */
 
 #define KPH_GUARDED_LOCK_ACTIVE 0x80000000
+#define KPH_GUARDED_LOCK_ACTIVE_SHIFT 31
 #define KPH_GUARDED_LOCK_SIGNALED 0x40000000
+#define KPH_GUARDED_LOCK_SIGNALED_SHIFT 30
 #define KPH_GUARDED_LOCK_FLAGS 0xc0000000
 
 typedef struct _KPH_GUARDED_LOCK
@@ -40,11 +42,13 @@ typedef struct _KPH_GUARDED_LOCK
     LONG Value;
 } KPH_GUARDED_LOCK, *PKPH_GUARDED_LOCK;
 
-VOID KphAcquireGuardedLock(
+#define KphAcquireGuardedLock KphfAcquireGuardedLock
+VOID FASTCALL KphfAcquireGuardedLock(
     __inout PKPH_GUARDED_LOCK Lock
     );
 
-VOID KphReleaseGuardedLock(
+#define KphReleaseGuardedLock KphfReleaseGuardedLock
+VOID FASTCALL KphfReleaseGuardedLock(
     __inout PKPH_GUARDED_LOCK Lock
     );
 
@@ -67,7 +71,8 @@ FORCEINLINE VOID KphInitializeGuardedLock(
 
 /* KphClearGuardedLock
  * 
- * Clears the signal state of a guarded lock.
+ * Clears the signal state of a guarded lock, assuming 
+ * that the current thread has acquired it.
  * 
  * IRQL: Any
  */
@@ -75,7 +80,7 @@ FORCEINLINE VOID KphClearGuardedLock(
     __in PKPH_GUARDED_LOCK Lock
     )
 {
-    InterlockedAnd(&Lock->Value, ~KPH_GUARDED_LOCK_SIGNALED);
+    Lock->Value &= ~KPH_GUARDED_LOCK_SIGNALED;
 }
 
 /* KphSignalGuardedLock
@@ -88,7 +93,7 @@ FORCEINLINE VOID KphSignalGuardedLock(
     __in PKPH_GUARDED_LOCK Lock
     )
 {
-    InterlockedOr(&Lock->Value, KPH_GUARDED_LOCK_SIGNALED);
+    Lock->Value |= KPH_GUARDED_LOCK_SIGNALED;
 }
 
 /* KphSignaledGuardedLock
@@ -184,7 +189,7 @@ FORCEINLINE BOOLEAN KphAcquireSignaledGuardedLock(
  * 
  * Releases a guarded lock, clears its signal, and restores the old IRQL.
  * 
- * IRQL: = APC_LEVEL
+ * IRQL: >= APC_LEVEL
  */
 FORCEINLINE VOID KphReleaseAndClearGuardedLock(
     __inout PKPH_GUARDED_LOCK Lock
@@ -198,7 +203,7 @@ FORCEINLINE VOID KphReleaseAndClearGuardedLock(
  * 
  * Releases a guarded lock, signals it, and restores the old IRQL.
  * 
- * IRQL: = APC_LEVEL
+ * IRQL: >= APC_LEVEL
  */
 FORCEINLINE VOID KphReleaseAndSignalGuardedLock(
     __inout PKPH_GUARDED_LOCK Lock

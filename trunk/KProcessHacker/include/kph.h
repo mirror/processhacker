@@ -34,6 +34,7 @@
 #include "trace.h"
 #include "zw.h"
 
+#define PAUSE() __asm { pause }
 #define GET_BIT(integer, bit) (((integer) >> (bit)) & 0x1)
 #define SET_BIT(integer, bit) ((integer) |= 1 << (bit))
 #define CLEAR_BIT(integer, bit) ((integer) &= ~(1 << (bit)))
