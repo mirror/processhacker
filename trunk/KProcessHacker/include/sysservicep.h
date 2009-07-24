@@ -42,8 +42,8 @@ typedef VOID (NTAPI *PKPHPSS_KIFASTCALLENTRYPROC)(
 typedef struct _KPHSS_CLIENT_ENTRY
 {
     PEPROCESS Process;
-    PKEVENT Event;
-    PKSEMAPHORE Semaphore;
+    PKSEMAPHORE ReadSemaphore;
+    PKSEMAPHORE WriteSemaphore;
     FAST_MUTEX BufferMutex;
     PVOID BufferBase;
     ULONG BufferSize;
@@ -65,7 +65,6 @@ typedef struct _KPHSS_PROCESS_ENTRY
 
 typedef enum _KPHPSS_BLOCK_TYPE
 {
-    HeadBlockType,
     ResetBlockType,
     EventBlockType
 } KPHPSS_BLOCK_TYPE;
@@ -76,11 +75,6 @@ typedef struct _KPHPSS_BLOCK_HEADER
     ULONG Type;
 } KPHPSS_BLOCK_HEADER, *PKPHPSS_BLOCK_HEADER;
 
-typedef struct _KPHPSS_HEAD_BLOCK
-{
-    KPHPSS_BLOCK_HEADER Header;
-} KPHPSS_HEAD_BLOCK, *PKPHPSS_HEAD_BLOCK;
-
 typedef struct _KPHPSS_RESET_BLOCK
 {
     KPHPSS_BLOCK_HEADER Header;
@@ -90,6 +84,8 @@ typedef struct _KPHPSS_RESET_BLOCK
 
 #define KPHPSS_EVENT_PROBE_ARGUMENTS_FAILED 0x00000001
 #define KPHPSS_EVENT_COPY_ARGUMENTS_FAILED 0x00000002
+#define KPHPSS_EVENT_KERNEL_MODE 0x00000004
+#define KPHPSS_EVENT_USER_MODE 0x00000008
 
 typedef struct _KPHPSS_EVENT_BLOCK
 {
@@ -106,7 +102,6 @@ typedef struct _KPHPSS_EVENT_BLOCK
     
     /* The number of PVOIDs in the trace. */
     ULONG TraceCount;
-    ULONG TraceHash;
     ULONG TraceOffset;
 } KPHPSS_EVENT_BLOCK, *PKPHPSS_EVENT_BLOCK;
 

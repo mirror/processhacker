@@ -170,9 +170,10 @@ NTSTATUS KphSsLogStop()
  * ClientEntry: A variable which receives a pointer to the client entry.
  * ProcessHandle: A handle to the client process, with PROCESS_VM_WRITE 
  * access.
- * EventHandle: A handle to an event which is set when an event is 
- * written to the client buffer.
- * SemaphoreHandle: A handle to a semaphore which is acquired when an 
+ * ReadSemaphoreHandle: A handle to a semaphore which is released when an 
+ * event is written to the client buffer. The client must wait for the 
+ * semaphore when it is about to read a block.
+ * WriteSemaphoreHandle: A handle to a semaphore which is acquired when an 
  * event is about to be written to the client buffer. If the semaphore 
  * cannot be acquired immediately, the event is dropped. The client must 
  * continually read the buffer and release the semaphore.
@@ -183,8 +184,8 @@ NTSTATUS KphSsLogStop()
 NTSTATUS KphSsCreateClientEntry(
     __out PKPHSS_CLIENT_ENTRY *ClientEntry,
     __in HANDLE ProcessHandle,
-    __in HANDLE EventHandle,
-    __in HANDLE SemaphoreHandle,
+    __in HANDLE ReadSemaphoreHandle,
+    __in HANDLE WriteSemaphoreHandle,
     __in PVOID BufferBase,
     __in ULONG BufferSize,
     __in KPROCESSOR_MODE AccessMode
@@ -193,8 +194,8 @@ NTSTATUS KphSsCreateClientEntry(
     NTSTATUS status = STATUS_SUCCESS;
     PKPHSS_CLIENT_ENTRY clientEntry;
     PEPROCESS processObject;
-    PKEVENT eventObject;
-    PKSEMAPHORE semaphoreObject;
+    PKSEMAPHORE readSemaphore;
+    PKSEMAPHORE writeSemaphore;
     
     /* Probe. */
     if (AccessMode != KernelMode)
@@ -222,13 +223,13 @@ NTSTATUS KphSsCreateClientEntry(
     if (!NT_SUCCESS(status))
         return status;
     
-    /* Reference the event. */
+    /* Reference the read semaphore. */
     status = ObReferenceObjectByHandle(
-        EventHandle,
-        EVENT_MODIFY_STATE,
-        *ExEventObjectType,
+        ReadSemaphoreHandle,
+        SEMAPHORE_MODIFY_STATE,
+        *ExSemaphoreObjectType,
         AccessMode,
-        &eventObject,
+        &readSemaphore,
         NULL
         );
     
@@ -238,20 +239,20 @@ NTSTATUS KphSsCreateClientEntry(
         return status;
     }
     
-    /* Reference the semaphore. */
+    /* Reference the write semaphore. */
     status = ObReferenceObjectByHandle(
-        SemaphoreHandle,
+        WriteSemaphoreHandle,
         SEMAPHORE_MODIFY_STATE,
         *ExSemaphoreObjectType,
         AccessMode,
-        &semaphoreObject,
+        &writeSemaphore,
         NULL
         );
     
     if (!NT_SUCCESS(status))
     {
         ObDereferenceObject(processObject);
-        ObDereferenceObject(eventObject);
+        ObDereferenceObject(readSemaphore);
         return status;
     }
     
@@ -267,15 +268,15 @@ NTSTATUS KphSsCreateClientEntry(
     if (!NT_SUCCESS(status))
     {
         ObDereferenceObject(processObject);
-        ObDereferenceObject(eventObject);
-        ObDereferenceObject(semaphoreObject);
+        ObDereferenceObject(readSemaphore);
+        ObDereferenceObject(writeSemaphore);
         
         return status;
     }
     
     clientEntry->Process = processObject;
-    clientEntry->Event = eventObject;
-    clientEntry->Semaphore = semaphoreObject;
+    clientEntry->ReadSemaphore = readSemaphore;
+    clientEntry->WriteSemaphore = writeSemaphore;
     ExInitializeFastMutex(&clientEntry->BufferMutex);
     clientEntry->BufferBase = BufferBase;
     clientEntry->BufferSize = BufferSize;
@@ -299,8 +300,8 @@ VOID NTAPI KphpSsClientEntryDeleteProcedure(
     PKPHSS_CLIENT_ENTRY clientEntry = (PKPHSS_CLIENT_ENTRY)Object;
     
     ObDereferenceObject(clientEntry->Process);
-    ObDereferenceObject(clientEntry->Event);
-    ObDereferenceObject(clientEntry->Semaphore);
+    ObDereferenceObject(clientEntry->ReadSemaphore);
+    ObDereferenceObject(clientEntry->WriteSemaphore);
 }
 
 /* KphSsCreateProcessEntry
@@ -409,21 +410,40 @@ NTSTATUS KphpSsCreateEventBlock(
     )
 {
     PKPHPSS_EVENT_BLOCK eventBlock;
+    KPROCESSOR_MODE previousMode;
     ULONG eventBlockSize;
     ULONG argumentsSize;
     ULONG traceSize;
-    PVOID stackTrace[MAX_STACK_DEPTH];
-    ULONG traceHash;
+    PVOID stackTrace[MAX_STACK_DEPTH * 2];
     ULONG capturedFrames;
     
-    /* Get a stack trace. */
+    previousMode = KeGetPreviousMode();
+    
+    /* Capture kernel-mode and user-mode stack traces. 
+     * We do this before we allocate the event block so 
+     * we can calculate how large the block should be.
+     */
+    
+    /* Get a kernel-mode stack trace. */
     capturedFrames = KphCaptureStackBackTrace(
         0,
         MAX_STACK_DEPTH,
-        RTL_WALK_USER_MODE_STACK,
+        0,
         stackTrace,
-        &traceHash
+        NULL
         );
+    
+    if (previousMode == UserMode)
+    {
+        /* Get a user-mode stack trace. */
+        capturedFrames += KphCaptureStackBackTrace(
+            0,
+            MAX_STACK_DEPTH,
+            RTL_WALK_USER_MODE_STACK,
+            &stackTrace[capturedFrames],
+            NULL
+            );
+    }
     
     /* Calculate the size of the event block. */
     argumentsSize = NumberOfArguments * sizeof(ULONG);
@@ -447,11 +467,16 @@ NTSTATUS KphpSsCreateEventBlock(
     eventBlock->NumberOfArguments = NumberOfArguments;
     eventBlock->ArgumentsOffset = sizeof(KPHPSS_EVENT_BLOCK);
     eventBlock->TraceCount = capturedFrames;
-    eventBlock->TraceHash = traceHash;
     eventBlock->TraceOffset = sizeof(KPHPSS_EVENT_BLOCK) + argumentsSize;
     
+    /* Set the flags according to the previous mode. */
+    if (previousMode == UserMode)
+        eventBlock->Flags |= KPHPSS_EVENT_USER_MODE;
+    else if (previousMode == KernelMode)
+        eventBlock->Flags |= KPHPSS_EVENT_KERNEL_MODE;
+    
     /* Probe and copy the arguments. */
-    if (KeGetPreviousMode() != KernelMode)
+    if (previousMode != KernelMode)
     {
         __try
         {
@@ -506,17 +531,16 @@ NTSTATUS KphpSsWriteBlock(
     LARGE_INTEGER zeroTimeout;
     KPH_ATTACH_STATE attachState;
     ULONG availableSpace;
-    ULONG blockSpaceNeeded;
     
     zeroTimeout.QuadPart = 0;
     
     ExAcquireFastMutex(&ClientEntry->BufferMutex);
     
-    /* Try to acquire the client-specified semaphore. If we can't acquire 
+    /* Try to acquire the write semaphore. If we can't acquire 
      * it immediately, drop the block.
      */
     status = KeWaitForSingleObject(
-        ClientEntry->Semaphore,
+        ClientEntry->WriteSemaphore,
         Executive,
         KernelMode,
         FALSE,
@@ -526,15 +550,13 @@ NTSTATUS KphpSsWriteBlock(
     if (!NT_SUCCESS(status) || status == STATUS_TIMEOUT)
     {
         if (status == STATUS_TIMEOUT)
-            dfprintf("Ss: WARNING: Dropped block (server %#x)\n", ClientEntry->BufferCursor);
+            dfprintf("Ss: WARNING: Dropped block (server %#x).\n", ClientEntry->BufferCursor);
         
         ExReleaseFastMutex(&ClientEntry->BufferMutex);
         return status;
     }
     
     availableSpace = ClientEntry->BufferSize - ClientEntry->BufferCursor;
-    /* The space we need includes the head block. */
-    blockSpaceNeeded = Block->Size - sizeof(KPHPSS_HEAD_BLOCK);
     
     /* Blocks are recorded in a circular buffer. 
      * In the case that there is not enough space for an entire block, 
@@ -548,11 +570,12 @@ NTSTATUS KphpSsWriteBlock(
     if (availableSpace < sizeof(KPHPSS_BLOCK_HEADER))
     {
         /* Not enough space. Reset the cursor. */
+        dfprintf("Ss: Implicit cursor reset (server %#x).\n", ClientEntry->BufferCursor);
         ClientEntry->BufferCursor = 0;
         availableSpace = ClientEntry->BufferSize;
     }
     /* Check if we have enough space for the block. */
-    else if (availableSpace < blockSpaceNeeded)
+    else if (availableSpace < Block->Size)
     {
         KPHPSS_RESET_BLOCK resetBlock;
         
@@ -582,6 +605,7 @@ NTSTATUS KphpSsWriteBlock(
             return GetExceptionCode();
         }
         
+        dfprintf("Ss: Wrote reset block (server %#x).\n", ClientEntry->BufferCursor);
         KphDetachProcess(&attachState);
         ClientEntry->BufferCursor = 0;
         availableSpace = ClientEntry->BufferSize;
@@ -592,37 +616,28 @@ NTSTATUS KphpSsWriteBlock(
      * event. We may have a huge event or the client may have a 
      * tiny buffer.
      */
-    if (availableSpace < blockSpaceNeeded)
+    if (availableSpace < Block->Size)
     {
+        dfprintf("Ss: WARNING: Insufficient buffer size (server %#x).\n", ClientEntry->BufferCursor);
         ExReleaseFastMutex(&ClientEntry->BufferMutex);
         return STATUS_BUFFER_TOO_SMALL;
     }
     
-    /* Time to copy the block into the buffer. We also need to write 
-     * a head block to tell the client when to stop reading.
+    /* Time to copy the block into the buffer.
      */
     KphAttachProcess(ClientEntry->Process, &attachState);
     
     __try
     {
-        KPHPSS_HEAD_BLOCK headBlock;
-        
-        headBlock.Header.Size = sizeof(KPHPSS_HEAD_BLOCK);
-        headBlock.Header.Type = HeadBlockType;
-        
         memcpy(
             PTR_ADD_OFFSET(ClientEntry->BufferBase, ClientEntry->BufferCursor),
             Block,
             Block->Size
             );
-        memcpy(
-            PTR_ADD_OFFSET(ClientEntry->BufferBase, ClientEntry->BufferCursor + Block->Size),
-            &headBlock,
-            headBlock.Header.Size
-            );
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
+        dfprintf("Ss: ERROR: Could not write to the client buffer (server %#x)!\n", ClientEntry->BufferCursor);
         KphDetachProcess(&attachState);
         ExReleaseFastMutex(&ClientEntry->BufferMutex);
         return GetExceptionCode();
@@ -631,10 +646,23 @@ NTSTATUS KphpSsWriteBlock(
     KphDetachProcess(&attachState);
     
     /* Now that we have succesfully copied the block, we need to 
-     * advance the cursor and signal the event.
+     * release the read semaphore to notify to the client that they have 
+     * a block to read and advance the cursor.
      */
+    
+    /* May cause an exception (STATUS_SEMAPHORE_LIMIT_EXCEEDED). */
+    __try
+    {
+        KeReleaseSemaphore(ClientEntry->ReadSemaphore, 2, 1, FALSE);
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        dfprintf("Ss: ERROR: Could not release read semaphore (server %#x)!\n", ClientEntry->BufferCursor);
+        ExReleaseFastMutex(&ClientEntry->BufferMutex);
+        return GetExceptionCode();
+    }
+    
     ClientEntry->BufferCursor += Block->Size;
-    KeSetEvent(ClientEntry->Event, 2, FALSE);
     
     dfprintf("Ss: Wrote block (server %#x).\n", ClientEntry->BufferCursor);
     
@@ -686,6 +714,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
         return;
     if (ServiceTable != __KeServiceDescriptorTable)
         return;
+    /* Note that with GDI calls, Thread is sometimes 0x4! */
     if (!Thread)
         return;
     
@@ -772,7 +801,10 @@ VOID NTAPI KphpSsLogSystemServiceCall(
         Arguments,
         NumberOfArguments
         )))
+    {
+        dfprintf("Ss: ERROR: Unable to create an event block!\n");
         return;
+    }
     
     /* Go through the process entry array and write the block to each 
      * client. While we're doing thing we can also dereference each 

@@ -42,8 +42,8 @@ NTSTATUS KphSsLogStop();
 NTSTATUS KphSsCreateClientEntry(
     __out PKPHSS_CLIENT_ENTRY *ClientEntry,
     __in HANDLE ProcessHandle,
-    __in HANDLE EventHandle,
-    __in HANDLE SemaphoreHandle,
+    __in HANDLE ReadSemaphoreHandle,
+    __in HANDLE WriteSemaphoreHandle,
     __in PVOID BufferBase,
     __in ULONG BufferSize,
     __in KPROCESSOR_MODE AccessMode

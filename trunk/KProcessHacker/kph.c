@@ -62,7 +62,7 @@ PVOID GetSystemRoutineAddress(WCHAR *Name)
 NTSTATUS KphNtInit()
 {
     NTSTATUS status = STATUS_SUCCESS;
-    /* Confuse those damn AVs */
+    /* Confuse those damn AVs... */
     PWCHAR keService = L"KeService"; // length 9, 18 bytes
     PWCHAR descriptorTable = L"DescriptorTable"; // 15, 30 bytes
     WCHAR keServiceDescriptorTable[9 + 15 + 1];

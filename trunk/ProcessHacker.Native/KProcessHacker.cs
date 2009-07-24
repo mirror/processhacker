@@ -850,8 +850,8 @@ namespace ProcessHacker.Native
 
         public KphSsClientEntryHandle SsCreateClientEntry(
             ProcessHandle processHandle,
-            EventHandle eventHandle,
-            SemaphoreHandle semaphoreHandle,
+            SemaphoreHandle readSemaphoreHandle,
+            SemaphoreHandle writeSemaphoreHandle,
             IntPtr bufferBase,
             int bufferSize
             )
@@ -860,8 +860,8 @@ namespace ProcessHacker.Native
             byte* outData = stackalloc byte[4];
 
             *(int*)inData = processHandle;
-            *(int*)(inData + 0x4) = eventHandle;
-            *(int*)(inData + 0x8) = semaphoreHandle;
+            *(int*)(inData + 0x4) = readSemaphoreHandle;
+            *(int*)(inData + 0x8) = writeSemaphoreHandle;
             *(int*)(inData + 0xc) = bufferBase.ToInt32();
             *(int*)(inData + 0x10) = bufferSize;
 
@@ -940,6 +940,21 @@ namespace ProcessHacker.Native
         DriverServiceKeyNameInformation
     }
 
+    public enum KphSsBlockType : int
+    {
+        Reset,
+        Event
+    }
+
+    [Flags]
+    public enum KphSsEventFlags : int
+    {
+        ProbeArgumentsFailed = 0x1,
+        CopyArgumentsFailed = 0x2,
+        KernelMode = 0x4,
+        UserMode = 0x8
+    }
+
     [Flags]
     public enum KphSsLogFlags : int
     {
@@ -987,6 +1002,29 @@ namespace ProcessHacker.Native
         public int Flags;
         public IntPtr DriverStart;
         public int DriverSize;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KphSsBlockHeader
+    {
+        public int Size;
+        public KphSsBlockType Type;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KphSsEventBlock
+    {
+        KphSsBlockHeader Header;
+        public int Flags;
+        public long Time;
+        public ClientId ClientId;
+
+        public int Number;
+        public int NumberOfArguments;
+        public int ArgumentsOffset;
+
+        public int TraceCount;
+        public int TraceOffset;
     }
 
     [StructLayout(LayoutKind.Sequential)]
