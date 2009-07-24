@@ -696,14 +696,14 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     ULONG i;
     
     previousMode = KeGetPreviousMode();
+    /* Ignore the Thread argument. Replace it with our own. */
+    Thread = KeGetCurrentThread();
     
     /* First, some checks.
      *   * We can't operate at IRQL > APC_LEVEL because 
      *     of restrictions on logging.
      *   * We can't operate on unknown service tables like the 
      *     shadow service table (yet).
-     *   * We have to make sure Thread isn't NULL, as it does 
-     *     sometimes happen.
      *   * We have to make sure we aren't attempting to log 
      *     a call to ZwContinue because we caused an exception 
      *     last time we were logging something. This will cause 
@@ -712,15 +712,17 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     
     if (KeGetCurrentIrql() > APC_LEVEL)
         return;
-    if (ServiceTable != __KeServiceDescriptorTable)
-        return;
-    /* Note that with GDI calls, Thread is sometimes 0x4! */
-    if (!Thread)
+    if (
+        ServiceTable->Base != __KeServiceDescriptorTable->Base || 
+        ServiceTable->Number != __KeServiceDescriptorTable->Number || 
+        ServiceTable->Limit != __KeServiceDescriptorTable->Limit
+        )
         return;
     
     /* Make sure we aren't logging ZwContinue if it's because 
      * we caused an exception somewhere. */
     if (
+        ServiceTable->Base == __KeServiceDescriptorTable->Base && 
         Number == SysCallZwContinue && 
         NumberOfArguments == 2 && 
         previousMode == KernelMode
@@ -756,7 +758,10 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     process = IoThreadToProcess(Thread);
     
     if (!process) /* should never happen */
+    {
+        dfprintf("Ss: ERROR: No process for thread!\n");
         return;
+    }
     
     ExAcquireFastMutex(&KphSsMutex);
     
@@ -765,7 +770,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     
     while (
         currentListEntry != &KphSsProcessListHead && 
-        processEntryCount <= KPHSS_PROCESS_ENTRY_LIMIT
+        processEntryCount < KPHSS_PROCESS_ENTRY_LIMIT
         )
     {
         PKPHSS_PROCESS_ENTRY processEntry = KPHSS_PROCESS_ENTRY(currentListEntry);
@@ -807,7 +812,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     }
     
     /* Go through the process entry array and write the block to each 
-     * client. While we're doing thing we can also dereference each 
+     * client. While we're doing that we can also dereference each 
      * process entry.
      */
     for (i = 0; i < processEntryCount; i++)
