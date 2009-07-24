@@ -54,7 +54,9 @@ following files contain "ported" ReactOS code (with modifications):
    - Contains Windows-version-specific data.
 
 == POOL TAGS ==
+PhCH: Client handle table. kprocesshacker.h
 PhCU: Captured Unicode string. kph.h
+PhEB: System service logging event block. sysservicep.h
 PhOb: Object manager object. refp.h
 PhPC: Pool-based virtual memory copying. mm.h
 PhPr: Protection entry. protect.h

@@ -31,6 +31,9 @@
 
 #include "include/sysservicep.h"
 #include "include/hook.h"
+#include "include/trace.h"
+
+extern PDRIVER_OBJECT KphDriverObject;
 
 FAST_MUTEX KphSsMutex;
 /* Whether system service logging has been initialized. */
@@ -50,11 +53,35 @@ EX_RUNDOWN_REF KphSsRundownProtect;
  */
 NTSTATUS KphSsLogInit()
 {
+    NTSTATUS status = STATUS_SUCCESS;
+    
     /* Initialize the process list. */
     InitializeListHead(&KphSsProcessListHead);
     ExInitializeFastMutex(&KphSsMutex);
     
-    return STATUS_SUCCESS;
+    /* Initialize the object types. */
+    status = KphCreateObjectType(
+        &KphSsClientEntryType,
+        NonPagedPool,
+        KphpSsClientEntryDeleteProcedure
+        );
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    status = KphCreateObjectType(
+        &KphSsProcessEntryType,
+        NonPagedPool,
+        KphpSsProcessEntryDeleteProcedure
+        );
+    
+    if (!NT_SUCCESS(status))
+    {
+        KphDereferenceObject(KphSsClientEntryType);
+        return status;
+    }
+    
+    return status;
 }
 
 /* KphSsLogStart
@@ -77,43 +104,10 @@ NTSTATUS KphSsLogStart()
         return STATUS_UNSUCCESSFUL;
     }
     
-    /* Initialize the object types. */
-    if (!KphSsClientEntryType)
-    {
-        status = KphCreateObjectType(
-            &KphSsClientEntryType,
-            NonPagedPool,
-            KphpClientEntryDeleteProcedure
-            );
-        
-        if (!NT_SUCCESS(status))
-        {
-            ExReleaseFastMutex(&KphSsMutex);
-            return status;
-        }
-    }
-    
-    if (!KphSsProcessEntryType)
-    {
-        status = KphCreateObjectType(
-            &KphSsProcessEntryType,
-            NonPagedPool,
-            KphpProcessEntryDeleteProcedure
-            );
-        
-        if (!NT_SUCCESS(status))
-        {
-            ExReleaseFastMutex(&KphSsMutex);
-            return status;
-        }
-    }
-    
     /* (Re-)initialize rundown protection. */
     ExInitializeRundownProtection(&KphSsRundownProtect);
     
-    /* This will overwrite the inc instruction in KiFastCallEntry with a jmp 
-     * to KphpSsNewKiFastCallEntry.
-     */
+    /* Hook KiFastCallEntry. Logging will start from now. */
     KphInitializeHook(
         &KphSsKiFastCallEntryHook,
         __KiFastCallEntry,
@@ -168,29 +162,46 @@ NTSTATUS KphSsLogStop()
     return status;
 }
 
-/* KphpCreateClientEntry
+/* KphSsCreateClientEntry
  * 
  * Creates a client entry which describes a client of the 
  * system service logger. Clients receieve system service log events.
+ * 
+ * ClientEntry: A variable which receives a pointer to the client entry.
+ * ProcessHandle: A handle to the client process, with PROCESS_VM_WRITE 
+ * access.
+ * EventHandle: A handle to an event which is set when an event is 
+ * written to the client buffer.
+ * SemaphoreHandle: A handle to a semaphore which is acquired when an 
+ * event is about to be written to the client buffer. If the semaphore 
+ * cannot be acquired immediately, the event is dropped. The client must 
+ * continually read the buffer and release the semaphore.
+ * BufferBase: A pointer to a buffer in the client process.
+ * BufferSize: The size of the buffer, in bytes.
+ * AccessMode: The mode to use when probing arguments.
  */
-NTSTATUS KphpCreateClientEntry(
-    __out PKPHPSS_CLIENT_ENTRY *ClientEntry,
-    __in HANDLE ClientProcessHandle,
-    __in PVOID ClientBufferBase,
-    __in ULONG ClientBufferSize,
+NTSTATUS KphSsCreateClientEntry(
+    __out PKPHSS_CLIENT_ENTRY *ClientEntry,
+    __in HANDLE ProcessHandle,
+    __in HANDLE EventHandle,
+    __in HANDLE SemaphoreHandle,
+    __in PVOID BufferBase,
+    __in ULONG BufferSize,
     __in KPROCESSOR_MODE AccessMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
-    PKPHPSS_CLIENT_ENTRY clientEntry;
-    PEPROCESS clientProcessObject;
+    PKPHSS_CLIENT_ENTRY clientEntry;
+    PEPROCESS processObject;
+    PKEVENT eventObject;
+    PKSEMAPHORE semaphoreObject;
     
     /* Probe. */
     if (AccessMode != KernelMode)
     {
         __try
         {
-            ProbeForWrite(ClientBufferBase, ClientBufferSize, 1);
+            ProbeForWrite(BufferBase, BufferSize, 1);
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
@@ -200,20 +211,54 @@ NTSTATUS KphpCreateClientEntry(
     
     /* Reference the client process. */
     status = ObReferenceObjectByHandle(
-        ClientProcessHandle,
+        ProcessHandle,
         PROCESS_VM_WRITE,
         *PsProcessType,
         AccessMode,
-        &clientProcessObject,
+        &processObject,
         NULL
         );
     
     if (!NT_SUCCESS(status))
         return status;
     
+    /* Reference the event. */
+    status = ObReferenceObjectByHandle(
+        EventHandle,
+        EVENT_MODIFY_STATE,
+        *ExEventObjectType,
+        AccessMode,
+        &eventObject,
+        NULL
+        );
+    
+    if (!NT_SUCCESS(status))
+    {
+        ObDereferenceObject(processObject);
+        return status;
+    }
+    
+    /* Reference the semaphore. */
+    status = ObReferenceObjectByHandle(
+        SemaphoreHandle,
+        SEMAPHORE_MODIFY_STATE,
+        *ExSemaphoreObjectType,
+        AccessMode,
+        &semaphoreObject,
+        NULL
+        );
+    
+    if (!NT_SUCCESS(status))
+    {
+        ObDereferenceObject(processObject);
+        ObDereferenceObject(eventObject);
+        return status;
+    }
+    
+    /* Create the client entry object. */
     status = KphCreateObject(
         &clientEntry,
-        sizeof(KPHPSS_CLIENT_ENTRY),
+        sizeof(KPHSS_CLIENT_ENTRY),
         0,
         KphSsClientEntryType,
         0
@@ -221,48 +266,58 @@ NTSTATUS KphpCreateClientEntry(
     
     if (!NT_SUCCESS(status))
     {
-        ObDereferenceObject(clientProcessObject);
+        ObDereferenceObject(processObject);
+        ObDereferenceObject(eventObject);
+        ObDereferenceObject(semaphoreObject);
+        
         return status;
     }
     
-    clientEntry->ClientProcess = clientProcessObject;
-    clientEntry->ClientBufferBase = ClientBufferBase;
-    clientEntry->ClientBufferSize = ClientBufferSize;
+    clientEntry->Process = processObject;
+    clientEntry->Event = eventObject;
+    clientEntry->Semaphore = semaphoreObject;
+    ExInitializeFastMutex(&clientEntry->BufferMutex);
+    clientEntry->BufferBase = BufferBase;
+    clientEntry->BufferSize = BufferSize;
+    clientEntry->BufferCursor = 0;
     
     *ClientEntry = clientEntry;
     
     return status;
 }
 
-/* KphpClientEntryDeleteProcedure
+/* KphpSsClientEntryDeleteProcedure
  * 
  * Performs cleanup for a client entry.
  */
-VOID NTAPI KphpClientEntryDeleteProcedure(
+VOID NTAPI KphpSsClientEntryDeleteProcedure(
     __in PVOID Object,
     __in ULONG Flags,
     __in SIZE_T Size
     )
 {
-    PKPHPSS_CLIENT_ENTRY clientEntry = (PKPHPSS_CLIENT_ENTRY)Object;
+    PKPHSS_CLIENT_ENTRY clientEntry = (PKPHSS_CLIENT_ENTRY)Object;
     
-    ObDereferenceObject(clientEntry->ClientProcess);
+    ObDereferenceObject(clientEntry->Process);
+    ObDereferenceObject(clientEntry->Event);
+    ObDereferenceObject(clientEntry->Semaphore);
 }
 
-/* KphpCreateProcessEntry
+/* KphSsCreateProcessEntry
  * 
  * Creates a process entry which describes a process for which 
  * system services will be logged.
  */
-NTSTATUS KphpCreateProcessEntry(
-    __out PKPHPSS_PROCESS_ENTRY *ProcessEntry,
-    __in PKPHPSS_CLIENT_ENTRY ClientEntry,
-    __in PEPROCESS TargetProcess,
+NTSTATUS KphSsCreateProcessEntry(
+    __out PKPHSS_PROCESS_ENTRY *ProcessEntry,
+    __in PKPHSS_CLIENT_ENTRY ClientEntry,
+    __in HANDLE TargetProcessHandle,
     __in ULONG Flags
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
-    PKPHPSS_PROCESS_ENTRY processEntry;
+    PKPHSS_PROCESS_ENTRY processEntry;
+    PEPROCESS processObject;
     
     /* Check if the flags are valid. */
     if ((Flags & KPHSS_LOG_VALID_FLAGS) != Flags)
@@ -272,9 +327,28 @@ NTSTATUS KphpCreateProcessEntry(
     if (!(Flags & (KPHSS_LOG_USER_MODE | KPHSS_LOG_KERNEL_MODE)))
         Flags |= KPHSS_LOG_USER_MODE | KPHSS_LOG_KERNEL_MODE;
     
+    /* Reference the process object. Note that we don't actually 
+     * need to keep the process object alive since we don't 
+     * access it at any point.
+     */
+    status = ObReferenceObjectByHandle(
+        TargetProcessHandle,
+        0,
+        *PsProcessType,
+        KernelMode,
+        &processObject,
+        NULL
+        );
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    ObDereferenceObject(processObject);
+    
+    /* Create the process entry object. */
     status = KphCreateObject(
         &processEntry,
-        sizeof(KPHPSS_PROCESS_ENTRY),
+        sizeof(KPHSS_PROCESS_ENTRY),
         0,
         KphSsProcessEntryType,
         0
@@ -285,7 +359,7 @@ NTSTATUS KphpCreateProcessEntry(
     
     KphReferenceObject(ClientEntry);
     processEntry->Client = ClientEntry;
-    processEntry->TargetProcess = TargetProcess;
+    processEntry->TargetProcess = processObject;
     processEntry->Flags = Flags;
     
     ExAcquireFastMutex(&KphSsMutex);
@@ -297,19 +371,276 @@ NTSTATUS KphpCreateProcessEntry(
     return status;
 }
 
-VOID NTAPI KphpProcessEntryDeleteProcedure(
+/* KphpSsProcessEntryDeleteProcedure
+ * 
+ * Performs cleanup for a process entry.
+ */
+VOID NTAPI KphpSsProcessEntryDeleteProcedure(
     __in PVOID Object,
     __in ULONG Flags,
     __in SIZE_T Size
     )
 {
-    PKPHPSS_PROCESS_ENTRY processEntry = (PKPHPSS_PROCESS_ENTRY)Object;
+    PKPHSS_PROCESS_ENTRY processEntry = (PKPHSS_PROCESS_ENTRY)Object;
     
     KphDereferenceObject(processEntry->Client);
     
     ExAcquireFastMutex(&KphSsMutex);
     RemoveEntryList(&processEntry->ProcessListEntry);
     ExReleaseFastMutex(&KphSsMutex);
+}
+
+/* KphpSsCreateEventBlock
+ * 
+ * Allocates and initializes an event block.
+ * 
+ * EventBlock: A variable which receives a pointer to the event block.
+ * Thread: The thread for which the event is being generated.
+ * Number: The system service number.
+ * Arguments: A pointer to the caller-supplied arguments.
+ * NumberOfArguments: The number of arguments, in ULONGs.
+ */
+NTSTATUS KphpSsCreateEventBlock(
+    __out PKPHPSS_EVENT_BLOCK *EventBlock,
+    __in PKTHREAD Thread,
+    __in ULONG Number,
+    __in ULONG *Arguments,
+    __in ULONG NumberOfArguments
+    )
+{
+    PKPHPSS_EVENT_BLOCK eventBlock;
+    ULONG eventBlockSize;
+    ULONG argumentsSize;
+    ULONG traceSize;
+    PVOID stackTrace[MAX_STACK_DEPTH];
+    ULONG traceHash;
+    ULONG capturedFrames;
+    
+    /* Get a stack trace. */
+    capturedFrames = KphCaptureStackBackTrace(
+        0,
+        MAX_STACK_DEPTH,
+        RTL_WALK_USER_MODE_STACK,
+        stackTrace,
+        &traceHash
+        );
+    
+    /* Calculate the size of the event block. */
+    argumentsSize = NumberOfArguments * sizeof(ULONG);
+    traceSize = capturedFrames * sizeof(PVOID);
+    eventBlockSize = sizeof(KPHPSS_EVENT_BLOCK) + argumentsSize + traceSize;
+    
+    /* Allocate the event block. */
+    eventBlock = ExAllocatePoolWithTag(PagedPool, eventBlockSize, TAG_EVENT_BLOCK);
+    
+    if (!eventBlock)
+        return STATUS_INSUFFICIENT_RESOURCES;
+    
+    /* Initialize the event block. */
+    eventBlock->Header.Size = eventBlockSize;
+    eventBlock->Header.Type = EventBlockType;
+    eventBlock->Flags = 0;
+    KeQuerySystemTime(&eventBlock->Time);
+    eventBlock->ClientId.UniqueThread = PsGetThreadId(Thread);
+    eventBlock->ClientId.UniqueProcess = PsGetProcessId(IoThreadToProcess(Thread));
+    eventBlock->Number = Number;
+    eventBlock->NumberOfArguments = NumberOfArguments;
+    eventBlock->ArgumentsOffset = sizeof(KPHPSS_EVENT_BLOCK);
+    eventBlock->TraceCount = capturedFrames;
+    eventBlock->TraceHash = traceHash;
+    eventBlock->TraceOffset = sizeof(KPHPSS_EVENT_BLOCK) + argumentsSize;
+    
+    /* Probe and copy the arguments. */
+    if (KeGetPreviousMode() != KernelMode)
+    {
+        __try
+        {
+            ProbeForRead(Arguments, argumentsSize, 4);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            eventBlock->Flags |= KPHPSS_EVENT_PROBE_ARGUMENTS_FAILED;
+        }
+    }
+    
+    __try
+    {
+        /* Copy the arguments to the space immediately after the event block. */
+        memcpy((PCHAR)eventBlock + eventBlock->ArgumentsOffset, Arguments, argumentsSize);
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        eventBlock->Flags |= KPHPSS_EVENT_COPY_ARGUMENTS_FAILED;
+    }
+    
+    /* Copy the stack trace. */
+    memcpy((PCHAR)eventBlock + eventBlock->TraceOffset, stackTrace, traceSize);
+    
+    /* Pass the pointer to the event block back. */
+    *EventBlock = eventBlock;
+    
+    return STATUS_SUCCESS;
+}
+
+/* KphpSsFreeEventBlock
+ * 
+ * Frees an event block created by KphpSsCreateEventBlock.
+ */
+VOID KphpSsFreeEventBlock(
+    __in PKPHPSS_EVENT_BLOCK EventBlock
+    )
+{
+    ExFreePoolWithTag(EventBlock, TAG_EVENT_BLOCK);
+}
+
+/* KphpSsWriteBlock
+ * 
+ * Writes a block into client memory.
+ */
+NTSTATUS KphpSsWriteBlock(
+    __in PKPHSS_CLIENT_ENTRY ClientEntry,
+    __in PKPHPSS_BLOCK_HEADER Block
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    LARGE_INTEGER zeroTimeout;
+    KPH_ATTACH_STATE attachState;
+    ULONG availableSpace;
+    ULONG blockSpaceNeeded;
+    
+    zeroTimeout.QuadPart = 0;
+    
+    ExAcquireFastMutex(&ClientEntry->BufferMutex);
+    
+    /* Try to acquire the client-specified semaphore. If we can't acquire 
+     * it immediately, drop the block.
+     */
+    status = KeWaitForSingleObject(
+        ClientEntry->Semaphore,
+        Executive,
+        KernelMode,
+        FALSE,
+        &zeroTimeout
+        );
+    
+    if (!NT_SUCCESS(status) || status == STATUS_TIMEOUT)
+    {
+        if (status == STATUS_TIMEOUT)
+            dfprintf("Ss: WARNING: Dropped block (server %#x)\n", ClientEntry->BufferCursor);
+        
+        ExReleaseFastMutex(&ClientEntry->BufferMutex);
+        return status;
+    }
+    
+    availableSpace = ClientEntry->BufferSize - ClientEntry->BufferCursor;
+    /* The space we need includes the head block. */
+    blockSpaceNeeded = Block->Size - sizeof(KPHPSS_HEAD_BLOCK);
+    
+    /* Blocks are recorded in a circular buffer. 
+     * In the case that there is not enough space for an entire block, 
+     * we will record a reset block that tells the client to reset 
+     * its read cursor to 0. In the case that there is not enough 
+     * space for a block header, it is implied that the client will 
+     * reset its read cursor.
+     */
+    
+    /* Check if we have enough space for a block header. */
+    if (availableSpace < sizeof(KPHPSS_BLOCK_HEADER))
+    {
+        /* Not enough space. Reset the cursor. */
+        ClientEntry->BufferCursor = 0;
+        availableSpace = ClientEntry->BufferSize;
+    }
+    /* Check if we have enough space for the block. */
+    else if (availableSpace < blockSpaceNeeded)
+    {
+        KPHPSS_RESET_BLOCK resetBlock;
+        
+        /* Not enough space for the block, but enough space 
+         * for a reset block. Write the reset block and reset
+         * the cursor.
+         */
+        resetBlock.Header.Size = sizeof(KPHPSS_RESET_BLOCK);
+        resetBlock.Header.Type = ResetBlockType;
+        
+        /* Attach to the client process and copy the block. */
+        KphAttachProcess(ClientEntry->Process, &attachState);
+        
+        __try
+        {
+            memcpy(
+                PTR_ADD_OFFSET(ClientEntry->BufferBase, ClientEntry->BufferCursor),
+                &resetBlock,
+                resetBlock.Header.Size
+                );
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            KphDetachProcess(&attachState);
+            ExReleaseFastMutex(&ClientEntry->BufferMutex);
+            
+            return GetExceptionCode();
+        }
+        
+        KphDetachProcess(&attachState);
+        ClientEntry->BufferCursor = 0;
+        availableSpace = ClientEntry->BufferSize;
+    }
+    
+    /* Now that we have dealt with any end-of-buffer issues, 
+     * we still have to check if we have enough space for the 
+     * event. We may have a huge event or the client may have a 
+     * tiny buffer.
+     */
+    if (availableSpace < blockSpaceNeeded)
+    {
+        ExReleaseFastMutex(&ClientEntry->BufferMutex);
+        return STATUS_BUFFER_TOO_SMALL;
+    }
+    
+    /* Time to copy the block into the buffer. We also need to write 
+     * a head block to tell the client when to stop reading.
+     */
+    KphAttachProcess(ClientEntry->Process, &attachState);
+    
+    __try
+    {
+        KPHPSS_HEAD_BLOCK headBlock;
+        
+        headBlock.Header.Size = sizeof(KPHPSS_HEAD_BLOCK);
+        headBlock.Header.Type = HeadBlockType;
+        
+        memcpy(
+            PTR_ADD_OFFSET(ClientEntry->BufferBase, ClientEntry->BufferCursor),
+            Block,
+            Block->Size
+            );
+        memcpy(
+            PTR_ADD_OFFSET(ClientEntry->BufferBase, ClientEntry->BufferCursor + Block->Size),
+            &headBlock,
+            headBlock.Header.Size
+            );
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        KphDetachProcess(&attachState);
+        ExReleaseFastMutex(&ClientEntry->BufferMutex);
+        return GetExceptionCode();
+    }
+    
+    KphDetachProcess(&attachState);
+    
+    /* Now that we have succesfully copied the block, we need to 
+     * advance the cursor and signal the event.
+     */
+    ClientEntry->BufferCursor += Block->Size;
+    KeSetEvent(ClientEntry->Event, 2, FALSE);
+    
+    dfprintf("Ss: Wrote block (server %#x).\n", ClientEntry->BufferCursor);
+    
+    ExReleaseFastMutex(&ClientEntry->BufferMutex);
+    
+    return status;
 }
 
 /* KphpSsLogSystemServiceCall
@@ -322,7 +653,7 @@ VOID NTAPI KphpProcessEntryDeleteProcedure(
  */
 VOID NTAPI KphpSsLogSystemServiceCall(
     __in ULONG Number,
-    __in PVOID *Arguments,
+    __in ULONG *Arguments,
     __in ULONG NumberOfArguments,
     __in PKSERVICE_TABLE_DESCRIPTOR ServiceTable,
     __in PKTHREAD Thread
@@ -331,7 +662,10 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     KPROCESSOR_MODE previousMode;
     PEPROCESS process;
     PLIST_ENTRY currentListEntry;
-    BOOLEAN processEntryFound = FALSE;
+    PKPHSS_PROCESS_ENTRY processEntryArray[KPHSS_PROCESS_ENTRY_LIMIT];
+    ULONG processEntryCount;
+    PKPHPSS_EVENT_BLOCK eventBlock;
+    ULONG i;
     
     previousMode = KeGetPreviousMode();
     
@@ -342,6 +676,10 @@ VOID NTAPI KphpSsLogSystemServiceCall(
      *     shadow service table (yet).
      *   * We have to make sure Thread isn't NULL, as it does 
      *     sometimes happen.
+     *   * We have to make sure we aren't attempting to log 
+     *     a call to ZwContinue because we caused an exception 
+     *     last time we were logging something. This will cause 
+     *     a deadlock!
      */
     
     if (KeGetCurrentIrql() > APC_LEVEL)
@@ -351,37 +689,68 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     if (!Thread)
         return;
     
-    /* Probe the arguments if we from user-mode. */
-    if (previousMode != KernelMode)
+    /* Make sure we aren't logging ZwContinue if it's because 
+     * we caused an exception somewhere. */
+    if (
+        Number == SysCallZwContinue && 
+        NumberOfArguments == 2 && 
+        previousMode == KernelMode
+        )
     {
-        __try
+        /* "Reverse probe" the arguments. */
+        if (
+            (ULONG_PTR)Arguments > (ULONG_PTR)MmHighestUserAddress && 
+            Arguments[0] > (ULONG_PTR)MmHighestUserAddress
+            )
         {
-            ProbeForRead(Arguments, NumberOfArguments * sizeof(ULONG), 4);
-        }
-        __except (EXCEPTION_EXECUTE_HANDLER)
-        {
-            return;
+            CONTEXT context;
+            
+            /* The first argument contains the context. */
+            memcpy(&context, (PCONTEXT)Arguments[0], sizeof(CONTEXT));
+            /* Check if the context Eip points into the KPH module.
+             * If so, abort the logging.
+             */
+            if (
+                context.Eip >= (ULONG_PTR)KphDriverObject->DriverStart && 
+                context.Eip < (ULONG_PTR)KphDriverObject->DriverStart + KphDriverObject->DriverSize
+                )
+                return;
         }
     }
     
-    /* Check if the thread's process is in the process list. If not, 
-     * we can simply return without doing anything.
+    /* Build the process entry array by going through the process 
+     * list, referencing each relevant one and copying them into 
+     * the local array. This we way don't hold the mutex for too 
+     * long.
      */
     
     process = IoThreadToProcess(Thread);
     
+    if (!process) /* should never happen */
+        return;
+    
     ExAcquireFastMutex(&KphSsMutex);
     
     currentListEntry = KphSsProcessListHead.Flink;
+    processEntryCount = 0;
     
-    while (currentListEntry != &KphSsProcessListHead)
+    while (
+        currentListEntry != &KphSsProcessListHead && 
+        processEntryCount <= KPHSS_PROCESS_ENTRY_LIMIT
+        )
     {
-        PKPHPSS_PROCESS_ENTRY processEntry = KPHPSS_PROCESS_ENTRY(currentListEntry);
+        PKPHSS_PROCESS_ENTRY processEntry = KPHSS_PROCESS_ENTRY(currentListEntry);
         
-        if (KphpIsProcessEntryRelevant(processEntry, process, previousMode))
+        if (
+            KphpSsIsProcessEntryRelevant(processEntry, process, previousMode) && 
+            /* Make sure the process entry isn't being destroyed. */
+            !KphIsDestroyedObject(processEntry)
+            )
         {
-            processEntryFound = TRUE;
-            break;
+            /* Reference and store the process entry in the local array. */
+            KphReferenceObject(processEntry);
+            processEntryArray[processEntryCount] = processEntry;
+            processEntryCount++;
         }
         
         currentListEntry = currentListEntry->Flink;
@@ -389,10 +758,34 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     
     ExReleaseFastMutex(&KphSsMutex);
     
-    if (!processEntryFound)
+    /* If we didn't find any process entries, don't bother creating the 
+     * event block.
+     */
+    if (processEntryCount == 0)
         return;
     
-    dfprintf("Made it this far!\n");
+    /* We have work to do. Create an event block first. */
+    if (!NT_SUCCESS(KphpSsCreateEventBlock(
+        &eventBlock,
+        Thread,
+        Number,
+        Arguments,
+        NumberOfArguments
+        )))
+        return;
+    
+    /* Go through the process entry array and write the block to each 
+     * client. While we're doing thing we can also dereference each 
+     * process entry.
+     */
+    for (i = 0; i < processEntryCount; i++)
+    {
+        KphpSsWriteBlock(processEntryArray[i]->Client, &eventBlock->Header);
+        KphDereferenceObject(processEntryArray[i]);
+    }
+    
+    /* Free the event block. */
+    KphpSsFreeEventBlock(eventBlock);
 }
 
 /* KphpSsNewKiFastCallEntry

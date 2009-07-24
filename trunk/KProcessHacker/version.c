@@ -183,6 +183,8 @@ NTSTATUS KvInit()
         OffOtiGenericMapping = 0x60 + 0x8;
         OffOtiOpenProcedure = 0x60 + 0x30;
         
+        SysCallZwContinue = 0x20;
+        
         /* We are scanning for PspTerminateProcess which has 
            the same signature as PsTerminateProcess because 
            PsTerminateProcess is simply a wrapper on XP.
@@ -262,18 +264,24 @@ NTSTATUS KvInit()
         {
             OffOtiGenericMapping = 0x60 + 0xc;
             OffOtiOpenProcedure = 0x60 + 0x30;
+            
+            SysCallZwContinue = 0x36;
         }
         /* SP1 */
         else if (servicePack == 1)
         {
             OffOtiGenericMapping = 0x28 + 0xc; /* They got rid of the Mutex (an ERESOURCE) */
             OffOtiOpenProcedure = 0x28 + 0x34;
+            
+            SysCallZwContinue = 0x37;
         }
         /* SP2 */
         else if (servicePack == 2)
         {
             OffOtiGenericMapping = 0x28 + 0xc;
             OffOtiOpenProcedure = 0x28 + 0x34;
+            
+            SysCallZwContinue = 0x37;
         }
         else
         {
@@ -305,6 +313,8 @@ NTSTATUS KvInit()
         OffOhBody = 0x18;
         OffOtiGenericMapping = 0x28 + 0xc;
         OffOtiOpenProcedure = 0x28 + 0x34;
+        
+        SysCallZwContinue = 0x3c;
         
         INIT_SCAN(
             PsTerminateProcessScan,

@@ -306,6 +306,33 @@ PKPH_OBJECT_TYPE KphGetTypeObject(
  * 
  * Determines whether the specified object is being 
  * freed (or is freed).
+ * 
+ * This function is necessary if you store a pointer to 
+ * an object without referencing it, you have a mutex 
+ * guarding accesses to that pointer, and you remove 
+ * that pointer in the object's delete procedure. You 
+ * must call this function while you hold that mutex and 
+ * before you reference the object for usage, because 
+ * the object may be in the process of destruction while 
+ * you hold the pointer to it. Note that this is the 
+ * only safe way to store a pointer to an object without 
+ * referencing it.
+ * 
+ * For example, you may have a linked list containing 
+ * pointers to objects, and all accesses to the list 
+ * are protected by a mutex. The delete procedures of 
+ * the objects acquire the mutex, remove the object being 
+ * deleted from the linked list, and release the mutex.
+ * 
+ * It may happen that while you are traversing the linked 
+ * list with the mutex held, all references to the object 
+ * are removed and the object begins to be deleted. Its 
+ * delete procedure is called and attempts to acquire the 
+ * mutex but blocks because you currently hold the mutex. 
+ * Since the destruction process has begun, your only 
+ * option is to skip the object. This function gives you 
+ * the ability to tell whether you should skip an object 
+ * in that scenario.
  */
 BOOLEAN KphIsDestroyedObject(
     __in PVOID Object

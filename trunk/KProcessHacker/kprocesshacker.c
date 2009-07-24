@@ -48,6 +48,8 @@
         goto IoControlEnd; \
     }
 
+PDRIVER_OBJECT KphDriverObject;
+
 static PKPH_OBJECT_TYPE ClientEntryType;
 static LIST_ENTRY ClientListHead;
 static FAST_MUTEX ClientListMutex;
@@ -75,6 +77,8 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     PDEVICE_OBJECT deviceObject = NULL;
     UNICODE_STRING deviceName, dosDeviceName;
     
+    KphDriverObject = DriverObject;
+    
     /* Initialize version information. */
     status = KvInit();
     
@@ -98,17 +102,20 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     if (!NT_SUCCESS(status))
         return status;
     
-    /* Initialize system service logging. */
-    status = KphSsLogInit();
-    
-    if (!NT_SUCCESS(status))
-        return status;
-    
     /* Initialize the KPH object manager. */
     status = KphRefInit();
     
     if (!NT_SUCCESS(status))
         return status;
+    
+    /* Initialize system service logging. */
+    status = KphSsLogInit();
+    
+    if (!NT_SUCCESS(status))
+    {
+        KphRefDeinit();
+        return status;
+    }
     
     /* Initialize trace databases. */
     status = KphTraceDatabaseInitialization();
@@ -312,6 +319,9 @@ VOID NTAPI ClientEntryDeleteProcedure(
     /* Lower the SS start count. */
     SsUnref(entry->SsStartCount);
     
+    /* Free the handle table. */
+    KphFreeHandleTable(entry->HandleTable);
+    
     /* Remove the entry from the client list. */
     ExAcquireFastMutex(&ClientListMutex);
     RemoveEntryList(&entry->ClientListEntry);
@@ -323,10 +333,19 @@ PKPH_CLIENT_ENTRY CreateClientEntry(
     )
 {
     PKPH_CLIENT_ENTRY entry;
+    PKPH_HANDLE_TABLE handleTable;
     
     /* If the PID wasn't specified, use the current one. */
     if (!ProcessId)
         ProcessId = PsGetCurrentProcessId();
+    
+    if (!NT_SUCCESS(KphCreateHandleTable(
+        &handleTable,
+        KPH_CLIENT_MAXHANDLES,
+        sizeof(KPH_HANDLE_TABLE_ENTRY),
+        TAG_CLIENT_HANDLETABLE
+        )))
+        return NULL;
     
     if (!NT_SUCCESS(KphCreateObject(
         &entry,
@@ -335,10 +354,15 @@ PKPH_CLIENT_ENTRY CreateClientEntry(
         ClientEntryType,
         0
         )))
+    {
+        KphFreeHandleTable(handleTable);
         return NULL;
+    }
     
     /* Initialize the entry. */
     entry->ProcessId = ProcessId;
+    entry->HandleTable = handleTable;
+    KphInitializeGuardedLock(&entry->SsLock, FALSE);
     entry->SsStartCount = 0;
     
     /* Insert the entry into the client list. */
@@ -390,6 +414,65 @@ PKPH_CLIENT_ENTRY ReferenceClientEntry(
     ExReleaseFastMutex(&ClientListMutex);
     
     return NULL;
+}
+
+NTSTATUS CloseClientHandle(
+    __in_opt HANDLE ProcessId,
+    __in HANDLE Handle
+    )
+{
+    NTSTATUS status;
+    PKPH_CLIENT_ENTRY clientEntry;
+    
+    clientEntry = ReferenceClientEntry(ProcessId);
+    
+    if (!clientEntry)
+        return STATUS_UNSUCCESSFUL;
+    
+    status = KphCloseHandle(clientEntry->HandleTable, Handle);
+    KphDereferenceObject(clientEntry);
+    
+    return status;
+}
+
+NTSTATUS CreateClientHandle(
+    __in_opt HANDLE ProcessId,
+    __in PVOID Object,
+    __out PHANDLE Handle
+    )
+{
+    NTSTATUS status;
+    PKPH_CLIENT_ENTRY clientEntry;
+    
+    clientEntry = ReferenceClientEntry(ProcessId);
+    
+    if (!clientEntry)
+        return STATUS_UNSUCCESSFUL;
+    
+    status = KphCreateHandle(clientEntry->HandleTable, Object, Handle);
+    KphDereferenceObject(clientEntry);
+    
+    return status;
+}
+
+NTSTATUS ReferenceClientHandle(
+    __in_opt HANDLE ProcessId,
+    __in HANDLE Handle,
+    __out PVOID *Object
+    )
+{
+    NTSTATUS status;
+    PKPH_CLIENT_ENTRY clientEntry;
+    
+    clientEntry = ReferenceClientEntry(ProcessId);
+    
+    if (!clientEntry)
+        return STATUS_UNSUCCESSFUL;
+    
+    status = KphReferenceObjectByHandle(clientEntry->HandleTable, Handle, Object);
+    KphDereferenceObject(clientEntry);
+    
+    return status;
 }
 
 /* from YAPM */
@@ -452,6 +535,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
 {
     switch (ControlCode)
     {
+        case KPH_CLOSEHANDLE:
+            return "Client Close Handle";
         case KPH_GETFILEOBJECTNAME:
             return "Get File Object Name";
         case KPH_OPENPROCESS:
@@ -536,6 +621,10 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "SsRef";
         case KPH_SSUNREF:
             return "SsUnref";
+        case KPH_SSCREATECLIENTENTRY:
+            return "SsCreateClientEntry";
+        case KPH_SSCREATEPROCESSENTRY:
+            return "SsCreateProcessEntry";
         default:
             return "Unknown";
     }
@@ -547,7 +636,8 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     PIO_STACK_LOCATION ioStackIrp = NULL;
     PVOID dataBuffer;
     ULONG controlCode;
-    ULONG inLength, outLength;
+    ULONG inLength = 0;
+    ULONG outLength = 0;
     ULONG retLength = 0;
     
     Irp->IoStatus.Status = STATUS_SUCCESS;
@@ -563,9 +653,9 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     dataBuffer = Irp->AssociatedIrp.SystemBuffer;
     
-    if (dataBuffer == NULL)
+    if (dataBuffer == NULL && (inLength != 0 || outLength != 0))
     {
-        status = STATUS_INTERNAL_ERROR;
+        status = STATUS_BUFFER_TOO_SMALL;
         goto IoControlEnd;
     }
     
@@ -580,6 +670,33 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     switch (controlCode)
     {
+        /* Client Close Handle
+         * 
+         * Closes a handle opened by the client.
+         */
+        case KPH_CLOSEHANDLE:
+        {
+            struct
+            {
+                HANDLE Handle;
+            } *args = dataBuffer;
+            PKPH_CLIENT_ENTRY clientEntry;
+            
+            CHECK_IN_LENGTH;
+            
+            clientEntry = ReferenceClientEntry(NULL);
+            
+            if (!clientEntry)
+            {
+                status = STATUS_UNSUCCESSFUL;
+                goto IoControlEnd;
+            }
+            
+            status = KphCloseHandle(clientEntry->HandleTable, args->Handle);
+            KphDereferenceObject(clientEntry);
+        }
+        break;
+        
         /* Get File Object Name
          * 
          * Gets the file name of the specified handle. The handle can be remote; 
@@ -1845,6 +1962,90 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             KphReleaseGuardedLock(&clientEntry->SsLock);
             
             KphDereferenceObject(clientEntry);
+        }
+        break;
+        
+        /* SsCreateClientEntry
+         * 
+         * Creates a system service logging client entry.
+         */
+        case KPH_SSCREATECLIENTENTRY:
+        {
+            struct
+            {
+                HANDLE ProcessHandle;
+                HANDLE EventHandle;
+                HANDLE SemaphoreHandle;
+                PVOID BufferBase;
+                ULONG BufferSize;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE ClientEntryHandle;
+            } *ret = dataBuffer;
+            PKPHSS_CLIENT_ENTRY clientEntry;
+            
+            CHECK_IN_OUT_LENGTH;
+            
+            status = KphSsCreateClientEntry(
+                &clientEntry,
+                args->ProcessHandle,
+                args->EventHandle,
+                args->SemaphoreHandle,
+                args->BufferBase,
+                args->BufferSize,
+                UserMode
+                );
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            status = CreateClientHandle(NULL, clientEntry, &ret->ClientEntryHandle);
+            KphDereferenceObject(clientEntry);
+            retLength = sizeof(*ret);
+        }
+        break;
+        
+        /* SsCreateProcessEntry
+         * 
+         * Creates a system service logging process entry.
+         */
+        case KPH_SSCREATEPROCESSENTRY:
+        {
+            struct
+            {
+                HANDLE ClientEntryHandle;
+                HANDLE TargetProcessHandle;
+                ULONG Flags;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE ProcessEntryHandle;
+            } *ret = dataBuffer;
+            PKPHSS_CLIENT_ENTRY clientEntry;
+            PKPHSS_PROCESS_ENTRY processEntry;
+            
+            CHECK_IN_OUT_LENGTH;
+            
+            status = ReferenceClientHandle(NULL, args->ClientEntryHandle, &clientEntry);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            status = KphSsCreateProcessEntry(
+                &processEntry,
+                clientEntry,
+                args->TargetProcessHandle,
+                args->Flags
+                );
+            KphDereferenceObject(clientEntry);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            status = CreateClientHandle(NULL, processEntry, &ret->ProcessEntryHandle);
+            KphDereferenceObject(processEntry);
+            retLength = sizeof(*ret);
         }
         break;
         

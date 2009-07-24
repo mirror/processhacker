@@ -52,14 +52,19 @@ NTSTATUS KphCreateHandleTable(
 {
     PKPH_HANDLE_TABLE handleTable;
     
+    /* Each handle entry must be at least the size of our 
+     * handle table entry definition.
+     */
+    if (SizeOfEntry < sizeof(KPH_HANDLE_TABLE_ENTRY))
+        return STATUS_INVALID_PARAMETER_3;
     /* Handle entries must be 4-byte aligned. */
     if (SizeOfEntry % 4 != 0)
-        return STATUS_DATATYPE_MISALIGNMENT_ERROR;
+        return STATUS_INVALID_PARAMETER_3;
     
     /* Allocate storage for the handle table structure. */
     handleTable = ExAllocatePoolWithTag(
         PagedPool,
-        sizeof(PKPH_HANDLE_TABLE),
+        sizeof(KPH_HANDLE_TABLE),
         Tag
         );
     
@@ -74,7 +79,10 @@ NTSTATUS KphCreateHandleTable(
         );
     
     if (!handleTable->Table)
+    {
+        ExFreePoolWithTag(handleTable, Tag);
         return STATUS_INSUFFICIENT_RESOURCES;
+    }
     
     /* Initialize the rest of the table descriptor. */
     handleTable->Tag = Tag;
@@ -97,7 +105,7 @@ NTSTATUS KphCreateHandleTable(
  * 
  * Frees all handle table resources.
  */
-NTSTATUS KphFreeHandleTable(
+VOID KphFreeHandleTable(
     __in PKPH_HANDLE_TABLE HandleTable
     )
 {
@@ -116,8 +124,6 @@ NTSTATUS KphFreeHandleTable(
     ExFreePoolWithTag(HandleTable->Table, tag);
     /* Free the descriptor. */
     ExFreePoolWithTag(HandleTable, tag);
-    
-    return STATUS_SUCCESS;
 }
 
 /* KphCloseHandle
@@ -157,7 +163,7 @@ NTSTATUS KphCloseHandle(
 NTSTATUS KphCreateHandle(
     __in PKPH_HANDLE_TABLE HandleTable,
     __in PVOID Object,
-    __out HANDLE *Handle
+    __out PHANDLE Handle
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -266,7 +272,7 @@ NTSTATUS KphpAllocateHandleEntry(
          */
         /* Make sure we don't go past the end of the table. */
         if (
-            (ULONG_PTR)KphEntryFromHandle(HandleTable, HandleTable->NextHandle) + 
+            KphIndexFromHandle(HandleTable->NextHandle) * 
             HandleTable->SizeOfEntry <= 
             HandleTable->TableSize
             )
@@ -310,7 +316,7 @@ NTSTATUS KphpFreeHandleEntry(
     /* Lock the entry. */
     if (!KphLockAllocatedHandleEntry(Entry))
     {
-        /* Someone else has already freed the entry. */
+        /* Someone else has already freed the entry (or it was never allocated). */
         ExReleaseFastMutex(&HandleTable->Mutex);
         return STATUS_INVALID_HANDLE;
     }

@@ -24,6 +24,9 @@
 #define KPROCESSHACKER_H
 
 #include "include/kph.h"
+#include "include/handle.h"
+#include "include/ref.h"
+#include "include/sync.h"
 
 /* KPH Configuration */
 //#define KPH_REQUIRE_DEBUG_PRIVILEGE
@@ -38,7 +41,7 @@
 #define KPHF_PSPTERMINATETHREADBPYPOINTER 0x2
 
 #define KPH_CTL_CODE(x) CTL_CODE(KPH_DEVICE_TYPE, 0x800 + x, METHOD_BUFFERED, FILE_ANY_ACCESS)
-#define KPH_RESERVED_1 KPH_CTL_CODE(0)
+#define KPH_CLOSEHANDLE KPH_CTL_CODE(0)
 #define KPH_RESERVED_2 KPH_CTL_CODE(1)
 #define KPH_GETFILEOBJECTNAME KPH_CTL_CODE(2)
 #define KPH_OPENPROCESS KPH_CTL_CODE(3)
@@ -82,6 +85,8 @@
 #define KPH_OPENDIRECTORYOBJECT KPH_CTL_CODE(41)
 #define KPH_SSREF KPH_CTL_CODE(42)
 #define KPH_SSUNREF KPH_CTL_CODE(43)
+#define KPH_SSCREATECLIENTENTRY KPH_CTL_CODE(44)
+#define KPH_SSCREATEPROCESSENTRY KPH_CTL_CODE(45)
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath);
 VOID DriverUnload(PDRIVER_OBJECT DriverObject);
@@ -93,15 +98,16 @@ NTSTATUS KphUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 
 /* Clients */
 
-#include "include/ref.h"
-#include "include/sync.h"
-
+#define TAG_CLIENT_HANDLETABLE ('HChP')
 #define KPH_CLIENT_SSMAXCOUNT 1000
+#define KPH_CLIENT_MAXHANDLES 100
 
 typedef struct _KPH_CLIENT_ENTRY
 {
     LIST_ENTRY ClientListEntry;
     HANDLE ProcessId;
+    PKPH_HANDLE_TABLE HandleTable;
+    
     KPH_GUARDED_LOCK SsLock;
     /* The number of times the client has "started" the system service logger. */
     LONG SsStartCount;
@@ -119,6 +125,23 @@ PKPH_CLIENT_ENTRY CreateClientEntry(
 
 PKPH_CLIENT_ENTRY ReferenceClientEntry(
     __in_opt HANDLE ProcessId
+    );
+
+NTSTATUS CloseClientHandle(
+    __in_opt HANDLE ProcessId,
+    __in HANDLE Handle
+    );
+
+NTSTATUS CreateClientHandle(
+    __in_opt HANDLE ProcessId,
+    __in PVOID Object,
+    __out PHANDLE Handle
+    );
+
+NTSTATUS ReferenceClientHandle(
+    __in_opt HANDLE ProcessId,
+    __in HANDLE Handle,
+    __out PVOID *Object
     );
 
 #endif

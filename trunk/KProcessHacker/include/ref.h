@@ -32,23 +32,15 @@
 #define KPHOBJ_VALID_FLAGS 0x00000007
 
 /* Object type callbacks */
+
 typedef VOID (NTAPI *PKPH_TYPE_DELETE_PROCEDURE)(
     __in PVOID Object,
     __in ULONG Flags,
     __in SIZE_T Size
     );
 
-typedef struct _KPH_OBJECT_TYPE
-{
-    /* The default pool type for objects of this type, used when the 
-     * pool type is not specified when an object is created. */
-    POOL_TYPE DefaultPoolType;
-    /* An optional procedure called when objects of this type are freed. */
-    PKPH_TYPE_DELETE_PROCEDURE DeleteProcedure;
-    
-    /* The total number of objects of this type that are alive. */
-    ULONG NumberOfObjects;
-} KPH_OBJECT_TYPE, *PKPH_OBJECT_TYPE;
+struct _KPH_OBJECT_TYPE;
+typedef struct _KPH_OBJECT_TYPE *PKPH_OBJECT_TYPE;
 
 #ifndef _REF_PRIVATE
 extern PKPH_OBJECT_TYPE KphObjectType;

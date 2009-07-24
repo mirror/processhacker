@@ -26,24 +26,8 @@
 #include "kph.h"
 #include "ref.h"
 
-typedef struct _KPH_HANDLE_TABLE
-{
-    /* The pool tag used for this descriptor and the table itself. */
-    ULONG Tag;
-    /* The size of each handle table entry. */
-    ULONG SizeOfEntry;
-    /* The next handle value to use. */
-    HANDLE NextHandle;
-    /* The free list of handle table entries. */
-    struct _KPH_HANDLE_TABLE_ENTRY *FreeHandle;
-    
-    /* A fast mutex guarding writes to the handle table. */
-    FAST_MUTEX Mutex;
-    /* The size of the table, in bytes. */
-    ULONG TableSize;
-    /* The actual handle table. */
-    PVOID Table;
-} KPH_HANDLE_TABLE, *PKPH_HANDLE_TABLE;
+struct _KPH_HANDLE_TABLE;
+typedef struct _KPH_HANDLE_TABLE *PKPH_HANDLE_TABLE;
 
 typedef struct _KPH_HANDLE_TABLE_ENTRY
 {
@@ -63,7 +47,7 @@ NTSTATUS KphCreateHandleTable(
     __in ULONG Tag
     );
 
-NTSTATUS KphFreeHandleTable(
+VOID KphFreeHandleTable(
     __in PKPH_HANDLE_TABLE HandleTable
     );
 
@@ -75,7 +59,7 @@ NTSTATUS KphCloseHandle(
 NTSTATUS KphCreateHandle(
     __in PKPH_HANDLE_TABLE HandleTable,
     __in PVOID Object,
-    __out HANDLE *Handle
+    __out PHANDLE Handle
     );
 
 NTSTATUS KphReferenceObjectByHandle(

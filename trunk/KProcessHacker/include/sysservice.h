@@ -30,8 +30,30 @@
 #define KPHSS_LOG_KERNEL_MODE 0x00000002
 #define KPHSS_LOG_VALID_FLAGS 0x00000003
 
+struct _KPHSS_CLIENT_ENTRY;
+typedef struct _KPHSS_CLIENT_ENTRY *PKPHSS_CLIENT_ENTRY;
+struct _KPHSS_PROCESS_ENTRY;
+typedef struct _KPHSS_PROCESS_ENTRY *PKPHSS_PROCESS_ENTRY;
+
 NTSTATUS KphSsLogInit();
 NTSTATUS KphSsLogStart();
 NTSTATUS KphSsLogStop();
+
+NTSTATUS KphSsCreateClientEntry(
+    __out PKPHSS_CLIENT_ENTRY *ClientEntry,
+    __in HANDLE ProcessHandle,
+    __in HANDLE EventHandle,
+    __in HANDLE SemaphoreHandle,
+    __in PVOID BufferBase,
+    __in ULONG BufferSize,
+    __in KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphSsCreateProcessEntry(
+    __out PKPHSS_PROCESS_ENTRY *ProcessEntry,
+    __in PKPHSS_CLIENT_ENTRY ClientEntry,
+    __in HANDLE TargetProcessHandle,
+    __in ULONG Flags
+    );
 
 #endif

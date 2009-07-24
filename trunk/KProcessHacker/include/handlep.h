@@ -23,10 +23,13 @@
 #ifndef _HANDLEP_H
 #define _HANDLEP_H
 
+#define _HANDLE_PRIVATE
 #include "handle.h"
+#include "sync.h"
 
 #define KPH_HANDLE_INCREMENT 4
 #define KPH_HANDLE_LOCKED 0x1
+#define KPH_HANDLE_LOCKED_SHIFT 0
 #define KPH_HANDLE_ALLOCATED 0x2
 #define KPH_HANDLE_FLAGS 0x3
 
@@ -54,6 +57,25 @@
 #define KphIndexFromEntry(HandleTable, Entry) \
     (((ULONG_PTR)(Entry) - (ULONG_PTR)(HandleTable)->Table) / (HandleTable)->SizeOfEntry)
 
+typedef struct _KPH_HANDLE_TABLE
+{
+    /* The pool tag used for this descriptor and the table itself. */
+    ULONG Tag;
+    /* The size of each handle table entry. */
+    ULONG SizeOfEntry;
+    /* The next handle value to use. */
+    HANDLE NextHandle;
+    /* The free list of handle table entries. */
+    struct _KPH_HANDLE_TABLE_ENTRY *FreeHandle;
+    
+    /* A fast mutex guarding writes to the handle table. */
+    FAST_MUTEX Mutex;
+    /* The size of the table, in bytes. */
+    ULONG TableSize;
+    /* The actual handle table. */
+    PVOID Table;
+} KPH_HANDLE_TABLE, *PKPH_HANDLE_TABLE;
+
 FORCEINLINE BOOLEAN KphLockHandleEntry(
     __inout PKPH_HANDLE_TABLE_ENTRY Entry
     );
@@ -78,35 +100,11 @@ FORCEINLINE BOOLEAN KphLockHandleEntry(
     __inout PKPH_HANDLE_TABLE_ENTRY Entry
     )
 {
-    ULONG_PTR value;
+    /* Acquire the spinlock. */
+    KphAcquireBitSpinLock(&Entry->Value, KPH_HANDLE_LOCKED_SHIFT);
     
-    /* Spinwait until the entry gets unlocked by someone. 
-     * Then try to lock the entry, and loop until we can 
-     * lock it.
-     */
-    while (TRUE)
-    {
-        value = Entry->Value;
-        
-        if (value & KPH_HANDLE_LOCKED)
-        {
-            continue;
-        }
-        else
-        {
-            if (InterlockedCompareExchange(
-                &Entry->Value,
-                value & KPH_HANDLE_LOCKED,
-                value
-                ) == value)
-            {
-                /* We locked the entry. Return whether it is 
-                 * allocated.
-                 */
-                return (Entry->Value & KPH_HANDLE_LOCKED) == KPH_HANDLE_LOCKED;
-            }
-        }
-    }
+    /* Return whether the entry is allocated. */
+    return !!(Entry->Value & KPH_HANDLE_ALLOCATED);
 }
 
 /* KphLockAllocatedHandle
@@ -139,11 +137,8 @@ FORCEINLINE VOID KphUnlockHandleEntry(
     __inout PKPH_HANDLE_TABLE_ENTRY Entry
     )
 {
-    /* Clear the locked bit to unlock the entry. */
-    InterlockedExchange(
-        &Entry->Value,
-        Entry->Value & ~KPH_HANDLE_LOCKED
-        );
+    /* Unlock the spinlock. */
+    KphReleaseBitSpinLock(&Entry->Value, KPH_HANDLE_LOCKED_SHIFT);
 }
 
 #endif

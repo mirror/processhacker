@@ -25,6 +25,40 @@
 
 #include "kph.h"
 
+/* Spin Locks */
+
+/* KphAcquireBitSpinLock
+ * 
+ * Uses the specified bit as a spinlock and acquires the 
+ * lock in the given value.
+ */
+FORCEINLINE VOID KphAcquireBitSpinLock(
+    __inout PULONG Value,
+    __in ULONG Bit
+    )
+{
+    /* Try to acquire the lock outside of the loop first. */
+    if (InterlockedBitTestAndSet(Value, Bit))
+    {
+        /* Lock was already acquired by someone else - slow path. */
+        while (InterlockedBitTestAndSet(Value, Bit))
+            PAUSE();
+    }
+}
+
+/* KphReleaseBitSpinLock
+ * 
+ * Uses the specified bit as a spinlock and releases the 
+ * lock in the given value.
+ */
+FORCEINLINE VOID KphReleaseBitSpinLock(
+    __inout PULONG Value,
+    __in ULONG Bit
+    )
+{
+    InterlockedBitTestAndReset(Value, Bit);
+}
+
 /* Guarded Locks */
 /* Guarded locks are small spinlocks. Code within 
  * synchronized regions run at APC_LEVEL. They also contain 
@@ -224,7 +258,7 @@ FORCEINLINE VOID KphReleaseAndSignalGuardedLock(
 typedef struct _KPH_PROCESSOR_LOCK
 {
     /* Synchronizes access to the processor lock. */
-    FAST_MUTEX Mutex;
+    KPH_GUARDED_LOCK Lock;
     /* Storage allocated for DPCs. */
     PKDPC Dpcs;
     /* The number of currently acquired processors. */

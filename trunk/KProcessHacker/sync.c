@@ -27,7 +27,7 @@ ULONG KphpCountBits(
     __in ULONG_PTR Number
     );
 
-/* KphAcquireGuardedLock
+/* KphfAcquireGuardedLock
  * 
  * Acquires a guarded lock and raises the IRQL to APC_LEVEL.
  * 
@@ -44,13 +44,8 @@ VOID FASTCALL KphfAcquireGuardedLock(
     /* Raise to APC_LEVEL. */
     oldIrql = KeRaiseIrql(APC_LEVEL, &oldIrql);
     
-    /* Try to acquire the lock outside of the loop first. */
-    if (InterlockedBitTestAndSet(&Lock->Value, KPH_GUARDED_LOCK_ACTIVE_SHIFT))
-    {
-        /* Lock was already acquired by someone else - slow path. */
-        while (InterlockedBitTestAndSet(&Lock->Value, KPH_GUARDED_LOCK_ACTIVE_SHIFT))
-            PAUSE();
-    }
+    /* Acquire the spinlock. */
+    KphAcquireBitSpinLock(&Lock->Value, KPH_GUARDED_LOCK_ACTIVE_SHIFT);
     
     /* Now that we have the lock, we must save the old IRQL. */
     /* Clear the old IRQL. */
@@ -59,7 +54,7 @@ VOID FASTCALL KphfAcquireGuardedLock(
     Lock->Value |= oldIrql;
 }
 
-/* KphReleaseGuardedLock
+/* KphfReleaseGuardedLock
  * 
  * Releases a guarded lock and restores the old IRQL.
  * 
@@ -75,8 +70,8 @@ VOID FASTCALL KphfReleaseGuardedLock(
     
     /* Get the old IRQL. */
     oldIrql = (KIRQL)(Lock->Value & ~KPH_GUARDED_LOCK_FLAGS);
-    /* Unlock the lock. */
-    InterlockedBitTestAndReset(&Lock->Value, KPH_GUARDED_LOCK_ACTIVE_SHIFT);
+    /* Unlock the spinlock. */
+    KphReleaseBitSpinLock(&Lock->Value, KPH_GUARDED_LOCK_ACTIVE_SHIFT);
     /* Restore the old IRQL. */
     KeLowerIrql(oldIrql);
 }
@@ -126,8 +121,8 @@ BOOLEAN KphAcquireProcessorLock(
     ULONG numberProcessors;
     ULONG currentProcessor;
     
-    /* Acquire the processor lock mutex. */
-    ExAcquireFastMutex(&ProcessorLock->Mutex);
+    /* Acquire the processor lock guarded lock. */
+    KphAcquireGuardedLock(&ProcessorLock->Lock);
     
     /* Reset some state. */
     ASSERT(ProcessorLock->AcquiredProcessors == 0);
@@ -157,6 +152,7 @@ BOOLEAN KphAcquireProcessorLock(
     if (!ProcessorLock->Dpcs)
     {
         dprintf("KphAcquireProcessorLock: Could not allocate storage for DPCs!\n");
+        KphReleaseGuardedLock(&ProcessorLock->Lock);
         return FALSE;
     }
     
@@ -205,7 +201,7 @@ VOID KphInitializeProcessorLock(
     __out PKPH_PROCESSOR_LOCK ProcessorLock
     )
 {
-    ExInitializeFastMutex(&ProcessorLock->Mutex);
+    KphInitializeGuardedLock(&ProcessorLock->Lock, FALSE);
     ProcessorLock->Dpcs = NULL;
     ProcessorLock->AcquiredProcessors = 0;
     ProcessorLock->ReleaseSignal = 0;
@@ -267,11 +263,11 @@ VOID KphReleaseProcessorLock(
     
     ProcessorLock->Acquired = FALSE;
     
-    /* Release the processor lock mutex. This will restore the 
+    /* Release the processor lock guarded lock. This will restore the 
      * IRQL back to what it was before the processor lock was 
      * acquired.
      */
-    ExReleaseFastMutex(&ProcessorLock->Mutex);
+    KphReleaseGuardedLock(&ProcessorLock->Lock);
 }
 
 /* KphpCountBits

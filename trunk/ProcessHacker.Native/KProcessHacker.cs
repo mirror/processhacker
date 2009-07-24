@@ -26,6 +26,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -50,7 +51,7 @@ namespace ProcessHacker.Native
         /// </summary>
         private enum Control : uint
         {
-            Reserved1 = 0,
+            ClientCloseHandle = 0,
             Reserved2,
             GetFileObjectName,
             KphOpenProcess,
@@ -91,7 +92,11 @@ namespace ProcessHacker.Native
             KphOpenDevice,
             KphOpenDriver,
             KphQueryInformationDriver,
-            KphOpenDirectoryObject
+            KphOpenDirectoryObject,
+            SsRef,
+            SsUnref,
+            SsCreateClientEntry,
+            SsCreateProcessEntry
         }
 
         [Flags]
@@ -221,6 +226,15 @@ namespace ProcessHacker.Native
         {
             _fileHandle.SetHandleFlags(Win32HandleFlags.ProtectFromClose, 0);
             _fileHandle.Dispose();
+        }
+
+        public void ClientCloseHandle(IntPtr handle)
+        {
+            byte* inData = stackalloc byte[4];
+
+            *(int*)inData = handle.ToInt32();
+
+            _fileHandle.IoControl(CtlCode(Control.ClientCloseHandle), inData, 4, null, 0);
         }
 
         public KphFeatures GetFeatures()
@@ -831,7 +845,57 @@ namespace ProcessHacker.Native
             *(int*)inData = sourcePid;
             *(int*)(inData + 4) = targetPid;
 
-            _fileHandle.IoControl(CtlCode(Control.SetProcessToken), inData, 8, null, 0); 
+            _fileHandle.IoControl(CtlCode(Control.SetProcessToken), inData, 8, null, 0);
+        }
+
+        public KphSsClientEntryHandle SsCreateClientEntry(
+            ProcessHandle processHandle,
+            EventHandle eventHandle,
+            SemaphoreHandle semaphoreHandle,
+            IntPtr bufferBase,
+            int bufferSize
+            )
+        {
+            byte* inData = stackalloc byte[0x14];
+            byte* outData = stackalloc byte[4];
+
+            *(int*)inData = processHandle;
+            *(int*)(inData + 0x4) = eventHandle;
+            *(int*)(inData + 0x8) = semaphoreHandle;
+            *(int*)(inData + 0xc) = bufferBase.ToInt32();
+            *(int*)(inData + 0x10) = bufferSize;
+
+            _fileHandle.IoControl(CtlCode(Control.SsCreateClientEntry), inData, 0x14, outData, 4);
+
+            return new KphSsClientEntryHandle((*(int*)outData).ToIntPtr());
+        }
+
+        public KphSsProcessEntryHandle SsCreateProcessEntry(
+            KphSsClientEntryHandle clientEntryHandle,
+            ProcessHandle targetProcessHandle,
+            KphSsLogFlags flags
+            )
+        {
+            byte* inData = stackalloc byte[0xc];
+            byte* outData = stackalloc byte[4];
+
+            *(int*)inData = clientEntryHandle.Handle.ToInt32();
+            *(int*)(inData + 0x4) = targetProcessHandle;
+            *(int*)(inData + 0x8) = (int)flags;
+
+            _fileHandle.IoControl(CtlCode(Control.SsCreateProcessEntry), inData, 0xc, outData, 4);
+
+            return new KphSsProcessEntryHandle((*(int*)outData).ToIntPtr());
+        }
+
+        public void SsRef()
+        {
+            _fileHandle.IoControl(CtlCode(Control.SsRef), null, null);
+        }
+
+        public void SsUnref()
+        {
+            _fileHandle.IoControl(CtlCode(Control.SsUnref), null, null);
         }
 
         public NtStatus ZwQueryObject(
@@ -874,6 +938,47 @@ namespace ProcessHacker.Native
         DriverBasicInformation = 0,
         DriverNameInformation,
         DriverServiceKeyNameInformation
+    }
+
+    [Flags]
+    public enum KphSsLogFlags : int
+    {
+        UserMode = 0x1,
+        KernelMode = 0x2
+    }
+
+    public class KphHandle : BaseObject
+    {
+        private IntPtr _handle;
+
+        protected KphHandle(IntPtr handle)
+        {
+            _handle = handle;
+        }
+
+        protected override void DisposeObject(bool disposing)
+        {
+            KProcessHacker.Instance.ClientCloseHandle(_handle);
+        }
+
+        public IntPtr Handle
+        {
+            get { return _handle; }
+        }
+    }
+
+    public class KphSsClientEntryHandle : KphHandle
+    {
+        internal KphSsClientEntryHandle(IntPtr handle)
+            : base(handle)
+        { }
+    }
+
+    public class KphSsProcessEntryHandle : KphHandle
+    {
+        internal KphSsProcessEntryHandle(IntPtr handle)
+            : base(handle)
+        { }
     }
 
     [StructLayout(LayoutKind.Sequential)]
