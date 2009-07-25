@@ -25,6 +25,44 @@
 
 #include "kph.h"
 
+/* General synchronization macros */
+
+/* KphEqualSpin
+ * 
+ * Spins until the first value is equal to the second 
+ * value.
+ */
+FORCEINLINE VOID KphSpinUntilEqual(
+    __inout PLONG Value,
+    __in LONG Value2
+    )
+{
+    while (InterlockedCompareExchange(
+        Value,
+        Value2,
+        Value2
+        ) != Value2)
+        PAUSE();
+}
+
+/* KphNotEqualSpin
+ * 
+ * Spins until the first value is not equal to the second 
+ * value.
+ */
+FORCEINLINE VOID KphSpinUntilNotEqual(
+    __inout PLONG Value,
+    __in LONG Value2
+    )
+{
+    while (InterlockedCompareExchange(
+        Value,
+        Value2,
+        Value2
+        ) == Value2)
+        PAUSE();
+}
+
 /* Spin Locks */
 
 /* KphAcquireBitSpinLock

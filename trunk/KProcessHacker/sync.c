@@ -27,6 +27,13 @@ ULONG KphpCountBits(
     __in ULONG_PTR Number
     );
 
+VOID KphpProcessorLockDpc(
+    __in PKDPC Dpc,
+    __in PVOID DeferredContext,
+    __in PVOID SystemArgument1,
+    __in PVOID SystemArgument2
+    );
+
 /* KphfAcquireGuardedLock
  * 
  * Acquires a guarded lock and raises the IRQL to APC_LEVEL.
@@ -75,13 +82,6 @@ VOID FASTCALL KphfReleaseGuardedLock(
     /* Restore the old IRQL. */
     KeLowerIrql(oldIrql);
 }
-
-VOID KphpProcessorLockDpc(
-    __in PKDPC Dpc,
-    __in PVOID DeferredContext,
-    __in PVOID SystemArgument1,
-    __in PVOID SystemArgument2
-    );
 
 /* KphAcquireProcessorLock
  * 
@@ -175,12 +175,7 @@ BOOLEAN KphAcquireProcessorLock(
             KeInsertQueueDpc(&ProcessorLock->Dpcs[i], ProcessorLock, NULL);
     
     /* Spinwait for all (other) processors to be acquired. */
-    while (InterlockedCompareExchange(
-        &ProcessorLock->AcquiredProcessors,
-        numberProcessors - 1,
-        numberProcessors - 1
-        ) != numberProcessors - 1)
-        NOTHING;
+    KphSpinUntilEqual(&ProcessorLock->AcquiredProcessors, numberProcessors - 1);
     
     dprintf("KphAcquireProcessorLock: All processors acquired.\n");
     ProcessorLock->Acquired = TRUE;
@@ -241,12 +236,7 @@ VOID KphReleaseProcessorLock(
     InterlockedExchange(&ProcessorLock->ReleaseSignal, 1);
     
     /* Spinwait for all acquired processors to be released. */
-    while (InterlockedCompareExchange(
-        &ProcessorLock->AcquiredProcessors,
-        0,
-        0
-        ))
-        NOTHING;
+    KphSpinUntilEqual(&ProcessorLock->AcquiredProcessors, 0);
     
     dprintf("KphReleaseProcessorLock: All processors released.\n");
     
@@ -313,12 +303,7 @@ VOID KphpProcessorLockDpc(
     InterlockedIncrement(&processorLock->AcquiredProcessors);
     
     /* Spin until we get the signal to release the processor. */
-    while (!InterlockedCompareExchange(
-        &processorLock->ReleaseSignal,
-        1,
-        1
-        ))
-        NOTHING;
+    KphSpinUntilNotEqual(&processorLock->ReleaseSignal, 0);
     
     /* Decrease the number of acquired processors. */
     InterlockedDecrement(&processorLock->AcquiredProcessors);

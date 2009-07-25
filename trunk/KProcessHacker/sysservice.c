@@ -31,21 +31,24 @@
 
 #include "include/sysservicep.h"
 #include "include/hook.h"
+#include "include/sync.h"
 #include "include/trace.h"
 
 extern PDRIVER_OBJECT KphDriverObject;
 
 FAST_MUTEX KphSsMutex;
 /* Whether system service logging has been initialized. */
-BOOLEAN KphSsInitialized;
+BOOLEAN KphSsInitialized = FALSE;
 /* The KiFastCallEntry hook. */
 KPH_HOOK KphSsKiFastCallEntryHook;
+/* The number of active loggers. */
+ULONG KphSsNumberOfActiveLoggers = 0;
 
 PKPH_OBJECT_TYPE KphSsClientEntryType;
 PKPH_OBJECT_TYPE KphSsProcessEntryType;
 
+FAST_MUTEX KphSsProcessListMutex;
 LIST_ENTRY KphSsProcessListHead;
-EX_RUNDOWN_REF KphSsRundownProtect;
 
 /* KphSsLogInit
  * 
@@ -58,6 +61,7 @@ NTSTATUS KphSsLogInit()
     /* Initialize the process list. */
     InitializeListHead(&KphSsProcessListHead);
     ExInitializeFastMutex(&KphSsMutex);
+    ExInitializeFastMutex(&KphSsProcessListMutex);
     
     /* Initialize the object types. */
     status = KphCreateObjectType(
@@ -104,9 +108,6 @@ NTSTATUS KphSsLogStart()
         return STATUS_UNSUCCESSFUL;
     }
     
-    /* (Re-)initialize rundown protection. */
-    ExInitializeRundownProtection(&KphSsRundownProtect);
-    
     /* Hook KiFastCallEntry. Logging will start from now. */
     KphInitializeHook(
         &KphSsKiFastCallEntryHook,
@@ -152,8 +153,8 @@ NTSTATUS KphSsLogStop()
         return status;
     }
     
-    /* Wait for all loggers to finish. */
-    ExWaitForRundownProtectionRelease(&KphSsRundownProtect);
+    /* Spin until the logger count reaches 0. */
+    KphSpinUntilEqual(&KphSsNumberOfActiveLoggers, 0);
     
     KphSsInitialized = FALSE;
     
@@ -165,7 +166,9 @@ NTSTATUS KphSsLogStop()
 /* KphSsCreateClientEntry
  * 
  * Creates a client entry which describes a client of the 
- * system service logger. Clients receieve system service log events.
+ * system service logger. Clients receieve system service log events. 
+ * Note that a client may have several process entries associated 
+ * with it.
  * 
  * ClientEntry: A variable which receives a pointer to the client entry.
  * ProcessHandle: A handle to the client process, with PROCESS_VM_WRITE 
@@ -363,9 +366,9 @@ NTSTATUS KphSsCreateProcessEntry(
     processEntry->TargetProcess = processObject;
     processEntry->Flags = Flags;
     
-    ExAcquireFastMutex(&KphSsMutex);
+    ExAcquireFastMutex(&KphSsProcessListMutex);
     InsertHeadList(&KphSsProcessListHead, &processEntry->ProcessListEntry);
-    ExReleaseFastMutex(&KphSsMutex);
+    ExReleaseFastMutex(&KphSsProcessListMutex);
     
     *ProcessEntry = processEntry;
     
@@ -386,9 +389,9 @@ VOID NTAPI KphpSsProcessEntryDeleteProcedure(
     
     KphDereferenceObject(processEntry->Client);
     
-    ExAcquireFastMutex(&KphSsMutex);
+    ExAcquireFastMutex(&KphSsProcessListMutex);
     RemoveEntryList(&processEntry->ProcessListEntry);
-    ExReleaseFastMutex(&KphSsMutex);
+    ExReleaseFastMutex(&KphSsProcessListMutex);
 }
 
 /* KphpSsCreateEventBlock
@@ -449,6 +452,10 @@ NTSTATUS KphpSsCreateEventBlock(
     argumentsSize = NumberOfArguments * sizeof(ULONG);
     traceSize = capturedFrames * sizeof(PVOID);
     eventBlockSize = sizeof(KPHPSS_EVENT_BLOCK) + argumentsSize + traceSize;
+    
+    /* Check if the event block is too large. */
+    if (eventBlockSize > KPHPSS_EVENT_BLOCK_MAX_SIZE)
+        return STATUS_UNSUCCESSFUL;
     
     /* Allocate the event block. */
     eventBlock = ExAllocatePoolWithTag(PagedPool, eventBlockSize, TAG_EVENT_BLOCK);
@@ -763,7 +770,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
         return;
     }
     
-    ExAcquireFastMutex(&KphSsMutex);
+    ExAcquireFastMutex(&KphSsProcessListMutex);
     
     currentListEntry = KphSsProcessListHead.Flink;
     processEntryCount = 0;
@@ -790,7 +797,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
         currentListEntry = currentListEntry->Flink;
     }
     
-    ExReleaseFastMutex(&KphSsMutex);
+    ExReleaseFastMutex(&KphSsProcessListMutex);
     
     /* If we didn't find any process entries, don't bother creating the 
      * event block.
@@ -899,13 +906,17 @@ __declspec(naked) VOID NTAPI KphpSsNewKiFastCallEntry()
         mov     cl, [ebx+eax] /* ecx = size of the arguments, in bytes. */
         shr     ecx, 2 /* divide by 2 to get the number of arguments (all ULONGs) */
         
-        /* Call the KiFastCallEntry proc. */
+        /* Call the KiFastCallEntry proc while maintaining the logger count 
+         * so that the driver doesn't get unloaded while we're executing.
+         */
         push    esi /* Thread */
         push    edi /* ServiceTable */
         push    ecx /* NumberOfArguments */
         push    edx /* Arguments */
         push    eax /* Number */
+        lock inc dword ptr KphSsNumberOfActiveLoggers
         call    KphpSsLogSystemServiceCall
+        lock dec dword ptr KphSsNumberOfActiveLoggers
         
         /* Restore the registers and resume execution in KiFastCallEntry. */
         pop     eax
