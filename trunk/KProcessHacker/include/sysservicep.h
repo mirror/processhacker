@@ -132,171 +132,8 @@ typedef enum _KPHSS_SEQUENCE_MODE
 } KPHSS_SEQUENCE_MODE;
 
 #define TAG_CAPTURE_TEMP_BUFFER ('tChP')
-
-FORCEINLINE PKPHSS_ARGUMENT_BLOCK KphpSsAllocateArgumentBlock(
-    __in ULONG InnerSize,
-    __in KPHSS_ARGUMENT_TYPE Type
-    )
-{
-    PKPHSS_ARGUMENT_BLOCK argumentBlock;
-    ULONG size;
-    
-    size = KPHSS_ARGUMENT_BLOCK_SIZE(InnerSize);
-    argumentBlock = ExAllocatePoolWithTag(
-        PagedPool,
-        size,
-        TAG_ARGUMENT_BLOCK
-        );
-    
-    if (!argumentBlock)
-        return NULL;
-    
-    argumentBlock->Header.Type = ArgumentBlockType;
-    argumentBlock->Header.Size = size;
-    argumentBlock->Type = Type;
-    
-    return argumentBlock;
-}
-
-FORCEINLINE NTSTATUS KphpSsCaptureSimple(
-    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
-    __in PVOID Argument,
-    __in KPHSS_ARGUMENT_TYPE Type
-    )
-{
-    PKPHSS_ARGUMENT_BLOCK argumentBlock;
-    ULONG size;
-    LARGE_INTEGER value;
-    
-    switch (Type)
-    {
-        case Int8Argument:
-            size = sizeof(BOOLEAN);
-            break;
-        case Int16Argument:
-            size = sizeof(SHORT);
-            break;
-        case Int32Argument:
-            size = sizeof(LONG);
-            break;
-        case Int64Argument:
-            size = sizeof(LARGE_INTEGER);
-            break;
-        default:
-            return STATUS_INVALID_PARAMETER_3;
-    }
-    
-    __try
-    {
-        ProbeForRead(Argument, size, 1);
-        memcpy(&value, Argument, size);
-    }
-    __except (EXCEPTION_EXECUTE_HANDLER)
-    {
-        return GetExceptionCode();
-    }
-    
-    argumentBlock = KphpSsAllocateArgumentBlock(size, Type);
-    
-    if (!argumentBlock)
-        return STATUS_INSUFFICIENT_RESOURCES;
-    
-    memcpy(&argumentBlock->Simple, &value, size);
-    *ArgumentBlock = argumentBlock;
-    
-    return STATUS_SUCCESS;
-}
-
 #define CAPTURE_HANDLE_BUFFER_SIZE 0x400
-
-FORCEINLINE NTSTATUS KphpSsCaptureHandle(
-    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
-    __in HANDLE Argument
-    )
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    PKPHSS_ARGUMENT_BLOCK argumentBlock;
-    PVOID object;
-    PUNICODE_STRING objectTypeName;
-    PUNICODE_STRING objectNameInfo;
-    ULONG returnLength;
-    PKPHSS_WSTRING wString;
-    
-    /* Reference the object. */
-    status = ObReferenceObjectByHandle(
-        Argument,
-        0,
-        NULL,
-        KernelMode,
-        &object,
-        NULL
-        );
-    
-    if (!NT_SUCCESS(status))
-        return status;
-    
-    /* Get a pointer to the UNICODE_STRING containing the 
-     * object type name.
-     */
-    objectTypeName = (PUNICODE_STRING)KVOFF(
-        OBJECT_TO_OBJECT_HEADER(object)->Type,
-        OffOtName
-        );
-    
-    /* Allocate a buffer for name information. */
-    objectNameInfo = ExAllocatePoolWithTag(
-        PagedPool,
-        CAPTURE_HANDLE_BUFFER_SIZE,
-        TAG_CAPTURE_TEMP_BUFFER
-        );
-    
-    if (!objectNameInfo)
-        goto CleanupObject;
-    
-    /* Query the name of the object. */
-    status = KphQueryNameObject(
-        object,
-        objectNameInfo,
-        CAPTURE_HANDLE_BUFFER_SIZE,
-        &returnLength
-        );
-    
-    if (!NT_SUCCESS(status))
-        goto CleanupName;
-    
-    /* Allocate an argument block. */
-    argumentBlock = KphpSsAllocateArgumentBlock(
-        sizeof(KPHSS_HANDLE) + sizeof(KPHSS_WSTRING) + sizeof(KPHSS_WSTRING) + 
-        objectTypeName->Length + objectNameInfo->Length,
-        HandleArgument
-        );
-    
-    if (!argumentBlock)
-        goto CleanupName;
-    
-    /* Copy the type name into the block. */
-    argumentBlock->Handle.TypeNameOffset = sizeof(KPHSS_HANDLE);
-    wString = (PKPHSS_WSTRING)PTR_ADD_OFFSET(&argumentBlock->Handle, argumentBlock->Handle.TypeNameOffset);
-    wString->Length = objectTypeName->Length;
-    memcpy(&wString->Buffer, objectTypeName->Buffer, wString->Length);
-    
-    /* Copy the object name into the block. */
-    argumentBlock->Handle.NameOffset = 
-        argumentBlock->Handle.TypeNameOffset + sizeof(KPHSS_WSTRING) + 
-        wString->Length;
-    wString = (PKPHSS_WSTRING)PTR_ADD_OFFSET(&argumentBlock->Handle, argumentBlock->Handle.NameOffset);
-    wString->Length = objectNameInfo->Length;
-    memcpy(&wString->Buffer, objectNameInfo->Buffer, wString->Length);
-    
-    *ArgumentBlock = argumentBlock;
-    
-CleanupName:
-    ExFreePoolWithTag(objectNameInfo, TAG_CAPTURE_TEMP_BUFFER);
-CleanupObject:
-    ObDereferenceObject(object);
-    
-    return status;
-}
+#define CAPTURE_UNICODE_STRING_MAX_SIZE 0x400
 
 /* KphpSsMatchRuleSetEntry
  * 
@@ -438,11 +275,41 @@ VOID KphpSsFreeEventBlock(
     __in PKPHSS_EVENT_BLOCK EventBlock
     );
 
+NTSTATUS KphpSsCaptureSimpleArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in PVOID Argument,
+    __in KPHSS_ARGUMENT_TYPE Type,
+    __in KPROCESSOR_MODE PreviousMode
+    );
+
+NTSTATUS KphpSsCaptureHandleArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in HANDLE Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    );
+
+NTSTATUS KphpSsCaptureUnicodeStringArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in PUNICODE_STRING Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    );
+
+NTSTATUS KphpSsCaptureObjectAttributesArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in POBJECT_ATTRIBUTES Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    );
+
 NTSTATUS KphpSsCreateArgumentBlock(
     __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
     __in ULONG Number,
     __in ULONG Argument,
     __in ULONG Index
+    );
+
+PKPHSS_ARGUMENT_BLOCK KphpSsAllocateArgumentBlock(
+    __in ULONG InnerSize,
+    __in KPHSS_ARGUMENT_TYPE Type
     );
 
 VOID KphpSsFreeArgumentBlock(

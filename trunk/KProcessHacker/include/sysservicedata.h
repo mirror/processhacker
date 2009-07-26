@@ -73,6 +73,7 @@ typedef enum _KPHSS_ARGUMENT_TYPE
 
 typedef struct _KPHSS_HANDLE
 {
+    HANDLE HandleInClient;
     ULONG TypeNameOffset; /* KPHSS_WSTRING */
     ULONG NameOffset; /* KPHSS_WSTRING */
 } KPHSS_HANDLE, *PKPHSS_HANDLE;
@@ -107,12 +108,19 @@ typedef struct _KPHSS_UNICODE_STRING
 
 typedef struct _KPHSS_OBJECT_ATTRIBUTES
 {
-    ULONG Length;
-    HANDLE RootDirectory;
-    PUNICODE_STRING ObjectName;
-    ULONG Attributes;
-    PVOID SecurityDescriptor;
-    PVOID SecurityQualityOfService;
+    union
+    {
+        OBJECT_ATTRIBUTES ObjectAttributes;
+        struct
+        {
+            ULONG Length;
+            HANDLE RootDirectory;
+            PUNICODE_STRING ObjectName;
+            ULONG Attributes;
+            PVOID SecurityDescriptor;
+            PVOID SecurityQualityOfService;
+        };
+    };
     
     ULONG RootDirectoryOffset; /* KPHSS_HANDLE */
     ULONG ObjectNameOffset; /* KPHSS_UNICODE_STRING */
@@ -136,7 +144,7 @@ extern RTL_GENERIC_TABLE KphSsCallTable;
 
 #define TAG_CALL_ENTRY ('cShP')
 
-#define KPHSS_MAXIMUM_ARGUMENT_BLOCKS 10
+#define KPHSS_MAXIMUM_ARGUMENT_BLOCKS 20
 
 typedef struct _KPHSS_CALL_ENTRY
 {

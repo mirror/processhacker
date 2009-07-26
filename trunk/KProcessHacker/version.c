@@ -287,9 +287,25 @@ NTSTATUS KvInit()
             
             SsNtAddAtom = 0x8;
             SsNtAlertResumeThread = 0xd;
+            SsNtAlertThread = 0xe;
+            SsNtAllocateLocallyUniqueId = 0xf;
+            SsNtAllocateUserPhysicalPages = 0x10;
+            SsNtAllocateUuids = 0x11;
+            SsNtAllocateVirtualMemory = 0x12;
+            SsNtApphelpCacheControl = 0x28;
+            SsNtAreMappedFilesTheSame = 0x29;
+            SsNtAssignProcessToJobObject = 0x2a;
+            SsNtCallbackReturn = 0x2b;
+            SsNtCancelDeviceWakeupRequest = 0x2c;
+            SsNtCancelIoFile = 0x2d;
+            SsNtCancelTimer = 0x2e;
+            SsNtClearEvent = 0x2f;
             SsNtClose = 0x30;
             SsNtContinue = 0x37;
+            SsNtCreateFile = 0x3c;
             SsNtDelayExecution = 0x76;
+            SsNtLoadDriver = 0xa5;
+            SsNtOpenDirectoryObject = 0xb7;
         }
         else
         {

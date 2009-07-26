@@ -39,32 +39,64 @@ VOID KphpSsCallEntryFreeRoutine(
     __in PVOID Buffer
     );
 
-/* NTSTATUS NtAddAtom(PWSTR String, ULONG StringLength, PUSHORT Atom) */
-KPHSS_CALL_ENTRY SsNtAddAtomEntry = { &SsNtAddAtom, "NtAddAtom", 3, { WStringArgument, 0, Int16Argument } };
-/* NTSTATUS NtAlertResumeThread(HANDLE ThreadHandle, PULONG PreviousSuspendCount) */
-KPHSS_CALL_ENTRY SsNtAlertResumeThreadEntry = { &SsNtAlertResumeThread, "NtAlertResumeThread", 2, { HandleArgument, NormalArgument } };
-/* NTSTATUS NtClose(HANDLE Handle) */
-KPHSS_CALL_ENTRY SsNtCloseEntry = { &SsNtClose, "NtClose", 1, { HandleArgument } };
-/* NTSTATUS NtContinue(PCONTEXT Context, BOOLEAN TestAlert) */
-KPHSS_CALL_ENTRY SsNtContinueEntry = { &SsNtContinue, "NtContinue", 2, { ContextArgument, 0 } };
-
 KPHSS_CALL_ENTRY SsEntries[] =
 {
     /* NTSTATUS NtAddAtom(PWSTR String, ULONG StringLength, PUSHORT Atom) */
     { &SsNtAddAtom, "NtAddAtom", 3, { WStringArgument, 0, Int16Argument } },
     /* NTSTATUS NtAlertResumeThread(HANDLE ThreadHandle, PULONG PreviousSuspendCount) */
-    { &SsNtAlertResumeThread, "NtAlertResumeThread", 2, { HandleArgument, NormalArgument } },
+    { &SsNtAlertResumeThread, "NtAlertResumeThread", 2, { HandleArgument, 0 } },
+    /* NTSTATUS NtAlertThread(HANDLE ThreadHandle) */
+    { &SsNtAlertThread, "NtAlertThread", 1, { HandleArgument } },
+    /* NTSTATUS NtAllocateLocallyUniqueId(PLUID Luid) */
+    { &SsNtAllocateLocallyUniqueId, "NtAllocateLocallyUniqueId", 1, { 0 } },
+    /* NTSTATUS NtAllocateUserPhysicalPages(HANDLE ProcessHandle, PULONG NumberOfPages, PULONG PageFrameNumbers) */
+    { &SsNtAllocateUserPhysicalPages, "NtAllocateUserPhysicalPages", 3, { HandleArgument, Int32Argument, 0 } },
+    /* NTSTATUS NtAllocateUuids(PLARGE_INTEGER UuidLastTimeAllocated, PULONG UuidDeltaTime, PULONG UuidSequenceNumber, 
+     *      PUCHAR UuidSeed)
+     */
+    { &SsNtAllocateUuids, "NtAllocateUuids", 4, { Int64Argument, 0, 0, 0 } },
+    /* NTSTATUS NtAllocateVirtualMemory(HANDLE ProcessHandle, PVOID *BaseAddress, ULONG ZeroBits, 
+     *      PULONG AllocationSize, ULONG AllocationType, ULONG Protect)
+     */
+    { &SsNtAllocateVirtualMemory, "NtAllocateVirtualMemory", 6, { HandleArgument, Int32Argument, 0, Int32Argument, 0, 0 } },
+    /* NTSTATUS NtApphelpCacheControl(APPHELPCACHECONTROL ApphelpCacheControl, PUNICODE_STRING ApphelpCacheObject) */
+    { &SsNtApphelpCacheControl, "NtApphelpCacheControl", 2, { 0, UnicodeStringArgument } },
+    /* NTSTATUS NtAreMappedFilesTheSame(PVOID Address1, PVOID Address2) */
+    { &SsNtAreMappedFilesTheSame, "NtAreMappedFilesTheSame", 2, { 0, 0 } },
+    /* NTSTATUS NtAssignProcessToJobObject(HANDLE JobHandle, HANDLE ProcessHandle) */
+    { &SsNtAssignProcessToJobObject, "NtAssignProcessToJobObject", 2, { HandleArgument, HandleArgument } },
+    /* NTSTATUS NtCallbackReturn(PVOID Result, ULONG ResultLength, NTSTATUS Status) */
+    { &SsNtCallbackReturn, "NtCallbackReturn", 3, { 0, 0, 0 } },
+    /* NTSTATUS NtCancelDeviceWakeupRequest(HANDLE DeviceHandle) */
+    { &SsNtCancelDeviceWakeupRequest, "NtCancelDeviceWakeupRequest", 1, { HandleArgument } },
+    /* NTSTATUS NtCancelIoFile(HANDLE FileHandle, PIO_STATUS_BLOCK IoStatusBlock) */
+    { &SsNtCancelIoFile, "NtCancelIoFile", 2, { HandleArgument, 0 } },
+    /* NTSTATUS NtCancelTimer(HANDLE TimerHandle, PBOOLEAN CurrentState) */
+    { &SsNtCancelTimer, "NtCancelTimer", 2, { HandleArgument, 0 } },
+    /* NTSTATUS NtClearEvent(HANDLE EventHandle) */
+    { &SsNtClearEvent, "NtClearEvent", 1, { HandleArgument } },
     /* NTSTATUS NtClose(HANDLE Handle) */
     { &SsNtClose, "NtClose", 1, { HandleArgument } },
     /* NTSTATUS NtContinue(PCONTEXT Context, BOOLEAN TestAlert) */
     { &SsNtContinue, "NtContinue", 2, { ContextArgument, 0 } },
+    /* NTSTATUS NtCreateFile(PHANDLE FileHandle, ACCESS_MASK DesiredAccess, POBJECT_ATTRIBUTES ObjectAttributes, 
+     *      PIO_STATUS_BLOCK IoStatusBlock, PLARGE_INTEGER AllocationSize, ULONG FileAttributes, 
+     *      ULONG ShareAccess, ULONG CreateDisposition, ULONG CreateOptions, 
+     *      PVOID EaBuffer, ULONG EaLength)
+     */
+    { &SsNtCreateFile, "NtCreateFile", 11, { 0, 0, ObjectAttributesArgument, 0, Int64Argument, 0, 0, 0, 0, 0, 0 } },
     /* NTSTATUS NtDelayExecution(BOOLEAN Alertable, PLARGE_INTEGER Interval) */
     { &SsNtDelayExecution, "NtDelayExecution", 2, { 0, Int64Argument } },
+    /* NTSTATUS NtLoadDriver(PUNICODE_STRING DriverServiceName) */
+    { &SsNtLoadDriver, "NtLoadDriver", 1, { UnicodeStringArgument } },
+    /* NTSTATUS NtOpenDirectoryObject(PHANDLE DirectoryHandle, ACCESS_MASK DesiredAccess, POBJECT_ATTRIBUTES ObjectAttributes) */
+    { &SsNtOpenDirectoryObject, "NtOpenDirectoryObject", 3, { 0, 0, ObjectAttributesArgument } },
     
     { NULL, "Dummy", 0 }
 };
 
 RTL_GENERIC_TABLE KphSsCallTable;
+FAST_MUTEX KphSsCallTableMutex;
 
 VOID KphSsDataInit()
 {
@@ -93,6 +125,8 @@ VOID KphSsDataInit()
                 );
         }
     }
+    
+    ExInitializeFastMutex(&KphSsCallTableMutex);
 }
 
 VOID KphSsDataDeinit()
@@ -108,13 +142,18 @@ PKPHSS_CALL_ENTRY KphSsLookupCallEntry(
     )
 {
     KPHSS_CALL_ENTRY callEntry;
+    PKPHSS_CALL_ENTRY foundEntry;
     
     callEntry.Number = &Number;
     
-    return (PKPHSS_CALL_ENTRY)RtlLookupElementGenericTable(
+    ExAcquireFastMutex(&KphSsCallTableMutex);
+    foundEntry = (PKPHSS_CALL_ENTRY)RtlLookupElementGenericTable(
         &KphSsCallTable,
         &callEntry
         );
+    ExReleaseFastMutex(&KphSsCallTableMutex);
+    
+    return foundEntry;
 }
 
 PVOID KphpSsCallEntryAllocateRoutine(

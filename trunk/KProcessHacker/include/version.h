@@ -111,8 +111,24 @@ EXT KV_SCANPROC PspTerminateThreadByPointerScan SCANNULL;
  */
 EXT ULONG SsNtAddAtom;
 EXT ULONG SsNtAlertResumeThread;
+EXT ULONG SsNtAlertThread;
+EXT ULONG SsNtAllocateLocallyUniqueId;
+EXT ULONG SsNtAllocateUserPhysicalPages;
+EXT ULONG SsNtAllocateUuids;
+EXT ULONG SsNtAllocateVirtualMemory;
+EXT ULONG SsNtApphelpCacheControl;
+EXT ULONG SsNtAreMappedFilesTheSame;
+EXT ULONG SsNtAssignProcessToJobObject;
+EXT ULONG SsNtCallbackReturn;
+EXT ULONG SsNtCancelDeviceWakeupRequest;
+EXT ULONG SsNtCancelIoFile;
+EXT ULONG SsNtCancelTimer;
+EXT ULONG SsNtClearEvent;
 EXT ULONG SsNtClose;
 EXT ULONG SsNtContinue;
+EXT ULONG SsNtCreateFile;
 EXT ULONG SsNtDelayExecution;
+EXT ULONG SsNtLoadDriver;
+EXT ULONG SsNtOpenDirectoryObject;
 
 #endif

@@ -200,7 +200,7 @@ NTSTATUS KphSsLogStop()
 /* KphSsCreateClientEntry
  * 
  * Creates a client entry which describes a client of the 
- * system service logger. Clients receieve system service log events. 
+ * system service logger. Clients receive system service log events. 
  * Note that a client may have several ruleset entries associated 
  * with it.
  * 
@@ -757,6 +757,392 @@ VOID KphpSsFreeEventBlock(
     ExFreePoolWithTag(EventBlock, TAG_EVENT_BLOCK);
 }
 
+/* KphpSsCaptureSimpleArgument
+ * 
+ * Captures a simple (1-, 2-, 4- or 8-byte) argument.
+ */
+NTSTATUS KphpSsCaptureSimpleArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in PVOID Argument,
+    __in KPHSS_ARGUMENT_TYPE Type,
+    __in KPROCESSOR_MODE PreviousMode
+    )
+{
+    PKPHSS_ARGUMENT_BLOCK argumentBlock;
+    ULONG size;
+    LARGE_INTEGER value;
+    
+    /* Get the proper argument size based on the argument type. */
+    switch (Type)
+    {
+        case Int8Argument:
+            size = sizeof(BOOLEAN);
+            break;
+        case Int16Argument:
+            size = sizeof(SHORT);
+            break;
+        case Int32Argument:
+            size = sizeof(LONG);
+            break;
+        case Int64Argument:
+            size = sizeof(LARGE_INTEGER);
+            break;
+        default:
+            return STATUS_INVALID_PARAMETER_3;
+    }
+    
+    /* Probe and read the value. */
+    __try
+    {
+        if (PreviousMode != KernelMode)
+            ProbeForRead(Argument, size, 1);
+        
+        memcpy(&value, Argument, size);
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        return GetExceptionCode();
+    }
+    
+    /* Allocate an argument block. */
+    argumentBlock = KphpSsAllocateArgumentBlock(size, Type);
+    
+    if (!argumentBlock)
+        return STATUS_INSUFFICIENT_RESOURCES;
+    
+    /* Copy the value into the argument block. */
+    memcpy(&argumentBlock->Simple, &value, size);
+    *ArgumentBlock = argumentBlock;
+    
+    return STATUS_SUCCESS;
+}
+
+/* KphpSsCaptureHandleArgument
+ * 
+ * Captures a handle argument.
+ */
+NTSTATUS KphpSsCaptureHandleArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in HANDLE Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PKPHSS_ARGUMENT_BLOCK argumentBlock;
+    PVOID object;
+    PUNICODE_STRING objectTypeName;
+    PUNICODE_STRING objectNameInfo;
+    ULONG returnLength;
+    PKPHSS_WSTRING wString;
+    
+    /* Make sure the handle isn't a kernel handle if we're 
+     * from user-mode.
+     */
+    if (PreviousMode != KernelMode)
+    {
+        if ((LONG_PTR)Argument < 0)
+            return STATUS_INVALID_HANDLE;
+    }
+    
+    /* Reference the object. */
+    status = ObReferenceObjectByHandle(
+        Argument,
+        0,
+        NULL,
+        KernelMode,
+        &object,
+        NULL
+        );
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    /* Get a pointer to the UNICODE_STRING containing the 
+     * object type name.
+     */
+    objectTypeName = (PUNICODE_STRING)KVOFF(
+        OBJECT_TO_OBJECT_HEADER(object)->Type,
+        OffOtName
+        );
+    
+    /* Allocate a buffer for name information. */
+    objectNameInfo = ExAllocatePoolWithTag(
+        PagedPool,
+        CAPTURE_HANDLE_BUFFER_SIZE,
+        TAG_CAPTURE_TEMP_BUFFER
+        );
+    
+    if (!objectNameInfo)
+        goto CleanupObject;
+    
+    /* Query the name of the object. */
+    status = KphQueryNameObject(
+        object,
+        objectNameInfo,
+        CAPTURE_HANDLE_BUFFER_SIZE,
+        &returnLength
+        );
+    
+    if (!NT_SUCCESS(status))
+        goto CleanupName;
+    
+    /* Allocate an argument block. */
+    argumentBlock = KphpSsAllocateArgumentBlock(
+        sizeof(KPHSS_HANDLE) + sizeof(KPHSS_WSTRING) + sizeof(KPHSS_WSTRING) + 
+        objectTypeName->Length + objectNameInfo->Length,
+        HandleArgument
+        );
+    
+    if (!argumentBlock)
+        goto CleanupName;
+    
+    /* Copy the type name into the block. */
+    argumentBlock->Handle.TypeNameOffset = sizeof(KPHSS_HANDLE);
+    wString = (PKPHSS_WSTRING)PTR_ADD_OFFSET(&argumentBlock->Handle, argumentBlock->Handle.TypeNameOffset);
+    wString->Length = objectTypeName->Length;
+    memcpy(&wString->Buffer, objectTypeName->Buffer, wString->Length);
+    
+    /* Copy the object name into the block. */
+    argumentBlock->Handle.NameOffset = 
+        argumentBlock->Handle.TypeNameOffset + sizeof(KPHSS_WSTRING) + 
+        wString->Length;
+    wString = (PKPHSS_WSTRING)PTR_ADD_OFFSET(&argumentBlock->Handle, argumentBlock->Handle.NameOffset);
+    wString->Length = objectNameInfo->Length;
+    memcpy(&wString->Buffer, objectNameInfo->Buffer, wString->Length);
+    
+    /* HACK: Save the handle value in the argument block so that
+     * KphpSsWriteBlock will duplicate it. This doesn't apply to 
+     * file objects because we may hang when attempting to 
+     * duplicate them.
+     */
+    if (OBJECT_TO_OBJECT_HEADER(object)->Type != *IoFileObjectType)
+        argumentBlock->Handle.HandleInClient = Argument;
+    else
+        argumentBlock->Handle.HandleInClient = NULL;
+    
+    *ArgumentBlock = argumentBlock;
+    
+CleanupName:
+    ExFreePoolWithTag(objectNameInfo, TAG_CAPTURE_TEMP_BUFFER);
+CleanupObject:
+    ObDereferenceObject(object);
+    
+    return status;
+}
+
+/* KphpSsCaptureUnicodeStringArgument
+ * 
+ * Captures a UNICODE_STRING argument.
+ */
+NTSTATUS KphpSsCaptureUnicodeStringArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in PUNICODE_STRING Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PKPHSS_ARGUMENT_BLOCK argumentBlock;
+    UNICODE_STRING unicodeString;
+    
+    /* Probe and copy the UNICODE_STRING structure. */
+    __try
+    {
+        if (PreviousMode != KernelMode)
+            ProbeForRead(Argument, sizeof(UNICODE_STRING), 1);
+        
+        memcpy(&unicodeString, Argument, sizeof(UNICODE_STRING));
+        
+        /* Probe the buffer, if present. */
+        if (unicodeString.Buffer && PreviousMode != KernelMode)
+        {
+            ProbeForRead(unicodeString.Buffer, unicodeString.Length, 1);
+        }
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        return GetExceptionCode();
+    }
+    
+    /* Check if the string is too large. */
+    if (unicodeString.Length > CAPTURE_UNICODE_STRING_MAX_SIZE)
+        return STATUS_UNSUCCESSFUL;
+    
+    /* Allocate an argument block. */
+    argumentBlock = KphpSsAllocateArgumentBlock(
+        sizeof(KPHSS_UNICODE_STRING) + unicodeString.Length,
+        UnicodeStringArgument
+        );
+    
+    if (!argumentBlock)
+        return STATUS_INSUFFICIENT_RESOURCES;
+    
+    /* Copy the string into the argument block. */
+    argumentBlock->UnicodeString.Length = unicodeString.Length;
+    argumentBlock->UnicodeString.MaximumLength = unicodeString.MaximumLength;
+    argumentBlock->UnicodeString.Pointer = unicodeString.Buffer;
+    
+    if (unicodeString.Buffer)
+    {
+        __try
+        {
+            memcpy(argumentBlock->UnicodeString.Buffer, unicodeString.Buffer, unicodeString.Length);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            KphpSsFreeArgumentBlock(argumentBlock);
+            return GetExceptionCode();
+        }
+    }
+    
+    *ArgumentBlock = argumentBlock;
+    
+    return status;
+}
+
+/* KphpSsCaptureObjectAttributesArgument
+ * 
+ * Captures an OBJECT_ATTRIBUTES argument.
+ */
+NTSTATUS KphpSsCaptureObjectAttributesArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in POBJECT_ATTRIBUTES Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PKPHSS_ARGUMENT_BLOCK argumentBlock;
+    OBJECT_ATTRIBUTES objectAttributes;
+    PKPHSS_ARGUMENT_BLOCK rootDirectoryArgumentBlock = NULL;
+    ULONG rootDirectoryArgumentBlockSize = 0;
+    PKPHSS_ARGUMENT_BLOCK objectNameArgumentBlock = NULL;
+    ULONG objectNameArgumentBlockSize = 0;
+    
+    /* Probe and copy the OBJECT_ATTRIBUTES structure. */
+    __try
+    {
+        if (PreviousMode != KernelMode)
+            ProbeForRead(Argument, sizeof(OBJECT_ATTRIBUTES), 1);
+        
+        memcpy(&objectAttributes, Argument, sizeof(OBJECT_ATTRIBUTES));
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        return GetExceptionCode();
+    }
+    
+    /* If we have a root directory, create an argument block from it
+     * and copy it to our argument block.
+     */
+    if (objectAttributes.RootDirectory)
+    {
+        status = KphpSsCaptureHandleArgument(
+            &rootDirectoryArgumentBlock,
+            objectAttributes.RootDirectory,
+            PreviousMode
+            );
+        
+        /* If we created the argument block, we need to:
+         * 
+         * * Calculate the size of the KPHSS_HANDLE structure, and 
+         * * Clear the HandleInClient field in the structure because 
+         *   we are not going to duplicate the handle.
+         */
+        if (NT_SUCCESS(status))
+        {
+            rootDirectoryArgumentBlockSize = 
+                rootDirectoryArgumentBlock->Header.Size - KPHSS_ARGUMENT_BLOCK_OVERHEAD;
+            rootDirectoryArgumentBlock->Handle.HandleInClient = NULL;
+        }
+        else
+        {
+            rootDirectoryArgumentBlock = NULL;
+        }
+    }
+    
+    /* If we have a object name, create an argument block from it and 
+     * copy it to our argument block.
+     */
+    if (objectAttributes.ObjectName)
+    {
+        status = KphpSsCaptureUnicodeStringArgument(
+            &objectNameArgumentBlock,
+            objectAttributes.ObjectName,
+            PreviousMode
+            );
+        
+        /* If we created the argument block, we need to calculate 
+         * the size of the KPHSS_UNICODE_STRING structure.
+         */
+        if (NT_SUCCESS(status))
+        {
+            objectNameArgumentBlockSize = 
+                objectNameArgumentBlock->Header.Size - KPHSS_ARGUMENT_BLOCK_OVERHEAD;
+        }
+        else
+        {
+            objectNameArgumentBlock = NULL;
+        }
+    }
+    
+    /* Allocate an argument block. */
+    argumentBlock = KphpSsAllocateArgumentBlock(
+        sizeof(KPHSS_OBJECT_ATTRIBUTES) + rootDirectoryArgumentBlockSize + objectNameArgumentBlockSize,
+        ObjectAttributesArgument
+        );
+    
+    argumentBlock->ObjectAttributes.RootDirectoryOffset = 0;
+    argumentBlock->ObjectAttributes.ObjectNameOffset = 0;
+    
+    /* Copy the object attributes fields. */
+    memcpy(
+        &argumentBlock->ObjectAttributes.ObjectAttributes,
+        &objectAttributes,
+        sizeof(OBJECT_ATTRIBUTES)
+        );
+    
+    /* Copy the root directory structure, if we have one. */
+    if (rootDirectoryArgumentBlock)
+    {
+        ULONG rootDirectoryOffset;
+        
+        /* It will go directly after the KPHSS_OBJECT_ATTRIBUTES structure. */
+        rootDirectoryOffset = sizeof(KPHSS_OBJECT_ATTRIBUTES);
+        argumentBlock->ObjectAttributes.RootDirectoryOffset = rootDirectoryOffset;
+        /* Copy it. */
+        memcpy(
+            PTR_ADD_OFFSET(&argumentBlock->ObjectAttributes, rootDirectoryOffset),
+            &rootDirectoryArgumentBlock->Handle,
+            rootDirectoryArgumentBlockSize
+            );
+        /* Free the block. */
+        KphpSsFreeArgumentBlock(rootDirectoryArgumentBlock);
+    }
+    
+    /* Copy the object name structure, if we have one. */
+    if (objectNameArgumentBlock)
+    {
+        ULONG objectNameOffset;
+        
+        /* We'll place the structure after the root directory structure, 
+         * if present.
+         */
+        objectNameOffset = sizeof(KPHSS_OBJECT_ATTRIBUTES) + rootDirectoryArgumentBlockSize;
+        argumentBlock->ObjectAttributes.ObjectNameOffset = objectNameOffset;
+        /* Copy it. */
+        memcpy(
+            PTR_ADD_OFFSET(&argumentBlock->ObjectAttributes, objectNameOffset),
+            &objectNameArgumentBlock->UnicodeString,
+            objectNameArgumentBlockSize
+            );
+        /* Free the block. */
+        KphpSsFreeArgumentBlock(objectNameArgumentBlock);
+    }
+    
+    *ArgumentBlock = argumentBlock;
+    
+    return status;
+}
+
 /* KphpSsCreateArgumentBlock
  * 
  * Allocates and initializes an argument block.
@@ -770,8 +1156,11 @@ NTSTATUS KphpSsCreateArgumentBlock(
 {
     NTSTATUS status = STATUS_SUCCESS;
     PKPHSS_ARGUMENT_BLOCK argumentBlock;
+    KPROCESSOR_MODE previousMode;
     PKPHSS_CALL_ENTRY callEntry;
     KPHSS_ARGUMENT_TYPE argumentType;
+    
+    previousMode = KeGetPreviousMode();
     
     /* Get a pointer to the call entry for the system service. 
      * If we don't have one, we can't proceed.
@@ -802,16 +1191,32 @@ NTSTATUS KphpSsCreateArgumentBlock(
         case Int16Argument:
         case Int32Argument:
         case Int64Argument:
-            status = KphpSsCaptureSimple(
+            status = KphpSsCaptureSimpleArgument(
                 &argumentBlock,
                 (PVOID)Argument,
-                argumentType
+                argumentType,
+                previousMode
                 );
             break;
         case HandleArgument:
-            status = KphpSsCaptureHandle(
+            status = KphpSsCaptureHandleArgument(
                 &argumentBlock,
-                (HANDLE)Argument
+                (HANDLE)Argument,
+                previousMode
+                );
+            break;
+        case UnicodeStringArgument:
+            status = KphpSsCaptureUnicodeStringArgument(
+                &argumentBlock,
+                (PUNICODE_STRING)Argument,
+                previousMode
+                );
+            break;
+        case ObjectAttributesArgument:
+            status = KphpSsCaptureObjectAttributesArgument(
+                &argumentBlock,
+                (POBJECT_ATTRIBUTES)Argument,
+                previousMode
                 );
             break;
         default:
@@ -828,6 +1233,35 @@ NTSTATUS KphpSsCreateArgumentBlock(
     *ArgumentBlock = argumentBlock;
     
     return status;
+}
+
+/* KphpSsAllocateArgumentBlock
+ * 
+ * Allocates an argument block and initializes some fields.
+ */
+PKPHSS_ARGUMENT_BLOCK KphpSsAllocateArgumentBlock(
+    __in ULONG InnerSize,
+    __in KPHSS_ARGUMENT_TYPE Type
+    )
+{
+    PKPHSS_ARGUMENT_BLOCK argumentBlock;
+    ULONG size;
+    
+    size = KPHSS_ARGUMENT_BLOCK_SIZE(InnerSize);
+    argumentBlock = ExAllocatePoolWithTag(
+        PagedPool,
+        size,
+        TAG_ARGUMENT_BLOCK
+        );
+    
+    if (!argumentBlock)
+        return NULL;
+    
+    argumentBlock->Header.Type = ArgumentBlockType;
+    argumentBlock->Header.Size = size;
+    argumentBlock->Type = Type;
+    
+    return argumentBlock;
 }
 
 /* KphpSsFreeArgumentBlock
@@ -855,6 +1289,7 @@ NTSTATUS KphpSsWriteBlock(
     LARGE_INTEGER zeroTimeout;
     KPH_ATTACH_STATE attachState;
     ULONG availableSpace;
+    HANDLE dupHandleInClient = NULL;
     
     zeroTimeout.QuadPart = 0;
     
@@ -976,6 +1411,40 @@ NTSTATUS KphpSsWriteBlock(
         goto CleanupBufferMutex;
     }
     
+    /* HACK: If this is a HANDLE argument block, we need to duplicate 
+     * the handle into the client process. This makes it possible 
+     * for the client to get additional information about the object.
+     */
+    if (Block->Type == ArgumentBlockType)
+    {
+        PKPHSS_ARGUMENT_BLOCK argumentBlock = (PKPHSS_ARGUMENT_BLOCK)Block;
+        
+        if (
+            argumentBlock->Type == HandleArgument && 
+            argumentBlock->Handle.HandleInClient
+            )
+        {
+            /* Duplicate the handle. */
+            status = ObDuplicateObject(
+                PsGetCurrentProcess(),
+                ClientEntry->Process,
+                argumentBlock->Handle.HandleInClient,
+                &dupHandleInClient,
+                0xffffffff, /* HACK */
+                0,
+                0,
+                KernelMode
+                );
+            
+            /* Replace the HandleInClient value with our new 
+             * duplicated handle value. Note that if the 
+             * duplication failed, we will be replacing it with 
+             * NULL.
+             */
+            argumentBlock->Handle.HandleInClient = dupHandleInClient;
+        }
+    }
+    
     /* Time to copy the block into the buffer.
      */
     KphAttachProcess(ClientEntry->Process, &attachState);
@@ -1021,6 +1490,23 @@ NTSTATUS KphpSsWriteBlock(
     dprintf("Ss: Wrote block (server %#x).\n", ClientEntry->BufferCursor);
     
 CleanupBufferMutex:
+    /* HACK: Did we successfully write the block? If we didn't, we should 
+     * close the handle we may have duplicated into the client.
+     */
+    if (!KPHSS_BLOCK_SUCCESS(status) && dupHandleInClient)
+    {
+        ObDuplicateObject(
+            ClientEntry->Process,
+            NULL,
+            dupHandleInClient,
+            NULL,
+            0,
+            0,
+            0,
+            KernelMode
+            );
+    }
+    
     if (SequenceMode != InSequence)
         ExReleaseFastMutex(&ClientEntry->BufferMutex);
     
