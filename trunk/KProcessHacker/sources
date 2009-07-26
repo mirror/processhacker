@@ -15,6 +15,7 @@ SOURCES= \
     protect.c \
     sync.c \
     sysservice.c \
+    sysservicedata.c \
     trace.c \
     \
     io.c \

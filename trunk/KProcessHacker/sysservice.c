@@ -36,6 +36,7 @@
 
 extern PDRIVER_OBJECT KphDriverObject;
 
+/* A fast mutex guarding starting/stopping system service logging. */
 FAST_MUTEX KphSsMutex;
 /* Whether system service logging has been initialized. */
 BOOLEAN KphSsInitialized = FALSE;
@@ -44,11 +45,17 @@ KPH_HOOK KphSsKiFastCallEntryHook;
 /* The number of active loggers. */
 ULONG KphSsNumberOfActiveLoggers = 0;
 
+/* The object type for client entries. */
 PKPH_OBJECT_TYPE KphSsClientEntryType;
-PKPH_OBJECT_TYPE KphSsProcessEntryType;
+/* The object type for ruleset entries. */
+PKPH_OBJECT_TYPE KphSsRuleSetEntryType;
+/* The object type for rule entries. */
+PKPH_OBJECT_TYPE KphSsRuleEntryType;
 
-FAST_MUTEX KphSsProcessListMutex;
-LIST_ENTRY KphSsProcessListHead;
+/* A fast mutex guarding all accesses to the ruleset list. */
+FAST_MUTEX KphSsRuleSetListMutex;
+/* The list of ruleset entries. */
+LIST_ENTRY KphSsRuleSetListHead;
 
 /* KphSsLogInit
  * 
@@ -58,10 +65,13 @@ NTSTATUS KphSsLogInit()
 {
     NTSTATUS status = STATUS_SUCCESS;
     
+    /* Initialize the system service call data. */
+    KphSsDataInit();
+    
     /* Initialize the process list. */
-    InitializeListHead(&KphSsProcessListHead);
+    InitializeListHead(&KphSsRuleSetListHead);
     ExInitializeFastMutex(&KphSsMutex);
-    ExInitializeFastMutex(&KphSsProcessListMutex);
+    ExInitializeFastMutex(&KphSsRuleSetListMutex);
     
     /* Initialize the object types. */
     status = KphCreateObjectType(
@@ -74,9 +84,9 @@ NTSTATUS KphSsLogInit()
         return status;
     
     status = KphCreateObjectType(
-        &KphSsProcessEntryType,
+        &KphSsRuleSetEntryType,
         NonPagedPool,
-        KphpSsProcessEntryDeleteProcedure
+        KphpSsRuleSetEntryDeleteProcedure
         );
     
     if (!NT_SUCCESS(status))
@@ -85,7 +95,31 @@ NTSTATUS KphSsLogInit()
         return status;
     }
     
+    status = KphCreateObjectType(
+        &KphSsRuleEntryType,
+        NonPagedPool,
+        NULL
+        );
+    
+    if (!NT_SUCCESS(status))
+    {
+        KphDereferenceObject(KphSsClientEntryType);
+        KphDereferenceObject(KphSsRuleSetEntryType);
+        return status;
+    }
+    
     return status;
+}
+
+/* KphSsLogDeinit
+ * 
+ * Frees system service logging data.
+ */
+NTSTATUS KphSsLogDeinit()
+{
+    KphSsDataDeinit();
+    
+    return STATUS_SUCCESS;
 }
 
 /* KphSsLogStart
@@ -167,7 +201,7 @@ NTSTATUS KphSsLogStop()
  * 
  * Creates a client entry which describes a client of the 
  * system service logger. Clients receieve system service log events. 
- * Note that a client may have several process entries associated 
+ * Note that a client may have several ruleset entries associated 
  * with it.
  * 
  * ClientEntry: A variable which receives a pointer to the client entry.
@@ -284,6 +318,8 @@ NTSTATUS KphSsCreateClientEntry(
     clientEntry->BufferBase = BufferBase;
     clientEntry->BufferSize = BufferSize;
     clientEntry->BufferCursor = 0;
+    clientEntry->NumberOfBlocksWritten = 0;
+    clientEntry->NumberOfBlocksDropped = 0;
     
     *ClientEntry = clientEntry;
     
@@ -307,91 +343,291 @@ VOID NTAPI KphpSsClientEntryDeleteProcedure(
     ObDereferenceObject(clientEntry->WriteSemaphore);
 }
 
-/* KphSsCreateProcessEntry
+/* KphSsCreateRuleSetEntry
  * 
- * Creates a process entry which describes a process for which 
- * system services will be logged.
+ * Creates a ruleset entry which contains a list of rules 
+ * and an action to perform.
  */
-NTSTATUS KphSsCreateProcessEntry(
-    __out PKPHSS_PROCESS_ENTRY *ProcessEntry,
+NTSTATUS KphSsCreateRuleSetEntry(
+    __out PKPHSS_RULESET_ENTRY *RuleSetEntry,
     __in PKPHSS_CLIENT_ENTRY ClientEntry,
-    __in HANDLE TargetProcessHandle,
-    __in ULONG Flags
+    __in KPHSS_FILTER_TYPE DefaultFilterType,
+    __in KPHSS_RULESET_ACTION Action
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
-    PKPHSS_PROCESS_ENTRY processEntry;
-    PEPROCESS processObject;
+    PKPHSS_RULESET_ENTRY ruleSetEntry;
     
-    /* Check if the flags are valid. */
-    if ((Flags & KPHSS_LOG_VALID_FLAGS) != Flags)
-        return STATUS_INVALID_PARAMETER_4;
+    /* Make sure the action is valid. */
+    if (Action < LogRuleSetAction || Action >= MaxRuleSetAction)
+        return STATUS_INVALID_PARAMETER_3;
     
-    /* If the caller didn't specify any mode flags, assume both modes. */
-    if (!(Flags & (KPHSS_LOG_USER_MODE | KPHSS_LOG_KERNEL_MODE)))
-        Flags |= KPHSS_LOG_USER_MODE | KPHSS_LOG_KERNEL_MODE;
-    
-    /* Reference the process object. Note that we don't actually 
-     * need to keep the process object alive since we don't 
-     * access it at any point.
-     */
-    status = ObReferenceObjectByHandle(
-        TargetProcessHandle,
-        0,
-        *PsProcessType,
-        KernelMode,
-        &processObject,
-        NULL
-        );
-    
-    if (!NT_SUCCESS(status))
-        return status;
-    
-    ObDereferenceObject(processObject);
-    
-    /* Create the process entry object. */
+    /* Create the ruleset object. */
     status = KphCreateObject(
-        &processEntry,
-        sizeof(KPHSS_PROCESS_ENTRY),
+        &ruleSetEntry,
+        sizeof(KPHSS_RULESET_ENTRY),
         0,
-        KphSsProcessEntryType,
+        KphSsRuleSetEntryType,
         0
         );
     
     if (!NT_SUCCESS(status))
         return status;
     
+    /* Initialize the ruleset object. */
     KphReferenceObject(ClientEntry);
-    processEntry->Client = ClientEntry;
-    processEntry->TargetProcess = processObject;
-    processEntry->Flags = Flags;
+    ruleSetEntry->Client = ClientEntry;
+    ruleSetEntry->DefaultFilterType = DefaultFilterType;
+    ruleSetEntry->Action = Action;
+    ruleSetEntry->NextRuleHandle = 4;
+    ExInitializeFastMutex(&ruleSetEntry->RuleListMutex);
+    InitializeListHead(&ruleSetEntry->RuleListHead);
     
-    ExAcquireFastMutex(&KphSsProcessListMutex);
-    InsertHeadList(&KphSsProcessListHead, &processEntry->ProcessListEntry);
-    ExReleaseFastMutex(&KphSsProcessListMutex);
+    /* Add the ruleset to the list. */
+    ExAcquireFastMutex(&KphSsRuleSetListMutex);
+    InsertHeadList(&KphSsRuleSetListHead, &ruleSetEntry->RuleSetListEntry);
+    ExReleaseFastMutex(&KphSsRuleSetListMutex);
     
-    *ProcessEntry = processEntry;
+    *RuleSetEntry = ruleSetEntry;
     
     return status;
 }
 
-/* KphpSsProcessEntryDeleteProcedure
+/* KphpSsRuleSetEntryDeleteProcedure
  * 
- * Performs cleanup for a process entry.
+ * Performs cleanup for a ruleset entry.
  */
-VOID NTAPI KphpSsProcessEntryDeleteProcedure(
+VOID NTAPI KphpSsRuleSetEntryDeleteProcedure(
     __in PVOID Object,
     __in ULONG Flags,
     __in SIZE_T Size
     )
 {
-    PKPHSS_PROCESS_ENTRY processEntry = (PKPHSS_PROCESS_ENTRY)Object;
+    PKPHSS_RULESET_ENTRY ruleSetEntry = (PKPHSS_RULESET_ENTRY)Object;
+    PLIST_ENTRY currentRuleListEntry;
     
-    KphDereferenceObject(processEntry->Client);
+    /* Dereference the client entry. */
+    KphDereferenceObject(ruleSetEntry->Client);
     
-    ExAcquireFastMutex(&KphSsProcessListMutex);
-    RemoveEntryList(&processEntry->ProcessListEntry);
-    ExReleaseFastMutex(&KphSsProcessListMutex);
+    /* Dereference all rules in the ruleset. */
+    ExAcquireFastMutex(&ruleSetEntry->RuleListMutex);
+    
+    currentRuleListEntry = ruleSetEntry->RuleListHead.Flink;
+    
+    while (currentRuleListEntry != &ruleSetEntry->RuleListHead)
+    {
+        KphDereferenceObject(KPHSS_RULE_ENTRY(currentRuleListEntry));
+        currentRuleListEntry = currentRuleListEntry->Flink;
+    }
+    
+    ExReleaseFastMutex(&ruleSetEntry->RuleListMutex);
+    
+    /* Remove the ruleset from the list. */
+    ExAcquireFastMutex(&KphSsRuleSetListMutex);
+    RemoveEntryList(&ruleSetEntry->RuleSetListEntry);
+    ExReleaseFastMutex(&KphSsRuleSetListMutex);
+}
+
+/* KphSsAddProcessIdRule
+ * 
+ * Adds a process ID rule entry to a ruleset entry.
+ */
+NTSTATUS KphSsAddProcessIdRule(
+    __out PKPHSS_RULE_ENTRY *RuleEntry,
+    __in PKPHSS_RULESET_ENTRY RuleSetEntry,
+    __in KPHSS_FILTER_TYPE FilterType,
+    __in HANDLE ProcessId
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PKPHSS_RULE_ENTRY ruleEntry;
+    
+    /* Add the rule. */
+    status = KphpSsAddRule(&ruleEntry, RuleSetEntry, FilterType, ProcessIdRuleType);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    ruleEntry->ProcessIdRule.ProcessId = ProcessId;
+    ruleEntry->Initialized = TRUE;
+    
+    *RuleEntry = ruleEntry;
+    
+    return status;
+}
+
+/* KphSsAddThreadIdRule
+ * 
+ * Adds a thread ID rule entry to a ruleset entry.
+ */
+NTSTATUS KphSsAddThreadIdRule(
+    __out PKPHSS_RULE_ENTRY *RuleEntry,
+    __in PKPHSS_RULESET_ENTRY RuleSetEntry,
+    __in KPHSS_FILTER_TYPE FilterType,
+    __in HANDLE ThreadId
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PKPHSS_RULE_ENTRY ruleEntry;
+    
+    /* Add the rule. */
+    status = KphpSsAddRule(&ruleEntry, RuleSetEntry, FilterType, ThreadIdRuleType);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    ruleEntry->ThreadIdRule.ThreadId = ThreadId;
+    ruleEntry->Initialized = TRUE;
+    
+    *RuleEntry = ruleEntry;
+    
+    return status;
+}
+
+/* KphSsAddPreviousModeRule
+ * 
+ * Adds a previous mode rule entry to a ruleset entry.
+ */
+NTSTATUS KphSsAddPreviousModeRule(
+    __out PKPHSS_RULE_ENTRY *RuleEntry,
+    __in PKPHSS_RULESET_ENTRY RuleSetEntry,
+    __in KPHSS_FILTER_TYPE FilterType,
+    __in KPROCESSOR_MODE PreviousMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PKPHSS_RULE_ENTRY ruleEntry;
+    
+    /* Add the rule. */
+    status = KphpSsAddRule(&ruleEntry, RuleSetEntry, FilterType, PreviousModeRuleType);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    ruleEntry->PreviousModeRule.PreviousMode = PreviousMode;
+    ruleEntry->Initialized = TRUE;
+    
+    *RuleEntry = ruleEntry;
+    
+    return status;
+}
+
+/* KphSsAddNumberRule
+ * 
+ * Adds a system service number rule entry to a ruleset entry.
+ */
+NTSTATUS KphSsAddNumberRule(
+    __out PKPHSS_RULE_ENTRY *RuleEntry,
+    __in PKPHSS_RULESET_ENTRY RuleSetEntry,
+    __in KPHSS_FILTER_TYPE FilterType,
+    __in ULONG Number
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PKPHSS_RULE_ENTRY ruleEntry;
+    
+    /* Add the rule. */
+    status = KphpSsAddRule(&ruleEntry, RuleSetEntry, FilterType, NumberRuleType);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    ruleEntry->NumberRule.Number = Number;
+    ruleEntry->Initialized = TRUE;
+    
+    *RuleEntry = ruleEntry;
+    
+    return status;
+}
+
+/* KphSsRemoveRule
+ * 
+ * Removes a rule entry from a ruleset entry.
+ */
+NTSTATUS KphSsRemoveRule(
+    __in PKPHSS_RULESET_ENTRY RuleSetEntry,
+    __in HANDLE RuleEntryHandle
+    )
+{
+    PLIST_ENTRY currentListEntry;
+    
+    ExAcquireFastMutex(&RuleSetEntry->RuleListMutex);
+    
+    currentListEntry = RuleSetEntry->RuleListHead.Flink;
+    
+    while (currentListEntry != &RuleSetEntry->RuleListHead)
+    {
+        PKPHSS_RULE_ENTRY ruleEntry = KPHSS_RULE_ENTRY(currentListEntry);
+        
+        if (ruleEntry->Handle == RuleEntryHandle)
+        {
+            RemoveEntryList(&ruleEntry->RuleListEntry);
+            ExReleaseFastMutex(&RuleSetEntry->RuleListMutex);
+            
+            return STATUS_SUCCESS;
+        }
+        
+        currentListEntry = currentListEntry->Flink;
+    }
+    
+    ExReleaseFastMutex(&RuleSetEntry->RuleListMutex);
+    
+    return STATUS_INVALID_PARAMETER_2;
+}
+
+/* KphpSsAddRule
+ * 
+ * Adds a rule entry to a ruleset entry.
+ */
+NTSTATUS KphpSsAddRule(
+    __out PKPHSS_RULE_ENTRY *RuleEntry,
+    __in PKPHSS_RULESET_ENTRY RuleSetEntry,
+    __in KPHSS_FILTER_TYPE FilterType,
+    __in KPHSS_RULE_TYPE RuleType
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PKPHSS_RULE_ENTRY ruleEntry;
+    
+    /* Make sure the filter/rule type is valid. */
+    if (FilterType < IncludeFilterType || FilterType >= MaxFilterType)
+        return STATUS_INVALID_PARAMETER_3;
+    if (RuleType < ProcessIdRuleType || RuleType >= MaxRuleType)
+        return STATUS_INVALID_PARAMETER_4;
+    
+    /* Create the rule entry object. */
+    status = KphCreateObject(
+        &ruleEntry,
+        sizeof(KPHSS_RULE_ENTRY),
+        0,
+        KphSsRuleEntryType,
+        0
+        );
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    /* Initialize the object. */
+    ruleEntry->Initialized = FALSE;
+    ruleEntry->FilterType = FilterType;
+    ruleEntry->RuleType = RuleType;
+    
+    /* Get a handle for the rule. */
+    ruleEntry->Handle = (HANDLE)InterlockedExchangeAdd(
+        &RuleSetEntry->NextRuleHandle,
+        KPHSS_RULE_HANDLE_INCREMENT
+        );
+    
+    /* Add the rule to the ruleset. */
+    ExAcquireFastMutex(&RuleSetEntry->RuleListMutex);
+    InsertTailList(&RuleSetEntry->RuleListHead, &ruleEntry->RuleListEntry);
+    ExReleaseFastMutex(&RuleSetEntry->RuleListMutex);
+    /* Add a reference for the rule being on the list. */
+    KphReferenceObject(ruleEntry);
+    
+    *RuleEntry = ruleEntry;
+    
+    return status;
 }
 
 /* KphpSsCreateEventBlock
@@ -405,14 +641,14 @@ VOID NTAPI KphpSsProcessEntryDeleteProcedure(
  * NumberOfArguments: The number of arguments, in ULONGs.
  */
 NTSTATUS KphpSsCreateEventBlock(
-    __out PKPHPSS_EVENT_BLOCK *EventBlock,
+    __out PKPHSS_EVENT_BLOCK *EventBlock,
     __in PKTHREAD Thread,
     __in ULONG Number,
     __in ULONG *Arguments,
     __in ULONG NumberOfArguments
     )
 {
-    PKPHPSS_EVENT_BLOCK eventBlock;
+    PKPHSS_EVENT_BLOCK eventBlock;
     KPROCESSOR_MODE previousMode;
     ULONG eventBlockSize;
     ULONG argumentsSize;
@@ -451,11 +687,7 @@ NTSTATUS KphpSsCreateEventBlock(
     /* Calculate the size of the event block. */
     argumentsSize = NumberOfArguments * sizeof(ULONG);
     traceSize = capturedFrames * sizeof(PVOID);
-    eventBlockSize = sizeof(KPHPSS_EVENT_BLOCK) + argumentsSize + traceSize;
-    
-    /* Check if the event block is too large. */
-    if (eventBlockSize > KPHPSS_EVENT_BLOCK_MAX_SIZE)
-        return STATUS_UNSUCCESSFUL;
+    eventBlockSize = sizeof(KPHSS_EVENT_BLOCK) + argumentsSize + traceSize;
     
     /* Allocate the event block. */
     eventBlock = ExAllocatePoolWithTag(PagedPool, eventBlockSize, TAG_EVENT_BLOCK);
@@ -472,15 +704,15 @@ NTSTATUS KphpSsCreateEventBlock(
     eventBlock->ClientId.UniqueProcess = PsGetProcessId(IoThreadToProcess(Thread));
     eventBlock->Number = Number;
     eventBlock->NumberOfArguments = NumberOfArguments;
-    eventBlock->ArgumentsOffset = sizeof(KPHPSS_EVENT_BLOCK);
+    eventBlock->ArgumentsOffset = sizeof(KPHSS_EVENT_BLOCK);
     eventBlock->TraceCount = capturedFrames;
-    eventBlock->TraceOffset = sizeof(KPHPSS_EVENT_BLOCK) + argumentsSize;
+    eventBlock->TraceOffset = sizeof(KPHSS_EVENT_BLOCK) + argumentsSize;
     
     /* Set the flags according to the previous mode. */
     if (previousMode == UserMode)
-        eventBlock->Flags |= KPHPSS_EVENT_USER_MODE;
+        eventBlock->Flags |= KPHSS_EVENT_USER_MODE;
     else if (previousMode == KernelMode)
-        eventBlock->Flags |= KPHPSS_EVENT_KERNEL_MODE;
+        eventBlock->Flags |= KPHSS_EVENT_KERNEL_MODE;
     
     /* Probe and copy the arguments. */
     if (previousMode != KernelMode)
@@ -491,7 +723,7 @@ NTSTATUS KphpSsCreateEventBlock(
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
-            eventBlock->Flags |= KPHPSS_EVENT_PROBE_ARGUMENTS_FAILED;
+            eventBlock->Flags |= KPHSS_EVENT_PROBE_ARGUMENTS_FAILED;
         }
     }
     
@@ -502,7 +734,7 @@ NTSTATUS KphpSsCreateEventBlock(
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
-        eventBlock->Flags |= KPHPSS_EVENT_COPY_ARGUMENTS_FAILED;
+        eventBlock->Flags |= KPHSS_EVENT_COPY_ARGUMENTS_FAILED;
     }
     
     /* Copy the stack trace. */
@@ -519,10 +751,94 @@ NTSTATUS KphpSsCreateEventBlock(
  * Frees an event block created by KphpSsCreateEventBlock.
  */
 VOID KphpSsFreeEventBlock(
-    __in PKPHPSS_EVENT_BLOCK EventBlock
+    __in PKPHSS_EVENT_BLOCK EventBlock
     )
 {
     ExFreePoolWithTag(EventBlock, TAG_EVENT_BLOCK);
+}
+
+/* KphpSsCreateArgumentBlock
+ * 
+ * Allocates and initializes an argument block.
+ */
+NTSTATUS KphpSsCreateArgumentBlock(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in ULONG Number,
+    __in ULONG Argument,
+    __in ULONG Index
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PKPHSS_ARGUMENT_BLOCK argumentBlock;
+    PKPHSS_CALL_ENTRY callEntry;
+    KPHSS_ARGUMENT_TYPE argumentType;
+    
+    /* Get a pointer to the call entry for the system service. 
+     * If we don't have one, we can't proceed.
+     */
+    callEntry = KphSsLookupCallEntry(Number);
+    
+    if (!callEntry)
+        return STATUS_INVALID_PARAMETER_2;
+    
+    /* Validate the argument index. */
+    if (Index >= callEntry->NumberOfArguments)
+        return STATUS_INVALID_PARAMETER_3;
+    
+    /* Is this a normal argument? If so, there's no point 
+     * creating an argument block since the data is already 
+     * in the event block.
+     */
+    argumentType = callEntry->Arguments[Index];
+    
+    if (argumentType == NormalArgument)
+        return STATUS_UNSUCCESSFUL;
+    
+    /* Capture the argument. */
+    
+    switch (argumentType)
+    {
+        case Int8Argument:
+        case Int16Argument:
+        case Int32Argument:
+        case Int64Argument:
+            status = KphpSsCaptureSimple(
+                &argumentBlock,
+                (PVOID)Argument,
+                argumentType
+                );
+            break;
+        case HandleArgument:
+            status = KphpSsCaptureHandle(
+                &argumentBlock,
+                (HANDLE)Argument
+                );
+            break;
+        default:
+            status = STATUS_NOT_IMPLEMENTED;
+            break;
+    }
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    /* Put the index in. */
+    argumentBlock->Index = Index;
+    
+    *ArgumentBlock = argumentBlock;
+    
+    return status;
+}
+
+/* KphpSsFreeArgumentBlock
+ * 
+ * Frees an argument block created by KphpSsCreateArgumentBlock.
+ */
+VOID KphpSsFreeArgumentBlock(
+    __in PKPHSS_ARGUMENT_BLOCK ArgumentBlock
+    )
+{
+    ExFreePoolWithTag(ArgumentBlock, TAG_ARGUMENT_BLOCK);
 }
 
 /* KphpSsWriteBlock
@@ -531,7 +847,8 @@ VOID KphpSsFreeEventBlock(
  */
 NTSTATUS KphpSsWriteBlock(
     __in PKPHSS_CLIENT_ENTRY ClientEntry,
-    __in PKPHPSS_BLOCK_HEADER Block
+    __in_opt PKPHSS_BLOCK_HEADER Block,
+    __in KPHSS_SEQUENCE_MODE SequenceMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -541,7 +858,35 @@ NTSTATUS KphpSsWriteBlock(
     
     zeroTimeout.QuadPart = 0;
     
-    ExAcquireFastMutex(&ClientEntry->BufferMutex);
+    /* Take care of the sequence mode. If it isn't 
+     * NoSequence, it is effectively a way for the caller 
+     * to control the buffer mutex.
+     */
+    if (SequenceMode == StartSequence)
+    {
+        ExAcquireFastMutex(&ClientEntry->BufferMutex);
+        return STATUS_SUCCESS;
+    }
+    else if (SequenceMode == EndSequence)
+    {
+        ExReleaseFastMutex(&ClientEntry->BufferMutex);
+        return STATUS_SUCCESS;
+    }
+    else
+    {
+        /* If we aren't manipulating the mutex, we need 
+         * a block to write.
+         */
+        if (!Block)
+            return STATUS_INVALID_PARAMETER_2;
+        
+        /* If we're in a sequence, don't acquire the mutex 
+         * because the caller would have acquired it using 
+         * StartSequence already.
+         */
+        if (SequenceMode != InSequence)
+            ExAcquireFastMutex(&ClientEntry->BufferMutex);
+    }
     
     /* Try to acquire the write semaphore. If we can't acquire 
      * it immediately, drop the block.
@@ -554,13 +899,15 @@ NTSTATUS KphpSsWriteBlock(
         &zeroTimeout
         );
     
-    if (!NT_SUCCESS(status) || status == STATUS_TIMEOUT)
+    if (!KPHSS_BLOCK_SUCCESS(status))
     {
         if (status == STATUS_TIMEOUT)
-            dfprintf("Ss: WARNING: Dropped block (server %#x).\n", ClientEntry->BufferCursor);
+        {
+            dprintf("Ss: WARNING: Dropped block (server %#x).\n", ClientEntry->BufferCursor);
+            ClientEntry->NumberOfBlocksDropped++;
+        }
         
-        ExReleaseFastMutex(&ClientEntry->BufferMutex);
-        return status;
+        goto CleanupBufferMutex;
     }
     
     availableSpace = ClientEntry->BufferSize - ClientEntry->BufferCursor;
@@ -574,23 +921,23 @@ NTSTATUS KphpSsWriteBlock(
      */
     
     /* Check if we have enough space for a block header. */
-    if (availableSpace < sizeof(KPHPSS_BLOCK_HEADER))
+    if (availableSpace < sizeof(KPHSS_BLOCK_HEADER))
     {
         /* Not enough space. Reset the cursor. */
-        dfprintf("Ss: Implicit cursor reset (server %#x).\n", ClientEntry->BufferCursor);
+        dprintf("Ss: Implicit cursor reset (server %#x).\n", ClientEntry->BufferCursor);
         ClientEntry->BufferCursor = 0;
         availableSpace = ClientEntry->BufferSize;
     }
     /* Check if we have enough space for the block. */
     else if (availableSpace < Block->Size)
     {
-        KPHPSS_RESET_BLOCK resetBlock;
+        KPHSS_RESET_BLOCK resetBlock;
         
         /* Not enough space for the block, but enough space 
          * for a reset block. Write the reset block and reset
          * the cursor.
          */
-        resetBlock.Header.Size = sizeof(KPHPSS_RESET_BLOCK);
+        resetBlock.Header.Size = sizeof(KPHSS_RESET_BLOCK);
         resetBlock.Header.Type = ResetBlockType;
         
         /* Attach to the client process and copy the block. */
@@ -607,12 +954,11 @@ NTSTATUS KphpSsWriteBlock(
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
             KphDetachProcess(&attachState);
-            ExReleaseFastMutex(&ClientEntry->BufferMutex);
-            
-            return GetExceptionCode();
+            status = GetExceptionCode();
+            goto CleanupBufferMutex;
         }
         
-        dfprintf("Ss: Wrote reset block (server %#x).\n", ClientEntry->BufferCursor);
+        dprintf("Ss: Wrote reset block (server %#x).\n", ClientEntry->BufferCursor);
         KphDetachProcess(&attachState);
         ClientEntry->BufferCursor = 0;
         availableSpace = ClientEntry->BufferSize;
@@ -626,8 +972,8 @@ NTSTATUS KphpSsWriteBlock(
     if (availableSpace < Block->Size)
     {
         dfprintf("Ss: WARNING: Insufficient buffer size (server %#x).\n", ClientEntry->BufferCursor);
-        ExReleaseFastMutex(&ClientEntry->BufferMutex);
-        return STATUS_BUFFER_TOO_SMALL;
+        status = STATUS_BUFFER_TOO_SMALL;
+        goto CleanupBufferMutex;
     }
     
     /* Time to copy the block into the buffer.
@@ -646,8 +992,8 @@ NTSTATUS KphpSsWriteBlock(
     {
         dfprintf("Ss: ERROR: Could not write to the client buffer (server %#x)!\n", ClientEntry->BufferCursor);
         KphDetachProcess(&attachState);
-        ExReleaseFastMutex(&ClientEntry->BufferMutex);
-        return GetExceptionCode();
+        status = GetExceptionCode();
+        goto CleanupBufferMutex;
     }
     
     KphDetachProcess(&attachState);
@@ -665,15 +1011,18 @@ NTSTATUS KphpSsWriteBlock(
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
         dfprintf("Ss: ERROR: Could not release read semaphore (server %#x)!\n", ClientEntry->BufferCursor);
-        ExReleaseFastMutex(&ClientEntry->BufferMutex);
-        return GetExceptionCode();
+        status = GetExceptionCode();
+        goto CleanupBufferMutex;
     }
     
     ClientEntry->BufferCursor += Block->Size;
+    ClientEntry->NumberOfBlocksWritten++;
     
-    dfprintf("Ss: Wrote block (server %#x).\n", ClientEntry->BufferCursor);
+    dprintf("Ss: Wrote block (server %#x).\n", ClientEntry->BufferCursor);
     
-    ExReleaseFastMutex(&ClientEntry->BufferMutex);
+CleanupBufferMutex:
+    if (SequenceMode != InSequence)
+        ExReleaseFastMutex(&ClientEntry->BufferMutex);
     
     return status;
 }
@@ -694,13 +1043,14 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     __in PKTHREAD Thread
     )
 {
+    NTSTATUS status = STATUS_SUCCESS;
     KPROCESSOR_MODE previousMode;
-    PEPROCESS process;
     PLIST_ENTRY currentListEntry;
-    PKPHSS_PROCESS_ENTRY processEntryArray[KPHSS_PROCESS_ENTRY_LIMIT];
-    ULONG processEntryCount;
-    PKPHPSS_EVENT_BLOCK eventBlock;
-    ULONG i;
+    PKPHSS_RULESET_ENTRY ruleSetEntryArray[KPHSS_RULESET_ENTRY_LIMIT];
+    ULONG ruleSetEntryCount;
+    PKPHSS_EVENT_BLOCK eventBlock;
+    PKPHSS_ARGUMENT_BLOCK argumentBlockArray[KPHSS_MAXIMUM_ARGUMENT_BLOCKS];
+    ULONG i, j;
     
     previousMode = KeGetPreviousMode();
     /* Ignore the Thread argument. Replace it with our own. */
@@ -730,7 +1080,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
      * we caused an exception somewhere. */
     if (
         ServiceTable->Base == __KeServiceDescriptorTable->Base && 
-        Number == SysCallZwContinue && 
+        Number == SsNtContinue && 
         NumberOfArguments == 2 && 
         previousMode == KernelMode
         )
@@ -756,53 +1106,53 @@ VOID NTAPI KphpSsLogSystemServiceCall(
         }
     }
     
-    /* Build the process entry array by going through the process 
+    /* Build the ruleset entry array by going through the ruleset 
      * list, referencing each relevant one and copying them into 
      * the local array. This we way don't hold the mutex for too 
      * long.
      */
     
-    process = IoThreadToProcess(Thread);
+    ExAcquireFastMutex(&KphSsRuleSetListMutex);
     
-    if (!process) /* should never happen */
-    {
-        dfprintf("Ss: ERROR: No process for thread!\n");
-        return;
-    }
-    
-    ExAcquireFastMutex(&KphSsProcessListMutex);
-    
-    currentListEntry = KphSsProcessListHead.Flink;
-    processEntryCount = 0;
+    currentListEntry = KphSsRuleSetListHead.Flink;
+    ruleSetEntryCount = 0;
     
     while (
-        currentListEntry != &KphSsProcessListHead && 
-        processEntryCount < KPHSS_PROCESS_ENTRY_LIMIT
+        currentListEntry != &KphSsRuleSetListHead && 
+        ruleSetEntryCount < KPHSS_RULESET_ENTRY_LIMIT
         )
     {
-        PKPHSS_PROCESS_ENTRY processEntry = KPHSS_PROCESS_ENTRY(currentListEntry);
+        PKPHSS_RULESET_ENTRY ruleSetEntry = KPHSS_RULESET_ENTRY(currentListEntry);
         
         if (
-            KphpSsIsProcessEntryRelevant(processEntry, process, previousMode) && 
-            /* Make sure the process entry isn't being destroyed. */
-            !KphIsDestroyedObject(processEntry)
+            KphpSsMatchRuleSetEntry(
+                ruleSetEntry,
+                Number,
+                Arguments,
+                NumberOfArguments,
+                ServiceTable,
+                Thread,
+                previousMode
+                ) && 
+            /* Make sure the ruleset entry isn't being destroyed. */
+            !KphIsDestroyedObject(ruleSetEntry)
             )
         {
-            /* Reference and store the process entry in the local array. */
-            KphReferenceObject(processEntry);
-            processEntryArray[processEntryCount] = processEntry;
-            processEntryCount++;
+            /* Reference and store the ruleset entry in the local array. */
+            KphReferenceObject(ruleSetEntry);
+            ruleSetEntryArray[ruleSetEntryCount] = ruleSetEntry;
+            ruleSetEntryCount++;
         }
         
         currentListEntry = currentListEntry->Flink;
     }
     
-    ExReleaseFastMutex(&KphSsProcessListMutex);
+    ExReleaseFastMutex(&KphSsRuleSetListMutex);
     
-    /* If we didn't find any process entries, don't bother creating the 
+    /* If we didn't find any ruleset entries, don't bother creating the 
      * event block.
      */
-    if (processEntryCount == 0)
+    if (ruleSetEntryCount == 0)
         return;
     
     /* We have work to do. Create an event block first. */
@@ -818,18 +1168,78 @@ VOID NTAPI KphpSsLogSystemServiceCall(
         return;
     }
     
-    /* Go through the process entry array and write the block to each 
-     * client. While we're doing that we can also dereference each 
-     * process entry.
+    /* Create the argument blocks. If we fail to create one, 
+     * set the array entry to NULL and we'll skip it later.
      */
-    for (i = 0; i < processEntryCount; i++)
+    
+    for (i = 0; i < NumberOfArguments && i < KPHSS_MAXIMUM_ARGUMENT_BLOCKS; i++)
     {
-        KphpSsWriteBlock(processEntryArray[i]->Client, &eventBlock->Header);
-        KphDereferenceObject(processEntryArray[i]);
+        ULONG argument;
+        
+        __try
+        {
+            /* We'll assume the arguments have already been probed 
+             * since we created the event block successfully.
+             */
+            argument = Arguments[i];
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            /* The caller is probably malicious. Exit. */
+            KphpSsFreeEventBlock(eventBlock);
+            return;
+        }
+        
+        status = KphpSsCreateArgumentBlock(
+            &argumentBlockArray[i],
+            Number,
+            argument,
+            i
+            );
+        
+        if (!NT_SUCCESS(status))
+            argumentBlockArray[i] = NULL;
+    }
+    
+    /* Go through the ruleset entry array and write the blocks to each 
+     * client. While we're doing that we can also dereference each 
+     * ruleset entry.
+     */
+    for (i = 0; i < ruleSetEntryCount; i++)
+    {
+        /* Begin a sequence. */
+        status = KphpSsWriteBlock(ruleSetEntryArray[i]->Client, NULL, StartSequence);
+        
+        if (NT_SUCCESS(status))
+        {
+            /* Write the event block. */
+            KphpSsWriteBlock(ruleSetEntryArray[i]->Client, &eventBlock->Header, InSequence);
+            
+            /* Write the argument blocks. */
+            for (j = 0; j < NumberOfArguments && j < KPHSS_MAXIMUM_ARGUMENT_BLOCKS; j++)
+            {
+                if (argumentBlockArray[j])
+                {
+                    KphpSsWriteBlock(ruleSetEntryArray[i]->Client, &argumentBlockArray[j]->Header, InSequence);
+                }
+            }
+            
+            /* End the sequence. */
+            KphpSsWriteBlock(ruleSetEntryArray[i]->Client, NULL, EndSequence);
+        }
+        
+        KphDereferenceObject(ruleSetEntryArray[i]);
     }
     
     /* Free the event block. */
     KphpSsFreeEventBlock(eventBlock);
+    
+    /* Free the argument blocks. */
+    for (i = 0; i < NumberOfArguments && i < KPHSS_MAXIMUM_ARGUMENT_BLOCKS; i++)
+    {
+        if (argumentBlockArray[i])
+            KphpSsFreeArgumentBlock(argumentBlockArray[i]);
+    }
 }
 
 /* KphpSsNewKiFastCallEntry

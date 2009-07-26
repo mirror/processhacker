@@ -180,10 +180,11 @@ NTSTATUS KvInit()
         OffEpProtectedProcessBit = 0;
         OffEpRundownProtect = 0x80;
         OffOhBody = 0x18;
+        OffOtName = 0x40;
         OffOtiGenericMapping = 0x60 + 0x8;
         OffOtiOpenProcedure = 0x60 + 0x30;
         
-        SysCallZwContinue = 0x20;
+        SsNtContinue = 0x20;
         
         /* We are scanning for PspTerminateProcess which has 
            the same signature as PsTerminateProcess because 
@@ -262,26 +263,33 @@ NTSTATUS KvInit()
         /* SP0 */
         if (servicePack == 0)
         {
+            OffOtName = 0x40;
             OffOtiGenericMapping = 0x60 + 0xc;
             OffOtiOpenProcedure = 0x60 + 0x30;
             
-            SysCallZwContinue = 0x36;
+            SsNtContinue = 0x36;
         }
         /* SP1 */
         else if (servicePack == 1)
         {
+            OffOtName = 0x8;
             OffOtiGenericMapping = 0x28 + 0xc; /* They got rid of the Mutex (an ERESOURCE) */
             OffOtiOpenProcedure = 0x28 + 0x34;
             
-            SysCallZwContinue = 0x37;
+            SsNtContinue = 0x37;
         }
         /* SP2 */
         else if (servicePack == 2)
         {
+            OffOtName = 0x8;
             OffOtiGenericMapping = 0x28 + 0xc;
             OffOtiOpenProcedure = 0x28 + 0x34;
             
-            SysCallZwContinue = 0x37;
+            SsNtAddAtom = 0x8;
+            SsNtAlertResumeThread = 0xd;
+            SsNtClose = 0x30;
+            SsNtContinue = 0x37;
+            SsNtDelayExecution = 0x76;
         }
         else
         {
@@ -311,10 +319,11 @@ NTSTATUS KvInit()
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0xb0;
         OffOhBody = 0x18;
+        OffOtName = 0x8;
         OffOtiGenericMapping = 0x28 + 0xc;
         OffOtiOpenProcedure = 0x28 + 0x34;
         
-        SysCallZwContinue = 0x3c;
+        SsNtContinue = 0x3c;
         
         INIT_SCAN(
             PsTerminateProcessScan,

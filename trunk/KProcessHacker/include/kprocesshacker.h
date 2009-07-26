@@ -86,7 +86,9 @@
 #define KPH_SSREF KPH_CTL_CODE(42)
 #define KPH_SSUNREF KPH_CTL_CODE(43)
 #define KPH_SSCREATECLIENTENTRY KPH_CTL_CODE(44)
-#define KPH_SSCREATEPROCESSENTRY KPH_CTL_CODE(45)
+#define KPH_SSCREATERULESETENTRY KPH_CTL_CODE(45)
+#define KPH_SSREMOVERULE KPH_CTL_CODE(46)
+#define KPH_SSADDPROCESSIDRULE KPH_CTL_CODE(47)
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath);
 VOID DriverUnload(PDRIVER_OBJECT DriverObject);
@@ -112,6 +114,9 @@ typedef struct _KPH_CLIENT_ENTRY
     /* The number of times the client has "started" the system service logger. */
     LONG SsStartCount;
 } KPH_CLIENT_ENTRY, *PKPH_CLIENT_ENTRY;
+
+VOID SsRef(LONG count);
+VOID SsUnref(LONG count);
 
 VOID NTAPI ClientEntryDeleteProcedure(
     __in PVOID Object,

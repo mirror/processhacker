@@ -96,7 +96,9 @@ namespace ProcessHacker.Native
             SsRef,
             SsUnref,
             SsCreateClientEntry,
-            SsCreateProcessEntry
+            SsCreateRuleSetEntry,
+            SsRemoveRule,
+            SsAddProcessIdRule
         }
 
         [Flags]
@@ -848,6 +850,24 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(CtlCode(Control.SetProcessToken), inData, 8, null, 0);
         }
 
+        public IntPtr SsAddProcessIdRule(
+            KphSsRuleSetEntryHandle ruleSetEntryHandle,
+            KphSsFilterType filterType,
+            IntPtr processId
+            )
+        {
+            byte* inData = stackalloc byte[0xc];
+            byte* outData = stackalloc byte[4];
+
+            *(int*)inData = ruleSetEntryHandle.Handle.ToInt32();
+            *(int*)(inData + 0x4) = (int)filterType;
+            *(int*)(inData + 0x8) = processId.ToInt32();
+
+            _fileHandle.IoControl(CtlCode(Control.SsAddProcessIdRule), inData, 0xc, outData, 4);
+
+            return (*(int*)outData).ToIntPtr();
+        }
+
         public KphSsClientEntryHandle SsCreateClientEntry(
             ProcessHandle processHandle,
             SemaphoreHandle readSemaphoreHandle,
@@ -870,22 +890,35 @@ namespace ProcessHacker.Native
             return new KphSsClientEntryHandle((*(int*)outData).ToIntPtr());
         }
 
-        public KphSsProcessEntryHandle SsCreateProcessEntry(
+        public KphSsRuleSetEntryHandle SsCreateRuleSetEntry(
             KphSsClientEntryHandle clientEntryHandle,
-            ProcessHandle targetProcessHandle,
-            KphSsLogFlags flags
+            KphSsFilterType defaultFilterType,
+            KphSsRuleSetAction action
             )
         {
             byte* inData = stackalloc byte[0xc];
             byte* outData = stackalloc byte[4];
 
             *(int*)inData = clientEntryHandle.Handle.ToInt32();
-            *(int*)(inData + 0x4) = targetProcessHandle;
-            *(int*)(inData + 0x8) = (int)flags;
+            *(int*)(inData + 0x4) = (int)defaultFilterType;
+            *(int*)(inData + 0x8) = (int)action;
 
-            _fileHandle.IoControl(CtlCode(Control.SsCreateProcessEntry), inData, 0xc, outData, 4);
+            _fileHandle.IoControl(CtlCode(Control.SsCreateRuleSetEntry), inData, 0xc, outData, 4);
 
-            return new KphSsProcessEntryHandle((*(int*)outData).ToIntPtr());
+            return new KphSsRuleSetEntryHandle((*(int*)outData).ToIntPtr());
+        }
+
+        public void SsRemoveRule(
+            KphSsRuleSetEntryHandle ruleSetEntryHandle,
+            IntPtr ruleEntryHandle
+            )
+        {
+            byte* inData = stackalloc byte[8];
+
+            *(int*)inData = ruleSetEntryHandle.Handle.ToInt32();
+            *(int*)(inData + 4) = ruleEntryHandle.ToInt32();
+
+            _fileHandle.IoControl(CtlCode(Control.SsRemoveRule), inData, 8, null, 0);
         }
 
         public void SsRef()
@@ -940,10 +973,29 @@ namespace ProcessHacker.Native
         DriverServiceKeyNameInformation
     }
 
+    public enum KphSsArgumentType : int
+    {
+        Normal = 0,
+        Int8,
+        Int16,
+        Int32,
+        Int64,
+        Handle,
+        String,
+        WString,
+        AnsiString,
+        UnicodeString,
+        ObjectAttributes,
+        ClientId,
+        Context,
+        InitialTeb
+    }
+
     public enum KphSsBlockType : int
     {
         Reset,
-        Event
+        Event,
+        Argument
     }
 
     [Flags]
@@ -955,11 +1007,22 @@ namespace ProcessHacker.Native
         UserMode = 0x8
     }
 
+    public enum KphSsFilterType : int
+    {
+        Include,
+        Exclude
+    }
+
     [Flags]
-    public enum KphSsLogFlags : int
+    public enum KphSsModeFlags : int
     {
         UserMode = 0x1,
         KernelMode = 0x2
+    }
+
+    public enum KphSsRuleSetAction : int
+    {
+        Log
     }
 
     public class KphHandle : BaseObject
@@ -989,9 +1052,9 @@ namespace ProcessHacker.Native
         { }
     }
 
-    public class KphSsProcessEntryHandle : KphHandle
+    public class KphSsRuleSetEntryHandle : KphHandle
     {
-        internal KphSsProcessEntryHandle(IntPtr handle)
+        internal KphSsRuleSetEntryHandle(IntPtr handle)
             : base(handle)
         { }
     }
@@ -1005,6 +1068,30 @@ namespace ProcessHacker.Native
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct KphSsArgumentBlock
+    {
+        [StructLayout(LayoutKind.Explicit)]
+        public struct KphSsArgumentUnion
+        {
+            [FieldOffset(0)]
+            public int Normal;
+            [FieldOffset(0)]
+            public byte Int8;
+            [FieldOffset(0)]
+            public short Int16;
+            [FieldOffset(0)]
+            public int Int32;
+            [FieldOffset(0)]
+            public long Int64;
+        }
+
+        public KphSsBlockHeader Header;
+        public int Index;
+        public KphSsArgumentType Type;
+        public KphSsArgumentUnion Data;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct KphSsBlockHeader
     {
         public int Size;
@@ -1014,7 +1101,7 @@ namespace ProcessHacker.Native
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsEventBlock
     {
-        KphSsBlockHeader Header;
+        public KphSsBlockHeader Header;
         public int Flags;
         public long Time;
         public ClientId ClientId;
@@ -1025,6 +1112,20 @@ namespace ProcessHacker.Native
 
         public int TraceCount;
         public int TraceOffset;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KphSsHandle
+    {
+        public int TypeNameOffset;
+        public int NameOffset;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KphSsWString
+    {
+        public ushort Length;
+        public byte Buffer;
     }
 
     [StructLayout(LayoutKind.Sequential)]

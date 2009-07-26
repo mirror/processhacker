@@ -306,6 +306,20 @@ NTSTATUS KphQueryInformationDriver(
     __in KPROCESSOR_MODE AccessMode
     );
 
+NTSTATUS KphQueryNameFileObject(
+    __in PFILE_OBJECT FileObject,
+    __inout_bcount(BufferLength) PUNICODE_STRING Buffer,
+    __in ULONG BufferLength,
+    __out PULONG ReturnLength
+    );
+
+NTSTATUS KphQueryNameObject(
+    __in PVOID Object,
+    __inout_bcount(BufferLength) PUNICODE_STRING Buffer,
+    __in ULONG BufferLength,
+    __out PULONG ReturnLength
+    );
+
 NTSTATUS KphQueryProcessHandles(
     __in HANDLE ProcessHandle,
     __out_bcount_opt(BufferLength) PPROCESS_HANDLE_INFORMATION Buffer,

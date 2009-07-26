@@ -96,6 +96,7 @@ EXT ULONG OffEpProtectedProcessOff;
 EXT ULONG OffEpProtectedProcessBit;
 EXT ULONG OffEpRundownProtect;
 EXT ULONG OffOhBody;
+EXT ULONG OffOtName;
 EXT ULONG OffOtiGenericMapping;
 EXT ULONG OffOtiOpenProcedure;
 
@@ -108,6 +109,10 @@ EXT KV_SCANPROC PspTerminateThreadByPointerScan SCANNULL;
 
 /* System Call Numbers
  */
-EXT ULONG SysCallZwContinue;
+EXT ULONG SsNtAddAtom;
+EXT ULONG SsNtAlertResumeThread;
+EXT ULONG SsNtClose;
+EXT ULONG SsNtContinue;
+EXT ULONG SsNtDelayExecution;
 
 #endif

@@ -280,6 +280,117 @@ NTSTATUS KphOpenNamedObject(
     return status;
 }
 
+/* KphQueryFileObjectName
+ * 
+ * Queries the name of a file object.
+ * 
+ * From YAPM.
+ */
+NTSTATUS KphQueryNameFileObject(
+    __in PFILE_OBJECT FileObject,
+    __inout_bcount(BufferLength) PUNICODE_STRING Buffer,
+    __in ULONG BufferLength,
+    __out PULONG ReturnLength
+    )
+{
+    ULONG returnLength = 0;
+    ULONG nameLength = 0;
+    /* Pointer to the parent of the current file object. */
+    PFILE_OBJECT relatedFileObject;
+    PVOID name = Buffer;
+    
+    /* Check if the file object has an associated device. */
+    if (FileObject->DeviceObject)
+    {
+        /* Query the name of the device (e.g. "\Device\HarddiskVolume1"). */
+        ObQueryNameString(FileObject->DeviceObject, name, BufferLength, &returnLength);
+        /* Add on the length, in bytes, of the name we just queried 
+         * (minus the null terminator, since the return length 
+         * includes that).
+         */
+        (PCHAR)name += returnLength - sizeof(WCHAR);
+        BufferLength -= returnLength - sizeof(WCHAR);
+    }
+    else
+    {
+        (PCHAR)name += sizeof(UNICODE_STRING);
+        BufferLength -= sizeof(UNICODE_STRING);
+    }
+    
+    if (!FileObject->FileName.Buffer)
+        return STATUS_SUCCESS;
+    
+    /* Walk up the file object tree to get the total length needed. */
+    
+    relatedFileObject = FileObject;
+    
+    do
+    {
+        nameLength += relatedFileObject->FileName.Length;
+        relatedFileObject = relatedFileObject->RelatedFileObject;
+    }
+    while (relatedFileObject);
+    
+    returnLength += nameLength;
+    
+    if (nameLength + sizeof(UNICODE_STRING) > BufferLength)
+    {
+        return STATUS_BUFFER_TOO_SMALL;
+    }
+    
+    /* We are going to copy over the individual paths in reverse order. */
+    
+    (PCHAR)name += nameLength;
+    /* Write the null terminator. */
+    *(PUSHORT)name = 0;
+    
+    relatedFileObject = FileObject;
+    do
+    {
+        (PCHAR)name -= relatedFileObject->FileName.Length;
+        memcpy(name, relatedFileObject->FileName.Buffer, relatedFileObject->FileName.Length);
+        relatedFileObject = relatedFileObject->RelatedFileObject;
+    }
+    while (relatedFileObject);
+    
+    /* Write some length information. */
+    /* FIXME: Is the null terminator always present? */
+    Buffer->Length = (USHORT)(returnLength - sizeof(UNICODE_STRING) - sizeof(WCHAR));
+    
+    if (ReturnLength)
+        *ReturnLength = returnLength;
+    
+    return STATUS_SUCCESS;
+}
+
+/* KphQueryObjectName
+ * 
+ * Queries the name of an object.
+ */
+NTSTATUS KphQueryNameObject(
+    __in PVOID Object,
+    __inout_bcount(BufferLength) PUNICODE_STRING Buffer,
+    __in ULONG BufferLength,
+    __out PULONG ReturnLength
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    
+    if (
+        OBJECT_TO_OBJECT_HEADER(Object)->Type == *IoFileObjectType && 
+        (((PFILE_OBJECT)Object)->Busy || ((PFILE_OBJECT)Object)->Waiters)
+        )
+    {
+        status = KphQueryNameFileObject((PFILE_OBJECT)Object, Buffer, BufferLength, ReturnLength);
+    }
+    else
+    {
+        status = ObQueryNameString(Object, (POBJECT_NAME_INFORMATION)Buffer, BufferLength, ReturnLength);
+    }
+    
+    return status;
+}
+
 /* KphQueryProcessHandles
  * 
  * Queries a process handle table.

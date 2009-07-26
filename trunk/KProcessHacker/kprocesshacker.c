@@ -192,6 +192,13 @@ VOID DriverUnload(PDRIVER_OBJECT DriverObject)
     
     ExReleaseFastMutex(&ProtectionMutex);
     
+    /* Make sure system service logging is disabled. */
+    if (SsStartCount > 0)
+        SsUnref(SsStartCount);
+    
+    /* Free system service logging structures. */
+    KphSsLogDeinit();
+    
     /* Free all objects in the object manager. */
     KphRefDeinit();
     
@@ -475,62 +482,6 @@ NTSTATUS ReferenceClientHandle(
     return status;
 }
 
-/* from YAPM */
-NTSTATUS GetObjectName(PFILE_OBJECT FileObject, PVOID Buffer, ULONG BufferLength, PULONG ReturnLength)
-{
-    ULONG nameLength = 0;
-    PFILE_OBJECT relatedFile;
-    PVOID name = Buffer;
-    
-    if (FileObject->DeviceObject)
-    {
-        ObQueryNameString((PVOID)FileObject->DeviceObject, name, BufferLength, ReturnLength);
-        (PCHAR)name += *ReturnLength - 2; /* minus the null terminator */
-        BufferLength -= *ReturnLength - 2;
-    }
-    else
-    {
-        /* It's a UNICODE_STRING. we need to subtract the space 
-         * Length and MaximumLength take up.
-         */
-        (PCHAR)name += 4;
-        BufferLength -= 4;
-    }
-    
-    if (!FileObject->FileName.Buffer)
-        return STATUS_SUCCESS;
-    
-    relatedFile = FileObject;
-    
-    do
-    {
-        nameLength += relatedFile->FileName.Length;
-        relatedFile = relatedFile->RelatedFileObject;
-    }
-    while (relatedFile);
-    
-    *ReturnLength += nameLength;
-    
-    if (nameLength > BufferLength)
-    {
-        return STATUS_BUFFER_TOO_SMALL;
-    }
-    
-    (PCHAR)name += nameLength;
-    *(PUSHORT)name = 0;
-    
-    relatedFile = FileObject;
-    do
-    {
-        (PCHAR)name -= relatedFile->FileName.Length;
-        memcpy(name, relatedFile->FileName.Buffer, relatedFile->FileName.Length);
-        relatedFile = relatedFile->RelatedFileObject;
-    }
-    while (relatedFile);
-    
-    return STATUS_SUCCESS;
-}
-
 PCHAR GetIoControlName(ULONG ControlCode)
 {
     switch (ControlCode)
@@ -623,8 +574,12 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "SsUnref";
         case KPH_SSCREATECLIENTENTRY:
             return "SsCreateClientEntry";
-        case KPH_SSCREATEPROCESSENTRY:
-            return "SsCreateProcessEntry";
+        case KPH_SSCREATERULESETENTRY:
+            return "SsCreateRuleSetEntry";
+        case KPH_SSREMOVERULE:
+            return "SsRemoveRule";
+        case KPH_SSADDPROCESSIDRULE:
+            return "SsAddProcessIdRule";
         default:
             return "Unknown";
     }
@@ -731,22 +686,14 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             __try
             {
-                if (((PFILE_OBJECT)object)->Busy || ((PFILE_OBJECT)object)->Waiters)
-                {
-                    status = GetObjectName((PFILE_OBJECT)object, dataBuffer, outLength, &retLength);
-                    ObDereferenceObject(object);
-                }
-                else
-                {
-                    status = ObQueryNameString(
-                        object, (POBJECT_NAME_INFORMATION)dataBuffer, outLength, &retLength);
-                    ObDereferenceObject(object);
-                }
+                status = KphQueryNameFileObject(object, dataBuffer, outLength, &retLength);
             }
             __except (EXCEPTION_EXECUTE_HANDLER)
             {
-                status = STATUS_ACCESS_VIOLATION;
+                status = GetExceptionCode();
             }
+            
+            ObDereferenceObject(object);
         }
         break;
         
@@ -1302,7 +1249,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             {
                 HANDLE ProcessHandle;
                 HANDLE Handle;
-                ULONG ObjectInformationClass;
+                OBJECT_INFORMATION_CLASS ObjectInformationClass;
             } *args = dataBuffer;
             struct
             {
@@ -2006,24 +1953,24 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
-        /* SsCreateProcessEntry
+        /* SsCreateRuleSetEntry
          * 
-         * Creates a system service logging process entry.
+         * Creates a system service logging ruleset entry.
          */
-        case KPH_SSCREATEPROCESSENTRY:
+        case KPH_SSCREATERULESETENTRY:
         {
             struct
             {
                 HANDLE ClientEntryHandle;
-                HANDLE TargetProcessHandle;
-                ULONG Flags;
+                KPHSS_FILTER_TYPE DefaultFilterType;
+                KPHSS_RULESET_ACTION Action;
             } *args = dataBuffer;
             struct
             {
-                HANDLE ProcessEntryHandle;
+                HANDLE RuleSetEntryHandle;
             } *ret = dataBuffer;
             PKPHSS_CLIENT_ENTRY clientEntry;
-            PKPHSS_PROCESS_ENTRY processEntry;
+            PKPHSS_RULESET_ENTRY ruleSetEntry;
             
             CHECK_IN_OUT_LENGTH;
             
@@ -2032,19 +1979,87 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            status = KphSsCreateProcessEntry(
-                &processEntry,
+            status = KphSsCreateRuleSetEntry(
+                &ruleSetEntry,
                 clientEntry,
-                args->TargetProcessHandle,
-                args->Flags
+                args->DefaultFilterType,
+                args->Action
                 );
             KphDereferenceObject(clientEntry);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            status = CreateClientHandle(NULL, processEntry, &ret->ProcessEntryHandle);
-            KphDereferenceObject(processEntry);
+            status = CreateClientHandle(NULL, ruleSetEntry, &ret->RuleSetEntryHandle);
+            KphDereferenceObject(ruleSetEntry);
+            retLength = sizeof(*ret);
+        }
+        break;
+        
+        /* SsRemoveRule
+         * 
+         * Removes a rule from a ruleset.
+         */
+        case KPH_SSREMOVERULE:
+        {
+            struct
+            {
+                HANDLE RuleSetEntryHandle;
+                HANDLE RuleEntryHandle;
+            } *args = dataBuffer;
+            PKPHSS_RULESET_ENTRY ruleSetEntry;
+            
+            CHECK_IN_LENGTH;
+            
+            status = ReferenceClientHandle(NULL, args->RuleSetEntryHandle, &ruleSetEntry);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            status = KphSsRemoveRule(ruleSetEntry, args->RuleEntryHandle);
+            KphDereferenceObject(ruleSetEntry);
+        }
+        break;
+        
+        /* SsAddProcessIdRule
+         * 
+         * Adds a process ID rule to a ruleset.
+         */
+        case KPH_SSADDPROCESSIDRULE:
+        {
+            struct
+            {
+                HANDLE RuleSetEntryHandle;
+                KPHSS_FILTER_TYPE FilterType;
+                HANDLE ProcessId;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE RuleEntryHandle;
+            } *ret = dataBuffer;
+            PKPHSS_RULESET_ENTRY ruleSetEntry;
+            PKPHSS_RULE_ENTRY ruleEntry;
+            
+            CHECK_IN_OUT_LENGTH;
+            
+            status = ReferenceClientHandle(NULL, args->RuleSetEntryHandle, &ruleSetEntry);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            status = KphSsAddProcessIdRule(
+                &ruleEntry,
+                ruleSetEntry,
+                args->FilterType,
+                args->ProcessId
+                );
+            KphDereferenceObject(ruleSetEntry);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            status = CreateClientHandle(NULL, ruleEntry, &ret->RuleEntryHandle);
+            KphDereferenceObject(ruleEntry);
             retLength = sizeof(*ret);
         }
         break;
