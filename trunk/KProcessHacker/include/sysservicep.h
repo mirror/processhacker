@@ -287,7 +287,9 @@ FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
         
         /* The ordering of these if statements are 
          * extremely important. The order of precedence 
-         * is: exclude, include, failed include.
+         * is: exclude, include, failed include. Failed include 
+         * doesn't apply if we're using the Include default 
+         * filter type, though.
          */
         if (ruleTypeExcludeArray[i])
         {
@@ -298,7 +300,10 @@ FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
         {
             isRuleSetMatch = TRUE;
         }
-        else if (ruleTypeFailedArray[i])
+        else if (
+            ruleTypeFailedArray[i] && 
+            RuleSetEntry->DefaultFilterType != IncludeFilterType
+            )
         {
             isRuleSetMatch = FALSE;
             break;
