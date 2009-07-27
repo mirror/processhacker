@@ -482,6 +482,64 @@ NTSTATUS ReferenceClientHandle(
     return status;
 }
 
+/* From YAPM. Note: I do not have the slightest clue how this works, which is 
+ * why you see a duplicate function in ob.c.
+ */
+NTSTATUS GetObjectName(PFILE_OBJECT FileObject, PVOID Buffer, ULONG BufferLength, PULONG ReturnLength)
+{
+    ULONG nameLength = 0;
+    PFILE_OBJECT relatedFile;
+    PVOID name = Buffer;
+    
+    if (FileObject->DeviceObject)
+    {
+        ObQueryNameString((PVOID)FileObject->DeviceObject, name, BufferLength, ReturnLength);
+        (PCHAR)name += *ReturnLength - 2; /* minus the null terminator */
+        BufferLength -= *ReturnLength - 2;
+    }
+    else
+    {
+        /* It's a UNICODE_STRING. we need to subtract the space 
+         * Length and MaximumLength take up.
+         */
+        (PCHAR)name += 4;
+        BufferLength -= 4;
+    }
+    
+    if (!FileObject->FileName.Buffer)
+        return STATUS_SUCCESS;
+    
+    relatedFile = FileObject;
+    
+    do
+    {
+        nameLength += relatedFile->FileName.Length;
+        relatedFile = relatedFile->RelatedFileObject;
+    }
+    while (relatedFile);
+    
+    *ReturnLength += nameLength;
+    
+    if (nameLength > BufferLength)
+    {
+        return STATUS_BUFFER_TOO_SMALL;
+    }
+    
+    (PCHAR)name += nameLength;
+    *(PUSHORT)name = 0;
+    
+    relatedFile = FileObject;
+    do
+    {
+        (PCHAR)name -= relatedFile->FileName.Length;
+        memcpy(name, relatedFile->FileName.Buffer, relatedFile->FileName.Length);
+        relatedFile = relatedFile->RelatedFileObject;
+    }
+    while (relatedFile);
+    
+    return STATUS_SUCCESS;
+}
+
 PCHAR GetIoControlName(ULONG ControlCode)
 {
     switch (ControlCode)
@@ -666,7 +724,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 HANDLE ProcessId;
             } *args = dataBuffer;
             KPH_ATTACH_STATE attachState;
-            PVOID object;
+            PFILE_OBJECT object;
             
             CHECK_IN_LENGTH;
             
@@ -676,7 +734,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             
             status = ObReferenceObjectByHandle(args->Handle, 0, 
-                *IoFileObjectType, KernelMode, &object, 0);
+                *IoFileObjectType, KernelMode, &object, NULL);
             KphDetachProcess(&attachState);
             
             if (!NT_SUCCESS(status))
@@ -686,7 +744,14 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             __try
             {
-                status = KphQueryNameFileObject(object, dataBuffer, outLength, &retLength);
+                if (((PFILE_OBJECT)object)->Busy || ((PFILE_OBJECT)object)->Waiters)
+                {
+                    status = GetObjectName((PFILE_OBJECT)object, dataBuffer, outLength, &retLength);
+                }
+                else
+                {
+                    status = ObQueryNameString(object, (POBJECT_NAME_INFORMATION)dataBuffer, outLength, &retLength);
+                }
             }
             __except (EXCEPTION_EXECUTE_HANDLER)
             {
