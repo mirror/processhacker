@@ -862,6 +862,10 @@ NTSTATUS KphpSsCaptureSimpleArgument(
     ULONG size;
     LARGE_INTEGER value;
     
+    /* Return if we have a NULL pointer. */
+    if (!Argument)
+        return STATUS_INVALID_PARAMETER_2;
+    
     /* Get the proper argument size based on the argument type. */
     switch (Type)
     {
@@ -927,6 +931,10 @@ NTSTATUS KphpSsCaptureHandleArgument(
     ULONG returnLength;
     PKPHSS_HANDLE handleInfo;
     PKPHSS_WSTRING wString;
+    
+    /* Return if we have a NULL handle. */
+    if (!Argument)
+        return STATUS_INVALID_PARAMETER_2;
     
     /* Make sure the handle isn't a kernel handle if we're 
      * from user-mode.
@@ -1045,6 +1053,10 @@ NTSTATUS KphpSsCaptureUnicodeStringArgument(
     PKPHSS_ARGUMENT_BLOCK argumentBlock;
     UNICODE_STRING unicodeString;
     
+    /* Return if we have a NULL pointer. */
+    if (!Argument)
+        return STATUS_INVALID_PARAMETER_2;
+    
     /* Probe and copy the UNICODE_STRING structure. */
     __try
     {
@@ -1117,6 +1129,10 @@ NTSTATUS KphpSsCaptureObjectAttributesArgument(
     ULONG rootDirectoryArgumentBlockSize = 0;
     PKPHSS_ARGUMENT_BLOCK objectNameArgumentBlock = NULL;
     ULONG objectNameArgumentBlockSize = 0;
+    
+    /* Return if we have a NULL pointer. */
+    if (!Argument)
+        return STATUS_INVALID_PARAMETER_2;
     
     /* Probe and copy the OBJECT_ATTRIBUTES structure. */
     __try
