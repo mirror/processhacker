@@ -315,7 +315,7 @@ namespace ProcessHacker.Common
             else
             {
                 return MessageBox.Show(
-                    message + "Are you sure you want to " + action + "?",
+                    message + " Are you sure you want to " + action + "?",
                     "Process Hacker",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning
