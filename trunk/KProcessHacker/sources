@@ -17,6 +17,7 @@ SOURCES= \
     sysservice.c \
     sysservicedata.c \
     trace.c \
+    util.c \
     \
     io.c \
     mm.c \

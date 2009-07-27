@@ -1117,9 +1117,17 @@ namespace ProcessHacker.Native
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsHandle
     {
-        public IntPtr HandleInClient;
+        public ClientId ClientId;
         public int TypeNameOffset;
         public int NameOffset;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KphSsObjectAttributes
+    {
+        public ObjectAttributes ObjectAttributes;
+        public int RootDirectoryOffset;
+        public int ObjectNameOffset;
     }
 
     [StructLayout(LayoutKind.Sequential)]

@@ -25,6 +25,8 @@
 
 #include "kph.h"
 
+#define TAG_CALL_ENTRY ('cShP')
+
 typedef enum _KPHSS_ARGUMENT_TYPE
 {
     /* Having argument info for out variables is very rare 
@@ -73,7 +75,7 @@ typedef enum _KPHSS_ARGUMENT_TYPE
 
 typedef struct _KPHSS_HANDLE
 {
-    HANDLE HandleInClient;
+    CLIENT_ID ClientId;
     ULONG TypeNameOffset; /* KPHSS_WSTRING */
     ULONG NameOffset; /* KPHSS_WSTRING */
 } KPHSS_HANDLE, *PKPHSS_HANDLE;
@@ -141,8 +143,6 @@ typedef struct _KPHSS_INITIAL_TEB
 #ifndef _SYSSERVICEDATA_PRIVATE
 extern RTL_GENERIC_TABLE KphSsCallTable;
 #endif
-
-#define TAG_CALL_ENTRY ('cShP')
 
 #define KPHSS_MAXIMUM_ARGUMENT_BLOCKS 20
 

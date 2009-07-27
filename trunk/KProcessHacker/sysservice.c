@@ -829,10 +829,13 @@ NTSTATUS KphpSsCaptureHandleArgument(
 {
     NTSTATUS status = STATUS_SUCCESS;
     PKPHSS_ARGUMENT_BLOCK argumentBlock;
+    ULONG bufferLength;
     PVOID object;
+    POBJECT_TYPE objectType;
     PUNICODE_STRING objectTypeName;
     PUNICODE_STRING objectNameInfo;
     ULONG returnLength;
+    PKPHSS_HANDLE handleInfo;
     PKPHSS_WSTRING wString;
     
     /* Make sure the handle isn't a kernel handle if we're 
@@ -860,13 +863,11 @@ NTSTATUS KphpSsCaptureHandleArgument(
     /* Get a pointer to the UNICODE_STRING containing the 
      * object type name.
      */
-    objectTypeName = (PUNICODE_STRING)KVOFF(
-        OBJECT_TO_OBJECT_HEADER(object)->Type,
-        OffOtName
-        );
+    objectType = OBJECT_TO_OBJECT_HEADER(object)->Type;
+    objectTypeName = (PUNICODE_STRING)KVOFF(objectType, OffOtName);
     
     /* Allocate a buffer for name information. */
-    objectNameInfo = ExAllocatePoolWithTag(
+    objectNameInfo = (PUNICODE_STRING)ExAllocatePoolWithTag(
         PagedPool,
         CAPTURE_HANDLE_BUFFER_SIZE,
         TAG_CAPTURE_TEMP_BUFFER
@@ -896,29 +897,39 @@ NTSTATUS KphpSsCaptureHandleArgument(
     if (!argumentBlock)
         goto CleanupName;
     
-    /* Copy the type name into the block. */
-    argumentBlock->Handle.TypeNameOffset = sizeof(KPHSS_HANDLE);
-    wString = (PKPHSS_WSTRING)PTR_ADD_OFFSET(&argumentBlock->Handle, argumentBlock->Handle.TypeNameOffset);
+    handleInfo = &argumentBlock->Handle;
+    /* Calculate the offsets. */
+    handleInfo->TypeNameOffset = sizeof(KPHSS_HANDLE);
+    handleInfo->NameOffset = 
+        handleInfo->TypeNameOffset + sizeof(KPHSS_WSTRING) + 
+        objectTypeName->Length;
+    
+    /* Copy the object type name into the block. */
+    wString = (PKPHSS_WSTRING)PTR_ADD_OFFSET(handleInfo, handleInfo->TypeNameOffset);
     wString->Length = objectTypeName->Length;
     memcpy(&wString->Buffer, objectTypeName->Buffer, wString->Length);
     
     /* Copy the object name into the block. */
-    argumentBlock->Handle.NameOffset = 
-        argumentBlock->Handle.TypeNameOffset + sizeof(KPHSS_WSTRING) + 
-        wString->Length;
-    wString = (PKPHSS_WSTRING)PTR_ADD_OFFSET(&argumentBlock->Handle, argumentBlock->Handle.NameOffset);
+    wString = (PKPHSS_WSTRING)PTR_ADD_OFFSET(handleInfo, handleInfo->NameOffset);
     wString->Length = objectNameInfo->Length;
     memcpy(&wString->Buffer, objectNameInfo->Buffer, wString->Length);
     
-    /* HACK: Save the handle value in the argument block so that
-     * KphpSsWriteBlock will duplicate it. This doesn't apply to 
-     * file objects because we may hang when attempting to 
-     * duplicate them.
+    /* We may be able to get additional information for the 
+     * object.
      */
-    if (OBJECT_TO_OBJECT_HEADER(object)->Type != *IoFileObjectType)
-        argumentBlock->Handle.HandleInClient = Argument;
-    else
-        argumentBlock->Handle.HandleInClient = NULL;
+    
+    handleInfo->ClientId.UniqueProcess = NULL;
+    handleInfo->ClientId.UniqueThread = NULL;
+    
+    if (objectType == *PsProcessType)
+    {
+        handleInfo->ClientId.UniqueProcess = PsGetProcessId((PEPROCESS)object);
+    }
+    else if (objectType == *PsThreadType)
+    {
+        handleInfo->ClientId.UniqueThread = PsGetThreadId((PETHREAD)object);
+        handleInfo->ClientId.UniqueProcess = PsGetProcessId(IoThreadToProcess((PETHREAD)object));
+    }
     
     *ArgumentBlock = argumentBlock;
     
@@ -1041,17 +1052,13 @@ NTSTATUS KphpSsCaptureObjectAttributesArgument(
             PreviousMode
             );
         
-        /* If we created the argument block, we need to:
-         * 
-         * * Calculate the size of the KPHSS_HANDLE structure, and 
-         * * Clear the HandleInClient field in the structure because 
-         *   we are not going to duplicate the handle.
+        /* If we created the argument block, we need to calculate 
+         * the size of the KPHSS_HANDLE structure.
          */
         if (NT_SUCCESS(status))
         {
             rootDirectoryArgumentBlockSize = 
                 rootDirectoryArgumentBlock->Header.Size - KPHSS_ARGUMENT_BLOCK_OVERHEAD;
-            rootDirectoryArgumentBlock->Handle.HandleInClient = NULL;
         }
         else
         {
@@ -1411,40 +1418,6 @@ NTSTATUS KphpSsWriteBlock(
         goto CleanupBufferMutex;
     }
     
-    /* HACK: If this is a HANDLE argument block, we need to duplicate 
-     * the handle into the client process. This makes it possible 
-     * for the client to get additional information about the object.
-     */
-    if (Block->Type == ArgumentBlockType)
-    {
-        PKPHSS_ARGUMENT_BLOCK argumentBlock = (PKPHSS_ARGUMENT_BLOCK)Block;
-        
-        if (
-            argumentBlock->Type == HandleArgument && 
-            argumentBlock->Handle.HandleInClient
-            )
-        {
-            /* Duplicate the handle. */
-            status = ObDuplicateObject(
-                PsGetCurrentProcess(),
-                ClientEntry->Process,
-                argumentBlock->Handle.HandleInClient,
-                &dupHandleInClient,
-                0xffffffff, /* HACK */
-                0,
-                0,
-                KernelMode
-                );
-            
-            /* Replace the HandleInClient value with our new 
-             * duplicated handle value. Note that if the 
-             * duplication failed, we will be replacing it with 
-             * NULL.
-             */
-            argumentBlock->Handle.HandleInClient = dupHandleInClient;
-        }
-    }
-    
     /* Time to copy the block into the buffer.
      */
     KphAttachProcess(ClientEntry->Process, &attachState);
@@ -1490,23 +1463,6 @@ NTSTATUS KphpSsWriteBlock(
     dprintf("Ss: Wrote block (server %#x).\n", ClientEntry->BufferCursor);
     
 CleanupBufferMutex:
-    /* HACK: Did we successfully write the block? If we didn't, we should 
-     * close the handle we may have duplicated into the client.
-     */
-    if (!KPHSS_BLOCK_SUCCESS(status) && dupHandleInClient)
-    {
-        ObDuplicateObject(
-            ClientEntry->Process,
-            NULL,
-            dupHandleInClient,
-            NULL,
-            0,
-            0,
-            0,
-            KernelMode
-            );
-    }
-    
     if (SequenceMode != InSequence)
         ExReleaseFastMutex(&ClientEntry->BufferMutex);
     

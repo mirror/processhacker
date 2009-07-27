@@ -284,7 +284,7 @@ NTSTATUS KphOpenNamedObject(
  * 
  * Queries the name of a file object.
  * 
- * From YAPM.
+ * Technique from YAPM.
  */
 NTSTATUS KphQueryNameFileObject(
     __in PFILE_OBJECT FileObject,
@@ -293,72 +293,127 @@ NTSTATUS KphQueryNameFileObject(
     __out PULONG ReturnLength
     )
 {
-    ULONG returnLength = 0;
-    ULONG nameLength = 0;
-    /* Pointer to the parent of the current file object. */
+    NTSTATUS status = STATUS_SUCCESS;
+    ULONG returnLength;
+    PCHAR objectName;
+    ULONG usedLength;
+    ULONG subNameLength;
     PFILE_OBJECT relatedFileObject;
-    PVOID name = Buffer;
     
-    /* Check if the file object has an associated device. */
-    if (FileObject->DeviceObject)
+    /* We need at least the size of UNICODE_STRING to 
+     * continue.
+     */
+    if (BufferLength < sizeof(UNICODE_STRING))
     {
-        /* Query the name of the device (e.g. "\Device\HarddiskVolume1"). */
-        ObQueryNameString(FileObject->DeviceObject, name, BufferLength, &returnLength);
-        /* Add on the length, in bytes, of the name we just queried 
-         * (minus the null terminator, since the return length 
-         * includes that).
-         */
-        (PCHAR)name += returnLength - sizeof(WCHAR);
-        BufferLength -= returnLength - sizeof(WCHAR);
-    }
-    else
-    {
-        (PCHAR)name += sizeof(UNICODE_STRING);
-        BufferLength -= sizeof(UNICODE_STRING);
-    }
-    
-    if (!FileObject->FileName.Buffer)
-        return STATUS_SUCCESS;
-    
-    /* Walk up the file object tree to get the total length needed. */
-    
-    relatedFileObject = FileObject;
-    
-    do
-    {
-        nameLength += relatedFileObject->FileName.Length;
-        relatedFileObject = relatedFileObject->RelatedFileObject;
-    }
-    while (relatedFileObject);
-    
-    returnLength += nameLength;
-    
-    if (nameLength + sizeof(UNICODE_STRING) > BufferLength)
-    {
+        *ReturnLength = sizeof(UNICODE_STRING);
+        
         return STATUS_BUFFER_TOO_SMALL;
     }
     
-    /* We are going to copy over the individual paths in reverse order. */
+    /* Assume failure. */
+    Buffer->Length = 0;
+    /* We will place the object name directly after the 
+     * UNICODE_STRING structure in the buffer.
+     */
+    Buffer->Buffer = (PWSTR)PTR_ADD_OFFSET(Buffer, sizeof(UNICODE_STRING));
+    /* Retain a local pointer to the object name so we 
+     * can manipulate the pointer.
+     */
+    objectName = (PCHAR)Buffer->Buffer;
+    /* A variable that keeps track of how much space we 
+     * have used.
+     */
+    usedLength = sizeof(UNICODE_STRING);
     
-    (PCHAR)name += nameLength;
-    /* Write the null terminator. */
-    *(PUSHORT)name = 0;
+    /* Check if the file object has an associated device 
+     * (e.g. "\Device\NamedPipe", "\Device\Mup"). We can 
+     * use the user-supplied buffer for this since if the 
+     * buffer isn't big enough, we can't proceed anyway 
+     * (we are going to use the name).
+     */
+    if (FileObject->DeviceObject)
+    {
+        status = ObQueryNameString(
+            FileObject->DeviceObject,
+            (POBJECT_NAME_INFORMATION)Buffer,
+            BufferLength,
+            &returnLength
+            );
+        
+        if (!NT_SUCCESS(status))
+        {
+            *ReturnLength = returnLength;
+            
+            return status;
+        }
+        
+        /* The UNICODE_STRING in the buffer is now filled in. 
+         * We will append to the object name later, so 
+         * we need to fix the object name pointer by adding 
+         * the length, in bytes, of the device name string we 
+         * just got.
+         */
+        objectName += Buffer->Length;
+        usedLength += Buffer->Length;
+    }
+    
+    /* Check if the file object has a file name component. If not, 
+     * we can't do anything else, so we just return the name we 
+     * have already.
+     */
+    if (!FileObject->FileName.Buffer)
+    {
+        *ReturnLength = usedLength;
+        
+        return STATUS_SUCCESS;
+    }
+    
+    /* The file object has a name. We need to walk up the file 
+     * object tree and append the names of the related file 
+     * objects in reverse order. This means we need to calculate 
+     * the total length first.
+     */
     
     relatedFileObject = FileObject;
+    subNameLength = 0;
+    
     do
     {
-        (PCHAR)name -= relatedFileObject->FileName.Length;
-        memcpy(name, relatedFileObject->FileName.Buffer, relatedFileObject->FileName.Length);
+        subNameLength += relatedFileObject->FileName.Length;
         relatedFileObject = relatedFileObject->RelatedFileObject;
     }
     while (relatedFileObject);
     
-    /* Write some length information. */
-    /* FIXME: Is the null terminator always present? */
-    Buffer->Length = (USHORT)(returnLength - sizeof(UNICODE_STRING) - sizeof(WCHAR));
+    usedLength += subNameLength;
     
-    if (ReturnLength)
-        *ReturnLength = returnLength;
+    /* Check if we have enough space to write the whole thing. */
+    if (usedLength > BufferLength)
+    {
+        *ReturnLength = usedLength;
+        
+        return STATUS_BUFFER_TOO_SMALL;
+    }
+    
+    /* We're ready to begin copying the names. */
+    
+    /* Add the name length because we're copying in reverse order. */
+    objectName += subNameLength;
+    
+    relatedFileObject = FileObject;
+    
+    do
+    {
+        objectName -= relatedFileObject->FileName.Length;
+        memcpy(objectName, relatedFileObject->FileName.Buffer, relatedFileObject->FileName.Length);
+        relatedFileObject = relatedFileObject->RelatedFileObject;
+    }
+    while (relatedFileObject);
+    
+    /* Update the length. */
+    Buffer->Length += (USHORT)subNameLength;
+    
+    /* Pass the return length back. */
+    *ReturnLength = usedLength;
     
     return STATUS_SUCCESS;
 }
@@ -375,9 +430,15 @@ NTSTATUS KphQueryNameObject(
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
+    POBJECT_TYPE objectType;
     
+    objectType = OBJECT_TO_OBJECT_HEADER(Object)->Type;
+    
+    /* Check if we are going to hang when querying the object, and use 
+     * the special file object query function if needed.
+     */
     if (
-        OBJECT_TO_OBJECT_HEADER(Object)->Type == *IoFileObjectType && 
+        (objectType == *IoFileObjectType) && 
         (((PFILE_OBJECT)Object)->Busy || ((PFILE_OBJECT)Object)->Waiters)
         )
     {
@@ -709,7 +770,7 @@ OpenObjectEnd:
     if (NT_SUCCESS(status))
         *TargetHandle = objectHandle;
     else
-        *TargetHandle = 0;
+        *TargetHandle = NULL;
     
     return status;
 }

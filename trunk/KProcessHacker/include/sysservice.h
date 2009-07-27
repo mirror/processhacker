@@ -25,6 +25,7 @@
 
 #include "kph.h"
 #include "sysservicedata.h"
+#include "util.h"
 
 /* Define opaque object types */
 
