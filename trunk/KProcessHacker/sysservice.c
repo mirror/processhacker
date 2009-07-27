@@ -326,6 +326,77 @@ NTSTATUS KphSsCreateClientEntry(
     return status;
 }
 
+/* KphSsQueryClientEntry
+ * 
+ * Queries information about a client entry.
+ */
+NTSTATUS KphSsQueryClientEntry(
+    __in PKPHSS_CLIENT_ENTRY ClientEntry,
+    __out_bcount_opt(ClientInformationLength) PKPHSS_CLIENT_INFORMATION ClientInformation,
+    __in ULONG ClientInformationLength,
+    __out_opt PULONG ReturnLength,
+    __in KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    
+    /* Probe the return length if necessary. */
+    if (AccessMode != KernelMode)
+    {
+        __try
+        {
+            ProbeForWrite(ReturnLength, sizeof(ULONG), 1);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            return GetExceptionCode();
+        }
+    }
+    
+    /* Check the length. */
+    if (ClientInformationLength >= sizeof(KPHSS_CLIENT_INFORMATION))
+    {
+        if (ClientInformation)
+        {
+            __try
+            {
+                /* Probe the buffer if we're not from kernel-mode. */
+                if (AccessMode != KernelMode)
+                    ProbeForWrite(ClientInformation, sizeof(KPHSS_CLIENT_INFORMATION), 1);
+                
+                ClientInformation->ProcessId = PsGetProcessId(ClientEntry->Process);
+                ClientInformation->BufferBase = ClientEntry->BufferBase;
+                ClientInformation->BufferSize = ClientEntry->BufferSize;
+                ClientInformation->NumberOfBlocksWritten = ClientEntry->NumberOfBlocksWritten;
+                ClientInformation->NumberOfBlocksDropped = ClientEntry->NumberOfBlocksDropped;
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+            }
+        }
+    }
+    else
+    {
+        status = STATUS_BUFFER_TOO_SMALL;
+    }
+    
+    /* Pass the return length back if requested. */
+    if (ReturnLength)
+    {
+        __try
+        {
+            *ReturnLength = sizeof(KPHSS_CLIENT_INFORMATION);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            status = GetExceptionCode();
+        }
+    }
+    
+    return status;
+}
+
 /* KphpSsClientEntryDeleteProcedure
  * 
  * Performs cleanup for a client entry.
@@ -540,6 +611,17 @@ NTSTATUS KphSsAddNumberRule(
     return status;
 }
 
+/* KphSsGetHandleRule
+ * 
+ * Gets the handle of a rule.
+ */
+HANDLE KphSsGetHandleRule(
+    __in PKPHSS_RULE_ENTRY RuleEntry
+    )
+{
+    return RuleEntry->Handle;
+}
+
 /* KphSsRemoveRule
  * 
  * Removes a rule entry from a ruleset entry.
@@ -553,6 +635,8 @@ NTSTATUS KphSsRemoveRule(
     
     ExAcquireFastMutex(&RuleSetEntry->RuleListMutex);
     
+    /* Find the rule in the ruleset. */
+    
     currentListEntry = RuleSetEntry->RuleListHead.Flink;
     
     while (currentListEntry != &RuleSetEntry->RuleListHead)
@@ -561,7 +645,13 @@ NTSTATUS KphSsRemoveRule(
         
         if (ruleEntry->Handle == RuleEntryHandle)
         {
+            /* Remove the rule from the list. */
             RemoveEntryList(&ruleEntry->RuleListEntry);
+            /* Dereference the rule (it was referenced when it 
+             * got added to the list).
+             */
+            KphDereferenceObject(ruleEntry);
+            
             ExReleaseFastMutex(&RuleSetEntry->RuleListMutex);
             
             return STATUS_SUCCESS;

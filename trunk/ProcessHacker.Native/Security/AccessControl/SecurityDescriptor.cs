@@ -178,12 +178,6 @@ namespace ProcessHacker.Native.Security.AccessControl
             get { return _memory; }
         }
 
-        protected MemoryAlloc MemoryAlloc
-        {
-            get { return _memory; }
-            set { _memory = value; }
-        }
-
         public Sid Owner
         {
             get { return _owner; }

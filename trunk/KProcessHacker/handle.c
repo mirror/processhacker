@@ -192,6 +192,7 @@ NTSTATUS KphCreateHandle(
 NTSTATUS KphReferenceObjectByHandle(
     __in PKPH_HANDLE_TABLE HandleTable,
     __in HANDLE Handle,
+    __in_opt PKPH_OBJECT_TYPE ObjectType,
     __out PVOID *Object
     )
 {
@@ -204,6 +205,20 @@ NTSTATUS KphReferenceObjectByHandle(
     /* Lock the entry. */
     if (!KphLockAllocatedHandleEntry(entry))
         return STATUS_INVALID_HANDLE;
+    
+    /* Check the type of object if the caller requested us 
+     * to do that.
+     */
+    if (ObjectType)
+    {
+        if (KphGetTypeObject(entry->Object) != ObjectType)
+        {
+            /* Bad type. */
+            KphUnlockHandleEntry(entry);
+            
+            return STATUS_OBJECT_TYPE_MISMATCH;
+        }
+    }
     
     /* Reference and pass the object back. */
     KphReferenceObject(entry->Object);

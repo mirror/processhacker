@@ -73,7 +73,7 @@ NTSTATUS KphQueryInformationDriver(
     __in HANDLE DriverHandle,
     __in DRIVER_INFORMATION_CLASS DriverInformationClass,
     __out_bcount_opt(DriverInformationLength) PVOID DriverInformation,
-    __in_opt ULONG DriverInformationLength,
+    __in ULONG DriverInformationLength,
     __out_opt PULONG ReturnLength,
     __in KPROCESSOR_MODE AccessMode
     )

@@ -465,6 +465,7 @@ NTSTATUS CreateClientHandle(
 NTSTATUS ReferenceClientHandle(
     __in_opt HANDLE ProcessId,
     __in HANDLE Handle,
+    __in PKPH_OBJECT_TYPE ObjectType,
     __out PVOID *Object
     )
 {
@@ -476,7 +477,12 @@ NTSTATUS ReferenceClientHandle(
     if (!clientEntry)
         return STATUS_UNSUCCESSFUL;
     
-    status = KphReferenceObjectByHandle(clientEntry->HandleTable, Handle, Object);
+    status = KphReferenceObjectByHandle(
+        clientEntry->HandleTable,
+        Handle,
+        ObjectType,
+        Object
+        );
     KphDereferenceObject(clientEntry);
     
     return status;
@@ -488,6 +494,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
     {
         case KPH_CLOSEHANDLE:
             return "Client Close Handle";
+        case KPH_SSQUERYCLIENTENTRY:
+            return "SsQueryClientEntry";
         case KPH_GETFILEOBJECTNAME:
             return "Get File Object Name";
         case KPH_OPENPROCESS:
@@ -639,15 +647,46 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             CHECK_IN_LENGTH;
             
-            clientEntry = ReferenceClientEntry(NULL);
-            
-            if (!clientEntry)
+            status = CloseClientHandle(NULL, args->Handle);
+        }
+        break;
+        
+        /* SsQueryClientEntry
+         * 
+         * Queries information about a client entry.
+         */
+        case KPH_SSQUERYCLIENTENTRY:
+        {
+            struct
             {
-                status = STATUS_UNSUCCESSFUL;
-                goto IoControlEnd;
-            }
+                HANDLE ClientEntryHandle;
+                PKPHSS_CLIENT_INFORMATION ClientInformation;
+                ULONG ClientInformationLength;
+                PULONG ReturnLength;
+            } *args = dataBuffer;
+            PKPHSS_CLIENT_ENTRY clientEntry;
             
-            status = KphCloseHandle(clientEntry->HandleTable, args->Handle);
+            CHECK_IN_LENGTH;
+            
+            /* Reference the client entry. */
+            status = ReferenceClientHandle(
+                NULL,
+                args->ClientEntryHandle,
+                KphSsClientEntryType,
+                &clientEntry
+                );
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            /* Query the client entry. */
+            status = KphSsQueryClientEntry(
+                clientEntry,
+                args->ClientInformation,
+                args->ClientInformationLength,
+                args->ReturnLength,
+                UserMode
+                );
             KphDereferenceObject(clientEntry);
         }
         break;
@@ -1971,11 +2010,18 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             CHECK_IN_OUT_LENGTH;
             
-            status = ReferenceClientHandle(NULL, args->ClientEntryHandle, &clientEntry);
+            /* Reference the client entry. */
+            status = ReferenceClientHandle(
+                NULL,
+                args->ClientEntryHandle,
+                KphSsClientEntryType,
+                &clientEntry
+                );
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
+            /* Create the ruleset entry. */
             status = KphSsCreateRuleSetEntry(
                 &ruleSetEntry,
                 clientEntry,
@@ -1987,6 +2033,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
+            /* Create and return a handle to the ruleset entry. */
             status = CreateClientHandle(NULL, ruleSetEntry, &ret->RuleSetEntryHandle);
             KphDereferenceObject(ruleSetEntry);
             retLength = sizeof(*ret);
@@ -2008,11 +2055,18 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             CHECK_IN_LENGTH;
             
-            status = ReferenceClientHandle(NULL, args->RuleSetEntryHandle, &ruleSetEntry);
+            /* Reference the ruleset entry. */
+            status = ReferenceClientHandle(
+                NULL,
+                args->RuleSetEntryHandle,
+                KphSsRuleSetEntryType,
+                &ruleSetEntry
+                );
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
+            /* Remove the rule. */
             status = KphSsRemoveRule(ruleSetEntry, args->RuleEntryHandle);
             KphDereferenceObject(ruleSetEntry);
         }
@@ -2039,11 +2093,18 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             CHECK_IN_OUT_LENGTH;
             
-            status = ReferenceClientHandle(NULL, args->RuleSetEntryHandle, &ruleSetEntry);
+            /* Reference the client entry. */
+            status = ReferenceClientHandle(
+                NULL,
+                args->RuleSetEntryHandle,
+                KphSsRuleSetEntryType,
+                &ruleSetEntry
+                );
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
+            /* Add a process ID rule. */
             status = KphSsAddProcessIdRule(
                 &ruleEntry,
                 ruleSetEntry,
@@ -2055,7 +2116,8 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            status = CreateClientHandle(NULL, ruleEntry, &ret->RuleEntryHandle);
+            /* Return the rule handle. */
+            ret->RuleEntryHandle = KphSsGetHandleRule(ruleEntry);
             KphDereferenceObject(ruleEntry);
             retLength = sizeof(*ret);
         }

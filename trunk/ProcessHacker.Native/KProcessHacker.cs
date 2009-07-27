@@ -52,7 +52,7 @@ namespace ProcessHacker.Native
         private enum Control : uint
         {
             ClientCloseHandle = 0,
-            Reserved2,
+            SsQueryClientEntry,
             GetFileObjectName,
             KphOpenProcess,
             KphOpenThread,
@@ -908,6 +908,27 @@ namespace ProcessHacker.Native
             return new KphSsRuleSetEntryHandle((*(int*)outData).ToIntPtr());
         }
 
+        public void SsQueryClientEntry(
+            KphSsClientEntryHandle clientEntryHandle,
+            out KphSsClientInformation clientInformation,
+            int clientInformationLength,
+            out int returnLength
+            )
+        {
+            fixed (KphSsClientInformation *clientInfoPtr = &clientInformation)
+            fixed (int* retLengthPtr = &returnLength)
+            {
+                byte* inData = stackalloc byte[0x10];
+
+                *(int*)inData = clientEntryHandle.Handle.ToInt32();
+                *(int*)(inData + 0x4) = (int)clientInfoPtr;
+                *(int*)(inData + 0x8) = clientInformationLength;
+                *(int*)(inData + 0xc) = (int)retLengthPtr;
+
+                _fileHandle.IoControl(CtlCode(Control.SsQueryClientEntry), inData, 0x10, null, 0);
+            }
+        }
+
         public void SsRemoveRule(
             KphSsRuleSetEntryHandle ruleSetEntryHandle,
             IntPtr ruleEntryHandle
@@ -1096,6 +1117,16 @@ namespace ProcessHacker.Native
     {
         public int Size;
         public KphSsBlockType Type;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KphSsClientInformation
+    {
+        public IntPtr ProcessId;
+        public IntPtr BufferBase;
+        public int BufferSize;
+        public int NumberOfBlocksWritten;
+        public int NumberOfBlocksDropped;
     }
 
     [StructLayout(LayoutKind.Sequential)]

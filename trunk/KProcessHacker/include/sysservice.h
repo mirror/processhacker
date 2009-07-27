@@ -36,6 +36,18 @@ typedef struct _KPHSS_RULESET_ENTRY *PKPHSS_RULESET_ENTRY;
 struct _KPHSS_RULE_ENTRY;
 typedef struct _KPHSS_RULE_ENTRY *PKPHSS_RULE_ENTRY;
 
+/* Information types */
+
+typedef struct _KPHSS_CLIENT_INFORMATION
+{
+    HANDLE ProcessId;
+    PVOID BufferBase;
+    ULONG BufferSize;
+    
+    ULONG NumberOfBlocksWritten;
+    ULONG NumberOfBlocksDropped;
+} KPHSS_CLIENT_INFORMATION, *PKPHSS_CLIENT_INFORMATION;
+
 /* Object types */
 
 #ifndef _SYSSERVICE_PRIVATE
@@ -170,11 +182,23 @@ NTSTATUS KphSsCreateClientEntry(
     __in KPROCESSOR_MODE AccessMode
     );
 
+NTSTATUS KphSsQueryClientEntry(
+    __in PKPHSS_CLIENT_ENTRY ClientEntry,
+    __out_bcount_opt(ClientInformationLength) PKPHSS_CLIENT_INFORMATION ClientInformation,
+    __in ULONG ClientInformationLength,
+    __out_opt PULONG ReturnLength,
+    __in KPROCESSOR_MODE AccessMode
+    );
+
 NTSTATUS KphSsCreateRuleSetEntry(
     __out PKPHSS_RULESET_ENTRY *RuleSetEntry,
     __in PKPHSS_CLIENT_ENTRY ClientEntry,
     __in KPHSS_FILTER_TYPE DefaultFilterType,
     __in KPHSS_RULESET_ACTION Action
+    );
+
+HANDLE KphSsGetHandleRule(
+    __in PKPHSS_RULE_ENTRY RuleEntry
     );
 
 NTSTATUS KphSsRemoveRule(

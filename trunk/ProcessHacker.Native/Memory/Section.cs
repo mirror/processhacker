@@ -15,6 +15,7 @@ namespace ProcessHacker.Native
         /// Opens an existing section.
         /// </summary>
         /// <param name="name">The name of an existing section.</param>
+        /// <param name="access">The desired access to the section.</param>
         public Section(string name, SectionAccess access)
         {
             this.Handle = new SectionHandle(name, access);

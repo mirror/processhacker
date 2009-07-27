@@ -65,6 +65,7 @@ NTSTATUS KphCreateHandle(
 NTSTATUS KphReferenceObjectByHandle(
     __in PKPH_HANDLE_TABLE HandleTable,
     __in HANDLE Handle,
+    __in_opt PKPH_OBJECT_TYPE ObjectType,
     __out PVOID *Object
     );
 

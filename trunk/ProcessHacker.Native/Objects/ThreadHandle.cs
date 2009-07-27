@@ -197,9 +197,9 @@ namespace ProcessHacker.Native.Objects
         /// <param name="timeout">The timeout, in 100ns units.</param>
         /// <param name="relative">Whether the timeout value is relative.</param>
         /// <returns>A NT status value.</returns>
-        public static NtStatus Sleep(long time, bool relative)
+        public static NtStatus Sleep(long timeout, bool relative)
         {
-            return Sleep(false, time, relative);
+            return Sleep(false, timeout, relative);
         }
 
         /// <summary>
@@ -211,15 +211,15 @@ namespace ProcessHacker.Native.Objects
         /// <param name="timeout">The timeout, in 100ns units.</param>
         /// <param name="relative">Whether the timeout value is relative.</param>
         /// <returns>A NT status value.</returns>
-        public static NtStatus Sleep(bool alertable, long time, bool relative)
+        public static NtStatus Sleep(bool alertable, long timeout, bool relative)
         {
-            if (time == 0)
+            if (timeout == 0)
             {
                 Yield();
                 return NtStatus.Success;
             }
 
-            long realTime = relative ? -time : time;
+            long realTime = relative ? -timeout : timeout;
 
             return Win32.NtDelayExecution(alertable, ref realTime);
         }
