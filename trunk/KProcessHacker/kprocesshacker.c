@@ -588,6 +588,12 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "SsRemoveRule";
         case KPH_SSADDPROCESSIDRULE:
             return "SsAddProcessIdRule";
+        case KPH_SSADDTHREADIDRULE:
+            return "SsAddThreadIdRule";
+        case KPH_SSADDPREVIOUSMODERULE:
+            return "SsAddPreviousModeRule";
+        case KPH_SSADDNUMBERRULE:
+            return "SsAddNumberRule";
         default:
             return "Unknown";
     }
@@ -2110,6 +2116,159 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 ruleSetEntry,
                 args->FilterType,
                 args->ProcessId
+                );
+            KphDereferenceObject(ruleSetEntry);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            /* Return the rule handle. */
+            ret->RuleEntryHandle = KphSsGetHandleRule(ruleEntry);
+            KphDereferenceObject(ruleEntry);
+            retLength = sizeof(*ret);
+        }
+        break;
+        
+        /* SsAddThreadIdRule
+         * 
+         * Adds a thread ID rule to a ruleset.
+         */
+        case KPH_SSADDTHREADIDRULE:
+        {
+            struct
+            {
+                HANDLE RuleSetEntryHandle;
+                KPHSS_FILTER_TYPE FilterType;
+                HANDLE ThreadId;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE RuleEntryHandle;
+            } *ret = dataBuffer;
+            PKPHSS_RULESET_ENTRY ruleSetEntry;
+            PKPHSS_RULE_ENTRY ruleEntry;
+            
+            CHECK_IN_OUT_LENGTH;
+            
+            /* Reference the client entry. */
+            status = ReferenceClientHandle(
+                NULL,
+                args->RuleSetEntryHandle,
+                KphSsRuleSetEntryType,
+                &ruleSetEntry
+                );
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            /* Add a thread ID rule. */
+            status = KphSsAddThreadIdRule(
+                &ruleEntry,
+                ruleSetEntry,
+                args->FilterType,
+                args->ThreadId
+                );
+            KphDereferenceObject(ruleSetEntry);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            /* Return the rule handle. */
+            ret->RuleEntryHandle = KphSsGetHandleRule(ruleEntry);
+            KphDereferenceObject(ruleEntry);
+            retLength = sizeof(*ret);
+        }
+        break;
+        
+        /* SsAddPreviousModeRule
+         * 
+         * Adds a previous mode rule to a ruleset.
+         */
+        case KPH_SSADDPREVIOUSMODERULE:
+        {
+            struct
+            {
+                HANDLE RuleSetEntryHandle;
+                KPHSS_FILTER_TYPE FilterType;
+                KPROCESSOR_MODE PreviousMode;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE RuleEntryHandle;
+            } *ret = dataBuffer;
+            PKPHSS_RULESET_ENTRY ruleSetEntry;
+            PKPHSS_RULE_ENTRY ruleEntry;
+            
+            CHECK_IN_OUT_LENGTH;
+            
+            /* Reference the client entry. */
+            status = ReferenceClientHandle(
+                NULL,
+                args->RuleSetEntryHandle,
+                KphSsRuleSetEntryType,
+                &ruleSetEntry
+                );
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            /* Add a previous mode rule. */
+            status = KphSsAddPreviousModeRule(
+                &ruleEntry,
+                ruleSetEntry,
+                args->FilterType,
+                args->PreviousMode
+                );
+            KphDereferenceObject(ruleSetEntry);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            /* Return the rule handle. */
+            ret->RuleEntryHandle = KphSsGetHandleRule(ruleEntry);
+            KphDereferenceObject(ruleEntry);
+            retLength = sizeof(*ret);
+        }
+        break;
+        
+        /* SsAddNumberRule
+         * 
+         * Adds a system service number rule to a ruleset.
+         */
+        case KPH_SSADDNUMBERRULE:
+        {
+            struct
+            {
+                HANDLE RuleSetEntryHandle;
+                KPHSS_FILTER_TYPE FilterType;
+                ULONG Number;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE RuleEntryHandle;
+            } *ret = dataBuffer;
+            PKPHSS_RULESET_ENTRY ruleSetEntry;
+            PKPHSS_RULE_ENTRY ruleEntry;
+            
+            CHECK_IN_OUT_LENGTH;
+            
+            /* Reference the client entry. */
+            status = ReferenceClientHandle(
+                NULL,
+                args->RuleSetEntryHandle,
+                KphSsRuleSetEntryType,
+                &ruleSetEntry
+                );
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            /* Add a number rule. */
+            status = KphSsAddNumberRule(
+                &ruleEntry,
+                ruleSetEntry,
+                args->FilterType,
+                args->Number
                 );
             KphDereferenceObject(ruleSetEntry);
             

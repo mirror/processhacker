@@ -152,16 +152,40 @@ FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
     )
 {
     PLIST_ENTRY currentListEntry;
-    BOOLEAN isRuleSetMatch = FALSE;
+    ULONG i;
+    BOOLEAN ruleTypeUsedArray[MaxRuleType];
+    BOOLEAN ruleTypeIncludeArray[MaxRuleType];
+    BOOLEAN ruleTypeExcludeArray[MaxRuleType];
+    BOOLEAN ruleTypeFailedArray[MaxRuleType];
+    BOOLEAN isRuleSetMatch;
     
-    /* Get the default filter type. If it is the Include 
-     * filter type, we assume the ruleset matches. If it 
-     * is the Exclude filter type, we assume it doesn't.
+    /* Due to the lack of proper boolean expression support, 
+     * we are going to have these rules:
+     * 
+     * * Each rule type has four arrays. The standard 
+     *   filtering rules apply to each rule type, 
+     *   except that on an include we increment the value 
+     *   in the include array and on an exclude we 
+     *   increment the value in the exclude array. On a 
+     *   failed include we increment the value in the 
+     *   failed array.
+     * * When we're done matching the rules, we'll look 
+     *   at the default filter type. If it's Include, 
+     *   we assume the ruleset matches. If it's Exclude, 
+     *   we assume the ruleset fails.
+     * * We will go through each rule type and look at 
+     *   the two arrays. See the code for further 
+     *   information.
      */
-    if (RuleSetEntry->DefaultFilterType == IncludeFilterType)
-        isRuleSetMatch = TRUE;
-    else if (RuleSetEntry->DefaultFilterType == ExcludeFilterType)
-        isRuleSetMatch = FALSE;
+    
+    /* Initialize the arrays. */
+    for (i = 0; i < MaxRuleType; i++)
+    {
+        ruleTypeUsedArray[i] = FALSE;
+        ruleTypeIncludeArray[i] = FALSE;
+        ruleTypeExcludeArray[i] = FALSE;
+        ruleTypeFailedArray[i] = FALSE;
+    }
     
     ExAcquireFastMutex(&RuleSetEntry->RuleListMutex);
     
@@ -172,8 +196,14 @@ FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
         PKPHSS_RULE_ENTRY ruleEntry = KPHSS_RULE_ENTRY(currentListEntry);
         BOOLEAN isRuleMatch = FALSE;
         
-        /* Check if the rule is initialized. */
-        if (!ruleEntry->Initialized)
+        /* Check if the rule is initialized, and if 
+         * the rule type has already been failed - 
+         * Exclude filter types take precedence.
+         */
+        if (
+            !ruleEntry->Initialized || 
+            ruleTypeExcludeArray[ruleEntry->RuleType]
+            )
         {
             currentListEntry = currentListEntry->Flink;
             continue;
@@ -205,33 +235,75 @@ FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
         
         /* Now that we have attempted to match the rule, we 
          * must look at the rule filter type to determine 
-         * whether we should continue:
-         * 
-         * * For the Include filter type, we note that the 
-         *   we have a match, but we still have to continue 
-         *   going down the rule list since there may be 
-         *   Exclude filters.
-         * * For the Exclude filter type, we can simply stop 
-         *   the matching and return - Exclude filters take 
-         *   precedence.
+         * what to do.
          */
         if (isRuleMatch)
         {
             if (ruleEntry->FilterType == IncludeFilterType)
             {
-                isRuleSetMatch = TRUE;
+                ruleTypeIncludeArray[ruleEntry->RuleType] = TRUE;
             }
             else if (ruleEntry->FilterType == ExcludeFilterType)
             {
-                isRuleSetMatch = FALSE;
-                break;
+                ruleTypeExcludeArray[ruleEntry->RuleType] = TRUE;
             }
         }
+        else
+        {
+            if (ruleEntry->FilterType == IncludeFilterType)
+            {
+                ruleTypeFailedArray[ruleEntry->RuleType] = TRUE;
+            }
+        }
+        
+        /* Declare that we have used the rule type. */
+        ruleTypeUsedArray[ruleEntry->RuleType] = TRUE;
         
         currentListEntry = currentListEntry->Flink;
     }
     
     ExReleaseFastMutex(&RuleSetEntry->RuleListMutex);
+    
+    /* Look at the default filter type. If it's Include, 
+     * we assume the ruleset matches. Otherwise, we 
+     * assume it fails.
+     */
+    if (RuleSetEntry->DefaultFilterType == IncludeFilterType)
+    {
+        isRuleSetMatch = TRUE;
+    }
+    else if (RuleSetEntry->DefaultFilterType == ExcludeFilterType)
+    {
+        isRuleSetMatch = FALSE;
+    }
+    
+    /* Go through the rule type match/failed arrays. */
+    
+    for (i = 0; i < MaxRuleType; i++)
+    {
+        /* Make sure this rule type has been used. */
+        if (!ruleTypeUsedArray[i])
+            continue;
+        
+        /* The ordering of these if statements are 
+         * extremely important. The order of precedence 
+         * is: exclude, include, failed include.
+         */
+        if (ruleTypeExcludeArray[i])
+        {
+            isRuleSetMatch = FALSE;
+            break;
+        }
+        else if (ruleTypeIncludeArray[i])
+        {
+            isRuleSetMatch = TRUE;
+        }
+        else if (ruleTypeFailedArray[i])
+        {
+            isRuleSetMatch = FALSE;
+            break;
+        }
+    }
     
     return isRuleSetMatch;
 }

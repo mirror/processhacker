@@ -98,7 +98,10 @@ namespace ProcessHacker.Native
             SsCreateClientEntry,
             SsCreateRuleSetEntry,
             SsRemoveRule,
-            SsAddProcessIdRule
+            SsAddProcessIdRule,
+            SsAddThreadIdRule,
+            SsAddPreviousModeRule,
+            SsAddNumberRule
         }
 
         [Flags]
@@ -864,6 +867,60 @@ namespace ProcessHacker.Native
             *(int*)(inData + 0x8) = processId.ToInt32();
 
             _fileHandle.IoControl(CtlCode(Control.SsAddProcessIdRule), inData, 0xc, outData, 4);
+
+            return (*(int*)outData).ToIntPtr();
+        }
+
+        public IntPtr SsAddThreadIdRule(
+            KphSsRuleSetEntryHandle ruleSetEntryHandle,
+            KphSsFilterType filterType,
+            IntPtr threadId
+            )
+        {
+            byte* inData = stackalloc byte[0xc];
+            byte* outData = stackalloc byte[4];
+
+            *(int*)inData = ruleSetEntryHandle.Handle.ToInt32();
+            *(int*)(inData + 0x4) = (int)filterType;
+            *(int*)(inData + 0x8) = threadId.ToInt32();
+
+            _fileHandle.IoControl(CtlCode(Control.SsAddThreadIdRule), inData, 0xc, outData, 4);
+
+            return (*(int*)outData).ToIntPtr();
+        }
+
+        public IntPtr SsAddPreviousModeRule(
+            KphSsRuleSetEntryHandle ruleSetEntryHandle,
+            KphSsFilterType filterType,
+            KProcessorMode previousMode
+            )
+        {
+            byte* inData = stackalloc byte[0x9];
+            byte* outData = stackalloc byte[4];
+
+            *(int*)inData = ruleSetEntryHandle.Handle.ToInt32();
+            *(int*)(inData + 0x4) = (int)filterType;
+            *(int*)(inData + 0x8) = (int)previousMode;
+
+            _fileHandle.IoControl(CtlCode(Control.SsAddPreviousModeRule), inData, 0x9, outData, 4);
+
+            return (*(int*)outData).ToIntPtr();
+        }
+
+        public IntPtr SsAddNumberRule(
+            KphSsRuleSetEntryHandle ruleSetEntryHandle,
+            KphSsFilterType filterType,
+            int number
+            )
+        {
+            byte* inData = stackalloc byte[0xc];
+            byte* outData = stackalloc byte[4];
+
+            *(int*)inData = ruleSetEntryHandle.Handle.ToInt32();
+            *(int*)(inData + 0x4) = (int)filterType;
+            *(int*)(inData + 0x8) = number;
+
+            _fileHandle.IoControl(CtlCode(Control.SsAddNumberRule), inData, 0xc, outData, 4);
 
             return (*(int*)outData).ToIntPtr();
         }

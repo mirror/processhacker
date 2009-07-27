@@ -407,6 +407,12 @@ namespace ProcessHacker.Native.Api
         MaxKeySetInfoClass
     }
 
+    public enum KProcessorMode : byte
+    {
+        KernelMode = 0,
+        UserMode = 1
+    }
+
     public enum KProfileSource : int
     {
         ProfileTime,

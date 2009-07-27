@@ -74,7 +74,7 @@ typedef enum _KPHSS_FILTER_TYPE
 
 typedef enum _KPHSS_RULE_TYPE
 {
-    ProcessIdRuleType,
+    ProcessIdRuleType = 0,
     ThreadIdRuleType,
     PreviousModeRuleType,
     NumberRuleType,
