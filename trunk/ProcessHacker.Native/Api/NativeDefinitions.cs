@@ -57,6 +57,12 @@ namespace ProcessHacker.Native.Api
         public const int SizeOf80387Registers = 80;
         public const int TimeMsTo100Ns = 10000;
 
+        // KTM object paths
+        public const string TransactionManagerObjectPath = "\\TransactionManager\\";
+        public const string TransactionObjectPath = "\\Transaction\\";
+        public const string EnlistmentObjectPath = "\\Enlistment\\";
+        public const string ResourceManagerObjectPath = "\\ResourceManager\\";
+
         public static readonly IntPtr KnownAceSidStartOffset = Marshal.OffsetOf(typeof(KnownAceStruct), "SidStart");
         public static readonly IntPtr PebLdrOffset = Marshal.OffsetOf(typeof(Peb), "Ldr");
         public static readonly IntPtr PebProcessHeapOffset = Marshal.OffsetOf(typeof(Peb), "ProcessHeap");

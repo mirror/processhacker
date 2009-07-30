@@ -33,6 +33,13 @@ namespace ProcessHacker.Native.Api
     {
         // IMPORTANT: All timeouts, etc. are in 100ns units except when stated otherwise.
 
+        // These definitions were gathered from these sources:
+        // 
+        // * The NDK.
+        // * The NT API headers.
+        // * ReactOS source code.
+        // * The Windows DDK.
+
         #region System Calls
 
         [DllImport("ntdll.dll")]
@@ -132,6 +139,24 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCommitComplete(
+            [In] IntPtr EnlistmentHandle,
+            [In] [Optional] ref long TmVirtualClock
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCommitEnlistment(
+            [In] IntPtr EnlistmentHandle,
+            [In] [Optional] ref long TmVirtualClock
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCommitTransaction(
+            [In] ref IntPtr TransactionHandle,
+            [In] bool Wait
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtCompareTokens(
             [In] IntPtr FirstTokenHandle,
             [In] IntPtr SecondTokenHandle,
@@ -213,6 +238,18 @@ namespace ProcessHacker.Native.Api
             [Out] out IntPtr DirectoryHandle,
             [In] DirectoryAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateEnlistment(
+            [Out] out IntPtr EnlistmentHandle,
+            [In] EnlistmentAccess DesiredAccess,
+            [In] IntPtr ResourceManagerHandle,
+            [In] IntPtr TransactionHandle,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] EnlistmentOptions CreateOptions,
+            [In] NotificationMask NotificationMask,
+            [In] [Optional] IntPtr EnlistmentKey
             );
 
         [DllImport("ntdll.dll")]
@@ -385,6 +422,17 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateResourceManager(
+            [Out] out IntPtr ResourceManagerHandle,
+            [In] ResourceManagerAccess DesiredAccess,
+            [In] IntPtr TmHandle,
+            [In] [Optional] ref Guid ResourceManagerGuid,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] ResourceManagerOptions CreateOptions,
+            [In] [Optional] ref UnicodeString Description // should be null-terminated
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtCreateSection(
             [Out] out IntPtr SectionHandle,
             [In] SectionAccess DesiredAccess,
@@ -504,6 +552,30 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateTransaction(
+            [Out] out IntPtr TransactionHandle,
+            [In] TransactionAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] ref Guid Uow, // Unit of work identifier
+            [In] [Optional] IntPtr TmHandle,
+            [In] [Optional] TransactionOptions CreateOptions,
+            [In] [Optional] int IsolationLevel, // Reserved
+            [In] [Optional] int IsolationFlags, // Reserved
+            [In] [Optional] ref long Timeout,
+            [In] [Optional] ref UnicodeString Description
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateTransactionManager(
+            [Out] out IntPtr TmHandle,
+            [In] TmAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] ref UnicodeString LogFileName,
+            [In] [Optional] TmOptions CreateOptions,
+            [In] [Optional] int CreateStrength // Reserved
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtCreateWaitablePort(
             [Out] out IntPtr PortHandle,
             [In] ref ObjectAttributes ObjectAttributes,
@@ -581,6 +653,15 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtEnumerateTransactionObject(
+            [In] [Optional] IntPtr RootObjectHandle,
+            [In] KtmObjectType QueryType,
+            ref KtmObjectCursor ObjectCursor,
+            [In] int ObjectCursorLength,
+            [Out] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtExtendSection(
             [In] IntPtr SectionHandle,
             ref long NewSectionSize
@@ -638,6 +719,17 @@ namespace ProcessHacker.Native.Api
             [In] HandleFlags HandleAttributes,
             [In] int Flags,
             [Out] out IntPtr NewThreadHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtGetNotificationResourceManager(
+            [In] IntPtr ResourceManagerHandle,
+            [In] IntPtr TransactionNotification, // TransactionNotification*
+            [In] int NotificationLength,
+            [In] ref long Timeout,
+            [Out] [Optional] out int ReturnLength,
+            [In] int Asynchronous, // Must be zero.
+            [In] [Optional] IntPtr AsynchronousContext
             );
 
         [DllImport("ntdll.dll")]
@@ -712,6 +804,15 @@ namespace ProcessHacker.Native.Api
             [Out] out IntPtr DirectoryHandle,
             [In] DirectoryAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenEnlistment(
+            [Out] out IntPtr EnlistmentHandle,
+            [In] EnlistmentAccess DesiredAccess,
+            [In] IntPtr RmHandle,
+            [In] ref Guid EnlistmentGuid,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
@@ -798,6 +899,15 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenResourceManager(
+            [Out] out IntPtr ResourceManagerHandle,
+            [In] ResourceManagerAccess DesiredAccess,
+            [In] IntPtr TmHandle,
+            [In] ref Guid ResourceManagerGuid,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtOpenSection(
             [Out] out IntPtr SectionHandle,
             [In] SectionAccess DesiredAccess,
@@ -856,6 +966,49 @@ namespace ProcessHacker.Native.Api
             [Out] out IntPtr TimerHandle,
             [In] TimerAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenTransaction(
+            [Out] out IntPtr TransactionHandle,
+            [In] TransactionAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] ref Guid Uow,
+            [In] [Optional] IntPtr TmHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenTransactionManager(
+            [Out] out IntPtr TmHandle,
+            [In] TmAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] ref UnicodeString LogFileName,
+            [In] [Optional] ref Guid TmIdentity,
+            [In] [Optional] int OpenOptions // Must be zero.
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtPrepareComplete(
+            [In] IntPtr EnlistmentHandle,
+            [In] [Optional] ref long TmVirtualClock
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtPrepareEnlistment(
+            [In] IntPtr EnlistmentHandle,
+            [In] [Optional] ref long TmVirtualClock
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtPrePrepareComplete(
+            [In] IntPtr EnlistmentHandle,
+            [In] [Optional] ref long TmVirtualClock
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtPrePrepareEnlistment(
+            [In] IntPtr EnlistmentHandle,
+            [In] [Optional] ref long TmVirtualClock
             );
 
         [DllImport("ntdll.dll")]
@@ -1230,6 +1383,12 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtReadOnlyEnlistment(
+            [In] IntPtr EnlistmentHandle,
+            [In] [Optional] ref long TmVirtualClock
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtReadRequestData(
             [In] IntPtr PortHandle,
             [In] IntPtr Message,
@@ -1246,6 +1405,22 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr Buffer,
             [In] IntPtr BufferSize,
             [Out] [Optional] out IntPtr ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtRecoverEnlistment(
+            [In] IntPtr EnlistmentHandle,
+            [In] [Optional] IntPtr EnlistmentKey
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtRecoverResourceManager(
+            [In] IntPtr ResourceManagerHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtRecoverTransactionManager(
+            [In] IntPtr TransactionManagerHandle
             );
 
         [DllImport("ntdll.dll")]
@@ -1346,6 +1521,30 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtResumeThread(
             [In] IntPtr ThreadHandle,
             [Out] [Optional] out int PreviousSuspendCount
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtRollbackComplete(
+            [In] IntPtr EnlistmentHandle,
+            [In] [Optional] ref long TmVirtualClock
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtRollbackEnlistment(
+            [In] IntPtr EnlistmentHandle,
+            [In] [Optional] ref long TmVirtualClock
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtRollbackTransaction(
+            [In] ref IntPtr TransactionHandle,
+            [In] bool Wait
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtRollforwardTransactionManager(
+            [In] ref IntPtr TransactionManagerHandle,
+            [In] [Optional] ref long TmVirtualClock
             );
 
         [DllImport("ntdll.dll")]
@@ -1505,6 +1704,12 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr WaitHandle,
             [In] bool Alertable,
             [In] [Optional] ref long Timeout
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSinglePhaseReject(
+            [In] IntPtr EnlistmentHandle,
+            [In] [Optional] ref long TmVirtualClock
             );
 
         [DllImport("ntdll.dll")]

@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+
+namespace ProcessHacker.Native
+{
+    public class VirtualMemoryAlloc : MemoryAlloc
+    {
+        public VirtualMemoryAlloc(int size)
+        {
+            this.Memory = ProcessHandle.Current.AllocateMemory(size, MemoryProtection.ReadWrite);
+            this.Size = size;
+        }
+
+        protected override void Free()
+        {
+            base.Free();
+        }
+
+        public override void Resize(int newSize)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

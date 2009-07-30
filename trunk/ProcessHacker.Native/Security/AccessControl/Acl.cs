@@ -35,7 +35,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             return acl.Memory;
         }
 
-        private MemoryAlloc _memory;
+        private MemoryRegion _memory;
 
         public Acl(int size)
         {
@@ -79,7 +79,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             }
             else
             {
-                _memory = new MemoryAlloc(memory, false);
+                _memory = new MemoryRegion(memory);
             }
         }
 

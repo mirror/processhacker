@@ -1148,6 +1148,8 @@ namespace ProcessHacker.Native
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsArgumentBlock
     {
+        public static readonly int DataOffset = Marshal.OffsetOf(typeof(KphSsArgumentBlock), "Data").ToInt32();
+
         [StructLayout(LayoutKind.Explicit)]
         public struct KphSsArgumentUnion
         {
@@ -1190,7 +1192,7 @@ namespace ProcessHacker.Native
     public struct KphSsEventBlock
     {
         public KphSsBlockHeader Header;
-        public int Flags;
+        public KphSsEventFlags Flags;
         public long Time;
         public ClientId ClientId;
 
@@ -1221,6 +1223,8 @@ namespace ProcessHacker.Native
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsUnicodeString
     {
+        public static readonly int BufferOffset = Marshal.OffsetOf(typeof(KphSsUnicodeString), "Buffer").ToInt32();
+
         public ushort Length;
         public ushort MaximumLength;
         public IntPtr Pointer;
@@ -1230,6 +1234,8 @@ namespace ProcessHacker.Native
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsWString
     {
+        public static readonly int BufferOffset = Marshal.OffsetOf(typeof(KphSsWString), "Buffer").ToInt32();
+
         public ushort Length;
         public byte Buffer;
     }

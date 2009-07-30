@@ -780,6 +780,15 @@ namespace ProcessHacker.Native.Api
         public int SidStart;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KtmObjectCursor
+    {
+        public Guid LastQuery;
+        public int ObjectIdCount;
+        public byte ObjectIds;
+        // Array of Guids follows.
+    }
+
     [StructLayout(LayoutKind.Explicit, Size = 8)]
     public struct LargeInteger
     {
@@ -2324,6 +2333,15 @@ namespace ProcessHacker.Native.Api
         }
 
         public SidAndAttributes User;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TransactionNotification
+    {
+        public IntPtr TransactionKey;
+        public NotificationMask Notification; // Original name: TransactionNotification
+        public long TmVirtualClock;
+        public int ArgumentLength;
     }
 
     [StructLayout(LayoutKind.Sequential)]

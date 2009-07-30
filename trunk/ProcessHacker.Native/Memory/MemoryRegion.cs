@@ -1,0 +1,292 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using ProcessHacker.Common.Objects;
+using System.Runtime.InteropServices;
+
+namespace ProcessHacker.Native
+{
+    public class MemoryRegion : BaseObject
+    {
+        private static Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
+
+        public static implicit operator int(MemoryRegion memory)
+        {
+            return memory.Memory.ToInt32();
+        }
+
+        public static implicit operator IntPtr(MemoryRegion memory)
+        {
+            return memory.Memory;
+        }
+
+        public unsafe static implicit operator byte*(MemoryRegion memory)
+        {
+            return (byte*)memory.Memory;
+        }
+
+        public unsafe static explicit operator void*(MemoryRegion memory)
+        {
+            return (void*)memory.Memory;
+        }
+
+        public unsafe static explicit operator int*(MemoryRegion memory)
+        {
+            return (int*)memory.Memory;
+        }
+
+        private IntPtr _memory;
+        private int _size;
+
+        /// <summary>
+        /// Creates a new, invalid memory allocation. 
+        /// You must set the pointer using the Memory property.
+        /// </summary>
+        protected MemoryRegion()
+        { }
+
+        public MemoryRegion(IntPtr memory)
+            : this(memory, 0)
+        { }
+
+        public MemoryRegion(IntPtr memory, int offset)
+            : this(memory.Increment(offset), 0, false)
+        { }
+
+        protected MemoryRegion(IntPtr memory, int size, bool owned)
+            : base(owned)
+        {
+            _memory = memory;
+            _size = size;
+        }
+
+        protected sealed override void DisposeObject(bool disposing)
+        {
+            this.Free();
+        }
+
+        protected virtual void Free()
+        { }
+
+        /// <summary>
+        /// Gets a pointer to the allocated memory.
+        /// </summary>
+        public IntPtr Memory
+        {
+            get { return _memory; }
+            protected set { _memory = value; }
+        }
+
+        /// <summary>
+        /// Gets the size of the allocated memory.
+        /// </summary>
+        public virtual int Size
+        {
+            get { return _size; }
+            protected set { _size = value; }
+        }
+
+        public MemoryRegionStream GetStream()
+        {
+            return new MemoryRegionStream(this);
+        }
+
+        private int GetStructSizeCached(Type structType)
+        {
+            if (!_sizeCache.ContainsKey(structType))
+                _sizeCache.Add(structType, Marshal.SizeOf(structType));
+
+            return _sizeCache[structType];
+        }
+
+        public byte[] ReadBytes(int length)
+        {
+            return this.ReadBytes(0, length);
+        }
+
+        public byte[] ReadBytes(int offset, int length)
+        {
+            byte[] buffer = new byte[length];
+
+            this.ReadBytes(offset, buffer, 0, length);
+
+            return buffer;
+        }
+
+        public void ReadBytes(byte[] buffer, int startIndex, int length)
+        {
+            this.ReadBytes(0, buffer, startIndex, length);
+        }
+
+        public void ReadBytes(int offset, byte[] buffer, int startIndex, int length)
+        {
+            Marshal.Copy(_memory.Increment(offset), buffer, startIndex, length);
+        }
+
+        /// <summary>
+        /// Reads a signed integer.
+        /// </summary>
+        /// <param name="offset">The offset at which to begin reading.</param>
+        /// <returns>The integer.</returns>
+        public int ReadInt32(int offset)
+        {
+            return this.ReadInt32(offset, 0);
+        }
+
+        /// <summary>
+        /// Reads a signed integer.
+        /// </summary>
+        /// <param name="offset">The offset at which to begin reading.</param>
+        /// <param name="index">The index at which to begin reading, after the offset is added.</param>
+        /// <returns>The integer.</returns>
+        public int ReadInt32(int offset, int index)
+        {
+            return Marshal.ReadInt32(_memory, offset + index * sizeof(int));
+        }
+
+        public IntPtr ReadIntPtr(int offset)
+        {
+            return this.ReadIntPtr(offset, 0);
+        }
+
+        public IntPtr ReadIntPtr(int offset, int index)
+        {
+            return Marshal.ReadIntPtr(_memory, offset + index * IntPtr.Size);
+        }
+
+        /// <summary>
+        /// Reads an unsigned integer.
+        /// </summary>
+        /// <param name="offset">The offset at which to begin reading.</param>
+        /// <returns>The integer.</returns>
+        public uint ReadUInt32(int offset)
+        {
+            return this.ReadUInt32(offset, 0);
+        }
+
+        /// <summary>
+        /// Reads an unsigned integer.
+        /// </summary>
+        /// <param name="offset">The offset at which to begin reading.</param>
+        /// <param name="index">The index at which to begin reading, after the offset is added.</param>
+        /// <returns>The integer.</returns>
+        public uint ReadUInt32(int offset, int index)
+        {
+            return (uint)this.ReadInt32(offset, index);
+        }
+
+        /// <summary>
+        /// Creates a struct from the memory allocation.
+        /// </summary>
+        /// <typeparam name="T">The type of the struct.</typeparam>
+        /// <returns>The new struct.</returns>
+        public T ReadStruct<T>()
+        {
+            return this.ReadStruct<T>(0);
+        }
+
+        /// <summary>
+        /// Creates a struct from the memory allocation.
+        /// </summary>
+        /// <typeparam name="T">The type of the struct.</typeparam>
+        /// <param name="index">The index at which to begin reading to the struct. This is multiplied by  
+        /// the size of the struct.</param>
+        /// <returns>The new struct.</returns>
+        public T ReadStruct<T>(int index)
+        {
+            return this.ReadStruct<T>(0, index);
+        }
+
+        /// <summary>
+        /// Creates a struct from the memory allocation.
+        /// </summary>
+        /// <typeparam name="T">The type of the struct.</typeparam>
+        /// <param name="offset">The offset to add before reading.</param>
+        /// <param name="index">The index at which to begin reading to the struct. This is multiplied by  
+        /// the size of the struct.</param>
+        /// <returns>The new struct.</returns>
+        public T ReadStruct<T>(int offset, int index)
+        {
+            return (T)Marshal.PtrToStructure(
+                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index), typeof(T));
+        }
+
+        public string ReadUnicodeString(int offset)
+        {
+            return Marshal.PtrToStringUni(_memory.Increment(offset));
+        }
+
+        public string ReadUnicodeString(int offset, int length)
+        {
+            return Marshal.PtrToStringUni(_memory.Increment(offset), length);
+        }
+
+        /// <summary>
+        /// Writes a single byte to the memory allocation.
+        /// </summary>
+        /// <param name="offset">The offset at which to write.</param>
+        /// <param name="b">The value of the byte.</param>
+        public void WriteByte(int offset, byte b)
+        {
+            Marshal.WriteByte(this, offset, b);
+        }
+
+        public void WriteBytes(int offset, byte[] b)
+        {
+            Marshal.Copy(b, 0, _memory.Increment(offset), b.Length);
+        }
+
+        public void WriteInt16(int offset, short i)
+        {
+            Marshal.WriteInt16(this, offset, i);
+        }
+
+        public void WriteInt32(int offset, int i)
+        {
+            Marshal.WriteInt32(this, offset, i);
+        }
+
+        public void WriteIntPtr(int offset, IntPtr i)
+        {
+            Marshal.WriteIntPtr(this, offset, i);
+        }
+
+        public void WriteMemory(int destOffset, IntPtr data, int srcOffset, int length)
+        {
+            ProcessHacker.Native.Api.Win32.RtlMoveMemory(
+                _memory.Increment(destOffset),
+                data.Increment(srcOffset),
+                length.ToIntPtr()
+                );
+        }
+
+        public void WriteStruct<T>(T s)
+        {
+            this.WriteStruct<T>(0, s);
+        }
+
+        public void WriteStruct<T>(int index, T s)
+        {
+            this.WriteStruct<T>(0, index, s);
+        }
+
+        public void WriteStruct<T>(int offset, int index, T s)
+        {
+            Marshal.StructureToPtr(s,
+                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index), false);
+        }
+
+        /// <summary>
+        /// Writes a Unicode string to the allocated memory.
+        /// </summary>
+        /// <param name="offset">The offset to add.</param>
+        /// <param name="s">The string to write.</param>
+        public void WriteUnicodeString(int offset, string s)
+        {
+            byte[] b = UnicodeEncoding.Unicode.GetBytes(s);
+
+            for (int i = 0; i < b.Length; i++)
+                Marshal.WriteByte(this.Memory, offset + i, b[i]);
+        }
+    }
+}

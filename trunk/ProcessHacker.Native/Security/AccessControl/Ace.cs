@@ -46,7 +46,7 @@ namespace ProcessHacker.Native.Security.AccessControl
 
         public static AceType GetType(IntPtr ace)
         {
-            MemoryAlloc memory = new MemoryAlloc(ace, false);
+            MemoryRegion memory = new MemoryRegion(ace);
 
             return memory.ReadStruct<AceHeader>().AceType;
         }
@@ -56,7 +56,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             return ace.Memory;
         }
 
-        private MemoryAlloc _memory;
+        private MemoryRegion _memory;
         private AceFlags _flags;
         private int _size;
         private AceType _type;
@@ -80,7 +80,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             }
             else
             {
-                _memory = new MemoryAlloc(memory, false);
+                _memory = new MemoryRegion(memory);
             }
 
             this.Read();
@@ -102,7 +102,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             get { return _memory; }
         }
 
-        protected MemoryAlloc MemoryAlloc
+        protected MemoryRegion MemoryRegion
         {
             get { return _memory; }
             set { _memory = value; }

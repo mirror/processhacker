@@ -100,6 +100,14 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
+    public enum CrmProtocolOptions : int
+    {
+        ExplicitMarshalOnly = 0x1,
+        DynamicMarshalInfo = 0x2,
+        MaximumOption = 0x3
+    }
+
+    [Flags]
     public enum DebugObjectFlags : uint
     {
         KillOnClose = 0x1
@@ -134,6 +142,13 @@ namespace ProcessHacker.Native.Api
         CloseSource = 0x1,
         SameAccess = 0x2,
         SameAttributes = 0x4
+    }
+
+    [Flags]
+    public enum EnlistmentOptions : int
+    {
+        Superior = 0x1,
+        MaximumOption = 0x1
     }
 
     public enum EventInformationClass : int
@@ -442,6 +457,15 @@ namespace ProcessHacker.Native.Api
         ProfileMaximum
     }
 
+    public enum KtmObjectType : int
+    {
+        Transaction,
+        TransactionManager,
+        ResourceManager,
+        Enlistment,
+        Invalid
+    }
+
     public enum KWaitReason : int
     {
         Executive = 0,
@@ -576,6 +600,40 @@ namespace ProcessHacker.Native.Api
     public enum MutantInformationClass : int
     {
         MutantBasicInformation
+    }
+
+    [Flags]
+    public enum NotificationMask : uint
+    {
+        Mask = 0x3fffffff,
+        PrePrepare = 0x00000001,
+        Prepare = 0x00000002,
+        Commit = 0x00000004,
+        Rollback = 0x00000008,
+        PrePrepareComplete = 0x00000010,
+        PrepareComplete = 0x00000020,
+        CommitComplete = 0x00000040,
+        RollbackComplete = 0x00000080,
+        Recover = 0x00000100,
+        SinglePhaseComplete = 0x00000200,
+        DelegateCommit = 0x00000400,
+        RecoverQuery = 0x00000800,
+        EnlistPrePrepare = 0x00001000,
+        LastRecover = 0x00002000,
+        InDoubt = 0x00004000,
+        PropagatePull = 0x00008000,
+        PropagatePush = 0x00010000,
+        Marshal = 0x00020000,
+        EnlistMask = 0x00040000,
+        RmDisconnected = 0x01000000,
+        TmOnline = 0x02000000,
+        CommitRequest = 0x04000000,
+        Promote = 0x08000000,
+        PromoteNew = 0x10000000,
+        RequestOutcome = 0x20000000,
+
+        // For filter manager use only. DO NOT SPECIFY.
+        CommitFinalize = 0x40000000
     }
 
     [Flags]
@@ -764,6 +822,14 @@ namespace ProcessHacker.Native.Api
     public enum RegUnloadFlags : int
     {
         ForceUnload = 0x1
+    }
+
+    [Flags]
+    public enum ResourceManagerOptions : int
+    {
+        Volatile = 0x1,
+        Communication = 0x2,
+        MaximumOption = 0x3
     }
 
     [Flags]
@@ -1084,6 +1150,19 @@ namespace ProcessHacker.Native.Api
         SynchronizationTimer
     }
 
+    [Flags]
+    public enum TmOptions : int
+    {
+        Volatile = 0x1,
+        CommitDefault = 0x0,
+        CommitSystemVolume = 0x2,
+        CommitSystemHives = 0x4,
+        CommitLowest = 0x8,
+        CorruptForRecovery = 0x10,
+        CorruptForProgress = 0x20,
+        MaximumOption = 0x3f
+    }
+
     public enum TokenElevationType : int
     {
         Default = 1,
@@ -1128,6 +1207,13 @@ namespace ProcessHacker.Native.Api
     {
         Primary = 1,
         Impersonation
+    }
+
+    [Flags]
+    public enum TransactionOptions : int
+    {
+        DoNotPromote = 0x1,
+        MaximumOption = 0x1
     }
 
     public enum WaitType : int

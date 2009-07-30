@@ -54,14 +54,14 @@ namespace ProcessHacker.Native.Security
 
         public PrivilegeSet(IntPtr memory)
         {
-            MemoryAlloc memoryAlloc = new MemoryAlloc(memory, false);
-            int count = memoryAlloc.ReadInt32(0);
-            PrivilegeSetFlags flags = (PrivilegeSetFlags)memoryAlloc.ReadInt32(4);
+            MemoryRegion memoryRegion = new MemoryRegion(memory);
+            int count = memoryRegion.ReadInt32(0);
+            PrivilegeSetFlags flags = (PrivilegeSetFlags)memoryRegion.ReadInt32(4);
 
             _privileges = new List<Privilege>(count);
 
             for (int i = 0; i < count; i++)
-                _privileges.Add(new Privilege(memoryAlloc.ReadStruct<LuidAndAttributes>(8, i)));
+                _privileges.Add(new Privilege(memoryRegion.ReadStruct<LuidAndAttributes>(8, i)));
         }
 
         public PrivilegeSetFlags Flags

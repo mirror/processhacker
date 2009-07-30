@@ -69,7 +69,7 @@ namespace ProcessHacker.Native.Debugging
             if (debugInfo.Heaps == IntPtr.Zero)
                 throw new InvalidOperationException("Heap information does not exist.");
 
-            MemoryAlloc heapInfo = new MemoryAlloc(debugInfo.Heaps, false);
+            MemoryRegion heapInfo = new MemoryRegion(debugInfo.Heaps);
             var heaps = heapInfo.ReadStruct<RtlProcessHeaps>();
 
             for (int i = 0; i < heaps.NumberOfHeaps; i++)
@@ -92,7 +92,7 @@ namespace ProcessHacker.Native.Debugging
             if (debugInfo.Locks == IntPtr.Zero)
                 throw new InvalidOperationException("Lock information does not exist.");
 
-            MemoryAlloc locksInfo = new MemoryAlloc(debugInfo.Locks, false);
+            MemoryRegion locksInfo = new MemoryRegion(debugInfo.Locks);
             var locks = locksInfo.ReadStruct<RtlProcessLocks>();
 
             for (int i = 0; i < locks.NumberOfLocks; i++)
@@ -115,7 +115,7 @@ namespace ProcessHacker.Native.Debugging
             if (debugInfo.Modules == IntPtr.Zero)
                 throw new InvalidOperationException("Module information does not exist.");
 
-            MemoryAlloc modulesInfo = new MemoryAlloc(debugInfo.Modules, false);
+            MemoryRegion modulesInfo = new MemoryRegion(debugInfo.Modules);
             var modules = modulesInfo.ReadStruct<RtlProcessModules>();
 
             for (int i = 0; i < modules.NumberOfModules; i++)
@@ -133,7 +133,7 @@ namespace ProcessHacker.Native.Debugging
         /// <returns>A RtlDebugInformation structure.</returns>
         private RtlDebugInformation GetDebugInformation()
         {
-            MemoryAlloc data = new MemoryAlloc(_buffer, false);
+            MemoryRegion data = new MemoryRegion(_buffer);
 
             return data.ReadStruct<RtlDebugInformation>();
         }

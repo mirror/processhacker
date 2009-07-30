@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native
 {
-    public class MemoryAllocStream : Stream
+    public class MemoryRegionStream : Stream
     {
-        private MemoryAlloc _memory;
+        private MemoryRegion _memory;
         private long _position = 0;
 
-        public MemoryAllocStream(MemoryAlloc memory)
+        public MemoryRegionStream(MemoryRegion memory)
         {
             _memory = memory;
         }

@@ -45,7 +45,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 )
                 throw new ArgumentException("Invalid ACE type.");
 
-            this.MemoryAlloc = new MemoryAlloc(
+            this.MemoryRegion = new MemoryAlloc(
                 Marshal.SizeOf(typeof(KnownAceStruct)) - // known ace struct size
                 sizeof(int) + // minus SidStart field
                 sid.Length // plus SID length
@@ -56,12 +56,12 @@ namespace ProcessHacker.Native.Security.AccessControl
             // Initialize the ACE (minus the SID).
             knownAce.Header.AceType = type;
             knownAce.Header.AceFlags = flags;
-            knownAce.Header.AceSize = (ushort)this.MemoryAlloc.Size;
+            knownAce.Header.AceSize = (ushort)this.MemoryRegion.Size;
             knownAce.Mask = mask;
             // Write the ACE to memory.
-            this.MemoryAlloc.WriteStruct<KnownAceStruct>(knownAce);
+            this.MemoryRegion.WriteStruct<KnownAceStruct>(knownAce);
             // Write the SID.
-            this.MemoryAlloc.WriteMemory(Win32.KnownAceSidStartOffset.ToInt32(), sid, 0, sid.Length);
+            this.MemoryRegion.WriteMemory(Win32.KnownAceSidStartOffset.ToInt32(), sid, 0, sid.Length);
             // Update the cached info.
             this.Read();
         }
@@ -82,8 +82,7 @@ namespace ProcessHacker.Native.Security.AccessControl
 
         protected override void Read()
         {
-            var memory = new MemoryAlloc(this.Memory, false);
-            var knownAce = memory.ReadStruct<KnownAceStruct>();
+            var knownAce = this.MemoryRegion.ReadStruct<KnownAceStruct>();
 
             _mask = knownAce.Mask;
             _sid = Sid.FromPointer(this.Memory.Increment(Win32.KnownAceSidStartOffset));

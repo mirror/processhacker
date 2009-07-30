@@ -34,7 +34,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             return securityDescriptor.Memory;
         }
 
-        private MemoryAlloc _memory;
+        private MemoryRegion _memory;
         private bool _memoryOwned = true;
         private Acl _dacl;
         private Acl _sacl;
@@ -59,10 +59,10 @@ namespace ProcessHacker.Native.Security.AccessControl
         }
 
         public SecurityDescriptor(IntPtr memory)
-            : this(new MemoryAlloc(memory, false), false)
+            : this(new MemoryRegion(memory), false)
         { }
 
-        public SecurityDescriptor(MemoryAlloc memory, bool owned)
+        public SecurityDescriptor(MemoryRegion memory, bool owned)
         {
             _memory = memory;
             _memoryOwned = owned;

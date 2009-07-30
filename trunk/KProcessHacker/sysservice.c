@@ -1548,7 +1548,7 @@ NTSTATUS KphpSsWriteBlock(
     
     /* Now that we have succesfully copied the block, we need to 
      * release the read semaphore to notify to the client that they have 
-     * a block to read and advance the cursor.
+     * a block to read. We also need to advance our cursor.
      */
     
     /* May cause an exception (STATUS_SEMAPHORE_LIMIT_EXCEEDED). */
