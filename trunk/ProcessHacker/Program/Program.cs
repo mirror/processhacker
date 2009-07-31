@@ -597,28 +597,24 @@ namespace ProcessHacker
         {
             bool found = false;
 
-            Win32.EnumWindows((hWnd, param) =>
+            WindowHandle.Enumerate((window) =>
                 {
-                    System.Text.StringBuilder sb = new System.Text.StringBuilder(0x100);
-                    int length = Win32.InternalGetWindowText(hWnd, sb, sb.Capacity);
-
-                    if (sb.ToString().Contains("Process Hacker ["))
+                    if (window.GetText().Contains("Process Hacker ["))
                     {
                         int result;
 
-                        Win32.SendMessageTimeout(hWnd, (WindowMessage)0x9991, 0, 0,
-                            SmtoFlags.Block, 5000, out result);
+                        window.SendMessageTimeout((WindowMessage)0x9991, 0, 0, SmtoFlags.Block, 5000, out result);
 
                         if (result == 0x1119)
                         {
-                            Win32.SetForegroundWindow(hWnd);
+                            window.SetForeground();
                             found = true;
                             return false;
                         }
                     }
 
                     return true;
-                }, 0);
+                });
 
             if (found)
                 Environment.Exit(0);

@@ -180,6 +180,11 @@ namespace ProcessHacker.Native.Objects
             return Win32.SendMessage(this, message, wParam, lParam);
         }
 
+        public IntPtr SendMessageTimeout(WindowMessage message, int wParam, int lParam, SmtoFlags flags, int timeout, out int result)
+        {
+            return Win32.SendMessageTimeout(this, message, wParam, lParam, flags, timeout, out result);
+        }
+
         public bool SetForeground()
         {
             return Win32.SetForegroundWindow(this);
