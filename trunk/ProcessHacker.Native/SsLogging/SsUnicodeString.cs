@@ -18,7 +18,7 @@ namespace ProcessHacker.Native.SsLogging
                 Buffer = unicodeStringInfo.Pointer
             };
             this.String = data.ReadUnicodeString(
-                KphSsWString.BufferOffset,
+                KphSsUnicodeString.BufferOffset,
                 unicodeStringInfo.Length / 2
                 );
         }
