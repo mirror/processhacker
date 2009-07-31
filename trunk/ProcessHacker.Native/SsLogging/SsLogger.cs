@@ -70,6 +70,42 @@ namespace ProcessHacker.Native.SsLogging
                 );
         }
 
+        public IntPtr AddNumberRule(FilterType filterType, int number)
+        {
+            return KProcessHacker.Instance.SsAddNumberRule(
+                _ruleSetEntryHandle,
+                filterType.ToKphSs(),
+                number
+                );
+        }
+
+        public IntPtr AddPreviousModeRule(FilterType filterType, KProcessorMode previousMode)
+        {
+            return KProcessHacker.Instance.SsAddPreviousModeRule(
+                _ruleSetEntryHandle,
+                filterType.ToKphSs(),
+                previousMode
+                );
+        }
+
+        public IntPtr AddProcessIdRule(FilterType filterType, int pid)
+        {
+            return KProcessHacker.Instance.SsAddProcessIdRule(
+                _ruleSetEntryHandle,
+                filterType.ToKphSs(),
+                pid.ToIntPtr()
+                );
+        }
+
+        public IntPtr AddThreadIdRule(FilterType filterType, int tid)
+        {
+            return KProcessHacker.Instance.SsAddProcessIdRule(
+                _ruleSetEntryHandle,
+                filterType.ToKphSs(),
+                tid.ToIntPtr()
+                );
+        }
+
         private void BufferWorkerThreadStart()
         {
             int cursor = 0;
@@ -228,6 +264,27 @@ namespace ProcessHacker.Native.SsLogging
                 // Signal that a buffer block is available for writing.
                 _writeSemaphore.Release();
             }
+        }
+
+        public void GetStatistics(out int blocksWritten, out int blocksDropped)
+        {
+            KphSsClientInformation info;
+            int retLength;
+
+            KProcessHacker.Instance.SsQueryClientEntry(
+                _clientEntryHandle,
+                out info,
+                Marshal.SizeOf(typeof(KphSsClientInformation)),
+                out retLength
+                );
+
+            blocksWritten = info.NumberOfBlocksWritten;
+            blocksDropped = info.NumberOfBlocksDropped;
+        }
+
+        public void RemoveRule(IntPtr handle)
+        {
+            KProcessHacker.Instance.SsRemoveRule(_ruleSetEntryHandle, handle);
         }
 
         public void Start()

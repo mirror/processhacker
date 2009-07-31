@@ -98,6 +98,10 @@ NTSTATUS NTAPI PsGetContextThread(
     __in KPROCESSOR_MODE PreviousMode
     );
 
+BOOLEAN NTAPI PsGetProcessExitProcessCalled(
+    __in PEPROCESS Process
+    );
+
 PVOID NTAPI PsGetThreadWin32Thread(
     __in PETHREAD Thread
     );

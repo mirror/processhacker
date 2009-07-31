@@ -900,7 +900,7 @@ namespace ProcessHacker.Native
 
             *(int*)inData = ruleSetEntryHandle.Handle.ToInt32();
             *(int*)(inData + 0x4) = (int)filterType;
-            *(int*)(inData + 0x8) = (int)previousMode;
+            *(int*)(inData + 0x8) = (byte)previousMode;
 
             _fileHandle.IoControl(CtlCode(Control.SsAddPreviousModeRule), inData, 0x9, outData, 4);
 

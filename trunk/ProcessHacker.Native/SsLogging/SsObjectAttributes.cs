@@ -11,9 +11,13 @@ namespace ProcessHacker.Native.SsLogging
         {
             KphSsObjectAttributes oaInfo = data.ReadStruct<KphSsObjectAttributes>();
 
-            this.ObjectName = new SsUnicodeString(new MemoryRegion(data, oaInfo.ObjectNameOffset));
+            if (oaInfo.ObjectNameOffset != 0)
+                this.ObjectName = new SsUnicodeString(new MemoryRegion(data, oaInfo.ObjectNameOffset));
+
             this.Original = oaInfo.ObjectAttributes;
-            this.RootDirectory = new SsHandle(new MemoryRegion(data, oaInfo.RootDirectoryOffset));
+
+            if (oaInfo.RootDirectoryOffset != 0)
+                this.RootDirectory = new SsHandle(new MemoryRegion(data, oaInfo.RootDirectoryOffset));
         }
 
         public SsUnicodeString ObjectName
