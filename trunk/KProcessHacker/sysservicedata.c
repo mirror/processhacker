@@ -169,6 +169,14 @@ KPHSS_CALL_ENTRY SsEntries[] =
     { &SsNtLoadDriver, "NtLoadDriver", 1, { UnicodeStringArgument } },
     /* NTSTATUS NtOpenDirectoryObject(PHANDLE DirectoryHandle, ACCESS_MASK DesiredAccess, POBJECT_ATTRIBUTES ObjectAttributes) */
     { &SsNtOpenDirectoryObject, "NtOpenDirectoryObject", 3, { 0, 0, ObjectAttributesArgument } },
+    /* NTSTATUS NtReadFile(HANDLE FileHandle, HANDLE Event, PIO_APC_ROUTINE ApcRoutine, 
+     *      PVOID ApcContext, PIO_STATUS_BLOCK IoStatusBlock, PVOID Buffer, 
+     *      ULONG Length, PLARGE_INTEGER ByteOffset, PULONG Key) */
+    { &SsNtReadFile, "NtReadFile", 9, { HandleArgument, HandleArgument, 0, 0, 0, 0, 0, Int64Argument, Int32Argument } },
+    /* NTSTATUS NtWriteFile(HANDLE FileHandle, HANDLE Event, PIO_APC_ROUTINE ApcRoutine, 
+     *      PVOID ApcContext, PIO_STATUS_BLOCK IoStatusBlock, PVOID Buffer, 
+     *      ULONG Length, PLARGE_INTEGER ByteOffset, PULONG Key) */
+    { &SsNtWriteFile, "NtWriteFile", 9, { HandleArgument, HandleArgument, 0, 0, 0, 0, 0, Int64Argument, Int32Argument } },
     
     { NULL, "Dummy", 0 }
 };

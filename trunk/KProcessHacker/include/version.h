@@ -155,5 +155,7 @@ EXT ULONG SsNtCreateWaitablePort;
 EXT ULONG SsNtDelayExecution;
 EXT ULONG SsNtLoadDriver;
 EXT ULONG SsNtOpenDirectoryObject;
+EXT ULONG SsNtReadFile;
+EXT ULONG SsNtWriteFile;
 
 #endif

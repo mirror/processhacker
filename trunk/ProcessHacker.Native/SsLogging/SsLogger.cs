@@ -251,6 +251,8 @@ namespace ProcessHacker.Native.SsLogging
                             break;
                     }
 
+                    ssArg.Index = argBlock.Index;
+
                     // Raise the event.
                     if (ssArg != null)
                     {

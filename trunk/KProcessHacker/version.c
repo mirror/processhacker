@@ -331,6 +331,8 @@ NTSTATUS KvInit()
             SsNtDelayExecution = 0x76;
             SsNtLoadDriver = 0xa5;
             SsNtOpenDirectoryObject = 0xb7;
+            SsNtReadFile = 0x102;
+            SsNtWriteFile = 0x163;
         }
         else
         {
