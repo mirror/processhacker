@@ -76,8 +76,8 @@ typedef enum _KPHSS_ARGUMENT_TYPE
 typedef struct _KPHSS_HANDLE
 {
     CLIENT_ID ClientId;
-    ULONG TypeNameOffset; /* KPHSS_WSTRING */
-    ULONG NameOffset; /* KPHSS_WSTRING */
+    USHORT TypeNameOffset; /* KPHSS_WSTRING */
+    USHORT NameOffset; /* KPHSS_WSTRING */
 } KPHSS_HANDLE, *PKPHSS_HANDLE;
 
 typedef struct _KPHSS_STRING
@@ -124,8 +124,8 @@ typedef struct _KPHSS_OBJECT_ATTRIBUTES
         };
     };
     
-    ULONG RootDirectoryOffset; /* KPHSS_HANDLE */
-    ULONG ObjectNameOffset; /* KPHSS_UNICODE_STRING */
+    USHORT RootDirectoryOffset; /* KPHSS_HANDLE */
+    USHORT ObjectNameOffset; /* KPHSS_UNICODE_STRING */
 } KPHSS_OBJECT_ATTRIBUTES, *PKPHSS_OBJECT_ATTRIBUTES;
 
 typedef struct _KPHSS_INITIAL_TEB

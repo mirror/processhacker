@@ -377,6 +377,12 @@ NTSTATUS KphpSsCaptureObjectAttributesArgument(
     __in KPROCESSOR_MODE PreviousMode
     );
 
+NTSTATUS KphpSsCaptureClientIdArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in PCLIENT_ID Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    );
+
 NTSTATUS KphpSsCreateArgumentBlock(
     __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
     __in ULONG Number,

@@ -34,6 +34,14 @@
 #include "trace.h"
 #include "zw.h"
 
+#define MAX_UINTEGER(Bits) ((1 << (Bits)) - 1)
+#define BITS_UCHAR 8
+#define MAX_UCHAR MAX_UINTEGER(BITS_UCHAR)
+#define BITS_USHORT 16
+#define MAX_USHORT MAX_UINTEGER(BITS_USHORT)
+#define BITS_ULONG 32
+#define MAX_ULONG MAX_UINTEGER(BITS_ULONG)
+
 #define PAUSE() __asm { pause }
 #define PTR_ADD_OFFSET(Pointer, Offset) ((PVOID)((ULONG_PTR)(Pointer) + (ULONG_PTR)(Offset)))
 

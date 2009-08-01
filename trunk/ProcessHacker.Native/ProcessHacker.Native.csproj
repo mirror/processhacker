@@ -90,6 +90,7 @@
     <Compile Include="Security\TmAccess.cs" />
     <Compile Include="Security\TransactionAccess.cs" />
     <Compile Include="SsLogging\FilterType.cs" />
+    <Compile Include="SsLogging\SsClientId.cs" />
     <Compile Include="SsLogging\SsData.cs" />
     <Compile Include="SsLogging\SsEvent.cs" />
     <Compile Include="SsLogging\SsHandle.cs" />

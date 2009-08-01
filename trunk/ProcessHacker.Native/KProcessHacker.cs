@@ -1051,7 +1051,7 @@ namespace ProcessHacker.Native
         DriverServiceKeyNameInformation
     }
 
-    public enum KphSsArgumentType : int
+    public enum KphSsArgumentType : byte
     {
         Normal = 0,
         Int8,
@@ -1069,7 +1069,7 @@ namespace ProcessHacker.Native
         InitialTeb
     }
 
-    public enum KphSsBlockType : int
+    public enum KphSsBlockType : ushort
     {
         Reset,
         Event,
@@ -1077,7 +1077,7 @@ namespace ProcessHacker.Native
     }
 
     [Flags]
-    public enum KphSsEventFlags : int
+    public enum KphSsEventFlags : ushort
     {
         ProbeArgumentsFailed = 0x1,
         CopyArgumentsFailed = 0x2,
@@ -1166,7 +1166,7 @@ namespace ProcessHacker.Native
         }
 
         public KphSsBlockHeader Header;
-        public int Index;
+        public byte Index;
         public KphSsArgumentType Type;
         public KphSsArgumentUnion Data;
     }
@@ -1174,7 +1174,7 @@ namespace ProcessHacker.Native
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsBlockHeader
     {
-        public int Size;
+        public ushort Size;
         public KphSsBlockType Type;
     }
 
@@ -1197,27 +1197,27 @@ namespace ProcessHacker.Native
         public ClientId ClientId;
 
         public int Number;
-        public int NumberOfArguments;
-        public int ArgumentsOffset;
+        public ushort NumberOfArguments;
+        public ushort ArgumentsOffset;
 
-        public int TraceCount;
-        public int TraceOffset;
+        public ushort TraceCount;
+        public ushort TraceOffset;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsHandle
     {
         public ClientId ClientId;
-        public int TypeNameOffset;
-        public int NameOffset;
+        public ushort TypeNameOffset;
+        public ushort NameOffset;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsObjectAttributes
     {
         public ObjectAttributes ObjectAttributes;
-        public int RootDirectoryOffset;
-        public int ObjectNameOffset;
+        public ushort RootDirectoryOffset;
+        public ushort ObjectNameOffset;
     }
 
     [StructLayout(LayoutKind.Sequential)]

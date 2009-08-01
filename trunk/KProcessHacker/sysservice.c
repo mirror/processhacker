@@ -746,6 +746,10 @@ NTSTATUS KphpSsCreateEventBlock(
     PVOID stackTrace[MAX_STACK_DEPTH * 2];
     ULONG capturedFrames;
     
+    /* Make sure the argument count isn't too large. */
+    if (NumberOfArguments > MAX_USHORT)
+        return STATUS_INVALID_PARAMETER;
+    
     previousMode = KeGetPreviousMode();
     
     /* Capture kernel-mode and user-mode stack traces. 
@@ -779,6 +783,10 @@ NTSTATUS KphpSsCreateEventBlock(
     traceSize = capturedFrames * sizeof(PVOID);
     eventBlockSize = sizeof(KPHSS_EVENT_BLOCK) + argumentsSize + traceSize;
     
+    /* Make sure the block size isn't too large. */
+    if (eventBlockSize > MAX_USHORT)
+        return STATUS_INVALID_PARAMETER;
+    
     /* Allocate the event block. */
     eventBlock = ExAllocatePoolWithTag(PagedPool, eventBlockSize, TAG_EVENT_BLOCK);
     
@@ -786,17 +794,17 @@ NTSTATUS KphpSsCreateEventBlock(
         return STATUS_INSUFFICIENT_RESOURCES;
     
     /* Initialize the event block. */
-    eventBlock->Header.Size = eventBlockSize;
+    eventBlock->Header.Size = (USHORT)eventBlockSize;
     eventBlock->Header.Type = EventBlockType;
     eventBlock->Flags = 0;
     KeQuerySystemTime(&eventBlock->Time);
     eventBlock->ClientId.UniqueThread = PsGetThreadId(Thread);
     eventBlock->ClientId.UniqueProcess = PsGetProcessId(IoThreadToProcess(Thread));
     eventBlock->Number = Number;
-    eventBlock->NumberOfArguments = NumberOfArguments;
+    eventBlock->NumberOfArguments = (USHORT)NumberOfArguments;
     eventBlock->ArgumentsOffset = sizeof(KPHSS_EVENT_BLOCK);
-    eventBlock->TraceCount = capturedFrames;
-    eventBlock->TraceOffset = sizeof(KPHSS_EVENT_BLOCK) + argumentsSize;
+    eventBlock->TraceCount = (USHORT)capturedFrames;
+    eventBlock->TraceOffset = (USHORT)(sizeof(KPHSS_EVENT_BLOCK) + argumentsSize);
     
     /* Set the flags according to the previous mode. */
     if (previousMode == UserMode)
@@ -1220,7 +1228,7 @@ NTSTATUS KphpSsCaptureObjectAttributesArgument(
         
         /* It will go directly after the KPHSS_OBJECT_ATTRIBUTES structure. */
         rootDirectoryOffset = sizeof(KPHSS_OBJECT_ATTRIBUTES);
-        argumentBlock->ObjectAttributes.RootDirectoryOffset = rootDirectoryOffset;
+        argumentBlock->ObjectAttributes.RootDirectoryOffset = (USHORT)rootDirectoryOffset;
         /* Copy it. */
         memcpy(
             PTR_ADD_OFFSET(&argumentBlock->ObjectAttributes, rootDirectoryOffset),
@@ -1240,16 +1248,70 @@ NTSTATUS KphpSsCaptureObjectAttributesArgument(
          * if present.
          */
         objectNameOffset = sizeof(KPHSS_OBJECT_ATTRIBUTES) + rootDirectoryArgumentBlockSize;
-        argumentBlock->ObjectAttributes.ObjectNameOffset = objectNameOffset;
-        /* Copy it. */
-        memcpy(
-            PTR_ADD_OFFSET(&argumentBlock->ObjectAttributes, objectNameOffset),
-            &objectNameArgumentBlock->UnicodeString,
-            objectNameArgumentBlockSize
-            );
+        
+        /* Make sure the offset isn't too large. */
+        if (objectNameOffset <= MAX_USHORT)
+        {
+            argumentBlock->ObjectAttributes.ObjectNameOffset = (USHORT)objectNameOffset;
+            /* Copy it. */
+            memcpy(
+                PTR_ADD_OFFSET(&argumentBlock->ObjectAttributes, objectNameOffset),
+                &objectNameArgumentBlock->UnicodeString,
+                objectNameArgumentBlockSize
+                );
+        }
+        
         /* Free the block. */
         KphpSsFreeArgumentBlock(objectNameArgumentBlock);
     }
+    
+    *ArgumentBlock = argumentBlock;
+    
+    return status;
+}
+
+/* KphpSsCaptureClientIdArgument
+ * 
+ * Captures a CLIENT_ID argument.
+ */
+NTSTATUS KphpSsCaptureClientIdArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in PCLIENT_ID Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    CLIENT_ID clientId;
+    PKPHSS_ARGUMENT_BLOCK argumentBlock;
+    
+    /* Check if we have a NULL pointer. */
+    if (!Argument)
+        return STATUS_INVALID_PARAMETER_2;
+    
+    /* Probe and copy the CLIENT_ID structure. */
+    __try
+    {
+        if (PreviousMode != KernelMode)
+            ProbeForRead(Argument, sizeof(CLIENT_ID), 1);
+        
+        memcpy(&clientId, Argument, sizeof(CLIENT_ID));
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        return GetExceptionCode();
+    }
+    
+    /* Allocate an argument block. */
+    argumentBlock = KphpSsAllocateArgumentBlock(
+        sizeof(CLIENT_ID),
+        ClientIdArgument
+        );
+    
+    if (!argumentBlock)
+        return STATUS_INSUFFICIENT_RESOURCES;
+    
+    /* Fill in the argument block. */
+    memcpy(&argumentBlock->ClientId, &clientId, sizeof(CLIENT_ID));
     
     *ArgumentBlock = argumentBlock;
     
@@ -1332,6 +1394,13 @@ NTSTATUS KphpSsCreateArgumentBlock(
                 previousMode
                 );
             break;
+        case ClientIdArgument:
+            status = KphpSsCaptureClientIdArgument(
+                &argumentBlock,
+                (PCLIENT_ID)Argument,
+                previousMode
+                );
+            break;
         default:
             status = STATUS_NOT_IMPLEMENTED;
             break;
@@ -1341,7 +1410,7 @@ NTSTATUS KphpSsCreateArgumentBlock(
         return status;
     
     /* Put the index in. */
-    argumentBlock->Index = Index;
+    argumentBlock->Index = (UCHAR)Index;
     
     *ArgumentBlock = argumentBlock;
     
@@ -1361,6 +1430,11 @@ PKPHSS_ARGUMENT_BLOCK KphpSsAllocateArgumentBlock(
     ULONG size;
     
     size = KPHSS_ARGUMENT_BLOCK_SIZE(InnerSize);
+    
+    /* Make sure the size isn't too large. */
+    if (size > MAX_USHORT)
+        return NULL;
+    
     argumentBlock = ExAllocatePoolWithTag(
         PagedPool,
         size,
@@ -1371,7 +1445,7 @@ PKPHSS_ARGUMENT_BLOCK KphpSsAllocateArgumentBlock(
         return NULL;
     
     argumentBlock->Header.Type = ArgumentBlockType;
-    argumentBlock->Header.Size = size;
+    argumentBlock->Header.Size = (USHORT)size;
     argumentBlock->Type = Type;
     
     return argumentBlock;

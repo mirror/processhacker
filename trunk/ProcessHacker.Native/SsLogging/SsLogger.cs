@@ -190,7 +190,10 @@ namespace ProcessHacker.Native.SsLogging
                 else if (blockHeader.Type == KphSsBlockType.Argument)
                 {
                     var argBlock = _buffer.ReadStruct<KphSsArgumentBlock>(cursor, 0);
+                    MemoryRegion dataRegion;
                     SsData ssArg = null;
+
+                    dataRegion = new MemoryRegion(_buffer, cursor + KphSsArgumentBlock.DataOffset);
 
                     // Process the argument block based on its type.
                     switch (argBlock.Type)
@@ -233,20 +236,22 @@ namespace ProcessHacker.Native.SsLogging
                             break;
                         case KphSsArgumentType.Handle:
                             {
-                                ssArg = new SsHandle(
-                                    new MemoryRegion(_buffer, cursor + KphSsArgumentBlock.DataOffset));
+                                ssArg = new SsHandle(dataRegion);
                             }
                             break;
                         case KphSsArgumentType.UnicodeString:
                             {
-                                ssArg = new SsUnicodeString(
-                                    new MemoryRegion(_buffer, cursor + KphSsArgumentBlock.DataOffset));
+                                ssArg = new SsUnicodeString(dataRegion);
                             }
                             break;
                         case KphSsArgumentType.ObjectAttributes:
                             {
-                                ssArg = new SsObjectAttributes(
-                                    new MemoryRegion(_buffer, cursor + KphSsArgumentBlock.DataOffset));
+                                ssArg = new SsObjectAttributes(dataRegion);
+                            }
+                            break;
+                        case KphSsArgumentType.ClientId:
+                            {
+                                ssArg = new SsClientId(dataRegion);
                             }
                             break;
                     }

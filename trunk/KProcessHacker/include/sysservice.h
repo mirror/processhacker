@@ -94,8 +94,8 @@ typedef enum _KPHSS_BLOCK_TYPE
 
 typedef struct _KPHSS_BLOCK_HEADER
 {
-    ULONG Size; /* a.k.a. NextEntryOffset */
-    ULONG Type;
+    USHORT Size; /* a.k.a. NextEntryOffset */
+    USHORT Type;
 } KPHSS_BLOCK_HEADER, *PKPHSS_BLOCK_HEADER;
 
 typedef struct _KPHSS_RESET_BLOCK
@@ -113,19 +113,19 @@ typedef struct _KPHSS_RESET_BLOCK
 typedef struct _KPHSS_EVENT_BLOCK
 {
     KPHSS_BLOCK_HEADER Header;
-    ULONG Flags;
+    USHORT Flags;
     LARGE_INTEGER Time;
     CLIENT_ID ClientId;
     
     /* The system service number. */
     ULONG Number;
     /* The number of ULONG arguments to the system service. */
-    ULONG NumberOfArguments;
-    ULONG ArgumentsOffset;
+    USHORT NumberOfArguments;
+    USHORT ArgumentsOffset;
     
     /* The number of PVOIDs in the trace. */
-    ULONG TraceCount;
-    ULONG TraceOffset;
+    USHORT TraceCount;
+    USHORT TraceOffset;
 } KPHSS_EVENT_BLOCK, *PKPHSS_EVENT_BLOCK;
 
 /* Argument Blocks
@@ -144,8 +144,8 @@ typedef struct _KPHSS_EVENT_BLOCK
 typedef struct _KPHSS_ARGUMENT_BLOCK
 {
     KPHSS_BLOCK_HEADER Header;
-    ULONG Index;
-    KPHSS_ARGUMENT_TYPE Type;
+    UCHAR Index;
+    UCHAR Type; /* KPHSS_ARGUMENT_TYPE */
     
     union
     {
