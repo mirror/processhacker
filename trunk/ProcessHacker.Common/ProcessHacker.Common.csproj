@@ -69,7 +69,9 @@
     <Compile Include="Logging.cs" />
     <Compile Include="Messaging\MessageQueue.cs" />
     <Compile Include="Threading\RundownProtection.cs" />
+    <Compile Include="Threading\SemaphorePair.cs" />
     <Compile Include="Threading\SpinLock.cs" />
+    <Compile Include="Threading\WaitableQueue.cs" />
     <Compile Include="Tokenizer.cs" />
     <Compile Include="Ui\SortedListViewComparer.cs" />
     <Compile Include="Utils.cs" />

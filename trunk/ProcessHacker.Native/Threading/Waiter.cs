@@ -156,6 +156,7 @@ namespace ProcessHacker.Native.Threading
 
                 // Open a handle to the current thread.
                 _threadHandle = ThreadHandle.OpenCurrent(ThreadAccess.Alert);
+
                 // Signal that the thread has been initialized.
                 lock (_thread)
                 {
