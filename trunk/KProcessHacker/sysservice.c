@@ -312,6 +312,7 @@ NTSTATUS KphSsCreateClientEntry(
     }
     
     clientEntry->Process = processObject;
+    clientEntry->Enabled = TRUE;
     clientEntry->ReadSemaphore = readSemaphore;
     clientEntry->WriteSemaphore = writeSemaphore;
     ExInitializeFastMutex(&clientEntry->BufferMutex);
@@ -324,6 +325,23 @@ NTSTATUS KphSsCreateClientEntry(
     *ClientEntry = clientEntry;
     
     return status;
+}
+
+/* KphSsEnableClientEntry
+ * 
+ * Enables or disables a client entry.
+ */
+NTSTATUS KphSsEnableClientEntry(
+    __in PKPHSS_CLIENT_ENTRY ClientEntry,
+    __in BOOLEAN Enable
+    )
+{
+    if (Enable)
+        ClientEntry->Enabled = TRUE;
+    else
+        ClientEntry->Enabled = FALSE;
+    
+    return STATUS_SUCCESS;
 }
 
 /* KphSsQueryClientEntry
@@ -1746,24 +1764,30 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     {
         PKPHSS_RULESET_ENTRY ruleSetEntry = KPHSS_RULESET_ENTRY(currentListEntry);
         
-        if (
-            KphpSsMatchRuleSetEntry(
-                ruleSetEntry,
-                Number,
-                Arguments,
-                NumberOfArguments,
-                ServiceTable,
-                Thread,
-                previousMode
-                ) && 
-            /* Make sure the ruleset entry isn't being destroyed. */
-            !KphIsDestroyedObject(ruleSetEntry)
-            )
+        if (KphpSsMatchRuleSetEntry(
+            ruleSetEntry,
+            Number,
+            Arguments,
+            NumberOfArguments,
+            ServiceTable,
+            Thread,
+            previousMode
+            ))
         {
             /* Reference and store the ruleset entry in the local array. */
-            KphReferenceObject(ruleSetEntry);
-            ruleSetEntryArray[ruleSetEntryCount] = ruleSetEntry;
-            ruleSetEntryCount++;
+            if (KphReferenceObjectSafe(ruleSetEntry))
+            {
+                /* Make sure the client is enabled. */
+                if (ruleSetEntry->Client->Enabled)
+                {
+                    ruleSetEntryArray[ruleSetEntryCount] = ruleSetEntry;
+                    ruleSetEntryCount++;
+                }
+                else
+                {
+                    KphDereferenceObject(ruleSetEntry);
+                }
+            }
         }
         
         currentListEntry = currentListEntry->Flink;

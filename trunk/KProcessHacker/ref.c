@@ -159,7 +159,6 @@ NTSTATUS KphCreateObject(
     }
     
     /* Initialize the object header. */
-    KphInitializeGuardedLock(&objectHeader->Lock, FALSE);
     objectHeader->RefCount = 1 + AdditionalReferences;
     objectHeader->Flags = Flags;
     objectHeader->Size = ObjectSize;
@@ -250,8 +249,6 @@ BOOLEAN KphDereferenceObjectEx(
      * removes the object from the linked list. In this case the client 
      * must know when an object is about to be freed (but not freed yet).
      */
-    /* Acquire the lock to make sure people don't read the wrong signal state. */
-    KphAcquireGuardedLock(&objectHeader->Lock);
     
     /* Decrease the reference count. */
     oldRefCount = InterlockedExchangeAdd(&objectHeader->RefCount, -RefCount);
@@ -259,13 +256,6 @@ BOOLEAN KphDereferenceObjectEx(
     /* Free the object if it has 0 references. */
     if (oldRefCount - RefCount == 0)
     {
-        /* Signal the lock to indicate that we're freeing the object. */
-        KphSignalGuardedLock(&objectHeader->Lock);
-        /* We don't need the lock anymore. If someone calls dereference 
-         * more times than they're supposed to, that's their problem.
-         */
-        KphReleaseGuardedLock(&objectHeader->Lock);
-        
         /* Object type statistics. */
         InterlockedDecrement(&objectHeader->Type->NumberOfObjects);
         
@@ -277,11 +267,6 @@ BOOLEAN KphDereferenceObjectEx(
         /* Free the object. */
         KphpFreeObject(objectHeader);
         freed = TRUE;
-    }
-    else
-    {
-        /* Release the lock (we didn't signal it). */
-        KphReleaseGuardedLock(&objectHeader->Lock);
     }
     
     /* Pass the old reference count back. */
@@ -300,65 +285,6 @@ PKPH_OBJECT_TYPE KphGetTypeObject(
     )
 {
     return KphObjectToObjectHeader(Object)->Type;
-}
-
-/* KphIsDestroyedObject
- * 
- * Determines whether the specified object is being 
- * freed (or is freed).
- * 
- * This function is necessary if you store a pointer to 
- * an object without referencing it, you have a mutex 
- * guarding accesses to that pointer, and you remove 
- * that pointer in the object's delete procedure. You 
- * must call this function while you hold that mutex and 
- * before you reference the object for usage, because 
- * the object may be in the process of destruction while 
- * you hold the pointer to it. Note that this is the 
- * only safe way to store a pointer to an object without 
- * referencing it.
- * 
- * For example, you may have a linked list containing 
- * pointers to objects, and all accesses to the list 
- * are protected by a mutex. The delete procedures of 
- * the objects acquire the mutex, remove the object being 
- * deleted from the linked list, and release the mutex.
- * 
- * It may happen that while you are traversing the linked 
- * list with the mutex held, all references to the object 
- * are removed and the object begins to be deleted. Its 
- * delete procedure is called and attempts to acquire the 
- * mutex but blocks because you currently hold the mutex. 
- * Since the destruction process has begun, your only 
- * option is to skip the object. This function gives you 
- * the ability to tell whether you should skip an object 
- * in that scenario.
- */
-BOOLEAN KphIsDestroyedObject(
-    __in PVOID Object
-    )
-{
-    PKPH_OBJECT_HEADER objectHeader;
-    BOOLEAN signaled;
-    
-    objectHeader = KphObjectToObjectHeader(Object);
-    
-    /* We have to lock the object so that we don't 
-     * read the signal state just after the dereference 
-     * routine has decided to free the object but before 
-     * it has actually signaled the lock.
-     */
-    if (KphAcquireSignaledGuardedLock(&objectHeader->Lock))
-    {
-        /* The lock is signaled. Release and return TRUE. */
-        KphReleaseGuardedLock(&objectHeader->Lock);
-        return TRUE;
-    }
-    else
-    {
-        /* The lock isn't signaled. Return FALSE. */
-        return FALSE;
-    }
 }
 
 /* KphReferenceObject
@@ -400,6 +326,30 @@ VOID KphReferenceObjectEx(
     /* Pass the old reference count back. */
     if (OldRefCount)
         *OldRefCount = oldRefCount;
+}
+
+/* KphReferenceObjectSafe
+ * 
+ * Attempts to reference an object and fails if it is being 
+ * destroyed.
+ * 
+ * Object: The object to reference if it is not being deleted.
+ * 
+ * Return value: TRUE if the object was referenced, FALSE if 
+ * it was being deleted and was not referenced.
+ */
+BOOLEAN KphReferenceObjectSafe(
+    __in PVOID Object
+    )
+{
+    PKPH_OBJECT_HEADER objectHeader;
+    BOOLEAN result;
+    
+    objectHeader = KphObjectToObjectHeader(Object);
+    /* Increase the reference count only if it isn't 0 (atomically). */
+    result = KphpInterlockedIncrementSafe(&objectHeader->RefCount);
+    
+    return result;
 }
 
 /* KphpAllocateObject

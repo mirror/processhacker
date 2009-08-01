@@ -402,11 +402,9 @@ PKPH_CLIENT_ENTRY ReferenceClientEntry(
         {
             PKPH_CLIENT_ENTRY returnEntry = NULL;
             
-            /* Make sure the entry is not currently being destroyed. */
-            if (!KphIsDestroyedObject(clientEntry))
+            /* Reference and return the entry. */
+            if (KphReferenceObjectSafe(clientEntry))
             {
-                /* Reference and return the entry. */
-                KphReferenceObject(clientEntry);
                 returnEntry = clientEntry;
             }
             
@@ -594,6 +592,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "SsAddPreviousModeRule";
         case KPH_SSADDNUMBERRULE:
             return "SsAddNumberRule";
+        case KPH_SSENABLECLIENTENTRY:
+            return "SsEnableClientEntry";
         default:
             return "Unknown";
     }
@@ -2279,6 +2279,38 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             ret->RuleEntryHandle = KphSsGetHandleRule(ruleEntry);
             KphDereferenceObject(ruleEntry);
             retLength = sizeof(*ret);
+        }
+        break;
+        
+        /* SsEnableClientEntry
+         * 
+         * Enables or disables a client entry.
+         */
+        case KPH_SSENABLECLIENTENTRY:
+        {
+            struct
+            {
+                HANDLE ClientEntryHandle;
+                BOOLEAN Enable;
+            } *args = dataBuffer;
+            PKPHSS_CLIENT_ENTRY clientEntry;
+            
+            CHECK_IN_LENGTH;
+            
+            /* Reference the client entry. */
+            status = ReferenceClientHandle(
+                NULL,
+                args->ClientEntryHandle,
+                KphSsClientEntryType,
+                &clientEntry
+                );
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            /* Enable/disable the client entry. */
+            status = KphSsEnableClientEntry(clientEntry, args->Enable);
+            KphDereferenceObject(clientEntry);
         }
         break;
         

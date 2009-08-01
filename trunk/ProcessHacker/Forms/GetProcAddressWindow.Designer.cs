@@ -42,7 +42,7 @@
             this.label1.Location = new System.Drawing.Point(12, 15);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(109, 13);
-            this.label1.TabIndex = 0;
+            this.label1.TabIndex = 4;
             this.label1.Text = "Export Name/Ordinal:";
             // 
             // label2
@@ -51,7 +51,7 @@
             this.label2.Location = new System.Drawing.Point(12, 41);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(48, 13);
-            this.label2.TabIndex = 1;
+            this.label2.TabIndex = 5;
             this.label2.Text = "Address:";
             // 
             // textProcName
@@ -61,7 +61,7 @@
             this.textProcName.Location = new System.Drawing.Point(127, 12);
             this.textProcName.Name = "textProcName";
             this.textProcName.Size = new System.Drawing.Size(255, 20);
-            this.textProcName.TabIndex = 2;
+            this.textProcName.TabIndex = 0;
             this.textProcName.Leave += new System.EventHandler(this.textProcName_Leave);
             this.textProcName.Enter += new System.EventHandler(this.textProcName_Enter);
             // 
@@ -73,7 +73,7 @@
             this.textProcAddress.Name = "textProcAddress";
             this.textProcAddress.ReadOnly = true;
             this.textProcAddress.Size = new System.Drawing.Size(255, 20);
-            this.textProcAddress.TabIndex = 2;
+            this.textProcAddress.TabIndex = 1;
             // 
             // buttonLookup
             // 
@@ -82,7 +82,7 @@
             this.buttonLookup.Location = new System.Drawing.Point(226, 64);
             this.buttonLookup.Name = "buttonLookup";
             this.buttonLookup.Size = new System.Drawing.Size(75, 23);
-            this.buttonLookup.TabIndex = 3;
+            this.buttonLookup.TabIndex = 2;
             this.buttonLookup.Text = "&Lookup";
             this.buttonLookup.UseVisualStyleBackColor = true;
             this.buttonLookup.Click += new System.EventHandler(this.buttonLookup_Click);
@@ -94,7 +94,7 @@
             this.buttonClose.Location = new System.Drawing.Point(307, 64);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
-            this.buttonClose.TabIndex = 4;
+            this.buttonClose.TabIndex = 3;
             this.buttonClose.Text = "&Close";
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);

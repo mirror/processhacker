@@ -67,7 +67,7 @@
             this.buttonOK.Location = new System.Drawing.Point(147, 69);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
-            this.buttonOK.TabIndex = 2;
+            this.buttonOK.TabIndex = 3;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
             this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -79,7 +79,7 @@
             this.buttonCancel.Location = new System.Drawing.Point(228, 69);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancel.TabIndex = 2;
+            this.buttonCancel.TabIndex = 4;
             this.buttonCancel.Text = "&Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -91,7 +91,7 @@
             this.checkPermanent.Location = new System.Drawing.Point(12, 39);
             this.checkPermanent.Name = "checkPermanent";
             this.checkPermanent.Size = new System.Drawing.Size(83, 18);
-            this.checkPermanent.TabIndex = 3;
+            this.checkPermanent.TabIndex = 2;
             this.checkPermanent.Text = "Permanent";
             this.checkPermanent.UseVisualStyleBackColor = true;
             this.checkPermanent.Visible = false;

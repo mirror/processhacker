@@ -51,7 +51,7 @@
             this.label1.Location = new System.Drawing.Point(12, 49);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 13);
-            this.label1.TabIndex = 0;
+            this.label1.TabIndex = 10;
             this.label1.Text = "Program:";
             // 
             // textCmdLine
@@ -63,7 +63,7 @@
             this.textCmdLine.Location = new System.Drawing.Point(79, 46);
             this.textCmdLine.Name = "textCmdLine";
             this.textCmdLine.Size = new System.Drawing.Size(230, 20);
-            this.textCmdLine.TabIndex = 1;
+            this.textCmdLine.TabIndex = 0;
             // 
             // label2
             // 
@@ -71,7 +71,7 @@
             this.label2.Location = new System.Drawing.Point(12, 75);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(58, 13);
-            this.label2.TabIndex = 2;
+            this.label2.TabIndex = 11;
             this.label2.Text = "Username:";
             // 
             // comboUsername
@@ -90,7 +90,7 @@
             this.label3.Location = new System.Drawing.Point(12, 128);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(61, 13);
-            this.label3.TabIndex = 4;
+            this.label3.TabIndex = 14;
             this.label3.Text = "Session ID:";
             // 
             // textSessionID
@@ -98,7 +98,7 @@
             this.textSessionID.Location = new System.Drawing.Point(79, 125);
             this.textSessionID.Name = "textSessionID";
             this.textSessionID.Size = new System.Drawing.Size(100, 20);
-            this.textSessionID.TabIndex = 4;
+            this.textSessionID.TabIndex = 5;
             // 
             // label4
             // 
@@ -106,7 +106,7 @@
             this.label4.Location = new System.Drawing.Point(12, 102);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(56, 13);
-            this.label4.TabIndex = 6;
+            this.label4.TabIndex = 13;
             this.label4.Text = "Password:";
             // 
             // textPassword
@@ -114,7 +114,7 @@
             this.textPassword.Location = new System.Drawing.Point(79, 99);
             this.textPassword.Name = "textPassword";
             this.textPassword.Size = new System.Drawing.Size(154, 20);
-            this.textPassword.TabIndex = 3;
+            this.textPassword.TabIndex = 4;
             this.textPassword.UseSystemPasswordChar = true;
             // 
             // buttonOK
@@ -124,7 +124,7 @@
             this.buttonOK.Location = new System.Drawing.Point(234, 155);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
-            this.buttonOK.TabIndex = 5;
+            this.buttonOK.TabIndex = 7;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
             this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -136,7 +136,7 @@
             this.buttonCancel.Location = new System.Drawing.Point(315, 155);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancel.TabIndex = 7;
+            this.buttonCancel.TabIndex = 8;
             this.buttonCancel.Text = "&Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -148,7 +148,7 @@
             this.buttonBrowse.Location = new System.Drawing.Point(315, 44);
             this.buttonBrowse.Name = "buttonBrowse";
             this.buttonBrowse.Size = new System.Drawing.Size(75, 23);
-            this.buttonBrowse.TabIndex = 6;
+            this.buttonBrowse.TabIndex = 1;
             this.buttonBrowse.Text = "&Browse...";
             this.buttonBrowse.UseVisualStyleBackColor = true;
             this.buttonBrowse.Click += new System.EventHandler(this.buttonBrowse_Click);
@@ -160,7 +160,7 @@
             this.label5.Location = new System.Drawing.Point(12, 9);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(378, 30);
-            this.label5.TabIndex = 8;
+            this.label5.TabIndex = 9;
             this.label5.Text = "Enter the command to start as the specified user. Note that the program may take " +
                 "a while to start as Windows loads the user\'s profile.";
             // 
@@ -170,7 +170,7 @@
             this.buttonSessions.Location = new System.Drawing.Point(185, 122);
             this.buttonSessions.Name = "buttonSessions";
             this.buttonSessions.Size = new System.Drawing.Size(24, 24);
-            this.buttonSessions.TabIndex = 9;
+            this.buttonSessions.TabIndex = 6;
             this.buttonSessions.Text = "...";
             this.buttonSessions.UseVisualStyleBackColor = true;
             this.buttonSessions.Click += new System.EventHandler(this.buttonSessions_Click);
@@ -181,7 +181,7 @@
             this.label6.Location = new System.Drawing.Point(239, 75);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(34, 13);
-            this.label6.TabIndex = 10;
+            this.label6.TabIndex = 12;
             this.label6.Text = "Type:";
             // 
             // comboType
@@ -200,7 +200,7 @@
             this.comboType.Location = new System.Drawing.Point(279, 72);
             this.comboType.Name = "comboType";
             this.comboType.Size = new System.Drawing.Size(111, 21);
-            this.comboType.TabIndex = 11;
+            this.comboType.TabIndex = 3;
             // 
             // RunWindow
             // 

@@ -67,7 +67,7 @@
             this.buttonExplore.Location = new System.Drawing.Point(304, 0);
             this.buttonExplore.Name = "buttonExplore";
             this.buttonExplore.Size = new System.Drawing.Size(24, 24);
-            this.buttonExplore.TabIndex = 1;
+            this.buttonExplore.TabIndex = 2;
             this.toolTip.SetToolTip(this.buttonExplore, "Open File Location");
             this.buttonExplore.UseVisualStyleBackColor = true;
             this.buttonExplore.Click += new System.EventHandler(this.buttonExplore_Click);

@@ -72,7 +72,7 @@
             this.buttonClose.Location = new System.Drawing.Point(420, 320);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
-            this.buttonClose.TabIndex = 0;
+            this.buttonClose.TabIndex = 7;
             this.buttonClose.Text = "&Close";
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
@@ -94,7 +94,7 @@
             this.labelAppName.Location = new System.Drawing.Point(174, 12);
             this.labelAppName.Name = "labelAppName";
             this.labelAppName.Size = new System.Drawing.Size(119, 16);
-            this.labelAppName.TabIndex = 2;
+            this.labelAppName.TabIndex = 0;
             this.labelAppName.Text = "Process Hacker";
             // 
             // labelVersion
@@ -103,7 +103,7 @@
             this.labelVersion.Location = new System.Drawing.Point(174, 33);
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(42, 13);
-            this.labelVersion.TabIndex = 3;
+            this.labelVersion.TabIndex = 1;
             this.labelVersion.Text = "Version";
             // 
             // linkFamFamFam
@@ -147,7 +147,7 @@
             this.labelBy.Location = new System.Drawing.Point(174, 50);
             this.labelBy.Name = "labelBy";
             this.labelBy.Size = new System.Drawing.Size(234, 17);
-            this.labelBy.TabIndex = 8;
+            this.labelBy.TabIndex = 2;
             this.labelBy.Text = "Licensed under the GNU GPL, v3.";
             // 
             // linkSourceforge
@@ -157,7 +157,7 @@
             this.linkSourceforge.Location = new System.Drawing.Point(12, 325);
             this.linkSourceforge.Name = "linkSourceforge";
             this.linkSourceforge.Size = new System.Drawing.Size(229, 13);
-            this.linkSourceforge.TabIndex = 9;
+            this.linkSourceforge.TabIndex = 4;
             this.linkSourceforge.TabStop = true;
             this.linkSourceforge.Text = "http://sourceforge.net/projects/processhacker";
             this.linkSourceforge.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkSourceforge_LinkClicked);
@@ -169,7 +169,7 @@
             this.linkEmail.Location = new System.Drawing.Point(12, 307);
             this.linkEmail.Name = "linkEmail";
             this.linkEmail.Size = new System.Drawing.Size(145, 13);
-            this.linkEmail.TabIndex = 10;
+            this.linkEmail.TabIndex = 3;
             this.linkEmail.TabStop = true;
             this.linkEmail.Text = "Post feedback on our tracker";
             this.linkEmail.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEmail_LinkClicked);
@@ -438,7 +438,7 @@
             this.buttonChangelog.Location = new System.Drawing.Point(325, 291);
             this.buttonChangelog.Name = "buttonChangelog";
             this.buttonChangelog.Size = new System.Drawing.Size(75, 23);
-            this.buttonChangelog.TabIndex = 15;
+            this.buttonChangelog.TabIndex = 5;
             this.buttonChangelog.Text = "Changelog...";
             this.buttonChangelog.UseVisualStyleBackColor = true;
             this.buttonChangelog.Click += new System.EventHandler(this.buttonChangelog_Click);
@@ -450,7 +450,7 @@
             this.buttonDiagnostics.Location = new System.Drawing.Point(406, 291);
             this.buttonDiagnostics.Name = "buttonDiagnostics";
             this.buttonDiagnostics.Size = new System.Drawing.Size(89, 23);
-            this.buttonDiagnostics.TabIndex = 16;
+            this.buttonDiagnostics.TabIndex = 6;
             this.buttonDiagnostics.Text = "Diagnostics...";
             this.buttonDiagnostics.UseVisualStyleBackColor = true;
             this.buttonDiagnostics.Click += new System.EventHandler(this.buttonDiagnostics_Click);

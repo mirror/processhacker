@@ -47,10 +47,6 @@ typedef struct _KPH_OBJECT_TYPE
 
 typedef struct _KPH_OBJECT_HEADER
 {
-    /* A lock protecting the object. This guarded lock is signaled 
-     * when the object is being destroyed, and is never unsignaled.
-     */
-    KPH_GUARDED_LOCK Lock;
     /* The reference count of the object. */
     LONG RefCount;
     /* The flags that were used to create the object. */
@@ -68,6 +64,48 @@ typedef struct _KPH_OBJECT_HEADER
     /* The body of the object. For use by the KphObject(Header)ToObject(Header) macros. */
     ULONG Body;
 } KPH_OBJECT_HEADER, *PKPH_OBJECT_HEADER;
+
+/* KphpInterlockedIncrementSafe
+ * 
+ * Increments a reference count, but will never increment 
+ * from 0 to 1.
+ */
+FORCEINLINE BOOLEAN KphpInterlockedIncrementSafe(
+    __inout PLONG RefCount
+    )
+{
+    LONG refCount;
+    
+    /* Here we will attempt to increment the reference count, 
+     * making sure that it is not 0.
+     */
+    
+    while (TRUE)
+    {
+        refCount = *RefCount;
+        
+        /* Check if the reference count is 0. If it is, the 
+         * object is being or about to be deleted.
+         */
+        if (refCount == 0)
+            return FALSE;
+        
+        /* Try to increment the reference count. */
+        if (InterlockedCompareExchange(
+            RefCount,
+            refCount + 1,
+            refCount
+            ) == refCount)
+        {
+            /* Success. */
+            return TRUE;
+        }
+        
+        /* Someone else changed the reference count before we did. 
+         * Go back and try again.
+         */
+    }
+}
 
 PKPH_OBJECT_HEADER KphpAllocateObject(
     __in SIZE_T ObjectSize,

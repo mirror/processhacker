@@ -53,7 +53,7 @@
             this.buttonCopy.Location = new System.Drawing.Point(467, 323);
             this.buttonCopy.Name = "buttonCopy";
             this.buttonCopy.Size = new System.Drawing.Size(75, 23);
-            this.buttonCopy.TabIndex = 1;
+            this.buttonCopy.TabIndex = 2;
             this.buttonCopy.Text = "Copy";
             this.buttonCopy.UseVisualStyleBackColor = true;
             this.buttonCopy.Click += new System.EventHandler(this.buttonCopy_Click);

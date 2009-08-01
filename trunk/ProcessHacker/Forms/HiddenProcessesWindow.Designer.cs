@@ -56,7 +56,7 @@
             this.listProcesses.ShowItemToolTips = true;
             this.listProcesses.Size = new System.Drawing.Size(487, 296);
             this.listProcesses.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.listProcesses.TabIndex = 0;
+            this.listProcesses.TabIndex = 1;
             this.listProcesses.UseCompatibleStateImageBehavior = false;
             this.listProcesses.View = System.Windows.Forms.View.Details;
             this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
@@ -77,7 +77,7 @@
             this.buttonClose.Location = new System.Drawing.Point(424, 361);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
-            this.buttonClose.TabIndex = 1;
+            this.buttonClose.TabIndex = 7;
             this.buttonClose.Text = "&Close";
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
@@ -89,7 +89,7 @@
             this.buttonScan.Location = new System.Drawing.Point(343, 361);
             this.buttonScan.Name = "buttonScan";
             this.buttonScan.Size = new System.Drawing.Size(75, 23);
-            this.buttonScan.TabIndex = 1;
+            this.buttonScan.TabIndex = 6;
             this.buttonScan.Text = "&Scan";
             this.buttonScan.UseVisualStyleBackColor = true;
             this.buttonScan.Click += new System.EventHandler(this.buttonScan_Click);
@@ -102,7 +102,7 @@
             this.label2.Location = new System.Drawing.Point(12, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(487, 32);
-            this.label2.TabIndex = 3;
+            this.label2.TabIndex = 0;
             this.label2.Text = "Processes highlighted red are hidden while those highlighted gray have terminated" +
                 " but are still being referenced by other processes.";
             // 
@@ -138,7 +138,7 @@
             this.labelCount.Location = new System.Drawing.Point(12, 343);
             this.labelCount.Name = "labelCount";
             this.labelCount.Size = new System.Drawing.Size(487, 15);
-            this.labelCount.TabIndex = 6;
+            this.labelCount.TabIndex = 2;
             this.labelCount.Text = "Count";
             this.labelCount.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
@@ -154,7 +154,7 @@
             this.comboMethod.Location = new System.Drawing.Point(12, 363);
             this.comboMethod.Name = "comboMethod";
             this.comboMethod.Size = new System.Drawing.Size(121, 21);
-            this.comboMethod.TabIndex = 7;
+            this.comboMethod.TabIndex = 3;
             // 
             // HiddenProcessesWindow
             // 

@@ -172,6 +172,7 @@ NTSTATUS KvInit()
         ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x3ff;
         
         OffEtClientId = 0x1ec;
+        OffEtSpareByteForSs = 0x256; /* Padding, last */
         OffEtStartAddress = 0x224;
         OffEtWin32StartAddress = 0x228;
         OffEpJob = 0x134;
@@ -240,6 +241,7 @@ NTSTATUS KvInit()
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
         ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
         OffEtClientId = 0x20c;
+        OffEtSpareByteForSs = 0x26f; /* Padding, second-last */
         OffEtStartAddress = 0x1f8;
         OffEtWin32StartAddress = 0x240;
         OffEpJob = 0x10c;
@@ -430,6 +432,7 @@ NTSTATUS KvInit()
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
         ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
         OffEtClientId = 0x22c;
+        OffEtSpareByteForSs = 0x2b4; /* Padding, last */
         OffEtStartAddress = 0x218;
         OffEtWin32StartAddress = 0x260;
         OffEpJob = 0x124;

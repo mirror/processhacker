@@ -64,7 +64,7 @@
             this.buttonContinue.Location = new System.Drawing.Point(352, 244);
             this.buttonContinue.Name = "buttonContinue";
             this.buttonContinue.Size = new System.Drawing.Size(75, 23);
-            this.buttonContinue.TabIndex = 3;
+            this.buttonContinue.TabIndex = 4;
             this.buttonContinue.Text = "&Continue";
             this.buttonContinue.UseVisualStyleBackColor = true;
             this.buttonContinue.Click += new System.EventHandler(this.buttonContinue_Click);
@@ -76,7 +76,7 @@
             this.buttonQuit.Location = new System.Drawing.Point(271, 244);
             this.buttonQuit.Name = "buttonQuit";
             this.buttonQuit.Size = new System.Drawing.Size(75, 23);
-            this.buttonQuit.TabIndex = 4;
+            this.buttonQuit.TabIndex = 3;
             this.buttonQuit.Text = "&Quit";
             this.buttonQuit.UseVisualStyleBackColor = true;
             this.buttonQuit.Click += new System.EventHandler(this.buttonQuit_Click);
@@ -93,7 +93,7 @@
             this.textException.ReadOnly = true;
             this.textException.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textException.Size = new System.Drawing.Size(415, 189);
-            this.textException.TabIndex = 5;
+            this.textException.TabIndex = 1;
             // 
             // ErrorDialog
             // 

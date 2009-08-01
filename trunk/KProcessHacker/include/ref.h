@@ -78,10 +78,6 @@ PKPH_OBJECT_TYPE KphGetTypeObject(
     __in PVOID Object
     );
 
-BOOLEAN KphIsDestroyedObject(
-    __in PVOID Object
-    );
-
 VOID KphReferenceObject(
     __in PVOID Object
     );
@@ -90,6 +86,10 @@ VOID KphReferenceObjectEx(
     __in PVOID Object,
     __in LONG RefCount,
     __out_opt PLONG OldRefCount
+    );
+
+BOOLEAN KphReferenceObjectSafe(
+    __in PVOID Object
     );
 
 #endif

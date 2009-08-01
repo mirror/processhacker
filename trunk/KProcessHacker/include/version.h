@@ -88,6 +88,7 @@ EXT ACCESS_MASK ThreadAllAccess;
  * Oti: OBJECT_TYPE_INITIALIZER, offset measured from an OBJECT_TYPE
  */
 EXT ULONG OffEtClientId;
+EXT ULONG OffEtSpareByteForSs;
 EXT ULONG OffEtStartAddress;
 EXT ULONG OffEtWin32StartAddress;
 EXT ULONG OffEpJob;

@@ -261,7 +261,7 @@ namespace ProcessHacker
             this.groupProcess.Location = new System.Drawing.Point(8, 126);
             this.groupProcess.Name = "groupProcess";
             this.groupProcess.Size = new System.Drawing.Size(467, 258);
-            this.groupProcess.TabIndex = 5;
+            this.groupProcess.TabIndex = 1;
             this.groupProcess.TabStop = false;
             this.groupProcess.Text = "Process";
             // 
@@ -273,7 +273,7 @@ namespace ProcessHacker
             this.fileCurrentDirectory.Name = "fileCurrentDirectory";
             this.fileCurrentDirectory.ReadOnly = true;
             this.fileCurrentDirectory.Size = new System.Drawing.Size(360, 24);
-            this.fileCurrentDirectory.TabIndex = 10;
+            this.fileCurrentDirectory.TabIndex = 3;
             this.fileCurrentDirectory.Leave += new System.EventHandler(this.fileCurrentDirectory_TextBoxLeave);
             // 
             // label26
@@ -282,7 +282,7 @@ namespace ProcessHacker
             this.label26.Location = new System.Drawing.Point(6, 24);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(44, 13);
-            this.label26.TabIndex = 9;
+            this.label26.TabIndex = 12;
             this.label26.Text = "Started:";
             this.toolTip.SetToolTip(this.label26, "The time at which the program was started.");
             // 
@@ -292,7 +292,7 @@ namespace ProcessHacker
             this.label7.Location = new System.Drawing.Point(6, 106);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(72, 13);
-            this.label7.TabIndex = 8;
+            this.label7.TabIndex = 15;
             this.label7.Text = "PEB Address:";
             this.toolTip.SetToolTip(this.label7, "The address of the Process Environment Block (PEB).");
             // 
@@ -305,7 +305,7 @@ namespace ProcessHacker
             this.textProtected.Name = "textProtected";
             this.textProtected.ReadOnly = true;
             this.textProtected.Size = new System.Drawing.Size(330, 20);
-            this.textProtected.TabIndex = 7;
+            this.textProtected.TabIndex = 10;
             // 
             // labelProtected
             // 
@@ -313,7 +313,7 @@ namespace ProcessHacker
             this.labelProtected.Location = new System.Drawing.Point(6, 184);
             this.labelProtected.Name = "labelProtected";
             this.labelProtected.Size = new System.Drawing.Size(56, 13);
-            this.labelProtected.TabIndex = 6;
+            this.labelProtected.TabIndex = 18;
             this.labelProtected.Text = "Protected:";
             this.toolTip.SetToolTip(this.labelProtected, "Whether the process is DRM-protected.");
             // 
@@ -326,7 +326,7 @@ namespace ProcessHacker
             this.textDEP.Name = "textDEP";
             this.textDEP.ReadOnly = true;
             this.textDEP.Size = new System.Drawing.Size(330, 20);
-            this.textDEP.TabIndex = 7;
+            this.textDEP.TabIndex = 8;
             // 
             // labelDEP
             // 
@@ -334,7 +334,7 @@ namespace ProcessHacker
             this.labelDEP.Location = new System.Drawing.Point(6, 158);
             this.labelDEP.Name = "labelDEP";
             this.labelDEP.Size = new System.Drawing.Size(32, 13);
-            this.labelDEP.TabIndex = 6;
+            this.labelDEP.TabIndex = 17;
             this.labelDEP.Text = "DEP:";
             this.toolTip.SetToolTip(this.labelDEP, "The status of Data Execution Prevention (DEP) for this process.");
             // 
@@ -345,7 +345,7 @@ namespace ProcessHacker
             this.buttonTerminate.Location = new System.Drawing.Point(386, 20);
             this.buttonTerminate.Name = "buttonTerminate";
             this.buttonTerminate.Size = new System.Drawing.Size(75, 23);
-            this.buttonTerminate.TabIndex = 5;
+            this.buttonTerminate.TabIndex = 1;
             this.buttonTerminate.Text = "Terminate";
             this.buttonTerminate.UseVisualStyleBackColor = true;
             this.buttonTerminate.Click += new System.EventHandler(this.buttonTerminate_Click);
@@ -357,7 +357,7 @@ namespace ProcessHacker
             this.buttonInspectPEB.Location = new System.Drawing.Point(437, 100);
             this.buttonInspectPEB.Name = "buttonInspectPEB";
             this.buttonInspectPEB.Size = new System.Drawing.Size(24, 24);
-            this.buttonInspectPEB.TabIndex = 4;
+            this.buttonInspectPEB.TabIndex = 5;
             this.toolTip.SetToolTip(this.buttonInspectPEB, "Inspects the PEB.");
             this.buttonInspectPEB.UseVisualStyleBackColor = true;
             this.buttonInspectPEB.Click += new System.EventHandler(this.buttonInspectPEB_Click);
@@ -369,7 +369,7 @@ namespace ProcessHacker
             this.buttonEditProtected.Location = new System.Drawing.Point(437, 178);
             this.buttonEditProtected.Name = "buttonEditProtected";
             this.buttonEditProtected.Size = new System.Drawing.Size(24, 24);
-            this.buttonEditProtected.TabIndex = 4;
+            this.buttonEditProtected.TabIndex = 11;
             this.toolTip.SetToolTip(this.buttonEditProtected, "Allows you to protect or unprotect the process.");
             this.buttonEditProtected.UseVisualStyleBackColor = true;
             this.buttonEditProtected.Click += new System.EventHandler(this.buttonEditProtected_Click);
@@ -381,7 +381,7 @@ namespace ProcessHacker
             this.buttonInspectParent.Location = new System.Drawing.Point(437, 126);
             this.buttonInspectParent.Name = "buttonInspectParent";
             this.buttonInspectParent.Size = new System.Drawing.Size(24, 24);
-            this.buttonInspectParent.TabIndex = 4;
+            this.buttonInspectParent.TabIndex = 7;
             this.toolTip.SetToolTip(this.buttonInspectParent, "Inspects the parent process.");
             this.buttonInspectParent.UseVisualStyleBackColor = true;
             this.buttonInspectParent.Click += new System.EventHandler(this.buttonInspectParent_Click);
@@ -393,7 +393,7 @@ namespace ProcessHacker
             this.buttonEditDEP.Location = new System.Drawing.Point(437, 152);
             this.buttonEditDEP.Name = "buttonEditDEP";
             this.buttonEditDEP.Size = new System.Drawing.Size(24, 24);
-            this.buttonEditDEP.TabIndex = 4;
+            this.buttonEditDEP.TabIndex = 9;
             this.toolTip.SetToolTip(this.buttonEditDEP, "Allows you to change the process\' DEP policy.");
             this.buttonEditDEP.UseVisualStyleBackColor = true;
             this.buttonEditDEP.Click += new System.EventHandler(this.buttonEditDEP_Click);
@@ -404,7 +404,7 @@ namespace ProcessHacker
             this.label5.Location = new System.Drawing.Point(6, 132);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(41, 13);
-            this.label5.TabIndex = 0;
+            this.label5.TabIndex = 16;
             this.label5.Text = "Parent:";
             this.toolTip.SetToolTip(this.label5, "The name and ID of the process which started this process.");
             // 
@@ -417,7 +417,7 @@ namespace ProcessHacker
             this.textParent.Name = "textParent";
             this.textParent.ReadOnly = true;
             this.textParent.Size = new System.Drawing.Size(330, 20);
-            this.textParent.TabIndex = 3;
+            this.textParent.TabIndex = 6;
             // 
             // label4
             // 
@@ -425,7 +425,7 @@ namespace ProcessHacker
             this.label4.Location = new System.Drawing.Point(6, 78);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(89, 13);
-            this.label4.TabIndex = 0;
+            this.label4.TabIndex = 14;
             this.label4.Text = "Current Directory:";
             this.toolTip.SetToolTip(this.label4, "The program\'s current directory.");
             // 
@@ -437,7 +437,7 @@ namespace ProcessHacker
             this.textPEBAddress.Name = "textPEBAddress";
             this.textPEBAddress.ReadOnly = true;
             this.textPEBAddress.Size = new System.Drawing.Size(330, 20);
-            this.textPEBAddress.TabIndex = 3;
+            this.textPEBAddress.TabIndex = 4;
             // 
             // label2
             // 
@@ -445,7 +445,7 @@ namespace ProcessHacker
             this.label2.Location = new System.Drawing.Point(6, 50);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(80, 13);
-            this.label2.TabIndex = 0;
+            this.label2.TabIndex = 13;
             this.label2.Text = "Command Line:";
             this.toolTip.SetToolTip(this.label2, "The command used to start the program.");
             // 
@@ -457,7 +457,7 @@ namespace ProcessHacker
             this.textStartTime.Name = "textStartTime";
             this.textStartTime.ReadOnly = true;
             this.textStartTime.Size = new System.Drawing.Size(279, 20);
-            this.textStartTime.TabIndex = 3;
+            this.textStartTime.TabIndex = 0;
             // 
             // textCmdLine
             // 
@@ -467,7 +467,7 @@ namespace ProcessHacker
             this.textCmdLine.Name = "textCmdLine";
             this.textCmdLine.ReadOnly = true;
             this.textCmdLine.Size = new System.Drawing.Size(360, 20);
-            this.textCmdLine.TabIndex = 3;
+            this.textCmdLine.TabIndex = 2;
             // 
             // groupFile
             // 
@@ -483,7 +483,7 @@ namespace ProcessHacker
             this.groupFile.Location = new System.Drawing.Point(6, 7);
             this.groupFile.Name = "groupFile";
             this.groupFile.Size = new System.Drawing.Size(469, 114);
-            this.groupFile.TabIndex = 4;
+            this.groupFile.TabIndex = 0;
             this.groupFile.TabStop = false;
             this.groupFile.Text = "File";
             // 
@@ -495,7 +495,7 @@ namespace ProcessHacker
             this.fileImage.Name = "fileImage";
             this.fileImage.ReadOnly = true;
             this.fileImage.Size = new System.Drawing.Size(360, 24);
-            this.fileImage.TabIndex = 10;
+            this.fileImage.TabIndex = 1;
             // 
             // pictureIcon
             // 
@@ -529,7 +529,7 @@ namespace ProcessHacker
             this.textFileCompany.Name = "textFileCompany";
             this.textFileCompany.ReadOnly = true;
             this.textFileCompany.Size = new System.Drawing.Size(419, 13);
-            this.textFileCompany.TabIndex = 2;
+            this.textFileCompany.TabIndex = 3;
             this.textFileCompany.Text = "File Company";
             // 
             // label1
@@ -538,7 +538,7 @@ namespace ProcessHacker
             this.label1.Location = new System.Drawing.Point(6, 60);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(77, 13);
-            this.label1.TabIndex = 0;
+            this.label1.TabIndex = 4;
             this.label1.Text = "Image Version:";
             this.toolTip.SetToolTip(this.label1, "The version of the program.");
             // 
@@ -548,7 +548,7 @@ namespace ProcessHacker
             this.label3.Location = new System.Drawing.Point(6, 88);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(89, 13);
-            this.label3.TabIndex = 0;
+            this.label3.TabIndex = 5;
             this.label3.Text = "Image File Name:";
             this.toolTip.SetToolTip(this.label3, "The file name of the program.");
             // 
@@ -560,7 +560,7 @@ namespace ProcessHacker
             this.textFileVersion.Name = "textFileVersion";
             this.textFileVersion.ReadOnly = true;
             this.textFileVersion.Size = new System.Drawing.Size(362, 20);
-            this.textFileVersion.TabIndex = 2;
+            this.textFileVersion.TabIndex = 0;
             // 
             // tabStatistics
             // 
@@ -885,7 +885,7 @@ namespace ProcessHacker
             this.label15.Location = new System.Drawing.Point(8, 11);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(44, 13);
-            this.label15.TabIndex = 10;
+            this.label15.TabIndex = 3;
             this.label15.Text = "Search:";
             // 
             // checkHideFreeRegions
@@ -909,7 +909,7 @@ namespace ProcessHacker
             this.buttonSearch.Name = "buttonSearch";
             this.buttonSearch.Size = new System.Drawing.Size(117, 25);
             this.buttonSearch.SplitMenu = this.menuSearch;
-            this.buttonSearch.TabIndex = 9;
+            this.buttonSearch.TabIndex = 0;
             this.buttonSearch.Text = "&String Scan...";
             this.buttonSearch.UseVisualStyleBackColor = true;
             this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
@@ -970,7 +970,7 @@ namespace ProcessHacker
             this.listMemory.Name = "listMemory";
             this.listMemory.Provider = null;
             this.listMemory.Size = new System.Drawing.Size(469, 325);
-            this.listMemory.TabIndex = 0;
+            this.listMemory.TabIndex = 2;
             // 
             // tabEnvironment
             // 
@@ -1031,7 +1031,7 @@ namespace ProcessHacker
             this.checkHideHandlesNoName.Location = new System.Drawing.Point(6, 7);
             this.checkHideHandlesNoName.Name = "checkHideHandlesNoName";
             this.checkHideHandlesNoName.Size = new System.Drawing.Size(160, 18);
-            this.checkHideHandlesNoName.TabIndex = 9;
+            this.checkHideHandlesNoName.TabIndex = 0;
             this.checkHideHandlesNoName.Text = "Hide handles with no name";
             this.checkHideHandlesNoName.UseVisualStyleBackColor = true;
             this.checkHideHandlesNoName.CheckedChanged += new System.EventHandler(this.checkHideHandlesNoName_CheckedChanged);
@@ -1046,7 +1046,7 @@ namespace ProcessHacker
             this.listHandles.Name = "listHandles";
             this.listHandles.Provider = null;
             this.listHandles.Size = new System.Drawing.Size(469, 354);
-            this.listHandles.TabIndex = 0;
+            this.listHandles.TabIndex = 1;
             // 
             // tabJob
             // 

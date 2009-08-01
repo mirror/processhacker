@@ -79,7 +79,7 @@ namespace ProcessHacker
             this.listResults.ShowItemToolTips = true;
             this.listResults.Size = new System.Drawing.Size(464, 296);
             this.listResults.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.listResults.TabIndex = 13;
+            this.listResults.TabIndex = 6;
             this.listResults.UseCompatibleStateImageBehavior = false;
             this.listResults.View = System.Windows.Forms.View.Details;
             this.listResults.VirtualMode = true;
@@ -113,7 +113,7 @@ namespace ProcessHacker
             this.labelText.Location = new System.Drawing.Point(72, 11);
             this.labelText.Name = "labelText";
             this.labelText.Size = new System.Drawing.Size(32, 13);
-            this.labelText.TabIndex = 19;
+            this.labelText.TabIndex = 2;
             this.labelText.Text = "Text";
             // 
             // mainMenu
@@ -133,7 +133,7 @@ namespace ProcessHacker
             this.buttonFilter.Location = new System.Drawing.Point(392, 5);
             this.buttonFilter.Name = "buttonFilter";
             this.buttonFilter.Size = new System.Drawing.Size(24, 24);
-            this.buttonFilter.TabIndex = 22;
+            this.buttonFilter.TabIndex = 3;
             this.toolTip.SetToolTip(this.buttonFilter, "Filter");
             this.buttonFilter.UseVisualStyleBackColor = true;
             this.buttonFilter.Click += new System.EventHandler(this.buttonFilter_Click);
@@ -145,7 +145,7 @@ namespace ProcessHacker
             this.buttonIntersect.Location = new System.Drawing.Point(422, 5);
             this.buttonIntersect.Name = "buttonIntersect";
             this.buttonIntersect.Size = new System.Drawing.Size(24, 24);
-            this.buttonIntersect.TabIndex = 22;
+            this.buttonIntersect.TabIndex = 4;
             this.toolTip.SetToolTip(this.buttonIntersect, "Intersect");
             this.buttonIntersect.UseVisualStyleBackColor = true;
             this.buttonIntersect.Click += new System.EventHandler(this.buttonIntersect_Click);
@@ -156,7 +156,7 @@ namespace ProcessHacker
             this.buttonEdit.Location = new System.Drawing.Point(42, 5);
             this.buttonEdit.Name = "buttonEdit";
             this.buttonEdit.Size = new System.Drawing.Size(24, 24);
-            this.buttonEdit.TabIndex = 21;
+            this.buttonEdit.TabIndex = 1;
             this.toolTip.SetToolTip(this.buttonEdit, "Edit Search...");
             this.buttonEdit.UseVisualStyleBackColor = true;
             this.buttonEdit.Click += new System.EventHandler(this.buttonEdit_Click);
@@ -167,7 +167,7 @@ namespace ProcessHacker
             this.buttonFind.Location = new System.Drawing.Point(12, 5);
             this.buttonFind.Name = "buttonFind";
             this.buttonFind.Size = new System.Drawing.Size(24, 24);
-            this.buttonFind.TabIndex = 20;
+            this.buttonFind.TabIndex = 0;
             this.toolTip.SetToolTip(this.buttonFind, "Search");
             this.buttonFind.UseVisualStyleBackColor = true;
             this.buttonFind.Click += new System.EventHandler(this.buttonFind_Click);
@@ -179,7 +179,7 @@ namespace ProcessHacker
             this.buttonSave.Location = new System.Drawing.Point(452, 5);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(24, 24);
-            this.buttonSave.TabIndex = 18;
+            this.buttonSave.TabIndex = 5;
             this.toolTip.SetToolTip(this.buttonSave, "Save...");
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
@@ -187,6 +187,7 @@ namespace ProcessHacker
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
             // 
             // ResultsWindow
             // 

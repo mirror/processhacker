@@ -40,7 +40,7 @@
             this.labelValue.Location = new System.Drawing.Point(12, 15);
             this.labelValue.Name = "labelValue";
             this.labelValue.Size = new System.Drawing.Size(37, 13);
-            this.labelValue.TabIndex = 0;
+            this.labelValue.TabIndex = 3;
             this.labelValue.Text = "Value:";
             // 
             // textValue
@@ -51,7 +51,7 @@
             this.textValue.Location = new System.Drawing.Point(55, 12);
             this.textValue.Name = "textValue";
             this.textValue.Size = new System.Drawing.Size(319, 20);
-            this.textValue.TabIndex = 1;
+            this.textValue.TabIndex = 0;
             // 
             // buttonOK
             // 
@@ -60,7 +60,7 @@
             this.buttonOK.Location = new System.Drawing.Point(218, 38);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
-            this.buttonOK.TabIndex = 2;
+            this.buttonOK.TabIndex = 1;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
             this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -72,7 +72,7 @@
             this.buttonCancel.Location = new System.Drawing.Point(299, 38);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancel.TabIndex = 3;
+            this.buttonCancel.TabIndex = 2;
             this.buttonCancel.Text = "&Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);

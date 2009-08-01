@@ -48,6 +48,7 @@ typedef VOID (NTAPI *PKPHPSS_KIFASTCALLENTRYPROC)(
 typedef struct _KPHSS_CLIENT_ENTRY
 {
     PEPROCESS Process;
+    BOOLEAN Enabled;
     
     /* Buffer */
     PKSEMAPHORE ReadSemaphore;

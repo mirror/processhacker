@@ -101,7 +101,8 @@ namespace ProcessHacker.Native
             SsAddProcessIdRule,
             SsAddThreadIdRule,
             SsAddPreviousModeRule,
-            SsAddNumberRule
+            SsAddNumberRule,
+            SsEnableClientEntry
         }
 
         [Flags]
@@ -900,7 +901,7 @@ namespace ProcessHacker.Native
 
             *(int*)inData = ruleSetEntryHandle.Handle.ToInt32();
             *(int*)(inData + 0x4) = (int)filterType;
-            *(int*)(inData + 0x8) = (byte)previousMode;
+            *(byte*)(inData + 0x8) = (byte)previousMode;
 
             _fileHandle.IoControl(CtlCode(Control.SsAddPreviousModeRule), inData, 0x9, outData, 4);
 
@@ -963,6 +964,19 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(CtlCode(Control.SsCreateRuleSetEntry), inData, 0xc, outData, 4);
 
             return new KphSsRuleSetEntryHandle((*(int*)outData).ToIntPtr());
+        }
+
+        public void SsEnableClientEntry(
+            KphSsClientEntryHandle clientEntryHandle,
+            bool enable
+            )
+        {
+            byte* inData = stackalloc byte[5];
+
+            *(int*)inData = clientEntryHandle.Handle.ToInt32();
+            *(byte*)(inData + 4) = (byte)(enable ? 1 : 0);
+
+            _fileHandle.IoControl(CtlCode(Control.SsEnableClientEntry), inData, 5, null, 0);
         }
 
         public void SsQueryClientEntry(

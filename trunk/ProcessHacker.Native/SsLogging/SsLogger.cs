@@ -301,6 +301,7 @@ namespace ProcessHacker.Native.SsLogging
                 if (!_started)
                 {
                     KProcessHacker.Instance.SsRef();
+                    KProcessHacker.Instance.SsEnableClientEntry(_clientEntryHandle, true);
                     _started = true;
 
                     _terminating = false;
@@ -321,6 +322,7 @@ namespace ProcessHacker.Native.SsLogging
             {
                 if (_started)
                 {
+                    KProcessHacker.Instance.SsEnableClientEntry(_clientEntryHandle, false);
                     KProcessHacker.Instance.SsUnref();
                     _started = false;
 

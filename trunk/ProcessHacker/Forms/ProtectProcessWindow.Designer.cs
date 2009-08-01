@@ -58,7 +58,7 @@
             this.label1.Location = new System.Drawing.Point(12, 62);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(124, 13);
-            this.label1.TabIndex = 1;
+            this.label1.TabIndex = 2;
             this.label1.Text = "Allowed process access:";
             // 
             // label2
@@ -69,7 +69,7 @@
             this.label2.Location = new System.Drawing.Point(12, 175);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(117, 13);
-            this.label2.TabIndex = 2;
+            this.label2.TabIndex = 4;
             this.label2.Text = "Allowed thread access:";
             // 
             // listProcessAccess
@@ -90,7 +90,7 @@
             this.listThreadAccess.Location = new System.Drawing.Point(12, 191);
             this.listThreadAccess.Name = "listThreadAccess";
             this.listThreadAccess.Size = new System.Drawing.Size(474, 94);
-            this.listThreadAccess.TabIndex = 3;
+            this.listThreadAccess.TabIndex = 5;
             // 
             // buttonCancel
             // 
@@ -99,7 +99,7 @@
             this.buttonCancel.Location = new System.Drawing.Point(411, 291);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancel.TabIndex = 4;
+            this.buttonCancel.TabIndex = 7;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -111,7 +111,7 @@
             this.buttonOK.Location = new System.Drawing.Point(330, 291);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
-            this.buttonOK.TabIndex = 4;
+            this.buttonOK.TabIndex = 6;
             this.buttonOK.Text = "OK";
             this.buttonOK.UseVisualStyleBackColor = true;
             this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -123,7 +123,7 @@
             this.checkDontAllowKernelMode.Location = new System.Drawing.Point(12, 36);
             this.checkDontAllowKernelMode.Name = "checkDontAllowKernelMode";
             this.checkDontAllowKernelMode.Size = new System.Drawing.Size(270, 18);
-            this.checkDontAllowKernelMode.TabIndex = 5;
+            this.checkDontAllowKernelMode.TabIndex = 1;
             this.checkDontAllowKernelMode.Text = "Don\'t allow kernel-mode code to bypass protection";
             this.checkDontAllowKernelMode.UseVisualStyleBackColor = true;
             // 

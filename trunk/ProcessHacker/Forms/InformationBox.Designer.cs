@@ -55,7 +55,7 @@
             this.buttonClose.Location = new System.Drawing.Point(462, 306);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
-            this.buttonClose.TabIndex = 1;
+            this.buttonClose.TabIndex = 3;
             this.buttonClose.Text = "&Close";
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
@@ -67,7 +67,7 @@
             this.buttonSave.Location = new System.Drawing.Point(300, 306);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(75, 23);
-            this.buttonSave.TabIndex = 2;
+            this.buttonSave.TabIndex = 1;
             this.buttonSave.Text = "Save...";
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);

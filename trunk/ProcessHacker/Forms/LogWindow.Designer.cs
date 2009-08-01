@@ -78,7 +78,7 @@
             this.buttonClose.Location = new System.Drawing.Point(492, 437);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
-            this.buttonClose.TabIndex = 1;
+            this.buttonClose.TabIndex = 5;
             this.buttonClose.Text = "Close";
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
@@ -96,7 +96,7 @@
             this.buttonCopy.Location = new System.Drawing.Point(411, 437);
             this.buttonCopy.Name = "buttonCopy";
             this.buttonCopy.Size = new System.Drawing.Size(75, 23);
-            this.buttonCopy.TabIndex = 2;
+            this.buttonCopy.TabIndex = 4;
             this.buttonCopy.Text = "Copy";
             this.buttonCopy.UseVisualStyleBackColor = true;
             this.buttonCopy.Click += new System.EventHandler(this.buttonCopy_Click);
@@ -120,7 +120,7 @@
             this.buttonClear.Location = new System.Drawing.Point(12, 437);
             this.buttonClear.Name = "buttonClear";
             this.buttonClear.Size = new System.Drawing.Size(75, 23);
-            this.buttonClear.TabIndex = 4;
+            this.buttonClear.TabIndex = 1;
             this.buttonClear.Text = "Clear";
             this.buttonClear.UseVisualStyleBackColor = true;
             this.buttonClear.Click += new System.EventHandler(this.buttonClear_Click);
@@ -135,7 +135,7 @@
             this.checkAutoscroll.Location = new System.Drawing.Point(93, 440);
             this.checkAutoscroll.Name = "checkAutoscroll";
             this.checkAutoscroll.Size = new System.Drawing.Size(81, 18);
-            this.checkAutoscroll.TabIndex = 5;
+            this.checkAutoscroll.TabIndex = 2;
             this.checkAutoscroll.Text = "Auto-scroll";
             this.checkAutoscroll.UseVisualStyleBackColor = true;
             // 

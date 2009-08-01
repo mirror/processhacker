@@ -41,7 +41,7 @@
             this.buttonCancel.Location = new System.Drawing.Point(398, 357);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancel.TabIndex = 0;
+            this.buttonCancel.TabIndex = 3;
             this.buttonCancel.Text = "&Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -54,7 +54,7 @@
             this.buttonOK.Location = new System.Drawing.Point(317, 357);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
-            this.buttonOK.TabIndex = 0;
+            this.buttonOK.TabIndex = 2;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
             this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -64,6 +64,7 @@
             this.treeProcesses.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeProcesses.Draw = true;
             this.treeProcesses.Location = new System.Drawing.Point(12, 28);
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.Provider = null;
@@ -80,7 +81,7 @@
             this.labelLabel.Location = new System.Drawing.Point(12, 9);
             this.labelLabel.Name = "labelLabel";
             this.labelLabel.Size = new System.Drawing.Size(461, 16);
-            this.labelLabel.TabIndex = 2;
+            this.labelLabel.TabIndex = 0;
             this.labelLabel.Text = "Select a process:";
             // 
             // ProcessPickerWindow

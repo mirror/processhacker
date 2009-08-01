@@ -89,7 +89,8 @@ typedef enum _KPHSS_BLOCK_TYPE
 {
     ResetBlockType,
     EventBlockType,
-    ArgumentBlockType
+    ArgumentBlockType,
+    ProcessBlockType
 } KPHSS_BLOCK_TYPE;
 
 typedef struct _KPHSS_BLOCK_HEADER
@@ -121,11 +122,11 @@ typedef struct _KPHSS_EVENT_BLOCK
     ULONG Number;
     /* The number of ULONG arguments to the system service. */
     USHORT NumberOfArguments;
-    USHORT ArgumentsOffset;
+    USHORT ArgumentsOffset; /* ULONG[] */
     
     /* The number of PVOIDs in the trace. */
     USHORT TraceCount;
-    USHORT TraceOffset;
+    USHORT TraceOffset; /* PVOID[] */
 } KPHSS_EVENT_BLOCK, *PKPHSS_EVENT_BLOCK;
 
 /* Argument Blocks
@@ -164,6 +165,22 @@ typedef struct _KPHSS_ARGUMENT_BLOCK
     };
 } KPHSS_ARGUMENT_BLOCK, *PKPHSS_ARGUMENT_BLOCK;
 
+/* Process Blocks
+ * 
+ * These blocks notify the client of a new process.
+ */
+
+#define TAG_PROCESS_BLOCK ('BPhP')
+
+typedef struct _KPHSS_PROCESS_BLOCK
+{
+    KPHSS_BLOCK_HEADER Header;
+    
+    HANDLE ProcessId;
+    USHORT NameOffset; /* KPHSS_WSTRING */
+    USHORT ImageFileNameOffset; /* KPHSS_WSTRING */
+} KPHSS_PROCESS_BLOCK, *PKPHSS_PROCESS_BLOCK;
+
 /* Functions */
 
 NTSTATUS KphSsLogInit();
@@ -179,6 +196,11 @@ NTSTATUS KphSsCreateClientEntry(
     __in PVOID BufferBase,
     __in ULONG BufferSize,
     __in KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphSsEnableClientEntry(
+    __in PKPHSS_CLIENT_ENTRY ClientEntry,
+    __in BOOLEAN Enable
     );
 
 NTSTATUS KphSsQueryClientEntry(

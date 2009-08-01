@@ -40,7 +40,7 @@
             this.buttonCancel.Location = new System.Drawing.Point(361, 187);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancel.TabIndex = 3;
+            this.buttonCancel.TabIndex = 2;
             this.buttonCancel.Text = "&Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -55,7 +55,7 @@
             this.flowPanel.Location = new System.Drawing.Point(12, 12);
             this.flowPanel.Name = "flowPanel";
             this.flowPanel.Size = new System.Drawing.Size(424, 169);
-            this.flowPanel.TabIndex = 1;
+            this.flowPanel.TabIndex = 0;
             // 
             // buttonOK
             // 
@@ -64,7 +64,7 @@
             this.buttonOK.Location = new System.Drawing.Point(280, 187);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
-            this.buttonOK.TabIndex = 2;
+            this.buttonOK.TabIndex = 1;
             this.buttonOK.Text = "&OK";
             this.buttonOK.UseVisualStyleBackColor = true;
             this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);

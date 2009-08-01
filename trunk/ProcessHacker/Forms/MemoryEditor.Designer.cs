@@ -73,7 +73,7 @@ namespace ProcessHacker
             this.labelHexSelection.Name = "labelHexSelection";
             this.labelHexSelection.ReadOnly = true;
             this.labelHexSelection.Size = new System.Drawing.Size(751, 13);
-            this.labelHexSelection.TabIndex = 27;
+            this.labelHexSelection.TabIndex = 0;
             this.labelHexSelection.Text = "Selection:";
             // 
             // buttonValues
@@ -83,7 +83,7 @@ namespace ProcessHacker
             this.buttonValues.Location = new System.Drawing.Point(709, 328);
             this.buttonValues.Name = "buttonValues";
             this.buttonValues.Size = new System.Drawing.Size(24, 24);
-            this.buttonValues.TabIndex = 26;
+            this.buttonValues.TabIndex = 9;
             this.toolTip.SetToolTip(this.buttonValues, "Show Data Representations");
             this.buttonValues.UseVisualStyleBackColor = true;
             this.buttonValues.Click += new System.EventHandler(this.buttonValues_Click);
@@ -95,7 +95,7 @@ namespace ProcessHacker
             this.buttonGoToMemory.Location = new System.Drawing.Point(275, 330);
             this.buttonGoToMemory.Name = "buttonGoToMemory";
             this.buttonGoToMemory.Size = new System.Drawing.Size(47, 23);
-            this.buttonGoToMemory.TabIndex = 22;
+            this.buttonGoToMemory.TabIndex = 7;
             this.buttonGoToMemory.Text = "&Go";
             this.toolTip.SetToolTip(this.buttonGoToMemory, "Go to the specified address");
             this.buttonGoToMemory.UseVisualStyleBackColor = true;
@@ -107,7 +107,7 @@ namespace ProcessHacker
             this.textGoTo.Location = new System.Drawing.Point(188, 332);
             this.textGoTo.Name = "textGoTo";
             this.textGoTo.Size = new System.Drawing.Size(81, 20);
-            this.textGoTo.TabIndex = 21;
+            this.textGoTo.TabIndex = 6;
             this.textGoTo.Leave += new System.EventHandler(this.textGoTo_Leave);
             this.textGoTo.Enter += new System.EventHandler(this.textGoTo_Enter);
             // 
@@ -118,7 +118,7 @@ namespace ProcessHacker
             this.buttonTopFind.Location = new System.Drawing.Point(159, 330);
             this.buttonTopFind.Name = "buttonTopFind";
             this.buttonTopFind.Size = new System.Drawing.Size(23, 23);
-            this.buttonTopFind.TabIndex = 19;
+            this.buttonTopFind.TabIndex = 5;
             this.toolTip.SetToolTip(this.buttonTopFind, "Top");
             this.buttonTopFind.UseVisualStyleBackColor = true;
             this.buttonTopFind.Click += new System.EventHandler(this.buttonTopFind_Click);
@@ -130,7 +130,7 @@ namespace ProcessHacker
             this.buttonNextFind.Location = new System.Drawing.Point(130, 330);
             this.buttonNextFind.Name = "buttonNextFind";
             this.buttonNextFind.Size = new System.Drawing.Size(23, 23);
-            this.buttonNextFind.TabIndex = 20;
+            this.buttonNextFind.TabIndex = 4;
             this.toolTip.SetToolTip(this.buttonNextFind, "Next Result");
             this.buttonNextFind.UseVisualStyleBackColor = true;
             this.buttonNextFind.Click += new System.EventHandler(this.buttonNextFind_Click);
@@ -141,7 +141,7 @@ namespace ProcessHacker
             this.textSearchMemory.Location = new System.Drawing.Point(48, 332);
             this.textSearchMemory.Name = "textSearchMemory";
             this.textSearchMemory.Size = new System.Drawing.Size(76, 20);
-            this.textSearchMemory.TabIndex = 18;
+            this.textSearchMemory.TabIndex = 3;
             this.textSearchMemory.TextChanged += new System.EventHandler(this.textSearchMemory_TextChanged);
             this.textSearchMemory.Leave += new System.EventHandler(this.textSearchMemory_Leave);
             this.textSearchMemory.Enter += new System.EventHandler(this.textSearchMemory_Enter);
@@ -153,7 +153,7 @@ namespace ProcessHacker
             this.labelFind.Location = new System.Drawing.Point(12, 335);
             this.labelFind.Name = "labelFind";
             this.labelFind.Size = new System.Drawing.Size(30, 13);
-            this.labelFind.TabIndex = 17;
+            this.labelFind.TabIndex = 2;
             this.labelFind.Text = "Find:";
             // 
             // mainMenu
@@ -220,7 +220,7 @@ namespace ProcessHacker
             this.buttonStruct.Location = new System.Drawing.Point(679, 328);
             this.buttonStruct.Name = "buttonStruct";
             this.buttonStruct.Size = new System.Drawing.Size(24, 24);
-            this.buttonStruct.TabIndex = 26;
+            this.buttonStruct.TabIndex = 8;
             this.toolTip.SetToolTip(this.buttonStruct, "View Struct...");
             this.buttonStruct.UseVisualStyleBackColor = true;
             this.buttonStruct.Click += new System.EventHandler(this.buttonStruct_Click);
@@ -239,7 +239,7 @@ namespace ProcessHacker
             this.hexBoxMemory.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
             this.hexBoxMemory.Size = new System.Drawing.Size(751, 301);
             this.hexBoxMemory.StringViewVisible = true;
-            this.hexBoxMemory.TabIndex = 14;
+            this.hexBoxMemory.TabIndex = 1;
             this.hexBoxMemory.UseFixedBytesPerLine = true;
             this.hexBoxMemory.VScrollBarVisible = true;
             this.hexBoxMemory.SelectionStartChanged += new System.EventHandler(this.hexBoxMemory_SelectionStartChanged);
@@ -252,12 +252,13 @@ namespace ProcessHacker
             this.utilitiesButtonMemory.Location = new System.Drawing.Point(739, 328);
             this.utilitiesButtonMemory.Name = "utilitiesButtonMemory";
             this.utilitiesButtonMemory.Size = new System.Drawing.Size(24, 24);
-            this.utilitiesButtonMemory.TabIndex = 28;
+            this.utilitiesButtonMemory.TabIndex = 10;
             this.toolTip.SetToolTip(this.utilitiesButtonMemory, "Insert Data");
             // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
             // 
             // MemoryEditor
             // 

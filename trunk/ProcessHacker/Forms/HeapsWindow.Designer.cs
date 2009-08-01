@@ -50,7 +50,7 @@
             this.buttonClose.Location = new System.Drawing.Point(416, 419);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
-            this.buttonClose.TabIndex = 0;
+            this.buttonClose.TabIndex = 2;
             this.buttonClose.Text = "Close";
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
@@ -70,7 +70,7 @@
             this.listHeaps.Location = new System.Drawing.Point(12, 12);
             this.listHeaps.Name = "listHeaps";
             this.listHeaps.Size = new System.Drawing.Size(479, 401);
-            this.listHeaps.TabIndex = 1;
+            this.listHeaps.TabIndex = 0;
             this.listHeaps.UseCompatibleStateImageBehavior = false;
             this.listHeaps.View = System.Windows.Forms.View.Details;
             // 
@@ -128,7 +128,7 @@
             this.checkSizesInBytes.Location = new System.Drawing.Point(12, 423);
             this.checkSizesInBytes.Name = "checkSizesInBytes";
             this.checkSizesInBytes.Size = new System.Drawing.Size(96, 18);
-            this.checkSizesInBytes.TabIndex = 2;
+            this.checkSizesInBytes.TabIndex = 1;
             this.checkSizesInBytes.Text = "Sizes in bytes";
             this.checkSizesInBytes.UseVisualStyleBackColor = true;
             this.checkSizesInBytes.CheckedChanged += new System.EventHandler(this.checkSizesInBytes_CheckedChanged);
