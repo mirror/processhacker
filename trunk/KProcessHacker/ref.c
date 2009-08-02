@@ -243,13 +243,6 @@ BOOLEAN KphDereferenceObjectEx(
     
     objectHeader = KphObjectToObjectHeader(Object);
     
-    /* We must lock the object to signal to others that the object is 
-     * being destroyed. This is useful when our client is using a 
-     * linked list to store a list of objects and the delete procedure 
-     * removes the object from the linked list. In this case the client 
-     * must know when an object is about to be freed (but not freed yet).
-     */
-    
     /* Decrease the reference count. */
     oldRefCount = InterlockedExchangeAdd(&objectHeader->RefCount, -RefCount);
     
@@ -337,6 +330,13 @@ VOID KphReferenceObjectEx(
  * 
  * Return value: TRUE if the object was referenced, FALSE if 
  * it was being deleted and was not referenced.
+ * 
+ * Remarks:
+ * This function is useful if a reference to an object is 
+ * held, protected by a mutex, and the delete procedure of 
+ * the object's type attempts to acquire the mutex. If this 
+ * function is called while the mutex is owned, you can 
+ * avoid referencing an object that is being destroyed.
  */
 BOOLEAN KphReferenceObjectSafe(
     __in PVOID Object
