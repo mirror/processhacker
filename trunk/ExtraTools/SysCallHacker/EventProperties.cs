@@ -48,7 +48,13 @@ namespace SysCallHacker
                     }
                     else if (data is SsHandle)
                     {
-                        text = (data as SsHandle).TypeName + ": " + (data as SsHandle).Name;
+                        SsHandle handle = data as SsHandle;
+
+                        if (!string.IsNullOrEmpty(handle.Name))
+                            text = handle.TypeName + ": " + handle.Name;
+                        else
+                            text = handle.TypeName + ": PID: " + handle.ProcessId.ToString() +
+                                ", TID: " + handle.ThreadId.ToString();
                     }
                     else if (data is SsUnicodeString)
                     {
@@ -73,7 +79,7 @@ namespace SysCallHacker
                     else if (data is SsClientId)
                     {
                         text = "PID: " + (data as SsClientId).Original.ProcessId.ToString() +
-                            "TID: " + (data as SsClientId).Original.ThreadId.ToString();
+                            ", TID: " + (data as SsClientId).Original.ThreadId.ToString();
                     }
 
                     item.SubItems.Add(new ListViewItem.ListViewSubItem(item, text));
@@ -138,6 +144,11 @@ namespace SysCallHacker
 
             listArguments.SetDoubleBuffered(true);
             listStackTrace.SetDoubleBuffered(true);
+        }
+
+        private void buttonClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

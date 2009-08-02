@@ -784,7 +784,7 @@ NTSTATUS KphpSsCreateEventBlock(
         NULL
         );
     
-    if (previousMode == UserMode)
+    if (PsGetCurrentProcess() != PsInitialSystemProcess)
     {
         /* Get a user-mode stack trace. */
         capturedFrames += KphCaptureStackBackTrace(
@@ -963,11 +963,16 @@ NTSTATUS KphpSsCaptureHandleArgument(
         return STATUS_INVALID_PARAMETER_2;
     
     /* Make sure the handle isn't a kernel handle if we're 
-     * from user-mode.
+     * from user-mode. We need exceptions for the process 
+     * and thread pseudo-handles.
      */
     if (PreviousMode != KernelMode)
     {
-        if ((LONG_PTR)Argument < 0)
+        if (
+            (LONG_PTR)Argument < 0 && 
+            Argument != NtCurrentProcess() && 
+            Argument != NtCurrentThread()
+            )
             return STATUS_INVALID_HANDLE;
     }
     
