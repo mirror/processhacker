@@ -49,7 +49,17 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr ConnectionRequest,
             [In] bool AcceptConnection,
             [Optional] ref PortView ServerView,
-            [Out] [Optional] out RemotePortView ClientView
+            [Optional] ref RemotePortView ClientView
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtAcceptConnectPort(
+            [Out] out IntPtr PortHandle,
+            [In] [Optional] IntPtr PortContext,
+            [In] IntPtr ConnectionRequest,
+            [In] bool AcceptConnection,
+            [Optional] IntPtr ServerView,
+            [Optional] IntPtr ClientView
             );
 
         [DllImport("ntdll.dll")]

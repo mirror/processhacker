@@ -21,12 +21,9 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Security;
 using ProcessHacker.Native.Lpc;
-using System.Runtime.InteropServices;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -103,37 +100,43 @@ namespace ProcessHacker.Native.Objects
         public PortComHandle AcceptConnect(PortMessage message, bool accept)
         {
             NtStatus status;
-            MemoryAlloc messageMemory;
             IntPtr portHandle;
-            PortView serverView;
-            RemotePortView clientView;
 
-            serverView = new PortView();
-            serverView.Length = Marshal.SizeOf(typeof(PortView));
-            messageMemory = message.ToMemory();
+            using (var messageMemory = message.ToMemory())
+            {
+                if ((status = Win32.NtAcceptConnectPort(
+                    out portHandle,
+                    IntPtr.Zero,
+                    messageMemory,
+                    accept,
+                    IntPtr.Zero,
+                    IntPtr.Zero
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
 
-            if ((status = Win32.NtAcceptConnectPort(
-                out portHandle,
-                IntPtr.Zero,
-                messageMemory,
-                accept,
-                ref serverView,
-                out clientView
-                )) >= NtStatus.Error)
+                return new PortComHandle(portHandle, true);
+            }
+        }
+
+        public void CompleteConnect()
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtCompleteConnectPort(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
-
-            return new PortComHandle(portHandle, true);
         }
 
         public PortMessage Listen()
         {
             NtStatus status;
-            var buffer = PortMessage.AllocateBuffer();
 
-            if ((status = Win32.NtListenPort(this, buffer)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+            using (var buffer = PortMessage.AllocateBuffer())
+            {
+                if ((status = Win32.NtListenPort(this, buffer)) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
 
-            return new PortMessage(buffer);
+                return new PortMessage(buffer);
+            }
         }
     }
 }

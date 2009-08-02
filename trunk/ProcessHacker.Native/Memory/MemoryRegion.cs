@@ -50,7 +50,11 @@ namespace ProcessHacker.Native
         { }
 
         public MemoryRegion(IntPtr memory, int offset)
-            : this(memory.Increment(offset), 0, false)
+            : this(memory, offset, 0)
+        { }
+
+        public MemoryRegion(IntPtr memory, int offset, int size)
+            : this(memory.Increment(offset), size, false)
         { }
 
         protected MemoryRegion(IntPtr memory, int size, bool owned)

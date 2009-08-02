@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Security;
 using System.Runtime.InteropServices;
 using ProcessHacker.Common.Objects;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Lpc
 {
@@ -18,34 +15,35 @@ namespace ProcessHacker.Native.Lpc
         }
 
         private PortMessageStruct _message;
-        private MemoryAlloc _data;
+        private MemoryRegion _data;
+        private MemoryRegion _referencedData;
 
-        public PortMessage(MemoryAlloc data, short dataLength, ClientId clientId, int messageId)
+        public PortMessage(byte[] data)
         {
-            if (dataLength > Win32.PortMessageMaxDataLength)
-                throw new ArgumentOutOfRangeException("Data length is too large.");
-            if (dataLength < 0)
-                throw new ArgumentOutOfRangeException("Data length cannot be negative.");
-
-            _message = new PortMessageStruct();
-            _message.DataLength = dataLength;
-            _message.TotalLength = (short)(_portMessageSize + dataLength);
-            _message.ClientId = clientId;
-            _message.MessageId = messageId;
-            _data = data;
-            _data.Reference();
+            using (var alloc = new MemoryAlloc(data.Length))
+            {
+                alloc.WriteBytes(0, data);
+                this.InitializeMessage(alloc, (short)alloc.Size);
+            }
         }
 
-        internal PortMessage(MemoryAlloc headerAndData)
+        public PortMessage(MemoryRegion data, short dataLength)
+        {
+            this.InitializeMessage(data, dataLength);
+        }
+
+        internal PortMessage(MemoryRegion headerAndData)
         {
             _message = headerAndData.ReadStruct<PortMessageStruct>();
-            _data = new MemoryAlloc(headerAndData.Memory.Increment(_portMessageSize), _message.DataLength, false);
-            _data.Reference();
+            _data = new MemoryRegion(headerAndData, _portMessageSize, _message.DataLength);
+
+            _referencedData = headerAndData;
+            _referencedData.Reference();
         }
 
         protected override void DisposeObject(bool disposing)
         {
-            _data.Dereference(disposing);
+            _referencedData.Dereference(disposing);
         }
 
         public ClientId ClientId
@@ -54,7 +52,7 @@ namespace ProcessHacker.Native.Lpc
             set { _message.ClientId = value; }
         }
 
-        public MemoryAlloc Data
+        public MemoryRegion Data
         {
             get { return _data; }
         }
@@ -72,6 +70,23 @@ namespace ProcessHacker.Native.Lpc
         public PortMessageType Type
         {
             get { return _message.Type; }
+        }
+
+        private void InitializeMessage(MemoryRegion data, short dataLength)
+        {
+            if (dataLength > Win32.PortMessageMaxDataLength)
+                throw new ArgumentOutOfRangeException("Data length is too large.");
+            if (dataLength < 0)
+                throw new ArgumentOutOfRangeException("Data length cannot be negative.");
+
+            _message = new PortMessageStruct();
+            _message.DataLength = dataLength;
+            _message.TotalLength = (short)(_portMessageSize + dataLength);
+            _message.DataInfoOffset = 0;
+            _data = data;
+
+            _referencedData = data;
+            _referencedData.Reference();
         }
 
         public MemoryAlloc ToMemory()
