@@ -2424,6 +2424,19 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Message Resources
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlFindMessage(
+            [In] IntPtr DllHandle,
+            [In] int MessageTableId,
+            [In] int MessageLanguageId,
+            [In] int MessageId,
+            [Out] out IntPtr MessageEntry // MessageResourceEntry*
+            );
+
+        #endregion
+
         #region Privileges
 
         [DllImport("ntdll.dll")]

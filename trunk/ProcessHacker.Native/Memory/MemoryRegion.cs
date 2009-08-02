@@ -103,6 +103,16 @@ namespace ProcessHacker.Native
             return _sizeCache[structType];
         }
 
+        public string ReadAnsiString(int offset)
+        {
+            return Marshal.PtrToStringAnsi(_memory.Increment(offset));
+        }
+
+        public string ReadAnsiString(int offset, int length)
+        {
+            return Marshal.PtrToStringAnsi(_memory.Increment(offset), length);
+        }
+
         public byte[] ReadBytes(int length)
         {
             return this.ReadBytes(0, length);

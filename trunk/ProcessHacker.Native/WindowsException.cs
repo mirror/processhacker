@@ -40,14 +40,25 @@ namespace ProcessHacker.Native
         private NtStatus _status;
         private string _message = null;
 
+        /// <summary>
+        /// Creates an exception with no error.
+        /// </summary>
         public WindowsException()
         { }
 
+        /// <summary>
+        /// Creates an exception from a Win32 error code.
+        /// </summary>
+        /// <param name="errorCode">The Win32 error code.</param>
         public WindowsException(int errorCode)
         {
             _errorCode = errorCode;
         }
 
+        /// <summary>
+        /// Creates an exception from a NT status value.
+        /// </summary>
+        /// <param name="status">The NT status value.</param>
         public WindowsException(NtStatus status)
         {
             _status = status;
@@ -55,27 +66,82 @@ namespace ProcessHacker.Native
             _isNtStatus = true;
         }
 
+        /// <summary>
+        /// Gets whether the NT status value is valid.
+        /// </summary>
         public bool IsNtStatus
         {
             get { return _isNtStatus; }
         }
 
+        /// <summary>
+        /// Gets a Win32 error code which represents the exception.
+        /// </summary>
         public int ErrorCode
         {
             get { return _errorCode; }
         }
 
+        /// <summary>
+        /// Gets a NT status value which represents the exception.
+        /// </summary>
         public NtStatus Status
         {
             get { return _status; }
         }
 
+        /// <summary>
+        /// Gets a message describing the exception.
+        /// </summary>
         public override string Message
         {
             get
             {
+                // No locking, for performance reasons. Getting the 
+                // message doesn't have any side-effects anyway.
                 if (_message == null)
-                    _message = Win32.GetErrorMessage(_errorCode);
+                {
+                    if (_isNtStatus)
+                    {
+                        // Get the real NT status value.
+
+                        NtStatus status;
+                        IntPtr messageEntry;
+
+                        status = Win32.RtlFindMessage(
+                            Loader.GetDllHandle("ntdll.dll"),
+                            0xb,
+                            System.Threading.Thread.CurrentThread.CurrentUICulture.LCID,
+                            (int)_status,
+                            out messageEntry
+                            );
+
+                        if (!status.IsError())
+                        {
+                            var region = new MemoryRegion(messageEntry);
+                            var entry = region.ReadStruct<MessageResourceEntry>();
+
+                            // Read the message, depending on format.
+                            if ((entry.Flags & MessageResourceFlags.Unicode) == MessageResourceFlags.Unicode)
+                            {
+                                _message = region.ReadUnicodeString(MessageResourceEntry.TextOffset);
+                            }
+                            else
+                            {
+                                _message = region.ReadAnsiString(MessageResourceEntry.TextOffset);
+                            }
+                        }
+                        else
+                        {
+                            _message = "Could not retrieve the error message (0x" + ((int)status).ToString("x") + ").";
+                        }
+                    }
+                    else
+                    {
+                        // Use the dumbass Win32 way.
+                        _message = Win32.GetErrorMessage(_errorCode);
+                    }
+                }
 
                 return _message;
             }

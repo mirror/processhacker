@@ -597,6 +597,12 @@ namespace ProcessHacker.Native.Api
         WriteCopy = 0x08
     }
 
+    [Flags]
+    public enum MessageResourceFlags : ushort
+    {
+        Unicode = 0x1
+    }
+
     public enum MutantInformationClass : int
     {
         MutantBasicInformation

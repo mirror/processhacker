@@ -934,6 +934,17 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct MessageResourceEntry
+    {
+        public static readonly int TextOffset = Marshal.OffsetOf(typeof(MessageResourceEntry), "Text").ToInt32();
+
+        public ushort Length;
+        public MessageResourceFlags Flags;
+        public byte Text;
+        // ANSI/Unicode string follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct MutantBasicInformation
     {
         public int CurrentCount;

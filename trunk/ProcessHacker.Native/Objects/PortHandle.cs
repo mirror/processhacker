@@ -114,7 +114,10 @@ namespace ProcessHacker.Native.Objects
                     )) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
 
-                return new PortComHandle(portHandle, true);
+                if (!NativeHandle.IsInvalid(portHandle))
+                    return new PortComHandle(portHandle, true);
+                else
+                    return null;
             }
         }
 
