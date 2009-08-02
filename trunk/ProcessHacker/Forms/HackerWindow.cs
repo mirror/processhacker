@@ -1043,8 +1043,8 @@ namespace ProcessHacker
                 copyProcessMenuItem.Enabled = true;
             }
 
-            // Special case for DPCs and Interrupts.
-            if (processSelectedPid < 0 && treeProcesses.SelectedNodes.Count == 1)
+            // Special case for invalid PIDs.
+            if (processSelectedPid <= 0 && treeProcesses.SelectedNodes.Count == 1)
             {
                 priorityMenuItem.Text = "&Priority";
                 menuProcess.DisableAll();
