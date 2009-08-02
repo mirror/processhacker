@@ -130,6 +130,16 @@ namespace ProcessHacker.Native
                             {
                                 _message = region.ReadAnsiString(MessageResourceEntry.TextOffset);
                             }
+
+                            // Fix those messages which are formatted like:
+                            // {Asdf}\r\nAsdf asdf asdf...
+                            if (_message.StartsWith("{"))
+                            {
+                                string[] split = _message.Split('\n');
+
+                                if (split.Length > 1)
+                                    _message = split[1];
+                            }
                         }
                         else
                         {
