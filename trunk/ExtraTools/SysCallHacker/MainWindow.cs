@@ -17,8 +17,14 @@ namespace SysCallHacker
 {
     public partial class MainWindow : Form
     {
+        private static Dictionary<int, string> _sysCallNames = new Dictionary<int, string>();
+
+        public static Dictionary<int, string> SysCallNames
+        {
+            get { return _sysCallNames; }
+        }
+
         private SsLogger _logger;
-        private Dictionary<int, string> _sysCallNames = new Dictionary<int,string>();
         private List<LogEvent> _events = new List<LogEvent>();
         private LogEvent _lastEvent;
         private Dictionary<int, SystemProcess> _processes;
@@ -165,6 +171,16 @@ namespace SysCallHacker
             {
                 _logger.Stop();
             }
+        }
+
+        private void ShowProperties(int index)
+        {
+            (new EventProperties(_events[index])).ShowDialog();
+        }
+
+        private void listEvents_DoubleClick(object sender, EventArgs e)
+        {
+            this.ShowProperties(listEvents.SelectedIndices[0]);
         }
     }
 }

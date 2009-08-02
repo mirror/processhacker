@@ -70,7 +70,7 @@ ULONG KphCaptureStackBackTrace(
     __out_opt PULONG BackTraceHash
     )
 {
-    PVOID backTrace[MAX_STACK_DEPTH * 2];
+    PVOID backTrace[MAX_STACK_DEPTH];
     ULONG framesFound;
     ULONG hash;
     ULONG i;
@@ -80,7 +80,7 @@ ULONG KphCaptureStackBackTrace(
     
     /* Check the input. */
     /* Ensure we won't overrun the buffer. */
-    if (FramesToCapture + FramesToSkip >= MAX_STACK_DEPTH * 2)
+    if (FramesToCapture + FramesToSkip > MAX_STACK_DEPTH)
         return 0;
     /* Make sure the flags are correct. */
     if ((Flags & RTL_WALK_VALID_FLAGS) != Flags)
@@ -287,7 +287,7 @@ BOOLEAN KphpCaptureAndAddStack(
     __out_opt PRTL_TRACE_BLOCK *TraceBlock
     )
 {
-    PVOID trace[MAX_STACK_DEPTH * 4];
+    PVOID trace[MAX_STACK_DEPTH * 2];
     ULONG kmodeFramesFound = 0;
     ULONG umodeFramesFound = 0;
     
@@ -302,7 +302,7 @@ BOOLEAN KphpCaptureAndAddStack(
         )
         kmodeFramesFound = KphCaptureStackBackTrace(
             1,
-            MAX_STACK_DEPTH * 2 - 2,
+            MAX_STACK_DEPTH - 1,
             0,
             trace,
             NULL
@@ -314,7 +314,7 @@ BOOLEAN KphpCaptureAndAddStack(
         )
         umodeFramesFound = KphCaptureStackBackTrace(
             0,
-            MAX_STACK_DEPTH * 2 - 1,
+            MAX_STACK_DEPTH - 1,
             RTL_WALK_USER_MODE_STACK,
             &trace[kmodeFramesFound],
             NULL

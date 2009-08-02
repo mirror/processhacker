@@ -778,7 +778,7 @@ NTSTATUS KphpSsCreateEventBlock(
     /* Get a kernel-mode stack trace. */
     capturedFrames = KphCaptureStackBackTrace(
         0,
-        MAX_STACK_DEPTH,
+        MAX_STACK_DEPTH - 1,
         0,
         stackTrace,
         NULL
@@ -789,7 +789,7 @@ NTSTATUS KphpSsCreateEventBlock(
         /* Get a user-mode stack trace. */
         capturedFrames += KphCaptureStackBackTrace(
             0,
-            MAX_STACK_DEPTH,
+            MAX_STACK_DEPTH - 1,
             RTL_WALK_USER_MODE_STACK,
             &stackTrace[capturedFrames],
             NULL
