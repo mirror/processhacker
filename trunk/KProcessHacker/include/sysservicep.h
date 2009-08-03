@@ -25,6 +25,7 @@
 
 #define _SYSSERVICE_PRIVATE
 #include "sysservice.h"
+#include "ex.h"
 #include "ref.h"
 
 /* PKPHPSS_KIFASTCALLENTRYPROC
@@ -84,7 +85,7 @@ typedef struct _KPHSS_RULESET_ENTRY
     KPHSS_FILTER_TYPE DefaultFilterType;
     
     ULONG NextRuleHandle;
-    FAST_MUTEX RuleListMutex;
+    EX_PUSH_LOCK RuleListPushLock;
     /* A list of rules. Each rule is referenced when stored. */
     LIST_ENTRY RuleListHead;
 } KPHSS_RULESET_ENTRY, *PKPHSS_RULESET_ENTRY;
@@ -188,7 +189,7 @@ FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
         ruleTypeFailedArray[i] = FALSE;
     }
     
-    ExAcquireFastMutex(&RuleSetEntry->RuleListMutex);
+    ExAcquirePushLockShared(&RuleSetEntry->RuleListPushLock);
     
     currentListEntry = RuleSetEntry->RuleListHead.Flink;
     
@@ -263,7 +264,7 @@ FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
         currentListEntry = currentListEntry->Flink;
     }
     
-    ExReleaseFastMutex(&RuleSetEntry->RuleListMutex);
+    ExReleasePushLock(&RuleSetEntry->RuleListPushLock);
     
     /* Look at the default filter type. If it's Include, 
      * we assume the ruleset matches. Otherwise, we 

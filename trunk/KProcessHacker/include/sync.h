@@ -75,10 +75,10 @@ FORCEINLINE VOID KphAcquireBitSpinLock(
     __in ULONG Bit
     )
 {
-    /* Try to acquire the lock outside of the loop first. */
+    /* Fast path - try to acquire the lock outside of the loop first. */
     if (InterlockedBitTestAndSet(Value, Bit))
     {
-        /* Lock was already acquired by someone else - slow path. */
+        /* Slow path - lock was already acquired by someone else; spin. */
         while (InterlockedBitTestAndSet(Value, Bit))
             PAUSE();
     }

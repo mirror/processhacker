@@ -52,8 +52,8 @@ PKPH_OBJECT_TYPE KphSsRuleSetEntryType;
 /* The object type for rule entries. */
 PKPH_OBJECT_TYPE KphSsRuleEntryType;
 
-/* A fast mutex guarding all accesses to the ruleset list. */
-FAST_MUTEX KphSsRuleSetListMutex;
+/* A push lock guarding accesses to the ruleset list. */
+EX_PUSH_LOCK KphSsRuleSetListPushLock;
 /* The list of ruleset entries. */
 LIST_ENTRY KphSsRuleSetListHead;
 
@@ -68,10 +68,10 @@ NTSTATUS KphSsLogInit()
     /* Initialize the system service call data. */
     KphSsDataInit();
     
-    /* Initialize the process list. */
+    /* Initialize the ruleset list. */
     InitializeListHead(&KphSsRuleSetListHead);
     ExInitializeFastMutex(&KphSsMutex);
-    ExInitializeFastMutex(&KphSsRuleSetListMutex);
+    ExInitializePushLock(&KphSsRuleSetListPushLock);
     
     /* Initialize the object types. */
     status = KphCreateObjectType(
@@ -469,13 +469,13 @@ NTSTATUS KphSsCreateRuleSetEntry(
     ruleSetEntry->DefaultFilterType = DefaultFilterType;
     ruleSetEntry->Action = Action;
     ruleSetEntry->NextRuleHandle = 4;
-    ExInitializeFastMutex(&ruleSetEntry->RuleListMutex);
+    ExInitializePushLock(&ruleSetEntry->RuleListPushLock);
     InitializeListHead(&ruleSetEntry->RuleListHead);
     
     /* Add the ruleset to the list. */
-    ExAcquireFastMutex(&KphSsRuleSetListMutex);
+    ExAcquirePushLockExclusive(&KphSsRuleSetListPushLock);
     InsertHeadList(&KphSsRuleSetListHead, &ruleSetEntry->RuleSetListEntry);
-    ExReleaseFastMutex(&KphSsRuleSetListMutex);
+    ExReleasePushLock(&KphSsRuleSetListPushLock);
     
     *RuleSetEntry = ruleSetEntry;
     
@@ -499,7 +499,7 @@ VOID NTAPI KphpSsRuleSetEntryDeleteProcedure(
     KphDereferenceObject(ruleSetEntry->Client);
     
     /* Dereference all rules in the ruleset. */
-    ExAcquireFastMutex(&ruleSetEntry->RuleListMutex);
+    ExAcquirePushLockExclusive(&ruleSetEntry->RuleListPushLock);
     
     currentRuleListEntry = ruleSetEntry->RuleListHead.Flink;
     
@@ -509,12 +509,12 @@ VOID NTAPI KphpSsRuleSetEntryDeleteProcedure(
         currentRuleListEntry = currentRuleListEntry->Flink;
     }
     
-    ExReleaseFastMutex(&ruleSetEntry->RuleListMutex);
+    ExReleasePushLock(&ruleSetEntry->RuleListPushLock);
     
     /* Remove the ruleset from the list. */
-    ExAcquireFastMutex(&KphSsRuleSetListMutex);
+    ExAcquirePushLockExclusive(&KphSsRuleSetListPushLock);
     RemoveEntryList(&ruleSetEntry->RuleSetListEntry);
-    ExReleaseFastMutex(&KphSsRuleSetListMutex);
+    ExReleasePushLock(&KphSsRuleSetListPushLock);
 }
 
 /* KphSsAddProcessIdRule
@@ -651,7 +651,7 @@ NTSTATUS KphSsRemoveRule(
 {
     PLIST_ENTRY currentListEntry;
     
-    ExAcquireFastMutex(&RuleSetEntry->RuleListMutex);
+    ExAcquirePushLockExclusive(&RuleSetEntry->RuleListPushLock);
     
     /* Find the rule in the ruleset. */
     
@@ -670,7 +670,7 @@ NTSTATUS KphSsRemoveRule(
              */
             KphDereferenceObject(ruleEntry);
             
-            ExReleaseFastMutex(&RuleSetEntry->RuleListMutex);
+            ExReleasePushLock(&RuleSetEntry->RuleListPushLock);
             
             return STATUS_SUCCESS;
         }
@@ -678,7 +678,7 @@ NTSTATUS KphSsRemoveRule(
         currentListEntry = currentListEntry->Flink;
     }
     
-    ExReleaseFastMutex(&RuleSetEntry->RuleListMutex);
+    ExReleasePushLock(&RuleSetEntry->RuleListPushLock);
     
     return STATUS_INVALID_PARAMETER_2;
 }
@@ -727,9 +727,9 @@ NTSTATUS KphpSsAddRule(
         );
     
     /* Add the rule to the ruleset. */
-    ExAcquireFastMutex(&RuleSetEntry->RuleListMutex);
+    ExAcquirePushLockExclusive(&RuleSetEntry->RuleListPushLock);
     InsertTailList(&RuleSetEntry->RuleListHead, &ruleEntry->RuleListEntry);
-    ExReleaseFastMutex(&RuleSetEntry->RuleListMutex);
+    ExReleasePushLock(&RuleSetEntry->RuleListPushLock);
     /* Add a reference for the rule being on the list. */
     KphReferenceObject(ruleEntry);
     
@@ -1753,11 +1753,11 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     
     /* Build the ruleset entry array by going through the ruleset 
      * list, referencing each relevant one and copying them into 
-     * the local array. This we way don't hold the mutex for too 
+     * the local array. This we way don't hold the lock for too 
      * long.
      */
     
-    ExAcquireFastMutex(&KphSsRuleSetListMutex);
+    ExAcquirePushLockShared(&KphSsRuleSetListPushLock);
     
     currentListEntry = KphSsRuleSetListHead.Flink;
     ruleSetEntryCount = 0;
@@ -1798,7 +1798,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
         currentListEntry = currentListEntry->Flink;
     }
     
-    ExReleaseFastMutex(&KphSsRuleSetListMutex);
+    ExReleasePushLock(&KphSsRuleSetListPushLock);
     
     /* If we didn't find any ruleset entries, don't bother creating the 
      * event block.
