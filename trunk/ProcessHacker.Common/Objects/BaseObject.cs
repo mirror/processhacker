@@ -116,29 +116,15 @@ namespace ProcessHacker.Common.Objects
         /// Whether the object is owned by the garbage collector (to ensure 
         /// calling Dispose more than once has no effect).
         /// </summary>
-        private volatile bool _ownedByGc = true;
-        /// <summary>
-        /// Synchronization for all reference-related methods.
-        /// </summary>
-        private FastMutex _refMutex = new FastMutex();
+        private int _ownedByGc = 1;
         /// <summary>
         /// The reference count of the object.
         /// </summary>
         private int _refCount = 1;
         /// <summary>
-        /// The weak reference count of the object. This is subtracted 
-        /// from the actual reference count when the object is no longer 
-        /// reachable.
-        /// </summary>
-        private int _weakRefCount = 0;
-        /// <summary>
         /// Whether the finalizer will run.
         /// </summary>
-        private volatile bool _finalizerRegistered = true;
-        /// <summary>
-        /// Synchronization for finalizer-related methods.
-        /// </summary>
-        private object _finalizerRegisterLock = new object();
+        private int _finalizerRegistered = 1;
         /// <summary>
         /// Whether the object has been freed.
         /// </summary>
@@ -163,7 +149,7 @@ namespace ProcessHacker.Common.Objects
             if (!_owned)
             {
                 this.DisableFinalizer();
-                _ownedByGc = false;
+                _ownedByGc = 0;
                 _refCount = 0;
             }
 
@@ -181,8 +167,6 @@ namespace ProcessHacker.Common.Objects
         {
             // Get rid of GC ownership if still present.
             this.Dispose(false);
-            // Zero the weak reference count.
-            this.ClearWeakReferences();
         }
 
         /// <summary>
@@ -204,30 +188,29 @@ namespace ProcessHacker.Common.Objects
 
             Thread.BeginCriticalRegion();
 
-            if (managed)
-                _refMutex.Acquire();
-
             try
             {
-                // Only proceed if the object is owned by the GC.
-                if (_ownedByGc)
+                int oldOwnedByGc;
+
+                // Only proceed if the object is owned by the GC. We can perform 
+                // this operation without any locks by using CAS.
+                oldOwnedByGc = Interlocked.CompareExchange(ref _ownedByGc, 0, 1);
+
+                if (oldOwnedByGc == 1)
                 {
                     // Decrement the reference count.
                     this.Dereference(managed);
-                    _ownedByGc = false;
 
-                    // Disable the finalizer if we don't need it.
-                    if (Thread.VolatileRead(ref _weakRefCount) == 0)
-                    {
-                        if (managed)
-                            this.DisableFinalizer();
-                    }
+                    // Disable the finalizer.
+                    if (managed)
+                        this.DisableFinalizer();
 
-                    // Stats...
+                    // Stats.
                     if (managed)
                         Interlocked.Increment(ref _disposedCount);
                     else
                         Interlocked.Increment(ref _finalizedCount);
+
                     // The dereferenced count should count the number of times 
                     // the user has called Dereference, so decrement it 
                     // because we just called it.
@@ -236,9 +219,6 @@ namespace ProcessHacker.Common.Objects
             }
             finally
             {
-                if (managed)
-                    _refMutex.Release();
-
                 Thread.EndCriticalRegion();
             }
         }
@@ -279,7 +259,7 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         public bool OwnedByGc
         {
-            get { return _ownedByGc; }
+            get { return _ownedByGc == 1; }
         }
 
         /// <summary>
@@ -295,46 +275,17 @@ namespace ProcessHacker.Common.Objects
         }
 
         /// <summary>
-        /// Gets the mutex used internally to synchronize object disposal.
-        /// </summary>
-        protected FastMutex ReferenceMutex
-        {
-            get { return _refMutex; }
-        }
-
-        /// <summary>
-        /// Gets the current weak reference count of the object.
-        /// </summary>
-        /// <remarks>
-        /// This information is for debugging purposes ONLY. DO NOT 
-        /// base memory management logic upon this value.
-        /// </remarks>
-        public int WeakReferenceCount
-        {
-            get { return Thread.VolatileRead(ref _weakRefCount); }
-        }
-
-        /// <summary>
-        /// Removes all weak references.
-        /// </summary>
-        private void ClearWeakReferences()
-        {
-            this.Dereference(_weakRefCount, false);
-            _weakRefCount = 0;
-        }
-
-        /// <summary>
         /// Disables the finalizer if it is not already disabled.
         /// </summary>
         private void DisableFinalizer()
         {
-            lock (_finalizerRegisterLock)
+            int oldFinalizerRegistered;
+
+            oldFinalizerRegistered = Interlocked.CompareExchange(ref _finalizerRegistered, 0, 1);
+
+            if (oldFinalizerRegistered == 1)
             {
-                if (_finalizerRegistered)
-                {
-                    GC.SuppressFinalize(this);
-                    _finalizerRegistered = false;
-                }
+                GC.SuppressFinalize(this);
             }
         }
 
@@ -343,20 +294,16 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         protected void DisableOwnership(bool dispose)
         {
-            using (_refMutex.AcquireContext())
-            {
-                this.ClearWeakReferences();
+            if (dispose)
+                this.Dispose();
 
-                if (dispose)
-                    this.Dispose();
-
-                this.DisableFinalizer();
-                _owned = false;
-            }
+            this.DisableFinalizer();
+            _owned = false;
 
             // If the object didn't get disposed, pretend the object 
             // never got created.
-            Interlocked.Decrement(ref _createdCount);
+            if (!dispose)
+                Interlocked.Decrement(ref _createdCount);
         }
 
         /// <summary>
@@ -419,9 +366,6 @@ namespace ProcessHacker.Common.Objects
             // Critical, prevent thread abortion.
             Thread.BeginCriticalRegion();
 
-            if (managed)
-                _refMutex.Acquire();
-
             try
             {
                 if (!_owned)
@@ -452,9 +396,6 @@ namespace ProcessHacker.Common.Objects
             }
             finally
             {
-                if (managed)
-                    _refMutex.Release();
-
                 Thread.EndCriticalRegion();
             }
         }
@@ -472,13 +413,13 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         private void EnableFinalizer()
         {
-            lock (_finalizerRegisterLock)
+            int oldFinalizerRegistered;
+
+            oldFinalizerRegistered = Interlocked.CompareExchange(ref _finalizerRegistered, 1, 0);
+
+            if (oldFinalizerRegistered == 0)
             {
-                if (!_finalizerRegistered)
-                {
-                    GC.ReRegisterForFinalize(this);
-                    _finalizerRegistered = true;
-                }
+                GC.ReRegisterForFinalize(this);
             }
         }
 
@@ -516,37 +457,6 @@ namespace ProcessHacker.Common.Objects
             Interlocked.Add(ref _referencedCount, count);
 
             return Interlocked.Add(ref _refCount, count);
-        }
-
-        /// <summary>
-        /// Increments the reference count of the object and ensures the 
-        /// reference count will decremented when the object is no 
-        /// longer reachable.
-        /// </summary>
-        /// <returns>The new reference count.</returns>
-        /// <remarks>
-        /// You must not call Dereference to decrement the reference count 
-        /// as it will be decremented automatically.
-        /// </remarks>
-        public int ReferenceWeak()
-        {
-            if (!_owned)
-                return 0;
-
-            Thread.BeginCriticalRegion();
-            _refMutex.Acquire();
-
-            try
-            {
-                Interlocked.Increment(ref _weakRefCount);
-                this.EnableFinalizer();
-                return Interlocked.Increment(ref _refCount);
-            }
-            finally
-            {
-                _refMutex.Release();
-                Thread.EndCriticalRegion();
-            }
         }
     }
 }
