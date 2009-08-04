@@ -447,7 +447,7 @@ NTSTATUS KvInit()
         OffEtWin32StartAddress = 0x260;
         OffEpJob = 0x124;
         OffEpObjectTable = 0xf4;
-        OffEpProtectedProcessOff = 0x268;
+        OffEpProtectedProcessOff = 0x26c;
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0xb0;
         OffOhBody = 0x18;
