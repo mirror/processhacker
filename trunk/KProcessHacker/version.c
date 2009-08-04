@@ -91,8 +91,13 @@ static char PsTerminateProcess60[] =
 static char PsTerminateProcess61[] =
 {
     0x8b, 0xff, 0x55, 0x8b, 0xec, 0x51, 0x51, 0x53,
-    0x56, 0x64, 0x8b, 0x35, 0x24, 0x01, 0x00, 0x00
-};
+    0x56, 0x64, 0x8b, 0x35, 0x24, 0x01, 0x00, 0x00,
+    0x66, 0xff, 0x8e, 0x84, 0x00, 0x00, 0x00, 0x57,
+    0xc7, 0x45, 0xfc
+}; /* a lot of functions seem to share the first 
+    * 16 bytes of the Windows 7 PsTerminateProcess, 
+    * and a few even share the first 24 bytes.
+    */
 
 /* PspTerminateThreadByPointer */
 static char PspTerminateThreadByPointer51[] =
@@ -159,7 +164,8 @@ NTSTATUS KvInit()
     INIT_SCAN(
         KiFastCallEntryScan,
         KiFastCallEntry,
-        16, (ULONG_PTR)__ZwClose, SCAN_LENGTH, -7
+        sizeof(KiFastCallEntry),
+        (ULONG_PTR)__ZwClose, SCAN_LENGTH, -7
         );
     
     /* Windows XP */
@@ -194,12 +200,14 @@ NTSTATUS KvInit()
         INIT_SCAN(
             PsTerminateProcessScan,
             PspTerminateProcess51,
-            16, searchOffset, SCAN_LENGTH, 0
+            sizeof(PspTerminateProcess51),
+            searchOffset, SCAN_LENGTH, 0
             );
         INIT_SCAN(
             PspTerminateThreadByPointerScan,
             PspTerminateThreadByPointer51,
-            16, searchOffset, SCAN_LENGTH, 0
+            sizeof(PspTerminateThreadByPointer51),
+            searchOffset, SCAN_LENGTH, 0
             );
         
         /* Windows XP SP0 and 1 are not supported */
@@ -254,12 +262,14 @@ NTSTATUS KvInit()
         INIT_SCAN(
             PsTerminateProcessScan,
             PsTerminateProcess60,
-            16, searchOffset, SCAN_LENGTH, 0
+            sizeof(PsTerminateProcess60),
+            searchOffset, SCAN_LENGTH, 0
             );
         INIT_SCAN(
             PspTerminateThreadByPointerScan,
             PspTerminateThreadByPointer60,
-            24, searchOffset - 0x50000, SCAN_LENGTH, 0
+            sizeof(PspTerminateThreadByPointer60),
+            searchOffset - 0x50000, SCAN_LENGTH, 0
             );
         
         /* SP0 */
@@ -450,12 +460,14 @@ NTSTATUS KvInit()
         INIT_SCAN(
             PsTerminateProcessScan,
             PsTerminateProcess61,
-            16, psSearchOffset, psScanLength, 0
+            sizeof(PsTerminateProcess61),
+            psSearchOffset, psScanLength, 0
             );
         INIT_SCAN(
             PspTerminateThreadByPointerScan,
             PspTerminateThreadByPointer61,
-            24, psSearchOffset, psScanLength, 0
+            sizeof(PspTerminateThreadByPointer61),
+            psSearchOffset, psScanLength, 0
             );
         
         /* SP0 */
