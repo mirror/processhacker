@@ -734,7 +734,8 @@ namespace ProcessHacker
                         //if (dict.ContainsKey(""))
                         //    throw new Exception("Input file already specified.");
 
-                        dict.Add("", s);
+                        if (!dict.ContainsKey(""))
+                            dict.Add("", s);
                     }
                 }
             }
