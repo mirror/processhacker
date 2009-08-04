@@ -30,7 +30,7 @@ namespace ProcessHacker.Native
     public enum WindowsVersion
     {
         /// <summary>
-        /// Windows XP SP2 and SP3.
+        /// Windows XP SP2, SP3.
         /// </summary>
         XP = 51,
 
@@ -40,7 +40,7 @@ namespace ProcessHacker.Native
         Server2003 = 52,
 
         /// <summary>
-        /// Windows Vista SP0 and SP1, Windows Server 2008.
+        /// Windows Vista SP0, SP1, SP2, Windows Server 2008.
         /// </summary>
         Vista = 60,
 
