@@ -726,8 +726,13 @@ namespace ProcessHacker
                     }
                     else
                     {
-                        if (dict.ContainsKey(""))
-                            throw new Exception("Input file already specified.");
+                        // On Windows 7 if PH replaces Task Manager, PH will be 
+                        // started with a command line of:
+                        // ProcessHacker.exe "C:\...\taskmgr.exe" /4
+                        // The following two lines are commented out due to this.
+
+                        //if (dict.ContainsKey(""))
+                        //    throw new Exception("Input file already specified.");
 
                         dict.Add("", s);
                     }
