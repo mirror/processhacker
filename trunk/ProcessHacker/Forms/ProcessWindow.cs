@@ -491,23 +491,6 @@ namespace ProcessHacker
                 textFileCompany.Text = "";
             }
 
-            if (_pid > 0)
-            {
-                try
-                {
-                    var processes = Windows.GetProcesses();
-
-                    if (!processes.ContainsKey(_pid))
-                    {
-                        textFileDescription.Text = "(HIDDEN PROCESS) " + textFileDescription.Text;
-                        textFileDescription.ForeColor = Color.Red;
-                        textFileCompany.ForeColor = Color.Red;
-                    }
-                }
-                catch
-                { }
-            }
-
             // HACK: Evil but necessary to reduce user complaints
             Application.DoEvents();
 
@@ -1328,6 +1311,10 @@ namespace ProcessHacker
                             NtStatus exitStatus = _processHandle.GetExitStatus();
                             string exitString = exitStatus.ToString();
                             long exitLong;
+
+                            // We want "Success" instead of "Wait0" (both are 0x0).
+                            if (exitString == "Wait0")
+                                exitString = "Success";
 
                             // If we have a NT status string, display it. 
                             // Otherwise, display the NT status value in hex.

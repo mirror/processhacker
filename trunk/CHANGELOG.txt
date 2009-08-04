@@ -12,6 +12,7 @@ Process Hacker
    * Thread list is more responsive
    * Process exit notification (in the process window) is now instant
    * Improved control tab indicies
+   * Small performance improvements
  * FIXED:
    * #2821437 - "Windows 7 PsTerminateProcess crash"
    * Properties menu item for handles was disabled most of the time
