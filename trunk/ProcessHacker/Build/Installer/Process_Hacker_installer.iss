@@ -1,10 +1,10 @@
-; ISTool v5.3.0/Inno Setup v5.3.2-beta, Script by XhmikosR
+; ISTool v5.3.0/Inno Setup v5.3.3, Script by XhmikosR
 ;
 ; Requirements:
 ; *Inno Setup QuickStart Pack:
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
-#define installer_build_number "34"
+#define installer_build_number "35"
 #define app_version GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_updates_url "http://processhacker.sourceforge.net/"
@@ -60,6 +60,8 @@ AlwaysShowGroupOnReadyPage=True
 WizardImageStretch=False
 PrivilegesRequired=Admin
 ShowLanguageDialog=Auto
+DisableDirPage=Auto
+DisableProgramGroupPage=Auto
 LanguageDetectionMethod=uilanguage
 AppMutex=Global\ProcessHackerMutex
 
@@ -191,28 +193,6 @@ Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Check: KProcessHacker
 [Code]
 // Create a mutex for the installer
 const installer_mutex_name = 'process_hacker_setup_mutex';
-
-
-// Function to check if app is already installed
-function IsInstalled(AppID: String): Boolean;
-var
-  sPrevPath: String;
-begin
-  sPrevPath := '';
-  if not RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\'+AppID+'_is1', 'Inno Setup: App Path', sPrevpath) then
-  RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\'+AppID+'_is1', 'Inno Setup: App Path', sPrevpath);
-  Result := sPrevPath<>'';
-end;
-
-
-// If this is an update then we use the same directories again
-function ShouldSkipPage(PageID: Integer): Boolean;
-begin
-  Result := False;
-  if (PageID = wpSelectDir) or (PageID = wpSelectProgramGroup) then begin
-  Result := IsInstalled('Process_Hacker');
-  end;
-end;
 
 
 // Check if Process Hacker is configured to run on startup in order to control startup choice within the installer
