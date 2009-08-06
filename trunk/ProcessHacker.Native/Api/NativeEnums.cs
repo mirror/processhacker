@@ -144,6 +144,13 @@ namespace ProcessHacker.Native.Api
         SameAttributes = 0x4
     }
 
+    public enum EnlistmentInformationClass : int
+    {
+        EnlistmentBasicInformation,
+        EnlistmentRecoveryInformation,
+        EnlistmentFullInformation
+    }
+
     [Flags]
     public enum EnlistmentOptions : int
     {
@@ -626,7 +633,7 @@ namespace ProcessHacker.Native.Api
         RecoverQuery = 0x00000800,
         EnlistPrePrepare = 0x00001000,
         LastRecover = 0x00002000,
-        InDoubt = 0x00004000,
+        Indoubt = 0x00004000,
         PropagatePull = 0x00008000,
         PropagatePush = 0x00010000,
         Marshal = 0x00020000,
@@ -828,6 +835,13 @@ namespace ProcessHacker.Native.Api
     public enum RegUnloadFlags : int
     {
         ForceUnload = 0x1
+    }
+
+    public enum ResourceManagerInformationClass : int
+    {
+        ResourceManagerBasicInformation,
+        ResourceManagerCompletionInformation,
+        ResourceManagerFullInformation
     }
 
     [Flags]
@@ -1156,6 +1170,15 @@ namespace ProcessHacker.Native.Api
         SynchronizationTimer
     }
 
+    public enum TmInformationClass : int
+    {
+        TransactionManagerBasicInformation,
+        TransactionManagerLogInformation,
+        TransactionManagerLogPathInformation,
+        TransactionManagerOnlineProbeInformation,
+        TransactionManagerRecoveryInformation
+    }
+
     [Flags]
     public enum TmOptions : int
     {
@@ -1215,11 +1238,33 @@ namespace ProcessHacker.Native.Api
         Impersonation
     }
 
+    public enum TransactionInformationClass : int
+    {
+        TransactionBasicInformation,
+        TransactionPropertiesInformation,
+        TransactionEnlistmentInformation,
+        TransactionFullInformation
+    }
+
     [Flags]
     public enum TransactionOptions : int
     {
         DoNotPromote = 0x1,
         MaximumOption = 0x1
+    }
+
+    public enum TransactionOutcome : int
+    {
+        Undetermined = 1,
+        Committed,
+        Aborted
+    }
+
+    public enum TransactionState : int
+    {
+        Normal = 1,
+        Indoubt,
+        CommittedNotify
     }
 
     public enum WaitType : int

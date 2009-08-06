@@ -1065,6 +1065,24 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationEnlistment(
+            [In] IntPtr EnlistmentHandle,
+            [In] EnlistmentInformationClass EnlistmentInformationClass,
+            [In] IntPtr EnlistmentInformation,
+            [In] int EnlistmentInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationEnlistment(
+            [In] IntPtr EnlistmentHandle,
+            [In] EnlistmentInformationClass EnlistmentInformationClass,
+            [Out] out EnlistmentBasicInformation EnlistmentInformation,
+            [In] int EnlistmentInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtQueryInformationFile(
             [In] IntPtr FileHandle,
             [Out] out IoStatusBlock IoStatusBlock,
@@ -1173,6 +1191,15 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationResourceManager(
+            [In] IntPtr ResourceManagerHandle,
+            [In] ResourceManagerInformationClass ResourceManagerInformationClass,
+            [In] IntPtr ResourceManagerInformation,
+            [In] int ResourceManagerInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtQueryInformationThread(
             [In] IntPtr ThreadHandle,
             [In] ThreadInformationClass ThreadInformationClass,
@@ -1223,6 +1250,60 @@ namespace ProcessHacker.Native.Api
             [In] TokenInformationClass TokenInformationClass,
             [In] IntPtr TokenInformation,
             [In] int TokenInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationTransaction(
+            [In] IntPtr TransactionHandle,
+            [In] TransactionInformationClass TransactionInformationClass,
+            [In] IntPtr TransactionInformation,
+            [In] int TransactionInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationTransaction(
+            [In] IntPtr TransactionHandle,
+            [In] TransactionInformationClass TransactionInformationClass,
+            [Out] out TransactionBasicInformation TransactionInformation,
+            [In] int TransactionInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationTransactionManager(
+            [In] IntPtr TransactionManagerHandle,
+            [In] TmInformationClass TransactionManagerInformationClass,
+            [In] IntPtr TransactionManagerInformation,
+            [In] int TransactionManagerInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationTransactionManager(
+            [In] IntPtr TransactionManagerHandle,
+            [In] TmInformationClass TransactionManagerInformationClass,
+            [Out] out TmBasicInformation TransactionManagerInformation,
+            [In] int TransactionManagerInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationTransactionManager(
+            [In] IntPtr TransactionManagerHandle,
+            [In] TmInformationClass TransactionManagerInformationClass,
+            [Out] out TmLogInformation TransactionManagerInformation,
+            [In] int TransactionManagerInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationTransactionManager(
+            [In] IntPtr TransactionManagerHandle,
+            [In] TmInformationClass TransactionManagerInformationClass,
+            [Out] out TmRecoveryInformation TransactionManagerInformation,
+            [In] int TransactionManagerInformationLength,
             [Out] [Optional] out int ReturnLength
             );
 

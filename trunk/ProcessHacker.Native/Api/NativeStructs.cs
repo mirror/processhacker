@@ -297,6 +297,14 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct EnlistmentBasicInformation
+    {
+        public Guid EnlistmentId;
+        public Guid TransactionId;
+        public Guid ResourceManagerId;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct EventBasicInformation
     {
         public EventType EventType;
@@ -1307,6 +1315,15 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct ResourceManagerBasicInformation
+    {
+        public Guid ResourceManagerId;
+        public int DescriptionLength;
+        public byte Description; // wchar[]
+        // Description string follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct RtlAceData
     {
         public AceType AceType;
@@ -2238,6 +2255,33 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct TmBasicInformation
+    {
+        public Guid TmIdentity;
+        public long VirtualClock;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TmLogInformation
+    {
+        public Guid LogIdentity;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TmLogPathInformation
+    {
+        public int LogPathLength;
+        public byte LogPath; // wchar[]
+        // Log path follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TmRecoveryInformation
+    {
+        public long LastRecoveredLsn;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct TokenDefaultDacl
     {
         public TokenDefaultDacl(Acl defaultDacl)
@@ -2347,12 +2391,47 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct TransactionBasicInformation
+    {
+        public Guid TransactionId;
+        public TransactionState State;
+        public TransactionOutcome Outcome;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TransactionEnlistmentPair
+    {
+        public Guid EnlistmentId;
+        public Guid ResourceManagerId;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TransactionEnlistmentsInformation
+    {
+        public int NumberOfEnlistments;
+        public byte EnlistmentPair; // TransactionEnlistmentPair[]
+        // Array of TransactionEnlistmentPair structures follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct TransactionNotification
     {
         public IntPtr TransactionKey;
         public NotificationMask Notification; // Original name: TransactionNotification
         public long TmVirtualClock;
         public int ArgumentLength;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TransactionPropertiesInformation
+    {
+        public int IsolationLevel;
+        public int IsolationFlags;
+        public long Timeout;
+        public TransactionOutcome Outcome;
+        public int DescriptionLength;
+        public byte Description; // wchar[]
+        // Description string follows.
     }
 
     [StructLayout(LayoutKind.Sequential)]
