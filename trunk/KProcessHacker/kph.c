@@ -124,6 +124,7 @@ VOID KphAttachProcess(
     {
         KeStackAttachProcess(Process, &AttachState->ApcState);
         AttachState->Attached = TRUE;
+        AttachState->Process = Process;
     }
 }
 

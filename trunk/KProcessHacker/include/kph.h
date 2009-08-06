@@ -42,12 +42,17 @@
 #define BITS_ULONG 32
 #define MAX_ULONG MAX_UINTEGER(BITS_ULONG)
 
+#define SYSTEM_PROCESS_ID ((HANDLE)4)
+#define KERNEL_HANDLE_BIT (1 << (sizeof(HANDLE) * 8 - 1))
+#define IsKernelHandle(Handle) ((LONG_PTR)(Handle) < 0)
+#define MakeKernelHandle(Handle) ((ULONG_PTR)(Handle) |= KERNEL_HANDLE_BIT)
+
 #define PAUSE() __asm { pause }
 #define PTR_ADD_OFFSET(Pointer, Offset) ((PVOID)((ULONG_PTR)(Pointer) + (ULONG_PTR)(Offset)))
 
-#define GET_BIT(integer, bit) (((integer) >> (bit)) & 0x1)
-#define SET_BIT(integer, bit) ((integer) |= 1 << (bit))
-#define CLEAR_BIT(integer, bit) ((integer) &= ~(1 << (bit)))
+#define GET_BIT(Integer, Bit) (((Integer) >> (Bit)) & 0x1)
+#define SET_BIT(Integer, Bit) ((Integer) |= 1 << (Bit))
+#define CLEAR_BIT(Integer, Bit) ((Integer) &= ~(1 << (Bit)))
 
 #define KPH_TIMEOUT_TO_SEC ((LONGLONG) 1 * 10 * 1000 * 1000)
 #define KPH_REL_TIMEOUT_IN_SEC(Time) (Time * -1 * KPH_TIMEOUT_TO_SEC)
@@ -97,6 +102,7 @@ typedef struct _DRIVER_BASIC_INFORMATION
 typedef struct _KPH_ATTACH_STATE
 {
     BOOLEAN Attached;
+    PEPROCESS Process;
     KAPC_STATE ApcState;
 } KPH_ATTACH_STATE, *PKPH_ATTACH_STATE;
 

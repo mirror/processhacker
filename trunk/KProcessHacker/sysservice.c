@@ -969,7 +969,7 @@ NTSTATUS KphpSsCaptureHandleArgument(
     if (PreviousMode != KernelMode)
     {
         if (
-            (LONG_PTR)Argument < 0 && 
+            IsKernelHandle(Argument) && 
             Argument != NtCurrentProcess() && 
             Argument != NtCurrentThread()
             )

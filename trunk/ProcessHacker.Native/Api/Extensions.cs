@@ -125,7 +125,7 @@ namespace ProcessHacker.Native
             GenericHandle objectHandle = null;
 
             if (thisHandle.Handle == 0 || thisHandle.Handle == -1 || thisHandle.Handle == -2)
-                throw new WindowsException(6);
+                throw new WindowsException(NtStatus.InvalidHandle);
 
             // Duplicate the handle if we're not using KPH
             if (KProcessHacker.Instance == null)
@@ -134,7 +134,7 @@ namespace ProcessHacker.Native
 
                 if ((status = Win32.NtDuplicateObject(
                     process, handle, ProcessHandle.Current, out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
-                    Win32.ThrowLastError();
+                    Win32.ThrowLastError(status);
 
                 objectHandle = new GenericHandle(objectHandleI);
             }
@@ -201,7 +201,7 @@ namespace ProcessHacker.Native
                 if (KProcessHacker.Instance != null)
                 {
                     // Use KProcessHacker for files to avoid hangs.
-                    info.OrigName = KProcessHacker.Instance.GetFileObjectName(thisHandle);
+                    info.OrigName = KProcessHacker.Instance.GetHandleObjectName(process, handle);
                 }
                 else
                 {

@@ -720,6 +720,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
+            /* See the block for KPH_ZWQUERYOBJECT for information. */
+            if (attachState.Process == PsInitialSystemProcess)
+                MakeKernelHandle(args->Handle);
+            
             status = ObReferenceObjectByHandle(args->Handle, 0, 
                 *IoFileObjectType, KernelMode, &object, NULL);
             KphDetachProcess(&attachState);
@@ -1146,6 +1150,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
+            /* See the block for KPH_ZWQUERYOBJECT for information. */
+            if (attachState.Process == PsInitialSystemProcess)
+                MakeKernelHandle(args->Handle);
+            
             status = ObReferenceObjectByHandle(args->Handle, 0, NULL, KernelMode, &object, NULL);
             KphDetachProcess(&attachState);
             
@@ -1302,6 +1310,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             } *ret = dataBuffer;
             NTSTATUS status2 = STATUS_SUCCESS;
             KPH_ATTACH_STATE attachState;
+            BOOLEAN attached;
             
             if (inLength < sizeof(*args) || outLength < sizeof(*ret) - sizeof(CHAR))
             {
@@ -1313,6 +1322,14 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
+            
+            /* Are we attached to the system process? If we are, 
+             * we must set the high bit in the handle to indicate 
+             * that it is a kernel handle - a new check for this 
+             * was added in Windows 7.
+             */
+            if (attachState.Process == PsInitialSystemProcess)
+                MakeKernelHandle(args->Handle);
             
             status2 = ZwQueryObject(
                 args->Handle,
@@ -1359,6 +1376,9 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
+            if (attachState.Process == PsInitialSystemProcess)
+                MakeKernelHandle(args->Handle);
+            
             ret->ProcessId = KphGetProcessId(args->Handle);
             KphDetachProcess(&attachState);
             retLength = sizeof(*ret);
@@ -1389,6 +1409,9 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
+            
+            if (attachState.Process == PsInitialSystemProcess)
+                MakeKernelHandle(args->Handle);
             
             ret->ThreadId = KphGetThreadId(args->Handle, &ret->ProcessId);
             KphDetachProcess(&attachState);

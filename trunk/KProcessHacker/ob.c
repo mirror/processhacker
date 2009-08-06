@@ -104,6 +104,12 @@ NTSTATUS KphDuplicateObject(
             return status;
     }
     
+    /* Fix the source handle if the source process is 
+     * the system process.
+     */
+    if (sourceProcess == PsInitialSystemProcess)
+        MakeKernelHandle(SourceHandle);
+    
     /* Call the internal function. */
     status = ObDuplicateObject(
         sourceProcess,
