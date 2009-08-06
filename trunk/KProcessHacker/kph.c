@@ -82,6 +82,12 @@ NTSTATUS KphNtInit()
     PsSuspendProcess = GetSystemRoutineAddress(L"PsSuspendProcess");
     dfprintf("PsSuspendProcess: %#x\n", PsSuspendProcess);
     
+    if (WindowsVersion >= WINDOWS_7)
+    {
+        ObGetObjectType = GetSystemRoutineAddress(L"ObGetObjectType");
+        dfprintf("ObGetObjectType: %#x\n", ObGetObjectType);
+    }
+    
     /* Scan for functions. */
     if (KiFastCallEntryScan.Initialized)
     {

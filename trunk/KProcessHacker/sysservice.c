@@ -992,7 +992,7 @@ NTSTATUS KphpSsCaptureHandleArgument(
     /* Get a pointer to the UNICODE_STRING containing the 
      * object type name.
      */
-    objectType = OBJECT_TO_OBJECT_HEADER(object)->Type;
+    objectType = KphGetObjectTypeNt(object);
     objectTypeName = (PUNICODE_STRING)KVOFF(objectType, OffOtName);
     
     /* Allocate a buffer for name information. */

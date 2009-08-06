@@ -165,6 +165,39 @@ BOOLEAN KphEnumProcessHandleTable(
     return result;
 }
 
+/* KphGetObjectTypeNt
+ * 
+ * Gets the type of an object.
+ */
+POBJECT_TYPE KphGetObjectTypeNt(
+    __in PVOID Object
+    )
+{
+    /* XP to Vista: A pointer to the object type is 
+     * stored in the object header.
+     */
+    if (
+        WindowsVersion >= WINDOWS_XP && 
+        WindowsVersion <= WINDOWS_VISTA
+        )
+    {
+        return OBJECT_TO_OBJECT_HEADER(Object)->Type;
+    }
+    /* Seven and above: An index to an internal object type 
+     * table is stored in the object header. Luckily we have 
+     * a new exported function, ObGetObjectType, to get 
+     * the object type.
+     */
+    else if (WindowsVersion >= WINDOWS_7)
+    {
+        return ObGetObjectType(Object);
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
 /* KphOpenDirectoryObject
  * 
  * Opens a directory object.
@@ -432,7 +465,7 @@ NTSTATUS KphQueryNameObject(
     NTSTATUS status = STATUS_SUCCESS;
     POBJECT_TYPE objectType;
     
-    objectType = OBJECT_TO_OBJECT_HEADER(Object)->Type;
+    objectType = KphGetObjectTypeNt(Object);
     
     /* Check if we are going to hang when querying the object, and use 
      * the special file object query function if needed.
@@ -726,7 +759,7 @@ NTSTATUS ObDuplicateObject(
     
     /* Open the object and detach from the target process */
     {
-        POBJECT_TYPE objectType = OBJECT_TO_OBJECT_HEADER(object)->Type;
+        POBJECT_TYPE objectType = KphGetObjectTypeNt(object);
         ACCESS_STATE accessState;
         CHAR auxData[AUX_ACCESS_DATA_SIZE];
         

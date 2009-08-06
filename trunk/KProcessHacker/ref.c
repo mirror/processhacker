@@ -269,11 +269,11 @@ BOOLEAN KphDereferenceObjectEx(
     return freed;
 }
 
-/* KphGetTypeObject
+/* KphGetObjectType
  * 
  * Gets an object's type.
  */
-PKPH_OBJECT_TYPE KphGetTypeObject(
+PKPH_OBJECT_TYPE KphGetObjectType(
     __in PVOID Object
     )
 {

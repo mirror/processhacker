@@ -211,7 +211,7 @@ NTSTATUS KphReferenceObjectByHandle(
      */
     if (ObjectType)
     {
-        if (KphGetTypeObject(entry->Object) != ObjectType)
+        if (KphGetObjectType(entry->Object) != ObjectType)
         {
             /* Bad type. */
             KphUnlockHandleEntry(entry);

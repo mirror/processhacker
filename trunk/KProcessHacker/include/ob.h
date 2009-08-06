@@ -72,6 +72,12 @@ NTSTATUS NTAPI ObSetHandleAttributes(
     );
 
 /* FUNCTION TYPEDEFS */
+
+/* Seven+ */
+typedef POBJECT_TYPE (NTAPI *_ObGetObjectType)(
+    __in PVOID Object
+    );
+
 enum _OB_OPEN_REASON;
 
 typedef NTSTATUS (NTAPI *OB_OPEN_METHOD_51)(

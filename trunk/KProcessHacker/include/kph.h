@@ -69,6 +69,7 @@
 EXT PKSERVICE_TABLE_DESCRIPTOR __KeServiceDescriptorTable EQNULL;
 EXT PVOID __KiFastCallEntry EQNULL;
 EXT _NtClose __NtClose EQNULL;
+EXT _ObGetObjectType ObGetObjectType EQNULL;
 EXT _PsGetProcessJob PsGetProcessJob EQNULL;
 EXT _PsResumeProcess PsResumeProcess EQNULL;
 EXT _PsSuspendProcess PsSuspendProcess EQNULL;
@@ -223,6 +224,10 @@ NTSTATUS KphGetContextThread(
     __in HANDLE ThreadHandle,
     __inout PCONTEXT ThreadContext,
     __in KPROCESSOR_MODE AccessMode
+    );
+
+POBJECT_TYPE KphGetObjectTypeNt(
+    __in PVOID Object
     );
 
 HANDLE KphGetProcessId(

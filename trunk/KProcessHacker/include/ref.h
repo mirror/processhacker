@@ -74,7 +74,7 @@ BOOLEAN KphDereferenceObjectEx(
     __out_opt PLONG OldRefCount
     );
 
-PKPH_OBJECT_TYPE KphGetTypeObject(
+PKPH_OBJECT_TYPE KphGetObjectType(
     __in PVOID Object
     );
 

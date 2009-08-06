@@ -259,7 +259,7 @@ NTSTATUS NTAPI KphNewOpenProcedure60(
     
     if (accessAllowed)
     {
-        POBJECT_TYPE objectType = OBJECT_TO_OBJECT_HEADER(Object)->Type;
+        POBJECT_TYPE objectType = KphGetObjectTypeNt(Object);
         
         /* Call the original open procedure. There shouldn't be any for Windows XP, 
          * while on Windows Vista and 7 it is used for implementing protected 
@@ -442,7 +442,7 @@ BOOLEAN KphpIsAccessAllowed(
     PEPROCESS processObject;
     BOOLEAN isThread = FALSE;
     
-    objectType = OBJECT_TO_OBJECT_HEADER(Object)->Type;
+    objectType = KphGetObjectTypeNt(Object);
     /* It doesn't matter if it isn't actually a process because we won't be 
        dereferencing it. */
     processObject = (PEPROCESS)Object;
