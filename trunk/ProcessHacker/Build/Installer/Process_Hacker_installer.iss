@@ -64,9 +64,7 @@ DisableDirPage=Auto
 DisableProgramGroupPage=Auto
 LanguageDetectionMethod=uilanguage
 AppMutex=Global\ProcessHackerMutex
-
-; Specify the architectures that Process Hacker can run on
-ArchitecturesAllowed=x86
+ArchitecturesInstallIn64BitMode=x64 ia64
 
 
 [Languages]
