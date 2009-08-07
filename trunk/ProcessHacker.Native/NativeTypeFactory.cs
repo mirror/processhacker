@@ -95,6 +95,8 @@ namespace ProcessHacker.Native
                     return typeof(EventPairAccess);
                 case ObjectType.File:
                     return typeof(FileAccess);
+                case ObjectType.IoCompletion:
+                    return typeof(IoCompletionAccess);
                 case ObjectType.Job:
                     return typeof(JobObjectAccess);
                 case ObjectType.Key:
@@ -103,8 +105,6 @@ namespace ProcessHacker.Native
                     return typeof(KeyedEventAccess);
                 case ObjectType.Mutant:
                     return typeof(MutantAccess);
-                case ObjectType.Type:
-                    return typeof(ObjectTypeAccess);
                 case ObjectType.Process:
                     return typeof(ProcessAccess);
                 case ObjectType.Profile:
@@ -119,8 +119,18 @@ namespace ProcessHacker.Native
                     return typeof(ThreadAccess);
                 case ObjectType.Timer:
                     return typeof(TimerAccess);
+                case ObjectType.TmEn:
+                    return typeof(EnlistmentAccess);
+                case ObjectType.TmRm:
+                    return typeof(ResourceManagerAccess);
+                case ObjectType.TmTm:
+                    return typeof(TmAccess);
+                case ObjectType.TmTx:
+                    return typeof(TransactionAccess);
                 case ObjectType.Token:
                     return typeof(TokenAccess);
+                case ObjectType.Type:
+                    return typeof(ObjectTypeAccess);
                 case ObjectType.WindowStation:
                     return typeof(WindowStationAccess);
                 default:

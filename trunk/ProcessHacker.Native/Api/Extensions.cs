@@ -333,6 +333,63 @@ namespace ProcessHacker.Native
 
                         break;
 
+                    case "TmEn":
+                        {
+                            using (var enHandleDup =
+                                new NativeHandle<EnlistmentAccess>(process, handle, EnlistmentAccess.QueryInformation))
+                            {
+                                var enHandle = EnlistmentHandle.FromHandle(enHandleDup);
+
+                                info.BestName = enHandle.GetBasicInformation().EnlistmentId.ToString("B");
+                            }
+                        }
+                        break;
+
+                    case "TmRm":
+                        {
+                            using (var rmHandleDup =
+                                new NativeHandle<ResourceManagerAccess>(process, handle, ResourceManagerAccess.QueryInformation))
+                            {
+                                var rmHandle = ResourceManagerHandle.FromHandle(rmHandleDup);
+
+                                info.BestName = rmHandle.GetDescription();
+
+                                if (string.IsNullOrEmpty(info.BestName))
+                                    info.BestName = rmHandle.GetGuid().ToString("B");
+                            }
+                        }
+                        break;
+
+                    case "TmTm":
+                        {
+                            using (var tmHandleDup =
+                                new NativeHandle<TmAccess>(process, handle, TmAccess.QueryInformation))
+                            {
+                                var tmHandle = TmHandle.FromHandle(tmHandleDup);
+
+                                info.BestName = FileUtils.FixPath(FileUtils.DeviceFileNameToDos(tmHandle.GetLogFileName()));
+
+                                if (string.IsNullOrEmpty(info.BestName))
+                                    info.BestName = tmHandle.GetBasicInformation().TmIdentity.ToString("B");
+                            }
+                        }
+                        break;
+
+                    case "TmTx":
+                        {
+                            using (var transactionHandleDup =
+                                new NativeHandle<TransactionAccess>(process, handle, TransactionAccess.QueryInformation))
+                            {
+                                var transactionHandle = TransactionHandle.FromHandle(transactionHandleDup);
+
+                                info.BestName = transactionHandle.GetDescription();
+
+                                if (string.IsNullOrEmpty(info.BestName))
+                                    info.BestName = transactionHandle.GetBasicInformation().TransactionId.ToString("B");
+                            }
+                        }
+                        break;
+
                     case "Token":
                         {
                             using (var tokenHandleDup =

@@ -37,19 +37,26 @@ namespace ProcessHacker.Native.Objects
         {
             NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
-            UnicodeString linkTargetString = new UnicodeString(linkTarget);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateSymbolicLinkObject(out handle, access,
-                    ref oa, ref linkTargetString)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                UnicodeString linkTargetString = new UnicodeString(linkTarget);
+
+                try
+                {
+                    if ((status = Win32.NtCreateSymbolicLinkObject(out handle, access,
+                        ref oa, ref linkTargetString)) >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+                }
+                finally
+                {
+                    linkTargetString.Dispose();
+                }
             }
             finally
             {
                 oa.Dispose();
-                linkTargetString.Dispose();
             }
 
             return new SymbolicLinkHandle(handle, true);

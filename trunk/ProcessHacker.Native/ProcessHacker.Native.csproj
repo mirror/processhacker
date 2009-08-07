@@ -72,12 +72,15 @@
     <Compile Include="Memory\VirtualMemoryAlloc.cs" />
     <Compile Include="NativeUtils.cs" />
     <Compile Include="NProcessHacker.cs" />
+    <Compile Include="Objects\EnlistmentHandle.cs" />
+    <Compile Include="Objects\TransactionHandle.cs" />
     <Compile Include="Objects\DriverHandle.cs" />
-    <Compile Include="Objects\DeviceHandle.cs" />
     <Compile Include="Objects\PortComHandle.cs" />
     <Compile Include="Objects\IoCompletionHandle.cs" />
     <Compile Include="Objects\PrivateNamespaceHandle.cs" />
+    <Compile Include="Objects\ResourceManagerHandle.cs" />
     <Compile Include="Objects\TerminalServerHandle.cs" />
+    <Compile Include="Objects\TmHandle.cs" />
     <Compile Include="Objects\WindowHandle.cs" />
     <Compile Include="Security\AccessControl\Ace.cs" />
     <Compile Include="Security\AccessControl\Acl.cs" />

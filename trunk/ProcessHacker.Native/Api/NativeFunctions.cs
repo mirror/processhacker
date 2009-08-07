@@ -162,7 +162,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtCommitTransaction(
-            [In] ref IntPtr TransactionHandle,
+            [In] IntPtr TransactionHandle,
             [In] bool Wait
             );
 
@@ -998,6 +998,16 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenTransactionManager(
+            [Out] out IntPtr TmHandle,
+            [In] TmAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] IntPtr LogFileName,
+            [In] [Optional] IntPtr TmIdentity,
+            [In] [Optional] int OpenOptions // Must be zero.
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtPrepareComplete(
             [In] IntPtr EnlistmentHandle,
             [In] [Optional] ref long TmVirtualClock
@@ -1628,13 +1638,13 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtRollbackTransaction(
-            [In] ref IntPtr TransactionHandle,
+            [In] IntPtr TransactionHandle,
             [In] bool Wait
             );
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtRollforwardTransactionManager(
-            [In] ref IntPtr TransactionManagerHandle,
+            [In] IntPtr TransactionManagerHandle,
             [In] [Optional] ref long TmVirtualClock
             );
 

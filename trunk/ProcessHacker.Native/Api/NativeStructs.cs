@@ -966,14 +966,14 @@ namespace ProcessHacker.Native.Api
         public ObjectAttributes(
             string objectName,
             ObjectFlags attributes,
-            DirectoryHandle rootDirectory)
+            NativeHandle rootDirectory)
             : this(objectName, attributes, rootDirectory, null, null)
         { }
 
         public ObjectAttributes(
             string objectName,
             ObjectFlags attributes,
-            DirectoryHandle rootDirectory,
+            NativeHandle rootDirectory,
             SecurityDescriptor securityDescriptor,
             SecurityQualityOfService? securityQos
             )
@@ -1317,8 +1317,22 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ResourceManagerBasicInformation
     {
+        public static readonly int DescriptionOffset =
+            Marshal.OffsetOf(typeof(ResourceManagerBasicInformation), "Description").ToInt32();
+
+        /// <summary>
+        /// The GUID assigned to the resource manager.
+        /// </summary>
         public Guid ResourceManagerId;
+
+        /// <summary>
+        /// The length, in bytes, of the resource manager description string.
+        /// </summary>
         public int DescriptionLength;
+
+        /// <summary>
+        /// The first byte of the description string.
+        /// </summary>
         public byte Description; // wchar[]
         // Description string follows.
     }
@@ -2270,7 +2284,16 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TmLogPathInformation
     {
+        public static readonly int LogPathOffset = Marshal.OffsetOf(typeof(TmLogPathInformation), "LogPath").ToInt32();
+
+        /// <summary>
+        /// The length, in characters, of the log path string.
+        /// </summary>
         public int LogPathLength;
+
+        /// <summary>
+        /// The first byte of the log path string.
+        /// </summary>
         public byte LogPath; // wchar[]
         // Log path follows.
     }
@@ -2425,11 +2448,22 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TransactionPropertiesInformation
     {
+        public static readonly int DescriptionOffset =
+            Marshal.OffsetOf(typeof(TransactionPropertiesInformation), "Description").ToInt32();
+
         public int IsolationLevel;
         public int IsolationFlags;
         public long Timeout;
         public TransactionOutcome Outcome;
+
+        /// <summary>
+        /// The length, in bytes, of the description string.
+        /// </summary>
         public int DescriptionLength;
+
+        /// <summary>
+        /// The first byte of the description string.
+        /// </summary>
         public byte Description; // wchar[]
         // Description string follows.
     }
@@ -2439,12 +2473,21 @@ namespace ProcessHacker.Native.Api
     {
         public UnicodeString(string str)
         {
-            UnicodeString newString;
+            if (str != null)
+            {
+                UnicodeString newString;
 
-            if (!Win32.RtlCreateUnicodeString(out newString, str))
-                throw new OutOfMemoryException();
+                if (!Win32.RtlCreateUnicodeString(out newString, str))
+                    throw new OutOfMemoryException();
 
-            this = newString;
+                this = newString;
+            }
+            else
+            {
+                this.Length = 0;
+                this.MaximumLength = 0;
+                this.Buffer = IntPtr.Zero;
+            }
         }
 
         public ushort Length;

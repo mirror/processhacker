@@ -4,10 +4,11 @@ Process Hacker
  * NEW/IMPROVED:
    * Full support for Windows 7 SP0
    * Ability to unload drivers
-   * Improved user prompts
+   * Handle names for Kernel Transaction Manager (KTM) objects
    * Ability to save details for processes
    * Improved handle granted access display
    * Improved process window exit status display
+   * Improved user prompts
    * Ability to open key handles in regedit
    * Thread list is more responsive
    * Process exit notification (in the process window) is now instant
