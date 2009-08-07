@@ -90,7 +90,24 @@ namespace ProcessHacker.Native.Ui
                 { }
 
                 if (groupObjectInfo.Controls.Count == 0)
+                {
                     groupObjectInfo.Visible = false;
+                }
+                else if (groupObjectInfo.Controls.Count == 1)
+                {
+                    Control control = groupObjectInfo.Controls[0];
+
+                    // If it's a user control, dock it.
+                    if (control is UserControl)
+                    {
+                        control.Dock = DockStyle.Fill;
+                        control.Margin = new Padding(3);
+                    }
+                    else
+                    {
+                        control.Location = new System.Drawing.Point(10, 20);
+                    }
+                }
             }
         }
 

@@ -346,7 +346,6 @@ namespace ProcessHacker.Components
                                     Button b = new Button();
 
                                     b.FlatStyle = FlatStyle.System;
-                                    b.Location = new Point(10, 20);
                                     b.Text = "Properties...";
                                     b.Click += (sender, e) =>
                                         {
@@ -422,7 +421,6 @@ namespace ProcessHacker.Components
                                 {
                                     dupHandle = new GenericHandle(phandle, handle, (int)EventAccess.QueryState);
                                     var eventProps = new EventProperties(EventHandle.FromHandle(dupHandle));
-                                    eventProps.Location = new Point(10, 20);
                                     control.Controls.Add(eventProps);
                                 }
                                 break;
@@ -430,7 +428,6 @@ namespace ProcessHacker.Components
                                 {
                                     dupHandle = new GenericHandle(phandle, handle, (int)EventPairAccess.All);
                                     var eventPairProps = new EventPairProperties(EventPairHandle.FromHandle(dupHandle));
-                                    eventPairProps.Location = new Point(10, 20);
                                     control.Controls.Add(eventPairProps);
                                 }
                                 break;
@@ -438,7 +435,6 @@ namespace ProcessHacker.Components
                                 {
                                     dupHandle = new GenericHandle(phandle, handle, (int)MutantAccess.QueryState);
                                     var mutantProps = new MutantProperties(MutantHandle.FromHandle(dupHandle));
-                                    mutantProps.Location = new Point(10, 20);
                                     control.Controls.Add(mutantProps);
                                 }
                                 break;
@@ -446,7 +442,6 @@ namespace ProcessHacker.Components
                                 {
                                     dupHandle = new GenericHandle(phandle, handle, (int)SectionAccess.Query);
                                     var sectionProps = new SectionProperties(SectionHandle.FromHandle(dupHandle));
-                                    sectionProps.Location = new Point(10, 20);
                                     control.Controls.Add(sectionProps);
                                 }
                                 break;
@@ -454,7 +449,6 @@ namespace ProcessHacker.Components
                                 {
                                     dupHandle = new GenericHandle(phandle, handle, (int)SemaphoreAccess.QueryState);
                                     var semaphoreProps = new SemaphoreProperties(SemaphoreHandle.FromHandle(dupHandle));
-                                    semaphoreProps.Location = new Point(10, 20);
                                     control.Controls.Add(semaphoreProps);
                                 }
                                 break;
@@ -462,8 +456,14 @@ namespace ProcessHacker.Components
                                 {
                                     dupHandle = new GenericHandle(phandle, handle, (int)TimerAccess.QueryState);
                                     var timerProps = new TimerProperties(TimerHandle.FromHandle(dupHandle));
-                                    timerProps.Location = new Point(10, 20);
                                     control.Controls.Add(timerProps);
+                                }
+                                break;
+                            case "tmtm":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)TmAccess.QueryInformation);
+                                    var tmTmProps = new TmTmProperties(TmHandle.FromHandle(dupHandle));
+                                    control.Controls.Add(tmTmProps);
                                 }
                                 break;
                         }

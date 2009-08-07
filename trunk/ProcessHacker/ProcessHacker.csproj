@@ -195,6 +195,9 @@
     <EmbeddedResource Include="Components\TimerProperties.resx">
       <DependentUpon>TimerProperties.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\TmTmProperties.resx">
+      <DependentUpon>TmTmProperties.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\TokenGroupsList.resx">
       <DependentUpon>TokenGroupsList.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -409,6 +412,12 @@
     </Compile>
     <Compile Include="Components\TimerProperties.Designer.cs">
       <DependentUpon>TimerProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TmTmProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\TmTmProperties.Designer.cs">
+      <DependentUpon>TmTmProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\CreateServiceWindow.cs">
       <SubType>Form</SubType>

@@ -52,7 +52,7 @@ PDRIVER_OBJECT KphDriverObject;
 
 static PKPH_OBJECT_TYPE ClientEntryType;
 static LIST_ENTRY ClientListHead;
-static FAST_MUTEX ClientListMutex;
+static EX_PUSH_LOCK ClientListLock;
 
 static BOOLEAN ProtectionInitialized = FALSE;
 static FAST_MUTEX ProtectionMutex;
@@ -128,7 +128,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     
     /* Initialize client list structures. */
     InitializeListHead(&ClientListHead);
-    ExInitializeFastMutex(&ClientListMutex);
+    ExInitializePushLock(&ClientListLock);
     
     status = KphCreateObjectType(
         &ClientEntryType,
@@ -253,7 +253,7 @@ NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     clientEntry = ReferenceClientEntry(NULL);
     
     if (clientEntry)
-        KphDereferenceObjectEx(clientEntry, 2, NULL);
+        KphDereferenceObjectEx(clientEntry, 2);
     
     dprintf("Client (PID %d) disconnected\n", PsGetCurrentProcessId());
     
@@ -330,9 +330,11 @@ VOID NTAPI ClientEntryDeleteProcedure(
     KphFreeHandleTable(entry->HandleTable);
     
     /* Remove the entry from the client list. */
-    ExAcquireFastMutex(&ClientListMutex);
+    KeEnterCriticalRegion();
+    ExAcquirePushLockExclusive(&ClientListLock);
     RemoveEntryList(&entry->ClientListEntry);
-    ExReleaseFastMutex(&ClientListMutex);
+    ExReleasePushLock(&ClientListLock);
+    KeLeaveCriticalRegion();
 }
 
 PKPH_CLIENT_ENTRY CreateClientEntry(
@@ -373,9 +375,11 @@ PKPH_CLIENT_ENTRY CreateClientEntry(
     entry->SsStartCount = 0;
     
     /* Insert the entry into the client list. */
-    ExAcquireFastMutex(&ClientListMutex);
+    KeEnterCriticalRegion();
+    ExAcquirePushLockExclusive(&ClientListLock);
     InsertHeadList(&ClientListHead, &entry->ClientListEntry);
-    ExReleaseFastMutex(&ClientListMutex);
+    ExReleasePushLock(&ClientListLock);
+    KeLeaveCriticalRegion();
     
     return entry;
 }
@@ -390,7 +394,8 @@ PKPH_CLIENT_ENTRY ReferenceClientEntry(
     if (!ProcessId)
         ProcessId = PsGetCurrentProcessId();
     
-    ExAcquireFastMutex(&ClientListMutex);
+    KeEnterCriticalRegion();
+    ExAcquirePushLockShared(&ClientListLock);
     
     /* Find the client entry. */
     while (entry != &ClientListHead)
@@ -408,7 +413,8 @@ PKPH_CLIENT_ENTRY ReferenceClientEntry(
                 returnEntry = clientEntry;
             }
             
-            ExReleaseFastMutex(&ClientListMutex);
+            ExReleasePushLock(&ClientListLock);
+            KeLeaveCriticalRegion();
             
             return returnEntry;
         }
@@ -416,7 +422,8 @@ PKPH_CLIENT_ENTRY ReferenceClientEntry(
         entry = entry->Flink;
     }
     
-    ExReleaseFastMutex(&ClientListMutex);
+    ExReleasePushLock(&ClientListLock);
+    KeLeaveCriticalRegion();
     
     return NULL;
 }

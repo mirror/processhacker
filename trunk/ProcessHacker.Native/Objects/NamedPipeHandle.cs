@@ -26,7 +26,7 @@ using ProcessHacker.Native.Api;
 namespace ProcessHacker.Native.Objects
 {
     /// <summary>
-    /// Represents a handle to a file.
+    /// Represents a handle to a named pipe.
     /// </summary>
     public sealed class NamedPipeHandle : FileHandle
     {

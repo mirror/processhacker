@@ -24,6 +24,7 @@
 #define _SYNC_H
 
 #include "kph.h"
+#include "ex.h"
 
 /* General synchronization macros */
 

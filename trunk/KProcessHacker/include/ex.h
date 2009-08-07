@@ -162,9 +162,9 @@ VOID FORCEINLINE ExReleasePushLock(
     
     oldValue.Value = *PushLock;
     
-    /* If the push lock has been acquired in shared mode, 
-     * we clearly didn't acquire it in exclusive mode 
-     * before.
+    /* If we are the last to release in shared mode or we 
+     * are releasing in exclusive mode, we simply set 
+     * the value to 0.
      */
     
     if (oldValue.Shared > 1)

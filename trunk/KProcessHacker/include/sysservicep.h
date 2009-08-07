@@ -189,6 +189,7 @@ FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
         ruleTypeFailedArray[i] = FALSE;
     }
     
+    KeEnterCriticalRegion();
     ExAcquirePushLockShared(&RuleSetEntry->RuleListPushLock);
     
     currentListEntry = RuleSetEntry->RuleListHead.Flink;
@@ -265,6 +266,7 @@ FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
     }
     
     ExReleasePushLock(&RuleSetEntry->RuleListPushLock);
+    KeLeaveCriticalRegion();
     
     /* Look at the default filter type. If it's Include, 
      * we assume the ruleset matches. Otherwise, we 

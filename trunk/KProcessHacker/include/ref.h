@@ -68,10 +68,9 @@ BOOLEAN KphDereferenceObject(
     __in PVOID Object
     );
 
-BOOLEAN KphDereferenceObjectEx(
+LONG KphDereferenceObjectEx(
     __in PVOID Object,
-    __in LONG RefCount,
-    __out_opt PLONG OldRefCount
+    __in LONG RefCount
     );
 
 PKPH_OBJECT_TYPE KphGetObjectType(
@@ -82,10 +81,9 @@ VOID KphReferenceObject(
     __in PVOID Object
     );
 
-VOID KphReferenceObjectEx(
+LONG KphReferenceObjectEx(
     __in PVOID Object,
-    __in LONG RefCount,
-    __out_opt PLONG OldRefCount
+    __in LONG RefCount
     );
 
 BOOLEAN KphReferenceObjectSafe(

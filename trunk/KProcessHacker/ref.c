@@ -213,29 +213,36 @@ NTSTATUS KphCreateObjectType(
 /* KphDereferenceObject
  * 
  * Dereferences the specified object. The object will be freed if 
- * its reference count is 0.
+ * its reference count reaches 0.
+ * 
+ * Object: A pointer to the object to dereference.
+ * 
+ * Return value: TRUE if the object was freed, otherwise FALSE.
  */
 BOOLEAN KphDereferenceObject(
     __in PVOID Object
     )
 {
-    return KphDereferenceObjectEx(Object, 1, NULL);
+    return KphDereferenceObjectEx(Object, 1) == 0;
 }
 
 /* KphDereferenceObjectEx
  * 
  * Dereferences the specified object. The object will be freed if 
- * its reference count is 0.
+ * its reference count reaches 0.
+ * 
+ * Object: A pointer to the object to dereference.
+ * RefCount: The number of references to remove.
+ * 
+ * Return value: The new reference count of the object.
  */
-BOOLEAN KphDereferenceObjectEx(
+LONG KphDereferenceObjectEx(
     __in PVOID Object,
-    __in LONG RefCount,
-    __out_opt PLONG OldRefCount
+    __in LONG RefCount
     )
 {
     PKPH_OBJECT_HEADER objectHeader;
     LONG oldRefCount;
-    BOOLEAN freed = FALSE;
     
     /* Make sure we're not subtracting a negative reference count. */
     if (RefCount < 0)
@@ -249,9 +256,6 @@ BOOLEAN KphDereferenceObjectEx(
     /* Free the object if it has 0 references. */
     if (oldRefCount - RefCount == 0)
     {
-        /* Object type statistics. */
-        InterlockedDecrement(&objectHeader->Type->NumberOfObjects);
-        
         /* Remove the object from the global object list. */
         ExAcquireFastMutex(&KphObjectListMutex);
         RemoveEntryList(&objectHeader->GlobalObjectListEntry);
@@ -259,14 +263,9 @@ BOOLEAN KphDereferenceObjectEx(
         
         /* Free the object. */
         KphpFreeObject(objectHeader);
-        freed = TRUE;
     }
     
-    /* Pass the old reference count back. */
-    if (OldRefCount)
-        *OldRefCount = oldRefCount;
-    
-    return freed;
+    return oldRefCount - RefCount;
 }
 
 /* KphGetObjectType
@@ -283,6 +282,8 @@ PKPH_OBJECT_TYPE KphGetObjectType(
 /* KphReferenceObject
  * 
  * References the specified object.
+ * 
+ * Object: A pointer to the object to reference.
  */
 VOID KphReferenceObject(
     __in PVOID Object
@@ -298,11 +299,15 @@ VOID KphReferenceObject(
 /* KphReferenceObjectEx
  * 
  * References the specified object.
+ * 
+ * Object: A pointer to the object to reference.
+ * RefCount: The number of references to add.
+ * 
+ * Return value: The new reference count of the object.
  */
-VOID KphReferenceObjectEx(
+LONG KphReferenceObjectEx(
     __in PVOID Object,
-    __in LONG RefCount,
-    __out_opt PLONG OldRefCount
+    __in LONG RefCount
     )
 {
     PKPH_OBJECT_HEADER objectHeader;
@@ -316,9 +321,7 @@ VOID KphReferenceObjectEx(
     /* Increase the reference count. */
     oldRefCount = InterlockedExchangeAdd(&objectHeader->RefCount, RefCount);
     
-    /* Pass the old reference count back. */
-    if (OldRefCount)
-        *OldRefCount = oldRefCount;
+    return oldRefCount + RefCount;
 }
 
 /* KphReferenceObjectSafe
@@ -382,6 +385,9 @@ VOID KphpFreeObject(
     __in PKPH_OBJECT_HEADER ObjectHeader
     )
 {
+    /* Object type statistics. */
+    InterlockedDecrement(&ObjectHeader->Type->NumberOfObjects);
+    
     /* Call the delete procedure if we have one. */
     if (ObjectHeader->Type->DeleteProcedure)
     {

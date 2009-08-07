@@ -67,7 +67,7 @@ namespace SysCallHacker
 
             KProcessHacker.Instance = new KProcessHacker();
 
-            _logger = new SsLogger(1024, true);
+            _logger = new SsLogger(4096, true);
             _logger.EventBlockReceived += new EventBlockReceivedDelegate(logger_EventBlockReceived);
             _logger.ArgumentBlockReceived += new ArgumentBlockReceivedDelegate(logger_ArgumentBlockReceived);
             _logger.AddPreviousModeRule(FilterType.Exclude, KProcessorMode.KernelMode);

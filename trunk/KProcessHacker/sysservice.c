@@ -52,10 +52,10 @@ PKPH_OBJECT_TYPE KphSsRuleSetEntryType;
 /* The object type for rule entries. */
 PKPH_OBJECT_TYPE KphSsRuleEntryType;
 
-/* A push lock guarding accesses to the ruleset list. */
-EX_PUSH_LOCK KphSsRuleSetListPushLock;
 /* The list of ruleset entries. */
 LIST_ENTRY KphSsRuleSetListHead;
+/* A push lock guarding accesses to the ruleset list. */
+EX_PUSH_LOCK KphSsRuleSetListPushLock;
 
 /* KphSsLogInit
  * 
@@ -473,9 +473,11 @@ NTSTATUS KphSsCreateRuleSetEntry(
     InitializeListHead(&ruleSetEntry->RuleListHead);
     
     /* Add the ruleset to the list. */
+    KeEnterCriticalRegion();
     ExAcquirePushLockExclusive(&KphSsRuleSetListPushLock);
     InsertHeadList(&KphSsRuleSetListHead, &ruleSetEntry->RuleSetListEntry);
     ExReleasePushLock(&KphSsRuleSetListPushLock);
+    KeLeaveCriticalRegion();
     
     *RuleSetEntry = ruleSetEntry;
     
@@ -498,6 +500,8 @@ VOID NTAPI KphpSsRuleSetEntryDeleteProcedure(
     /* Dereference the client entry. */
     KphDereferenceObject(ruleSetEntry->Client);
     
+    KeEnterCriticalRegion();
+    
     /* Dereference all rules in the ruleset. */
     ExAcquirePushLockExclusive(&ruleSetEntry->RuleListPushLock);
     
@@ -515,6 +519,8 @@ VOID NTAPI KphpSsRuleSetEntryDeleteProcedure(
     ExAcquirePushLockExclusive(&KphSsRuleSetListPushLock);
     RemoveEntryList(&ruleSetEntry->RuleSetListEntry);
     ExReleasePushLock(&KphSsRuleSetListPushLock);
+    
+    KeLeaveCriticalRegion();
 }
 
 /* KphSsAddProcessIdRule
@@ -651,6 +657,7 @@ NTSTATUS KphSsRemoveRule(
 {
     PLIST_ENTRY currentListEntry;
     
+    KeEnterCriticalRegion();
     ExAcquirePushLockExclusive(&RuleSetEntry->RuleListPushLock);
     
     /* Find the rule in the ruleset. */
@@ -671,6 +678,7 @@ NTSTATUS KphSsRemoveRule(
             KphDereferenceObject(ruleEntry);
             
             ExReleasePushLock(&RuleSetEntry->RuleListPushLock);
+            KeLeaveCriticalRegion();
             
             return STATUS_SUCCESS;
         }
@@ -679,6 +687,7 @@ NTSTATUS KphSsRemoveRule(
     }
     
     ExReleasePushLock(&RuleSetEntry->RuleListPushLock);
+    KeLeaveCriticalRegion();
     
     return STATUS_INVALID_PARAMETER_2;
 }
@@ -727,9 +736,11 @@ NTSTATUS KphpSsAddRule(
         );
     
     /* Add the rule to the ruleset. */
+    KeEnterCriticalRegion();
     ExAcquirePushLockExclusive(&RuleSetEntry->RuleListPushLock);
     InsertTailList(&RuleSetEntry->RuleListHead, &ruleEntry->RuleListEntry);
     ExReleasePushLock(&RuleSetEntry->RuleListPushLock);
+    KeLeaveCriticalRegion();
     /* Add a reference for the rule being on the list. */
     KphReferenceObject(ruleEntry);
     
@@ -1757,6 +1768,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
      * long.
      */
     
+    KeEnterCriticalRegion();
     ExAcquirePushLockShared(&KphSsRuleSetListPushLock);
     
     currentListEntry = KphSsRuleSetListHead.Flink;
@@ -1799,6 +1811,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     }
     
     ExReleasePushLock(&KphSsRuleSetListPushLock);
+    KeLeaveCriticalRegion();
     
     /* If we didn't find any ruleset entries, don't bother creating the 
      * event block.
