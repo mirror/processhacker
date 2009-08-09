@@ -202,12 +202,12 @@ namespace ProcessHacker.Native
 
             // The structure of the buffer is the handle count plus an array of SYSTEM_HANDLE_INFORMATION 
             // structures.
-            handleCount = data.ReadInt32(0);
+            handleCount = data.ReadIntPtr(0).ToInt32();
             returnHandles = new SystemHandleInformation[handleCount];
 
             for (int i = 0; i < handleCount; i++)
             {
-                returnHandles[i] = data.ReadStruct<SystemHandleInformation>(sizeof(int), i);
+                returnHandles[i] = data.ReadStruct<SystemHandleInformation>(IntPtr.Size, i);
             }
 
             return returnHandles;

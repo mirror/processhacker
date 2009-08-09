@@ -223,7 +223,8 @@ namespace ProcessHacker.Native.Security
 
         protected override void DisposeObject(bool disposing)
         {
-            _memory.Dispose(disposing);
+            if (_memory != null)
+                _memory.Dispose(disposing);
         }
 
         public SidAttributes Attributes
