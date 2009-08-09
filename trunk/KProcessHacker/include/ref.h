@@ -43,7 +43,7 @@ struct _KPH_OBJECT_TYPE;
 typedef struct _KPH_OBJECT_TYPE *PKPH_OBJECT_TYPE;
 
 #ifndef _REF_PRIVATE
-extern PKPH_OBJECT_TYPE KphObjectType;
+extern PKPH_OBJECT_TYPE KphObjectTypeObject;
 #endif
 
 NTSTATUS KphRefInit();

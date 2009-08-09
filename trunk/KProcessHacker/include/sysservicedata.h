@@ -70,7 +70,9 @@ typedef enum _KPHSS_ARGUMENT_TYPE
     /* PCONTEXT */
     ContextArgument,
     /* PINITIAL_TEB */
-    InitialTebArgument
+    InitialTebArgument,
+    /* PGUID */
+    GuidArgument
 } KPHSS_ARGUMENT_TYPE;
 
 typedef struct _KPHSS_HANDLE

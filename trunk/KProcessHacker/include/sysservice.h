@@ -90,7 +90,8 @@ typedef enum _KPHSS_BLOCK_TYPE
     ResetBlockType,
     EventBlockType,
     ArgumentBlockType,
-    ProcessBlockType
+    ProcessBlockType,
+    ModuleBlockType
 } KPHSS_BLOCK_TYPE;
 
 typedef struct _KPHSS_BLOCK_HEADER
@@ -162,6 +163,7 @@ typedef struct _KPHSS_ARGUMENT_BLOCK
         CLIENT_ID ClientId;
         CONTEXT Context;
         KPHSS_INITIAL_TEB InitialTeb;
+        GUID Guid;
     };
 } KPHSS_ARGUMENT_BLOCK, *PKPHSS_ARGUMENT_BLOCK;
 
@@ -180,6 +182,24 @@ typedef struct _KPHSS_PROCESS_BLOCK
     USHORT NameOffset; /* KPHSS_WSTRING */
     USHORT ImageFileNameOffset; /* KPHSS_WSTRING */
 } KPHSS_PROCESS_BLOCK, *PKPHSS_PROCESS_BLOCK;
+
+/* Module Blocks
+ * 
+ * These blocks provide information about modules 
+ * loaded by a process.
+ */
+
+#define TAG_MODULE_BLOCK ('BMhP')
+
+typedef struct _KPHSS_MODULE_BLOCK
+{
+    KPHSS_BLOCK_HEADER Header;
+    
+    HANDLE ProcessId;
+    PVOID ModuleBase;
+    ULONG ModuleSize;
+    USHORT FileNameOffset; /* KPHSS_WSTRING */
+} KPHSS_MODULE_BLOCK, *PKPHSS_MODULE_BLOCK;
 
 /* Functions */
 

@@ -387,6 +387,11 @@ KPHSS_CALL_ENTRY SsEntries[] =
 RTL_GENERIC_TABLE KphSsCallTable;
 FAST_MUTEX KphSsCallTableMutex;
 
+/* KphSsDataInit
+ * 
+ * Initializes all data structures so that system service entries 
+ * can be looked up.
+ */
 VOID KphSsDataInit()
 {
     ULONG i;
@@ -418,6 +423,10 @@ VOID KphSsDataInit()
     ExInitializeFastMutex(&KphSsCallTableMutex);
 }
 
+/* KphSsDataDeinit
+ * 
+ * Frees all memory associated with system service data.
+ */
 VOID KphSsDataDeinit()
 {
     PKPHSS_CALL_ENTRY callEntry;
@@ -426,6 +435,10 @@ VOID KphSsDataDeinit()
         RtlDeleteElementGenericTable(&KphSsCallTable, callEntry);
 }
 
+/* KphSsLookupCallEntry
+ * 
+ * Lookups up a system service entry by system service number.
+ */
 PKPHSS_CALL_ENTRY KphSsLookupCallEntry(
     __in ULONG Number
     )
@@ -445,6 +458,10 @@ PKPHSS_CALL_ENTRY KphSsLookupCallEntry(
     return foundEntry;
 }
 
+/* KphpSsCallEntryAllocateRoutine
+ * 
+ * Allocates storage for a system service entry.
+ */
 PVOID KphpSsCallEntryAllocateRoutine(
     __in PRTL_GENERIC_TABLE Table,
     __in CLONG ByteSize
@@ -457,6 +474,10 @@ PVOID KphpSsCallEntryAllocateRoutine(
         );
 }
 
+/* KphpSsCallEntryCompareRoutine
+ * 
+ * Compares two system service entries.
+ */
 RTL_GENERIC_COMPARE_RESULTS KphpSsCallEntryCompareRoutine(
     __in PRTL_GENERIC_TABLE Table,
     __in PVOID FirstStruct,
@@ -476,6 +497,10 @@ RTL_GENERIC_COMPARE_RESULTS KphpSsCallEntryCompareRoutine(
         return GenericEqual;
 }
 
+/* KphpSsCallEntryFreeRoutine
+ * 
+ * Frees storage for a system service entry.
+ */
 VOID KphpSsCallEntryFreeRoutine(
     __in PRTL_GENERIC_TABLE Table,
     __in PVOID Buffer

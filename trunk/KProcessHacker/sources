@@ -13,6 +13,7 @@ SOURCES= \
     handle.c \
     hook.c \
     protect.c \
+    ref.c \
     sync.c \
     sysservice.c \
     sysservicedata.c \
@@ -23,6 +24,5 @@ SOURCES= \
     mm.c \
     ob.c \
     ps.c \
-    ref.c \
     se.c \
     resource.rc

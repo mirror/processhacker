@@ -29,16 +29,21 @@
 #include "include/sync.h"
 
 /* KPH Configuration */
+
 //#define KPH_REQUIRE_DEBUG_PRIVILEGE
 
-/* I like 0x9999. */
+/* Device */
+
 #define KPH_DEVICE_TYPE (0x9999)
 #define KPH_DEVICE_NAME (L"\\Device\\KProcessHacker")
 #define KPH_DEVICE_DOS_NAME (L"\\DosDevices\\KProcessHacker")
 
 /* Features */
+
 #define KPHF_PSTERMINATEPROCESS 0x1
 #define KPHF_PSPTERMINATETHREADBPYPOINTER 0x2
+
+/* Control Codes */
 
 #define KPH_CTL_CODE(x) CTL_CODE(KPH_DEVICE_TYPE, 0x800 + x, METHOD_BUFFERED, FILE_ANY_ACCESS)
 #define KPH_CLOSEHANDLE KPH_CTL_CODE(0)
@@ -94,6 +99,8 @@
 #define KPH_SSADDNUMBERRULE KPH_CTL_CODE(50)
 #define KPH_SSENABLECLIENTENTRY KPH_CTL_CODE(51)
 
+/* Standard Driver Routines */
+
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath);
 VOID DriverUnload(PDRIVER_OBJECT DriverObject);
 NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
@@ -118,6 +125,8 @@ typedef struct _KPH_CLIENT_ENTRY
     /* The number of times the client has "started" the system service logger. */
     LONG SsStartCount;
 } KPH_CLIENT_ENTRY, *PKPH_CLIENT_ENTRY;
+
+/* Functions */
 
 VOID SsRef(LONG count);
 VOID SsUnref(LONG count);

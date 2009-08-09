@@ -27,7 +27,7 @@ LIST_ENTRY KphObjectListHead;
 /* A mutex protecting global data structures. */
 FAST_MUTEX KphObjectListMutex;
 /* The object type type. */
-PKPH_OBJECT_TYPE KphObjectType;
+PKPH_OBJECT_TYPE KphObjectTypeObject = NULL;
 
 /* KphRefInit
  * 
@@ -44,7 +44,7 @@ NTSTATUS KphRefInit()
     
     /* Create the fundamental object type. */
     status = KphCreateObjectType(
-        &KphObjectType,
+        &KphObjectTypeObject,
         NonPagedPool,
         NULL
         );
@@ -53,8 +53,8 @@ NTSTATUS KphRefInit()
         return status;
     
     /* Now that the fundamental object type exists, fix it up. */
-    KphObjectToObjectHeader(KphObjectType)->Type = KphObjectType;
-    KphObjectType->NumberOfObjects = 1;
+    KphObjectToObjectHeader(KphObjectTypeObject)->Type = KphObjectTypeObject;
+    KphObjectTypeObject->NumberOfObjects = 1;
     
     return status;
 }
@@ -123,7 +123,7 @@ NTSTATUS KphCreateObject(
         return STATUS_INVALID_PARAMETER_3;
     /* The object type is only optional if the fundamental object type 
      * hasn't been created. */
-    if (!ObjectType && KphObjectType)
+    if (!ObjectType && KphObjectTypeObject)
         return STATUS_INVALID_PARAMETER_4;
     /* Make sure the additional reference count isn't negative. */
     if (AdditionalReferences < 0)
@@ -193,7 +193,7 @@ NTSTATUS KphCreateObjectType(
         &objectType,
         sizeof(KPH_OBJECT_TYPE),
         0,
-        KphObjectType,
+        KphObjectTypeObject,
         0
         );
     
