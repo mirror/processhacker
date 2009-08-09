@@ -34,11 +34,11 @@ namespace ProcessHacker.Native.Api
         // IMPORTANT: All timeouts, etc. are in 100ns units except when stated otherwise.
 
         // These definitions were gathered from these sources:
-        // 
-        // * The NDK.
-        // * The NT API headers.
-        // * ReactOS source code.
-        // * The Windows DDK.
+        //
+        // * The NT API headers - almost everything
+        // * Alex Ionescu's NDK
+        // * ReactOS source code
+        // * The Windows DDK - Kernel Transaction Manager (KTM) types
 
         #region System Calls
 
