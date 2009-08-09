@@ -24,6 +24,7 @@ using System;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.Common;
+using ProcessHacker.Native;
 using ProcessHacker.Structs;
 using ProcessHacker.UI;
 
@@ -201,7 +202,7 @@ namespace ProcessHacker.Components
                     case FieldType.UInt8:
                         return string.Format(formatStr, long.Parse(_value.Value.ToString()));
                     case FieldType.PVoid:
-                        return "0x" + int.Parse(_value.Value.ToString()).ToString("x8");
+                        return Utils.FormatAddress(long.Parse(_value.Value.ToString()).ToIntPtr());
                     case FieldType.StringASCII:
                     case FieldType.StringUTF16:
                         return _value.Value.ToString();

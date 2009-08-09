@@ -454,7 +454,7 @@ namespace ProcessHacker
 
                     if (string.IsNullOrEmpty(item.StartAddress))
                     {
-                        item.StartAddress = "0x" + item.StartAddressI.ToString("x8");
+                        item.StartAddress = Utils.FormatAddress(item.StartAddressI);
                         item.StartAddressLevel = SymbolResolveLevel.Address;
                     }
 

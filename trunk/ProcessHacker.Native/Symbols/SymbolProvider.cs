@@ -387,7 +387,7 @@ namespace ProcessHacker.Native.Symbols
                     fileName = null;
                     symbolName = null;
 
-                    return "0x" + address.ToString("x8");
+                    return Utils.FormatAddress(address);
                 }
 
                 FileInfo fi = null;

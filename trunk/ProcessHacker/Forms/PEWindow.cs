@@ -143,7 +143,7 @@ namespace ProcessHacker
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Time/Date Stamp", 
                 Utils.GetDateTimeFromUnixTime(_peFile.COFFHeader.TimeDateStamp).ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Pointer to Symbol Table", 
-                "0x" + _peFile.COFFHeader.PointerToSymbolTable.ToString("x8") }));
+                Utils.FormatAddress(_peFile.COFFHeader.PointerToSymbolTable) }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Number of Symbols", 
                 _peFile.COFFHeader.NumberOfSymbols.ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Size of Optional Header", 
@@ -171,14 +171,14 @@ namespace ProcessHacker
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Uninitialized Data",
                 "0x" + _peFile.COFFOptionalHeader.SizeOfUninitializedData.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Entry Point RVA",
-                "0x" + _peFile.COFFOptionalHeader.AddressOfEntryPoint.ToString("x8") }));
+                "0x" + _peFile.COFFOptionalHeader.AddressOfEntryPoint.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Base of Code",
-                "0x" + _peFile.COFFOptionalHeader.BaseOfCode.ToString("x8") }));
+                "0x" + _peFile.COFFOptionalHeader.BaseOfCode.ToString("x") }));
             if (_peFile.COFFOptionalHeader.Magic == COFFOptionalHeader.PE32PlusMagic)
                 listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Base of Data",
-                    "0x" + _peFile.COFFOptionalHeader.BaseOfData.ToString("x8") }));
+                    "0x" + _peFile.COFFOptionalHeader.BaseOfData.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Preferred Image Base",
-                "0x" + _peFile.COFFOptionalHeader.ImageBase.ToString("x8") }));
+                "0x" + _peFile.COFFOptionalHeader.ImageBase.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Section Alignment",
                 _peFile.COFFOptionalHeader.SectionAlignment.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "File Alignment",
@@ -197,7 +197,7 @@ namespace ProcessHacker
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Headers",
                 "0x" + _peFile.COFFOptionalHeader.SizeOfHeaders.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Checksum",
-                "0x" + _peFile.COFFOptionalHeader.CheckSum.ToString("x8") }));
+                "0x" + _peFile.COFFOptionalHeader.CheckSum.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Subsystem",
                 _peFile.COFFOptionalHeader.Subsystem.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "DLL Characteristics",
@@ -229,7 +229,7 @@ namespace ProcessHacker
                     ListViewItem item = new ListViewItem();
 
                     item.Text = type.ToString();
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + data.VirtualAddress.ToString("x8")));
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + data.VirtualAddress.ToString("x")));
                     item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + data.Size.ToString("x")));
 
                     listImageData.Items.Add(item);
@@ -247,9 +247,9 @@ namespace ProcessHacker
                 ListViewItem item = new ListViewItem();
 
                 item.Text = sh.Name;
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.VirtualAddress.ToString("x8")));
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.VirtualAddress.ToString("x")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.VirtualSize.ToString("x")));
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.PointerToRawData.ToString("x8")));
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.PointerToRawData.ToString("x")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, 
                     Utils.FlagsToString(typeof(SectionFlags), (long)sh.Characteristics)));
 
@@ -352,10 +352,10 @@ namespace ProcessHacker
 
                 if (entry.Type == ExportEntry.ExportType.Export)
                 {
-                    e.Item.SubItems[2].Text = "0x" + entry.ExportRVA.ToString("x8");
+                    e.Item.SubItems[2].Text = "0x" + entry.ExportRVA.ToString("x");
 
                     if (entry.ExportRVA != 0)
-                        e.Item.SubItems[3].Text = "0x" + _exportVAs[ordinal].ToString("x8");
+                        e.Item.SubItems[3].Text = "0x" + _exportVAs[ordinal].ToString("x");
                 }
                 else if (entry.Type == ExportEntry.ExportType.Forwarder)
                 {

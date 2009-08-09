@@ -320,7 +320,7 @@ namespace ProcessHacker.Components
                 litem.Text += " (" + GetStateStr(item.State) + ")";
             }
 
-            litem.SubItems[1].Text = "0x" + item.Address.ToString("x8");
+            litem.SubItems[1].Text = Utils.FormatAddress(item.Address);
             litem.SubItems[2].Text = Utils.FormatSize(item.Size);
             litem.SubItems[3].Text = GetProtectStr(item.Protection);
             litem.Tag = item;

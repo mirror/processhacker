@@ -207,7 +207,7 @@ namespace ProcessHacker.FormHelper
             item.Tag = pid;
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "DLL"));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, module.FileName));
-            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + module.BaseAddress.ToString("x8")));
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Utils.FormatAddress(module.BaseAddress)));
             OnMatchListView(item);
         }
 
@@ -220,7 +220,7 @@ namespace ProcessHacker.FormHelper
             item.Tag = pid;
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "Mapped File"));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, fileName));
-            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + address.ToString("x8")));
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Utils.FormatAddress(address)));
             OnMatchListView(item);
         }
 

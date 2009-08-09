@@ -41,7 +41,7 @@ namespace ProcessHacker
         private ThreadHandle _thandle;
         private SymbolProvider _symbols;
 
-        public const string DisplayFormat = "0x{0:x8}";
+        public const string DisplayFormat = "0x{0:x}";
 
         public string[] Registers = 
             new string[] { "eax", "ebx", "ecx", "edx", "esi", "edi", "esp", "ebp", "eip", "cs", "ds", "es", "fs", "gs", "ss" };
@@ -283,7 +283,7 @@ namespace ProcessHacker
                         ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(
                             new string[]
                                 {
-                                    "0x" + address.ToString("x8"),
+                                    Utils.FormatAddress(address),
                                     _symbols.GetSymbolFromAddress(address)
                                 }));
 
@@ -314,7 +314,7 @@ namespace ProcessHacker
                 ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(
                     new string[]
                     {
-                        "0x" + address.ToString("x8"),
+                        Utils.FormatAddress(address),
                         _symbols.GetSymbolFromAddress(address)
                     }));
 
@@ -351,7 +351,7 @@ namespace ProcessHacker
                 Logging.Log(ex);
 
                 ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
-                            "0x" + address.ToString("x8"),
+                            Utils.FormatAddress(address),
                             "???"
                         }));
 

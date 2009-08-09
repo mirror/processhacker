@@ -272,7 +272,7 @@ namespace ProcessHacker.Components
 
             litem.Name = item.BaseAddress.ToString();
             litem.Text = item.Name;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.BaseAddress.ToString("x8")));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Utils.FormatAddress(item.BaseAddress)));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, _pid != 4 ? Utils.FormatSize(item.Size) : ""));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
             litem.ToolTipText = item.FileName;

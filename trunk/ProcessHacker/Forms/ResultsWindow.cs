@@ -271,7 +271,7 @@ namespace ProcessHacker
 
                 foreach (string[] s in _so.Searcher.Results)
                 {
-                    sw.Write("0x{0:x8} ({1}){2}\r\n", Int32.Parse(s[0].Replace("0x", ""),
+                    sw.Write("0x{0:x} ({1}){2}\r\n", Int32.Parse(s[0].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber) + Int32.Parse(s[1].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber), Int32.Parse(s[2]),
                         s[3] != "" ? (": " + s[3]) : "");

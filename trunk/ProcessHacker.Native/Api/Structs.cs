@@ -103,8 +103,8 @@ namespace ProcessHacker.Native.Api
     public struct HeapEntry32
     {
         public int dwSize;
-        public int hHandle;
-        public int dwAddress;
+        public IntPtr hHandle;
+        public IntPtr dwAddress;
         public int dwBlockSize;
         public HeapEntry32Flags dwFlags;
         public int dwLockCount;

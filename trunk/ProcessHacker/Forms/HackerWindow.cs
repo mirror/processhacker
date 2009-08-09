@@ -302,11 +302,6 @@ namespace ProcessHacker
                 }, this.Handle);
         }
 
-        private void apiLoggerMenuItem_Click(object sender, EventArgs e)
-        {
-            (new Forms.ApiLogWindow()).Show();
-        }
-
         private void findHandlesMenuItem_Click(object sender, EventArgs e)
         {
             if (HandleFilterWindow == null)
@@ -2821,8 +2816,6 @@ namespace ProcessHacker
 
             if (!OSVersion.HasUac)
                 virtualizationProcessMenuItem.Visible = false;
-
-            apiLoggerMenuItem.Visible = false;
         }
 
         private void LoadUac()

@@ -85,7 +85,7 @@ namespace ProcessHacker
                     int bytesRead = 0;
 
                     CallSearchProgressChanged(
-                        String.Format("Searching 0x{0:x8} ({1} found)...", info.BaseAddress.ToInt32(), count));
+                        String.Format("Searching 0x{0:x} ({1} found)...", info.BaseAddress, count));
 
                     try
                     {
@@ -117,8 +117,8 @@ namespace ProcessHacker
 
                         if (good)
                         {
-                            Results.Add(new string[] { String.Format("0x{0:x8}", info.BaseAddress.ToInt32()),
-                                String.Format("0x{0:x8}", i), text.Length.ToString(), "" });
+                            Results.Add(new string[] { String.Format("0x{0:x}", info.BaseAddress),
+                                String.Format("0x{0:x}", i), text.Length.ToString(), "" });
 
                             count++;
 

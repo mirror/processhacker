@@ -86,8 +86,8 @@ namespace ProcessHacker
             Program.MemoryEditors.Add(this.Id, this);
 
             this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
-                "), 0x" + _address.ToString("x8") + "-0x" +
-                (_address.Increment(_length)).ToString("x8") + " - Memory Editor";
+                "), " + Utils.FormatAddress(_address) + "-" +
+                Utils.FormatAddress(_address.Increment(_length)) + " - Memory Editor";
 
             try
             {
@@ -263,7 +263,7 @@ namespace ProcessHacker
         private void UpdateHexBoxSelectionInfo()
         {
             labelHexSelection.Text =
-                string.Format("Selection: 0x{0:x8}, length 0x{1:x8}",
+                string.Format("Selection: 0x{0:x}, length 0x{1:x}",
                 hexBoxMemory.SelectionStart, hexBoxMemory.SelectionLength);
         }
 
@@ -312,7 +312,7 @@ namespace ProcessHacker
                 {
                     string fileName = phandle.GetNativeImageFileName();
 
-                    sfd.FileName = fileName.Substring(fileName.LastIndexOf('\\') + 1) + "-0x" + _address.ToString("x8") + ".bin";
+                    sfd.FileName = fileName.Substring(fileName.LastIndexOf('\\') + 1) + "-" + Utils.FormatAddress(_address) + ".bin";
                 }
             }
             catch

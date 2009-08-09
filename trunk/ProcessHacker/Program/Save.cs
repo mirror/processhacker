@@ -305,7 +305,7 @@ namespace ProcessHacker
                     foreach (var module in phandle.GetModules())
                     {
                         sb.AppendLine(module.FileName);
-                        sb.Append("    [0x" + module.BaseAddress.ToInt32().ToString("x8") + ", ");
+                        sb.Append("    [0x" + module.BaseAddress.ToInt32().ToString("x") + ", ");
                         sb.AppendLine(Utils.FormatSize(module.Size) + "] ");
                         sb.AppendLine("    Flags: " + module.Flags.ToString());
 

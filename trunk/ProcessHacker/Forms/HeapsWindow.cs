@@ -87,7 +87,7 @@ namespace ProcessHacker
                 ListViewItem litem = listHeaps.Items.Add(new ListViewItem(
                     new string[]
                     {
-                        "0x" + heap.Address.ToInt32().ToString("x8"),
+                        Utils.FormatAddress(heap.Address),
                         heap.BytesAllocated.ToString("N0") + " B",
                         heap.BytesCommitted.ToString("N0") + " B",
                         heap.EntryCount.ToString("N0")

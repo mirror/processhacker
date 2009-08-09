@@ -175,7 +175,7 @@ namespace ProcessHacker.Components
                     labelContextSwitches.Text = thread.ContextSwitchCount.ToString("N0");
 
                     using (ThreadHandle thandle = new ThreadHandle(tid, ThreadAccess.QueryInformation))
-                        labelTEBAddress.Text = "0x" + thandle.GetBasicInformation().TebBaseAddress.ToString("x8");
+                        labelTEBAddress.Text = Utils.FormatAddress(thandle.GetBasicInformation().TebBaseAddress);
                 }
                 catch
                 { }

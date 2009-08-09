@@ -345,6 +345,56 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Gets a string representation for an address.
+        /// </summary>
+        /// <param name="address">An address.</param>
+        /// <returns>A string representation of the specified address.</returns>
+        public static string FormatAddress(int address)
+        {
+            return "0x" + address.ToString("x");
+        }
+
+        /// <summary>
+        /// Gets a string representation for an address.
+        /// </summary>
+        /// <param name="address">An address.</param>
+        /// <returns>A string representation of the specified address.</returns>
+        public static string FormatAddress(uint address)
+        {
+            return "0x" + address.ToString("x");
+        }
+
+        /// <summary>
+        /// Gets a string representation for an address.
+        /// </summary>
+        /// <param name="address">An address.</param>
+        /// <returns>A string representation of the specified address.</returns>
+        public static string FormatAddress(long address)
+        {
+            return "0x" + address.ToString("x");
+        }
+
+        /// <summary>
+        /// Gets a string representation for an address.
+        /// </summary>
+        /// <param name="address">An address.</param>
+        /// <returns>A string representation of the specified address.</returns>
+        public static string FormatAddress(ulong address)
+        {
+            return "0x" + address.ToString("x");
+        }
+
+        /// <summary>
+        /// Gets a string representation for an address.
+        /// </summary>
+        /// <param name="address">An address.</param>
+        /// <returns>A string representation of the specified address.</returns>
+        public static string FormatAddress(IntPtr address)
+        {
+            return "0x" + address.ToString("x");
+        }
+
+        /// <summary>
         /// Gets the string representation of a priority number.
         /// </summary>
         /// <param name="priority">A priority number.</param>
