@@ -21,6 +21,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Parameter 'parameter' has no matching param tag in the XML comment for 'parameter' (but other parameters do)
 #pragma warning disable 1573
 
 using System;

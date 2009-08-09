@@ -20,9 +20,12 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define ENABLE_STATISTICS
+//#define EXTENDED_FINALIZER
+
 using System;
+using System.ComponentModel;
 using System.Threading;
-using ProcessHacker.Common.Threading;
 
 namespace ProcessHacker.Common.Objects
 {
@@ -122,13 +125,15 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         private int _refCount = 1;
         /// <summary>
-        /// Whether the finalizer will run.
-        /// </summary>
-        private int _finalizerRegistered = 1;
-        /// <summary>
         /// Whether the object has been freed.
         /// </summary>
         private volatile bool _disposed = false;
+#if EXTENDED_FINALIZER
+        /// <summary>
+        /// Whether the finalizer will run.
+        /// </summary>
+        private int _finalizerRegistered = 1;
+#endif
 
         /// <summary>
         /// Initializes a disposable object.
@@ -148,25 +153,38 @@ namespace ProcessHacker.Common.Objects
             // Don't need to finalize the object if it doesn't need to be disposed.
             if (!_owned)
             {
+#if EXTENDED_FINALIZER
                 this.DisableFinalizer();
+#else
+                GC.SuppressFinalize(this);
+#endif
                 _ownedByGc = 0;
                 _refCount = 0;
             }
 
+#if ENABLE_STATISTICS
             Interlocked.Increment(ref _createdCount);
+#endif
+
 #if DEBUG
             _creationStackTrace = Environment.StackTrace;
 #endif
         }
 
         /// <summary>
-        /// Ensures that the GC does not own the object and destroys
-        /// all weak references.
+        /// Ensures that the GC does not own the object.
         /// </summary>
         ~BaseObject()
         {
             // Get rid of GC ownership if still present.
             this.Dispose(false);
+
+#if ENABLE_STATISTICS
+            Interlocked.Increment(ref _finalizedCount);
+            // Dispose just incremented this value, but it 
+            // shouldn't have been incremented.
+            Interlocked.Decrement(ref _disposedCount);
+#endif
         }
 
         /// <summary>
@@ -203,18 +221,23 @@ namespace ProcessHacker.Common.Objects
 
                     // Disable the finalizer.
                     if (managed)
+                    {
+#if EXTENDED_FINALIZER
                         this.DisableFinalizer();
+#else
+                        GC.SuppressFinalize(this);
+#endif
+                    }
 
+#if ENABLE_STATISTICS
                     // Stats.
-                    if (managed)
-                        Interlocked.Increment(ref _disposedCount);
-                    else
-                        Interlocked.Increment(ref _finalizedCount);
+                    Interlocked.Increment(ref _disposedCount);
 
                     // The dereferenced count should count the number of times 
                     // the user has called Dereference, so decrement it 
                     // because we just called it.
                     Interlocked.Decrement(ref _dereferencedCount);
+#endif
                 }
             }
             finally
@@ -225,7 +248,8 @@ namespace ProcessHacker.Common.Objects
 
         /// <summary>
         /// Queues the object for disposal in the current delayed release pool.
-        /// </summary>
+        /// </summary> 
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public void DisposeDelayed()
         {
             DelayedReleasePool.CurrentPool.AddDispose(this);
@@ -274,6 +298,7 @@ namespace ProcessHacker.Common.Objects
             get { return Thread.VolatileRead(ref _refCount); }
         }
 
+#if EXTENDED_FINALIZER
         /// <summary>
         /// Disables the finalizer if it is not already disabled.
         /// </summary>
@@ -288,6 +313,7 @@ namespace ProcessHacker.Common.Objects
                 GC.SuppressFinalize(this);
             }
         }
+#endif
 
         /// <summary>
         /// Declares that the object should no longer be owned.
@@ -297,13 +323,19 @@ namespace ProcessHacker.Common.Objects
             if (dispose)
                 this.Dispose();
 
+#if EXTENDED_FINALIZER
             this.DisableFinalizer();
+#else
+            GC.SuppressFinalize(this);
+#endif
             _owned = false;
 
+#if ENABLE_STATISTICS
             // If the object didn't get disposed, pretend the object 
             // never got created.
             if (!dispose)
                 Interlocked.Decrement(ref _createdCount);
+#endif
         }
 
         /// <summary>
@@ -371,8 +403,10 @@ namespace ProcessHacker.Common.Objects
                 if (!_owned)
                     return 0;
 
+#if ENABLE_STATISTICS
                 // Statistics.
                 Interlocked.Add(ref _dereferencedCount, count);
+#endif
 
                 // Decrease the reference count.
                 int newRefCount = Interlocked.Add(ref _refCount, -count);
@@ -389,7 +423,10 @@ namespace ProcessHacker.Common.Objects
                     this.DisposeObject(managed);
                     // Prevent the object from being disposed twice.
                     _disposed = true;
+
+#if ENABLE_STATISTICS
                     Interlocked.Increment(ref _freedCount);
+#endif
                 }
 
                 return newRefCount;
@@ -403,11 +440,13 @@ namespace ProcessHacker.Common.Objects
         /// <summary>
         /// Queues the object for dereferencing in the current delayed release pool.
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public void DereferenceDelayed()
         {
             DelayedReleasePool.CurrentPool.AddDereference(this);
         }
 
+#if EXTENDED_FINALIZER
         /// <summary>
         /// Enables the finalizer if it is not already enabled.
         /// </summary>
@@ -422,6 +461,7 @@ namespace ProcessHacker.Common.Objects
                 GC.ReRegisterForFinalize(this);
             }
         }
+#endif
 
         /// <summary>
         /// Increments the reference count of the object.
@@ -454,7 +494,9 @@ namespace ProcessHacker.Common.Objects
             if (count < 0)
                 throw new ArgumentException("Cannot reference a negative number of times.");
 
+#if ENABLE_STATISTICS
             Interlocked.Add(ref _referencedCount, count);
+#endif
 
             return Interlocked.Add(ref _refCount, count);
         }

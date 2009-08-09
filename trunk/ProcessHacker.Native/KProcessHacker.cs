@@ -20,6 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// The private field 'field' is assigned but its value is never used
 #pragma warning disable 0414
 
 using System;

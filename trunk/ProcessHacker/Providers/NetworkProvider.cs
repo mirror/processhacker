@@ -20,6 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// 'member' is obsolete: 'text'
 #pragma warning disable 0618
 
 using System;

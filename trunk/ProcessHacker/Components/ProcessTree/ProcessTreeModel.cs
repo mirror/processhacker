@@ -20,6 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// The event 'event' is never used
 #pragma warning disable 0067
 
 using System;
