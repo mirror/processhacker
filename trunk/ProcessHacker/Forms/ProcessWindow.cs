@@ -887,7 +887,7 @@ namespace ProcessHacker
                 " (K: " + (procKernel * 100).ToString("F2") +
                 "%, U: " + (procUser * 100).ToString("F2") + "%)";
 
-            string pvtString = Utils.FormatSize(item.Process.VirtualMemoryCounters.PrivateBytes);
+            string pvtString = Utils.FormatSize(item.Process.VirtualMemoryCounters.PrivatePageCount);
             plotterMemory.Text = "Pvt: " + pvtString + 
                 ", WS: " + Utils.FormatSize(item.Process.VirtualMemoryCounters.WorkingSetSize);
 
@@ -915,7 +915,7 @@ namespace ProcessHacker
                 indicatorPvt.Maximum = (int)maxPvt;
             else
                 indicatorPvt.Maximum = (int)maxWS; 
-            indicatorPvt.Data1 = item.Process.VirtualMemoryCounters.PrivateBytes;
+            indicatorPvt.Data1 = item.Process.VirtualMemoryCounters.PrivatePageCount.ToInt32();
             indicatorPvt.TextValue = pvtString;
 
             // Update the I/O Bytes indicator.

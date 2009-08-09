@@ -103,7 +103,7 @@ namespace ProcessHacker.Components
             labelCPUUserTime.Text = Utils.FormatTimeSpan(new TimeSpan(item.Process.UserTime));
             labelCPUTotalTime.Text = Utils.FormatTimeSpan(new TimeSpan(item.Process.KernelTime + item.Process.UserTime));
 
-            labelMemoryPB.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.PrivateBytes);
+            labelMemoryPB.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.PrivatePageCount);
             labelMemoryWS.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.WorkingSetSize);
             labelMemoryPWS.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.PeakWorkingSetSize);
             labelMemoryVS.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.VirtualSize);

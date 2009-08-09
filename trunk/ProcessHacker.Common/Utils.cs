@@ -481,6 +481,18 @@ namespace ProcessHacker.Common
         /// Formats a size into a string representation, postfixing it with the correct unit.
         /// </summary>
         /// <param name="size">The size to format.</param>
+        public static string FormatSize(IntPtr size)
+        {
+            unchecked
+            {
+                return FormatSize((ulong)size.ToInt64());
+            }
+        }
+
+        /// <summary>
+        /// Formats a size into a string representation, postfixing it with the correct unit.
+        /// </summary>
+        /// <param name="size">The size to format.</param>
         public static string FormatSize(long size)
         {
             return FormatSize((ulong)size);

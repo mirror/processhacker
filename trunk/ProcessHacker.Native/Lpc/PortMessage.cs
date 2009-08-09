@@ -19,17 +19,25 @@ namespace ProcessHacker.Native.Lpc
         private MemoryRegion _referencedData;
 
         public PortMessage(byte[] data)
+            : this(null, data)
+        { }
+
+        public PortMessage(PortMessage existingMessage, byte[] data)
         {
             using (var alloc = new MemoryAlloc(data.Length))
             {
                 alloc.WriteBytes(0, data);
-                this.InitializeMessage(alloc, (short)alloc.Size);
+                this.InitializeMessage(existingMessage, alloc, (short)alloc.Size);
             }
         }
 
         public PortMessage(MemoryRegion data, short dataLength)
+            : this(null, data, dataLength)
+        { }
+
+        public PortMessage(PortMessage existingMessage, MemoryRegion data, short dataLength)
         {
-            this.InitializeMessage(data, dataLength);
+            this.InitializeMessage(existingMessage, data, dataLength);
         }
 
         internal PortMessage(MemoryRegion headerAndData)
@@ -62,6 +70,11 @@ namespace ProcessHacker.Native.Lpc
             get { return _message.DataLength; }
         }
 
+        internal PortMessageStruct Header
+        {
+            get { return _message; }
+        }
+
         public int MessageId
         {
             get { return _message.MessageId; }
@@ -72,17 +85,25 @@ namespace ProcessHacker.Native.Lpc
             get { return _message.Type; }
         }
 
-        private void InitializeMessage(MemoryRegion data, short dataLength)
+        private void InitializeMessage(PortMessage existingMessage, MemoryRegion data, short dataLength)
         {
             if (dataLength > Win32.PortMessageMaxDataLength)
                 throw new ArgumentOutOfRangeException("Data length is too large.");
             if (dataLength < 0)
                 throw new ArgumentOutOfRangeException("Data length cannot be negative.");
 
-            _message = new PortMessageStruct();
-            _message.DataLength = dataLength;
-            _message.TotalLength = (short)(_portMessageSize + dataLength);
-            _message.DataInfoOffset = 0;
+            if (existingMessage != null)
+            {
+                _message = existingMessage.Header;
+            }
+            else
+            {
+                _message = new PortMessageStruct();
+                _message.DataLength = dataLength;
+                _message.TotalLength = (short)(_portMessageSize + dataLength);
+                _message.DataInfoOffset = 0;
+            }
+
             _data = data;
 
             _referencedData = data;

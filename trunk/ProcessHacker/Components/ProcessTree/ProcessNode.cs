@@ -175,7 +175,7 @@ namespace ProcessHacker
 
         public string PvtMemory
         {
-            get { return Utils.FormatSize(_pitem.Process.VirtualMemoryCounters.PrivateBytes); }
+            get { return Utils.FormatSize(_pitem.Process.VirtualMemoryCounters.PrivatePageCount); }
         }
 
         public string WorkingSet

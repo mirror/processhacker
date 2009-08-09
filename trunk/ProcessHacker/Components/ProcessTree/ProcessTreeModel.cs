@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.Common;
+using ProcessHacker.Native;
 
 namespace ProcessHacker
 {
@@ -246,8 +247,8 @@ namespace ProcessHacker
                             case "pid":
                                 return ModifySort(n1.Pid.CompareTo(n2.Pid), sortO);
                             case "pvt. memory":
-                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PrivateBytes.CompareTo(
-                                    n2.ProcessItem.Process.VirtualMemoryCounters.PrivateBytes), sortO);
+                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PrivatePageCount.CompareTo(
+                                    n2.ProcessItem.Process.VirtualMemoryCounters.PrivatePageCount), sortO);
                             case "working set":
                                 return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize.CompareTo(
                                     n2.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize), sortO);
