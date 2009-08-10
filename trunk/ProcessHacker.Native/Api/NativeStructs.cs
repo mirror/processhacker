@@ -1755,7 +1755,7 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct SystemHandleInformation
+    public struct SystemHandleEntry
     {
         public int ProcessId;
         public byte ObjectTypeNumber;
@@ -1763,6 +1763,16 @@ namespace ProcessHacker.Native.Api
         public short Handle;
         public IntPtr Object;
         public int GrantedAccess;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SystemHandleInformation
+    {
+        public static readonly int HandlesOffset = 
+            Marshal.OffsetOf(typeof(SystemHandleInformation), "Handles").ToInt32();
+
+        public int NumberOfHandles;
+        public SystemHandleEntry Handles;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2154,6 +2164,9 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TokenGroups
     {
+        public static readonly int GroupsOffset =
+            Marshal.OffsetOf(typeof(TokenGroups), "Groups").ToInt32();
+
         public TokenGroups(Sid[] sids)
         {
             this.GroupCount = sids.Length;

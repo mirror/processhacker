@@ -137,7 +137,7 @@ namespace ProcessHacker.FormHelper
 
         private void CompareHandleBestNameWithFilterString(
             Dictionary<int, ProcessHandle> processHandles,
-            SystemHandleInformation currhandle, string lowerFilter)
+            SystemHandleEntry currhandle, string lowerFilter)
         {
             try
             {
@@ -185,7 +185,7 @@ namespace ProcessHacker.FormHelper
             }
         }
 
-        private void CallHandleMatchListView(SystemHandleInformation handle, ObjectInformation info)
+        private void CallHandleMatchListView(SystemHandleEntry handle, ObjectInformation info)
         {
             ListViewItem item = new ListViewItem();
             item.Name = handle.ProcessId.ToString() + " " + handle.Handle.ToString();

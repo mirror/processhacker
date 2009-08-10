@@ -355,12 +355,12 @@ namespace ProcessHacker.Native.Objects
                     data.Size, out retLen))
                     Win32.ThrowLastError();
 
-                uint count = data.ReadUInt32(0);
+                int count = data.ReadStruct<TokenGroups>().GroupCount;
                 Sid[] sids = new Sid[count];
 
                 for (int i = 0; i < count; i++)
                 {
-                    var saa = data.ReadStruct<SidAndAttributes>(sizeof(int), i);
+                    var saa = data.ReadStruct<SidAndAttributes>(TokenGroups.GroupsOffset, i);
                     sids[i] = new Sid(saa.Sid, saa.Attributes);
                 }
 

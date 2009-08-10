@@ -902,7 +902,7 @@ namespace ProcessHacker.Components
             }
         }
 
-        private SystemHandleInformation GetShiForHandle(int pid, IntPtr handle)
+        private SystemHandleEntry GetShiForHandle(int pid, IntPtr handle)
         {
             short handleValue = (short)handle.ToInt32();
             var handles = Windows.GetHandles();
@@ -913,7 +913,7 @@ namespace ProcessHacker.Components
                     return handleInfo;
             }
 
-            return new SystemHandleInformation();
+            return new SystemHandleEntry();
         }
 
         #region Analyze

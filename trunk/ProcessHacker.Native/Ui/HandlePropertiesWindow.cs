@@ -34,7 +34,7 @@ namespace ProcessHacker.Native.Ui
 
         private string _name, _typeName;
 
-        public HandlePropertiesWindow(SystemHandleInformation handle)
+        public HandlePropertiesWindow(SystemHandleEntry handle)
         {
             InitializeComponent();
             this.KeyPreview = true;

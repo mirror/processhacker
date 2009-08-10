@@ -253,7 +253,7 @@ namespace ProcessHacker.Native
             return (KphFeatures)(*(int*)outData);
         }
 
-        public string GetFileObjectName(SystemHandleInformation handle)
+        public string GetFileObjectName(SystemHandleEntry handle)
         {
             byte* inData = stackalloc byte[8];
             byte[] outData = new byte[2048];

@@ -323,7 +323,7 @@ namespace ProcessHacker.Components
             }
         }
 
-        public static void ShowHandleProperties(SystemHandleInformation handleInfo)
+        public static void ShowHandleProperties(SystemHandleEntry handleInfo)
         {
             try
             {

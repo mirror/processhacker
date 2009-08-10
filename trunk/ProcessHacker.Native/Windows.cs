@@ -167,11 +167,11 @@ namespace ProcessHacker.Native
         /// Enumerates the handles opened by every running process.
         /// </summary>
         /// <returns>An array containing information about the handles.</returns>
-        public static SystemHandleInformation[] GetHandles()
+        public static SystemHandleEntry[] GetHandles()
         {
             int retLength = 0;
             int handleCount = 0;
-            SystemHandleInformation[] returnHandles;
+            SystemHandleEntry[] returnHandles;
 
             if (_handlesBuffer == null)
                 _handlesBuffer = new MemoryAlloc(0x1000);
@@ -202,12 +202,12 @@ namespace ProcessHacker.Native
 
             // The structure of the buffer is the handle count plus an array of SYSTEM_HANDLE_INFORMATION 
             // structures.
-            handleCount = data.ReadIntPtr(0).ToInt32();
-            returnHandles = new SystemHandleInformation[handleCount];
+            handleCount = data.ReadStruct<SystemHandleInformation>().NumberOfHandles;
+            returnHandles = new SystemHandleEntry[handleCount];
 
             for (int i = 0; i < handleCount; i++)
             {
-                returnHandles[i] = data.ReadStruct<SystemHandleInformation>(IntPtr.Size, i);
+                returnHandles[i] = data.ReadStruct<SystemHandleEntry>(SystemHandleInformation.HandlesOffset, i);
             }
 
             return returnHandles;

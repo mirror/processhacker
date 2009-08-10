@@ -36,7 +36,7 @@ namespace ProcessHacker
         }
 
         public int RunId;
-        public SystemHandleInformation Handle;
+        public SystemHandleEntry Handle;
         public ObjectInformation ObjectInfo;
     }
 
@@ -72,7 +72,7 @@ namespace ProcessHacker
         private void UpdateOnce()
         {
             var handles = Windows.GetHandles();
-            var processHandles = new Dictionary<short, SystemHandleInformation>();
+            var processHandles = new Dictionary<short, SystemHandleEntry>();
             var newdictionary = new Dictionary<short, HandleItem>(this.Dictionary);
 
             foreach (var handle in handles)

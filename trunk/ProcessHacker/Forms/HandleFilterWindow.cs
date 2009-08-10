@@ -127,7 +127,7 @@ namespace ProcessHacker
                     IntPtr handle = new IntPtr((int)BaseConverter.ToNumberParse(listHandles.Items[index].SubItems[3].Text));
 
                     using (ProcessHandle process =
-                           new ProcessHandle(((SystemHandleInformation)listHandles.SelectedItems[0].Tag).ProcessId, 
+                           new ProcessHandle(((SystemHandleEntry)listHandles.SelectedItems[0].Tag).ProcessId, 
                                ProcessAccess.DupHandle))
                     {
                         Win32.DuplicateObject(process.Handle, handle, 0, 0, DuplicateOptions.CloseSource);
@@ -218,7 +218,7 @@ namespace ProcessHacker
             if (type == "DLL" || type == "Mapped File")
                 pid = (int)listHandles.SelectedItems[0].Tag;
             else
-                pid = ((SystemHandleInformation)listHandles.SelectedItems[0].Tag).ProcessId;
+                pid = ((SystemHandleEntry)listHandles.SelectedItems[0].Tag).ProcessId;
 
             if (Program.ProcessProvider.Dictionary.ContainsKey(pid))
             {
@@ -245,7 +245,7 @@ namespace ProcessHacker
             try
             {
                 HandleList.ShowHandleProperties(
-                    (SystemHandleInformation)listHandles.SelectedItems[0].Tag
+                    (SystemHandleEntry)listHandles.SelectedItems[0].Tag
                     );
             }
             catch (Exception ex)

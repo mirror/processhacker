@@ -8,7 +8,7 @@ namespace ProcessHacker.Native
 {
     public static class SystemHandleInformationExtensions
     {
-        public static ObjectBasicInformation GetBasicInfo(this SystemHandleInformation thisHandle)
+        public static ObjectBasicInformation GetBasicInfo(this SystemHandleEntry thisHandle)
         {
             using (ProcessHandle process = new ProcessHandle(thisHandle.ProcessId, ProcessAccess.DupHandle))
             {
@@ -16,7 +16,7 @@ namespace ProcessHacker.Native
             }
         }
 
-        public static ObjectBasicInformation GetBasicInfo(this SystemHandleInformation thisHandle, ProcessHandle process)
+        public static ObjectBasicInformation GetBasicInfo(this SystemHandleEntry thisHandle, ProcessHandle process)
         {
             NtStatus status = NtStatus.Success;
             IntPtr handle = new IntPtr(thisHandle.Handle);
@@ -108,7 +108,7 @@ namespace ProcessHacker.Native
             throw new Exception("NtQueryObject failed.");
         }
 
-        public static ObjectInformation GetHandleInfo(this SystemHandleInformation thisHandle)
+        public static ObjectInformation GetHandleInfo(this SystemHandleEntry thisHandle)
         {
             using (ProcessHandle process = new ProcessHandle(thisHandle.ProcessId,
                 KProcessHacker.Instance != null ? OSVersion.MinProcessQueryInfoAccess : ProcessAccess.DupHandle))
@@ -117,7 +117,7 @@ namespace ProcessHacker.Native
             }
         }
 
-        public static ObjectInformation GetHandleInfo(this SystemHandleInformation thisHandle, ProcessHandle process)
+        public static ObjectInformation GetHandleInfo(this SystemHandleEntry thisHandle, ProcessHandle process)
         {
             IntPtr handle = new IntPtr(thisHandle.Handle);
             IntPtr objectHandleI;
