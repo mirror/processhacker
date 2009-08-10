@@ -395,13 +395,20 @@ namespace ProcessHacker
                         if (checkReplaceTaskManager.Checked)
                         {
                             key.SetValue("Debugger", "\"" + fileName + "\"");
+                            // In case the user presses Apply and then OK.
+                            _oldTaskMgrDebugger = "\"" + fileName + "\"";
                         }
                         else
                         {
                             if (_oldTaskMgrDebugger.ToLower().Trim('"') == fileName.ToLower())
+                            {
                                 key.DeleteValue("Debugger");
+                                _oldTaskMgrDebugger = "";
+                            }
                             else if (_oldTaskMgrDebugger != "")
+                            {
                                 key.SetValue("Debugger", _oldTaskMgrDebugger);
+                            }
                         }
                     }
                 }
@@ -490,9 +497,12 @@ namespace ProcessHacker
                 " -rect " + this.Location.X.ToString() + "," + this.Location.Y.ToString() + "," +
                 this.Size.Width.ToString() + "," + this.Size.Height.ToString();
 
+            // Avoid cross-thread operation.
+            IntPtr thisHandle = this.Handle;
+
             Thread t = new Thread(() =>
                 {
-                    Program.StartProcessHackerAdminWait(args, this.Handle, 0xffffffff);
+                    Program.StartProcessHackerAdminWait(args, thisHandle, 0xffffffff);
 
                     this.BeginInvoke(new MethodInvoker(() =>
                         {

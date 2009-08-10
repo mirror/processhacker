@@ -491,6 +491,32 @@ namespace ProcessHacker
                 textFileCompany.Text = "";
             }
 
+            // Update WOW64 info.
+            if (IntPtr.Size == 4)
+            {
+                // 32-bit. Hide the labels.
+                labelProcessType.Visible = false;
+                labelProcessTypeValue.Visible = false;
+            }
+            else
+            {
+                // 64-bit. Show the label.
+                labelProcessType.Visible = true;
+                labelProcessTypeValue.Visible = true;
+
+                try
+                {
+                    using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    {
+                        labelProcessTypeValue.Text = phandle.IsWow64() ? "32-bit" : "64-bit";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    labelProcessTypeValue.Text = "(" + ex.Message + ")";
+                }
+            }
+
             // HACK: Evil but necessary to reduce user complaints
             Application.DoEvents();
 

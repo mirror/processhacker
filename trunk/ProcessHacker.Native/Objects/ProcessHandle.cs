@@ -981,13 +981,17 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A DepStatus enum.</returns>
         public DepStatus GetDepStatus()
         {
-            NtStatus status;
             MemExecuteOptions options;
-            int retLength;
 
-            if ((status = Win32.NtQueryInformationProcess(this, ProcessInformationClass.ProcessExecuteFlags,
-                out options, 4, out retLength)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+            // If we're on 64-bit and the process isn't under 
+            // WOW64, it must be under permanent DEP.
+            if (IntPtr.Size == 8)
+            {
+                if (!this.IsWow64())
+                    return DepStatus.Enabled | DepStatus.Permanent;
+            }
+
+            options = (MemExecuteOptions)this.GetInformationInt32(ProcessInformationClass.ProcessExecuteFlags);
 
             DepStatus depStatus = 0;
 
@@ -1859,6 +1863,14 @@ namespace ProcessHacker.Native.Objects
         public bool IsPriorityBoostEnabled()
         {
             return this.GetInformationInt32(ProcessInformationClass.ProcessPriorityBoost) == 0;
+        }
+
+        /// <summary>
+        /// Gets whether the process is running under WOW64.
+        /// </summary>
+        public bool IsWow64()
+        {
+            return this.GetInformationIntPtr(ProcessInformationClass.ProcessWow64Information) != IntPtr.Zero;
         }
 
         /// <summary>

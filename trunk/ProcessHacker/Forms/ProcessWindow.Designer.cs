@@ -81,6 +81,8 @@ namespace ProcessHacker
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
             this.groupProcess = new System.Windows.Forms.GroupBox();
+            this.labelProcessTypeValue = new System.Windows.Forms.Label();
+            this.labelProcessType = new System.Windows.Forms.Label();
             this.fileCurrentDirectory = new ProcessHacker.Components.FileNameBox();
             this.label26 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -239,6 +241,8 @@ namespace ProcessHacker
             this.groupProcess.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupProcess.Controls.Add(this.labelProcessTypeValue);
+            this.groupProcess.Controls.Add(this.labelProcessType);
             this.groupProcess.Controls.Add(this.fileCurrentDirectory);
             this.groupProcess.Controls.Add(this.label26);
             this.groupProcess.Controls.Add(this.label7);
@@ -264,6 +268,26 @@ namespace ProcessHacker
             this.groupProcess.TabIndex = 1;
             this.groupProcess.TabStop = false;
             this.groupProcess.Text = "Process";
+            // 
+            // labelProcessTypeValue
+            // 
+            this.labelProcessTypeValue.AutoSize = true;
+            this.labelProcessTypeValue.Location = new System.Drawing.Point(98, 210);
+            this.labelProcessTypeValue.Name = "labelProcessTypeValue";
+            this.labelProcessTypeValue.Size = new System.Drawing.Size(16, 13);
+            this.labelProcessTypeValue.TabIndex = 20;
+            this.labelProcessTypeValue.Text = "...";
+            this.labelProcessTypeValue.Visible = false;
+            // 
+            // labelProcessType
+            // 
+            this.labelProcessType.AutoSize = true;
+            this.labelProcessType.Location = new System.Drawing.Point(6, 210);
+            this.labelProcessType.Name = "labelProcessType";
+            this.labelProcessType.Size = new System.Drawing.Size(75, 13);
+            this.labelProcessType.TabIndex = 19;
+            this.labelProcessType.Text = "Process Type:";
+            this.labelProcessType.Visible = false;
             // 
             // fileCurrentDirectory
             // 
@@ -556,10 +580,10 @@ namespace ProcessHacker
             // 
             this.textFileVersion.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textFileVersion.Location = new System.Drawing.Point(101, 57);
+            this.textFileVersion.Location = new System.Drawing.Point(103, 57);
             this.textFileVersion.Name = "textFileVersion";
             this.textFileVersion.ReadOnly = true;
-            this.textFileVersion.Size = new System.Drawing.Size(362, 20);
+            this.textFileVersion.Size = new System.Drawing.Size(360, 20);
             this.textFileVersion.TabIndex = 0;
             // 
             // tabStatistics
@@ -1194,5 +1218,7 @@ namespace ProcessHacker
         private ProcessHacker.Components.Indicator indicatorPvt;
         private System.Windows.Forms.GroupBox groupBoxCpu;
         private ProcessHacker.Components.Indicator indicatorCpu;
+        private System.Windows.Forms.Label labelProcessType;
+        private System.Windows.Forms.Label labelProcessTypeValue;
     }
 }

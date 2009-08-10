@@ -3,6 +3,7 @@ Process Hacker
 1.3.9.5
  * NEW/IMPROVED:
    * Full support for Windows 7 SP0
+   * Basic support for Windows 64-bit
    * Ability to unload drivers
    * Handle names for Kernel Transaction Manager (KTM) objects
    * Ability to save details for processes
@@ -16,6 +17,7 @@ Process Hacker
    * Small performance improvements
  * FIXED:
    * #2821437 - "Windows 7 PsTerminateProcess crash"
+   * #2834578 - "Unable to replace Task Manager with Process Hacker error"
    * Properties menu item for handles was disabled most of the time
    * Handle names could not be viewed properly without KPH and 
      on systems without the VC++ 9 runtime
