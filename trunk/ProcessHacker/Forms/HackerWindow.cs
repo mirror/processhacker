@@ -1341,13 +1341,13 @@ namespace ProcessHacker
                                     taskDialog.SetMarqueeProgressBar(true);
                                     taskDialog.SetProgressBarState(ProgressBarState.Normal);
                                     taskDialog.SetProgressBarMarquee(true, 100);
-                                    taskDialog.EnableButton((int)DialogResult.OK, true);
+                                    taskDialog.EnableButton((int)DialogResult.OK, false);
                                 }
                                 else if (args.Notification == TaskDialogNotification.Timer)
                                 {
                                     if (!t.IsAlive)
                                     {
-                                        taskDialog.EnableButton((int)DialogResult.OK, false);
+                                        taskDialog.EnableButton((int)DialogResult.OK, true);
                                         taskDialog.SetProgressBarMarquee(false, 0);
                                         taskDialog.SetMarqueeProgressBar(false);
 

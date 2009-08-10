@@ -255,7 +255,7 @@ namespace ProcessHacker.Components
                 this.handle,
                 (uint)UnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_ENABLE_BUTTON,
                 (IntPtr)buttonId,
-                (IntPtr)(enable ? 0 : 1 ));
+                (IntPtr)(enable ? 1 : 0));
         }
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace ProcessHacker.Components
                 this.handle,
                 (uint)UnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_ENABLE_RADIO_BUTTON,
                 (IntPtr)buttonId,
-                (IntPtr)(enable ? 0 : 1));
+                (IntPtr)(enable ? 1 : 0));
         }
 
         /// <summary>
