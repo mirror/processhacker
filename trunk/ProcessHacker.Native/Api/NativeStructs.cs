@@ -1503,6 +1503,23 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct RtlUserProcessParameters
     {
+        public static readonly int CurrentDirectoryOffset =
+            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "CurrentDirectory").ToInt32();
+        public static readonly int DllPathOffset =
+            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "DllPath").ToInt32();
+        public static readonly int ImagePathNameOffset =
+            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "ImagePathName").ToInt32();
+        public static readonly int CommandLineOffset =
+            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "CommandLine").ToInt32();
+        public static readonly int WindowTitleOffset =
+            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "WindowTitle").ToInt32();
+        public static readonly int DesktopInfoOffset =
+            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "DesktopInfo").ToInt32();
+        public static readonly int ShellInfoOffset =
+            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "ShellInfo").ToInt32();
+        public static readonly int RuntimeDataOffset =
+            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "RuntimeData").ToInt32();
+
         public struct CurDir
         {
             public UnicodeString DosPath;
@@ -1606,7 +1623,7 @@ namespace ProcessHacker.Native.Api
         public int Owner;
         public int Group;
         public int Sacl;
-        public int Dacl; 
+        public int Dacl;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1705,23 +1722,23 @@ namespace ProcessHacker.Native.Api
         /// <summary>
         /// The size of the system working set, in bytes.
         /// </summary>
-        public int SystemCacheWsSize;
-        public int SystemCacheWsPeakSize;
+        public IntPtr SystemCacheWsSize;
+        public IntPtr SystemCacheWsPeakSize;
         public int SystemCacheWsFaults;
 
         /// <summary>
         /// Measured in pages.
         /// </summary>
-        public int SystemCacheWsMinimum;
+        public IntPtr SystemCacheWsMinimum;
 
         /// <summary>
         /// Measured in pages.
         /// </summary>
-        public int SystemCacheWsMaximum;
-        public int TransitionSharedPages;
-        public int TransitionSharedPagesPeak;
-        public int Reserved1;
-        public int Reserved2;
+        public IntPtr SystemCacheWsMaximum;
+        public IntPtr TransitionSharedPages;
+        public IntPtr TransitionSharedPagesPeak;
+        public int TransitionRePurposeCount;
+        public int Flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]

@@ -37,7 +37,7 @@ namespace ProcessHacker
 
             info.Size = Marshal.SizeOf(info);
             Win32.GetPerformanceInfo(out info, info.Size);
-            this.MinMaxValue = info.PhysicalTotal;
+            this.MinMaxValue = info.PhysicalTotal.ToInt64();
         }
 
         protected override void ProviderUpdated()

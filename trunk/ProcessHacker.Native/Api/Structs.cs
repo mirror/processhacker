@@ -271,7 +271,7 @@ namespace ProcessHacker.Native.Api
         public int NumEntries;
         public MibUdpRow[] Table;
     }
- 
+
     [StructLayout(LayoutKind.Sequential)]
     public struct MibUdpRowOwnerPid
     {
@@ -289,7 +289,7 @@ namespace ProcessHacker.Native.Api
         public int OutDatagrams;
         public int NumAddrs;
     }
- 
+
     [StructLayout(LayoutKind.Sequential)]
     public struct MibUdpTableOwnerPid
     {
@@ -339,16 +339,16 @@ namespace ProcessHacker.Native.Api
     public struct PerformanceInformation
     {
         public int Size;
-        public int CommitTotal;
-        public int CommitLimit;
-        public int CommitPeak;
-        public int PhysicalTotal;
-        public int PhysicalAvailable;
-        public int SystemCache;
-        public int KernelTotal;
-        public int KernelPaged;
-        public int KernelNonPaged;
-        public int PageSize;
+        public IntPtr CommitTotal;
+        public IntPtr CommitLimit;
+        public IntPtr CommitPeak;
+        public IntPtr PhysicalTotal;
+        public IntPtr PhysicalAvailable;
+        public IntPtr SystemCache;
+        public IntPtr KernelTotal;
+        public IntPtr KernelPaged;
+        public IntPtr KernelNonPaged;
+        public IntPtr PageSize;
         public int HandlesCount;
         public int ProcessCount;
         public int ThreadCount;
@@ -602,7 +602,7 @@ namespace ProcessHacker.Native.Api
         public int NameLen;
         public int MaxNameLen;
         public char Name;
-    } 
+    }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct ThreadEntry32

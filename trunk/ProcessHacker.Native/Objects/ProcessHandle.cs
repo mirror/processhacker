@@ -85,7 +85,7 @@ namespace ProcessHacker.Native.Objects
                 FileCreationDisposition.OpenAlways
                 ))
             {
-                using (var shandle = 
+                using (var shandle =
                     SectionHandle.Create(
                     SectionAccess.All,
                     SectionAttributes.Image,
@@ -246,6 +246,31 @@ namespace ProcessHacker.Native.Objects
             return Win32.GetCurrentProcessId();
         }
 
+        private static int GetPebOffset(PebOffset offset)
+        {
+            switch (offset)
+            {
+                case PebOffset.CommandLine:
+                    return RtlUserProcessParameters.CommandLineOffset;
+                case PebOffset.CurrentDirectoryPath:
+                    return RtlUserProcessParameters.CurrentDirectoryOffset;
+                case PebOffset.DesktopName:
+                    return RtlUserProcessParameters.DesktopInfoOffset;
+                case PebOffset.DllPath:
+                    return RtlUserProcessParameters.DllPathOffset;
+                case PebOffset.ImagePathName:
+                    return RtlUserProcessParameters.ImagePathNameOffset;
+                case PebOffset.RuntimeData:
+                    return RtlUserProcessParameters.RuntimeDataOffset;
+                case PebOffset.ShellInfo:
+                    return RtlUserProcessParameters.ShellInfoOffset;
+                case PebOffset.WindowTitle:
+                    return RtlUserProcessParameters.WindowTitleOffset;
+                default:
+                    throw new ArgumentException("offset");
+            }
+        }
+
         /// <summary>
         /// Opens processes with the specified name.
         /// </summary>
@@ -356,10 +381,10 @@ namespace ProcessHacker.Native.Objects
         /// <param name="clientId">A Client ID structure describing the process.</param>
         /// <param name="access">The desired access to the process.</param>
         public ProcessHandle(
-            string name, 
-            ObjectFlags objectFlags, 
-            DirectoryHandle rootDirectory, 
-            ClientId clientId, 
+            string name,
+            ObjectFlags objectFlags,
+            DirectoryHandle rootDirectory,
+            ClientId clientId,
             ProcessAccess access
             )
         {
@@ -1296,7 +1321,7 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(status);
 
             return value;
-        }   
+        }
 
         /// <summary>
         /// Gets the process' I/O priority, ranging from 0-7.
@@ -1397,10 +1422,10 @@ namespace ProcessHacker.Native.Objects
             ProcessModule mainModule = null;
 
             this.EnumModules((module) =>
-                {
-                    mainModule = module;
-                    return false;
-                });
+            {
+                mainModule = module;
+                return false;
+            });
 
             return mainModule;
         }
@@ -1597,12 +1622,13 @@ namespace ProcessHacker.Native.Objects
             // +00 USHORT Length;
             // +02 USHORT MaximumLength;
             // +04 PWSTR Buffer;
-            this.ReadMemory(processParameters.Increment((int)offset), buffer, 2);
+            int realOffset = GetPebOffset(offset);
+
+            this.ReadMemory(processParameters.Increment(realOffset), buffer, 2);
             ushort stringLength = *(ushort*)buffer;
-            byte[] stringData = new byte[stringLength];
 
             // read address of string
-            this.ReadMemory(processParameters.Increment((int)offset + 0x4), buffer, IntPtr.Size);
+            this.ReadMemory(processParameters.Increment(realOffset + 0x4), buffer, IntPtr.Size);
             IntPtr stringAddr = *(IntPtr*)buffer;
 
             // read string and decode it
@@ -2503,44 +2529,37 @@ namespace ProcessHacker.Native.Objects
         /// The current directory of the process. This may, as the name 
         /// implies, change very often.
         /// </summary>
-        CurrentDirectoryPath = 0x24,
-
+        CurrentDirectoryPath,
         /// <summary>
         /// A copy of the PATH environment variable for the process.
         /// </summary>
-        DllPath = 0x30,
-
+        DllPath,
         /// <summary>
         /// The image file name, in kernel format (e.g. \\?\C:\...,
         /// \SystemRoot\..., \Device\Harddisk1\...).
         /// </summary>
-        ImagePathName = 0x38,
-
+        ImagePathName,
         /// <summary>
         /// The command used to start the program, including arguments.
         /// </summary>
-        CommandLine = 0x40,
-
+        CommandLine,
         /// <summary>
         /// Usually blank.
         /// </summary>
-        WindowTitle = 0x70,
-
+        WindowTitle,
         /// <summary>
         /// For interactive programs, contains the window station and 
         /// desktop name of the first thread that was started, e.g. 
         /// WinSta0\Default.
         /// </summary>
-        DesktopName = 0x78,
-
+        DesktopName,
         /// <summary>
         /// Usually blank.
         /// </summary>
-        ShellInfo = 0x80,
-
+        ShellInfo,
         /// <summary>
         /// Usually blank.
         /// </summary>
-        RuntimeData = 0x88
+        RuntimeData
     }
 }

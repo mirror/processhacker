@@ -37,7 +37,7 @@ namespace ProcessHacker
 
             info.Size = Marshal.SizeOf(info);
             Win32.GetPerformanceInfo(out info, info.Size);
-            this.MinMaxValue = info.CommitLimit;
+            this.MinMaxValue = info.CommitLimit.ToInt64();
         }
 
         protected override void ProviderUpdated()
