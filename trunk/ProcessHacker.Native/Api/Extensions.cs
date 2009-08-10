@@ -205,14 +205,22 @@ namespace ProcessHacker.Native
                 }
                 else
                 {
-                    bool useHack = false;
+                    // 0: No hack, query the thing normally.
+                    // 1: No hack, use NProcessHacker.
+                    // 2: Hack.
+                    int hackLevel = 1;
 
                     // Can't use NPH because XP had a bug where a thread hanging 
                     // on NtQueryObject couldn't be terminated.
                     if (OSVersion.IsBelowOrEqual(WindowsVersion.XP))
-                        useHack = true;
+                        hackLevel = 2;
 
-                    if (!useHack)
+                    // On Windows 7 and above the hanging bug appears to have 
+                    // been fixed. Query the object normally.
+                    if (OSVersion.IsAboveOrEqual(WindowsVersion.Seven))
+                        hackLevel = 0;
+
+                    if (hackLevel == 1)
                     {
                         try
                         {
@@ -230,14 +238,18 @@ namespace ProcessHacker.Native
                         }
                         catch (DllNotFoundException)
                         {
-                            useHack = true;
+                            hackLevel = 2;
                         }
                     }
 
-                    if (useHack)
+                    if (hackLevel == 0)
+                    {
+                        info.OrigName = GetObjectNameNt(process, handle, objectHandle);
+                    }
+                    else if (hackLevel == 2)
                     {
                         // KProcessHacker and NProcessHacker not available. Fall back to using hack
-                        // (i.e. not querying the name at all if the access is 0x0012019f)
+                        // (i.e. not querying the name at all if the access is 0x0012019f).
                         if ((int)thisHandle.GrantedAccess != 0x0012019f)
                             info.OrigName = GetObjectNameNt(process, handle, objectHandle);
                     }

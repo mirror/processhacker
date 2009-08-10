@@ -78,6 +78,16 @@ namespace ProcessHacker
 
         public void Redraw()
         {
+            // If this is running in debug mode, we should do the usual 
+            // safe invoking. Otherwise, leave it out...
+#if DEBUG
+            if (this.Parent.InvokeRequired)
+            {
+                this.Parent.BeginInvoke(new MethodInvoker(this.Redraw));
+                return;
+            }
+#endif
+
             Icon newIcon;
             Icon oldIcon = this.Icon;
 
