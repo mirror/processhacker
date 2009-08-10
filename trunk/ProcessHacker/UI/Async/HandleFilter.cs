@@ -38,7 +38,7 @@ namespace ProcessHacker.FormHelper
         private const int BufferSize = 50;
 
         public delegate void MatchListViewEvent(List<ListViewItem> item);
-        public delegate void MatchProgressEvent(int currentValue,int count);
+        public delegate void MatchProgressEvent(int currentValue, int count);
         public event MatchListViewEvent MatchListView;
         public event MatchProgressEvent MatchProgress;
         private string strFilter;
@@ -47,9 +47,9 @@ namespace ProcessHacker.FormHelper
 
         public HandleFilter(ISynchronizeInvoke isi, string strFilter)
             : base(isi)
-        { 
-            this.strFilter=strFilter;  
-        }       
+        {
+            this.strFilter = strFilter;
+        }
 
         protected override void DoWork()
         {
@@ -101,28 +101,28 @@ namespace ProcessHacker.FormHelper
                             Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                         {
                             phandle.EnumModules((module) =>
-                                {
-                                    if (module.FileName.ToLower().Contains(lowerFilter))
-                                        this.CallDllMatchListView(process.Key, module);
-                                    return true;
-                                });
+                            {
+                                if (module.FileName.ToLower().Contains(lowerFilter))
+                                    this.CallDllMatchListView(process.Key, module);
+                                return true;
+                            });
                         }
 
                         using (var phandle = new ProcessHandle(process.Key,
                             ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
                         {
                             phandle.EnumMemory((region) =>
-                                {
-                                    if (region.Type != MemoryType.Mapped)
-                                        return true;
-
-                                    string name = phandle.GetMappedFileName(region.BaseAddress);
-
-                                    if (name != null && name.ToLower().Contains(lowerFilter))
-                                        this.CallMappedFileMatchListView(process.Key, region.BaseAddress, name);
-
+                            {
+                                if (region.Type != MemoryType.Mapped)
                                     return true;
-                                });
+
+                                string name = phandle.GetMappedFileName(region.BaseAddress);
+
+                                if (name != null && name.ToLower().Contains(lowerFilter))
+                                    this.CallMappedFileMatchListView(process.Key, region.BaseAddress, name);
+
+                                return true;
+                            });
                         }
                     }
                     catch (Exception ex)
@@ -141,7 +141,14 @@ namespace ProcessHacker.FormHelper
         {
             try
             {
-                if (KProcessHacker.Instance == null)
+                // Don't get handles from processes in other session 
+                // if we don't have KPH to reduce freezes. Note that 
+                // on Windows 7 the hanging bug appears to have been 
+                // fixed, so there is an exception for that.
+                if (
+                    KProcessHacker.Instance == null &&
+                    !OSVersion.IsAboveOrEqual(WindowsVersion.Seven)
+                    )
                 {
                     try
                     {
@@ -250,6 +257,3 @@ namespace ProcessHacker.FormHelper
         }
     }
 }
-
-
-
