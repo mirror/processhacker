@@ -65,7 +65,8 @@ namespace ProcessHacker
             }
         }
 
-        private int _pid, _length;
+        private int _pid;
+        private long _length;
         private IntPtr _address;
         private byte[] _data;
 
@@ -74,7 +75,7 @@ namespace ProcessHacker
             get { return _pid.ToString() + "-" + _address.ToString() + "-" + _length.ToString(); }
         }
 
-        public MemoryEditor(int PID, IntPtr Address, int Length)
+        public MemoryEditor(int PID, IntPtr Address, long Length)
         {
             InitializeComponent();
             this.AddEscapeToClose();
@@ -166,7 +167,7 @@ namespace ProcessHacker
             {
                 _data = new byte[_length];
 
-                if (phandle.ReadMemory(_address, _data, _length) == 0)
+                if (phandle.ReadMemory(_address, _data, (int)_length) == 0)
                     throw new Exception("Unknown error.");
 
                 hexBoxMemory.ByteProvider = new Be.Windows.Forms.DynamicByteProvider(_data);

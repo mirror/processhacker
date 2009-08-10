@@ -297,8 +297,8 @@ namespace ProcessHacker
 
             try
             {
-                int s_a = (int)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][0]) +
-                    (int)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][1]);
+                long s_a = (long)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][0]) +
+                    (long)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][1]);
 
                 var lastInfo = new MemoryBasicInformation();
                 ProcessHandle phandle;
@@ -315,23 +315,25 @@ namespace ProcessHacker
 
                 phandle.EnumMemory((info) =>
                     {
-                        if (info.BaseAddress.ToInt32() > s_a)
+                        if (info.BaseAddress.ToInt64() > s_a)
                         {
-                            int selectlength =
-                                (int)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][2]);
+                            long selectlength =
+                                (long)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][2]);
 
-                            MemoryEditor ed = Program.GetMemoryEditor(_pid, lastInfo.BaseAddress, lastInfo.RegionSize,
+                            MemoryEditor ed = Program.GetMemoryEditor(_pid,
+                                lastInfo.BaseAddress,
+                                lastInfo.RegionSize.ToInt64(),
                                 new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f)
-                            {
-                                try
                                 {
-                                    f.ReadOnly = false;
-                                    f.Activate();
-                                    f.Select(s_a - lastInfo.BaseAddress.ToInt64(), selectlength);
-                                }
-                                catch
-                                { }
-                            }));
+                                    try
+                                    {
+                                        f.ReadOnly = false;
+                                        f.Activate();
+                                        f.Select(s_a - lastInfo.BaseAddress.ToInt64(), selectlength);
+                                    }
+                                    catch
+                                    { }
+                                }));
 
                             return false;
                         }
@@ -349,7 +351,7 @@ namespace ProcessHacker
         private void intersectItemClicked(object sender, EventArgs e)
         {
             List<ListViewItem> newitems = new List<ListViewItem>();
-            List<int> windowitems = new List<int>();
+            List<long> windowitems = new List<long>();
             string id = ((MenuItem)sender).Tag.ToString();
             ResultsWindow window = Program.ResultsWindows[id];
 
@@ -357,8 +359,8 @@ namespace ProcessHacker
 
             foreach (string[] s in window.Results)
             {
-                windowitems.Add((int)BaseConverter.ToNumberParse(s[0]) +
-                    (int)BaseConverter.ToNumberParse(s[1]));
+                windowitems.Add((long)BaseConverter.ToNumberParse(s[0]) +
+                    (long)BaseConverter.ToNumberParse(s[1]));
             }
 
             ResultsWindow rw = Program.GetResultsWindow(_pid, new Program.ResultsWindowInvokeAction(delegate(ResultsWindow f)
@@ -367,8 +369,8 @@ namespace ProcessHacker
 
                 foreach (string[] s in Results)
                 {
-                    int location = (int)BaseConverter.ToNumberParse(s[0]) +
-                        (int)BaseConverter.ToNumberParse(s[1]);
+                    long location = (long)BaseConverter.ToNumberParse(s[0]) +
+                        (long)BaseConverter.ToNumberParse(s[1]);
 
                     if (windowitems.Contains(location))
                     {

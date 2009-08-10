@@ -86,9 +86,9 @@ namespace ProcessHacker
                         return true;
 
                     CallSearchProgressChanged(
-                        String.Format("Searching 0x{0:x} ({1} found)...", info.BaseAddress, count));
+                        String.Format("Searching 0x{0} ({1} found)...", info.BaseAddress.ToString("x"), count));
 
-                    for (int i = 0; i < info.RegionSize; i += align)
+                    for (int i = 0; i < info.RegionSize.ToInt32(); i += align)
                     {
                         try
                         {
@@ -96,7 +96,7 @@ namespace ProcessHacker
                             structDef.Read();
 
                             // read succeeded, add it to the results
-                            Results.Add(new string[] { String.Format("0x{0:x}", info.BaseAddress),
+                            Results.Add(new string[] { Utils.FormatAddress(info.BaseAddress),
                                 String.Format("0x{0:x}", i), structLen, "" });
                             count++;
                         }

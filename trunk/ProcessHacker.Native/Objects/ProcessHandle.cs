@@ -85,7 +85,7 @@ namespace ProcessHacker.Native.Objects
                 FileCreationDisposition.OpenAlways
                 ))
             {
-                using (var shandle =
+                using (var shandle = 
                     SectionHandle.Create(
                     SectionAccess.All,
                     SectionAttributes.Image,
@@ -381,10 +381,10 @@ namespace ProcessHacker.Native.Objects
         /// <param name="clientId">A Client ID structure describing the process.</param>
         /// <param name="access">The desired access to the process.</param>
         public ProcessHandle(
-            string name,
-            ObjectFlags objectFlags,
-            DirectoryHandle rootDirectory,
-            ClientId clientId,
+            string name, 
+            ObjectFlags objectFlags, 
+            DirectoryHandle rootDirectory, 
+            ClientId clientId, 
             ProcessAccess access
             )
         {
@@ -1021,29 +1021,12 @@ namespace ProcessHacker.Native.Objects
             IntPtr pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
             byte* buffer = stackalloc byte[IntPtr.Size];
 
-            this.ReadMemory(pebBaseAddress.Increment(0x10), buffer, IntPtr.Size);
+            // Get a pointer to the process parameters block.
+            this.ReadMemory(pebBaseAddress.Increment(Win32.PebProcessParametersOffset), buffer, IntPtr.Size);
             IntPtr processParameters = *(IntPtr*)buffer;
 
-            /*
-             * RTL_USER_PROCESS_PARAMETERS
-             * off field
-             * +00 ULONG MaximumLength
-             * +04 ULONG Length
-             * +08 ULONG Flags
-             * +0c ULONG DebugFlags
-             * +10 PVOID ConsoleHandle
-             * +14 ULONG ConsoleFlags
-             * +18 HANDLE StdInputHandle
-             * +1c HANDLE StdOutputHandle
-             * +20 HANDLE StdErrorHandle
-             * +24 UNICODE_STRING CurrentDirectoryPath
-             * +2c HANDLE CurrentDirectoryHandle
-             * +30 UNICODE_STRING DllPath
-             * +38 UNICODE_STRING ImagePathName
-             * +40 UNICODE_STRING CommandLine
-             * +48 PVOID Environment
-             */
-            this.ReadMemory(processParameters.Increment(0x48), buffer, IntPtr.Size);
+            // Get a pointer to the environment block.
+            this.ReadMemory(processParameters.Increment(RtlUserProcessParameters.EnvironmentOffset), buffer, IntPtr.Size);
             IntPtr envBase = *(IntPtr*)buffer;
             int length = 0;
 
@@ -1053,7 +1036,7 @@ namespace ProcessHacker.Native.Objects
                 if (mbi.Protect == MemoryProtection.NoAccess)
                     throw new WindowsException();
 
-                length = mbi.RegionSize - envBase.Decrement(mbi.BaseAddress).ToInt32();
+                length = mbi.RegionSize.Decrement(envBase.Decrement(mbi.BaseAddress)).ToInt32();
             }
 
             // Now we read in the entire region of memory
@@ -1321,7 +1304,7 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(status);
 
             return value;
-        }
+        }   
 
         /// <summary>
         /// Gets the process' I/O priority, ranging from 0-7.
@@ -1422,10 +1405,10 @@ namespace ProcessHacker.Native.Objects
             ProcessModule mainModule = null;
 
             this.EnumModules((module) =>
-            {
-                mainModule = module;
-                return false;
-            });
+                {
+                    mainModule = module;
+                    return false;
+                });
 
             return mainModule;
         }
@@ -1628,9 +1611,15 @@ namespace ProcessHacker.Native.Objects
             this.ReadMemory(pebBaseAddress.Increment(Win32.PebProcessParametersOffset), buffer, IntPtr.Size);
             IntPtr processParameters = *(IntPtr*)buffer;
 
-            // read address of string
-            this.ReadMemory(processParameters.Increment((int)PebOffset.CommandLine + 0x4), buffer, IntPtr.Size);
-            IntPtr stringAddr = *(IntPtr*)buffer;
+            // Read the command line UNICODE_STRING structure.
+            UnicodeString commandLineUs;
+
+            this.ReadMemory(
+                processParameters.Increment(GetPebOffset(PebOffset.CommandLine)),
+                &commandLineUs,
+                Marshal.SizeOf(typeof(UnicodeString))
+                );
+            IntPtr stringAddr = commandLineUs.Buffer;
 
             /*
              * In the POSIX subsystem the command line is actually split up into bits, as in 

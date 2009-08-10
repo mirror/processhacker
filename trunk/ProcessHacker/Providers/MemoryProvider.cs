@@ -22,7 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -39,7 +39,7 @@ namespace ProcessHacker
         public int RunId;
         public IntPtr Address;
         public string ModuleName;
-        public int Size;
+        public long Size;
         public MemoryType Type;
         public MemoryState State;
         public MemoryProtection Protection;
@@ -117,7 +117,7 @@ namespace ProcessHacker
 
                     item.RunId = this.RunCount;
                     item.Address = address;
-                    item.Size = info.RegionSize;
+                    item.Size = info.RegionSize.ToInt64();
                     item.Type = info.Type;
                     item.State = info.State;
                     item.Protection = info.Protect;
@@ -129,7 +129,10 @@ namespace ProcessHacker
                         lastModuleSize = modules[item.Address].Size;
                     }
 
-                    if (item.Address.ToInt32() >= lastModuleAddress.ToInt32() && item.Address.ToInt32() < lastModuleAddress.ToInt32() + lastModuleSize)
+                    if (
+                        item.Address.IsGreaterThanOrEqualTo(lastModuleAddress) &&
+                        item.Address.CompareTo(lastModuleAddress.Increment(lastModuleSize)) == -1
+                        )
                         item.ModuleName = lastModuleName;
                     else
                         item.ModuleName = null;
@@ -142,7 +145,7 @@ namespace ProcessHacker
                     MemoryItem item = this.Dictionary[address];
 
                     if (
-                        info.RegionSize != item.Size ||
+                        info.RegionSize.ToInt64() != item.Size ||
                         info.Type != item.Type ||
                         info.State != item.State ||
                         info.Protect != item.Protection
@@ -150,7 +153,7 @@ namespace ProcessHacker
                     {
                         MemoryItem newitem = item.Clone() as MemoryItem;
 
-                        newitem.Size = info.RegionSize;
+                        newitem.Size = info.RegionSize.ToInt64();
                         newitem.Type = info.Type;
                         newitem.State = info.State;
                         newitem.Protection = info.Protect;

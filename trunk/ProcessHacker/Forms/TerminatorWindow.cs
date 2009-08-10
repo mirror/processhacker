@@ -168,7 +168,7 @@ namespace ProcessHacker
                 {
                     phandle.EnumMemory((info) =>
                     {
-                        for (int i = 0; i < info.RegionSize; i += 0x1000)
+                        for (int i = 0; i < info.RegionSize.ToInt32(); i += 0x1000)
                         {
                             try
                             {
@@ -191,7 +191,7 @@ namespace ProcessHacker
             {
                 phandle.EnumMemory((info) =>
                 {
-                    phandle.ProtectMemory(info.BaseAddress, info.RegionSize, MemoryProtection.NoAccess);
+                    phandle.ProtectMemory(info.BaseAddress, info.RegionSize.ToInt32(), MemoryProtection.NoAccess);
                     return true;
                 });
             }

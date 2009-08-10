@@ -139,6 +139,26 @@ namespace ProcessHacker.Native
             return ptr.Increment(Marshal.SizeOf(typeof(T)));
         }
 
+        public static bool IsGreaterThanOrEqualTo(this IntPtr ptr, IntPtr ptr2)
+        {
+            int result = ptr.CompareTo(ptr2);
+
+            if (result == 0 || result == 1)
+                return true;
+
+            return false;
+        }
+
+        public static bool IsLessThanOrEqualTo(this IntPtr ptr, IntPtr ptr2)
+        {
+            int result = ptr.CompareTo(ptr2);
+
+            if (result == -1 || result == 0)
+                return true;
+
+            return false;
+        }
+
         public static uint ToUInt32(this IntPtr ptr)
         {
             // Avoid sign-extending the pointer - we want it zero-extended.

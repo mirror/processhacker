@@ -57,12 +57,12 @@ namespace ProcessHacker
                     do
                     {
                         CallSearchProgressChanged(
-                            String.Format("Searching 0x{0:x} ({1} found)...", heap.dwAddress, count));
+                            String.Format("Searching 0x{0} ({1} found)...", heap.dwAddress.ToString("x"), count));
 
                         if (heap.dwBlockSize <= minsize)
                             continue;
 
-                        Results.Add(new string[] { String.Format("0x{0:x}", heap.dwAddress),
+                        Results.Add(new string[] { Utils.FormatAddress(heap.dwAddress),
                             "0x0", heap.dwBlockSize.ToString(), heap.dwFlags.ToString().Replace("LF32_", "") });
 
                         count++;

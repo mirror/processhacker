@@ -910,7 +910,7 @@ namespace ProcessHacker
         /// <param name="PID">The PID of the process to edit</param>
         /// <param name="address">The address to start editing at</param>
         /// <param name="length">The length to edit</param>
-        public static MemoryEditor GetMemoryEditor(int PID, IntPtr address, int length)
+        public static MemoryEditor GetMemoryEditor(int PID, IntPtr address, long length)
         {
             return GetMemoryEditor(PID, address, length, new MemoryEditorInvokeAction(delegate {}));
         }
@@ -923,7 +923,7 @@ namespace ProcessHacker
         /// <param name="length">The length to edit</param>
         /// <param name="action">The action to be invoked on the memory editor's thread</param>
         /// <returns>Memory editor form</returns>
-        public static MemoryEditor GetMemoryEditor(int PID, IntPtr address, int length, MemoryEditorInvokeAction action)
+        public static MemoryEditor GetMemoryEditor(int PID, IntPtr address, long length, MemoryEditorInvokeAction action)
         {
             MemoryEditor ed = null;
             string id = PID.ToString() + "-" + address.ToString() + "-" + length.ToString();

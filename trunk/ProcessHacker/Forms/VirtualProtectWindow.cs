@@ -31,10 +31,11 @@ namespace ProcessHacker
 {
     public partial class VirtualProtectWindow : Form
     {
-        private int _pid, _size;
+        private int _pid;
+        private long _size;
         private IntPtr _address;
 
-        public VirtualProtectWindow(int pid, IntPtr address, int size)
+        public VirtualProtectWindow(int pid, IntPtr address, long size)
         {
             InitializeComponent();
             this.AddEscapeToClose();
@@ -74,7 +75,7 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        phandle.ProtectMemory(_address, _size, (MemoryProtection)newprotect);
+                        phandle.ProtectMemory(_address, (int)_size, (MemoryProtection)newprotect);
                     }
                     catch (Exception ex)
                     {

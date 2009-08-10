@@ -183,7 +183,7 @@ namespace ProcessHacker.Native.Api
         public IntPtr BaseAddress;
         public IntPtr AllocationBase;
         public MemoryProtection AllocationProtect;
-        public int RegionSize;
+        public IntPtr RegionSize;
         public MemoryState State;
         public MemoryProtection Protect;
         public MemoryType Type;
@@ -271,7 +271,7 @@ namespace ProcessHacker.Native.Api
         public int NumEntries;
         public MibUdpRow[] Table;
     }
-
+ 
     [StructLayout(LayoutKind.Sequential)]
     public struct MibUdpRowOwnerPid
     {
@@ -289,7 +289,7 @@ namespace ProcessHacker.Native.Api
         public int OutDatagrams;
         public int NumAddrs;
     }
-
+ 
     [StructLayout(LayoutKind.Sequential)]
     public struct MibUdpTableOwnerPid
     {
@@ -602,7 +602,7 @@ namespace ProcessHacker.Native.Api
         public int NameLen;
         public int MaxNameLen;
         public char Name;
-    }
+    } 
 
     [StructLayout(LayoutKind.Sequential)]
     public struct ThreadEntry32

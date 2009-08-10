@@ -97,11 +97,11 @@ namespace ProcessHacker
                     if ((!opt_map) && (info.Type == MemoryType.Mapped))
                         return true;
 
-                    byte[] data = new byte[info.RegionSize];
+                    byte[] data = new byte[info.RegionSize.ToInt32()];
                     int bytesRead = 0;
 
                     CallSearchProgressChanged(
-                        String.Format("Searching 0x{0:x} ({1} found)...", info.BaseAddress, count));
+                        String.Format("Searching 0x{0} ({1} found)...", info.BaseAddress.ToString("x"), count));
 
                     try
                     {
@@ -128,7 +128,7 @@ namespace ProcessHacker
 
                     foreach (Match m in mc)
                     {
-                        Results.Add(new string[] { String.Format("0x{0:x}", info.BaseAddress),
+                        Results.Add(new string[] { Utils.FormatAddress(info.BaseAddress),
                                 String.Format("0x{0:x}", m.Index), m.Length.ToString(),
                                 Utils.MakePrintable(m.Value) });
 

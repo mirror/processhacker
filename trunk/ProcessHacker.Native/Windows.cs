@@ -138,8 +138,8 @@ namespace ProcessHacker.Native
 
                 if (!enumCallback(
                     new KernelModule(
-                        imageBases[i], 
-                        name.ToString(), 
+                        imageBases[i],
+                        name.ToString(),
                         FileUtils.FixPath(fileName.ToString())
                         )))
                     break;
@@ -185,8 +185,8 @@ namespace ProcessHacker.Native
             // tries repeatedly to call the function, doubling the buffer size each time it fails.
             while ((status = Win32.NtQuerySystemInformation(
                 SystemInformationClass.SystemHandleInformation,
-                data, 
-                data.Size, 
+                data,
+                data.Size,
                 out retLength)
                 ) == NtStatus.InfoLengthMismatch)
             {
@@ -294,10 +294,10 @@ namespace ProcessHacker.Native
             List<KernelModule> kernelModules = new List<KernelModule>();
 
             EnumKernelModules((kernelModule) =>
-                {
-                    kernelModules.Add(kernelModule);
-                    return true;
-                });
+            {
+                kernelModules.Add(kernelModule);
+                return true;
+            });
 
             return kernelModules.ToArray();
         }

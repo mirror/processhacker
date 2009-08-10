@@ -353,7 +353,8 @@ namespace ProcessHacker.Components
                     {
                         ListViewItem litem = listMemory.Items[newItem.Address.ToString()];
 
-                        this.FillMemoryListViewItem(litem, newItem);
+                        if (litem != null)
+                            this.FillMemoryListViewItem(litem, newItem);
                     }
                 }));
         }
@@ -440,7 +441,7 @@ namespace ProcessHacker.Components
 
             MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
 
-            MemoryEditor.ReadWriteMemory(_pid, item.Address, item.Size, false);
+            MemoryEditor.ReadWriteMemory(_pid, item.Address, (int)item.Size, false);
         }
 
         private void dumpMemoryMenuItem_Click(object sender, EventArgs e)
@@ -461,14 +462,14 @@ namespace ProcessHacker.Components
                         {
                             MemoryItem item = (MemoryItem)litem.Tag;
 
-                            using (MemoryAlloc alloc = new MemoryAlloc(item.Size))
+                            using (MemoryAlloc alloc = new MemoryAlloc((int)item.Size))
                             {
                                 try
                                 {
                                     unsafe
                                     {
-                                        phandle.ReadMemory(item.Address, alloc, item.Size);
-                                        fhandle.Write(alloc, item.Size);
+                                        phandle.ReadMemory(item.Address, alloc, (int)item.Size);
+                                        fhandle.Write(alloc, (int)item.Size);
                                     }
                                 }
                                 catch (WindowsException)
@@ -492,7 +493,7 @@ namespace ProcessHacker.Components
             {
                 IntPtr address = new IntPtr(-1);
                 IntPtr regionAddress = IntPtr.Zero;
-                int regionSize = 0;
+                long regionSize = 0;
                 bool found = false;
 
                 try
@@ -542,7 +543,7 @@ namespace ProcessHacker.Components
                     return;
                 }
 
-                MemoryEditor m_e = MemoryEditor.ReadWriteMemory(_pid, regionAddress, regionSize, false,
+                MemoryEditor m_e = MemoryEditor.ReadWriteMemory(_pid, regionAddress, (int)regionSize, false,
                    new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f) { f.Select(address.Decrement(regionAddress).ToInt64(), 1); }));
             }
         }
@@ -568,7 +569,7 @@ namespace ProcessHacker.Components
                     {
                         MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
 
-                        phandle.FreeMemory(item.Address, item.Size, false);
+                        phandle.FreeMemory(item.Address, (int)item.Size, false);
                     }
                 }
                 catch (Exception ex)
@@ -594,7 +595,7 @@ namespace ProcessHacker.Components
                     {
                         MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
 
-                        phandle.FreeMemory(item.Address, item.Size, true);
+                        phandle.FreeMemory(item.Address, (int)item.Size, true);
                     }
                 }
                 catch (Exception ex)

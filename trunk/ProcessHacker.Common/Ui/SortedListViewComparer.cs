@@ -53,16 +53,16 @@ namespace ProcessHacker.Common.Ui
             public int Compare(ListViewItem x, ListViewItem y, int column)
             {
                 string sx, sy;
-                int ix, iy;
+                long ix, iy;
                 IComparable cx, cy;
 
                 sx = x.SubItems[column].Text.Replace(",", "");
                 sy = y.SubItems[column].Text.Replace(",", "");
 
-                if (!int.TryParse(sx.StartsWith("0x") ? sx.Substring(2) : sx,
+                if (!long.TryParse(sx.StartsWith("0x") ? sx.Substring(2) : sx,
                     sx.StartsWith("0x") ? NumberStyles.AllowHexSpecifier : 0,
                     null, out ix) ||
-                    !int.TryParse(sy.StartsWith("0x") ? sy.Substring(2) : sy,
+                    !long.TryParse(sy.StartsWith("0x") ? sy.Substring(2) : sy,
                     sy.StartsWith("0x") ? NumberStyles.AllowHexSpecifier : 0,
                     null, out iy))
                 {

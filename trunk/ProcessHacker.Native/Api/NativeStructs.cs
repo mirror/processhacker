@@ -1511,6 +1511,8 @@ namespace ProcessHacker.Native.Api
             Marshal.OffsetOf(typeof(RtlUserProcessParameters), "ImagePathName").ToInt32();
         public static readonly int CommandLineOffset =
             Marshal.OffsetOf(typeof(RtlUserProcessParameters), "CommandLine").ToInt32();
+        public static readonly int EnvironmentOffset =
+            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "Environment").ToInt32();
         public static readonly int WindowTitleOffset =
             Marshal.OffsetOf(typeof(RtlUserProcessParameters), "WindowTitle").ToInt32();
         public static readonly int DesktopInfoOffset =
@@ -1768,7 +1770,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemHandleInformation
     {
-        public static readonly int HandlesOffset = 
+        public static readonly int HandlesOffset =
             Marshal.OffsetOf(typeof(SystemHandleInformation), "Handles").ToInt32();
 
         public int NumberOfHandles;

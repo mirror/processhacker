@@ -186,7 +186,7 @@ namespace ProcessHacker
                                 modules.Add(info.BaseAddress,
                                     new ProcessModule(
                                         info.BaseAddress,
-                                        info.RegionSize,
+                                        info.RegionSize.ToInt32(),
                                         IntPtr.Zero,
                                         0,
                                         fi.Name, fi.FullName));
