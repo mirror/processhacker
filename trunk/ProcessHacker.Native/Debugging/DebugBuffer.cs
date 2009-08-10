@@ -74,7 +74,7 @@ namespace ProcessHacker.Native.Debugging
 
             for (int i = 0; i < heaps.NumberOfHeaps; i++)
             {
-                var heap = heapInfo.ReadStruct<RtlHeapInformation>(sizeof(int), i);
+                var heap = heapInfo.ReadStruct<RtlHeapInformation>(RtlProcessHeaps.HeapsOffset, i);
 
                 if (!callback(new HeapInformation(heap)))
                     break;
@@ -120,7 +120,7 @@ namespace ProcessHacker.Native.Debugging
 
             for (int i = 0; i < modules.NumberOfModules; i++)
             {
-                var module = modulesInfo.ReadStruct<RtlProcessModuleInformation>(sizeof(int), i);
+                var module = modulesInfo.ReadStruct<RtlProcessModuleInformation>(RtlProcessModules.ModulesOffset, i);
 
                 if (!callback(new ModuleInformation(module)))
                     break;
@@ -147,10 +147,10 @@ namespace ProcessHacker.Native.Debugging
             List<HeapInformation> heaps = new List<HeapInformation>();
 
             this.EnumHeaps((heap) =>
-                {
-                    heaps.Add(heap);
-                    return true;
-                });
+            {
+                heaps.Add(heap);
+                return true;
+            });
 
             return heaps.ToArray();
         }
@@ -164,10 +164,10 @@ namespace ProcessHacker.Native.Debugging
             List<LockInformation> locks = new List<LockInformation>();
 
             this.EnumLocks((lock_) =>
-                {
-                    locks.Add(lock_);
-                    return true;
-                });
+            {
+                locks.Add(lock_);
+                return true;
+            });
 
             return locks.ToArray();
         }

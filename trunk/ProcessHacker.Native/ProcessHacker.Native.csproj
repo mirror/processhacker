@@ -54,7 +54,8 @@
     <Compile Include="Api\NativeDefinitions.cs" />
     <Compile Include="Api\NativeEnums.cs" />
     <Compile Include="Api\NativeFunctions.cs" />
-    <Compile Include="Api\NativeStructs.cs" />
+    <Compile Include="Api\NativeStructs.cs">
+    </Compile>
     <Compile Include="Api\NtStatus.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Debugging\DebugBuffer.cs" />

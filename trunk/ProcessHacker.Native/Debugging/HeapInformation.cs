@@ -30,8 +30,8 @@ namespace ProcessHacker.Native.Debugging
         internal HeapInformation(RtlHeapInformation heapInfo)
         {
             this.Address = heapInfo.BaseAddress;
-            this.BytesAllocated = heapInfo.BytesAllocated.ToInt32();
-            this.BytesCommitted = heapInfo.BytesCommitted.ToInt32();
+            this.BytesAllocated = heapInfo.BytesAllocated.ToInt64();
+            this.BytesCommitted = heapInfo.BytesCommitted.ToInt64();
             this.TagCount = heapInfo.NumberOfTags;
             this.EntryCount = heapInfo.NumberOfEntries;
             this.PseudoTagCount = heapInfo.NumberOfPseudoTags;
@@ -39,8 +39,8 @@ namespace ProcessHacker.Native.Debugging
 
         public HeapInformation(
             IntPtr address,
-            int bytesAllocated,
-            int bytesCommitted,
+            long bytesAllocated,
+            long bytesCommitted,
             int tagCount,
             int entryCount,
             int pseudoTagCount)
@@ -54,8 +54,8 @@ namespace ProcessHacker.Native.Debugging
         }
 
         public IntPtr Address { get; private set; }
-        public int BytesAllocated { get; private set; }
-        public int BytesCommitted { get; private set; }
+        public long BytesAllocated { get; private set; }
+        public long BytesCommitted { get; private set; }
         public int TagCount { get; private set; }
         public int EntryCount { get; private set; }
         public int PseudoTagCount { get; private set; }

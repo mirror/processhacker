@@ -1436,8 +1436,11 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct RtlProcessHeaps
     {
+        public static readonly int HeapsOffset =
+            Marshal.OffsetOf(typeof(RtlProcessHeaps), "Heaps").ToInt32();
+
         public int NumberOfHeaps;
-        // RtlHeapInformation[] Heaps
+        public RtlHeapInformation Heaps;
         // Array of RtlHeapInformation structures follows.
     }
 
@@ -1488,8 +1491,11 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct RtlProcessModules
     {
+        public static readonly int ModulesOffset =
+            Marshal.OffsetOf(typeof(RtlProcessModules), "Modules").ToInt32();
+
         public int NumberOfModules;
-        // RtlProcessModuleInformation[] Modules
+        public RtlProcessModuleInformation Modules;
         // Array of RtlProcessModuleInformation structures follows.
     }
 

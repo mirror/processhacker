@@ -52,12 +52,12 @@ namespace ProcessHacker
             var comparer = new SortedListViewComparer(listHeaps);
             listHeaps.ListViewItemSorter = comparer;
             comparer.CustomSorters.Add(1, (l1, l2) =>
-                {
-                    HeapInformation heap1 = l1.Tag as HeapInformation;
-                    HeapInformation heap2 = l2.Tag as HeapInformation;
+            {
+                HeapInformation heap1 = l1.Tag as HeapInformation;
+                HeapInformation heap2 = l2.Tag as HeapInformation;
 
-                    return heap1.BytesAllocated.CompareTo(heap2.BytesAllocated);
-                });
+                return heap1.BytesAllocated.CompareTo(heap2.BytesAllocated);
+            });
             comparer.CustomSorters.Add(2, (l1, l2) =>
             {
                 HeapInformation heap1 = l1.Tag as HeapInformation;
@@ -80,7 +80,8 @@ namespace ProcessHacker
             catch (WindowsException)
             { }
 
-            int allocatedTotal = 0, committedTotal = 0, entriesTotal = 0, tagsTotal = 0, pseudoTagsTotal = 0;
+            long allocatedTotal = 0, committedTotal = 0;
+            int entriesTotal = 0, tagsTotal = 0, pseudoTagsTotal = 0;
 
             foreach (HeapInformation heap in heaps)
             {
@@ -119,7 +120,7 @@ namespace ProcessHacker
                     //tagsTotal.ToString("N0"),
                     //pseudoTagsTotal.ToString("N0")
                 })).Tag = new HeapInformation(
-                    IntPtr.Zero, allocatedTotal, committedTotal, 
+                    IntPtr.Zero, allocatedTotal, committedTotal,
                     tagsTotal, entriesTotal, pseudoTagsTotal
                     );
         }
