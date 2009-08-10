@@ -1598,42 +1598,21 @@ namespace ProcessHacker.Native.Objects
             byte* buffer = stackalloc byte[IntPtr.Size];
             IntPtr pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
 
-            /* read address of parameter information block
-             *
-             * PEB
-             * off field
-             * +00 BOOLEAN InheritedAddressSpace;
-             * +01 BOOLEAN ReadImageFileExecOptions;
-             * +02 BOOLEAN BeingDebugged;
-             * +03 BOOLEAN Spare;
-             * +04 HANDLE Mutant;
-             * +08 PVOID ImageBaseAddress;
-             * +0c PVOID LoaderData;
-             * +10 PRTL_USER_PROCESS_PARAMETERS ProcessParameters; 
-             */
+            // Read the address of parameter information block.
             this.ReadMemory(pebBaseAddress.Increment(Win32.PebProcessParametersOffset), buffer, IntPtr.Size);
             IntPtr processParameters = *(IntPtr*)buffer;
 
-            // Read length (in bytes) of string. The offset of the UNICODE_STRING structure is 
-            // specified in the enum.
-            //
-            // UNICODE_STRING
-            // off field
-            // +00 USHORT Length;
-            // +02 USHORT MaximumLength;
-            // +04 PWSTR Buffer;
+            // The offset of the UNICODE_STRING structure is specified in the enum.
             int realOffset = GetPebOffset(offset);
 
-            this.ReadMemory(processParameters.Increment(realOffset), buffer, 2);
-            ushort stringLength = *(ushort*)buffer;
+            // Read the UNICODE_STRING structure.
+            UnicodeString pebStr;
 
-            // read address of string
-            this.ReadMemory(processParameters.Increment(realOffset + 0x4), buffer, IntPtr.Size);
-            IntPtr stringAddr = *(IntPtr*)buffer;
+            this.ReadMemory(processParameters.Increment(realOffset), &pebStr, Marshal.SizeOf(typeof(UnicodeString)));
 
             // read string and decode it
             return UnicodeEncoding.Unicode.GetString(
-                this.ReadMemory(stringAddr, stringLength)).TrimEnd('\0');
+                this.ReadMemory(pebStr.Buffer, pebStr.Length), 0, pebStr.Length);
         }
 
         /// <summary>
