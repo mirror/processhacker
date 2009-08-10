@@ -1969,7 +1969,7 @@ namespace ProcessHacker.Native.Api
         public static extern IntPtr CreateRemoteThread(
             [In] IntPtr ProcessHandle,
             [In] IntPtr ThreadAttributes,
-            [In] int StackSize,
+            [In] IntPtr StackSize,
             [In] IntPtr StartAddress,
             [In] IntPtr Parameter,
             [In] CreationFlags CreationFlags,

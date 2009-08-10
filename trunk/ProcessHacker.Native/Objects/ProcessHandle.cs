@@ -85,7 +85,7 @@ namespace ProcessHacker.Native.Objects
                 FileCreationDisposition.OpenAlways
                 ))
             {
-                using (var shandle = 
+                using (var shandle =
                     SectionHandle.Create(
                     SectionAccess.All,
                     SectionAttributes.Image,
@@ -381,10 +381,10 @@ namespace ProcessHacker.Native.Objects
         /// <param name="clientId">A Client ID structure describing the process.</param>
         /// <param name="access">The desired access to the process.</param>
         public ProcessHandle(
-            string name, 
-            ObjectFlags objectFlags, 
-            DirectoryHandle rootDirectory, 
-            ClientId clientId, 
+            string name,
+            ObjectFlags objectFlags,
+            DirectoryHandle rootDirectory,
+            ClientId clientId,
             ProcessAccess access
             )
         {
@@ -600,7 +600,7 @@ namespace ProcessHacker.Native.Objects
             IntPtr threadHandle;
 
             if ((threadHandle = Win32.CreateRemoteThread(
-                this, IntPtr.Zero, 0, startAddress, parameter,
+                this, IntPtr.Zero, IntPtr.Zero, startAddress, parameter,
                 createSuspended ? CreationFlags.CreateSuspended : 0,
                 out threadId)) == IntPtr.Zero)
                 Win32.ThrowLastError();
@@ -1304,7 +1304,7 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(status);
 
             return value;
-        }   
+        }
 
         /// <summary>
         /// Gets the process' I/O priority, ranging from 0-7.
@@ -1405,10 +1405,10 @@ namespace ProcessHacker.Native.Objects
             ProcessModule mainModule = null;
 
             this.EnumModules((module) =>
-                {
-                    mainModule = module;
-                    return false;
-                });
+            {
+                mainModule = module;
+                return false;
+            });
 
             return mainModule;
         }
@@ -1764,8 +1764,11 @@ namespace ProcessHacker.Native.Objects
 
             this.WriteMemory(stringPage, UnicodeEncoding.Unicode.GetBytes(path));
 
-            this.CreateThread(Win32.GetProcAddress(Win32.GetModuleHandle("kernel32.dll"), "LoadLibraryW"),
-                stringPage).Wait(timeout * Win32.TimeMsTo100Ns);
+            using (var thandle = this.CreateThread(
+                Loader.GetProcedure("kernel32.dll", "LoadLibraryW"),
+                stringPage
+                ))
+                thandle.Wait(timeout * Win32.TimeMsTo100Ns);
 
             this.FreeMemory(stringPage, path.Length * 2 + 2, false);
         }
@@ -2085,7 +2088,11 @@ namespace ProcessHacker.Native.Objects
         {
             byte* buffer = stackalloc byte[IntPtr.Size];
 
-            this.ReadMemory(this.GetBasicInformation().PebBaseAddress.Increment(0xc), buffer, IntPtr.Size);
+            this.ReadMemory(
+                this.GetBasicInformation().PebBaseAddress.Increment(Win32.PebLdrOffset),
+                buffer,
+                IntPtr.Size
+                );
 
             IntPtr loaderData = *(IntPtr*)buffer;
 
@@ -2112,7 +2119,7 @@ namespace ProcessHacker.Native.Objects
 
                 if (currentEntry->DllBase == baseAddress)
                 {
-                    this.WriteMemory(currentLink.Increment(0x38), &count, 2);
+                    this.WriteMemory(currentLink.Increment(LdrDataTableEntry.LoadCountOffset), &count, 2);
                     break;
                 }
 

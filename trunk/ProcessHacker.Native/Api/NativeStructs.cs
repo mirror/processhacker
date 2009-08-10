@@ -823,6 +823,9 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct LdrDataTableEntry
     {
+        public static readonly int LoadCountOffset =
+            Marshal.OffsetOf(typeof(LdrDataTableEntry), "LoadCount").ToInt32();
+
         public ListEntry InLoadOrderLinks;
         public ListEntry InMemoryOrderLinks;
         public ListEntry InInitializationOrderLinks;
