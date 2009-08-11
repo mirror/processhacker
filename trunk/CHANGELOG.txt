@@ -1,6 +1,6 @@
 Process Hacker
 
-1.3.9.5
+1.4
  * NEW/IMPROVED:
    * Full support for Windows 7 SP0
    * Basic support for Windows 64-bit
