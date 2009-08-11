@@ -498,9 +498,59 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                if (!Win32.GetThreadContext(this, ref context))
-                    Win32.ThrowLastError();
+                NtStatus status;
+
+                if ((status = Win32.NtGetContextThread(this, ref context)) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
             }
+        }
+
+        /// <summary>
+        /// Gets the thread's context.
+        /// </summary>
+        /// <returns>A CONTEXT struct.</returns>
+        public ContextAmd64 GetContext(ContextFlagsAmd64 flags)
+        {
+            ContextAmd64 context = new ContextAmd64();
+
+            context.ContextFlags = flags;
+            this.GetContext(ref context);
+
+            return context;
+        }
+
+        /// <summary>
+        /// Gets the thread's context.
+        /// </summary>
+        /// <param name="context">A Context structure. The ContextFlags must be set appropriately.</param>
+        public void GetContext(ref ContextAmd64 context)
+        {
+            NtStatus status;
+
+            // HACK: To avoid a datatype misalignment error, create a temporary 
+            // heap allocation aligned on a 16 byte boundary.
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(ContextAmd64)), HeapFlags.CreateAlign16))
+            {
+                data.WriteStruct<ContextAmd64>(context);
+
+                if ((status = Win32.NtGetContextThread(this, data)) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                context = data.ReadStruct<ContextAmd64>();
+            }
+        }
+
+        /// <summary>
+        /// Gets the thread's x86 context. The thread's process must be running 
+        /// under WOW64.
+        /// </summary>
+        /// <param name="context">A Context structure. The ContextFlags must be set appropriately.</param>
+        public void GetContextWow64(ref Context context)
+        {
+            NtStatus status;
+
+            if ((status = Win32.RtlWow64GetThreadContext(this, ref context)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         /// <summary>
@@ -859,9 +909,43 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                if (!Win32.SetThreadContext(this, ref context))
-                    Win32.ThrowLastError();
+                NtStatus status;
+
+                if ((status = Win32.NtSetContextThread(this, ref context)) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
             }
+        }
+
+        /// <summary>
+        /// Sets the thread's context.
+        /// </summary>
+        /// <param name="context">A CONTEXT struct.</param>
+        public void SetContext(ContextAmd64 context)
+        {
+            NtStatus status;
+
+            // HACK: To avoid a datatype misalignment error, use a 
+            // heap allocation aligned on a 16 byte boundary.
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(ContextAmd64)), HeapFlags.CreateAlign16))
+            {
+                data.WriteStruct<ContextAmd64>(context);
+
+                if ((status = Win32.NtSetContextThread(this, data)) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+        }
+
+        /// <summary>
+        /// Sets the thread's x86 context. The thread's process must 
+        /// be running under WOW64.
+        /// </summary>
+        /// <param name="context">A CONTEXT struct.</param>
+        public void SetContextWow64(Context context)
+        {
+            NtStatus status;
+
+            if ((status = Win32.RtlWow64SetThreadContext(this, ref context)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }   
 
         /// <summary>
@@ -946,11 +1030,20 @@ namespace ProcessHacker.Native.Objects
         /// <param name="walkStackCallback">A callback to execute.</param>
         public void WalkStack(WalkStackDelegate walkStackCallback)
         {
+            this.WalkStack(walkStackCallback, OSVersion.Architecture);
+        }
+
+        /// <summary>
+        /// Walks the call stack for the thread.
+        /// </summary>
+        /// <param name="walkStackCallback">A callback to execute.</param>
+        public void WalkStack(WalkStackDelegate walkStackCallback, OSArch architecture)
+        {
             if (KProcessHacker.Instance != null)
             {
                 // Use KPH to open the parent process.
                 using (var phandle = this.GetProcess(ProcessAccess.QueryInformation | ProcessAccess.VmRead))
-                    this.WalkStack(phandle, walkStackCallback);
+                    this.WalkStack(phandle, walkStackCallback, architecture);
             }
             else
             {
@@ -961,7 +1054,7 @@ namespace ProcessHacker.Native.Objects
                     ProcessAccess.QueryInformation | ProcessAccess.VmRead
                     ))
                 {
-                    this.WalkStack(phandle, walkStackCallback);
+                    this.WalkStack(phandle, walkStackCallback, architecture);
                 }
             }
         }
@@ -973,10 +1066,22 @@ namespace ProcessHacker.Native.Objects
         /// <param name="walkStackCallback">A callback to execute.</param>
         public unsafe void WalkStack(ProcessHandle parentProcess, WalkStackDelegate walkStackCallback)
         {
-            var context = new Context();
-            bool suspended = false;
+            this.WalkStack(parentProcess, walkStackCallback, OSVersion.Architecture);
+        }
 
-            context.ContextFlags = ContextFlags.All;
+        /// <summary>
+        /// Walks the call stack for the thread.
+        /// </summary>
+        /// <param name="parentProcess">A handle to the thread's parent process.</param>
+        /// <param name="walkStackCallback">A callback to execute.</param>
+        /// <param name="architecture">
+        /// The type of stack walk. On 32-bit systems, this value is ignored. 
+        /// On 64-bit systems, this value can be set to I386 to walk the 
+        /// 32-bit stack.
+        /// </param>
+        public unsafe void WalkStack(ProcessHandle parentProcess, WalkStackDelegate walkStackCallback, OSArch architecture)
+        {
+            bool suspended = false;
 
             // Suspend the thread to avoid inaccurate thread stacks.
             try
@@ -984,7 +1089,7 @@ namespace ProcessHacker.Native.Objects
                 this.Suspend();
                 suspended = true;
             }
-            catch
+            catch (WindowsException)
             {
                 suspended = false;
             }
@@ -1004,44 +1109,106 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                // Get the context.
-                this.GetContext(ref context);
-
-                // Set up the initial stack frame structure.
-                var stackFrame = new StackFrame64();
-
-                stackFrame.AddrPC.Mode = AddressMode.AddrModeFlat;
-                stackFrame.AddrPC.Offset = (ulong)context.Eip;
-                stackFrame.AddrStack.Mode = AddressMode.AddrModeFlat;
-                stackFrame.AddrStack.Offset = (ulong)context.Esp;
-                stackFrame.AddrFrame.Mode = AddressMode.AddrModeFlat;
-                stackFrame.AddrFrame.Offset = (ulong)context.Ebp;
-
-                while (true)
+                // x86/WOW64 stack walk.
+                if (IntPtr.Size == 4 || (IntPtr.Size == 8 && architecture == OSArch.I386))
                 {
-                    using (Win32.DbgHelpLock.AcquireContext())
+                    Context context = new Context();
+
+                    context.ContextFlags = ContextFlags.All;
+
+                    if (IntPtr.Size == 4)
                     {
-                        if (!Win32.StackWalk64(
-                            MachineType.I386,
-                            parentProcess,
-                            this,
-                            ref stackFrame,
-                            ref context,
-                            readMemoryProc,
-                            Win32.SymFunctionTableAccess64,
-                            Win32.SymGetModuleBase64,
-                            IntPtr.Zero
-                            ))
-                            break;
+                        // Get the context.
+                        this.GetContext(ref context);
+                    }
+                    else
+                    {
+                        // Get the WOW64 x86 context.
+                        this.GetContextWow64(ref context);
                     }
 
-                    // If we got an invalid eip, break.
-                    if (stackFrame.AddrPC.Offset == 0)
-                        break;
+                    // Set up the initial stack frame structure.
+                    var stackFrame = new StackFrame64();
 
-                    // Execute the callback.
-                    if (!walkStackCallback(new ThreadStackFrame(ref stackFrame)))
-                        break;
+                    stackFrame.AddrPC.Mode = AddressMode.AddrModeFlat;
+                    stackFrame.AddrPC.Offset = (ulong)context.Eip;
+                    stackFrame.AddrStack.Mode = AddressMode.AddrModeFlat;
+                    stackFrame.AddrStack.Offset = (ulong)context.Esp;
+                    stackFrame.AddrFrame.Mode = AddressMode.AddrModeFlat;
+                    stackFrame.AddrFrame.Offset = (ulong)context.Ebp;
+
+                    while (true)
+                    {
+                        using (Win32.DbgHelpLock.AcquireContext())
+                        {
+                            if (!Win32.StackWalk64(
+                                MachineType.I386,
+                                parentProcess,
+                                this,
+                                ref stackFrame,
+                                ref context,
+                                readMemoryProc,
+                                Win32.SymFunctionTableAccess64,
+                                Win32.SymGetModuleBase64,
+                                IntPtr.Zero
+                                ))
+                                break;
+                        }
+
+                        // If we got an invalid eip, break.
+                        if (stackFrame.AddrPC.Offset == 0)
+                            break;
+
+                        // Execute the callback.
+                        if (!walkStackCallback(new ThreadStackFrame(ref stackFrame)))
+                            break;
+                    }
+                }
+                // x64 stack walk.
+                else if (IntPtr.Size == 8)
+                {
+                    ContextAmd64 context = new ContextAmd64();
+
+                    context.ContextFlags = ContextFlagsAmd64.All;
+                    // Get the context.
+                    this.GetContext(ref context);
+
+                    // Set up the initial stack frame structure.
+                    var stackFrame = new StackFrame64();
+
+                    stackFrame.AddrPC.Mode = AddressMode.AddrModeFlat;
+                    stackFrame.AddrPC.Offset = (ulong)context.Rip;
+                    stackFrame.AddrStack.Mode = AddressMode.AddrModeFlat;
+                    stackFrame.AddrStack.Offset = (ulong)context.Rsp;
+                    stackFrame.AddrFrame.Mode = AddressMode.AddrModeFlat;
+                    stackFrame.AddrFrame.Offset = (ulong)context.Rbp;
+
+                    while (true)
+                    {
+                        using (Win32.DbgHelpLock.AcquireContext())
+                        {
+                            if (!Win32.StackWalk64(
+                                MachineType.Amd64,
+                                parentProcess,
+                                this,
+                                ref stackFrame,
+                                ref context,
+                                readMemoryProc,
+                                Win32.SymFunctionTableAccess64,
+                                Win32.SymGetModuleBase64,
+                                IntPtr.Zero
+                                ))
+                                break;
+                        }
+
+                        // If we got an invalid rip, break.
+                        if (stackFrame.AddrPC.Offset == 0)
+                            break;
+
+                        // Execute the callback.
+                        if (!walkStackCallback(new ThreadStackFrame(ref stackFrame)))
+                            break;
+                    }
                 }
             }
             finally
@@ -1053,7 +1220,7 @@ namespace ProcessHacker.Native.Objects
                     {
                         this.Resume();
                     }
-                    catch
+                    catch (WindowsException)
                     { }
                 }
             }

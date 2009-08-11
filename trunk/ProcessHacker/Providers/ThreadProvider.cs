@@ -131,25 +131,25 @@ namespace ProcessHacker
                             _processHandle = new ProcessHandle(_pid, _processAccess);
                         }
                     }
-                    catch (Exception ex)
+                    catch (WindowsException ex)
                     {
                         Logging.Log(ex);
                     }
                 }
 
-                try
-                {
-                    // Needed (maybe) to display the EULA
-                    Win32.SymbolServerSetOptions(SymbolServerOption.Unattended, 0);
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
-                }
-
-                // start loading symbols; avoid the UI blocking on the dbghelp call lock
+                // Start loading symbols; avoid the UI blocking on the dbghelp call lock.
                 _symbolsWorkQueue.QueueWorkItemTag(new Action(() =>
                 {
+                    try
+                    {
+                        // Needed (maybe) to display the EULA
+                        Win32.SymbolServerSetOptions(SymbolServerOption.Unattended, 0);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
+
                     try
                     {
                         // Use the process handle if we have one, otherwise use the default ID generator.
@@ -178,13 +178,36 @@ namespace ProcessHacker
                                     // If the process is CSRSS we should load kernel modules 
                                     // due to the presence of kernel-mode threads.
                                     if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
-                                        this.LoadKernelSymbols();
+                                        this.LoadKernelSymbols(true);
                                 }
                             }
                             else
                             {
-                                this.LoadKernelSymbols();
+                                this.LoadKernelSymbols(true);
                             }
+                        }
+                        catch (WindowsException ex)
+                        {
+                            // Did we get Access Denied? At least load 
+                            // kernel32.dll and ntdll.dll.
+                            try
+                            {
+                                ProcessHandle.Current.EnumModules((module) =>
+                                    {
+                                        if (module.BaseName == "kernel32.dll" || module.BaseName == "ntdll.dll")
+                                        {
+                                            _symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
+                                        }
+
+                                        return true;
+                                    });
+                            }
+                            catch (Exception ex2)
+                            {
+                                Logging.Log(ex2);
+                            }
+
+                            Logging.Log(ex);
                         }
                         catch (Exception ex)
                         {
@@ -219,11 +242,16 @@ namespace ProcessHacker
 
         public void LoadKernelSymbols()
         {
+            this.LoadKernelSymbols(false);
+        }
+
+        public void LoadKernelSymbols(bool force)
+        {
             lock (_symbols)
             {
                 if (!_kernelSymbolsLoaded)
                 {
-                    if (KProcessHacker.Instance != null)
+                    if (KProcessHacker.Instance != null || force)
                         _symbols.LoadKernelModules();
 
                     _kernelSymbolsLoaded = true;

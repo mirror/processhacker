@@ -16,10 +16,3 @@ Tools > Options > Projects and Solutions > General.
 The build script relies on ILMerge being present in the default installation
 location or in your PATH environment variable. In order to build the installer 
 you must have Inno Setup QuickStart Pack installed.
-
-NOTES
- * Do not use OpenProcess, OpenThread, OpenProcessToken or OpenThreadToken. Instead, 
-   use the ProcessHandle, ThreadHandle and GetToken functions, respectively. These 
-   classes make common manipulation tasks much easier. They also use KProcessHacker 
-   automatically, if available.
- * Similarly, do not use OpenService - use ServiceHandle instead.

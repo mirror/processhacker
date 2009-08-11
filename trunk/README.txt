@@ -1,38 +1,41 @@
 Process Hacker is a tool for viewing and manipulating processes. 
-It supports:
+Its most basic functionality includes:
 
- * Running a program as almost any user, including SYSTEM, LOCAL 
-   SERVICE and NETWORK SERVICE.
  * Viewing, terminating, suspending and resuming processes
- * Viewing, controlling and deleting services
- * Viewing/enabling/disabling/removing process privileges
- * Viewing process groups
- * Inspecting PE files (exe/dll/ocx/sys files)
+ * Restarting processes, creating dump files, detaching from 
+   any debuggers, viewing heaps, injecting DLLs, etc.
+ * Viewing detailed process information, statistics, and 
+   performance information
  * Viewing, terminating, suspending and resuming threads
- * Viewing and closing process handles
- * Viewing modules, finding the address of an exported function, 
-   changing page protection, reading memory and viewing file 
-   properties
- * Viewing memory regions, changing page protection and reading 
-   and writing
- * Searching through process memory, either using literal data 
-   or regular expressions
- * Scanning for strings inside process memory
- * Getting heap information
- * Viewing DEP status and other additional information.
+ * Viewing detailed token information (including modifying 
+   privileges)
+ * Viewing and unloading modules
+ * Viewing memory regions
+ * Viewing environment variables
+ * Viewing and closing handles
+ * Viewing, controlling and editing services
+ * Viewing and closing network connections
 
-Process Hacker comes with an "Assistant" application which is used 
-when launching programs as other users.
+Process Hacker runs on both 32-bit and 64-bit Windows, but 
+certain functionality is only available on 32-bit systems, 
+including:
+
+ * Bypassing rootkits and security software when accessing 
+   processes, threads, and other objects
+ * Viewing kernel pool limits
+ * Viewing hidden processes
+ * Changing handle attributes
+ * Viewing kernel-mode stack traces
 
 Process Hacker has an embedded help file (accessible through 
 Hacker > Help).
 
 Process Hacker is brought to you by the Process Hacker team:
  * wj32 (Project Manager)
- * Dean (Developer)
- * Fliser (Developer)
  * XhmikosR (Installer Developer, Tester)
 Inactive:
+ * Dean (Developer)
+ * Fliser (Developer)
  * Mikalai Chaly (Developer)
  * Uday Shanbhag (Developer)
 

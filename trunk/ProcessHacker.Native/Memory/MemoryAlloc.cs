@@ -73,6 +73,17 @@ namespace ProcessHacker.Native
             this.Size = size;
         }
 
+        /// <summary>
+        /// Creates a new memory allocation with the specified size.
+        /// </summary>
+        /// <param name="size">The amount of memory, in bytes, to allocate.</param>
+        /// <param name="flags">Any flags to use.</param>
+        public MemoryAlloc(int size, HeapFlags flags)
+        {
+            this.Memory = _privateHeap.Allocate(flags, size);
+            this.Size = size;
+        }
+
         protected override void Free()
         {
             _privateHeap.Free(0, this);

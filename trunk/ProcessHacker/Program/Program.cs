@@ -794,7 +794,7 @@ namespace ProcessHacker
 
             info.AppendLine("Process Hacker " + Application.ProductVersion);
             info.AppendLine("CLR Version: " + Environment.Version.ToString());
-            info.AppendLine("OS Version: " + Environment.OSVersion.VersionString);
+            info.AppendLine("OS Version: " + Environment.OSVersion.VersionString + " (" + OSVersion.BitsString + ")");
             info.AppendLine("Elevation: " + ElevationType.ToString());
             info.AppendLine("Working set: " + Utils.FormatSize(Environment.WorkingSet));
             info.AppendLine("Private heap: 0x" + MemoryAlloc.PrivateHeap.ToString("x"));

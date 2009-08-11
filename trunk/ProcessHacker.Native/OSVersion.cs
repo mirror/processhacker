@@ -27,6 +27,12 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native
 {
+    public enum OSArch
+    {
+        I386,
+        Amd64
+    }
+
     public enum WindowsVersion
     {
         /// <summary>
@@ -57,6 +63,8 @@ namespace ProcessHacker.Native
 
     public static class OSVersion
     {
+        private static int _bits = IntPtr.Size * 8;
+        private static OSArch _arch = IntPtr.Size == 4 ? OSArch.I386 : OSArch.Amd64;
         private static WindowsVersion _windowsVersion;
 
         private static ProcessAccess _minProcessQueryInfoAccess = ProcessAccess.QueryInformation;
@@ -106,6 +114,21 @@ namespace ProcessHacker.Native
                 _hasUac = true;
                 _hasWin32ImageFileName = true;
             }
+        }
+
+        public static int Bits
+        {
+            get { return _bits; }
+        }
+
+        public static string BitsString
+        {
+            get { return _bits.ToString() + "-" + "bit"; }
+        }
+
+        public static OSArch Architecture
+        {
+            get { return _arch; }
         }
 
         public static WindowsVersion WindowsVersion
@@ -166,6 +189,16 @@ namespace ProcessHacker.Native
         public static bool HasWin32ImageFileName
         {
             get { return _hasWin32ImageFileName; }
+        }
+
+        public static bool IsAmd64()
+        {
+            return _arch == OSArch.Amd64;
+        }
+
+        public static bool IsI386()
+        {
+            return _arch == OSArch.I386;
         }
 
         public static bool IsAbove(WindowsVersion version)

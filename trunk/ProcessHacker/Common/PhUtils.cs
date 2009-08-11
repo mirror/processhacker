@@ -184,9 +184,9 @@ namespace ProcessHacker.Common
             // Set the last opened key in regedit config. Note that if we are on 
             // Vista, we need to append "Computer\" to the beginning.
             using (var regeditKey =
-                Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
+                Microsoft.Win32.Registry.CurrentUser.CreateSubKey(
                     @"Software\Microsoft\Windows\CurrentVersion\Applets\Regedit",
-                    true
+                    Microsoft.Win32.RegistryKeyPermissionCheck.ReadWriteSubTree
                     ))
             {
                 if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))

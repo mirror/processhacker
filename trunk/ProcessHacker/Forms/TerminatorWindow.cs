@@ -255,7 +255,7 @@ namespace ProcessHacker
 
         private void TP1a()
         {
-            ProcessHandle phandle = ProcessHandle.GetCurrent();
+            ProcessHandle phandle = ProcessHandle.Current;
             bool found = false;
 
             // Loop through the processes until we find our target process.

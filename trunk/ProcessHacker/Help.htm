@@ -27,8 +27,7 @@ pre {
 
     <h2>System Requirements</h2>
     <ul>
-      <li>Microsoft Windows XP SP2, Vista or 7, <strong>32-bit</strong> (Windows XP SP3 and 
-      Windows Vista SP1 required for certain features)</li>
+      <li>Microsoft Windows XP SP2, Vista or 7 (Windows XP SP3 and Windows Vista SP1 required for certain features)</li>
       <li>.NET Framework 2.0</li>
     </ul>
 
@@ -102,9 +101,12 @@ pre {
       to display all handles and bypass rootkits/security software. If enabled, it will be 
       loaded the next time Process Hacker is started.</dd>
       
+      <dt>Enable experimental features</dt>
+      <dd>Enables experimental features such as process protection.</dd>
+      
       <dt>Verify signatures and perform additional checks</dt>
       <dd>This option affects newly created processes, and controls whether Process Hacker will 
-      attempt to verify the digital signatures of processes.</dd>
+      attempt to verify the digital signatures of processes and detect packed images.</dd>
       
       <dt>Replace Task Manager with Process Hacker</dt>
       <dd>If enabled, any attempt to start Task Manager will start Process Hacker instead.</dd>
@@ -132,39 +134,39 @@ pre {
       are highlighted in a different color.</dd>
       
       <dt>New Objects</dt>
-      <dd>Highlighting for new processes, services, threads, modules, memory regions, and handles.</dd>
+      <dd>New processes, services, threads, modules, memory regions, and handles.</dd>
       
       <dt>Removed Objects</dt>
-      <dd>Highlighting for terminated/deleted processes, services, threads, modules, memory regions and 
+      <dd>Terminated/deleted processes, services, threads, modules, memory regions and 
       handles.</dd>
       
       <dt>Own Processes</dt>
-      <dd>Highlighting for processes running under the same user account as Process Hacker.</dd>
+      <dd>Processes running under the same user account as Process Hacker.</dd>
       
       <dt>System Processes</dt>
-      <dd>Highlighting for processes running under the SYSTEM user account.</dd>
+      <dd>Processes running under the SYSTEM user account.</dd>
       
       <dt>Service Processes</dt>
-      <dd>Highlighting for processes hosting one or more services.</dd>
+      <dd>Processes hosting one or more services.</dd>
       
       <dt>Debugged Processes</dt>
-      <dd>Highlighting for processes currently being debugged.</dd>
+      <dd>Processes currently being debugged.</dd>
       
       <dt>Elevated Processes</dt>
-      <dd>Highlighting for processes running with full privileges on a computer with 
+      <dd>Processes running with full privileges on a computer with 
       User Account Control (UAC) enabled.</dd>
       
       <dt>Job Processes</dt>
-      <dd>Highlighting for processes associated with a job object.</dd>
+      <dd>Processes associated with a job object.</dd>
       
-      <dt>.NET Processes</dt>
-      <dd>Highlighting for managed (.NET) processes.</dd>
+      <dt>.NET Processes and DLLs</dt>
+      <dd>Managed (.NET) processes and DLLs/modules.</dd>
       
       <dt>POSIX Processes</dt>
-      <dd>Highlighting for POSIX subsystem processes (also known as Subsystem for UNIX-based Applications).</dd>
+      <dd>POSIX subsystem processes (also known as Subsystem for UNIX-based Applications).</dd>
       
       <dt>Packed/Dangerous Processes</dt>
-      <dd>Highlighting for packed images and images with invalid signatures. These processes 
+      <dd>Packed images and images with invalid signatures. These processes 
       are often, but not always malicious - normal executables are often packed to reduce their 
       size.</dd>
       
@@ -173,6 +175,9 @@ pre {
       
       <dt>GUI Threads</dt>
       <dd>Threads which have made at least one GUI-related system call.</dd>
+      
+      <dt>Relocated DLLs</dt>
+      <dd>DLLs which were not loaded at their preferred base address.</dd>
       
       <dt>Protected Handles</dt>
       <dd>Handles which are protected from being closed.</dd>
@@ -289,6 +294,10 @@ pre {
       <dt>Detach from Debugger</dt>
       <dd>Detaches the process from any debugger. This will cause any attached debuggers to stop working.</dd>
       
+      <dt>Heaps...</dt>
+      <dd>Shows the heaps created by the process. Note that this action causes a temporary thread 
+      to be created in the process and should be used with caution.</dd>
+      
       <dt>Inject DLL...</dt>
       <dd>Allows you to select a DLL file (or any other PE image) that will be injected into 
       the selected process. This option is only available for processes running in the same 
@@ -321,8 +330,9 @@ pre {
       <dd>Terminates the process using the NtTerminateProcess function.</dd>
       
       <dt>TP2</dt>
-      <dd>Uses the CreateRemoteThread function to create a thread in the process which calls 
-      ExitProcess, terminating the process.</dd>
+      <dd>Uses the RtlCreateUserThread function to create a thread in the process which calls 
+      ExitProcess, terminating the process. On Vista and above, the thread calls 
+      RtlExitUserProcess.</dd>
       
       <dt>TT1</dt>
       <dd>Terminates the process' threads by using the NtTerminateThread function.</dd>
@@ -361,7 +371,8 @@ pre {
       <dd>Queues a kernel-mode special asynchronous procedure calls (APCs) to each of the process' threads. 
       This APC calls PspTerminateThreadByPointer to directly terminate the threads. This method will 
       terminate threads hanging due to kernel-mode code, but the system may crash or freeze because 
-      kernel-mode code is not given the chance to release any resources.</dd>
+      kernel-mode code is not given the chance to release any resources. <strong>Use this option with 
+      extreme caution.</strong></dd>
       
       <dt>M1</dt>
       <dd>Uses WriteProcessMemory to write random data to the process' memory, crashing the process.</dd>

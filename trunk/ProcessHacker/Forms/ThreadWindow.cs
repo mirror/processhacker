@@ -43,9 +43,6 @@ namespace ProcessHacker
 
         public const string DisplayFormat = "0x{0:x}";
 
-        public string[] Registers = 
-            new string[] { "eax", "ebx", "ecx", "edx", "esi", "edi", "esp", "ebp", "eip", "cs", "ds", "es", "fs", "gs", "ss" };
-
         public string Id
         {
             get { return _pid + "-" + _tid; }
@@ -90,7 +87,7 @@ namespace ProcessHacker
 
                         if (ex.Message.StartsWith("An attempt was made"))
                         {
-                            labelThreadUser.Text = "Username: (Not Impersonating)"; 
+                            labelThreadUser.Text = "Username: (Not Impersonating)";
                         }
                         else
                         {
@@ -190,37 +187,6 @@ namespace ProcessHacker
             _symbols = null;
         }
 
-        private void AddOrModify(ListView lv, ListViewItem item)
-        {
-            ListViewItem existing = null;
-            bool exists = false;
-
-            foreach (ListViewItem it in lv.Items)
-            {
-                if (it.Text == item.Text)
-                {
-                    exists = true;
-                    existing = it;
-
-                    break;
-                }
-            }
-
-            if (exists)
-            {
-                existing.SubItems[1].Text = item.SubItems[1].Text;
-            }
-            else
-            {
-                lv.Items.Add(item);  
-            }
-        }
-
-        private int BytesToInt32(byte[] b)
-        {
-            return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3] << 0);
-        }
-
         private void WalkCallStack()
         {
             try
@@ -250,7 +216,17 @@ namespace ProcessHacker
                     }
 
                     // Process the user-mode stack.
-                    _thandle.WalkStack(_phandle, this.WalkStackCallback);
+                    // If we're on 64-bit and the process is running 
+                    // under WOW64, get the 32-bit stack.
+
+                    if (IntPtr.Size == 4 || !_phandle.IsWow64())
+                    {
+                        _thandle.WalkStack(_phandle, this.WalkStackCallback);
+                    }
+                    else
+                    {
+                        _thandle.WalkStack(_phandle, this.WalkStackCallback, OSArch.I386);
+                    }
                 }
                 finally
                 {
@@ -306,8 +282,11 @@ namespace ProcessHacker
             ulong address = stackFrame.PcAddress.ToUInt64();
 
             // HACK for XP where the top user-mode frame for system threads is always 0xffffffff
-            if (OSVersion.WindowsVersion == WindowsVersion.XP && address == 0xffffffff)
-                return true;
+            if (_pid == 4)
+            {
+                if (OSVersion.WindowsVersion == WindowsVersion.XP && address == 0xffffffff)
+                    return true;
+            }
 
             try
             {
@@ -325,8 +304,8 @@ namespace ProcessHacker
                     if (stackFrame.Params.Length > 0)
                         newItem.ToolTipText = "Parameters: ";
 
-                    foreach (long arg in stackFrame.Params)
-                        newItem.ToolTipText += "0x" + (arg & 0xffffffff).ToString("x") + ", ";
+                    foreach (IntPtr arg in stackFrame.Params)
+                        newItem.ToolTipText += Utils.FormatAddress(arg) + ", ";
 
                     if (newItem.ToolTipText.EndsWith(", "))
                         newItem.ToolTipText = newItem.ToolTipText.Remove(newItem.ToolTipText.Length - 2);

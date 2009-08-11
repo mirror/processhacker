@@ -143,8 +143,11 @@ namespace ProcessHacker.Native.Api
         public long KiCallUserMode;
         public long KeUserCallbackDispatcher;
         public long SystemRangeStart;
+        public long KiUserExceptionDispatcher;
+        public long StackBase;
+        public long StackLimit;
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
         public long[] Reserved;
     }
 
@@ -540,7 +543,7 @@ namespace ProcessHacker.Native.Api
         public Address64 AddrStack;
         public Address64 AddrBStore;
 
-        public int FuncTableEntry;
+        public IntPtr FuncTableEntry;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public long[] Params;
@@ -551,7 +554,7 @@ namespace ProcessHacker.Native.Api
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
         public long[] Reserved;
 
-        KdHelp64 KdHelp;
+        public KdHelp64 KdHelp;
     }
 
     [StructLayout(LayoutKind.Sequential)]

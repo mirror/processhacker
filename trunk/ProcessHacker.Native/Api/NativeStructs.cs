@@ -162,7 +162,9 @@ namespace ProcessHacker.Native.Api
         public int SidStart;
     }
 
-    // x86 only
+    /// <summary>
+    /// x86 context
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct Context
     {
@@ -198,6 +200,69 @@ namespace ProcessHacker.Native.Api
         public int SegSs;
 
         public unsafe fixed byte ExtendedRegisters[Win32.MaximumSupportedExtension];
+    }
+
+    /// <summary>
+    /// AMD64 context.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ContextAmd64
+    {
+        public long P1Home;
+        public long P2Home;
+        public long P3Home;
+        public long P4Home;
+        public long P5Home;
+        public long P6Home;
+
+        public ContextFlagsAmd64 ContextFlags;
+        public int MxCsr;
+
+        public ushort SegCs;
+        public ushort SegDs;
+        public ushort SegEs;
+        public ushort SegFs;
+        public ushort SegGs;
+        public ushort SegSs;
+        public int EFlags;
+
+        public long Dr0;
+        public long Dr1;
+        public long Dr2;
+        public long Dr3;
+        public long Dr6;
+        public long Dr7;
+
+        public long Rax;
+        public long Rcx;
+        public long Rdx;
+        public long Rbx;
+        public long Rsp;
+        public long Rbp;
+        public long Rsi;
+        public long Rdi;
+        public long R8;
+        public long R9;
+        public long R10;
+        public long R11;
+        public long R12;
+        public long R13;
+        public long R14;
+        public long R15;
+
+        public long Rip;
+
+        public XmmSaveArea32 FltSave;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 26)]
+        public M128A[] VectorRegister;
+        public long VectorControl;
+
+        public long DebugControl;
+        public long LastBranchToRip;
+        public long LastBranchFromRip;
+        public long LastExceptionToRip;
+        public long LastExceptionFromRip;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -942,6 +1007,13 @@ namespace ProcessHacker.Native.Api
         {
             return this.LowPart;
         }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct M128A
+    {
+        public ulong Low;
+        public long High;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2522,5 +2594,30 @@ namespace ProcessHacker.Native.Api
         public IntPtr PagefileUsage;
         public IntPtr PeakPagefileUsage;
         public IntPtr PrivatePageCount;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XmmSaveArea32
+    {
+        public ushort ControlWord;
+        public ushort StatusWord;
+        public byte TagWord;
+        public byte Reserved1;
+        public ushort ErrorOpcode;
+        public int ErrorOffset;
+        public ushort ErrorSelector;
+        public ushort Reserved2;
+        public int DataOffset;
+        public ushort DataSelector;
+        public ushort Reserved3;
+        public int MxCsr;
+        public int MxCsrMask;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public M128A[] FloatRegisters;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public M128A[] XmmRegisters;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 96)]
+        public byte[] Reserved4;
     }
 }

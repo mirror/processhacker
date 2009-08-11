@@ -707,7 +707,19 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtGetContextThread(
             [In] IntPtr ThreadHandle,
+            [In] IntPtr ThreadContext
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtGetContextThread(
+            [In] IntPtr ThreadHandle,
             ref Context ThreadContext
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtGetContextThread(
+            [In] IntPtr ThreadHandle,
+            ref ContextAmd64 ThreadContext
             );
 
         [DllImport("ntdll.dll")]
@@ -1652,7 +1664,19 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtSetContextThread(
             [In] IntPtr ThreadHandle,
+            [In] IntPtr ThreadContext
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetContextThread(
+            [In] IntPtr ThreadHandle,
             [In] ref Context ThreadContext
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetContextThread(
+            [In] IntPtr ThreadHandle,
+            [In] ref ContextAmd64 ThreadContext
             );
 
         [DllImport("ntdll.dll")]
@@ -2965,6 +2989,22 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr TimerHandle,
             [In] int DueTime,
             [In] int Period
+            );
+
+        #endregion
+
+        #region WOW64
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlWow64GetThreadContext(
+            [In] IntPtr ThreadHandle,
+            ref Context ThreadContext
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlWow64SetThreadContext(
+            [In] IntPtr ThreadHandle,
+            [In] ref Context ThreadContext
             );
 
         #endregion

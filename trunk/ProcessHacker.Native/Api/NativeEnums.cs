@@ -84,19 +84,67 @@ namespace ProcessHacker.Native.Api
         Impersonation = 1
     }
 
+    /// <summary>
+    /// Generic context-related flags.
+    /// </summary>
     [Flags]
-    public enum ContextFlags : int
+    public enum ContextFlagsGeneric : uint
     {
+        // Context architecture
         I386 = 0x00010000,
         I486 = 0x00010000,
-        Control = I386 | 0x00000001,
-        Integer = I386 | 0x00000002,
-        Segments = I386 | 0x00000004,
-        FloatingPoint = I386 | 0x00000008,
-        DebugRegisters = I386 | 0x00000010,
-        ExtendedRegisters = I386 | 0x00000020,
+        Amd64 = 0x00100000,
+
+        // Context flags
+        Control = 0x00000001,
+        Integer = 0x00000002,
+        Segments = 0x00000004,
+        FloatingPoint = 0x00000008,
+        DebugRegisters = 0x00000010,
+        ExtendedRegisters = 0x00000020,
+    }
+
+    /// <summary>
+    /// x86 context.
+    /// </summary>
+    [Flags]
+    public enum ContextFlags : uint
+    {
+        I386 = ContextFlagsGeneric.I386,
+        I486 = ContextFlagsGeneric.I486,
+
+        Control = I386 | ContextFlagsGeneric.Control,
+        Integer = I386 | ContextFlagsGeneric.Integer,
+        Segments = I386 | ContextFlagsGeneric.Segments,
+        FloatingPoint = I386 | ContextFlagsGeneric.FloatingPoint,
+        DebugRegisters = I386 | ContextFlagsGeneric.DebugRegisters,
+        ExtendedRegisters = I386 | ContextFlagsGeneric.ExtendedRegisters,
+
         Full = Control | Integer | Segments,
         All = Control | Integer | Segments | FloatingPoint | DebugRegisters | ExtendedRegisters
+    }
+
+    /// <summary>
+    /// AMD64 context.
+    /// </summary>
+    [Flags]
+    public enum ContextFlagsAmd64 : uint
+    {
+        Amd64 = ContextFlagsGeneric.Amd64,
+
+        Control = Amd64 | ContextFlagsGeneric.Control,
+        Integer = Amd64 | ContextFlagsGeneric.Integer,
+        Segments = Amd64 | ContextFlagsGeneric.Segments,
+        FloatingPoint = Amd64 | ContextFlagsGeneric.FloatingPoint,
+        DebugRegisters = Amd64 | ContextFlagsGeneric.DebugRegisters,
+
+        Full = Control | Integer | FloatingPoint,
+        All = Control | Integer | Segments | FloatingPoint | DebugRegisters,
+
+        ExceptionActive = 0x08000000,
+        ServiceActive = 0x10000000,
+        ExceptionRequest = 0x40000000,
+        ExceptionReporting = 0x80000000
     }
 
     [Flags]
@@ -1138,7 +1186,7 @@ namespace ProcessHacker.Native.Api
         ThreadEnableAlignmentFaultFixup,
         ThreadEventPair,
         ThreadQuerySetWin32StartAddress,
-        ThreadZeroTlsCell,
+        ThreadZeroTlsCell, // 10
         ThreadPerformanceCount,
         ThreadAmILastThread,
         ThreadIdealProcessor,
@@ -1148,7 +1196,7 @@ namespace ProcessHacker.Native.Api
         ThreadHideFromDebugger,
         ThreadBreakOnTermination,
         ThreadSwitchLegacyState,
-        ThreadIsTerminated,
+        ThreadIsTerminated, // 20
         ThreadLastSystemCall,
         ThreadIoPriority,
         ThreadCycleTime,

@@ -2366,7 +2366,9 @@ namespace ProcessHacker
             if (Properties.Settings.Default.FirstRun)
             {
                 string defaultDbghelp = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
-                    "\\Debugging Tools for Windows (x86)\\dbghelp.dll";
+                    "\\Debugging Tools for Windows (" +
+                    (IntPtr.Size == 4 ? "x86" : "x64") + 
+                    ")\\dbghelp.dll";
 
                 if (System.IO.File.Exists(defaultDbghelp))
                     Properties.Settings.Default.DbgHelpPath = defaultDbghelp;
@@ -2374,8 +2376,8 @@ namespace ProcessHacker
 
             // If we couldn't load dbghelp.dll from the user's location, load the default one 
             // in PATH (usually in system32).
-            if (Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath) == IntPtr.Zero)
-                Win32.LoadLibrary("dbghelp.dll");
+            if (Loader.LoadDll(Properties.Settings.Default.DbgHelpPath) == IntPtr.Zero)
+                Loader.LoadDll("dbghelp.dll");
 
             // Find the location of the dbghelp.dll we loaded and load symsrv.dll.
             try
@@ -2387,7 +2389,7 @@ namespace ProcessHacker
                             // Load symsrv.dll from the same directory as dbghelp.dll.
                             var fi = new System.IO.FileInfo(module.FileName);
 
-                            Win32.LoadLibrary(fi.DirectoryName + "\\symsrv.dll");
+                            Loader.LoadDll(fi.DirectoryName + "\\symsrv.dll");
 
                             return false;
                         }

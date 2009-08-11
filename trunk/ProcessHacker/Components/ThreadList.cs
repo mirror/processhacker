@@ -56,13 +56,23 @@ namespace ProcessHacker.Components
             // Use Cycles instead of Context Switches on Vista
             if (OSVersion.HasCycleTime)
                 listThreads.Columns[1].Text = "Cycles Delta";
+
             // If KProcessHacker isn't available, hide Force Terminate.
             if (KProcessHacker.Instance == null)
                 forceTerminateThreadMenuItem.Visible = false;
+
             // Terminating a system thread is the same as Force Terminate, 
             // so hide it if we're viewing PID 4.
             if (_pid == 4)
                 forceTerminateThreadMenuItem.Visible = false;
+
+            // On x64, the first four arguments are passed in registers, 
+            // which means Analyze won't work properly.
+            if (IntPtr.Size != 4)
+            {
+                analyzeWaitMenuItem.Visible = false;
+                analyzeMenuItem.Visible = false;
+            }
 
             _highlightingContext = new HighlightingContext(listThreads);
             var comparer = (SortedListViewComparer)

@@ -1554,7 +1554,35 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr ProcessHandle,
             [In] IntPtr ThreadHandle,
             ref StackFrame64 StackFrame,
+            [In] IntPtr ContextRecord,
+            [In] [Optional] ReadProcessMemoryProc64 ReadMemoryRoutine,
+            [In] [Optional] FunctionTableAccessProc64 FunctionTableAccessRoutine,
+            [In] [Optional] GetModuleBaseProc64 GetModuleBaseRoutine,
+            [In] [Optional] IntPtr TranslateAddress
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool StackWalk64(
+            [In] MachineType MachineType,
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr ThreadHandle,
+            ref StackFrame64 StackFrame,
             ref Context ContextRecord,
+            [In] [Optional] ReadProcessMemoryProc64 ReadMemoryRoutine,
+            [In] [Optional] FunctionTableAccessProc64 FunctionTableAccessRoutine,
+            [In] [Optional] GetModuleBaseProc64 GetModuleBaseRoutine,
+            [In] [Optional] IntPtr TranslateAddress
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool StackWalk64(
+            [In] MachineType MachineType,
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr ThreadHandle,
+            ref StackFrame64 StackFrame,
+            ref ContextAmd64 ContextRecord,
             [In] [Optional] ReadProcessMemoryProc64 ReadMemoryRoutine,
             [In] [Optional] FunctionTableAccessProc64 FunctionTableAccessRoutine,
             [In] [Optional] GetModuleBaseProc64 GetModuleBaseRoutine,
