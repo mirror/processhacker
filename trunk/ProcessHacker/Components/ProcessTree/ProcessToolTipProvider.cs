@@ -201,6 +201,8 @@ namespace ProcessHacker
                         otherNotes += "\n    Process is managed (.NET).";
                     if (pNode.ProcessItem.IsPosix)
                         otherNotes += "\n    Process is POSIX.";
+                    if (pNode.ProcessItem.IsWow64)
+                        otherNotes += "\n    Process is 32-bit (running under WOW64).";
 
                     if (otherNotes != "")
                         otherNotes = "\nNotes:" + otherNotes;

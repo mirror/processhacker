@@ -498,10 +498,7 @@ namespace ProcessHacker.Components
 
                 try
                 {
-                    address = new IntPtr((int)BaseConverter.ToNumberParse(prompt.Value));
-
-                    if (address.CompareTo(0) < 0)
-                        throw new Exception();
+                    address = ((long)BaseConverter.ToNumberParse(prompt.Value)).ToIntPtr();
                 }
                 catch
                 {

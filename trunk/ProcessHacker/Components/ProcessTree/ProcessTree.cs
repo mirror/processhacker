@@ -264,6 +264,9 @@ namespace ProcessHacker
             else if (Properties.Settings.Default.UseColorPosixProcesses &&
                 p.IsPosix)
                 return Properties.Settings.Default.ColorPosixProcesses;
+            else if (Properties.Settings.Default.UseColorWow64Processes &&
+                p.IsWow64)
+                return Properties.Settings.Default.ColorWow64Processes;
             else if (Properties.Settings.Default.UseColorJobProcesses && p.IsInSignificantJob)
                 return Properties.Settings.Default.ColorJobProcesses;
             else if (Properties.Settings.Default.UseColorPackedProcesses &&

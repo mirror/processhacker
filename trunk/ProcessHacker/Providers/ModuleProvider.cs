@@ -26,6 +26,7 @@ using System.Text;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Debugging;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
@@ -52,6 +53,7 @@ namespace ProcessHacker
     {
         private ProcessHandle _processHandle;
         private int _pid;
+        private bool _isWow64 = false;
 
         public ModuleProvider(int pid)
             : base()
@@ -61,7 +63,7 @@ namespace ProcessHacker
 
             try
             {
-                _processHandle = new ProcessHandle(_pid, 
+                _processHandle = new ProcessHandle(_pid,
                     ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
             }
             catch
@@ -70,6 +72,16 @@ namespace ProcessHacker
                 {
                     _processHandle = new ProcessHandle(_pid,
                         Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
+                }
+                catch
+                { }
+            }
+
+            if (_processHandle != null && IntPtr.Size == 8)
+            {
+                try
+                {
+                    _isWow64 = _processHandle.IsWow64();
                 }
                 catch
                 { }
@@ -163,41 +175,78 @@ namespace ProcessHacker
                 return;
             }
 
-            var processModules = _processHandle.GetModules();
             var modules = new Dictionary<IntPtr, ProcessModule>();
             var newdictionary = new Dictionary<IntPtr, ModuleItem>(this.Dictionary);
 
-            foreach (var m in processModules)
-                modules.Add(m.BaseAddress, m);
+            // Is this a WOW64 process? If it is, get the 32-bit modules.
+            if (!_isWow64)
+            {
+                var processModules = _processHandle.GetModules();
+
+                foreach (var m in processModules)
+                {
+                    if (!modules.ContainsKey(m.BaseAddress))
+                        modules.Add(m.BaseAddress, m);
+                }
+            }
+            else
+            {
+                using (DebugBuffer buffer = new DebugBuffer())
+                {
+                    buffer.Query(_pid, RtlQueryProcessDebugFlags.Modules32);
+
+                    var processModules = buffer.GetModules();
+
+                    foreach (var m in processModules)
+                    {
+                        // Most of the time we will get a duplicate entry - 
+                        // the main executable image. Guard against that.
+                        if (!modules.ContainsKey(m.ImageBase))
+                        {
+                            modules.Add(
+                                m.ImageBase,
+                                new ProcessModule(
+                                    m.ImageBase,
+                                    m.ImageSize,
+                                    IntPtr.Zero,
+                                    m.Flags,
+                                    (new System.IO.FileInfo(m.FileName)).Name,
+                                    m.FileName
+                                    )
+                                );
+                        }
+                    }
+                }
+            }
 
             // add mapped files
             _processHandle.EnumMemory((info) =>
+            {
+                if (info.Type == MemoryType.Mapped)
                 {
-                    if (info.Type == MemoryType.Mapped)
+                    try
                     {
-                        try
+                        string fileName = _processHandle.GetMappedFileName(info.BaseAddress);
+
+                        if (fileName != null)
                         {
-                            string fileName = _processHandle.GetMappedFileName(info.BaseAddress);
+                            var fi = new System.IO.FileInfo(fileName);
 
-                            if (fileName != null)
-                            {
-                                var fi = new System.IO.FileInfo(fileName);
-
-                                modules.Add(info.BaseAddress,
-                                    new ProcessModule(
-                                        info.BaseAddress,
-                                        info.RegionSize.ToInt32(),
-                                        IntPtr.Zero,
-                                        0,
-                                        fi.Name, fi.FullName));
-                            }
+                            modules.Add(info.BaseAddress,
+                                new ProcessModule(
+                                    info.BaseAddress,
+                                    info.RegionSize.ToInt32(),
+                                    IntPtr.Zero,
+                                    0,
+                                    fi.Name, fi.FullName));
                         }
-                        catch
-                        { }
                     }
+                    catch
+                    { }
+                }
 
-                    return true;
-                });
+                return true;
+            });
 
             // look for unloaded modules
             foreach (IntPtr b in Dictionary.Keys)
@@ -240,7 +289,7 @@ namespace ProcessHacker
                     }
                     catch
                     { }
-                          
+
                     newdictionary.Add(b, item);
                     this.OnDictionaryAdded(item);
                 }

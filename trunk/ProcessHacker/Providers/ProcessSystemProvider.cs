@@ -65,6 +65,7 @@ namespace ProcessHacker
         public DateTime CreateTime;
 
         public TokenElevationType ElevationType;
+        public bool HasParent;
         public bool IsBeingDebugged;
         public bool IsDotNet;
         public bool IsElevated;
@@ -72,10 +73,9 @@ namespace ProcessHacker
         public bool IsInSignificantJob;
         public bool IsPacked;
         public bool IsPosix;
+        public bool IsWow64;
         public int SessionId;
-        public bool HasParent;
         public int ParentPid;
-        public bool IsHungGui;
 
         public VerifyResult VerifyResult;
         public string VerifySignerName;
@@ -439,15 +439,18 @@ namespace ProcessHacker
             if (fileName == null)
                 return null;
 
-            // find out if it's packed
-            // an image is packed if:
-            // 1. it references less than 3 libraries
-            // 2. it imports less than 5 functions
+            // Find out if it's packed.
+            // An image is packed if:
+            // 1. It references less than 3 libraries
+            // 2. It imports less than 5 functions
             // or:
-            // 1. the function-to-library ratio is lower than 4
+            // 1. The function-to-library ratio is lower than 4
             //   (on average less than 4 functions are imported from each library)
-            // 2. it references more than 3 libraries but less than 14 libraries.
-            if (fileName != null && (Properties.Settings.Default.VerifySignatures || forced))
+            // 2. It references more than 3 libraries but less than 14 libraries.
+            //
+            // Note that the PE reader is horribly broken and doesn't work for 
+            // PE32+ files. That means we'll disable this check for 64-bit.
+            if (fileName != null && (Properties.Settings.Default.VerifySignatures || forced) && IntPtr.Size == 4)
             {
                 try
                 {
@@ -652,41 +655,6 @@ namespace ProcessHacker
                 this.FileProcessingReceived(result.Stage, result.Pid);
         }
 
-        private void UpdateFrozenWindows()
-        {
-            foreach (ProcessItem item in Dictionary.Values)
-            {
-                if (item.IsHungGui)
-                {
-                    item.IsHungGui = false;
-                    item.Name = item.Name.Remove(item.Name.LastIndexOf(" [Not Responding]"));
-                }
-
-            }
-
-            Win32.EnumWindows((hwnd, param) =>
-            {
-                bool result = Win32.IsHungAppWindow(hwnd);
-
-                if (result && Win32.IsWindow(hwnd) && Win32.IsWindowVisible(hwnd)) //timeout
-                {
-                    int pid;
-                    Win32.GetWindowThreadProcessId(hwnd, out pid);
-                    
-                    if (this.Dictionary.ContainsKey(pid))
-                    {
-                        if (Dictionary[pid].IsHungGui == true)
-                            return true;
-
-                        Dictionary[pid].Name += " [Not Responding]";
-                        Dictionary[pid].IsHungGui = true;
-                    }
-                }
-
-                return true;
-            }, 0);
-        }
-
         private void UpdateOnce()
         {
             this.UpdatePerformance();
@@ -824,13 +792,14 @@ namespace ProcessHacker
                     ProcessItem item = new ProcessItem();
                     ProcessHandle queryLimitedHandle = null;
 
-                    // Can't open System Idle Process or the fake processes (DPCs/Interrupts)
+                    // Can't open System Idle Process or the fake processes (DPCs/Interrupts).
                     if (pid > 0)
                     {
                         try { queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights); }
                         catch (Exception ex) { Logging.Log(ex); }
                     }
 
+                    // Set up basic process information.
                     item.RunId = this.RunCount;
                     item.Pid = pid;
                     item.Process = processInfo;
@@ -839,6 +808,7 @@ namespace ProcessHacker
 
                     item.Name = procs[pid].Name;
 
+                    // Create the delta and history managers.
                     item.DeltaManager = new DeltaManager<ProcessStats, long>(
                         Subtractor.Int64Subtractor, EnumComparer<ProcessStats>.Instance);
                     item.DeltaManager.Add(ProcessStats.CpuKernel, processInfo.KernelTime);
@@ -859,7 +829,8 @@ namespace ProcessHacker
                     item.LongHistoryManager.Add(ProcessStats.PrivateMemory);
                     item.LongHistoryManager.Add(ProcessStats.WorkingSet);
 
-                    // HACK: Shouldn't happen, but it does.
+                    // HACK: Shouldn't happen, but it does - sometimes 
+                    // the process name is null.
                     if (item.Name == null)
                     {
                         try
@@ -873,6 +844,9 @@ namespace ProcessHacker
                             item.Name = "";
                         }
                     }
+
+                    // Get the process' creation time and check the 
+                    // parent process ID.
 
                     try
                     {
@@ -892,13 +866,16 @@ namespace ProcessHacker
                         }
                         else if (procs.ContainsKey(item.ParentPid))
                         {
-                            // check the parent's creation time to see if it's actually the parent
+                            // Check the parent's creation time to see if it's actually the parent.
                             ulong parentStartTime = (ulong)procs[item.ParentPid].Process.CreateTime;
                             ulong thisStartTime = (ulong)processInfo.CreateTime;
 
                             if (parentStartTime > thisStartTime)
                                 item.HasParent = false;
                         }
+
+                        // Get a process handle with QUERY_INFORMATION access, and 
+                        // see if it's being debugged.
 
                         try
                         {
@@ -920,6 +897,9 @@ namespace ProcessHacker
                             {
                                 try
                                 {
+                                    // Get a handle to the process' token and get its 
+                                    // username, elevation type, and integrity.
+
                                     using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
                                     {
                                         try
@@ -970,6 +950,20 @@ namespace ProcessHacker
                                 catch
                                 { }
 
+                                // Is the process running under WOW64?
+                                if (IntPtr.Size == 8)
+                                {
+                                    try
+                                    {
+                                        item.IsWow64 = queryLimitedHandle.IsWow64();
+                                    }
+                                    catch
+                                    { }
+                                }
+
+                                // Get the process' job if we have KProcessHacker. 
+                                // Otherwise, don't do anything.
+
                                 if (KProcessHacker.Instance != null)
                                 {
                                     try
@@ -985,6 +979,7 @@ namespace ProcessHacker
                                                 item.IsInJob = true;
                                                 item.JobName = jhandle.GetObjectName();
 
+                                                // This is what Process Explorer does...
                                                 if (limits.LimitFlags != JobObjectLimitFlags.SilentBreakawayOk)
                                                 {
                                                     item.IsInSignificantJob = true;
@@ -1009,6 +1004,8 @@ namespace ProcessHacker
                         catch
                         { }
                     }
+
+                    // Update the process name if it's a fake process.
 
                     if (pid == 0)
                     {
@@ -1041,11 +1038,16 @@ namespace ProcessHacker
                         }
                     }
 
+                    // Set the username for System Idle Process and System.
                     if (pid == 0 || pid == 4)
                     {
+                        // TODO: Potential localization problem. Need to create 
+                        // a well-known SID and use that.
                         item.Username = "NT AUTHORITY\\SYSTEM";
                     }
 
+                    // If we didn't get a username, try to use Terminal Services 
+                    // to get the SID of the process' token's user.
                     if (item.Username == null)
                     {
                         if (tsProcesses.Count == 0)
@@ -1077,6 +1079,8 @@ namespace ProcessHacker
                     ProcessItem item = this.Dictionary[pid];
                     bool fullUpdate = false;
 
+                    // Update process performance information.
+
                     item.DeltaManager.Update(ProcessStats.CpuKernel, processInfo.KernelTime);
                     item.DeltaManager.Update(ProcessStats.CpuUser, processInfo.UserTime);
                     item.DeltaManager.Update(ProcessStats.IoRead, (long)processInfo.IoCounters.ReadTransferCount);
@@ -1097,7 +1101,10 @@ namespace ProcessHacker
                     item.LongHistoryManager.Update(ProcessStats.PrivateMemory, processInfo.VirtualMemoryCounters.PrivatePageCount.ToInt64());
                     item.LongHistoryManager.Update(ProcessStats.WorkingSet, processInfo.VirtualMemoryCounters.WorkingSetSize.ToInt64());
 
+                    // Update the struct.
                     item.Process = processInfo;
+
+                    // Update CPU usage, and update PIDs with most activity.
 
                     try
                     {
@@ -1105,6 +1112,8 @@ namespace ProcessHacker
                             (item.DeltaManager[ProcessStats.CpuUser] + 
                             item.DeltaManager[ProcessStats.CpuKernel]) * 100 /
                             (sysKernelTime + sysUserTime + otherTime);
+
+                        // HACK.
 
                         if (item.CpuUsage > 400.0f)
                             item.CpuUsage /= 8.0f;
@@ -1130,6 +1139,8 @@ namespace ProcessHacker
                     catch
                     { }
 
+                    // Determine whether the process is being debugged.
+
                     if (item.ProcessQueryHandle != null)
                     {
                         try
@@ -1146,6 +1157,8 @@ namespace ProcessHacker
                         { }
                     }
 
+                    // Processes sometimes mistakenly get labeled as packed. 
+                    // Try again if it is packed.
                     if (pid > 0)
                     {
                         if (item.IsPacked && item.ProcessingAttempts < 3)
@@ -1162,6 +1175,9 @@ namespace ProcessHacker
                     if (item.JustProcessed)
                         fullUpdate = true;
 
+                    // If we need a full update, call the dictionary modified 
+                    // event so the process tree updates the process' 
+                    // highlighting color.
                     if (fullUpdate)
                     {
                         this.OnDictionaryModified(null, item);

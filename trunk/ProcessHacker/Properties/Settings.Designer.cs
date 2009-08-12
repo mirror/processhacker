@@ -1572,5 +1572,29 @@ namespace ProcessHacker.Properties {
                 this["UseColorRelocatedDlls"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RosyBrown")]
+        public global::System.Drawing.Color ColorWow64Processes {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorWow64Processes"]));
+            }
+            set {
+                this["ColorWow64Processes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorWow64Processes {
+            get {
+                return ((bool)(this["UseColorWow64Processes"]));
+            }
+            set {
+                this["UseColorWow64Processes"] = value;
+            }
+        }
     }
 }

@@ -185,6 +185,11 @@ namespace ProcessHacker.Native.Api
         InvalidParameter11 = 0xc00000f9,
         InvalidParameter12 = 0xc00000fa,
         MappedFileSizeZero = 0xc000011e,
+        DllNotFound = 0xc0000135,
+        IoPrivilegeFailed = 0xc0000137,
+        OrdinalNotFound = 0xc0000138,
+        EntryPointNotFound = 0xc0000139,
+        ControlCExit = 0xc000013a,
         PortNotSet = 0xc0000353,
         DebuggerInactive = 0xc0000354,
         CallbackBypass = 0xc0000503,
@@ -218,7 +223,7 @@ namespace ProcessHacker.Native.Api
         /// <param name="status">The NT status value.</param>
         public static bool IsError(this NtStatus status)
         {
-            return status >= NtStatus.Error && status <= NtStatus.MaximumNtStatus; 
+            return status >= NtStatus.Error && status <= NtStatus.MaximumNtStatus;
         }
 
         /// <summary>

@@ -1852,7 +1852,7 @@ namespace ProcessHacker.Native.Objects
             int subsystem;
             IntPtr pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
 
-            this.ReadMemory(pebBaseAddress.Increment(0xb4), &subsystem, sizeof(int));
+            this.ReadMemory(pebBaseAddress.Increment(Peb.ImageSubsystemOffset), &subsystem, sizeof(int));
 
             return subsystem == 7;
         }

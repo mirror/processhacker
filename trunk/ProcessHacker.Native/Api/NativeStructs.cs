@@ -1179,6 +1179,9 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct Peb
     {
+        public static readonly int ImageSubsystemOffset =
+            Marshal.OffsetOf(typeof(Peb), "ImageSubsystem").ToInt32();
+
         [MarshalAs(UnmanagedType.I1)]
         public bool InheritedAddressSpace;
         [MarshalAs(UnmanagedType.I1)]

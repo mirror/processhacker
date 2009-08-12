@@ -60,34 +60,34 @@ namespace ProcessHacker.Native.Symbols
                                 td.WindowTitle = "Process Hacker";
                                 td.MainIcon = TaskDialogIcon.Warning;
                                 td.MainInstruction = "Microsoft Symbol Server not supported";
-                                td.Content = "The Microsoft Symbol Server is not supported by your version of dbghelp.dll " + 
+                                td.Content = "The Microsoft Symbol Server is not supported by your version of dbghelp.dll " +
                                     "or could not be loaded. " +
                                     "To ensure you have the latest version of dbghelp.dll, download " +
-                                    "<a href=\"dbghelp\">Debugging " + 
+                                    "<a href=\"dbghelp\">Debugging " +
                                     "Tools for Windows</a> and configure Process Hacker to " +
                                     "use its version of dbghelp.dll. If you have the latest version of dbghelp.dll, " +
                                     "ensure that symsrv.dll resides in the same directory as dbghelp.dll.";
                                 td.EnableHyperlinks = true;
                                 td.Callback = (taskDialog, args, callbackData) =>
+                                {
+                                    if (args.Notification == TaskDialogNotification.HyperlinkClicked)
                                     {
-                                        if (args.Notification == TaskDialogNotification.HyperlinkClicked)
+                                        try
                                         {
-                                            try
-                                            {
-                                                System.Diagnostics.Process.Start(
-                                                    "http://www.microsoft.com/whdc/devtools/debugging/default.mspx");
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                MessageBox.Show("Could not open the hyperlink: " + ex.ToString(),
-                                                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                            }
-
-                                            return true;
+                                            System.Diagnostics.Process.Start(
+                                                "http://www.microsoft.com/whdc/devtools/debugging/default.mspx");
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            MessageBox.Show("Could not open the hyperlink: " + ex.ToString(),
+                                                "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                         }
 
-                                        return false;
-                                    };
+                                        return true;
+                                    }
+
+                                    return false;
+                                };
                                 td.VerificationText = force ? null : "Do not display this warning again";
                                 td.VerificationFlagChecked = true;
 
@@ -146,6 +146,26 @@ namespace ProcessHacker.Native.Symbols
                 catch (Exception ex)
                 {
                     Logging.Log(ex);
+                }
+            }
+        }
+
+        public static void LoadProcessWow64Modules(this SymbolProvider symbols, int pid)
+        {
+            using (var buffer = new ProcessHacker.Native.Debugging.DebugBuffer())
+            {
+                buffer.Query(pid, ProcessHacker.Native.Api.RtlQueryProcessDebugFlags.Modules32);
+
+                foreach (var module in buffer.GetModules())
+                {
+                    try
+                    {
+                        symbols.LoadModule(module.FileName, module.ImageBase, module.ImageSize);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
                 }
             }
         }

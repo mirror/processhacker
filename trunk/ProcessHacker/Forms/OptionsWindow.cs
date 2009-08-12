@@ -166,6 +166,14 @@ namespace ProcessHacker
                 "Executables are sometimes \"packed\" to reduce their size.\n" +
                 "\"Dangerous processes\" includes processes with invalid signatures and unverified " + 
                 "processes with the name of a system process.");
+
+            // WOW64, 64-bit only.
+            if (IntPtr.Size == 8)
+            {
+                AddToList("ColorWow64Processes", "32-bit Processes",
+                    "Processes running under WOW64, i.e. 32-bit.");
+            }
+
             AddToList("ColorSuspended", "Suspended Threads",
                 "Threads that are suspended from execution.");
             AddToList("ColorGuiThreads", "GUI Threads",

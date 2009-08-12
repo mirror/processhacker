@@ -217,13 +217,11 @@ namespace ProcessHacker
 
                     // Process the user-mode stack.
                     // If we're on 64-bit and the process is running 
-                    // under WOW64, get the 32-bit stack.
+                    // under WOW64, get the 32-bit stack as well.
 
-                    if (IntPtr.Size == 4 || !_phandle.IsWow64())
-                    {
-                        _thandle.WalkStack(_phandle, this.WalkStackCallback);
-                    }
-                    else
+                    _thandle.WalkStack(_phandle, this.WalkStackCallback);
+
+                    if (IntPtr.Size == 8 && _phandle.IsWow64())
                     {
                         _thandle.WalkStack(_phandle, this.WalkStackCallback, OSArch.I386);
                     }

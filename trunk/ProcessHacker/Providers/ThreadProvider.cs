@@ -95,15 +95,15 @@ namespace ProcessHacker
 
             _messageQueue.AddListener(
                 new MessageQueueListener<ResolveMessage>((message) =>
+                {
+                    if (message.Symbol != null)
                     {
-                        if (message.Symbol != null)
-                        {
-                            this.Dictionary[message.Tid].StartAddress = message.Symbol;
-                            this.Dictionary[message.Tid].FileName = message.FileName;
-                            this.Dictionary[message.Tid].StartAddressLevel = message.ResolveLevel;
-                            this.Dictionary[message.Tid].JustResolved = true;
-                        }
-                    }));
+                        this.Dictionary[message.Tid].StartAddress = message.Symbol;
+                        this.Dictionary[message.Tid].FileName = message.FileName;
+                        this.Dictionary[message.Tid].StartAddressLevel = message.ResolveLevel;
+                        this.Dictionary[message.Tid].JustResolved = true;
+                    }
+                }));
 
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
             this.Disposed += ThreadProvider_Disposed;
@@ -171,9 +171,18 @@ namespace ProcessHacker
                                 using (var phandle =
                                     new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                                 {
-                                    // Load the process' modules.
-                                    try { _symbols.LoadProcessModules(phandle); }
-                                    catch { }
+                                    if (IntPtr.Size == 4 || !phandle.IsWow64())
+                                    {
+                                        // Load the process' modules.
+                                        try { _symbols.LoadProcessModules(phandle); }
+                                        catch { }
+                                    }
+                                    else
+                                    {
+                                        // Load the process' WOW64 modules.
+                                        try { _symbols.LoadProcessWow64Modules(_pid); }
+                                        catch { }
+                                    }
 
                                     // If the process is CSRSS we should load kernel modules 
                                     // due to the presence of kernel-mode threads.
@@ -193,14 +202,14 @@ namespace ProcessHacker
                             try
                             {
                                 ProcessHandle.Current.EnumModules((module) =>
+                                {
+                                    if (module.BaseName == "kernel32.dll" || module.BaseName == "ntdll.dll")
                                     {
-                                        if (module.BaseName == "kernel32.dll" || module.BaseName == "ntdll.dll")
-                                        {
-                                            _symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
-                                        }
+                                        _symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
+                                    }
 
-                                        return true;
-                                    });
+                                    return true;
+                                });
                             }
                             catch (Exception ex2)
                             {
@@ -442,7 +451,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            item.StartAddressI = 
+                            item.StartAddressI =
                                 KProcessHacker.Instance.GetThreadStartAddress(item.ThreadQueryLimitedHandle).ToIntPtr();
                         }
                         catch
@@ -557,14 +566,14 @@ namespace ProcessHacker
                     }
 
                     if (
-                        newitem.ContextSwitches != item.ContextSwitches || 
+                        newitem.ContextSwitches != item.ContextSwitches ||
                         newitem.ContextSwitchesDelta != item.ContextSwitchesDelta ||
-                        newitem.Cycles != item.Cycles || 
-                        newitem.CyclesDelta != item.CyclesDelta || 
-                        newitem.IsGuiThread != item.IsGuiThread || 
-                        newitem.Priority != item.Priority || 
+                        newitem.Cycles != item.Cycles ||
+                        newitem.CyclesDelta != item.CyclesDelta ||
+                        newitem.IsGuiThread != item.IsGuiThread ||
+                        newitem.Priority != item.Priority ||
                         newitem.StartAddress != item.StartAddress ||
-                        newitem.WaitReason != item.WaitReason || 
+                        newitem.WaitReason != item.WaitReason ||
                         item.JustResolved
                         )
                     {

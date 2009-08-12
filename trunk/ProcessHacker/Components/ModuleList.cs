@@ -170,7 +170,7 @@ namespace ProcessHacker.Components
                         else
                         {
                             using (var phandle =
-                                new ProcessHandle(_pid, 
+                                new ProcessHandle(_pid,
                                     Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                                 _mainModule = FileUtils.FixPath(phandle.GetMainModule().FileName);
                         }
@@ -289,9 +289,9 @@ namespace ProcessHacker.Components
         private void provider_DictionaryRemoved(ModuleItem item)
         {
             this.BeginInvoke(new MethodInvoker(() =>
-                {
-                    listModules.Items[item.BaseAddress.ToString()].Remove();
-                }));
+            {
+                listModules.Items[item.BaseAddress.ToString()].Remove();
+            }));
         }
 
         public void SaveSettings()
@@ -447,8 +447,8 @@ namespace ProcessHacker.Components
             if (!PhUtils.ShowConfirmMessage(
                 "Unload",
                 _pid != 4 ? "the selected module" : "the selected driver",
-                _pid != 4 ? 
-                "Unloading a module may cause the process to crash." : 
+                _pid != 4 ?
+                "Unloading a module may cause the process to crash." :
                 "Unloading a driver may cause system instability.",
                 true
                 ))
@@ -572,7 +572,27 @@ namespace ProcessHacker.Components
                         }
 
                         thread.Wait(1000 * Win32.TimeMsTo100Ns);
-                        thread.GetExitStatus().ThrowIf();
+
+                        NtStatus exitStatus = thread.GetExitStatus();
+
+                        if (exitStatus == NtStatus.DllNotFound)
+                        {
+                            if (IntPtr.Size == 8)
+                            {
+                                PhUtils.ShowError("Unable to find the module to unload. This may be caused " +
+                                    "by an attempt to unload a mapped file or a 32-bit module.");
+                            }
+                            else
+                            {
+                                PhUtils.ShowError("Unable to find the module to unload. This may be caused " +
+                                    "by an attempt to unload a mapped file.");
+                            }
+                        }
+                        else
+                        {
+                            exitStatus.ThrowIf();
+                        }
+
                         thread.Dispose();
                     }
 

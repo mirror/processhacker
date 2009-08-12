@@ -389,5 +389,11 @@
     <Setting Name="UseColorRelocatedDlls" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="ColorWow64Processes" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">RosyBrown</Value>
+    </Setting>
+    <Setting Name="UseColorWow64Processes" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
