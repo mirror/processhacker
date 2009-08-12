@@ -17,6 +17,7 @@ SOURCES= \
     sync.c \
     sysservice.c \
     sysservicedata.c \
+    test.c \
     trace.c \
     util.c \
     \

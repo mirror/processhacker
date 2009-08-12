@@ -22,6 +22,8 @@
 
 #include "include/kph.h"
 
+static EX_PUSH_LOCK TestLock;
+
 VOID KphpTestPushLockThreadStart(
     __in PVOID Context
     );
@@ -30,13 +32,15 @@ VOID KphTestPushLock()
 {
     ULONG i;
     
+    ExInitializePushLock(&TestLock);
+    
     for (i = 0; i < 10; i++)
     {
         HANDLE threadHandle;
         OBJECT_ATTRIBUTES objectAttributes;
         
         InitializeObjectAttributes(&objectAttributes, NULL, OBJ_KERNEL_HANDLE, NULL, NULL);
-        PsCreateSystemThread(&threadHandle, 0, &objectAttributes, NULL, NULL, PushLockTest, NULL);
+        PsCreateSystemThread(&threadHandle, 0, &objectAttributes, NULL, NULL, KphpTestPushLockThreadStart, NULL);
     }
 }
 
@@ -48,19 +52,19 @@ VOID KphpTestPushLockThreadStart(
     
     for (i = 0; i < 400000; i++)
     {
-        ExAcquirePushLockShared(&ClientListLock);
+        ExAcquirePushLockShared(&TestLock);
         
         for (j = 0; j < 1000; j++)
             PAUSE();
         
-        ExReleasePushLock(&ClientListLock);
+        ExReleasePushLock(&TestLock);
         
-        ExAcquirePushLockExclusive(&ClientListLock);
+        ExAcquirePushLockExclusive(&TestLock);
         
         for (j = 0; j < 9000; j++)
             PAUSE();
         
-        ExReleasePushLock(&ClientListLock);
+        ExReleasePushLock(&TestLock);
     }
     
     PsTerminateSystemThread(STATUS_SUCCESS);
