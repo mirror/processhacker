@@ -25,6 +25,14 @@
 
 #include "types.h"
 
+/* HACK - version.c dependency */
+#define WINDOWS_XP 51
+#define WINDOWS_SERVER_2003 52
+#define WINDOWS_VISTA 60
+#define WINDOWS_7 61
+
+extern ULONG WindowsVersion;
+
 /* Handles */
 
 struct _HANDLE_TABLE;
@@ -45,15 +53,22 @@ BOOLEAN NTAPI ExEnumHandleTable(
 
 /* Push Locks */
 
+/* Definition for Windows 2003 and above. This means we 
+ * MUST use the slow path on Windows XP.
+ */
 typedef struct _EXI_PUSH_LOCK
 {
     union
     {
-        ULONG_PTR Locked : 1;
-        ULONG_PTR Waiting : 1;
-        ULONG_PTR Waking : 1;
-        ULONG_PTR MultipleShared : 1;
-        ULONG_PTR Shared : sizeof(ULONG_PTR) * 8 - 4; /* ULONG_PTR bits minus 4 */
+        struct
+        {
+            ULONG_PTR Locked : 1;
+            ULONG_PTR Waiting : 1;
+            ULONG_PTR Waking : 1;
+            ULONG_PTR MultipleShared : 1;
+            ULONG_PTR Shared : sizeof(ULONG_PTR) * 8 - 4; /* ULONG_PTR bits minus 4 */
+        };
+        
         ULONG_PTR Value;
         PVOID Ptr;
     };
@@ -123,7 +138,7 @@ VOID FORCEINLINE ExAcquirePushLockExclusive(
     )
 {
     /* Fast path - acquire push lock, no function call. */
-    if (InterlockedBitTestAndSet(PushLock, EX_PUSH_LOCK_LOCK_SHIFT))
+    if (WindowsVersion < WINDOWS_SERVER_2003 || InterlockedBitTestAndSet(PushLock, EX_PUSH_LOCK_LOCK_SHIFT))
     {
         /* Slow path - call the function. */
         ExfAcquirePushLockExclusive(PushLock);
@@ -139,7 +154,7 @@ VOID FORCEINLINE ExAcquirePushLockShared(
     )
 {
     /* Fast path - acquire push lock which is not held at all, no function call. */
-    if (InterlockedCompareExchangePointer(
+    if (WindowsVersion < WINDOWS_SERVER_2003 || InterlockedCompareExchangePointer(
         PushLock,
         EX_PUSH_LOCK_SHARE_INC | EX_PUSH_LOCK_LOCK,
         0
@@ -182,6 +197,7 @@ VOID FORCEINLINE ExReleasePushLock(
      * be unblocked.
      */
     if (
+        WindowsVersion < WINDOWS_SERVER_2003 || 
         oldValue.Waiting || 
         InterlockedCompareExchangePointer(
             PushLock,
@@ -195,6 +211,7 @@ VOID FORCEINLINE ExReleasePushLock(
     }
 }
 
+#ifndef NEVER_DEFINED
 /* ExTryAcquirePushLockExclusive
  * 
  * Attempts to acquire a push lock in exclusive mode.
@@ -241,5 +258,6 @@ BOOLEAN FORCEINLINE ExTryAcquirePushLockShared(
         return TRUE;
     }
 }
+#endif
 
 #endif
