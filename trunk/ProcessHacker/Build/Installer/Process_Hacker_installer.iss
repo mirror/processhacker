@@ -88,7 +88,7 @@ Source: ..\..\bin\Release\base.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\CHANGELOG.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\Help.htm; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\LICENSE.txt; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\bin\Release\kprocesshacker.sys; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\bin\Release\kprocesshacker.sys; DestDir: {app}; Flags: ignoreversion; Check: NOT Is64BitInstallMode()
 Source: ..\..\bin\Release\NProcessHacker.dll; DestDir: {app}; Flags: ignoreversion; Check: NOT Is64BitInstallMode()
 Source: ..\..\bin\Release\NProcessHacker64.dll; DestName: NProcessHacker.dll; DestDir: {app}; Flags: ignoreversion; Check: Is64BitInstallMode()
 Source: ..\..\bin\Release\ProcessHacker.exe; DestDir: {app}; Flags: ignoreversion
@@ -135,6 +135,7 @@ Type: files; Name: {app}\ProcessHacker.exe.config
 Type: files; Name: {app}\HACKING.txt
 Type: files; Name: {app}\psvince.dll
 Type: files; Name: {app}\Homepage.url
+Type: files; Name: {app}\kprocesshacker.sys; Check: Is64BitInstallMode()
 
 Type: files; Name: {userdesktop}\Process Hacker.lnk
 Type: files; Name: {commondesktop}\Process Hacker.lnk
