@@ -2820,6 +2820,48 @@ namespace ProcessHacker
                 virtualizationProcessMenuItem.Visible = false;
         }
 
+        private void LoadFixNProcessHacker()
+        {
+            bool nphExists, nph32Exists, nph64Exists;
+            string startupPath = Application.StartupPath;
+
+            try
+            {
+                nphExists = System.IO.File.Exists(startupPath + "\\NProcessHacker.dll");
+                nph32Exists = System.IO.File.Exists(startupPath + "\\NProcessHacker32.dll");
+                nph64Exists = System.IO.File.Exists(startupPath + "\\NProcessHacker64.dll");
+
+                // If we're on 32-bit and NPH32 exists, rename NPH to NPH64 and 
+                // NPH32 to NPH.
+                if (IntPtr.Size == 4)
+                {
+                    if (nph32Exists)
+                    {
+                        if (nphExists)
+                            System.IO.File.Move(startupPath + "\\NProcessHacker.dll", startupPath + "\\NProcessHacker64.dll");
+
+                        System.IO.File.Move(startupPath + "\\NProcessHacker32.dll", startupPath + "\\NProcessHacker.dll");
+                    }
+                }
+                // If we're on 64-bit and NPH64 exists, rename NPH to NPH32 and 
+                // NPH64 to NPH.
+                else if (IntPtr.Size == 8)
+                {
+                    if (nph64Exists)
+                    {
+                        if (nphExists)
+                            System.IO.File.Move(startupPath + "\\NProcessHacker.dll", startupPath + "\\NProcessHacker32.dll");
+
+                        System.IO.File.Move(startupPath + "\\NProcessHacker64.dll", startupPath + "\\NProcessHacker.dll");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
+        }
+
         private void LoadUac()
         {
             if (Program.ElevationType == TokenElevationType.Limited)
@@ -3119,6 +3161,7 @@ namespace ProcessHacker
                 this.LoadFixMenuItems();
                 this.LoadUac();
                 this.LoadAddShortcuts();
+                this.LoadFixNProcessHacker();
 
                 toolStrip.Items.Add(new ToolStripSeparator());
                 var targetButton = new TargetWindowButton();
