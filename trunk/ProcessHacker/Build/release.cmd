@@ -5,13 +5,15 @@ SETLOCAL
 SET outd=%~p1
 PUSHD %outd%
 
-:: Copy CHANGELOG.txt, LICENSE.txt, README.txt and kprocesshacker.sys to the
-:: "Release" folder
+:: Copy various files to the "Release" folder
 FOR %%a IN (
 	"CHANGELOG.txt" "LICENSE.txt" "README.txt"
     "KProcessHacker\i386\kprocesshacker.sys" 
-    "NProcessHacker\Release\NProcessHacker.dll"
+    "NProcessHacker\Release\NProcessHacker.dll" 
 	) DO COPY "..\..\..\%%a" >NUL
+
+:: Copy the 64-bit NPH to the "Release" folder
+COPY "..\..\..\NProcessHacker\x64\Release\NProcessHacker.dll" "NProcessHacker64.dll" >NUL
 
 :: Clear older files present in "Release" folder
 DEL/f/a "ProcessHacker.exe.config" "processhacker-*-setup.exe"^

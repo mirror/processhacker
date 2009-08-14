@@ -20,7 +20,7 @@
 #include "Custom_Messages.iss"
 
 
-; From now on you'll probably won't have to change anything, so be carefull
+; From now on you'll probably won't have to change anything, so be careful
 [Setup]
 AppID=Process_Hacker
 AppCopyright=Copyright © 2008-2009, Process Hacker Team. Licensed under the GNU GPL, v3.
@@ -69,7 +69,7 @@ DisableDirPage=Auto
 DisableProgramGroupPage=Auto
 LanguageDetectionMethod=uilanguage
 AppMutex=Global\ProcessHackerMutex
-ArchitecturesInstallIn64BitMode=x64 ia64
+ArchitecturesInstallIn64BitMode=x64
 
 
 [Languages]

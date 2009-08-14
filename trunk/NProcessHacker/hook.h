@@ -27,6 +27,8 @@
 
 /* Almost exactly the same as the hooking code in KProcessHacker. */
 
+#ifdef _X86_
+
 #define PH_DEFINE_HOOK_CALL(Name, Arguments, Hook) \
     __declspec(naked) Name(Arguments) \
     { \
@@ -49,6 +51,23 @@
         __asm jmp   edx \
     } \
 
+#else
+
+#define PH_DEFINE_HOOK_CALL(Name, Arguments, Hook) \
+    Name(Arguments) \
+    { \
+        RaiseException(STATUS_NOT_SUPPORTED, 0, 0, NULL); \
+        return 0; \
+    } \
+
+#define PH_DEFINE_NT_HOOK_CALL(Name, Arguments, Hook) \
+    Name(Arguments) \
+    { \
+        RaiseException(STATUS_NOT_SUPPORTED, 0, 0, NULL); \
+        return 0; \
+    } \
+
+#endif
 typedef struct _PH_HOOK
 {
     PVOID Function;

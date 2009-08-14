@@ -49,7 +49,7 @@ WsCounters:
             ULONG sharedCount = 0;
             ULONG shareableCount = 0;
             PPSAPI_WORKING_SET_INFORMATION wsInfo;
-            ULONG wsInfoLength;
+            SIZE_T wsInfoLength;
             ULONG i;
 
             if (!GetProcessMemoryInfo(ProcessHandle, &procMem, sizeof(procMem)))
