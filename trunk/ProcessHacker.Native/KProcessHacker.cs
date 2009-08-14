@@ -142,6 +142,9 @@ namespace ProcessHacker.Native
         {
             _deviceName = deviceName;
 
+            if (IntPtr.Size != 4)
+                throw new NotSupportedException("KProcessHacker does not support 64-bit Windows.");
+
             bool started = false;
 
             // Delete the service if it exists.
