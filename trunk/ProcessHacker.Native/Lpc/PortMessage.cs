@@ -92,22 +92,27 @@ namespace ProcessHacker.Native.Lpc
             if (dataLength < 0)
                 throw new ArgumentOutOfRangeException("Data length cannot be negative.");
 
+            _message = new PortMessageStruct();
+
+            _message.DataLength = dataLength;
+            _message.TotalLength = (short)(_portMessageSize + dataLength);
+            _message.DataInfoOffset = 0;
+
             if (existingMessage != null)
             {
-                _message = existingMessage.Header;
-            }
-            else
-            {
-                _message = new PortMessageStruct();
-                _message.DataLength = dataLength;
-                _message.TotalLength = (short)(_portMessageSize + dataLength);
-                _message.DataInfoOffset = 0;
+                _message.ClientId = existingMessage.ClientId;
+                _message.MessageId = existingMessage.MessageId;
             }
 
             _data = data;
 
             _referencedData = data;
             _referencedData.Reference();
+        }
+
+        internal void SetHeader(MemoryRegion data)
+        {
+            _message = data.ReadStruct<PortMessageStruct>();
         }
 
         public MemoryAlloc ToMemory()

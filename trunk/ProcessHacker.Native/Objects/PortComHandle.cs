@@ -71,6 +71,8 @@ namespace ProcessHacker.Native.Objects
             {
                 if ((status = Win32.NtReplyPort(this, messageMemory)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
+
+                message.SetHeader(messageMemory);
             }
         }
 
@@ -100,6 +102,9 @@ namespace ProcessHacker.Native.Objects
                         buffer
                         )) >= NtStatus.Error)
                         Win32.ThrowLastError(status);
+
+                    if (message != null)
+                        message.SetHeader(messageMemory);
                 }
                 finally
                 {
@@ -111,6 +116,22 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
+        public PortMessage ReplyWaitReply(PortMessage message)
+        {
+            NtStatus status;
+
+            using (var messageMemory = message.ToMemory())
+            {
+                if ((status = Win32.NtReplyWaitReplyPort(
+                    this,
+                    messageMemory
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                return new PortMessage(messageMemory);
+            }
+        }
+
         public void Request(PortMessage message)
         {
             NtStatus status;
@@ -119,6 +140,8 @@ namespace ProcessHacker.Native.Objects
             {
                 if ((status = Win32.NtRequestPort(this, messageMemory)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
+
+                message.SetHeader(messageMemory);
             }
         }
 
@@ -135,6 +158,8 @@ namespace ProcessHacker.Native.Objects
                     buffer
                     )) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
+
+                message.SetHeader(messageMemory);
 
                 return new PortMessage(buffer);
             }
