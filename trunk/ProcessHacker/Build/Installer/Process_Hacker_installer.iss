@@ -112,8 +112,8 @@ Name: reset_settings; Description: {cm:tsk_resetsettings}; GroupDescription: {cm
 Name: set_default_taskmgr; Description: {cm:tsk_setdefaulttaskmgr}; GroupDescription: {cm:tsk_other}; Check: PHDefaulTaskmgrCheck(); Flags: unchecked dontinheritcheck
 Name: restore_taskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {cm:tsk_other}; Check: NOT PHDefaulTaskmgrCheck(); Flags: unchecked dontinheritcheck
 
-Name: create_KPH_service; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND KPHServiceCheck(); Flags: unchecked dontinheritcheck
-Name: delete_KPH_service; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND NOT KPHServiceCheck(); Flags: unchecked dontinheritcheck
+Name: create_KPH_service; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
+Name: delete_KPH_service; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND NOT KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
 
 
 [Icons]
