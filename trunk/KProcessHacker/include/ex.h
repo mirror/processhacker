@@ -68,7 +68,6 @@ typedef struct _EXI_PUSH_LOCK
             ULONG_PTR MultipleShared : 1;
             ULONG_PTR Shared : sizeof(ULONG_PTR) * 8 - 4; /* ULONG_PTR bits minus 4 */
         };
-        
         ULONG_PTR Value;
         PVOID Ptr;
     };

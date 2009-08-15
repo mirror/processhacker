@@ -30,8 +30,7 @@ BOOLEAN KphpCaptureAndAddStack(
 
 VOID KphpTraceDatabaseDeleteProcedure(
     __in PVOID Object,
-    __in ULONG Flags,
-    __in SIZE_T Size
+    __in ULONG Flags
     );
 
 PKPH_OBJECT_TYPE KphTraceDatabaseType;
@@ -335,8 +334,7 @@ BOOLEAN KphpCaptureAndAddStack(
  */
 VOID KphpTraceDatabaseDeleteProcedure(
     __in PVOID Object,
-    __in ULONG Flags,
-    __in SIZE_T Size
+    __in ULONG Flags
     )
 {
     PKPH_TRACE_DATABASE database = (PKPH_TRACE_DATABASE)Object;

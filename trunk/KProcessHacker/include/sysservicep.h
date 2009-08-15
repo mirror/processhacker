@@ -321,14 +321,12 @@ FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
 
 VOID NTAPI KphpSsClientEntryDeleteProcedure(
     __in PVOID Object,
-    __in ULONG Flags,
-    __in SIZE_T Size
+    __in ULONG Flags
     );
 
 VOID NTAPI KphpSsRuleSetEntryDeleteProcedure(
     __in PVOID Object,
-    __in ULONG Flags,
-    __in SIZE_T Size
+    __in ULONG Flags
     );
 
 NTSTATUS KphpSsAddRule(
@@ -336,12 +334,6 @@ NTSTATUS KphpSsAddRule(
     __in PKPHSS_RULESET_ENTRY RuleSetEntry,
     __in KPHSS_FILTER_TYPE FilterType,
     __in KPHSS_RULE_TYPE RuleType
-    );
-
-VOID NTAPI KphpSsRuleEntryDeleteProcedure(
-    __in PVOID Object,
-    __in ULONG Flags,
-    __in SIZE_T Size
     );
 
 NTSTATUS KphpSsCreateEventBlock(

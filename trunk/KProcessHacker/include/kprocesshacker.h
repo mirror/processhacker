@@ -133,8 +133,7 @@ VOID SsUnref(LONG count);
 
 VOID NTAPI ClientEntryDeleteProcedure(
     __in PVOID Object,
-    __in ULONG Flags,
-    __in SIZE_T Size
+    __in ULONG Flags
     );
 
 PKPH_CLIENT_ENTRY CreateClientEntry(

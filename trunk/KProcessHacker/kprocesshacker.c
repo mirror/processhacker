@@ -253,7 +253,7 @@ NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     clientEntry = ReferenceClientEntry(NULL);
     
     if (clientEntry)
-        KphDereferenceObjectEx(clientEntry, 2);
+        KphDereferenceObjectEx(clientEntry, 2, FALSE);
     
     dprintf("Client (PID %d) disconnected\n", PsGetCurrentProcessId());
     
@@ -317,8 +317,7 @@ VOID SsUnref(LONG count)
 
 VOID NTAPI ClientEntryDeleteProcedure(
     __in PVOID Object,
-    __in ULONG Flags,
-    __in SIZE_T Size
+    __in ULONG Flags
     )
 {
     PKPH_CLIENT_ENTRY entry = (PKPH_CLIENT_ENTRY)Object;

@@ -33,10 +33,19 @@
 
 /* Object type callbacks */
 
+/* PKPH_TYPE_DELETE_PROCEDURE
+ * 
+ * The delete procedure for an object type, called when 
+ * an object of the type is being freed.
+ * 
+ * Object: A pointer to the object being freed.
+ * Flags: The flags specified when the object was created.
+ * 
+ * IRQL: <= APC_LEVEL
+ */
 typedef VOID (NTAPI *PKPH_TYPE_DELETE_PROCEDURE)(
     __in PVOID Object,
-    __in ULONG Flags,
-    __in SIZE_T Size
+    __in ULONG Flags
     );
 
 struct _KPH_OBJECT_TYPE;
@@ -68,9 +77,14 @@ BOOLEAN KphDereferenceObject(
     __in PVOID Object
     );
 
+BOOLEAN KphDereferenceObjectDeferDelete(
+    __in PVOID Object
+    );
+
 LONG KphDereferenceObjectEx(
     __in PVOID Object,
-    __in LONG RefCount
+    __in LONG RefCount,
+    __in BOOLEAN DeferDelete
     );
 
 PKPH_OBJECT_TYPE KphGetObjectType(

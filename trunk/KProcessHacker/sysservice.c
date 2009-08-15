@@ -421,8 +421,7 @@ NTSTATUS KphSsQueryClientEntry(
  */
 VOID NTAPI KphpSsClientEntryDeleteProcedure(
     __in PVOID Object,
-    __in ULONG Flags,
-    __in SIZE_T Size
+    __in ULONG Flags
     )
 {
     PKPHSS_CLIENT_ENTRY clientEntry = (PKPHSS_CLIENT_ENTRY)Object;
@@ -490,8 +489,7 @@ NTSTATUS KphSsCreateRuleSetEntry(
  */
 VOID NTAPI KphpSsRuleSetEntryDeleteProcedure(
     __in PVOID Object,
-    __in ULONG Flags,
-    __in SIZE_T Size
+    __in ULONG Flags
     )
 {
     PKPHSS_RULESET_ENTRY ruleSetEntry = (PKPHSS_RULESET_ENTRY)Object;
@@ -1802,7 +1800,10 @@ VOID NTAPI KphpSsLogSystemServiceCall(
                 }
                 else
                 {
-                    KphDereferenceObject(ruleSetEntry);
+                    /* We need to use defer delete here because we hold the 
+                     * ruleset list lock.
+                     */
+                    KphDereferenceObjectDeferDelete(ruleSetEntry);
                 }
             }
         }

@@ -33,6 +33,7 @@
 #define KphObjectHeaderToObject(ObjectHeader) (&((PKPH_OBJECT_HEADER)(ObjectHeader))->Body)
 #define KphpAddObjectHeaderSize(Size) ((Size) + sizeof(KPH_OBJECT_HEADER) - sizeof(ULONG))
 
+typedef struct _KPH_OBJECT_HEADER *PKPH_OBJECT_HEADER;
 typedef struct _KPH_OBJECT_TYPE *PKPH_OBJECT_TYPE;
 
 typedef struct _KPH_OBJECT_HEADER
@@ -41,8 +42,13 @@ typedef struct _KPH_OBJECT_HEADER
     LONG RefCount;
     /* The flags that were used to create the object. */
     ULONG Flags;
-    /* The size of the object, excluding the header. */
-    SIZE_T Size;
+    union
+    {
+        /* The size of the object, excluding the header. */
+        SIZE_T Size;
+        /* A pointer to the object header of the next object to free. */
+        PKPH_OBJECT_HEADER NextToFree;
+    };
     /* The type of the object. */
     PKPH_OBJECT_TYPE Type;
     /* A linked list entry for an optional object manager object list. 
@@ -112,6 +118,14 @@ FORCEINLINE BOOLEAN KphpInterlockedIncrementSafe(
 PKPH_OBJECT_HEADER KphpAllocateObject(
     __in SIZE_T ObjectSize,
     __in POOL_TYPE PoolType
+    );
+
+VOID KphpDeferDeleteObject(
+    __in PKPH_OBJECT_HEADER ObjectHeader
+    );
+
+VOID KphpDeferDeleteObjectRoutine(
+    __in PVOID Parameter
     );
 
 VOID KphpFreeObject(

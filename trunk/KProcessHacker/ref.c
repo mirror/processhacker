@@ -29,6 +29,13 @@ FAST_MUTEX KphObjectListMutex;
 /* The object type type. */
 PKPH_OBJECT_TYPE KphObjectTypeObject = NULL;
 
+/* Whether the object manager is destroying all objects. */
+BOOLEAN KphObjectDeinitializing = FALSE;
+/* The work item for deferred object deletes. */
+WORK_QUEUE_ITEM KphObjectDeferDeleteWorkItem;
+/* The next object to delete. */
+PKPH_OBJECT_HEADER KphObjectNextToFree = NULL;
+
 /* KphRefInit
  * 
  * Initializes the KPH object manager.
@@ -41,6 +48,13 @@ NTSTATUS KphRefInit()
     InitializeListHead(&KphObjectListHead);
     /* Initialize the object list mutex. */
     ExInitializeFastMutex(&KphObjectListMutex);
+    
+    /* Initialize the deferred delete work item. */
+    ExInitializeWorkItem(
+        &KphObjectDeferDeleteWorkItem,
+        KphpDeferDeleteObjectRoutine,
+        NULL
+        );
     
     /* Create the fundamental object type. */
     status = KphCreateObjectType(
@@ -67,6 +81,8 @@ NTSTATUS KphRefDeinit()
 {
     NTSTATUS status = STATUS_SUCCESS;
     PLIST_ENTRY currentEntry;
+    
+    KphObjectDeinitializing = TRUE;
     
     /* Acquire the object list mutex to make sure no one else 
      * modifies the list. */
@@ -104,6 +120,8 @@ NTSTATUS KphRefDeinit()
  * ObjectType: The type of the object.
  * AdditionalReferences: The number of references to add to the object. The 
  * object will have a reference count of 1 + AdditionalReferences.
+ * 
+ * IRQL: <= APC_LEVEL
  */
 NTSTATUS KphCreateObject(
     __out PVOID *Object,
@@ -178,6 +196,8 @@ NTSTATUS KphCreateObject(
 /* KphCreateObjectType
  * 
  * Creates an object type.
+ * 
+ * IRQL: <= APC_LEVEL
  */
 NTSTATUS KphCreateObjectType(
     __out PKPH_OBJECT_TYPE *ObjectType,
@@ -218,12 +238,33 @@ NTSTATUS KphCreateObjectType(
  * Object: A pointer to the object to dereference.
  * 
  * Return value: TRUE if the object was freed, otherwise FALSE.
+ * 
+ * IRQL: <= APC_LEVEL
  */
 BOOLEAN KphDereferenceObject(
     __in PVOID Object
     )
 {
-    return KphDereferenceObjectEx(Object, 1) == 0;
+    return KphDereferenceObjectEx(Object, 1, FALSE) == 0;
+}
+
+/* KphDereferenceObjectDeferDelete
+ * 
+ * Dereferences the specified object. The object will be freed in 
+ * a worker thread if its reference count reaches 0.
+ * 
+ * Object: A pointer to the object to dereference.
+ * 
+ * Return value: TRUE if the object was freed, otherwise FALSE.
+ * 
+ * IRQL: <= DISPATCH_LEVEL if the object was allocated using the 
+ * non-paged pool, otherwise <= APC_LEVEL.
+ */
+BOOLEAN KphDereferenceObjectDeferDelete(
+    __in PVOID Object
+    )
+{
+    return KphDereferenceObjectEx(Object, 1, TRUE) == 0;
 }
 
 /* KphDereferenceObjectEx
@@ -235,10 +276,14 @@ BOOLEAN KphDereferenceObject(
  * RefCount: The number of references to remove.
  * 
  * Return value: The new reference count of the object.
+ * 
+ * IRQL: <= DISPATCH_LEVEL if the object was allocated using the 
+ * non-paged pool and deletion is being deferred, otherwise <= APC_LEVEL.
  */
 LONG KphDereferenceObjectEx(
     __in PVOID Object,
-    __in LONG RefCount
+    __in LONG RefCount,
+    __in BOOLEAN DeferDelete
     )
 {
     PKPH_OBJECT_HEADER objectHeader;
@@ -256,13 +301,18 @@ LONG KphDereferenceObjectEx(
     /* Free the object if it has 0 references. */
     if (oldRefCount - RefCount == 0)
     {
-        /* Remove the object from the global object list. */
-        ExAcquireFastMutex(&KphObjectListMutex);
-        RemoveEntryList(&objectHeader->GlobalObjectListEntry);
-        ExReleaseFastMutex(&KphObjectListMutex);
-        
-        /* Free the object. */
-        KphpFreeObject(objectHeader);
+        /* If we are at DISPATCH_LEVEL or higher, or the caller 
+         * requested us to do so, defer the deletion.
+         */
+        if (DeferDelete || KeGetCurrentIrql() > APC_LEVEL)
+        {
+            KphpDeferDeleteObject(objectHeader);
+        }
+        else
+        {
+            /* Free the object. */
+            KphpFreeObject(objectHeader);
+        }
     }
     
     return oldRefCount - RefCount;
@@ -271,6 +321,9 @@ LONG KphDereferenceObjectEx(
 /* KphGetObjectType
  * 
  * Gets an object's type.
+ * 
+ * IRQL: <= DISPATCH_LEVEL if the object was allocated using the 
+ * non-paged pool, otherwise <= APC_LEVEL.
  */
 PKPH_OBJECT_TYPE KphGetObjectType(
     __in PVOID Object
@@ -284,6 +337,9 @@ PKPH_OBJECT_TYPE KphGetObjectType(
  * References the specified object.
  * 
  * Object: A pointer to the object to reference.
+ * 
+ * IRQL: <= DISPATCH_LEVEL if the object was allocated using the 
+ * non-paged pool, otherwise <= APC_LEVEL.
  */
 VOID KphReferenceObject(
     __in PVOID Object
@@ -304,6 +360,9 @@ VOID KphReferenceObject(
  * RefCount: The number of references to add.
  * 
  * Return value: The new reference count of the object.
+ * 
+ * IRQL: <= DISPATCH_LEVEL if the object was allocated using the 
+ * non-paged pool, otherwise <= APC_LEVEL.
  */
 LONG KphReferenceObjectEx(
     __in PVOID Object,
@@ -340,6 +399,9 @@ LONG KphReferenceObjectEx(
  * the object's type attempts to acquire the mutex. If this 
  * function is called while the mutex is owned, you can 
  * avoid referencing an object that is being destroyed.
+ * 
+ * IRQL: <= DISPATCH_LEVEL if the object was allocated using the 
+ * non-paged pool, otherwise <= APC_LEVEL.
  */
 BOOLEAN KphReferenceObjectSafe(
     __in PVOID Object
@@ -374,6 +436,86 @@ PKPH_OBJECT_HEADER KphpAllocateObject(
         );
 }
 
+/* KphpDeferDeleteObject
+ * 
+ * Queues an object for deletion.
+ * 
+ * IRQL: <= DISPATCH_LEVEL if the object was allocated using the 
+ * non-paged pool, otherwise <= APC_LEVEL.
+ */
+VOID KphpDeferDeleteObject(
+    __in PKPH_OBJECT_HEADER ObjectHeader
+    )
+{
+    PKPH_OBJECT_HEADER nextToFree;
+    
+    /* Add the object to the list while saving the old value, atomically.
+     * Note that it is first-in, last-out.
+     */
+    while (TRUE)
+    {
+        nextToFree = KphObjectNextToFree;
+        ObjectHeader->NextToFree = nextToFree;
+        
+        /* Attempt to set the global next-to-free variable. */
+        if (InterlockedCompareExchangePointer(
+            &KphObjectNextToFree,
+            ObjectHeader,
+            nextToFree
+            ) == nextToFree)
+        {
+            /* Success. */
+            break;
+        }
+        
+        /* Someone else changed the next-to-free variable. 
+         * Go back and try again.
+         */
+    }
+    
+    /* Was the to-free list empty before? If so, we need to queue 
+     * the work item.
+     */
+    if (!nextToFree)
+    {
+        ExQueueWorkItem(&KphObjectDeferDeleteWorkItem, CriticalWorkQueue);
+    }
+}
+
+/* KphpDeferDeleteObjectRoutine
+ * 
+ * Removes and frees objects from the to-free list.
+ * 
+ * IRQL: PASSIVE_LEVEL
+ */
+VOID KphpDeferDeleteObjectRoutine(
+    __in PVOID Parameter
+    )
+{
+    PKPH_OBJECT_HEADER objectHeader = NULL;
+    
+    while (TRUE)
+    {
+        /* Get the next object to free while replacing the global variable with 
+         * what we needed to free next.
+         */
+        objectHeader = InterlockedExchangePointer(&KphObjectNextToFree, objectHeader);
+        
+        /* If we have an object to free, free it and move on to the 
+         * next object. Otherwise, stop.
+         */
+        if (objectHeader)
+        {
+            KphpFreeObject(objectHeader);
+            objectHeader = objectHeader->NextToFree;
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
 /* KphpFreeObject
  * 
  * Calls the delete procedure for an object and frees its 
@@ -388,13 +530,24 @@ VOID KphpFreeObject(
     /* Object type statistics. */
     InterlockedDecrement(&ObjectHeader->Type->NumberOfObjects);
     
+    /* Remove the object from the global object list. 
+     * If the object manager is being destroyed, don't do this - 
+     * we will deadlock because the deinitialization function 
+     * holds the mutex.
+     */
+    if (!KphObjectDeinitializing)
+    {
+        ExAcquireFastMutex(&KphObjectListMutex);
+        RemoveEntryList(&ObjectHeader->GlobalObjectListEntry);
+        ExReleaseFastMutex(&KphObjectListMutex);
+    }
+    
     /* Call the delete procedure if we have one. */
     if (ObjectHeader->Type->DeleteProcedure)
     {
         ObjectHeader->Type->DeleteProcedure(
             KphObjectHeaderToObject(ObjectHeader),
-            ObjectHeader->Flags,
-            ObjectHeader->Size
+            ObjectHeader->Flags
             );
     }
     
