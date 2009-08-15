@@ -128,6 +128,7 @@ NTSTATUS KphSsLogDeinit()
  */
 NTSTATUS KphSsLogStart()
 {
+#ifdef _X86_
     NTSTATUS status = STATUS_SUCCESS;
     
     /* Make sure we have the KiFastCallEntry+x address. */
@@ -161,6 +162,9 @@ NTSTATUS KphSsLogStart()
     ExReleaseFastMutex(&KphSsMutex);
     
     return status;
+#else
+    return STATUS_NOT_SUPPORTED;
+#endif
 }
 
 /* KphSsLogStop
@@ -169,6 +173,7 @@ NTSTATUS KphSsLogStart()
  */
 NTSTATUS KphSsLogStop()
 {
+#ifdef _X86_
     NTSTATUS status = STATUS_SUCCESS;
     
     ExAcquireFastMutex(&KphSsMutex);
@@ -195,6 +200,9 @@ NTSTATUS KphSsLogStop()
     ExReleaseFastMutex(&KphSsMutex);
     
     return status;
+#else
+    return STATUS_NOT_SUPPORTED;
+#endif
 }
 
 /* KphSsCreateClientEntry
@@ -728,7 +736,7 @@ NTSTATUS KphpSsAddRule(
     ruleEntry->RuleType = RuleType;
     
     /* Get a handle for the rule. */
-    ruleEntry->Handle = (HANDLE)InterlockedExchangeAdd(
+    ruleEntry->Handle = (HANDLE)(ULONG_PTR)InterlockedExchangeAdd(
         &RuleSetEntry->NextRuleHandle,
         KPHSS_RULE_HANDLE_INCREMENT
         );
@@ -777,7 +785,7 @@ NTSTATUS KphpSsCreateEventBlock(
     if (NumberOfArguments > MAX_USHORT)
         return STATUS_INVALID_PARAMETER;
     
-    previousMode = KeGetPreviousMode();
+    previousMode = ExGetPreviousMode();
     
     /* Capture kernel-mode and user-mode stack traces. 
      * We do this before we allocate the event block so 
@@ -1361,13 +1369,14 @@ NTSTATUS KphpSsCreateArgumentBlock(
     __in ULONG Index
     )
 {
+#ifdef _X86_
     NTSTATUS status = STATUS_SUCCESS;
     PKPHSS_ARGUMENT_BLOCK argumentBlock;
     KPROCESSOR_MODE previousMode;
     PKPHSS_CALL_ENTRY callEntry;
     KPHSS_ARGUMENT_TYPE argumentType;
     
-    previousMode = KeGetPreviousMode();
+    previousMode = ExGetPreviousMode();
     
     /* Get a pointer to the call entry for the system service. 
      * If we don't have one, we can't proceed.
@@ -1447,6 +1456,9 @@ NTSTATUS KphpSsCreateArgumentBlock(
     *ArgumentBlock = argumentBlock;
     
     return status;
+#else
+    return STATUS_NOT_SUPPORTED;
+#endif
 }
 
 /* KphpSsAllocateArgumentBlock
@@ -1697,6 +1709,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     __in PKTHREAD Thread
     )
 {
+#ifdef _X86_
     NTSTATUS status = STATUS_SUCCESS;
     KPROCESSOR_MODE previousMode;
     PLIST_ENTRY currentListEntry;
@@ -1706,7 +1719,7 @@ VOID NTAPI KphpSsLogSystemServiceCall(
     PKPHSS_ARGUMENT_BLOCK argumentBlockArray[KPHSS_MAXIMUM_ARGUMENT_BLOCKS];
     ULONG i, j;
     
-    previousMode = KeGetPreviousMode();
+    previousMode = ExGetPreviousMode();
     /* Ignore the Thread argument. Replace it with our own. */
     Thread = KeGetCurrentThread();
     
@@ -1905,7 +1918,12 @@ VOID NTAPI KphpSsLogSystemServiceCall(
         if (argumentBlockArray[i])
             KphpSsFreeArgumentBlock(argumentBlockArray[i]);
     }
+#else
+    KeBugCheck(STATUS_NOT_SUPPORTED);
+#endif
 }
+
+#ifdef _X86_
 
 /* KphpSsNewKiFastCallEntry
  * 
@@ -2009,3 +2027,12 @@ __declspec(naked) VOID NTAPI KphpSsNewKiFastCallEntry()
         jmp     ebx /* jump back */
     }
 }
+
+#else
+
+VOID NTAPI KphpSsNewKiFastCallEntry()
+{
+    KeBugCheck(STATUS_NOT_SUPPORTED);
+}
+
+#endif

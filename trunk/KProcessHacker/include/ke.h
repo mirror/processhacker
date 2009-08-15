@@ -25,8 +25,6 @@
 
 #include "types.h"
 
-NTKERNELAPI KPROCESSOR_MODE NTAPI KeGetPreviousMode();
-
 /* APCs */
 
 typedef enum _KAPC_ENVIRONMENT

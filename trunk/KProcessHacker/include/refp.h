@@ -31,7 +31,7 @@
 
 #define KphObjectToObjectHeader(Object) ((PKPH_OBJECT_HEADER)CONTAINING_RECORD((PCHAR)(Object), KPH_OBJECT_HEADER, Body))
 #define KphObjectHeaderToObject(ObjectHeader) (&((PKPH_OBJECT_HEADER)(ObjectHeader))->Body)
-#define KphpAddObjectHeaderSize(Size) ((Size) + sizeof(KPH_OBJECT_HEADER) - sizeof(ULONG))
+#define KphpAddObjectHeaderSize(Size) ((Size) + sizeof(KPH_OBJECT_HEADER) - sizeof(QUAD))
 
 typedef struct _KPH_OBJECT_HEADER *PKPH_OBJECT_HEADER;
 typedef struct _KPH_OBJECT_TYPE *PKPH_OBJECT_TYPE;
@@ -58,7 +58,7 @@ typedef struct _KPH_OBJECT_HEADER
     LIST_ENTRY GlobalObjectListEntry;
     
     /* The body of the object. For use by the KphObject(Header)ToObject(Header) macros. */
-    ULONG Body;
+    QUAD Body;
 } KPH_OBJECT_HEADER, *PKPH_OBJECT_HEADER;
 
 typedef struct _KPH_OBJECT_TYPE

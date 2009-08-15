@@ -1140,6 +1140,7 @@ NTSTATUS PsTerminateProcess(
     if (!psTerminateProcess)
         return STATUS_NOT_SUPPORTED;
     
+#ifdef _X86_
     if (WindowsVersion == WINDOWS_XP)
     {
         /* PspTerminateProcess on XP is stdcall. */
@@ -1169,6 +1170,9 @@ NTSTATUS PsTerminateProcess(
     {
         return STATUS_NOT_SUPPORTED;
     }
+#else
+    status = __PsTerminateProcess(Process, ExitStatus);
+#endif
     
     return status;
 }

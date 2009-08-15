@@ -43,11 +43,10 @@
 #define MAX_ULONG MAX_UINTEGER(BITS_ULONG)
 
 #define SYSTEM_PROCESS_ID ((HANDLE)4)
-#define KERNEL_HANDLE_BIT (1 << (sizeof(HANDLE) * 8 - 1))
+#define KERNEL_HANDLE_BIT ((ULONG_PTR)1 << (sizeof(HANDLE) * 8 - 1))
 #define IsKernelHandle(Handle) ((LONG_PTR)(Handle) < 0)
 #define MakeKernelHandle(Handle) ((ULONG_PTR)(Handle) |= KERNEL_HANDLE_BIT)
 
-#define PAUSE() __asm { pause }
 #define PTR_ADD_OFFSET(Pointer, Offset) ((PVOID)((ULONG_PTR)(Pointer) + (ULONG_PTR)(Offset)))
 
 #define GET_BIT(Integer, Bit) (((Integer) >> (Bit)) & 0x1)

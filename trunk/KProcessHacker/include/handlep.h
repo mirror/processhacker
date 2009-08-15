@@ -44,7 +44,7 @@
 #define KphGetNextFreeEntry(Entry) ((PKPH_HANDLE_TABLE_ENTRY)((Entry)->Value & ~KPH_HANDLE_FLAGS))
 #define KphSetNextFreeEntry(Entry, NextFree) ((Entry)->Value = ((ULONG_PTR)(NextFree) | KphGetFlagsEntry(Entry)))
 
-#define KphHandleFromIndex(Index) ((HANDLE)((Index) * KPH_HANDLE_INCREMENT))
+#define KphHandleFromIndex(Index) ((HANDLE)((ULONG_PTR)(Index) * KPH_HANDLE_INCREMENT))
 #define KphHandleFromIndexEx(Index, Flags) ((HANDLE)(((Index) * KPH_HANDLE_INCREMENT) | (Flags)))
 #define KphIndexFromHandle(Handle) (((ULONG_PTR)(Handle) & ~KPH_HANDLE_FLAGS) / KPH_HANDLE_INCREMENT)
 
@@ -101,7 +101,7 @@ FORCEINLINE BOOLEAN KphLockHandleEntry(
     )
 {
     /* Acquire the spinlock. */
-    KphAcquireBitSpinLock(&Entry->Value, KPH_HANDLE_LOCKED_SHIFT);
+    KphAcquireBitSpinLock((PLONG)&Entry->Value, KPH_HANDLE_LOCKED_SHIFT);
     
     /* Return whether the entry is allocated. */
     return !!(Entry->Value & KPH_HANDLE_ALLOCATED);
@@ -138,7 +138,7 @@ FORCEINLINE VOID KphUnlockHandleEntry(
     )
 {
     /* Unlock the spinlock. */
-    KphReleaseBitSpinLock(&Entry->Value, KPH_HANDLE_LOCKED_SHIFT);
+    KphReleaseBitSpinLock((PLONG)&Entry->Value, KPH_HANDLE_LOCKED_SHIFT);
 }
 
 #endif

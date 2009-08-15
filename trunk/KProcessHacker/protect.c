@@ -58,15 +58,8 @@ static KSPIN_LOCK ProtectedProcessListLock;
  */
 static NPAGED_LOOKASIDE_LIST ProtectedProcessLookasideList;
 
-static KPH_HOOK ObOpenObjectByPointerHook = { 0 };
 static KPH_OB_OPEN_HOOK ProcessOpenHook = { 0 };
 static KPH_OB_OPEN_HOOK ThreadOpenHook = { 0 };
-
-KPH_DEFINE_HOOK_CALL(
-    NTSTATUS NTAPI KphOldObOpenObjectByPointer,
-    OBOPENOBJECTBYPOINTER_ARGS,
-    ObOpenObjectByPointerHook
-    );
 
 /* KphProtectInit
  * 
@@ -93,17 +86,9 @@ NTSTATUS KphProtectInit()
         0
         );
     
-    /* Initialize hooking. */
-    KphHookInit();
-    
     /* Hook various functions. */
-    /* Hooking ObOpenObjectByPointer allows us to intercept process/thread 
-     * handle creation. */
-    KphInitializeHook(&ObOpenObjectByPointerHook, ObOpenObjectByPointer, KphNewObOpenObjectByPointer);
-    if (!NT_SUCCESS(status = KphHook(&ObOpenObjectByPointerHook)))
-        return status;
     /* Hooking the open procedure calls for processes and threads allows 
-     * us to intercept handle duplication/inheritance. */
+     * us to intercept handle creation/duplication/inheritance. */
     KphInitializeObOpenHook(&ProcessOpenHook, *PsProcessType, KphNewOpenProcedure51, KphNewOpenProcedure60);
     if (!NT_SUCCESS(status = KphObOpenHook(&ProcessOpenHook)))
         return status;
@@ -127,7 +112,6 @@ NTSTATUS KphProtectDeinit()
     LARGE_INTEGER waitLi;
     
     /* Unhook. */
-    status = KphUnhook(&ObOpenObjectByPointerHook);
     status = KphObOpenUnhook(&ProcessOpenHook);
     status = KphObOpenUnhook(&ThreadOpenHook);
     
@@ -141,56 +125,6 @@ NTSTATUS KphProtectDeinit()
     
     /* Free all process protection entries. */
     ExDeleteNPagedLookasideList(&ProtectedProcessLookasideList);
-    
-    return status;
-}
-
-/* KphNewObOpenObjectByPointer
- * 
- * New ObOpenObjectByPointer function.
- * 
- * Thread safety: Full
- * IRQL: PASSIVE_LEVEL
- */
-NTSTATUS NTAPI KphNewObOpenObjectByPointer(
-    OBOPENOBJECTBYPOINTER_ARGS
-    )
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    
-    /* Prevent the driver from unloading while this routine is executing. */
-    if (!ExAcquireRundownProtection(&ProtectedProcessRundownProtect))
-    {
-        /* Should never happen. */
-        return STATUS_INTERNAL_ERROR;
-    }
-    
-    /* Assume failure. */
-    *Handle = NULL;
-    
-    if (KphpIsAccessAllowed(
-        Object,
-        AccessMode,
-        PassedAccessState ? PassedAccessState->OriginalDesiredAccess : DesiredAccess
-        ))
-    {
-        status = KphOldObOpenObjectByPointer(
-            Object,
-            HandleAttributes,
-            PassedAccessState,
-            DesiredAccess,
-            ObjectType,
-            AccessMode,
-            Handle
-            );
-    }
-    else
-    {
-        dprintf("KphNewObOpenObjectByPointer: Access denied.\n");
-        status = STATUS_ACCESS_DENIED;
-    }
-    
-    ExReleaseRundownProtection(&ProtectedProcessRundownProtect);
     
     return status;
 }
@@ -243,19 +177,12 @@ NTSTATUS NTAPI KphNewOpenProcedure60(
         return STATUS_INTERNAL_ERROR;
     }
     
-    /* We only care about handle duplication and inheritance. */
-    if (
-        OpenReason == ObDuplicateHandle || 
-        OpenReason == ObInheritHandle
-        )
-    {
-        accessAllowed = KphpIsAccessAllowed(
-            Object,
-            AccessMode,
-            /* Assume worst case if granted access not available. */
-            !GrantedAccess ? (ACCESS_MASK)-1 : GrantedAccess
-            );
-    }
+    accessAllowed = KphpIsAccessAllowed(
+        Object,
+        AccessMode,
+        /* Assume worst case if granted access not available. */
+        !GrantedAccess ? (ACCESS_MASK)-1 : GrantedAccess
+        );
     
     if (accessAllowed)
     {

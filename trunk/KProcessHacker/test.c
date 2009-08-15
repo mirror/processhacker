@@ -55,14 +55,14 @@ VOID KphpTestPushLockThreadStart(
         ExAcquirePushLockShared(&TestLock);
         
         for (j = 0; j < 1000; j++)
-            PAUSE();
+            YieldProcessor();
         
         ExReleasePushLock(&TestLock);
         
         ExAcquirePushLockExclusive(&TestLock);
         
         for (j = 0; j < 9000; j++)
-            PAUSE();
+            YieldProcessor();
         
         ExReleasePushLock(&TestLock);
     }

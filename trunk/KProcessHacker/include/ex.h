@@ -137,7 +137,7 @@ VOID FORCEINLINE ExAcquirePushLockExclusive(
     )
 {
     /* Fast path - acquire push lock, no function call. */
-    if (WindowsVersion < WINDOWS_SERVER_2003 || InterlockedBitTestAndSet(PushLock, EX_PUSH_LOCK_LOCK_SHIFT))
+    if (WindowsVersion < WINDOWS_SERVER_2003 || InterlockedBitTestAndSet((PLONG)PushLock, EX_PUSH_LOCK_LOCK_SHIFT))
     {
         /* Slow path - call the function. */
         ExfAcquirePushLockExclusive(PushLock);
@@ -154,8 +154,8 @@ VOID FORCEINLINE ExAcquirePushLockShared(
 {
     /* Fast path - acquire push lock which is not held at all, no function call. */
     if (WindowsVersion < WINDOWS_SERVER_2003 || InterlockedCompareExchangePointer(
-        PushLock,
-        EX_PUSH_LOCK_SHARE_INC | EX_PUSH_LOCK_LOCK,
+        (PVOID)PushLock,
+        (PVOID)(EX_PUSH_LOCK_SHARE_INC | EX_PUSH_LOCK_LOCK),
         0
         ) != 0)
     {
@@ -199,7 +199,7 @@ VOID FORCEINLINE ExReleasePushLock(
         WindowsVersion < WINDOWS_SERVER_2003 || 
         oldValue.Waiting || 
         InterlockedCompareExchangePointer(
-            PushLock,
+            (PVOID)PushLock,
             newValue.Ptr,
             oldValue.Ptr
             ) != oldValue.Ptr
@@ -222,7 +222,7 @@ BOOLEAN FORCEINLINE ExTryAcquirePushLockExclusive(
     __inout PEX_PUSH_LOCK PushLock
     )
 {
-    if (!InterlockedBitTestAndSet(PushLock, EX_PUSH_LOCK_LOCK_SHIFT))
+    if (!InterlockedBitTestAndSet((PLONG)PushLock, EX_PUSH_LOCK_LOCK_SHIFT))
     {
         return TRUE;
     }
@@ -245,8 +245,8 @@ BOOLEAN FORCEINLINE ExTryAcquirePushLockShared(
 {
     /* Fast path with the push lock not held at all. */
     if (InterlockedCompareExchangePointer(
-        PushLock,
-        EX_PUSH_LOCK_SHARE_INC | EX_PUSH_LOCK_LOCK,
+        (PVOID)PushLock,
+        (PVOID)(EX_PUSH_LOCK_SHARE_INC | EX_PUSH_LOCK_LOCK),
         0
         ) != 0)
     {

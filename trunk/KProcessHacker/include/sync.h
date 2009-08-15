@@ -43,7 +43,7 @@ FORCEINLINE VOID KphSpinUntilEqual(
         Value2,
         Value2
         ) != Value2)
-        PAUSE();
+        YieldProcessor();
 }
 
 /* KphNotEqualSpin
@@ -61,7 +61,7 @@ FORCEINLINE VOID KphSpinUntilNotEqual(
         Value2,
         Value2
         ) == Value2)
-        PAUSE();
+        YieldProcessor();
 }
 
 /* Spin Locks */
@@ -72,8 +72,8 @@ FORCEINLINE VOID KphSpinUntilNotEqual(
  * lock in the given value.
  */
 FORCEINLINE VOID KphAcquireBitSpinLock(
-    __inout PULONG Value,
-    __in ULONG Bit
+    __inout PLONG Value,
+    __in LONG Bit
     )
 {
     /* Fast path - try to acquire the lock outside of the loop first. */
@@ -81,7 +81,7 @@ FORCEINLINE VOID KphAcquireBitSpinLock(
     {
         /* Slow path - lock was already acquired by someone else; spin. */
         while (InterlockedBitTestAndSet(Value, Bit))
-            PAUSE();
+            YieldProcessor();
     }
 }
 
@@ -91,8 +91,8 @@ FORCEINLINE VOID KphAcquireBitSpinLock(
  * lock in the given value.
  */
 FORCEINLINE VOID KphReleaseBitSpinLock(
-    __inout PULONG Value,
-    __in ULONG Bit
+    __inout PLONG Value,
+    __in LONG Bit
     )
 {
     InterlockedBitTestAndReset(Value, Bit);
