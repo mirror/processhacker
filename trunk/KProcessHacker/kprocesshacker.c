@@ -133,6 +133,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     status = KphCreateObjectType(
         &ClientEntryType,
         PagedPool,
+        0,
         ClientEntryDeleteProcedure
         );
     

@@ -46,6 +46,7 @@ NTSTATUS KphTraceDatabaseInitialization()
     status = KphCreateObjectType(
         &KphTraceDatabaseType,
         PagedPool,
+        0,
         KphpTraceDatabaseDeleteProcedure
         );
     

@@ -77,6 +77,7 @@ NTSTATUS KphSsLogInit()
     status = KphCreateObjectType(
         &KphSsClientEntryType,
         NonPagedPool,
+        0,
         KphpSsClientEntryDeleteProcedure
         );
     
@@ -86,6 +87,7 @@ NTSTATUS KphSsLogInit()
     status = KphCreateObjectType(
         &KphSsRuleSetEntryType,
         NonPagedPool,
+        0,
         KphpSsRuleSetEntryDeleteProcedure
         );
     
@@ -98,6 +100,7 @@ NTSTATUS KphSsLogInit()
     status = KphCreateObjectType(
         &KphSsRuleEntryType,
         NonPagedPool,
+        0,
         NULL
         );
     

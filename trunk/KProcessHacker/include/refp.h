@@ -66,6 +66,8 @@ typedef struct _KPH_OBJECT_TYPE
     /* The default pool type for objects of this type, used when the 
      * pool type is not specified when an object is created. */
     POOL_TYPE DefaultPoolType;
+    /* The flags that were used to create the object type. */
+    ULONG Flags;
     /* An optional procedure called when objects of this type are freed. */
     PKPH_TYPE_DELETE_PROCEDURE DeleteProcedure;
     

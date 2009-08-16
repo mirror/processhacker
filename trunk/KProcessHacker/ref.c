@@ -39,6 +39,8 @@ PKPH_OBJECT_HEADER KphObjectNextToFree = NULL;
 /* KphRefInit
  * 
  * Initializes the KPH object manager.
+ * 
+ * IRQL: <= APC_LEVEL
  */
 NTSTATUS KphRefInit()
 {
@@ -60,6 +62,7 @@ NTSTATUS KphRefInit()
     status = KphCreateObjectType(
         &KphObjectTypeObject,
         NonPagedPool,
+        0,
         NULL
         );
     
@@ -76,6 +79,8 @@ NTSTATUS KphRefInit()
 /* KphRefDeinit
  * 
  * Frees all objets created by the KPH object manager.
+ * 
+ * IRQL: = PASSIVE_LEVEL
  */
 NTSTATUS KphRefDeinit()
 {
@@ -202,11 +207,16 @@ NTSTATUS KphCreateObject(
 NTSTATUS KphCreateObjectType(
     __out PKPH_OBJECT_TYPE *ObjectType,
     __in POOL_TYPE DefaultPoolType,
+    __in ULONG Flags,
     __in PKPH_TYPE_DELETE_PROCEDURE DeleteProcedure
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
     PKPH_OBJECT_TYPE objectType;
+    
+    /* Check the flags. */
+    if ((Flags & KPHOBJTYPE_VALID_FLAGS) != Flags) /* Valid flag mask */
+        return STATUS_INVALID_PARAMETER_3;
     
     /* Create the type object. */
     status = KphCreateObject(
@@ -222,6 +232,7 @@ NTSTATUS KphCreateObjectType(
     
     /* Initialize the type object. */
     objectType->DefaultPoolType = DefaultPoolType;
+    objectType->Flags = Flags;
     objectType->DeleteProcedure = DeleteProcedure;
     objectType->NumberOfObjects = 0;
     
@@ -301,10 +312,15 @@ LONG KphDereferenceObjectEx(
     /* Free the object if it has 0 references. */
     if (oldRefCount - RefCount == 0)
     {
-        /* If we are at DISPATCH_LEVEL or higher, or the caller 
-         * requested us to do so, defer the deletion.
+        /* If we are at DISPATCH_LEVEL or higher, the type requests 
+         * us to do so, or the caller requests us to do so, defer 
+         * the deletion.
          */
-        if (DeferDelete || KeGetCurrentIrql() > APC_LEVEL)
+        if (
+            DeferDelete || 
+            (objectHeader->Type->Flags & KPHOBJTYPE_PASSIVE_LEVEL_DELETE) || 
+            (KeGetCurrentIrql() > APC_LEVEL)
+            )
         {
             KphpDeferDeleteObject(objectHeader);
         }

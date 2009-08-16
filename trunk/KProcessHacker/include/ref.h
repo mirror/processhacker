@@ -31,6 +31,10 @@
 #define KPHOBJ_NONPAGED_POOL 0x00000004
 #define KPHOBJ_VALID_FLAGS 0x00000007
 
+/* Object type flags */
+#define KPHOBJTYPE_PASSIVE_LEVEL_DELETE 0x00000001
+#define KPHOBJTYPE_VALID_FLAGS 0x00000001
+
 /* Object type callbacks */
 
 /* PKPH_TYPE_DELETE_PROCEDURE
@@ -41,7 +45,8 @@
  * Object: A pointer to the object being freed.
  * Flags: The flags specified when the object was created.
  * 
- * IRQL: <= APC_LEVEL
+ * IRQL: = PASSIVE_LEVEL if the require passive level flag was 
+ * specified for the object type, otherwise <= APC_LEVEL.
  */
 typedef VOID (NTAPI *PKPH_TYPE_DELETE_PROCEDURE)(
     __in PVOID Object,
@@ -70,6 +75,7 @@ NTSTATUS KphCreateObject(
 NTSTATUS KphCreateObjectType(
     __out PKPH_OBJECT_TYPE *ObjectType,
     __in POOL_TYPE DefaultPoolType,
+    __in ULONG Flags,
     __in PKPH_TYPE_DELETE_PROCEDURE DeleteProcedure
     );
 
