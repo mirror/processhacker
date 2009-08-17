@@ -70,9 +70,11 @@
     <Compile Include="IResettable.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="Messaging\MessageQueue.cs" />
+    <Compile Include="Threading\FastQueue.cs" />
     <Compile Include="Threading\RundownProtection.cs" />
     <Compile Include="Threading\SemaphorePair.cs" />
     <Compile Include="Threading\SpinLock.cs" />
+    <Compile Include="Threading\FastStack.cs" />
     <Compile Include="Threading\WaitableQueue.cs" />
     <Compile Include="Tokenizer.cs" />
     <Compile Include="Ui\SortedListViewComparer.cs" />

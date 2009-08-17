@@ -30,11 +30,11 @@ namespace ProcessHacker.Common
     public class FreeList<T>
         where T : IResettable, new()
     {
-        private class FreeListEntry<T>
-            where T : IResettable, new()
+        private class FreeListEntry<U>
+            where U : IResettable, new()
         {
-            public T Object;
-            public FreeListEntry<T> Next;
+            public U Object;
+            public FreeListEntry<U> Next;
         }
 
         private FreeListEntry<T> _listHead = null;
