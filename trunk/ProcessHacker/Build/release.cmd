@@ -87,7 +87,7 @@ REM Make a PDB zip
 
 
 :END
-GOTO :EOF
+ENDLOCAL && GOTO :EOF
 
 :Sub
 SET InnoSetupPath=%*
