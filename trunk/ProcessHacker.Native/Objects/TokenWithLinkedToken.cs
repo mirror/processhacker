@@ -41,7 +41,7 @@ namespace ProcessHacker.Native.Objects
             int retLen;
 
             if (!Win32.GetTokenInformation(_token, TokenInformationClass.TokenLinkedToken,
-                out linkedToken, 4, out retLen))
+                out linkedToken, IntPtr.Size, out retLen))
                 Win32.ThrowLastError();
 
             return new TokenHandle(linkedToken, true);

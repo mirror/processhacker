@@ -1,5 +1,10 @@
 Process Hacker
 
+1.5
+ * NEW/IMPROVED:
+ * FIXED:
+   * Linked token display on x64
+
 1.4
  * NEW/IMPROVED:
    * Full support for Windows 7 SP0
