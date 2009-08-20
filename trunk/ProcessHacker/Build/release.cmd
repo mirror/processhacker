@@ -54,15 +54,11 @@ RD tmp >NUL 2>&1
 
 REM Detect if we are running on 64bit WIN and use Wow6432Node, set the path
 REM of Inno Setup accordingly and compile installer
-IF "%PROGRAMFILES(x86)%zzz"=="zzz" GOTO :32BIT
+IF "%PROGRAMFILES(x86)%zzz"=="zzz" (SET "U_=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
+) ELSE (
 SET "U_=HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
-GOTO :common
+)
 
-:32BIT
-SET "U_=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
-GOTO :common
-
-:common
 SET "I_=Inno Setup"
 SET "A_=%I_% 5"
 SET "M_=Inno Setup IS NOT INSTALLED!!!"
