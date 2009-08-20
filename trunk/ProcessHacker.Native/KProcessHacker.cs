@@ -54,7 +54,7 @@ namespace ProcessHacker.Native
         {
             ClientCloseHandle = 0,
             SsQueryClientEntry,
-            GetFileObjectName,
+            Reserved1,
             KphOpenProcess,
             KphOpenThread,
             KphOpenProcessToken,
@@ -254,26 +254,6 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(CtlCode(Control.GetFeatures), null, 0, outData, 4);
 
             return (KphFeatures)(*(int*)outData);
-        }
-
-        public string GetFileObjectName(SystemHandleEntry handle)
-        {
-            byte* inData = stackalloc byte[8];
-            byte[] outData = new byte[2048];
-
-            *(int*)inData = handle.Handle;
-            *(int*)(inData + 4) = handle.ProcessId;
-
-            try
-            {
-                int len = _fileHandle.IoControl(CtlCode(Control.GetFileObjectName), inData, 8, outData);
-
-                return UnicodeEncoding.Unicode.GetString(outData, 8, len - 8).TrimEnd('\0');
-            }
-            catch
-            { }
-
-            return null;
         }
 
         public string GetHandleObjectName(ProcessHandle processHandle, IntPtr handle)

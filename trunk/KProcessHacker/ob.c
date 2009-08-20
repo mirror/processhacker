@@ -419,6 +419,11 @@ NTSTATUS KphQueryNameFileObject(
     do
     {
         subNameLength += relatedFileObject->FileName.Length;
+        
+        /* Avoid infinite loops. */
+        if (relatedFileObject == relatedFileObject->RelatedFileObject)
+            break;
+        
         relatedFileObject = relatedFileObject->RelatedFileObject;
     }
     while (relatedFileObject);
@@ -444,6 +449,11 @@ NTSTATUS KphQueryNameFileObject(
     {
         objectName -= relatedFileObject->FileName.Length;
         memcpy(objectName, relatedFileObject->FileName.Buffer, relatedFileObject->FileName.Length);
+        
+        /* Avoid infinite loops. */
+        if (relatedFileObject == relatedFileObject->RelatedFileObject)
+            break;
+        
         relatedFileObject = relatedFileObject->RelatedFileObject;
     }
     while (relatedFileObject);

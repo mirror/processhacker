@@ -501,8 +501,6 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "Client Close Handle";
         case KPH_SSQUERYCLIENTENTRY:
             return "SsQueryClientEntry";
-        case KPH_GETFILEOBJECTNAME:
-            return "Get File Object Name";
         case KPH_OPENPROCESS:
             return "KphOpenProcess";
         case KPH_OPENTHREAD:
@@ -701,52 +699,6 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 UserMode
                 );
             KphDereferenceObject(clientEntry);
-        }
-        break;
-        
-        /* Get File Object Name
-         * 
-         * Gets the file name of the specified handle. The handle can be remote; 
-         * in that case the process ID must be specified. Otherwise, specify the 
-         * current process ID.
-         */
-        case KPH_GETFILEOBJECTNAME:
-        {
-            struct
-            {
-                HANDLE Handle;
-                HANDLE ProcessId;
-            } *args = dataBuffer;
-            KPH_ATTACH_STATE attachState;
-            PFILE_OBJECT object;
-            
-            CHECK_IN_LENGTH;
-            
-            status = KphAttachProcessId(args->ProcessId, &attachState);
-            
-            if (!NT_SUCCESS(status))
-                goto IoControlEnd;
-            
-            /* See the block for KPH_ZWQUERYOBJECT for information. */
-            if (attachState.Process == PsInitialSystemProcess)
-                MakeKernelHandle(args->Handle);
-            
-            status = ObReferenceObjectByHandle(args->Handle, 0, 
-                *IoFileObjectType, KernelMode, &object, NULL);
-            KphDetachProcess(&attachState);
-            
-            if (!NT_SUCCESS(status))
-            {
-                goto IoControlEnd;
-            }
-            
-            status = KphQueryNameObject(
-                object,
-                dataBuffer,
-                outLength,
-                &retLength
-                );
-            ObDereferenceObject(object);
         }
         break;
         
@@ -1167,7 +1119,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            status = ObQueryNameString(object, (POBJECT_NAME_INFORMATION)dataBuffer, outLength, &retLength);
+            status = KphQueryNameObject(object, (PUNICODE_STRING)dataBuffer, outLength, &retLength);
             ObDereferenceObject(object);
         }
         break;
