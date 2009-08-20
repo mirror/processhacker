@@ -52,8 +52,17 @@ DEL/f/a %RequiredDLLs% "ProcessHacker.Common.xml"^
 REM Delete the temporary directory
 RD tmp >NUL 2>&1
 
-REM Set the path of Inno Setup and compile installer
+REM Detect if we are running on 64bit WIN and use Wow6432Node, set the path
+REM of Inno Setup accordingly and compile installer
+IF "%PROGRAMFILES(x86)%zzz"=="zzz" GOTO :32BIT
+SET "U_=HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+GOTO :common
+
+:32BIT
 SET "U_=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
+GOTO :common
+
+:common
 SET "I_=Inno Setup"
 SET "A_=%I_% 5"
 SET "M_=Inno Setup IS NOT INSTALLED!!!"
