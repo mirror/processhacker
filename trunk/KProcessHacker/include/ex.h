@@ -121,7 +121,7 @@ NTKERNELAPI VOID FASTCALL ExfTryToWakePushLock(
  * 
  * Initializes a push lock.
  */
-VOID FORCEINLINE ExInitializePushLock(
+FORCEINLINE VOID ExInitializePushLock(
     __out PEX_PUSH_LOCK PushLock
     )
 {
@@ -132,7 +132,7 @@ VOID FORCEINLINE ExInitializePushLock(
  * 
  * Acquires a push lock in exclusive mode.
  */
-VOID FORCEINLINE ExAcquirePushLockExclusive(
+FORCEINLINE VOID ExAcquirePushLockExclusive(
     __inout PEX_PUSH_LOCK PushLock
     )
 {
@@ -148,7 +148,7 @@ VOID FORCEINLINE ExAcquirePushLockExclusive(
  * 
  * Acquires a push lock in shared mode.
  */
-VOID FORCEINLINE ExAcquirePushLockShared(
+FORCEINLINE VOID ExAcquirePushLockShared(
     __inout PEX_PUSH_LOCK PushLock
     )
 {
@@ -168,7 +168,7 @@ VOID FORCEINLINE ExAcquirePushLockShared(
  * 
  * Releases a push lock (for both types).
  */
-VOID FORCEINLINE ExReleasePushLock(
+FORCEINLINE VOID ExReleasePushLock(
     __inout PEX_PUSH_LOCK PushLock
     )
 {
@@ -218,7 +218,7 @@ VOID FORCEINLINE ExReleasePushLock(
  * Return value: TRUE if the push lock was acquired, FALSE if 
  * the push lock was already acquired in exclusive mode.
  */
-BOOLEAN FORCEINLINE ExTryAcquirePushLockExclusive(
+FORCEINLINE BOOLEAN ExTryAcquirePushLockExclusive(
     __inout PEX_PUSH_LOCK PushLock
     )
 {
@@ -239,7 +239,7 @@ BOOLEAN FORCEINLINE ExTryAcquirePushLockExclusive(
  * Return value: TRUE if the push lock was acquired, FALSE if 
  * the push lock was already acquired in exclusive mode.
  */
-BOOLEAN FORCEINLINE ExTryAcquirePushLockShared(
+FORCEINLINE BOOLEAN ExTryAcquirePushLockShared(
     __inout PEX_PUSH_LOCK PushLock
     )
 {
