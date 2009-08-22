@@ -27,7 +27,6 @@
 #include "include/protect.h"
 #include "include/ps.h"
 #include "include/sysservice.h"
-#include "include/test.h"
 #include "include/version.h"
 
 #define CHECK_IN_LENGTH \
@@ -232,8 +231,6 @@ NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     dprintf("Client (PID %d) connected\n", PsGetCurrentProcessId());
     dprintf("Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
-    
-    KphTestResource();
     
     return status;
 }
