@@ -317,4 +317,256 @@ VOID KphReleaseProcessorLock(
     __inout PKPH_PROCESSOR_LOCK ProcessorLock
     );
 
+/* Resource Locks */
+/* Resource locks are reader-writer locks. Speed is emphasized 
+ * over lock storage size. Writers are preferred, which means 
+ * that as soon as a writer is placed on the waiter list, 
+ * new readers block instead of acquiring the lock immediately.
+ */
+
+#define KPH_RESOURCE_LOCKED 0x00000001
+#define KPH_RESOURCE_LOCKED_SHIFT 0
+#define KPH_RESOURCE_WAKING 0x00000002
+#define KPH_RESOURCE_WAKING_SHIFT 1
+#define KPH_RESOURCE_WAITERS 0x00000004
+#define KPH_RESOURCE_WAITERS_SHIFT 2
+#define KPH_RESOURCE_EXCLUSIVE_WAITERS 0x00000008
+#define KPH_RESOURCE_EXCLUSIVE_WAITERS_SHIFT 3
+#define KPH_RESOURCE_SHARED_INC 0x00000010
+#define KPH_RESOURCE_SHARED_SHIFT 4
+
+#define KPH_RESOURCE_LIST_LOCKED 0x00000001
+#define KPH_RESOURCE_LIST_LOCKED_SHIFT 0
+
+typedef struct _KPH_RESOURCE
+{
+    /* Flags:
+     *  * KPH_RESOURCE_LOCKED: Locked for exclusive or shared access.
+     *  * KPH_RESOURCE_WAKING: A waiter has just been woken up. This is a signal to 
+     *    acquirers who have just woken up that they can acquire the lock even 
+     *    thought it says it is locked already.
+     *  * KPH_RESOURCE_WAITERS: There are waiters in the waiter list. Used so that 
+     *    the fast paths in this very file do not screw up things by not waking up 
+     *    waiters when they should.
+     *  * KPH_RESOURCE_EXCLUSIVE_WAITERS: There are exclusive waiters in the waiter 
+     *    list. Used for exclusive waiter biasing.
+     *  * KPH_RESOURCE_SHARED_INC: Add to increase the number of shared holders.
+     */
+    ULONG Flags;
+    ULONG WaiterListLock;
+    LIST_ENTRY WaiterListHead;
+} KPH_RESOURCE, *PKPH_RESOURCE;
+
+FORCEINLINE VOID KphInitializeResource(
+    __out PKPH_RESOURCE Resource
+    )
+{
+    Resource->Flags = 0;
+    Resource->WaiterListLock = 0;
+    InitializeListHead(&Resource->WaiterListHead);
+}
+
+#define KPH_RESOURCE_ACQUIRE_LIST_LOCK(Resource) \
+    KphAcquireBitSpinLock(&Resource->WaiterListLock, KPH_RESOURCE_LIST_LOCKED_SHIFT)
+#define KPH_RESOURCE_RELEASE_LIST_LOCK(Resource) \
+    KphReleaseBitSpinLock(&Resource->WaiterListLock, KPH_RESOURCE_LIST_LOCKED_SHIFT)
+
+#define KPH_RESOURCE_WAIT_BLOCK(ListEntry) \
+    CONTAINING_RECORD(ListEntry, KPH_RESOURCE_WAIT_BLOCK, WaiterListEntry)
+
+#define KPH_RESOURCE_EXCLUSIVE 0x00000001
+#define KPH_RESOURCE_SHARED 0x00000002
+#define KPH_RESOURCE_WOKEN 0x00000004
+
+typedef struct _KPH_RESOURCE_WAIT_BLOCK
+{
+    LIST_ENTRY WaiterListEntry;
+    ULONG Flags;
+    KEVENT WakeEvent;
+} KPH_RESOURCE_WAIT_BLOCK, *PKPH_RESOURCE_WAIT_BLOCK;
+
+/* KphInitializeResourceWaitBlock
+ * 
+ * Initializes a resource wait block.
+ */
+FORCEINLINE VOID KphInitializeResourceWaitBlock(
+    __out PKPH_RESOURCE_WAIT_BLOCK WaitBlock,
+    __in ULONG Flags
+    )
+{
+    WaitBlock->Flags = Flags;
+    KeInitializeEvent(&WaitBlock->WakeEvent, NotificationEvent, FALSE);
+}
+
+/* KphWaitForResourceWaitBlock
+ * 
+ * Waits for a wait block to be unblocked.
+ */
+FORCEINLINE VOID KphWaitForResourceWaitBlock(
+    __inout PKPH_RESOURCE_WAIT_BLOCK WaitBlock
+    )
+{
+    KeWaitForSingleObject(
+        &WaitBlock->WakeEvent,
+        Executive,
+        KernelMode,
+        FALSE,
+        NULL
+        );
+}
+
+/* KphWaitForResourceWaitBlockEx
+ * 
+ * Waits for a wait block to be unblocked.
+ */
+FORCEINLINE VOID KphWaitForResourceWaitBlockEx(
+    __inout PKPH_RESOURCE_WAIT_BLOCK WaitBlock,
+    __in PLARGE_INTEGER Timeout
+    )
+{
+    KeWaitForSingleObject(
+        &WaitBlock->WakeEvent,
+        Executive,
+        KernelMode,
+        FALSE,
+        Timeout
+        );
+}
+
+/* KphWakeResourceWaitBlock
+ * 
+ * Wakes a waiter specified by a wait block.
+ */
+FORCEINLINE VOID KphWakeResourceWaitBlock(
+    __in PKPH_RESOURCE_WAIT_BLOCK WaitBlock
+    )
+{
+    KeSetEvent(&WaitBlock->WakeEvent, 2, FALSE);
+}
+
+VOID FASTCALL KphfAcquireResourceExclusive(
+    __inout PKPH_RESOURCE Resource
+    );
+
+VOID FASTCALL KphfAcquireResourceShared(
+    __inout PKPH_RESOURCE Resource
+    );
+
+VOID KphBlockResource(
+    __inout PKPH_RESOURCE Resource,
+    __inout PKPH_RESOURCE_WAIT_BLOCK WaitBlock
+    );
+
+VOID FASTCALL KphfReleaseResourceExclusive(
+    __inout PKPH_RESOURCE Resource
+    );
+
+VOID FASTCALL KphfReleaseResourceShared(
+    __inout PKPH_RESOURCE Resource
+    );
+
+PKPH_RESOURCE_WAIT_BLOCK KphRemoveResourceWaitBlock(
+    __inout PKPH_RESOURCE Resource
+    );
+
+VOID KphUnblockResource(
+    __inout PKPH_RESOURCE Resource
+    );
+
+/* KphAcquireResourceExclusive
+ * 
+ * Acquires a resource lock for exclusive access.
+ * 
+ * IRQL: <= APC_LEVEL
+ */
+FORCEINLINE VOID KphAcquireResourceExclusive(
+    __inout PKPH_RESOURCE Resource
+    )
+{
+    /* Fast path. */
+    if (InterlockedCompareExchange(
+        &Resource->Flags,
+        KPH_RESOURCE_LOCKED,
+        0
+        ) != 0)
+    {
+        /* Slow path. */
+        KphfAcquireResourceExclusive(Resource);
+    }
+}
+
+/* KphAcquireResourceShared
+ * 
+ * Acquires a resource lock for shared access.
+ * 
+ * IRQL: <= APC_LEVEL
+ */
+FORCEINLINE VOID KphAcquireResourceShared(
+    __inout PKPH_RESOURCE Resource
+    )
+{
+    /* Fast path. */
+    if (InterlockedCompareExchange(
+        &Resource->Flags,
+        KPH_RESOURCE_LOCKED + KPH_RESOURCE_SHARED_INC,
+        0
+        ) != 0)
+    {
+        /* Slow path. */
+        KphfAcquireResourceShared(Resource);
+    }
+}
+
+/* KphReleaseResourceExclusive
+ * 
+ * Releases a resource previously acquired for exclusive access.
+ * 
+ * IRQL: <= APC_LEVEL
+ */
+FORCEINLINE VOID KphReleaseResourceExclusive(
+    __inout PKPH_RESOURCE Resource
+    )
+{
+    /* Fast path. */
+    if (InterlockedCompareExchange(
+        &Resource->Flags,
+        0,
+        KPH_RESOURCE_LOCKED
+        ) != KPH_RESOURCE_LOCKED)
+    {
+        /* Slow path. */
+        KphfReleaseResourceExclusive(Resource);
+    }
+}
+
+/* KphReleaseResourceShared
+ * 
+ * Releases a resource previously acquired for shared access.
+ * 
+ * IRQL: <= APC_LEVEL
+ */
+FORCEINLINE VOID KphReleaseResourceShared(
+    __inout PKPH_RESOURCE Resource
+    )
+{
+    ULONG flags;
+    
+    flags = Resource->Flags;
+    
+    /* Fast path. */
+    if (
+        (flags & KPH_RESOURCE_WAITERS) || 
+        (flags >> KPH_RESOURCE_SHARED_SHIFT == 1) || 
+        InterlockedCompareExchange(
+            &Resource->Flags,
+            flags - KPH_RESOURCE_SHARED_INC,
+            flags
+            ) != flags
+        )
+    {
+        /* Slow path. */
+        KphfReleaseResourceShared(Resource);
+    }
+}
+
 #endif

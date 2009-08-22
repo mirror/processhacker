@@ -21,12 +21,26 @@
  */
 
 #include "include/kph.h"
+#include "include/sync.h"
 
+static ULONG RandomSeed;
 static EX_PUSH_LOCK TestLock;
+static KPH_RESOURCE TestResource;
 
 VOID KphpTestPushLockThreadStart(
     __in PVOID Context
     );
+
+VOID KphpTestResourceThreadStart(
+    __in PVOID Context
+    );
+
+FORCEINLINE ULONG KphpRandomNumber()
+{
+    RandomSeed |= (ULONG)KeQueryInterruptTime();
+    
+    return RtlRandomEx(&RandomSeed);
+}
 
 VOID KphTestPushLock()
 {
@@ -41,6 +55,7 @@ VOID KphTestPushLock()
         
         InitializeObjectAttributes(&objectAttributes, NULL, OBJ_KERNEL_HANDLE, NULL, NULL);
         PsCreateSystemThread(&threadHandle, 0, &objectAttributes, NULL, NULL, KphpTestPushLockThreadStart, NULL);
+        ZwClose(threadHandle);
     }
 }
 
@@ -50,22 +65,72 @@ VOID KphpTestPushLockThreadStart(
 {
     ULONG i, j;
     
-    for (i = 0; i < 400000; i++)
+    for (i = 0; i < 10000; i++)
     {
         ExAcquirePushLockShared(&TestLock);
         
-        for (j = 0; j < 1000; j++)
+        for (j = 0; j < 10000; j++)
             YieldProcessor();
         
         ExReleasePushLock(&TestLock);
         
-        ExAcquirePushLockExclusive(&TestLock);
-        
-        for (j = 0; j < 9000; j++)
-            YieldProcessor();
-        
-        ExReleasePushLock(&TestLock);
+        if (KphpRandomNumber() % 2)
+        {
+            ExAcquirePushLockExclusive(&TestLock);
+            
+            for (j = 0; j < 4000; j++)
+                YieldProcessor();
+            
+            ExReleasePushLock(&TestLock);
+        }
     }
     
+    PsTerminateSystemThread(STATUS_SUCCESS);
+}
+
+VOID KphTestResource()
+{
+    ULONG i;
+    
+    KphInitializeResource(&TestResource);
+    
+    for (i = 0; i < 10; i++)
+    {
+        HANDLE threadHandle;
+        OBJECT_ATTRIBUTES objectAttributes;
+        
+        InitializeObjectAttributes(&objectAttributes, NULL, OBJ_KERNEL_HANDLE, NULL, NULL);
+        PsCreateSystemThread(&threadHandle, 0, &objectAttributes, NULL, NULL, KphpTestResourceThreadStart, NULL);
+        ZwClose(threadHandle);
+    }
+}
+
+VOID KphpTestResourceThreadStart(
+    __in PVOID Context
+    )
+{
+    ULONG i, j;
+    
+    for (i = 0; i < 10000; i++)
+    {
+        KphAcquireResourceShared(&TestResource);
+        
+        for (j = 0; j < 10000; j++)
+            YieldProcessor();
+        
+        KphReleaseResourceShared(&TestResource);
+        
+        if (KphpRandomNumber() % 2)
+        {
+            KphAcquireResourceExclusive(&TestResource);
+            
+            for (j = 0; j < 4000; j++)
+                YieldProcessor();
+            
+            KphReleaseResourceExclusive(&TestResource);
+        }
+    }
+    
+    dfprintf("Thread exit, flags: %#x\n", TestResource.Flags);
     PsTerminateSystemThread(STATUS_SUCCESS);
 }

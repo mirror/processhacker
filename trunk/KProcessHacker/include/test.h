@@ -26,5 +26,6 @@
 #include "kph.h"
 
 VOID KphTestPushLock();
+VOID KphTestResource();
 
 #endif

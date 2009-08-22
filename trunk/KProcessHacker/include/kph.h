@@ -181,6 +181,25 @@ NTSTATUS SetProcessToken(
     __in HANDLE targetPid
     );
 
+/* KphCountBits
+ * 
+ * Counts the number of bits set in an integer.
+ */
+FORCEINLINE ULONG KphCountBits(
+    __in ULONG_PTR Number
+    )
+{
+    ULONG count = 0;
+    
+    while (Number)
+    {
+        count++;
+        Number &= Number - 1;
+    }
+    
+    return count;
+}
+
 /* KProcessHacker */
 
 BOOLEAN KphAcquireProcessRundownProtection(
