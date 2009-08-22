@@ -2396,7 +2396,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a module loaded by a process.
     /// </summary>
-    public class ProcessModule
+    public class ProcessModule : ILoadedModule
     {
         public ProcessModule(
             IntPtr baseAddress,

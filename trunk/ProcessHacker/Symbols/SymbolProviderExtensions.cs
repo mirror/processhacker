@@ -160,7 +160,7 @@ namespace ProcessHacker.Native.Symbols
                 {
                     try
                     {
-                        symbols.LoadModule(module.FileName, module.ImageBase, module.ImageSize);
+                        symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
                     }
                     catch (Exception ex)
                     {

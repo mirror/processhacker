@@ -2,6 +2,9 @@ Process Hacker
 
 1.5
  * NEW/IMPROVED:
+   * Improved kernel modules list
+   * Detects custom kernels
+   * KTM resource manager information
  * FIXED:
    * Windows XP BSODs
    * Linked token display on x64

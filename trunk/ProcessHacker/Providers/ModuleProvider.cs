@@ -93,160 +93,98 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
-            if (_pid == 4)
-                this.UpdateDrivers();
-            else
-                this.UpdateModules();
-        }
-
-        private void UpdateDrivers()
-        {
-            int requiredSize = 0;
-            IntPtr[] imageBases;
-            List<int> done = new List<int>();
-            Dictionary<IntPtr, object> bases = new Dictionary<IntPtr, object>();
-            Dictionary<IntPtr, ModuleItem> newdictionary = new Dictionary<IntPtr, ModuleItem>(this.Dictionary);
-
-            Win32.EnumDeviceDrivers(null, 0, out requiredSize);
-            imageBases = new IntPtr[requiredSize];
-            Win32.EnumDeviceDrivers(imageBases, requiredSize * sizeof(int), out requiredSize);
-
-            for (int i = 0; i < requiredSize; i++)
-            {
-                if (bases.ContainsKey(imageBases[i]) || imageBases[i] == IntPtr.Zero)
-                    continue;
-
-                bases.Add(imageBases[i], null);
-            }
-
-            // look for unloaded drivers
-            foreach (IntPtr b in Dictionary.Keys)
-            {
-                if (!bases.ContainsKey(b))
-                {
-                    this.OnDictionaryRemoved(this.Dictionary[b]);
-                    newdictionary.Remove(b);
-                }
-            }
-
-            // look for new drivers
-            foreach (IntPtr b in bases.Keys)
-            {
-                if (!Dictionary.ContainsKey(b))
-                {
-                    ModuleItem item = new ModuleItem();
-                    StringBuilder name = new StringBuilder(0x400);
-                    StringBuilder filename = new StringBuilder(0x400);
-
-                    Win32.GetDeviceDriverBaseName(b, name, name.Capacity * 2);
-                    Win32.GetDeviceDriverFileName(b, filename, filename.Capacity * 2);
-
-                    item.RunId = this.RunCount;
-                    item.BaseAddress = b;
-                    item.Name = name.ToString();
-                    item.FileName = FileUtils.FixPath(filename.ToString());
-
-                    try
-                    {
-                        System.IO.FileInfo fi = new System.IO.FileInfo(item.FileName);
-                        item.FileName = fi.FullName;
-
-                        var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(item.FileName);
-
-                        item.FileDescription = info.FileDescription;
-                        item.FileVersion = info.FileVersion;
-                    }
-                    catch
-                    { }
-
-                    newdictionary.Add(b, item);
-                    this.OnDictionaryAdded(item);
-                }
-            }
-
-            this.Dictionary = newdictionary;
-        }
-
-        private void UpdateModules()
-        {
-            if (_processHandle == null)
+            if (_pid != 4 && _processHandle == null)
             {
                 Logging.Log(Logging.Importance.Warning, "ModuleProvider: Process Handle is null, exiting...");
                 return;
             }
 
-            var modules = new Dictionary<IntPtr, ProcessModule>();
+            var modules = new Dictionary<IntPtr, ILoadedModule>();
             var newdictionary = new Dictionary<IntPtr, ModuleItem>(this.Dictionary);
 
-            // Is this a WOW64 process? If it is, get the 32-bit modules.
-            if (!_isWow64)
+            if (_pid != 4)
             {
-                var processModules = _processHandle.GetModules();
-
-                foreach (var m in processModules)
+                // Is this a WOW64 process? If it is, get the 32-bit modules.
+                if (!_isWow64)
                 {
-                    if (!modules.ContainsKey(m.BaseAddress))
-                        modules.Add(m.BaseAddress, m);
+                    _processHandle.EnumModules((module) =>
+                        {
+                            if (!modules.ContainsKey(module.BaseAddress))
+                                modules.Add(module.BaseAddress, module);
+
+                            return true;
+                        });
                 }
+                else
+                {
+                    using (DebugBuffer buffer = new DebugBuffer())
+                    {
+                        buffer.Query(_pid, RtlQueryProcessDebugFlags.Modules32);
+
+                        var processModules = buffer.GetModules();
+
+                        foreach (var m in processModules)
+                        {
+                            // Most of the time we will get a duplicate entry - 
+                            // the main executable image. Guard against that.
+                            if (!modules.ContainsKey(m.BaseAddress))
+                            {
+                                modules.Add(
+                                    m.BaseAddress,
+                                    new ProcessModule(
+                                        m.BaseAddress,
+                                        m.Size,
+                                        IntPtr.Zero,
+                                        m.Flags,
+                                        (new System.IO.FileInfo(m.FileName)).Name,
+                                        m.FileName
+                                        )
+                                    );
+                            }
+                        }
+                    }
+                }
+
+                // add mapped files
+                _processHandle.EnumMemory((info) =>
+                {
+                    if (info.Type == MemoryType.Mapped)
+                    {
+                        try
+                        {
+                            string fileName = _processHandle.GetMappedFileName(info.BaseAddress);
+
+                            if (fileName != null)
+                            {
+                                var fi = new System.IO.FileInfo(fileName);
+
+                                modules.Add(info.BaseAddress,
+                                    new ProcessModule(
+                                        info.BaseAddress,
+                                        info.RegionSize.ToInt32(),
+                                        IntPtr.Zero,
+                                        0,
+                                        fi.Name, fi.FullName));
+                            }
+                        }
+                        catch
+                        { }
+                    }
+
+                    return true;
+                });
             }
             else
             {
-                using (DebugBuffer buffer = new DebugBuffer())
+                // Add loaded kernel modules.
+                Windows.EnumKernelModules((module) =>
                 {
-                    buffer.Query(_pid, RtlQueryProcessDebugFlags.Modules32);
+                    if (!modules.ContainsKey(module.BaseAddress))
+                        modules.Add(module.BaseAddress, module);
 
-                    var processModules = buffer.GetModules();
-
-                    foreach (var m in processModules)
-                    {
-                        // Most of the time we will get a duplicate entry - 
-                        // the main executable image. Guard against that.
-                        if (!modules.ContainsKey(m.ImageBase))
-                        {
-                            modules.Add(
-                                m.ImageBase,
-                                new ProcessModule(
-                                    m.ImageBase,
-                                    m.ImageSize,
-                                    IntPtr.Zero,
-                                    m.Flags,
-                                    (new System.IO.FileInfo(m.FileName)).Name,
-                                    m.FileName
-                                    )
-                                );
-                        }
-                    }
-                }
+                    return true;
+                });
             }
-
-            // add mapped files
-            _processHandle.EnumMemory((info) =>
-            {
-                if (info.Type == MemoryType.Mapped)
-                {
-                    try
-                    {
-                        string fileName = _processHandle.GetMappedFileName(info.BaseAddress);
-
-                        if (fileName != null)
-                        {
-                            var fi = new System.IO.FileInfo(fileName);
-
-                            modules.Add(info.BaseAddress,
-                                new ProcessModule(
-                                    info.BaseAddress,
-                                    info.RegionSize.ToInt32(),
-                                    IntPtr.Zero,
-                                    0,
-                                    fi.Name, fi.FullName));
-                        }
-                    }
-                    catch
-                    { }
-                }
-
-                return true;
-            });
 
             // look for unloaded modules
             foreach (IntPtr b in Dictionary.Keys)

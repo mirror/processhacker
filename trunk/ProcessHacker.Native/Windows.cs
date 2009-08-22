@@ -47,8 +47,6 @@ namespace ProcessHacker.Native
 
         public static GetProcessNameCallback GetProcessName;
 
-        public static string[] KernelNames = { "ntoskrnl.exe", "ntkrnlpa.exe", "ntkrnlmp.exe", "ntkrpamp.exe" };
-
         /// <summary>
         /// A cache for type names; QuerySystemInformation with ALL_TYPES_INFORMATION fails for some 
         /// reason. The dictionary relates object type numbers to their names.
@@ -58,6 +56,8 @@ namespace ProcessHacker.Native
         [ThreadStatic]
         private static MemoryAlloc _handlesBuffer;
         [ThreadStatic]
+        private static MemoryAlloc _kernelModulesBuffer;
+        [ThreadStatic]
         private static MemoryAlloc _processesBuffer;
         [ThreadStatic]
         private static MemoryAlloc _servicesBuffer;
@@ -66,6 +66,7 @@ namespace ProcessHacker.Native
         private static int _pageSize = 0;
         private static IntPtr _kernelBase = IntPtr.Zero;
         private static string _kernelFileName = null;
+        private static KernelModule _kernelModule;
 
         public static int NumberOfProcessors
         {
@@ -118,30 +119,48 @@ namespace ProcessHacker.Native
 
         public static void EnumKernelModules(EnumKernelModulesDelegate enumCallback)
         {
-            int requiredSize = 0;
-            IntPtr[] imageBases;
+            NtStatus status;
+            int retLength;
 
-            Win32.EnumDeviceDrivers(null, 0, out requiredSize);
-            imageBases = new IntPtr[requiredSize / 4];
-            Win32.EnumDeviceDrivers(imageBases, requiredSize, out requiredSize);
+            if (_kernelModulesBuffer == null)
+                _kernelModulesBuffer = new MemoryAlloc(0x1000);
 
-            for (int i = 0; i < imageBases.Length; i++)
+            status = Win32.NtQuerySystemInformation(
+                SystemInformationClass.SystemModuleInformation,
+                _kernelModulesBuffer,
+                _kernelModulesBuffer.Size,
+                out retLength
+                );
+
+            if (status == NtStatus.InfoLengthMismatch)
             {
-                if (imageBases[i] == IntPtr.Zero)
-                    continue;
+                _kernelModulesBuffer.Resize(retLength);
 
-                StringBuilder name = new StringBuilder(0x400);
-                StringBuilder fileName = new StringBuilder(0x400);
+                status = Win32.NtQuerySystemInformation(
+                    SystemInformationClass.SystemModuleInformation,
+                    _kernelModulesBuffer,
+                    _kernelModulesBuffer.Size,
+                    out retLength
+                    );
+            }
 
-                Win32.GetDeviceDriverBaseName(imageBases[i], name, name.Capacity * 2);
-                Win32.GetDeviceDriverFileName(imageBases[i], fileName, name.Capacity * 2);
+            if (status >= NtStatus.Error)
+                Win32.ThrowLastError(status);
 
-                if (!enumCallback(
-                    new KernelModule(
-                        imageBases[i],
-                        name.ToString(),
-                        FileUtils.FixPath(fileName.ToString())
-                        )))
+            RtlProcessModules modules = _kernelModulesBuffer.ReadStruct<RtlProcessModules>();
+
+            for (int i = 0; i < modules.NumberOfModules; i++)
+            {
+                var module = _kernelModulesBuffer.ReadStruct<RtlProcessModuleInformation>(RtlProcessModules.ModulesOffset, i);
+                var moduleInfo = new Debugging.ModuleInformation(module);
+
+                if (!enumCallback(new KernelModule(
+                    moduleInfo.BaseAddress,
+                    moduleInfo.Size,
+                    moduleInfo.Flags,
+                    moduleInfo.BaseName,
+                    FileUtils.FixPath(moduleInfo.FileName)
+                    )))
                     break;
             }
         }
@@ -223,29 +242,8 @@ namespace ProcessHacker.Native
 
             Windows.EnumKernelModules((module) =>
             {
-                System.IO.FileInfo fi = new System.IO.FileInfo(FileUtils.FixPath(module.FileName));
-                bool kernel = false;
-                string realName;
-
-                realName = fi.FullName;
-
-                foreach (string k in KernelNames)
-                {
-                    if (realName.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        kernel = true;
-
-                        break;
-                    }
-                }
-
-                if (kernel)
-                {
-                    kernelBase = module.BaseAddress;
-                    return false;
-                }
-
-                return true;
+                kernelBase = module.BaseAddress;
+                return false;
             });
 
             return kernelBase;
@@ -261,29 +259,8 @@ namespace ProcessHacker.Native
 
             EnumKernelModules((module) =>
             {
-                System.IO.FileInfo fi = new System.IO.FileInfo(FileUtils.FixPath(module.FileName));
-                bool kernel = false;
-                string realName;
-
-                realName = fi.FullName;
-
-                foreach (string k in KernelNames)
-                {
-                    if (realName.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        kernel = true;
-
-                        break;
-                    }
-                }
-
-                if (kernel)
-                {
-                    kernelFileName = realName;
-                    return false;
-                }
-
-                return true;
+                kernelFileName = module.FileName;
+                return false;
             });
 
             return kernelFileName;
@@ -672,17 +649,42 @@ namespace ProcessHacker.Native
         public Dictionary<int, SystemThreadInformation> Threads;
     }
 
-    public class KernelModule
+    public class KernelModule : ILoadedModule
     {
-        public KernelModule(IntPtr baseAddress, string baseName, string fileName)
+        public KernelModule(
+            IntPtr baseAddress,
+            int size,
+            LdrpDataTableEntryFlags flags,
+            string baseName,
+            string fileName
+            )
         {
             this.BaseAddress = baseAddress;
+            this.Size = size;
+            this.Flags = flags;
             this.BaseName = baseName;
             this.FileName = fileName;
         }
 
+        /// <summary>
+        /// The base address of the module.
+        /// </summary>
         public IntPtr BaseAddress { get; private set; }
+        /// <summary>
+        /// The size of the module.
+        /// </summary>
+        public int Size { get; private set; }
+        /// <summary>
+        /// The flags set by the loader for this module.
+        /// </summary>
+        public LdrpDataTableEntryFlags Flags { get; private set; }
+        /// <summary>
+        /// The base name of the module (e.g. module.dll).
+        /// </summary>
         public string BaseName { get; private set; }
+        /// <summary>
+        /// The file name of the module (e.g. C:\Windows\system32\module.dll).
+        /// </summary>
         public string FileName { get; private set; }
     }
 

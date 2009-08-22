@@ -459,6 +459,13 @@ namespace ProcessHacker.Components
                                     control.Controls.Add(timerProps);
                                 }
                                 break;
+                            case "tmrm":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)ResourceManagerAccess.QueryInformation);
+                                    var tmRmProps = new TmRmProperties(ResourceManagerHandle.FromHandle(dupHandle));
+                                    control.Controls.Add(tmRmProps);
+                                }
+                                break;
                             case "tmtm":
                                 {
                                     dupHandle = new GenericHandle(phandle, handle, (int)TmAccess.QueryInformation);
