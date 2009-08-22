@@ -38,17 +38,25 @@
 static char StandardPrologue[] = { 0x8b, 0xff, 0x55, 0x8b, 0xec };
 
 /* KiFastCallEntry */
-/* Note that we only use one array because this function 
- * almost never changes.
- * 
- * Also note that this scan will get the address of 
+/*
+ * Note that this scan will get the address of 
  * mov      esi, edx
  * within KiFastCallEntry, not the start of KiFastCallEntry. 
  * We will then subtract 7 to get the address of 
  * inc      dword ptr fs:PbSystemCalls
  * See sysservice.c for more details.
  */
-static char KiFastCallEntry[] =
+static char KiFastCallEntry51[] =
+{
+    0x8b, 0xf2, 0x8b, 0x5f, 0x0c, 0x33, 0xc9, 0x8a,
+    0x0c, 0x18, 0x8b, 0x3f, 0x8b, 0x1c, 0x87, 0x2b
+};
+static char KiFastCallEntry60[] =
+{
+    0x8b, 0xf2, 0x33, 0xc9, 0x8b, 0x57, 0x0c, 0x8b,
+    0x3f, 0x8a, 0x0c, 0x10, 0x8b, 0x14, 0x87, 0x2b
+};
+static char KiFastCallEntry61[] =
 {
     0x8b, 0xf2, 0x33, 0xc9, 0x8b, 0x57, 0x0c, 0x8b,
     0x3f, 0x8a, 0x0c, 0x10, 0x8b, 0x14, 0x87, 0x2b
@@ -160,14 +168,6 @@ NTSTATUS KvInit()
     if (!__ZwClose)
         return STATUS_NOT_SUPPORTED;
     
-    /* Initialize the KiFastCallEntry scan. */
-    INIT_SCAN(
-        KiFastCallEntryScan,
-        KiFastCallEntry,
-        sizeof(KiFastCallEntry),
-        (ULONG_PTR)__ZwClose, SCAN_LENGTH, -7
-        );
-    
     /* Windows XP */
     if (majorVersion == 5 && minorVersion == 1)
     {
@@ -193,6 +193,12 @@ NTSTATUS KvInit()
         
         SsNtContinue = 0x20;
         
+        INIT_SCAN(
+            KiFastCallEntryScan,
+            KiFastCallEntry51,
+            sizeof(KiFastCallEntry51),
+            (ULONG_PTR)__ZwClose, SCAN_LENGTH, -6
+            );
         /* We are scanning for PspTerminateProcess which has 
            the same signature as PsTerminateProcess because 
            PsTerminateProcess is simply a wrapper on XP.
@@ -259,6 +265,12 @@ NTSTATUS KvInit()
         OffEpRundownProtect = 0x98;
         OffOhBody = 0x18;
         
+        INIT_SCAN(
+            KiFastCallEntryScan,
+            KiFastCallEntry60,
+            sizeof(KiFastCallEntry60),
+            (ULONG_PTR)__ZwClose, SCAN_LENGTH, -7
+            );
         INIT_SCAN(
             PsTerminateProcessScan,
             PsTerminateProcess60,
@@ -457,6 +469,12 @@ NTSTATUS KvInit()
         
         SsNtContinue = 0x3c;
         
+        INIT_SCAN(
+            KiFastCallEntryScan,
+            KiFastCallEntry61,
+            sizeof(KiFastCallEntry61),
+            (ULONG_PTR)__ZwClose, SCAN_LENGTH, -7
+            );
         INIT_SCAN(
             PsTerminateProcessScan,
             PsTerminateProcess61,

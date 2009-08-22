@@ -3,6 +3,7 @@ Process Hacker
 1.5
  * NEW/IMPROVED:
  * FIXED:
+   * Windows XP BSODs
    * Linked token display on x64
 
 1.4
