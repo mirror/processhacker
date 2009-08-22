@@ -193,12 +193,12 @@ NTSTATUS KvInit()
         
         SsNtContinue = 0x20;
         
-        INIT_SCAN(
+        /* INIT_SCAN(
             KiFastCallEntryScan,
             KiFastCallEntry51,
             sizeof(KiFastCallEntry51),
             (ULONG_PTR)__ZwClose, SCAN_LENGTH, -6
-            );
+            ); */
         /* We are scanning for PspTerminateProcess which has 
            the same signature as PsTerminateProcess because 
            PsTerminateProcess is simply a wrapper on XP.
