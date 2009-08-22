@@ -94,7 +94,7 @@ namespace ProcessHacker.Native
             foreach (var pair in prefixes)
             {
                 if (fileName.StartsWith(pair.Key + "\\"))
-                    return pair.Value + "\\" + fileName.Substring(pair.Key.Length);
+                    return pair.Value + "\\" + fileName.Substring(pair.Key.Length + 1);
                 else if (fileName == pair.Key)
                     return pair.Value;
             }
