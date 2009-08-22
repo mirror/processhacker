@@ -92,8 +92,12 @@ namespace ProcessHacker.Native
             var prefixes = _driveDevicePrefixes;
 
             foreach (var pair in prefixes)
-                if (fileName.StartsWith(pair.Key))
-                    return pair.Value + fileName.Substring(pair.Key.Length);
+            {
+                if (fileName.StartsWith(pair.Key + "\\"))
+                    return pair.Value + "\\" + fileName.Substring(pair.Key.Length);
+                else if (fileName == pair.Key)
+                    return pair.Value;
+            }
 
             return fileName;
         }
