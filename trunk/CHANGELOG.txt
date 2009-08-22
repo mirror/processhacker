@@ -4,6 +4,7 @@ Process Hacker
  * NEW/IMPROVED:
    * Improved kernel modules list
    * Detects custom kernels
+   * Performance improvements
    * KTM resource manager information
  * FIXED:
    * Windows XP BSODs

@@ -46,14 +46,6 @@ namespace ProcessHacker.Components
 
         private Plotter _plotter;
 
-        public NodePlotter()
-        {
-            _plotter = new Plotter();
-            _plotter.BackColor = Color.Black;
-            _plotter.ShowGrid = false;
-            _plotter.OverlaySecondLine = false;
-        }
-
         public override Size MeasureSize(TreeNodeAdv node, DrawContext context)
         {
             return new Size(this.ParentColumn.Width, this.Parent.RowHeight);
@@ -62,6 +54,14 @@ namespace ProcessHacker.Components
         public override void Draw(TreeNodeAdv node, DrawContext context)
         {
             PlotterInfo info = GetValue(node) as PlotterInfo;
+
+            if (_plotter == null)
+            {
+                _plotter = new Plotter();
+                _plotter.BackColor = Color.Black;
+                _plotter.ShowGrid = false;
+                _plotter.OverlaySecondLine = false;
+            }
 
             if (info.UseLongData)
             {

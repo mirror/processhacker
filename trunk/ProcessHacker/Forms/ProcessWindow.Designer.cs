@@ -298,7 +298,6 @@ namespace ProcessHacker
             this.fileCurrentDirectory.ReadOnly = true;
             this.fileCurrentDirectory.Size = new System.Drawing.Size(360, 24);
             this.fileCurrentDirectory.TabIndex = 3;
-            this.fileCurrentDirectory.Leave += new System.EventHandler(this.fileCurrentDirectory_TextBoxLeave);
             // 
             // label26
             // 

@@ -1961,6 +1961,12 @@ namespace ProcessHacker.Native.Objects
         {
             int retLength;
 
+            if (this.Handle == Current)
+            {
+                Win32.RtlMoveMemory(new IntPtr(buffer), baseAddress, length.ToIntPtr());
+                return length;
+            }
+
             if (KProcessHacker.Instance != null)
             {
                 KProcessHacker.Instance.KphReadVirtualMemory(this, baseAddress.ToInt32(), buffer, length, out retLength);
@@ -2245,13 +2251,13 @@ namespace ProcessHacker.Native.Objects
         /// Writes data to the process' virtual memory.
         /// </summary>
         /// <param name="baseAddress">The offset at which to begin writing.</param>
-        /// <param name="data">The data to write.</param>
+        /// <param name="buffer">The data to write.</param>
         /// <returns>The length, in bytes, that was written.</returns>
-        public unsafe int WriteMemory(IntPtr baseAddress, byte[] data)
+        public unsafe int WriteMemory(IntPtr baseAddress, byte[] buffer)
         {
-            fixed (byte* dataPtr = data)
+            fixed (byte* dataPtr = buffer)
             {
-                return WriteMemory(baseAddress, dataPtr, data.Length);
+                return WriteMemory(baseAddress, dataPtr, buffer.Length);
             }
         }
 
@@ -2259,16 +2265,22 @@ namespace ProcessHacker.Native.Objects
         /// Writes data to the process' virtual memory.
         /// </summary>
         /// <param name="baseAddress">The offset at which to begin writing.</param>
-        /// <param name="data">The data to write.</param>
+        /// <param name="buffer">The data to write.</param>
         /// <param name="length">The length to be written.</param>
         /// <returns>The length, in bytes, that was written.</returns>
-        public unsafe int WriteMemory(IntPtr baseAddress, void* data, int length)
+        public unsafe int WriteMemory(IntPtr baseAddress, void* buffer, int length)
         {
             int retLength;
 
+            if (this.Handle == Current)
+            {
+                Win32.RtlMoveMemory(baseAddress, new IntPtr(buffer), length.ToIntPtr());
+                return length;
+            }
+
             if (KProcessHacker.Instance != null)
             {
-                KProcessHacker.Instance.KphWriteVirtualMemory(this, baseAddress.ToInt32(), data, length, out retLength);
+                KProcessHacker.Instance.KphWriteVirtualMemory(this, baseAddress.ToInt32(), buffer, length, out retLength);
             }
             else
             {
@@ -2278,7 +2290,7 @@ namespace ProcessHacker.Native.Objects
                 if ((status = Win32.NtWriteVirtualMemory(
                     this,
                     baseAddress,
-                    new IntPtr(data),
+                    new IntPtr(buffer),
                     length.ToIntPtr(),
                     out retLengthIntPtr
                     )) >= NtStatus.Error)

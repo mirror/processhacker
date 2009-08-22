@@ -59,8 +59,6 @@ namespace ProcessHacker
         private JobProperties _jobProps;
         private ServiceProperties _serviceProps;
 
-        private string _realCurrentDirectory;
-
         public ProcessWindow(ProcessItem process)
         {
             this.SetPhParent();
@@ -280,6 +278,8 @@ namespace ProcessHacker
                 this.Text = _processItem.Name + " (PID " + _pid.ToString() + ")";
             }
 
+            Application.DoEvents();
+
             // add our handler to the process provider
             Program.ProcessProvider.Updated +=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
@@ -319,7 +319,7 @@ namespace ProcessHacker
             indicatorCpu.Color1 = Properties.Settings.Default.PlotterCPUKernelColor;
             indicatorCpu.Color2 = Properties.Settings.Default.PlotterCPUUserColor;
             indicatorPvt.Color1 = Properties.Settings.Default.PlotterMemoryPrivateColor;
-            indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;           
+            indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;
 
             this.ApplyFont(Properties.Settings.Default.Font);
 
@@ -443,7 +443,7 @@ namespace ProcessHacker
                     return;
                 }
 
-                FileVersionInfo info = FileVersionInfo.GetVersionInfo(fileName);
+                FileVersionInfo info = _processItem.VersionInfo;
 
                 textFileDescription.Text = info.FileDescription;
                 textFileCompany.Text = info.CompanyName;
@@ -452,11 +452,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    Icon icon = FileUtils.GetFileIcon(fileName, true);
-                    
-                    pictureIcon.Image = _processImage = icon.ToBitmap();
-
-                    Win32.DestroyIcon(icon.Handle);
+                    pictureIcon.Image = _processImage = _processItem.LargeIcon.ToBitmap();
                 }
                 catch 
                 {
@@ -517,9 +513,6 @@ namespace ProcessHacker
                 }
             }
 
-            // HACK: Evil but necessary to reduce user complaints
-            Application.DoEvents();
-
             if (_pid <= 0)
                 return;
 
@@ -554,8 +547,6 @@ namespace ProcessHacker
                 fileCurrentDirectory.Text = "(" + ex.Message + ")";
                 fileCurrentDirectory.Enabled = false;
             }
-
-            _realCurrentDirectory = fileCurrentDirectory.Text;
 
             try
             {
@@ -607,7 +598,6 @@ namespace ProcessHacker
         {
             var processStats = new ProcessStatistics(_pid);
             processStats.Dock = DockStyle.Fill;
-            processStats.ClearStatistics();
             tabStatistics.Controls.Add(processStats);
             _processStats = processStats;
 
@@ -722,21 +712,41 @@ namespace ProcessHacker
             listEnvironment.Items.Clear();
 
             listEnvironment.BeginUpdate();
-            try
-            {
-                using (ProcessHandle phandle = new ProcessHandle(_pid,
-                    ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
+
+            WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
                 {
-                    foreach (var pair in phandle.GetEnvironmentVariables())
+                    try
                     {
-                        if (pair.Key != "")
-                            listEnvironment.Items.Add(new ListViewItem(new string[] { pair.Key, pair.Value }));
+                        using (ProcessHandle phandle = new ProcessHandle(_pid,
+                            ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
+                        {
+                            foreach (var pair in phandle.GetEnvironmentVariables())
+                            {
+                                if (pair.Key != "")
+                                {
+                                    if (this.IsHandleCreated)
+                                    {
+                                        // Work around delegate variable capturing.
+                                        var localPair = pair;
+
+                                        this.BeginInvoke(new MethodInvoker(() =>
+                                        {
+                                            listEnvironment.Items.Add(
+                                                new ListViewItem(new string[] { localPair.Key, localPair.Value }));
+                                        }));
+                                    }
+                                }
+                            }
+                        }
                     }
-                }
-            }
-            catch
-            { }
-            listEnvironment.EndUpdate();
+                    catch
+                    { }
+
+                    if (this.IsHandleCreated)
+                    {
+                        this.BeginInvoke(new MethodInvoker(() => listEnvironment.EndUpdate()));
+                    }
+                }), "process-update-environment-variables");
         }
 
         public void UpdateProtected()
@@ -953,12 +963,6 @@ namespace ProcessHacker
                 indicatorIO.Maximum = (int)maxW;
             indicatorIO.Data1 = (int)(ioRO);
             indicatorIO.TextValue = ioROString;
-        }
-
-        private void fileCurrentDirectory_TextBoxLeave(object sender, EventArgs e)
-        {
-            if (fileCurrentDirectory.Text != _realCurrentDirectory)
-                fileCurrentDirectory.Text = _realCurrentDirectory;
         }
 
         // Start: HACK HACK HACK HACK

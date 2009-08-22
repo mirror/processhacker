@@ -52,6 +52,7 @@ namespace ProcessHacker
         public int Pid;
 
         public Icon Icon;
+        public Icon LargeIcon;
         public string CmdLine;
         public float CpuUsage;
         public string FileName;
@@ -105,6 +106,7 @@ namespace ProcessHacker
             public int Pid;
             public string FileName;
             public Icon Icon;
+            public Icon LargeIcon;
             public FileVersionInfo VersionInfo;
             public string CmdLine;
             public bool IsDotNet;
@@ -330,6 +332,7 @@ namespace ProcessHacker
                 try
                 {
                     fpResult.Icon = FileUtils.GetFileIcon(fileName);
+                    fpResult.LargeIcon = FileUtils.GetFileIcon(fileName, true);
                 }
                 catch
                 { }
@@ -627,6 +630,7 @@ namespace ProcessHacker
             {
                 item.FileName = result.FileName;
                 item.Icon = result.Icon;
+                item.LargeIcon = result.LargeIcon;
                 item.VersionInfo = result.VersionInfo;
                 item.CmdLine = result.CmdLine;
                 item.IsPosix = result.IsPosix;
@@ -761,7 +765,10 @@ namespace ProcessHacker
                         item.ProcessQueryHandle.Dispose();
 
                     if (item.Icon != null)
+                    {
                         Win32.DestroyIcon(item.Icon.Handle);
+                        Win32.DestroyIcon(item.LargeIcon.Handle);
+                    }
 
                     // Remove process protection if needed.
                     if (KProcessHacker.Instance != null)
