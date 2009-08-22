@@ -71,7 +71,6 @@
     <Compile Include="Logging.cs" />
     <Compile Include="Messaging\MessageQueue.cs" />
     <Compile Include="Threading\FastQueue.cs" />
-    <Compile Include="Threading\FastResourceLock.cs" />
     <Compile Include="Threading\RundownProtection.cs" />
     <Compile Include="Threading\SemaphorePair.cs" />
     <Compile Include="Threading\SpinLock.cs" />
