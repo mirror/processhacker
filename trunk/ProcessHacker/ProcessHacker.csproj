@@ -229,6 +229,9 @@
     <EmbeddedResource Include="Forms\CreateServiceWindow.resx">
       <DependentUpon>CreateServiceWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HandleStatisticsWindow.resx">
+      <DependentUpon>HandleStatisticsWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\HeapsWindow.resx">
       <DependentUpon>HeapsWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -430,6 +433,12 @@
     </Compile>
     <Compile Include="Forms\CreateServiceWindow.Designer.cs">
       <DependentUpon>CreateServiceWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HandleStatisticsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HandleStatisticsWindow.Designer.cs">
+      <DependentUpon>HandleStatisticsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\HeapsWindow.cs">
       <SubType>Form</SubType>

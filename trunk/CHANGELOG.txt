@@ -2,6 +2,7 @@ Process Hacker
 
 1.5
  * NEW/IMPROVED:
+   * #2831605 - "Add handle count by type to process properties handle tab"
    * #2836706 - "Signature Column in Processes"
    * Improved kernel modules list
    * Detects custom kernels

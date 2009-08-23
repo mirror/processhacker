@@ -143,5 +143,17 @@ namespace ProcessHacker.Components
             catch
             { }
         }
+
+        private void buttonHandleDetails_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                (new HandleStatisticsWindow(_pid)).ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to show handle statistics", ex);
+            }
+        }
     }
 }

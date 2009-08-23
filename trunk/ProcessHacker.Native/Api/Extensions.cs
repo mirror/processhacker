@@ -132,14 +132,24 @@ namespace ProcessHacker.Native
 
         public static ObjectInformation GetHandleInfo(this SystemHandleEntry thisHandle)
         {
+            return thisHandle.GetHandleInfo(true);
+        }
+
+        public static ObjectInformation GetHandleInfo(this SystemHandleEntry thisHandle, bool getName)
+        {
             using (ProcessHandle process = new ProcessHandle(thisHandle.ProcessId,
                 KProcessHacker.Instance != null ? OSVersion.MinProcessQueryInfoAccess : ProcessAccess.DupHandle))
             {
-                return thisHandle.GetHandleInfo(process);
+                return thisHandle.GetHandleInfo(process, getName);
             }
         }
 
         public static ObjectInformation GetHandleInfo(this SystemHandleEntry thisHandle, ProcessHandle process)
+        {
+            return thisHandle.GetHandleInfo(process, true);
+        }
+
+        public static ObjectInformation GetHandleInfo(this SystemHandleEntry thisHandle, ProcessHandle process, bool getName)
         {
             IntPtr handle = new IntPtr(thisHandle.Handle);
             IntPtr objectHandleI;
@@ -215,6 +225,9 @@ namespace ProcessHacker.Native
                     }
                 }
             }
+
+            if (!getName)
+                return info;
 
             // Get the object's name. If the object is a file we must take special 
             // precautions so that we don't hang.

@@ -85,6 +85,7 @@
             this.label29 = new System.Windows.Forms.Label();
             this.labelOtherGDIHandles = new System.Windows.Forms.Label();
             this.labelOtherUSERHandles = new System.Windows.Forms.Label();
+            this.buttonHandleDetails = new System.Windows.Forms.Button();
             this.flowStats.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -663,7 +664,7 @@
             this.groupBox6.Controls.Add(this.tableLayoutPanel4);
             this.groupBox6.Location = new System.Drawing.Point(204, 157);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(195, 80);
+            this.groupBox6.Size = new System.Drawing.Size(195, 99);
             this.groupBox6.TabIndex = 0;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Other";
@@ -679,21 +680,23 @@
             this.tableLayoutPanel4.Controls.Add(this.label29, 0, 2);
             this.tableLayoutPanel4.Controls.Add(this.labelOtherGDIHandles, 1, 1);
             this.tableLayoutPanel4.Controls.Add(this.labelOtherUSERHandles, 1, 2);
+            this.tableLayoutPanel4.Controls.Add(this.buttonHandleDetails, 1, 3);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 3;
+            this.tableLayoutPanel4.RowCount = 4;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(189, 61);
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(189, 80);
             this.tableLayoutPanel4.TabIndex = 1;
             // 
             // label27
             // 
             this.label27.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(3, 3);
+            this.label27.Location = new System.Drawing.Point(3, 2);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(46, 13);
             this.label27.TabIndex = 1;
@@ -703,7 +706,7 @@
             // 
             this.labelOtherHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelOtherHandles.AutoSize = true;
-            this.labelOtherHandles.Location = new System.Drawing.Point(153, 3);
+            this.labelOtherHandles.Location = new System.Drawing.Point(153, 2);
             this.labelOtherHandles.Name = "labelOtherHandles";
             this.labelOtherHandles.Size = new System.Drawing.Size(33, 13);
             this.labelOtherHandles.TabIndex = 1;
@@ -713,7 +716,7 @@
             // 
             this.label28.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(3, 23);
+            this.label28.Location = new System.Drawing.Point(3, 19);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(68, 13);
             this.label28.TabIndex = 1;
@@ -723,7 +726,7 @@
             // 
             this.label29.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(3, 44);
+            this.label29.Location = new System.Drawing.Point(3, 36);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(79, 13);
             this.label29.TabIndex = 1;
@@ -733,7 +736,7 @@
             // 
             this.labelOtherGDIHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelOtherGDIHandles.AutoSize = true;
-            this.labelOtherGDIHandles.Location = new System.Drawing.Point(153, 23);
+            this.labelOtherGDIHandles.Location = new System.Drawing.Point(153, 19);
             this.labelOtherGDIHandles.Name = "labelOtherGDIHandles";
             this.labelOtherGDIHandles.Size = new System.Drawing.Size(33, 13);
             this.labelOtherGDIHandles.TabIndex = 1;
@@ -743,11 +746,23 @@
             // 
             this.labelOtherUSERHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelOtherUSERHandles.AutoSize = true;
-            this.labelOtherUSERHandles.Location = new System.Drawing.Point(153, 44);
+            this.labelOtherUSERHandles.Location = new System.Drawing.Point(153, 36);
             this.labelOtherUSERHandles.Name = "labelOtherUSERHandles";
             this.labelOtherUSERHandles.Size = new System.Drawing.Size(33, 13);
             this.labelOtherUSERHandles.TabIndex = 1;
             this.labelOtherUSERHandles.Text = "value";
+            // 
+            // buttonHandleDetails
+            // 
+            this.buttonHandleDetails.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.buttonHandleDetails.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonHandleDetails.Location = new System.Drawing.Point(112, 54);
+            this.buttonHandleDetails.Name = "buttonHandleDetails";
+            this.buttonHandleDetails.Size = new System.Drawing.Size(74, 23);
+            this.buttonHandleDetails.TabIndex = 2;
+            this.buttonHandleDetails.Text = "Details...";
+            this.buttonHandleDetails.UseVisualStyleBackColor = true;
+            this.buttonHandleDetails.Click += new System.EventHandler(this.buttonHandleDetails_Click);
             // 
             // ProcessStatistics
             // 
@@ -832,5 +847,6 @@
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Label labelOtherGDIHandles;
         private System.Windows.Forms.Label labelOtherUSERHandles;
+        private System.Windows.Forms.Button buttonHandleDetails;
     }
 }
