@@ -66,6 +66,7 @@
             this.columnTotalCpuTime = new Aga.Controls.Tree.TreeColumn();
             this.columnUserCpuTime = new Aga.Controls.Tree.TreeColumn();
             this.columnKernelCpuTime = new Aga.Controls.Tree.TreeColumn();
+            this.columnVerificationStatus = new Aga.Controls.Tree.TreeColumn();
             this.nodeIcon = new Aga.Controls.Tree.NodeControls.NodeIcon();
             this.nodeName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodePid = new Aga.Controls.Tree.NodeControls.NodeIntegerTextBox();
@@ -104,6 +105,7 @@
             this.nodeTotalCpuTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeKernelCpuTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeUserCpuTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeVerificationStatus = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.SuspendLayout();
             // 
             // treeProcesses
@@ -147,6 +149,7 @@
             this.treeProcesses.Columns.Add(this.columnTotalCpuTime);
             this.treeProcesses.Columns.Add(this.columnUserCpuTime);
             this.treeProcesses.Columns.Add(this.columnKernelCpuTime);
+            this.treeProcesses.Columns.Add(this.columnVerificationStatus);
             this.treeProcesses.DefaultToolTipProvider = null;
             this.treeProcesses.DisplayDraggingNodes = true;
             this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -194,6 +197,7 @@
             this.treeProcesses.NodeControls.Add(this.nodeTotalCpuTime);
             this.treeProcesses.NodeControls.Add(this.nodeKernelCpuTime);
             this.treeProcesses.NodeControls.Add(this.nodeUserCpuTime);
+            this.treeProcesses.NodeControls.Add(this.nodeVerificationStatus);
             this.treeProcesses.SelectedNode = null;
             this.treeProcesses.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
             this.treeProcesses.ShowNodeToolTips = true;
@@ -550,6 +554,15 @@
             this.columnKernelCpuTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnKernelCpuTime.TooltipText = null;
             this.columnKernelCpuTime.Width = 100;
+            // 
+            // columnVerificationStatus
+            // 
+            this.columnVerificationStatus.Header = "Verification Status";
+            this.columnVerificationStatus.IsVisible = false;
+            this.columnVerificationStatus.Sortable = true;
+            this.columnVerificationStatus.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnVerificationStatus.TooltipText = null;
+            this.columnVerificationStatus.Width = 60;
             // 
             // nodeIcon
             // 
@@ -917,6 +930,15 @@
             this.nodeUserCpuTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeUserCpuTime.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
+            // nodeVerificationStatus
+            // 
+            this.nodeVerificationStatus.DataPropertyName = "VerificationStatus";
+            this.nodeVerificationStatus.EditEnabled = false;
+            this.nodeVerificationStatus.IncrementalSearchEnabled = true;
+            this.nodeVerificationStatus.LeftMargin = 3;
+            this.nodeVerificationStatus.ParentColumn = this.columnVerificationStatus;
+            this.nodeVerificationStatus.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
             // ProcessTree
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1007,5 +1029,7 @@
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeUserCpuTime;
         private Aga.Controls.Tree.TreeColumn columnRelativeStartTime;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeRelativeStartTime;
+        private Aga.Controls.Tree.TreeColumn columnVerificationStatus;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeVerificationStatus;
     }
 }

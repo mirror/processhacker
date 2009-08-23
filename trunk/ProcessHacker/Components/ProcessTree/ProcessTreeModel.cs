@@ -328,6 +328,8 @@ namespace ProcessHacker
                             case "user cpu time":
                                 return ModifySort(n1.ProcessItem.Process.UserTime.CompareTo(
                                     n2.ProcessItem.Process.UserTime), sortO);
+                            case "verification status":
+                                return ModifySort(n1.VerificationStatus.CompareTo(n2.VerificationStatus), sortO);
                             default:
                                 return 0;
                         }

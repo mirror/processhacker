@@ -631,5 +631,10 @@ namespace ProcessHacker
         {
             get { return Utils.FormatTimeSpan(new TimeSpan(_pitem.Process.UserTime)); }
         }
+
+        public string VerificationStatus
+        {
+            get { return _pitem.VerifyResult == VerifyResult.Trusted ? "Verified" : ""; }
+        }
     }
 }
