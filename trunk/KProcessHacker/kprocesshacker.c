@@ -1477,6 +1477,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             CHECK_IN_LENGTH;
             
+            /* We'll reference the process and then dereference it. That way 
+             * we can get the address of the object - that's all we need.
+             */
+            
             status = ObReferenceObjectByHandle(
                 args->ProcessHandle,
                 0,
@@ -1485,10 +1489,11 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 &processObject,
                 NULL
                 );
-            ObDereferenceObject(processObject);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
+            
+            ObDereferenceObject(processObject);
             
             InitProtection();
             
@@ -1540,10 +1545,11 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 &processObject,
                 NULL
                 );
-            ObDereferenceObject(processObject);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
+            
+            ObDereferenceObject(processObject);
             
             if (!KphProtectRemoveByProcess(processObject))
             {
@@ -1596,10 +1602,11 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 &processObject,
                 NULL
                 );
-            ObDereferenceObject(processObject);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
+            
+            ObDereferenceObject(processObject);
             
             if (!KphProtectFindEntry(processObject, NULL, &processEntry))
             {
