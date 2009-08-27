@@ -57,15 +57,6 @@ namespace ProcessHacker.Components
             if (OSVersion.HasCycleTime)
                 listThreads.Columns[1].Text = "Cycles Delta";
 
-            // If KProcessHacker isn't available, hide Force Terminate.
-            if (KProcessHacker.Instance == null)
-                forceTerminateThreadMenuItem.Visible = false;
-
-            // Terminating a system thread is the same as Force Terminate, 
-            // so hide it if we're viewing PID 4.
-            if (_pid == 4)
-                forceTerminateThreadMenuItem.Visible = false;
-
             // On x64, the first four arguments are passed in registers, 
             // which means Analyze won't work properly.
             if (IntPtr.Size != 4)
@@ -301,6 +292,8 @@ namespace ProcessHacker.Components
                     _provider.LoadingStateChanged += new ThreadProvider.LoadingStateChangedDelegate(provider_LoadingStateChanged);
 
                     _pid = _provider.Pid;
+
+                    this.EnableDisableMenuItems();
                 }
             }
         }
@@ -363,6 +356,22 @@ namespace ProcessHacker.Components
             }
 
             _runCount++;
+        }
+
+        private void EnableDisableMenuItems()
+        {
+            // If KProcessHacker isn't available, hide Force Terminate.
+            if (KProcessHacker.Instance != null)
+                forceTerminateThreadMenuItem.Visible = true;
+            else
+                forceTerminateThreadMenuItem.Visible = false;
+
+            // Terminating a system thread is the same as Force Terminate, 
+            // so hide it if we're viewing PID 4.
+            if (_pid != 4)
+                forceTerminateThreadMenuItem.Visible = true;
+            else
+                forceTerminateThreadMenuItem.Visible = false;
         }
 
         private System.Drawing.Color GetThreadColor(ThreadItem titem)

@@ -1,5 +1,10 @@
 Process Hacker
 
+1.6
+ * NEW/IMPROVED:
+ * FIXED:
+   * Incorrect menu items for System threads
+
 1.5
  * NEW/IMPROVED:
    * #2831605 - "Add handle count by type to process properties handle tab"
