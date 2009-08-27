@@ -91,6 +91,7 @@ namespace ProcessHacker
         public static NetworkProvider NetworkProvider;
         public static System.Collections.Specialized.StringCollection ImposterNames = 
             new System.Collections.Specialized.StringCollection();
+        public static bool BadConfig = false;
         public static bool NoKph = false;
         public static bool StartHidden = false;
         public static bool StartVisible = false;
@@ -327,6 +328,8 @@ namespace ProcessHacker
 
                 try { ThemingScope.Activate(); }
                 catch { }
+
+                BadConfig = true;
 
                 if (OSVersion.HasTaskDialogs)
                 {

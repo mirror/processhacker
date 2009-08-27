@@ -26,7 +26,7 @@ namespace SysCallHacker
 
             _event = even;
 
-            textSystemCall.Text = MainWindow.SysCallNames[_event.Event.CallNumber];
+            textSystemCall.Text = MainWindow.SysCallNames.ContainsKey(even.Event.CallNumber) ? MainWindow.SysCallNames[even.Event.CallNumber] : "(unknown)";
             textTime.Text = _event.Event.Time.ToString();
             textMode.Text = _event.Event.Mode == KProcessorMode.UserMode ? "User-mode" : "Kernel-mode";
 

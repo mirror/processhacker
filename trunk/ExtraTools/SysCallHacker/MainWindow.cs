@@ -149,7 +149,7 @@ namespace SysCallHacker
             {
                 logEvent.Event.Time.ToString(),
                 _processes.ContainsKey(logEvent.Event.ProcessId) ? _processes[logEvent.Event.ProcessId].Name : logEvent.Event.ProcessId.ToString(),
-                _sysCallNames[logEvent.Event.CallNumber],
+                _sysCallNames.ContainsKey(logEvent.Event.CallNumber) ? _sysCallNames[logEvent.Event.CallNumber] : "(unknown)",
                 logEvent.Event.Mode == KProcessorMode.UserMode ? "User" : "Kernel",
                 objectName
             });

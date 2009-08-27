@@ -4,6 +4,8 @@ Process Hacker
  * NEW/IMPROVED:
  * FIXED:
    * Incorrect menu items for System threads
+   * Crash when viewing error details in the event 
+     of a corrupt configuration file
 
 1.5
  * NEW/IMPROVED:

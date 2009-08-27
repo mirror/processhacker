@@ -21,10 +21,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace ProcessHacker
@@ -36,7 +32,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
-            this.Size = Properties.Settings.Default.InformationBoxSize;
+            if (!Program.BadConfig)
+                this.Size = Properties.Settings.Default.InformationBoxSize;
+
             textValues.Text = values;
             textValues.Select(0, 0);
         }
@@ -50,7 +48,8 @@ namespace ProcessHacker
 
         private void InformationBox_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.InformationBoxSize = this.Size;
+            if (!Program.BadConfig)
+                Properties.Settings.Default.InformationBoxSize = this.Size;
         }
 
         public TextBox TextBox { get { return textValues; } }
