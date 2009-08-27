@@ -360,15 +360,13 @@ namespace ProcessHacker.Components
 
         private void EnableDisableMenuItems()
         {
-            // If KProcessHacker isn't available, hide Force Terminate.
-            if (KProcessHacker.Instance != null)
-                forceTerminateThreadMenuItem.Visible = true;
-            else
-                forceTerminateThreadMenuItem.Visible = false;
-
-            // Terminating a system thread is the same as Force Terminate, 
-            // so hide it if we're viewing PID 4.
-            if (_pid != 4)
+            if (
+                // If KProcessHacker isn't available, hide Force Terminate.
+                KProcessHacker.Instance != null &&
+                // Terminating a system thread is the same as Force Terminate, 
+                // so hide it if we're viewing PID 4.
+                _pid != 4
+                )
                 forceTerminateThreadMenuItem.Visible = true;
             else
                 forceTerminateThreadMenuItem.Visible = false;
