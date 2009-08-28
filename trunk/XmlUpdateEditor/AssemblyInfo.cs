@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ProcessHacker")]
 [assembly: AssemblyProduct("XMLUpdateEditor")]
-[assembly: AssemblyCopyright("ProcessHacker")]
+[assembly: AssemblyCopyright("dmex ProcessHacker")]
 [assembly: AssemblyTrademark("ProcessHacker")]
 [assembly: AssemblyCulture("")]		
 
