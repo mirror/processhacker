@@ -96,14 +96,14 @@
             this.buttonDbghelpBrowse = new System.Windows.Forms.Button();
             this.textDbghelpPath = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
-            this.buttonCancel = new System.Windows.Forms.Button();
-            this.buttonApply = new System.Windows.Forms.Button();
             this.tabUpdates = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
             this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
             this.optUpdateBeta = new System.Windows.Forms.RadioButton();
             this.optUpdateStable = new System.Windows.Forms.RadioButton();
-            this.label5 = new System.Windows.Forms.Label();
+            this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
+            this.buttonCancel = new System.Windows.Forms.Button();
+            this.buttonApply = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -962,6 +962,61 @@
             this.toolTipProvider.SetToolTip(this.label9, "Select the most recent version of dbghelp.dll available, usually distributed with" +
                     " Debugging Tools for Windows.");
             // 
+            // tabUpdates
+            // 
+            this.tabUpdates.Controls.Add(this.label5);
+            this.tabUpdates.Controls.Add(this.optUpdateAlpha);
+            this.tabUpdates.Controls.Add(this.optUpdateBeta);
+            this.tabUpdates.Controls.Add(this.optUpdateStable);
+            this.tabUpdates.Location = new System.Drawing.Point(4, 22);
+            this.tabUpdates.Name = "tabUpdates";
+            this.tabUpdates.Padding = new System.Windows.Forms.Padding(3);
+            this.tabUpdates.Size = new System.Drawing.Size(481, 289);
+            this.tabUpdates.TabIndex = 5;
+            this.tabUpdates.Text = "Updates";
+            this.tabUpdates.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 8);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(56, 13);
+            this.label5.TabIndex = 24;
+            this.label5.Text = "Check for:";
+            // 
+            // optUpdateAlpha
+            // 
+            this.optUpdateAlpha.AutoSize = true;
+            this.optUpdateAlpha.Location = new System.Drawing.Point(68, 52);
+            this.optUpdateAlpha.Name = "optUpdateAlpha";
+            this.optUpdateAlpha.Size = new System.Drawing.Size(94, 17);
+            this.optUpdateAlpha.TabIndex = 23;
+            this.optUpdateAlpha.Text = "Alpha releases";
+            this.optUpdateAlpha.UseVisualStyleBackColor = true;
+            // 
+            // optUpdateBeta
+            // 
+            this.optUpdateBeta.AutoSize = true;
+            this.optUpdateBeta.Location = new System.Drawing.Point(68, 29);
+            this.optUpdateBeta.Name = "optUpdateBeta";
+            this.optUpdateBeta.Size = new System.Drawing.Size(89, 17);
+            this.optUpdateBeta.TabIndex = 22;
+            this.optUpdateBeta.Text = "Beta releases";
+            this.optUpdateBeta.UseVisualStyleBackColor = true;
+            // 
+            // optUpdateStable
+            // 
+            this.optUpdateStable.AutoSize = true;
+            this.optUpdateStable.Checked = true;
+            this.optUpdateStable.Location = new System.Drawing.Point(68, 6);
+            this.optUpdateStable.Name = "optUpdateStable";
+            this.optUpdateStable.Size = new System.Drawing.Size(97, 17);
+            this.optUpdateStable.TabIndex = 21;
+            this.optUpdateStable.TabStop = true;
+            this.optUpdateStable.Text = "Stable releases";
+            this.optUpdateStable.UseVisualStyleBackColor = true;
+            // 
             // toolTipProvider
             // 
             this.toolTipProvider.AutomaticDelay = 250;
@@ -994,61 +1049,6 @@
             this.buttonApply.Text = "&Apply";
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
-            // 
-            // tabUpdates
-            // 
-            this.tabUpdates.Controls.Add(this.label5);
-            this.tabUpdates.Controls.Add(this.optUpdateAlpha);
-            this.tabUpdates.Controls.Add(this.optUpdateBeta);
-            this.tabUpdates.Controls.Add(this.optUpdateStable);
-            this.tabUpdates.Location = new System.Drawing.Point(4, 22);
-            this.tabUpdates.Name = "tabUpdates";
-            this.tabUpdates.Padding = new System.Windows.Forms.Padding(3);
-            this.tabUpdates.Size = new System.Drawing.Size(481, 289);
-            this.tabUpdates.TabIndex = 5;
-            this.tabUpdates.Text = "Updates";
-            this.tabUpdates.UseVisualStyleBackColor = true;
-            // 
-            // optUpdateAlpha
-            // 
-            this.optUpdateAlpha.AutoSize = true;
-            this.optUpdateAlpha.Location = new System.Drawing.Point(68, 52);
-            this.optUpdateAlpha.Name = "optUpdateAlpha";
-            this.optUpdateAlpha.Size = new System.Drawing.Size(99, 17);
-            this.optUpdateAlpha.TabIndex = 23;
-            this.optUpdateAlpha.Text = "Alpha Releases";
-            this.optUpdateAlpha.UseVisualStyleBackColor = true;
-            // 
-            // optUpdateBeta
-            // 
-            this.optUpdateBeta.AutoSize = true;
-            this.optUpdateBeta.Location = new System.Drawing.Point(68, 29);
-            this.optUpdateBeta.Name = "optUpdateBeta";
-            this.optUpdateBeta.Size = new System.Drawing.Size(94, 17);
-            this.optUpdateBeta.TabIndex = 22;
-            this.optUpdateBeta.Text = "Beta Releases";
-            this.optUpdateBeta.UseVisualStyleBackColor = true;
-            // 
-            // optUpdateStable
-            // 
-            this.optUpdateStable.AutoSize = true;
-            this.optUpdateStable.Checked = true;
-            this.optUpdateStable.Location = new System.Drawing.Point(68, 6);
-            this.optUpdateStable.Name = "optUpdateStable";
-            this.optUpdateStable.Size = new System.Drawing.Size(102, 17);
-            this.optUpdateStable.TabIndex = 21;
-            this.optUpdateStable.TabStop = true;
-            this.optUpdateStable.Text = "Stable Releases";
-            this.optUpdateStable.UseVisualStyleBackColor = true;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 8);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(56, 13);
-            this.label5.TabIndex = 24;
-            this.label5.Text = "Check for:";
             // 
             // OptionsWindow
             // 
