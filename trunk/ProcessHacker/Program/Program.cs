@@ -273,7 +273,7 @@ namespace ProcessHacker
             // Create the shared waiter.
             SharedWaiter = new ProcessHacker.Native.Threading.Waiter();
 
-            new HackerWindow()
+            new HackerWindow();
             Application.Run();
         }
 
