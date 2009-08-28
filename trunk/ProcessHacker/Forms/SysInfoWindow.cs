@@ -188,10 +188,10 @@ namespace ProcessHacker
             long maxRO = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther].Take(count).Max();
             long maxW = Program.ProcessProvider.LongHistory[SystemStats.IoWrite].Take(count).Max();
             if(maxRO>maxW)
-                indicatorIO.Maximum = (int)maxRO;
+                indicatorIO.Maximum = maxRO;
             else
-                indicatorIO.Maximum = (int)maxW;
-            indicatorIO.Data1 = (int)(Program.ProcessProvider.LongHistory[SystemStats.IoReadOther][0]);
+                indicatorIO.Maximum = maxW;
+            indicatorIO.Data1 = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther][0];
             indicatorIO.TextValue = Utils.FormatSize(Program.ProcessProvider.LongHistory[SystemStats.IoReadOther][0]);
 
             // Update the plotter settings.
@@ -292,8 +292,8 @@ namespace ProcessHacker
             labelPMT.Text = Utils.FormatSize((ulong)_pages * _pageSize);
 
             // Update the physical memory indicator here because we have perfInfo available.
-            
-            indicatorPhysical.Data1 = (int)(_pages - perfInfo.AvailablePages);
+
+            indicatorPhysical.Data1 = _pages - perfInfo.AvailablePages;
             indicatorPhysical.TextValue = physMemText;
 
             // File cache

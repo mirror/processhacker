@@ -4,6 +4,7 @@ Process Hacker
  * NEW/IMPROVED:
    * Update system
  * FIXED:
+   * #2845427 - "Indicator integer overflow"
    * Critical KProcessHacker denial-of-service security issues
    * Incorrect menu items for System threads
    * Crash when viewing error details in the event 

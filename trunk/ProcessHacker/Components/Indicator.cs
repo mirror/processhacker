@@ -1,6 +1,6 @@
 ﻿/* 
  * Process Hacker - 
- *   Indicator Component
+ *   indicator component
  * 
  * Copyright (C) 2009 Dean
  * 
@@ -45,14 +45,14 @@ namespace ProcessHacker.Components
             get { return _lineColor2; }
             set { _lineColor2 = value; }
         }
-        private int _data1;
-        public int Data1
+        private long _data1;
+        public long Data1
         {
             get { return _data1; }
             set { _data1 = value; }
         }
-        private int _data2;
-        public int Data2
+        private long _data2;
+        public long Data2
         {
             get { return _data2; }
             set { _data2 = value; }
@@ -140,8 +140,8 @@ namespace ProcessHacker.Components
             }
         }
         private int _GraphWidth=0x21;
-        private int _Maximum=0x7fffffff;
-        private int _Minimum=0;
+        private long _Maximum = long.MaxValue;
+        private long _Minimum = 0;
         public int GraphWidth
         {
             get
@@ -154,7 +154,7 @@ namespace ProcessHacker.Components
                 base.Invalidate();
             }
         }
-        public int Maximum
+        public long Maximum
         {
             get
             {
@@ -170,7 +170,7 @@ namespace ProcessHacker.Components
                 base.Invalidate();
             }
         }
-        public int Minimum
+        public long Minimum
         {
             get
             {

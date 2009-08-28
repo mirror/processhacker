@@ -948,20 +948,20 @@ namespace ProcessHacker
             long maxPvt = _processItem.LongHistoryManager[ProcessStats.PrivateMemory].Take(count).Max();
             long maxWS = _processItem.LongHistoryManager[ProcessStats.WorkingSet].Take(count).Max();
             if(maxPvt>maxWS)
-                indicatorPvt.Maximum = (int)maxPvt;
+                indicatorPvt.Maximum = maxPvt;
             else
-                indicatorPvt.Maximum = (int)maxWS; 
-            indicatorPvt.Data1 = item.Process.VirtualMemoryCounters.PrivatePageCount.ToInt32();
+                indicatorPvt.Maximum = maxWS; 
+            indicatorPvt.Data1 = item.Process.VirtualMemoryCounters.PrivatePageCount.ToInt64();
             indicatorPvt.TextValue = pvtString;
 
             // Update the I/O Bytes indicator.
             long maxRO = _processItem.LongHistoryManager[ProcessStats.IoReadOther].Take(count).Max();
             long maxW = _processItem.LongHistoryManager[ProcessStats.IoWrite].Take(count).Max();
             if (maxRO > maxW)
-                indicatorIO.Maximum = (int)maxRO;
+                indicatorIO.Maximum = maxRO;
             else
-                indicatorIO.Maximum = (int)maxW;
-            indicatorIO.Data1 = (int)(ioRO);
+                indicatorIO.Maximum = maxW;
+            indicatorIO.Data1 = ioRO;
             indicatorIO.TextValue = ioROString;
         }
 
