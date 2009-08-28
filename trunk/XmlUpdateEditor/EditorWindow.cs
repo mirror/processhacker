@@ -21,17 +21,11 @@
  */
 
 using System;
-using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
-using System.Data;
 using System.Xml;
 using System.Xml.XPath;
-using System.IO;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
 
 namespace XPath
 {
@@ -593,9 +587,5 @@ namespace XPath
         {
             this.LoadXml();
         }
-
 	}
 }
-
-
-
