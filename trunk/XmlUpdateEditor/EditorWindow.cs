@@ -1,6 +1,6 @@
 /*
  * Process Hacker - 
- *   XML update editor window
+ *   XML Editor for Process Hacker Update Description File
  * 
  * Copyright (C) 2009 dmex
  * 
@@ -27,12 +27,12 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
 
-namespace XPath
+namespace XMLUpdateEditor
 {
 	/// <summary>
-	/// Summary description for Form1.
+    /// XML editor for Process Hacker Update Description File
 	/// </summary>
-	public class Form1 : System.Windows.Forms.Form
+	public class EditorWindow : System.Windows.Forms.Form
 	{
         #region Windows Form Designer generated code
 
@@ -62,7 +62,7 @@ namespace XPath
         /// <summary>
         /// 
         /// </summary>
-		public Form1()
+		public EditorWindow()
 		{
 			InitializeComponent();
 		}
@@ -342,6 +342,8 @@ namespace XPath
 		#endregion
 
         String _xmlfile;
+        String _ItemHash;
+
         XPathDocument _doc;
         XPathNavigator _nav;
         XPathExpression _expr;
@@ -351,7 +353,7 @@ namespace XPath
 		static void Main() 
 		{
             Application.EnableVisualStyles();
-			Application.Run(new Form1());
+			Application.Run(new EditorWindow());
 		}
 
         private void Form1_Load(object sender, EventArgs e)
@@ -411,14 +413,16 @@ namespace XPath
         {
             if (!File.Exists(this._xmlfile))
             {
-                Debug.Fail("{0} does not exist.", this._xmlfile);
+                MessageBox.Show(this._xmlfile + " does not exist!");
                 return;
             }
+
             StreamReader sr = File.OpenText(this._xmlfile);
             String input;
 
             input = sr.ReadToEnd();
             sr.Close();
+
             this.textBox1.Text = input;
 
             this._doc = new XPathDocument(this._xmlfile);
@@ -427,10 +431,11 @@ namespace XPath
             // Compile a standard XPath expression
             this._expr = this._nav.Compile("//update//title");
             this._iterator = this._nav.Select(this._expr);
-
-            // Iterate on the node set
+            
+            //Clear Items
             this.titlecomboBox.Items.Clear();
-            try
+
+            try  //Iterate on the node set
             {
                 while (this._iterator.MoveNext())
                 {
@@ -440,7 +445,7 @@ namespace XPath
             }
             catch (Exception ex)
             {
-                Debug.Fail(ex.Message);
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -463,15 +468,17 @@ namespace XPath
                 this.updateURLtxtBox.Text = items.Item(this.titlecomboBox.SelectedIndex).SelectSingleNode("updateurl").InnerText;
                 this.hashtxtBox.Text = items.Item(this.titlecomboBox.SelectedIndex).SelectSingleNode("hash").InnerText;
 
+                this._ItemHash = items.Item(this.titlecomboBox.SelectedIndex).SelectSingleNode("hash").InnerText;
+
                 switch (items.Item(this.titlecomboBox.SelectedIndex).SelectSingleNode("type").InnerText)
                 {
-                    case "release":
+                    case "Release":
                         this.radioIsRelease.Checked = true;
                         break;
-                    case "beta":
+                    case "Beta":
                         this.radioIsbeta.Checked = true;
                         break;
-                    case "alpha":
+                    case "Alpha":
                         this.radioIsAlpha.Checked = true;
                         break;
                     default:
@@ -492,16 +499,16 @@ namespace XPath
             string type = null;
 
             if (this.radioIsRelease.Checked)
-            { type = "release"; }
+            { type = "Release"; }
             else if (this.radioIsbeta.Checked)
-            { type = "beta"; }
+            { type = "Beta"; }
             else if (this.radioIsAlpha.Checked)
-            { type = "alpha"; }
+            { type = "Alpha"; }
 
             //Select the cd node with the matching title
             XmlNode oldCd;
             XmlElement root = doc.DocumentElement;
-            oldCd = root.SelectSingleNode("//update[hash='" + this.hashtxtBox.Text + "']");
+            oldCd = root.SelectSingleNode("//update[hash='" + this._ItemHash + "']");
 
             XmlElement newCd = doc.CreateElement("update");
 
@@ -532,11 +539,11 @@ namespace XPath
             string type = null;
 
             if (this.radioIsRelease.Checked)
-            { type = "release"; }
+            { type = "Release"; }
             else if (this.radioIsbeta.Checked)
-            { type = "beta"; }
+            { type = "Beta"; }
             else if (this.radioIsAlpha.Checked)
-            { type = "alpha"; }
+            { type = "Alpha"; }
 
             XmlDocumentFragment docFrag = doc.CreateDocumentFragment();
             docFrag.InnerXml =
@@ -573,7 +580,7 @@ namespace XPath
                 //Select the cd node with the matching title
                 XmlNode cd;
                 XmlElement root = doc.DocumentElement;
-                cd = root.SelectSingleNode("//update[hash='" + this.hashtxtBox.Text + "']");
+                cd = root.SelectSingleNode("//update[hash='" + this._ItemHash + "']");
 
                 root.RemoveChild(cd);
                 //save the output to a file 
