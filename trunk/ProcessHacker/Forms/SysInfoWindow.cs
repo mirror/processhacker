@@ -278,6 +278,7 @@ namespace ProcessHacker
             labelTotalsProcesses.Text = ((ulong)info.ProcessCount).ToString("N0");
             labelTotalsThreads.Text = ((ulong)info.ThreadCount).ToString("N0");
             labelTotalsHandles.Text = ((ulong)info.HandlesCount).ToString("N0");
+            labelTotalsUptime.Text = Utils.FormatLongTimeSpan(Windows.GetUptime());
 
             // Commit
             labelCCC.Text = Utils.FormatSize((ulong)perfInfo.CommittedPages * _pageSize);

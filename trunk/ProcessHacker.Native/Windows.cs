@@ -567,6 +567,46 @@ namespace ProcessHacker.Native
             }
         }
 
+        public static long GetTickCount()
+        {
+            // Read the tick count multiplier.
+            int tickCountMultiplier = Marshal.ReadInt32(Win32.UserSharedData.Increment(
+                KUserSharedData.TickCountMultiplierOffset));
+
+            // Read the tick count.
+            var tickCount = QueryKSystemTime(Win32.UserSharedData.Increment(
+                KUserSharedData.TickCountOffset));
+
+            return (((long)tickCount.LowPart * tickCountMultiplier) >> (int)24) +
+                (((long)tickCount.HighPart * tickCountMultiplier) << (int)8);
+        }
+
+        public static SystemTimeOfDayInformation GetTimeOfDay()
+        {
+            NtStatus status;
+            SystemTimeOfDayInformation timeOfDay;
+            int retLength;
+
+            status = Win32.NtQuerySystemInformation(
+                SystemInformationClass.SystemTimeOfDayInformation,
+                out timeOfDay,
+                Marshal.SizeOf(typeof(SystemTimeOfDayInformation)),
+                out retLength
+                );
+
+            if (status >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return timeOfDay;
+        }
+
+        public static TimeSpan GetUptime()
+        {
+            var timeOfDay = GetTimeOfDay();
+
+            return new TimeSpan(timeOfDay.CurrentTime - timeOfDay.BootTime);
+        }
+
         public static void LoadDriver(string serviceName)
         {
             var str = new UnicodeString(
@@ -583,6 +623,41 @@ namespace ProcessHacker.Native
             {
                 str.Dispose();
             }
+        }
+
+        private static LargeInteger QueryKSystemTime(IntPtr time)
+        {
+            unsafe
+            {
+                return QueryKSystemTime((KSystemTime*)time.ToPointer());
+            }
+        }
+
+        private unsafe static LargeInteger QueryKSystemTime(KSystemTime* time)
+        {
+            LargeInteger localTime = new LargeInteger();
+
+            if (IntPtr.Size == 4)
+            {
+                localTime.QuadPart = 0;
+
+                while (true)
+                {
+                    localTime.HighPart = time->High1Time;
+                    localTime.LowPart = time->LowPart;
+
+                    if (localTime.HighPart == time->High2Time)
+                        break;
+
+                    System.Threading.Thread.SpinWait(1);
+                }
+            }
+            else
+            {
+                localTime.QuadPart = time->QuadPart;
+            }
+
+            return localTime;
         }
 
         public static void UnloadDriver(string serviceName)

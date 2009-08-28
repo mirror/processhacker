@@ -263,12 +263,12 @@ namespace ProcessHacker.Native.Api
         }
 
         /// <summary>
-        /// Throws the NT status value as an exception if it is an error.
+        /// Throws the NT status value as an exception if it is an error or warning.
         /// </summary>
         /// <param name="status">The NT status value.</param>
         public static void ThrowIf(this NtStatus status)
         {
-            if (status.IsError())
+            if (status.IsError() || status.IsWarning())
                 status.Throw();
         }
 

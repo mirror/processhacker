@@ -853,6 +853,20 @@ namespace ProcessHacker.Native.Api
         public int SidStart;
     }
 
+    [StructLayout(LayoutKind.Explicit, Size = 12)]
+    public struct KSystemTime
+    {
+        [FieldOffset(0)]
+        public uint LowPart;
+        [FieldOffset(4)]
+        public int High1Time;
+        [FieldOffset(8)]
+        public int High2Time;
+
+        [FieldOffset(0)]
+        public long QuadPart;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct KtmObjectCursor
     {
@@ -860,6 +874,73 @@ namespace ProcessHacker.Native.Api
         public int ObjectIdCount;
         public byte ObjectIds;
         // Array of Guids follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 4)]
+    public struct KUserSharedData
+    {
+        public static readonly int TickCountOffset = 
+            Marshal.OffsetOf(typeof(KUserSharedData), "TickCount").ToInt32();
+        public static readonly int TickCountMultiplierOffset =
+            Marshal.OffsetOf(typeof(KUserSharedData), "TickCountMultiplier").ToInt32();
+
+        public int TickCountLowDeprecated;
+        public int TickCountMultiplier;
+        public KSystemTime InterruptTime;
+        public KSystemTime SystemTime;
+        public KSystemTime TimeZoneBias;
+        public ushort ImageNumberLow;
+        public ushort ImageNumberHigh;
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+        public string NtSystemRoot;
+
+        public int MaxStackTraceDepth;
+        public int CryptoExponent;
+        public int TimeZoneId;
+        public int LargePageMinimum;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
+        public int[] Reserved2;
+
+        public NtProductType NtProductType;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool ProductTypeIsValid;
+
+        public int NtMajorVersion;
+        public int NtMinorVersion;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = Win32.ProcessorFeatureMax)]
+        public byte[] ProcessorFeatures;
+
+        public int Reserved1;
+        public int Reserved3;
+        public int TimeSlip;
+        public AlternativeArchitectureType AlternativeArchitecture;
+        public int Padding1;
+        public long SystemExpirationDate;
+        public SuiteType SuiteMask;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool KdDebuggerEnabled;
+        public byte NXSupportPolicy;
+        public int ActiveConsoleId;
+        public int DismountCount;
+        public int ComPlusPackage;
+        public int LastSystemRITEventTickCount;
+        public int NumberOfPhysicalPages;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool SafeBootMode;
+        public int TraceLogging;
+        public int Padding3;
+
+        public long TestRetInstruction;
+        public int SystemCall;
+        public int SystemCallReturn;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+        public long[] SystemCallPad;
+
+        public KSystemTime TickCount;
+
+        public int Cookie;
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 8)]
@@ -2179,6 +2260,18 @@ namespace ProcessHacker.Native.Api
         public int ContextSwitchCount; // 12
         public int State; // 13
         public KWaitReason WaitReason; // 14
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SystemTimeOfDayInformation
+    {
+        public long BootTime;
+        public long CurrentTime;
+        public long TimeZoneBias;
+        public int TimeZoneId;
+        public int Reserved;
+        public long BootTimeBias;
+        public long SleepTimeBias;
     }
 
     [StructLayout(LayoutKind.Sequential)]

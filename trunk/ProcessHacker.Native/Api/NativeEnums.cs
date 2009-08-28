@@ -79,6 +79,13 @@ namespace ProcessHacker.Native.Api
         AclSizeInformation
     }
 
+    public enum AlternativeArchitectureType : int
+    {
+        StandardDesign,
+        Nec98x86,
+        EndAlternatives
+    }
+
     public enum CompoundAceType : ushort
     {
         Impersonation = 1
@@ -697,6 +704,13 @@ namespace ProcessHacker.Native.Api
         CommitFinalize = 0x40000000
     }
 
+    public enum NtProductType : int
+    {
+        WinNt = 1,
+        LanManNt,
+        Server
+    }
+
     [Flags]
     public enum ObjectAceFlags : uint
     {
@@ -1061,6 +1075,29 @@ namespace ProcessHacker.Native.Api
         DaclSecurityInformation = 0x4,
         SaclSecurityInformation = 0x8,
         LabelSecurityInformation = 0x10
+    }
+
+    [Flags]
+    public enum SuiteType : uint
+    {
+        SmallBusiness = 0x00000001,
+        Enterprise = 0x00000002,
+        BackOffice = 0x00000004,
+        Communications = 0x00000008,
+        Terminal = 0x00000010,
+        SmallBusinessRestricted = 0x00000020,
+        EmbeddedNt = 0x00000040,
+        DataCenter = 0x00000080,
+        SingleUserTs = 0x00000100,
+        Personal = 0x00000200,
+        Blade = 0x00000400,
+        EmbeddedRestricted = 0x00000800,
+        SecurityAppliance = 0x00001000,
+        StorageServer = 0x00002000,
+        ComputeServer = 0x00004000,
+
+        WorkstationNt = 0x40000000,
+        ServerNt = 0x80000000
     }
 
     public enum SystemInformationClass : int

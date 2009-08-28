@@ -395,6 +395,22 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Formats a <see cref="TimeSpan"/> object into a string representation.
+        /// </summary>
+        /// <param name="time">The <see cref="TimeSpan"/> to format.</param>
+        /// <returns></returns>
+        public static string FormatLongTimeSpan(TimeSpan time)
+        {
+            return String.Format(
+                "{0}{1:d2}:{2:d2}:{3:d2}",
+                time.Days != 0 ? (time.Days.ToString() + ".") : "",
+                time.Hours,
+                time.Minutes,
+                time.Seconds
+                );
+        }
+
+        /// <summary>
         /// Gets the string representation of a priority number.
         /// </summary>
         /// <param name="priority">A priority number.</param>

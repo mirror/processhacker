@@ -47,9 +47,11 @@ namespace ProcessHacker.Native.Api
         public const int MaxKeyNameLength = 512;
         public const int MaxKeyValueNameLength = 32767;
         public const int MaxStackDepth = 32;
+        public const int MaxWow64SharedEntries = 16;
         public const int PortMessageMaxDataLength = 0x130;
         public const int PortMessageMaxLength = 0x148;
         public const int ProcessHandleTracingMaxStacks = 16;
+        public const int ProcessorFeatureMax = 64;
         public const int SecurityDescriptorRevision = 1;
         public const int SidMaxSubAuthorities = 15;
         public const int SidRecommendedSubAuthorities = 1;
@@ -72,5 +74,6 @@ namespace ProcessHacker.Native.Api
         public static readonly int SecurityDescriptorMinLength = Marshal.SizeOf(typeof(SecurityDescriptorStruct));
         public static readonly int SecurityMaxSidSize =
             Marshal.SizeOf(typeof(SidStruct)) - sizeof(int) + (SidMaxSubAuthorities * sizeof(int));
+        public static readonly IntPtr UserSharedData = new IntPtr(0x7ffe0000);
     }
 }

@@ -2,6 +2,7 @@ Process Hacker
 
 1.6
  * NEW/IMPROVED:
+   * #2845829 - "System uptime"
    * Update system
  * FIXED:
    * #2845427 - "Indicator integer overflow"

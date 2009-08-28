@@ -1444,6 +1444,14 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtQuerySystemInformation(
             [In] SystemInformationClass SystemInformationClass,
+            [Out] out SystemTimeOfDayInformation SystemInformation,
+            [In] int SystemInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQuerySystemInformation(
+            [In] SystemInformationClass SystemInformationClass,
             [Out] out SystemCacheInformation SystemInformation,
             [In] int SystemInformationLength,
             [Out] [Optional] out int ReturnLength
