@@ -410,6 +410,7 @@
     <Compile Include="Components\TargetWindowButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Common\IWin32ForegroundWindow.cs" />
     <Compile Include="Components\TimerProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>

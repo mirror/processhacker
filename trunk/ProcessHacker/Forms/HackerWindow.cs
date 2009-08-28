@@ -38,6 +38,7 @@ using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
+using System.Xml;
 
 namespace ProcessHacker
 {
@@ -3190,6 +3191,187 @@ namespace ProcessHacker
                 try { Win32.SetProcessShutdownParameters(0x100, 0); }
                 catch { }
             }
-        }       
+        }
+
+
+        #region "Update Check"
+
+        String _AppUpdateVers;
+        String _AppUpdateMSG;
+        String _AppUpdateURL;
+
+        private void UpdateCheckMenuItem_Click(object sender, EventArgs e)
+        {
+            this.updateProcessesMenuItem.Enabled = false;
+
+            Thread t = new Thread(new ThreadStart(this.UpdateJob));
+            t.IsBackground = true;
+            t.Start();
+        }
+
+        /// <summary>
+        /// Lock around UpdateXML target
+        /// </summary>
+        private readonly object stateLock = new object();
+
+        private void UpdateJob()
+        {
+            this.QueueMessage("Starting Update Check");
+
+            lock (this.stateLock)
+            {
+                this.AppUpdateCheckXML();
+            }
+
+            this.QueueMessage("Finished Update Check");
+
+            this.Invoke(new MethodInvoker(this.EnableButton));
+        }
+
+        private void EnableButton()
+        {
+            this.updateProcessesMenuItem.Enabled = true;
+        }
+
+        private void UpdateDownloadBegin()
+        {
+            try
+            {
+                Process.Start(this._AppUpdateURL);
+            }
+            catch (Exception ex)
+            { Logging.Log(ex); }  
+        }
+
+        private void AppUpdateCheckXML()
+        {
+            XmlDocument xDoc = new XmlDocument();
+
+            try
+            { xDoc.Load("http://processhacker.sourceforge.net/AppUpdate.xml"); }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+                return;
+            }
+
+            XmlNodeList items = xDoc.SelectNodes("//update");
+            foreach (XmlNode xn in items)
+            {
+                if (DateTime.Parse(xn["released"].InnerText) > this.AssemblyBuildDate() & new Version(xn["version"].InnerText) > new Version(Application.ProductVersion) & xn["type"].InnerText == "release")
+                {
+                    this.QueueMessage("Found New Release Version: " + xn["version"].InnerText + " - Current Version: " + Application.ProductVersion.ToString());
+
+                    this._AppUpdateVers = xn["version"].InnerText;
+                    this._AppUpdateMSG = xn["description"].InnerText;
+                    this._AppUpdateURL = xn["updateurl"].InnerText;
+                }
+                else if (Properties.Settings.Default.AppUpdateBeta)
+                {
+                    if (DateTime.Parse(xn["released"].InnerText) > this.AssemblyBuildDate() & new Version(xn["version"].InnerText) > new Version(Application.ProductVersion) & xn["type"].InnerText == "beta")
+                    {
+                        this.QueueMessage("Found New Beta Version: " + xn["version"].InnerText + " - Current Version: " + Application.ProductVersion.ToString());
+
+                        this._AppUpdateVers = xn["version"].InnerText;
+                        this._AppUpdateMSG = xn["description"].InnerText;
+                        this._AppUpdateURL = xn["updateurl"].InnerText;
+                    }
+                }
+                else if (Properties.Settings.Default.AppUpdateAlpha)
+                {
+                    if (DateTime.Parse(xn["released"].InnerText) > this.AssemblyBuildDate() & new Version(xn["version"].InnerText) > new Version(Application.ProductVersion) & xn["type"].InnerText == "alpha")
+                    {
+                        this.QueueMessage("Found New Alpha Version: " + xn["version"].InnerText + " - Current Version: " + Application.ProductVersion.ToString());
+
+                        this._AppUpdateVers = xn["version"].InnerText;
+                        this._AppUpdateMSG = xn["description"].InnerText;
+                        this._AppUpdateURL = xn["updateurl"].InnerText;
+                    }
+                }
+            }
+
+            if (this._AppUpdateVers != null & this._AppUpdateMSG != null)
+            {
+                if (OSVersion.HasTaskDialogs)
+                {
+                    TaskDialog td = new TaskDialog();
+                    td.PositionRelativeToWindow = true;
+                    td.Content = "Your Version: " + Application.ProductVersion + Environment.NewLine + "Server Version: " + this._AppUpdateVers + Environment.NewLine + Environment.NewLine + this._AppUpdateMSG;
+                    td.MainInstruction = "Process Hacker Update Available";
+                    td.WindowTitle = "Update Available!";
+                    td.MainIcon = TaskDialogIcon.SecurityWarning;
+                    td.Buttons = new TaskDialogButton[]
+                    {
+                        new TaskDialogButton((int)DialogResult.Yes, "Yes, Begin Downloading Update"),
+                        new TaskDialogButton((int)DialogResult.No, "No, I will Update Later"),
+                    };
+
+                    DialogResult dr = (DialogResult)td.Show(IWin32ForegroundWindow.Instance);
+                    if (dr == DialogResult.Yes)
+                    { 
+                        this.Invoke(new MethodInvoker(this.UpdateDownloadBegin));
+                    }
+                }
+                else 
+                {
+                    DialogResult dr = MessageBox.Show(IWin32ForegroundWindow.Instance, "Your Version: " + Application.ProductVersion + Environment.NewLine + "Server Version: " + this._AppUpdateVers + Environment.NewLine + Environment.NewLine + this._AppUpdateMSG + Environment.NewLine + Environment.NewLine + "Do you want to download the update now?", "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                    if (dr == DialogResult.Yes)
+                    {
+                        this.Invoke(new MethodInvoker(this.UpdateDownloadBegin));
+                    }
+                }
+            }
+            else
+            {
+                this.QueueMessage("No Updates Available!");
+
+                if (OSVersion.HasTaskDialogs)
+                {
+                    TaskDialog td = new TaskDialog();
+                    td.PositionRelativeToWindow = true;
+                    td.Content = "Your Version: " + Application.ProductVersion + Environment.NewLine + Environment.NewLine + "Server Version: " + this._AppUpdateVers;
+                    td.MainInstruction = "Process Hacker is Update2Date";
+                    td.WindowTitle = "No Updates Available!";
+                    td.MainIcon = TaskDialogIcon.SecuritySuccess;
+                    td.CommonButtons = TaskDialogCommonButtons.Ok;
+                    td.Show(IWin32ForegroundWindow.Instance);
+                }    
+                else
+                {
+                    MessageBox.Show(IWin32ForegroundWindow.Instance, "Process Hacker is Update2Date", "No Updates Available!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private DateTime AssemblyBuildDate()
+        {
+            const int PeHeaderOffset = 60;
+            const int LinkerTimestampOffset = 8;
+
+            byte[] b = new byte[2048];
+            System.IO.Stream s = default(System.IO.Stream);
+            try
+            {
+                s = new System.IO.FileStream(System.Reflection.Assembly.GetExecutingAssembly().Location, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                s.Read(b, 0, 2048);
+            }
+            finally
+            {
+                if ((s != null))
+                    s.Close();
+            }
+
+            int i = BitConverter.ToInt32(b, PeHeaderOffset);
+
+            int SecondsSince1970 = BitConverter.ToInt32(b, i + LinkerTimestampOffset);
+            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
+            dt = dt.AddSeconds(SecondsSince1970);
+            dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
+            return dt;
+
+        }
+
+        #endregion
+    
     }
 }
