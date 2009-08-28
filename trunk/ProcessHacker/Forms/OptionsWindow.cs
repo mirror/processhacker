@@ -337,6 +337,19 @@ namespace ProcessHacker
             }
             catch
             { }
+
+            if (Properties.Settings.Default.AppUpdateStable)
+            {
+                this.UpdateStableRadioBtn.Checked = true;
+            }
+            else if (Properties.Settings.Default.AppUpdateBeta )
+            {
+                this.UpdateBetaRadioBtn.Checked = true;
+            }
+            else if (Properties.Settings.Default.AppUpdateAlpha )
+            {
+                this.UpdateAlphaRadioBtn.Checked = true;
+            }
         }
 
         private void SaveSettings()
@@ -386,6 +399,25 @@ namespace ProcessHacker
             Properties.Settings.Default.DbgHelpPath = textDbghelpPath.Text;
             Properties.Settings.Default.DbgHelpSearchPath = textSearchPath.Text;
             Properties.Settings.Default.DbgHelpUndecorate = checkUndecorate.Checked;
+
+            if (this.UpdateStableRadioBtn.Checked)
+            {
+                Properties.Settings.Default.AppUpdateStable = true;
+                Properties.Settings.Default.AppUpdateBeta = false;
+                Properties.Settings.Default.AppUpdateAlpha = false;
+            }
+            else if (this.UpdateBetaRadioBtn.Checked)
+            {
+                Properties.Settings.Default.AppUpdateStable = false;
+                Properties.Settings.Default.AppUpdateBeta = true;
+                Properties.Settings.Default.AppUpdateAlpha = false;
+            }
+            else if (this.UpdateAlphaRadioBtn.Checked)
+            {
+                Properties.Settings.Default.AppUpdateStable = false;
+                Properties.Settings.Default.AppUpdateBeta = false;
+                Properties.Settings.Default.AppUpdateAlpha = true;
+            }
 
             Properties.Settings.Default.Save();
 
@@ -467,7 +499,7 @@ namespace ProcessHacker
         {
             this.SaveSettings();
 
-            if (!_dontApply)
+            if (!this._dontApply)
                 this.ApplySettings();
 
             this.Close();
@@ -553,8 +585,8 @@ namespace ProcessHacker
         {
             this.SaveSettings();
             this.ApplySettings();
-            buttonApply.Enabled = false;
-            buttonOK.Select();
+            this.buttonApply.Enabled = false;
+            this.buttonOK.Select();
         }
     }
 }

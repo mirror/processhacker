@@ -99,6 +99,9 @@
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
+            this.UpdateStableRadioBtn = new System.Windows.Forms.RadioButton();
+            this.UpdateBetaRadioBtn = new System.Windows.Forms.RadioButton();
+            this.UpdateAlphaRadioBtn = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -227,6 +230,9 @@
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.UpdateAlphaRadioBtn);
+            this.tabGeneral.Controls.Add(this.UpdateBetaRadioBtn);
+            this.tabGeneral.Controls.Add(this.UpdateStableRadioBtn);
             this.tabGeneral.Controls.Add(this.checkFloatChildWindows);
             this.tabGeneral.Controls.Add(this.checkScrollDownProcessTree);
             this.tabGeneral.Controls.Add(this.checkAllowOnlyOneInstance);
@@ -988,6 +994,38 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
+            // UpdateStableRadioBtn
+            // 
+            this.UpdateStableRadioBtn.AutoSize = true;
+            this.UpdateStableRadioBtn.Checked = true;
+            this.UpdateStableRadioBtn.Location = new System.Drawing.Point(168, 261);
+            this.UpdateStableRadioBtn.Name = "UpdateStableRadioBtn";
+            this.UpdateStableRadioBtn.Size = new System.Drawing.Size(102, 17);
+            this.UpdateStableRadioBtn.TabIndex = 18;
+            this.UpdateStableRadioBtn.TabStop = true;
+            this.UpdateStableRadioBtn.Text = "Stable Releases";
+            this.UpdateStableRadioBtn.UseVisualStyleBackColor = true;
+            // 
+            // UpdateBetaRadioBtn
+            // 
+            this.UpdateBetaRadioBtn.AutoSize = true;
+            this.UpdateBetaRadioBtn.Location = new System.Drawing.Point(276, 261);
+            this.UpdateBetaRadioBtn.Name = "UpdateBetaRadioBtn";
+            this.UpdateBetaRadioBtn.Size = new System.Drawing.Size(94, 17);
+            this.UpdateBetaRadioBtn.TabIndex = 19;
+            this.UpdateBetaRadioBtn.Text = "Beta Releases";
+            this.UpdateBetaRadioBtn.UseVisualStyleBackColor = true;
+            // 
+            // UpdateAlphaRadioBtn
+            // 
+            this.UpdateAlphaRadioBtn.AutoSize = true;
+            this.UpdateAlphaRadioBtn.Location = new System.Drawing.Point(376, 261);
+            this.UpdateAlphaRadioBtn.Name = "UpdateAlphaRadioBtn";
+            this.UpdateAlphaRadioBtn.Size = new System.Drawing.Size(99, 17);
+            this.UpdateAlphaRadioBtn.TabIndex = 20;
+            this.UpdateAlphaRadioBtn.Text = "Alpha Releases";
+            this.UpdateAlphaRadioBtn.UseVisualStyleBackColor = true;
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
@@ -1100,5 +1138,8 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.CheckBox checkScrollDownProcessTree;
         private System.Windows.Forms.CheckBox checkFloatChildWindows;
+        private System.Windows.Forms.RadioButton UpdateAlphaRadioBtn;
+        private System.Windows.Forms.RadioButton UpdateBetaRadioBtn;
+        private System.Windows.Forms.RadioButton UpdateStableRadioBtn;
     }
 }
