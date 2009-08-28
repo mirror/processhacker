@@ -410,7 +410,6 @@
     <Compile Include="Components\TargetWindowButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Common\IWin32ForegroundWindow.cs" />
     <Compile Include="Components\TimerProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -478,6 +477,7 @@
       <DependentUpon>SessionInformationWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Program\Settings.cs" />
+    <Compile Include="Program\Updater.cs" />
     <Compile Include="UI\Actions\SessionActions.cs" />
     <Compile Include="UI\GenericViewMenu.cs" />
     <Compile Include="UI\Icons\CommitHistoryIcon.cs" />

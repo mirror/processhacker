@@ -7,13 +7,13 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyTitle("XMLUpdateEditor")]
-[assembly: AssemblyDescription("XMLUpdateEditor")]
+[assembly: AssemblyTitle("XML Update Editor")]
+[assembly: AssemblyDescription("XML Update Editor")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ProcessHacker")]
-[assembly: AssemblyProduct("XMLUpdateEditor")]
-[assembly: AssemblyCopyright("dmex ProcessHacker")]
-[assembly: AssemblyTrademark("ProcessHacker")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Process Hacker")]
+[assembly: AssemblyCopyright("Licensed under the GNU GPL, v3.")]
+[assembly: AssemblyTrademark("Process Hacker")]
 [assembly: AssemblyCulture("")]		
 
 //

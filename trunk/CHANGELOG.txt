@@ -2,6 +2,7 @@ Process Hacker
 
 1.6
  * NEW/IMPROVED:
+   * Update system
  * FIXED:
    * Critical KProcessHacker denial-of-service security issues
    * Incorrect menu items for System threads

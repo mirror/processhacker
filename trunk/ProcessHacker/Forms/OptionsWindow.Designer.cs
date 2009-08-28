@@ -99,9 +99,11 @@
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.UpdateStableRadioBtn = new System.Windows.Forms.RadioButton();
-            this.UpdateBetaRadioBtn = new System.Windows.Forms.RadioButton();
-            this.UpdateAlphaRadioBtn = new System.Windows.Forms.RadioButton();
+            this.tabUpdates = new System.Windows.Forms.TabPage();
+            this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
+            this.optUpdateBeta = new System.Windows.Forms.RadioButton();
+            this.optUpdateStable = new System.Windows.Forms.RadioButton();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -113,6 +115,7 @@
             this.tabPlotting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textStep)).BeginInit();
             this.tabSymbols.SuspendLayout();
+            this.tabUpdates.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -222,6 +225,7 @@
             this.tabControl.Controls.Add(this.tabHighlighting);
             this.tabControl.Controls.Add(this.tabPlotting);
             this.tabControl.Controls.Add(this.tabSymbols);
+            this.tabControl.Controls.Add(this.tabUpdates);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -230,9 +234,6 @@
             // 
             // tabGeneral
             // 
-            this.tabGeneral.Controls.Add(this.UpdateAlphaRadioBtn);
-            this.tabGeneral.Controls.Add(this.UpdateBetaRadioBtn);
-            this.tabGeneral.Controls.Add(this.UpdateStableRadioBtn);
             this.tabGeneral.Controls.Add(this.checkFloatChildWindows);
             this.tabGeneral.Controls.Add(this.checkScrollDownProcessTree);
             this.tabGeneral.Controls.Add(this.checkAllowOnlyOneInstance);
@@ -994,37 +995,60 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
-            // UpdateStableRadioBtn
+            // tabUpdates
             // 
-            this.UpdateStableRadioBtn.AutoSize = true;
-            this.UpdateStableRadioBtn.Checked = true;
-            this.UpdateStableRadioBtn.Location = new System.Drawing.Point(168, 261);
-            this.UpdateStableRadioBtn.Name = "UpdateStableRadioBtn";
-            this.UpdateStableRadioBtn.Size = new System.Drawing.Size(102, 17);
-            this.UpdateStableRadioBtn.TabIndex = 18;
-            this.UpdateStableRadioBtn.TabStop = true;
-            this.UpdateStableRadioBtn.Text = "Stable Releases";
-            this.UpdateStableRadioBtn.UseVisualStyleBackColor = true;
+            this.tabUpdates.Controls.Add(this.label5);
+            this.tabUpdates.Controls.Add(this.optUpdateAlpha);
+            this.tabUpdates.Controls.Add(this.optUpdateBeta);
+            this.tabUpdates.Controls.Add(this.optUpdateStable);
+            this.tabUpdates.Location = new System.Drawing.Point(4, 22);
+            this.tabUpdates.Name = "tabUpdates";
+            this.tabUpdates.Padding = new System.Windows.Forms.Padding(3);
+            this.tabUpdates.Size = new System.Drawing.Size(481, 289);
+            this.tabUpdates.TabIndex = 5;
+            this.tabUpdates.Text = "Updates";
+            this.tabUpdates.UseVisualStyleBackColor = true;
             // 
-            // UpdateBetaRadioBtn
+            // optUpdateAlpha
             // 
-            this.UpdateBetaRadioBtn.AutoSize = true;
-            this.UpdateBetaRadioBtn.Location = new System.Drawing.Point(276, 261);
-            this.UpdateBetaRadioBtn.Name = "UpdateBetaRadioBtn";
-            this.UpdateBetaRadioBtn.Size = new System.Drawing.Size(94, 17);
-            this.UpdateBetaRadioBtn.TabIndex = 19;
-            this.UpdateBetaRadioBtn.Text = "Beta Releases";
-            this.UpdateBetaRadioBtn.UseVisualStyleBackColor = true;
+            this.optUpdateAlpha.AutoSize = true;
+            this.optUpdateAlpha.Location = new System.Drawing.Point(68, 52);
+            this.optUpdateAlpha.Name = "optUpdateAlpha";
+            this.optUpdateAlpha.Size = new System.Drawing.Size(99, 17);
+            this.optUpdateAlpha.TabIndex = 23;
+            this.optUpdateAlpha.Text = "Alpha Releases";
+            this.optUpdateAlpha.UseVisualStyleBackColor = true;
             // 
-            // UpdateAlphaRadioBtn
+            // optUpdateBeta
             // 
-            this.UpdateAlphaRadioBtn.AutoSize = true;
-            this.UpdateAlphaRadioBtn.Location = new System.Drawing.Point(376, 261);
-            this.UpdateAlphaRadioBtn.Name = "UpdateAlphaRadioBtn";
-            this.UpdateAlphaRadioBtn.Size = new System.Drawing.Size(99, 17);
-            this.UpdateAlphaRadioBtn.TabIndex = 20;
-            this.UpdateAlphaRadioBtn.Text = "Alpha Releases";
-            this.UpdateAlphaRadioBtn.UseVisualStyleBackColor = true;
+            this.optUpdateBeta.AutoSize = true;
+            this.optUpdateBeta.Location = new System.Drawing.Point(68, 29);
+            this.optUpdateBeta.Name = "optUpdateBeta";
+            this.optUpdateBeta.Size = new System.Drawing.Size(94, 17);
+            this.optUpdateBeta.TabIndex = 22;
+            this.optUpdateBeta.Text = "Beta Releases";
+            this.optUpdateBeta.UseVisualStyleBackColor = true;
+            // 
+            // optUpdateStable
+            // 
+            this.optUpdateStable.AutoSize = true;
+            this.optUpdateStable.Checked = true;
+            this.optUpdateStable.Location = new System.Drawing.Point(68, 6);
+            this.optUpdateStable.Name = "optUpdateStable";
+            this.optUpdateStable.Size = new System.Drawing.Size(102, 17);
+            this.optUpdateStable.TabIndex = 21;
+            this.optUpdateStable.TabStop = true;
+            this.optUpdateStable.Text = "Stable Releases";
+            this.optUpdateStable.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 8);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(56, 13);
+            this.label5.TabIndex = 24;
+            this.label5.Text = "Check for:";
             // 
             // OptionsWindow
             // 
@@ -1062,6 +1086,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.textStep)).EndInit();
             this.tabSymbols.ResumeLayout(false);
             this.tabSymbols.PerformLayout();
+            this.tabUpdates.ResumeLayout(false);
+            this.tabUpdates.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1138,8 +1164,10 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.CheckBox checkScrollDownProcessTree;
         private System.Windows.Forms.CheckBox checkFloatChildWindows;
-        private System.Windows.Forms.RadioButton UpdateAlphaRadioBtn;
-        private System.Windows.Forms.RadioButton UpdateBetaRadioBtn;
-        private System.Windows.Forms.RadioButton UpdateStableRadioBtn;
+        private System.Windows.Forms.TabPage tabUpdates;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.RadioButton optUpdateAlpha;
+        private System.Windows.Forms.RadioButton optUpdateBeta;
+        private System.Windows.Forms.RadioButton optUpdateStable;
     }
 }

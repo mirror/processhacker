@@ -2,6 +2,7 @@
  * Process Hacker - 
  *   options window
  * 
+ * Copyright (C) 2009 dmex
  * Copyright (C) 2008 Dean
  * Copyright (C) 2008-2009 wj32
  * 
@@ -340,15 +341,15 @@ namespace ProcessHacker
 
             if (Properties.Settings.Default.AppUpdateStable)
             {
-                this.UpdateStableRadioBtn.Checked = true;
+                optUpdateStable.Checked = true;
             }
-            else if (Properties.Settings.Default.AppUpdateBeta )
+            else if (Properties.Settings.Default.AppUpdateBeta)
             {
-                this.UpdateBetaRadioBtn.Checked = true;
+                optUpdateBeta.Checked = true;
             }
-            else if (Properties.Settings.Default.AppUpdateAlpha )
+            else if (Properties.Settings.Default.AppUpdateAlpha)
             {
-                this.UpdateAlphaRadioBtn.Checked = true;
+                optUpdateAlpha.Checked = true;
             }
         }
 
@@ -400,19 +401,19 @@ namespace ProcessHacker
             Properties.Settings.Default.DbgHelpSearchPath = textSearchPath.Text;
             Properties.Settings.Default.DbgHelpUndecorate = checkUndecorate.Checked;
 
-            if (this.UpdateStableRadioBtn.Checked)
+            if (optUpdateStable.Checked)
             {
                 Properties.Settings.Default.AppUpdateStable = true;
                 Properties.Settings.Default.AppUpdateBeta = false;
                 Properties.Settings.Default.AppUpdateAlpha = false;
             }
-            else if (this.UpdateBetaRadioBtn.Checked)
+            else if (optUpdateBeta.Checked)
             {
                 Properties.Settings.Default.AppUpdateStable = false;
                 Properties.Settings.Default.AppUpdateBeta = true;
                 Properties.Settings.Default.AppUpdateAlpha = false;
             }
-            else if (this.UpdateAlphaRadioBtn.Checked)
+            else if (optUpdateAlpha.Checked)
             {
                 Properties.Settings.Default.AppUpdateStable = false;
                 Properties.Settings.Default.AppUpdateBeta = false;

@@ -32,6 +32,7 @@ Hacker > Help).
 
 Process Hacker is brought to you by the Process Hacker team:
  * wj32 (Project Manager)
+ * dmex (Developer)
  * XhmikosR (Installer Developer, Tester)
 Inactive:
  * Dean (Developer)
