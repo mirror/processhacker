@@ -128,7 +128,7 @@ namespace ProcessHacker.Components
         DegragIcon = 111,
         ShowDesktopIcon = 110,
         ExclamationMarkShield = 107,
-        GreenTickShild = 106,
+        GreenTickShield = 106,
         RedXShield = 105,
         QuestionIcon = 104,
         MonitorIcon = 101,

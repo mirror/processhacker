@@ -4,6 +4,7 @@ using System.Xml;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
@@ -97,12 +98,12 @@ namespace ProcessHacker
                         new TaskDialogButton((int)DialogResult.No, "Cancel"),
                     };
 
-                    dialogResult = (DialogResult)td.Show(Form.ActiveForm);
+                    dialogResult = (DialogResult)td.Show(Program.HackerWindowHandle);
                 }
                 else
                 {
                     dialogResult = MessageBox.Show(
-                        Form.ActiveForm,
+                        new WindowFromHandle(Program.HackerWindowHandle),
                         "Your Version: " + Application.ProductVersion + Environment.NewLine +
                         "Server Version: " + appUpdateVersion + Environment.NewLine + Environment.NewLine +
                         appUpdateMessage + Environment.NewLine + Environment.NewLine +
@@ -126,12 +127,15 @@ namespace ProcessHacker
                     td.WindowTitle = "No Updates Available";
                     td.MainIcon = TaskDialogIcon.SecuritySuccess;
                     td.CommonButtons = TaskDialogCommonButtons.Ok;
-                    td.Show(Form.ActiveForm);
+                    td.Show(Program.HackerWindowHandle);
                 }
                 else
                 {
-                    MessageBox.Show(Form.ActiveForm, "Process Hacker is up-to-date", 
-                        "No Updates Available", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(
+                        new WindowFromHandle(Program.HackerWindowHandle),
+                        "Process Hacker is up-to-date", 
+                        "No Updates Available", MessageBoxButtons.OK, MessageBoxIcon.Information
+                        );
                 }
             }
         }
