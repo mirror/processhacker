@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+ * Process Hacker - 
+ *   ProcessHacker Updater
+ * 
+ * Copyright (C) 2009 dmex
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Windows.Forms;
 using System.Xml;
 using ProcessHacker.Common;
@@ -8,6 +30,9 @@ using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// Application Updater Class for Process Hacker
+    /// </summary>
     public static class Updater
     {
         public static void Update()
@@ -24,20 +49,24 @@ namespace ProcessHacker
                 return;
             }
 
-            XmlNodeList items = xDoc.SelectNodes("//update");
             string appUpdateMessage = null;
             string appUpdateUrl = null;
             string appUpdateVersion = null;
 
+            int Release = 7;
+            int Beta = 4;
+            int Alpha = 5;
+
+            XmlNodeList items = xDoc.SelectNodes("//update");
             foreach (XmlNode xn in items)
             {
-                if (
-                    DateTime.Parse(xn["released"].InnerText) > GetAssemblyBuildDate() &&
+                if (DateTime.Parse(xn["released"].InnerText) > GetAssemblyBuildDate() &&
                     new Version(xn["version"].InnerText) > new Version(Application.ProductVersion) &&
-                    xn["type"].InnerText == "release"
-                    )
+                    xn["type"].InnerText.Length == Release)
                 {
-                    Program.HackerWindow.QueueMessage("Found New Release Version: " + xn["version"].InnerText +
+                    Program.HackerWindow.QueueMessage(
+                        "Found New " + xn["type"].InnerText + 
+                        " Version: " + xn["version"].InnerText +
                         " - Current Version: " + Application.ProductVersion.ToString());
 
                     appUpdateVersion = xn["version"].InnerText;
@@ -46,13 +75,14 @@ namespace ProcessHacker
                 }
                 else if (Properties.Settings.Default.AppUpdateBeta)
                 {
-                    if (
-                        DateTime.Parse(xn["released"].InnerText) > GetAssemblyBuildDate() &&
+                    if (DateTime.Parse(xn["released"].InnerText) > GetAssemblyBuildDate() &&
                         new Version(xn["version"].InnerText) > new Version(Application.ProductVersion) &&
-                        xn["type"].InnerText == "release" || xn["type"].InnerText == "beta"
-                        )
+                        xn["type"].InnerText.Length == Release || 
+                        xn["type"].InnerText.Length == Beta) 
                     {
-                        Program.HackerWindow.QueueMessage("Found New Beta Version: " + xn["version"].InnerText +
+                        Program.HackerWindow.QueueMessage(
+                            "Found New " + xn["type"].InnerText + 
+                            " Version: " + xn["version"].InnerText +
                             " - Current Version: " + Application.ProductVersion.ToString());
 
                         appUpdateVersion = xn["version"].InnerText;
@@ -62,13 +92,16 @@ namespace ProcessHacker
                 }
                 else if (Properties.Settings.Default.AppUpdateAlpha)
                 {
-                    if (
-                        DateTime.Parse(xn["released"].InnerText) > GetAssemblyBuildDate() &&
+                    if (DateTime.Parse(xn["released"].InnerText) > GetAssemblyBuildDate() &&
                         new Version(xn["version"].InnerText) > new Version(Application.ProductVersion) &&
-                        xn["type"].InnerText == "release" || xn["type"].InnerText == "beta" || xn["type"].InnerText == "alpha"
-                        )
+                        xn["type"].InnerText.Length == Release || 
+                        xn["type"].InnerText.Length == Beta || 
+                        xn["type"].InnerText.Length == Alpha)
                     {
-                        Program.HackerWindow.QueueMessage("Found New Alpha Version: " + xn["version"].InnerText + " - Current Version: " + Application.ProductVersion.ToString());
+                        Program.HackerWindow.QueueMessage(
+                            "Found New " + xn["type"].InnerText + 
+                            " Version: " + xn["version"].InnerText + 
+                            " - Current Version: " + Application.ProductVersion.ToString());
 
                         appUpdateVersion = xn["version"].InnerText;
                         appUpdateMessage = xn["description"].InnerText;
@@ -84,11 +117,9 @@ namespace ProcessHacker
                 if (OSVersion.HasTaskDialogs)
                 {
                     TaskDialog td = new TaskDialog();
-
                     td.PositionRelativeToWindow = true;
                     td.Content = "Your Version: " + Application.ProductVersion + Environment.NewLine +
-                        "Server Version: " + appUpdateVersion + Environment.NewLine + Environment.NewLine +
-                        appUpdateMessage;
+                        "Server Version: " + appUpdateVersion + Environment.NewLine + Environment.NewLine + appUpdateMessage;
                     td.MainInstruction = "Process Hacker Update Available";
                     td.WindowTitle = "Update Available";
                     td.MainIcon = TaskDialogIcon.SecurityWarning;
@@ -140,32 +171,42 @@ namespace ProcessHacker
             }
         }
 
+        private static DateTime? AssemblyBuildDate = null;
         private static DateTime GetAssemblyBuildDate()
         {
-            const int PeHeaderOffset = 60;
-            const int LinkerTimestampOffset = 8;
-
-            byte[] b = new byte[2048];
-            System.IO.Stream s = default(System.IO.Stream);
-            try
+            if (AssemblyBuildDate != null) //Performance fix - Prevent reading current Assembly multiple times
             {
-                s = new System.IO.FileStream(System.Reflection.Assembly.GetExecutingAssembly().Location, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-                s.Read(b, 0, 2048);
+                return (DateTime)AssemblyBuildDate;              
             }
-            finally
+            else
             {
-                if ((s != null))
-                    s.Close();
+                const int PeHeaderOffset = 60;
+                const int LinkerTimestampOffset = 8;
+
+                byte[] b = new byte[2048];
+                System.IO.Stream s = default(System.IO.Stream);
+                try
+                {
+                    s = new System.IO.FileStream(System.Reflection.Assembly.GetExecutingAssembly().Location, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                    s.Read(b, 0, 2048);
+                }
+                finally
+                {
+                    if ((s != null))
+                        s.Close();
+                }
+
+                int i = BitConverter.ToInt32(b, PeHeaderOffset);
+                int SecondsSince1970 = BitConverter.ToInt32(b, i + LinkerTimestampOffset);
+                DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
+                dt = dt.AddSeconds(SecondsSince1970);
+                dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
+
+                AssemblyBuildDate = dt;
+
+                return (DateTime)AssemblyBuildDate;
             }
-
-            int i = BitConverter.ToInt32(b, PeHeaderOffset);
-
-            int SecondsSince1970 = BitConverter.ToInt32(b, i + LinkerTimestampOffset);
-            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
-            dt = dt.AddSeconds(SecondsSince1970);
-            dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
-            return dt;
-
         }
+
     }
 }
