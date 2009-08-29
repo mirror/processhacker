@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Text;
 using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -68,6 +67,9 @@ namespace ProcessHacker.Native
         private static string _kernelFileName = null;
         private static KernelModule _kernelModule;
 
+        /// <summary>
+        /// Gets the number of active processors.
+        /// </summary>
         public static int NumberOfProcessors
         {
             get
@@ -79,6 +81,9 @@ namespace ProcessHacker.Native
             }
         }
 
+        /// <summary>
+        /// Gets the page size.
+        /// </summary>
         public static int PageSize
         {
             get
@@ -90,6 +95,9 @@ namespace ProcessHacker.Native
             }
         }
 
+        /// <summary>
+        /// Gets the base address of the kernel.
+        /// </summary>
         public static IntPtr KernelBase
         {
             get
@@ -101,6 +109,9 @@ namespace ProcessHacker.Native
             }
         }
 
+        /// <summary>
+        /// Gets the file name of the kernel.
+        /// </summary>
         public static string KernelFileName
         {
             get
@@ -112,11 +123,21 @@ namespace ProcessHacker.Native
             }
         }
 
+        /// <summary>
+        /// Gets the number of pages needed to store the 
+        /// specified number of bytes.
+        /// </summary>
+        /// <param name="bytes">The number of bytes.</param>
+        /// <returns>The number of pages needed.</returns>
         public static int BytesToPages(int bytes)
         {
             return (bytes - 1) / PageSize + 1;
         }
 
+        /// <summary>
+        /// Enumerates the modules loaded by the kernel.
+        /// </summary>
+        /// <param name="enumCallback">A callback for the enumeration.</param>
         public static void EnumKernelModules(EnumKernelModulesDelegate enumCallback)
         {
             NtStatus status;
@@ -165,6 +186,10 @@ namespace ProcessHacker.Native
             }
         }
 
+        /// <summary>
+        /// Gets basic information about the system.
+        /// </summary>
+        /// <returns>A structure containing basic information.</returns>
         public static SystemBasicInformation GetBasicInformation()
         {
             NtStatus status;
@@ -266,6 +291,10 @@ namespace ProcessHacker.Native
             return kernelFileName;
         }
 
+        /// <summary>
+        /// Gets the modules loaded by the kernel.
+        /// </summary>
+        /// <returns>A collection of module information structures.</returns>
         public static KernelModule[] GetKernelModules()
         {
             List<KernelModule> kernelModules = new List<KernelModule>();
@@ -279,6 +308,10 @@ namespace ProcessHacker.Native
             return kernelModules.ToArray();
         }
 
+        /// <summary>
+        /// Gets the network connections currently active.
+        /// </summary>
+        /// <returns>A dictionary of network connections.</returns>
         public static Dictionary<int, List<NetworkConnection>> GetNetworkConnections()
         {
             var retDict = new Dictionary<int, List<NetworkConnection>>();
@@ -341,6 +374,10 @@ namespace ProcessHacker.Native
             return retDict;
         }
 
+        /// <summary>
+        /// Gets the page files currently active.
+        /// </summary>
+        /// <returns>A collection of page file information structures.</returns>
         public static SystemPagefile[] GetPagefiles()
         {
             int retLength;
@@ -390,6 +427,10 @@ namespace ProcessHacker.Native
             }
         }
 
+        /// <summary>
+        /// Gets a dictionary containing the currently running processes.
+        /// </summary>
+        /// <returns>A dictionary, indexed by process ID.</returns>
         public static Dictionary<int, SystemProcess> GetProcesses()
         {
             return GetProcesses(false);
@@ -398,6 +439,7 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Gets a dictionary containing the currently running processes.
         /// </summary>
+        /// <param name="getThreads">Whether to get thread information.</param>
         /// <returns>A dictionary, indexed by process ID.</returns>
         public static Dictionary<int, SystemProcess> GetProcesses(bool getThreads)
         {
@@ -466,6 +508,11 @@ namespace ProcessHacker.Native
             return returnProcesses;
         }
 
+        /// <summary>
+        /// Gets a dictionary containing the threads owned by the specified process.
+        /// </summary>
+        /// <param name="pid">A process ID.</param>
+        /// <returns>A dictionary, indexed by thread ID.</returns>
         public static Dictionary<int, SystemThreadInformation> GetProcessThreads(int pid)
         {
             int retLength;
@@ -525,6 +572,10 @@ namespace ProcessHacker.Native
             return null;
         }
 
+        /// <summary>
+        /// Gets a dictionary containing the services on the system.
+        /// </summary>
+        /// <returns>A dictionary, indexed by service name.</returns>
         public static Dictionary<string, EnumServiceStatusProcess> GetServices()
         {
             using (ServiceManagerHandle manager =
@@ -567,6 +618,10 @@ namespace ProcessHacker.Native
             }
         }
 
+        /// <summary>
+        /// Gets the 64-bit tick count.
+        /// </summary>
+        /// <returns>A 64-bit tick count.</returns>
         public static long GetTickCount()
         {
             // Read the tick count multiplier.
@@ -581,6 +636,10 @@ namespace ProcessHacker.Native
                 (((long)tickCount.HighPart * tickCountMultiplier) << (int)8);
         }
 
+        /// <summary>
+        /// Gets information about the system time.
+        /// </summary>
+        /// <returns>A time of day structure.</returns>
         public static SystemTimeOfDayInformation GetTimeOfDay()
         {
             NtStatus status;
@@ -600,6 +659,10 @@ namespace ProcessHacker.Native
             return timeOfDay;
         }
 
+        /// <summary>
+        /// Gets the uptime of the system.
+        /// </summary>
+        /// <returns>A time span describing the time elapsed since the system was booted.</returns>
         public static TimeSpan GetUptime()
         {
             var timeOfDay = GetTimeOfDay();
@@ -607,6 +670,10 @@ namespace ProcessHacker.Native
             return new TimeSpan(timeOfDay.CurrentTime - timeOfDay.BootTime);
         }
 
+        /// <summary>
+        /// Loads a driver.
+        /// </summary>
+        /// <param name="serviceName">The service name of the driver.</param>
         public static void LoadDriver(string serviceName)
         {
             var str = new UnicodeString(
@@ -625,6 +692,11 @@ namespace ProcessHacker.Native
             }
         }
 
+        /// <summary>
+        /// Reads a KSYSTEM_TIME value atomically.
+        /// </summary>
+        /// <param name="time">A pointer to a KSYSTEM_TIME value.</param>
+        /// <returns>A 64-bit time value.</returns>
         private static LargeInteger QueryKSystemTime(IntPtr time)
         {
             unsafe
@@ -633,9 +705,18 @@ namespace ProcessHacker.Native
             }
         }
 
+        /// <summary>
+        /// Reads a KSYSTEM_TIME value atomically.
+        /// </summary>
+        /// <param name="time">A pointer to a KSYSTEM_TIME value.</param>
+        /// <returns>A 64-bit time value.</returns>
         private unsafe static LargeInteger QueryKSystemTime(KSystemTime* time)
         {
             LargeInteger localTime = new LargeInteger();
+
+            // If we're on 32-bit, we need to use a special 
+            // method to read the time atomically. On 64-bit, 
+            // we can simply read the time.
 
             if (IntPtr.Size == 4)
             {
@@ -646,6 +727,8 @@ namespace ProcessHacker.Native
                     localTime.HighPart = time->High1Time;
                     localTime.LowPart = time->LowPart;
 
+                    // Check if someone started changing the time 
+                    // while we were reading the two values.
                     if (localTime.HighPart == time->High2Time)
                         break;
 
@@ -660,6 +743,10 @@ namespace ProcessHacker.Native
             return localTime;
         }
 
+        /// <summary>
+        /// Unloads a driver.
+        /// </summary>
+        /// <param name="serviceName">The service name of the driver.</param>
         public static void UnloadDriver(string serviceName)
         {
             var str = new UnicodeString(
