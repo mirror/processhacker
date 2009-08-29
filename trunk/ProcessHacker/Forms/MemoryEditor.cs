@@ -107,7 +107,7 @@ namespace ProcessHacker
 
         private void MemoryEditor_Load(object sender, EventArgs e)
         {
-            Program.UpdateWindow(this);
+            Program.UpdateWindowMenu(windowMenuItem, this);
 
             this.Size = Properties.Settings.Default.MemoryWindowSize;
             this.SetPhParent(false);
@@ -144,16 +144,6 @@ namespace ProcessHacker
                 catch
                 { }
             }
-        }
-
-        public MenuItem WindowMenuItem
-        {
-            get { return windowMenuItem; }
-        }
-
-        public wyDay.Controls.VistaMenu VistaMenu
-        {
-            get { return vistaMenu; }
         }
 
         public void Select(long start, long length)

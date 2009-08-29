@@ -108,19 +108,9 @@ namespace ProcessHacker
                 Utils.FitRectangle(new Rectangle(location, this.Size), this).Location;
 
             // Update the Window menu.
-            Program.UpdateWindow(this);
+            Program.UpdateWindowMenu(windowMenuItem, this);
 
             SymbolProviderExtensions.ShowWarning(this, false);
-        }
-
-        public MenuItem WindowMenuItem
-        {
-            get { return windowMenuItem; }
-        }
-
-        public wyDay.Controls.VistaMenu VistaMenu
-        {
-            get { return vistaMenu; }
         }
 
         public ListView ThreadListView

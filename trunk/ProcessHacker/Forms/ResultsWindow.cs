@@ -75,7 +75,7 @@ namespace ProcessHacker
 
         private void ResultsWindow_Load(object sender, EventArgs e)
         {
-            Program.UpdateWindow(this);
+            Program.UpdateWindowMenu(windowMenuItem, this);
 
             listResults.ContextMenu = listResults.GetCopyMenu(listResults_RetrieveVirtualItem);
 
@@ -93,16 +93,6 @@ namespace ProcessHacker
                 Properties.Settings.Default.ResultsWindowSize = this.Size;
 
             Properties.Settings.Default.ResultsListViewColumns = ColumnSettings.SaveSettings(listResults);
-        }
-
-        public MenuItem WindowMenuItem
-        {
-            get { return windowMenuItem; }
-        }
-
-        public wyDay.Controls.VistaMenu VistaMenu
-        {
-            get { return vistaMenu; }
         }
 
         public ListView ResultsList

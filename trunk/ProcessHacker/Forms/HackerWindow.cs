@@ -3122,7 +3122,7 @@ namespace ProcessHacker
 
         private void HackerWindow_Load(object sender, EventArgs e)
         {
-            Program.UpdateWindow(this);
+            Program.UpdateWindowMenu(windowMenuItem, this);
             this.ApplyFont(Properties.Settings.Default.Font);
             this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
         }

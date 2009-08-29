@@ -1165,44 +1165,24 @@ namespace ProcessHacker
             f.Activate();
         }
 
-        public static void UpdateWindow(Form f)
+        public static void UpdateWindowMenu(Menu windowMenuItem, Form f)
         {
-            if (f.InvokeRequired)
-            {
-                f.BeginInvoke(new UpdateWindowAction(UpdateWindow), f);
+            WeakReference<Form> fRef = new WeakReference<Form>(f);
 
-                return;
-            }
+            windowMenuItem.MenuItems.DisposeAndClear();
 
-            MenuItem windowMenuItem = (MenuItem)f.GetType().GetProperty("WindowMenuItem").GetValue(f, null);
-            wyDay.Controls.VistaMenu vistaMenu =
-                (wyDay.Controls.VistaMenu)f.GetType().GetProperty("VistaMenu").GetValue(f, null);
             MenuItem item;
 
-            lock (windowMenuItem)
-            {
-                WeakReference<Form> fRef = new WeakReference<Form>(f);
+            item = new MenuItem("&Always On Top");
+            item.Tag = fRef;
+            item.Click += new EventHandler(windowAlwaysOnTopItemClicked);
+            item.Checked = f.TopMost;
+            windowMenuItem.MenuItems.Add(item);
 
-                foreach (MenuItem menuItem in windowMenuItem.MenuItems)
-                {
-                    vistaMenu.SetImage(menuItem, null);
-                    menuItem.Tag = null;
-                }
-
-                windowMenuItem.MenuItems.DisposeAndClear();
-
-                item = new MenuItem("&Always On Top");
-                item.Tag = fRef;
-                item.Click += new EventHandler(windowAlwaysOnTopItemClicked);
-                item.Checked = f.TopMost;
-                windowMenuItem.MenuItems.Add(item);
-
-                item = new MenuItem("&Close");
-                item.Tag = fRef;
-                item.Click += new EventHandler(windowCloseItemClicked);
-                windowMenuItem.MenuItems.Add(item);
-                vistaMenu.SetImage(item, global::ProcessHacker.Properties.Resources.application_delete);
-            }
+            item = new MenuItem("&Close");
+            item.Tag = fRef;
+            item.Click += new EventHandler(windowCloseItemClicked);
+            windowMenuItem.MenuItems.Add(item);
         }
 
         public static void AddEscapeToClose(this Form f)
@@ -1253,7 +1233,7 @@ namespace ProcessHacker
 
             f.Invoke(new MethodInvoker(delegate { f.TopMost = !f.TopMost; }));
 
-            Program.UpdateWindow(f);
+            UpdateWindowMenu(((MenuItem)sender).Parent, f);
         }
 
         private static void windowCloseItemClicked(object sender, EventArgs e)
