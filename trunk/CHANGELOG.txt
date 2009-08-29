@@ -4,6 +4,8 @@ Process Hacker
  * NEW/IMPROVED:
    * #2845829 - "System uptime"
    * Update system
+   * Two new terminator tests: W1 (send WM_DESTROY messages) and 
+     W2 (send WM_QUIT messages)
  * FIXED:
    * #2820170 - "System.ArgumentOutOfRangeException in network list"
    * #2845427 - "Indicator integer overflow"

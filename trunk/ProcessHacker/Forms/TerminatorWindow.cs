@@ -55,6 +55,8 @@ namespace ProcessHacker
                 this.AddTest("TT1a", "Terminates the process' threads (alternative method)");
             }
             this.AddTest("CH1", "Closes the process' handles");
+            this.AddTest("W1", "Sends the WM_DESTROY message to the process' windows");
+            this.AddTest("W2", "Sends the WM_QUIT message to the process' windows");
             this.AddTest("TJ1", "Assigns the process to a job object and terminates the job");
             this.AddTest("TD1", "Debugs the process and closes the debug object");
             this.AddTest("TP3", "Terminates the process in kernel-mode (if possible)");
@@ -379,6 +381,28 @@ namespace ProcessHacker
                     thandle.DangerousTerminate(NtStatus.Success);
                 }
             }
+        }
+
+        private void W1()
+        {
+            WindowHandle.Enumerate((window) =>
+                {
+                    if (window.GetClientId().ProcessId == _pid)
+                        window.PostMessage(WindowMessage.Destroy, 0, 0);
+
+                    return true;
+                });
+        }
+
+        private void W2()
+        {
+            WindowHandle.Enumerate((window) =>
+            {
+                if (window.GetClientId().ProcessId == _pid)
+                    window.PostMessage(WindowMessage.Quit, 0, 0);
+
+                return true;
+            });
         }
 
         private void buttonRun_Click(object sender, EventArgs e)
