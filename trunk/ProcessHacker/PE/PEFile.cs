@@ -80,7 +80,7 @@ namespace ProcessHacker.PE
 
             byte[] peSig = br.ReadBytes(4);
 
-            if (!Utils.BytesEqual(peSig, PEFile.PESignature))
+            if (!Utils.Equals(peSig, PEFile.PESignature))
                 throw new PEException("Invalid PE signature.");
 
             // read COFF header

@@ -36,6 +36,11 @@ namespace ProcessHacker.Common
     /// </summary>
     public static class Utils
     {
+        public enum Endianness
+        {
+            Little, Big
+        }
+
         #region Constants
 
         public static string[] SizeUnitNames = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
@@ -115,6 +120,19 @@ namespace ProcessHacker.Common
             }
 
             return na;
+        }
+
+        /// <summary>
+        /// Determines whether the specified value is contained 
+        /// within an array.
+        /// </summary>
+        /// <typeparam name="T">The type of the array.</typeparam>
+        /// <param name="array">The array to search.</param>
+        /// <param name="value">The value to search for.</param>
+        /// <returns>True if the array contains the value, otherwise false.</returns>
+        public static bool Contains<T>(this T[] array, T value)
+        {
+            return Array.IndexOf<T>(array, value) != -1;
         }
 
         /// <summary>
@@ -252,7 +270,7 @@ namespace ProcessHacker.Common
         /// <param name="array">The first array.</param>
         /// <param name="other">The second array.</param>
         /// <returns>Whether the two arrays are considered to be equal.</returns>
-        public static bool Equals<T>(T[] array, T[] other)
+        public static bool Equals<T>(this T[] array, T[] other)
         {
             return Equals(array, other, 0);
         }
@@ -265,7 +283,7 @@ namespace ProcessHacker.Common
         /// <param name="other">The second array.</param>
         /// <param name="startIndex">The index from which to begin comparing.</param>
         /// <returns>Whether the two arrays are considered to be equal.</returns>
-        public static bool Equals<T>(T[] array, T[] other, int startIndex)
+        public static bool Equals<T>(this T[] array, T[] other, int startIndex)
         {
             return Equals(array, other, startIndex, array.Length);
         }
@@ -279,7 +297,7 @@ namespace ProcessHacker.Common
         /// <param name="startIndex">The index from which to begin comparing.</param>
         /// <param name="length">The number of elements to compare.</param>
         /// <returns>Whether the two arrays are considered to be equal.</returns>
-        public static bool Equals<T>(T[] array, T[] other, int startIndex, int length)
+        public static bool Equals<T>(this T[] array, T[] other, int startIndex, int length)
         {
             for (int i = startIndex; i < startIndex + length; i++)
                 if (!array[i].Equals(other[i]))
@@ -293,7 +311,7 @@ namespace ProcessHacker.Common
         /// </summary>
         /// <param name="str">The string to escape.</param>
         /// <returns>The escaped string.</returns>
-        public static string EscapeString(string str)
+        public static string Escape(this string str)
         {
             str = str.Replace("\\", "\\\\");
             str = str.Replace("\"", "\\\"");
@@ -392,6 +410,26 @@ namespace ProcessHacker.Common
         public static string FormatAddress(IntPtr address)
         {
             return "0x" + address.ToString("x");
+        }
+
+        public static string FormatFlags(Type e, long value)
+        {
+            string r = "";
+
+            for (int i = 0; i < 32; i++)
+            {
+                long fv = 1 << i;
+
+                if ((value & fv) == fv)
+                {
+                    r += Enum.GetName(e, fv) + ", ";
+                }
+            }
+
+            if (r.EndsWith(", "))
+                r = r.Remove(r.Length - 2, 2);
+
+            return r;
         }
 
         /// <summary>
@@ -596,6 +634,80 @@ namespace ProcessHacker.Common
                 time.Milliseconds);
         }
 
+        public static byte[] GetBytes(this int n, Endianness type)
+        {
+            byte[] data = new byte[4];
+
+            if (type == Endianness.Little)
+            {
+                data[0] = (byte)(n & 0xff);
+                data[1] = (byte)((n >> 8) & 0xff);
+                data[2] = (byte)((n >> 16) & 0xff);
+                data[3] = (byte)((n >> 24) & 0xff);
+            }
+            else if (type == Endianness.Big)
+            {
+                data[0] = (byte)((n >> 24) & 0xff);
+                data[1] = (byte)((n >> 16) & 0xff);
+                data[2] = (byte)((n >> 8) & 0xff);
+                data[3] = (byte)(n & 0xff);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+
+            return data;
+        }
+
+        public static byte[] GetBytes(this uint n, Endianness type)
+        {
+            byte[] data = new byte[4];
+
+            if (type == Endianness.Little)
+            {
+                data[0] = (byte)(n & 0xff);
+                data[1] = (byte)((n >> 8) & 0xff);
+                data[2] = (byte)((n >> 16) & 0xff);
+                data[3] = (byte)((n >> 24) & 0xff);
+            }
+            else if (type == Endianness.Big)
+            {
+                data[0] = (byte)((n >> 24) & 0xff);
+                data[1] = (byte)((n >> 16) & 0xff);
+                data[2] = (byte)((n >> 8) & 0xff);
+                data[3] = (byte)(n & 0xff);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+
+            return data;
+        }
+
+        public static byte[] GetBytes(this ushort n, Endianness type)
+        {
+            byte[] data = new byte[2];
+
+            if (type == Endianness.Little)
+            {
+                data[0] = (byte)(n & 0xff);
+                data[1] = (byte)((n >> 8) & 0xff);
+            }
+            else if (type == Endianness.Big)
+            {
+                data[0] = (byte)((n >> 8) & 0xff);
+                data[1] = (byte)(n & 0xff);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+
+            return data;
+        }
+
         /// <summary>
         /// Converts a 64-bit Windows time value to a DateTime object.
         /// </summary>
@@ -629,7 +741,7 @@ namespace ProcessHacker.Common
             return new Rectangle(int.Parse(split[0]), int.Parse(split[1]),
                 int.Parse(split[2]), int.Parse(split[3]));
         }
-        
+
         /// <summary>
         /// Returns a <see cref="ProcessThread"/> object of the specified thread ID.
         /// </summary>
@@ -710,6 +822,16 @@ namespace ProcessHacker.Common
                 return ProcessPriorityClass.Idle;
         }
 
+        public static int ReadInt32(Stream s, Endianness type)
+        {
+            byte[] buffer = new byte[4];
+
+            if (s.Read(buffer, 0, 4) == 0)
+                throw new EndOfStreamException();
+
+            return ToInt32(buffer, type);
+        }
+
         /// <summary>
         /// Reads a null-terminated string from a stream.
         /// </summary>
@@ -730,6 +852,26 @@ namespace ProcessHacker.Common
             }
 
             return str.ToString();
+        }
+
+        public static string ReadString(Stream s, int length)
+        {
+            byte[] buffer = new byte[length];
+
+            if (s.Read(buffer, 0, length) == 0)
+                throw new EndOfStreamException();
+
+            return System.Text.ASCIIEncoding.ASCII.GetString(buffer);
+        }
+
+        public static uint ReadUInt32(Stream s, Endianness type)
+        {
+            byte[] buffer = new byte[4];
+
+            if (s.Read(buffer, 0, 4) == 0)
+                throw new EndOfStreamException();
+
+            return ToUInt32(buffer, type);
         }
 
         /// <summary>
@@ -793,6 +935,68 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Swaps the order of the bytes.
+        /// </summary>
+        /// <param name="v">The number to change.</param>
+        /// <returns>A number.</returns>
+        public static int Reverse(this int v)
+        {
+            byte b1 = (byte)v;
+            byte b2 = (byte)(v >> 8);
+            byte b3 = (byte)(v >> 16);
+            byte b4 = (byte)(v >> 24);
+
+            return b4 | (b3 << 8) | (b2 << 16) | (b1 << 24);
+        }
+
+        /// <summary>
+        /// Swaps the order of the bytes.
+        /// </summary>
+        /// <param name="v">The number to change.</param>
+        /// <returns>A number.</returns>
+        public static uint Reverse(this uint v)
+        {
+            uint b0 = v & 0xff;
+            uint b1 = (v >> 8) & 0xff;
+            uint b2 = (v >> 16) & 0xff;
+            uint b3 = (v >> 24) & 0xff;
+
+            b0 <<= 24;
+            b1 <<= 16;
+            b2 <<= 8;
+
+            return b0 | b1 | b2 | b3;
+        }
+
+        /// <summary>
+        /// Swaps the order of the bytes.
+        /// </summary>
+        /// <param name="v">The number to change.</param>
+        /// <returns>A number.</returns>
+        public static ushort Reverse(this ushort v)
+        {
+            byte b1 = (byte)v;
+            byte b2 = (byte)(v >> 8);
+
+            return (ushort)(b2 | (b1 << 8));
+        }
+
+        /// <summary>
+        /// Reverses an array.
+        /// </summary>
+        /// <param name="data">The array to reverse.</param>
+        /// <returns>A new array.</returns>
+        public static T[] Reverse<T>(this T[] data)
+        {
+            T[] newData = new T[data.Length];
+
+            for (int i = 0; i < data.Length; i++)
+                newData[i] = data[data.Length - i - 1];
+
+            return newData;
+        }
+
+        /// <summary>
         /// Selects all of the specified items.
         /// </summary>
         /// <param name="items">The items.</param>
@@ -819,7 +1023,7 @@ namespace ProcessHacker.Common
         /// <param name="c">The control.</param>
         /// <param name="t">The type of the control.</param>
         /// <param name="value">The new setting.</param>
-        public static void SetDoubleBuffered(Control c, Type t, bool value)
+        public static void SetDoubleBuffered(this Control c, Type t, bool value)
         {
             PropertyInfo property = t.GetProperty("DoubleBuffered",
                BindingFlags.NonPublic | BindingFlags.Instance);
@@ -834,7 +1038,7 @@ namespace ProcessHacker.Common
         /// <param name="value">The new value.</param>
         public static void SetDoubleBuffered(this Control c, bool value)
         {
-            SetDoubleBuffered(c, c.GetType(), value);
+            c.SetDoubleBuffered(c.GetType(), value);
         }
 
         /// <summary>
@@ -867,47 +1071,95 @@ namespace ProcessHacker.Common
             return nameList;
         }
 
-        /// <summary>
-        /// Swaps the order of the bytes.
-        /// </summary>
-        /// <param name="v">The number to change.</param>
-        /// <returns>A number.</returns>
-        public static int SwapBytes(this int v)
+        public static int ToInt32(this byte[] data, Endianness type)
         {
-            byte b1 = (byte)v;
-            byte b2 = (byte)(v >> 8);
-            byte b3 = (byte)(v >> 16);
-            byte b4 = (byte)(v >> 24);
-
-            return b4 | (b3 << 8) | (b2 << 16) | (b1 << 24);
+            if (type == Endianness.Little)
+            {
+                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
+            }
+            else if (type == Endianness.Big)
+            {
+                return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | (data[3]);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
 
-        /// <summary>
-        /// Swaps the order of the bytes.
-        /// </summary>
-        /// <param name="v">The number to change.</param>
-        /// <returns>A number.</returns>
-        public static uint SwapBytes(this uint v)
+        public static long ToInt64(this byte[] data, Endianness type)
         {
-            byte b1 = (byte)v;
-            byte b2 = (byte)(v >> 8);
-            byte b3 = (byte)(v >> 16);
-            byte b4 = (byte)(v >> 24);
-
-            return (uint)(b4 | (b3 << 8) | (b2 << 16) | (b1 << 24));
+            if (type == Endianness.Little)
+            {
+                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24) |
+                    (data[4] << 32) | (data[5] << 40) | (data[6] << 48) | (data[7] << 56);
+            }
+            else if (type == Endianness.Big)
+            {
+                return (data[0] << 56) | (data[1] << 48) | (data[2] << 40) | (data[3] << 32) |
+                    (data[4] << 24) | (data[5] << 16) | (data[6] << 8) | (data[7]);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
 
-        /// <summary>
-        /// Swaps the order of the bytes.
-        /// </summary>
-        /// <param name="v">The number to change.</param>
-        /// <returns>A number.</returns>
-        public static ushort SwapBytes(this ushort v)
+        public static IntPtr ToIntPtr(this byte[] data)
         {
-            byte b1 = (byte)v;
-            byte b2 = (byte)(v >> 8);
+            if (IntPtr.Size != data.Length)
+                throw new ArgumentException("data");
 
-            return (ushort)(b2 | (b1 << 8));
+            if (IntPtr.Size == sizeof(int))
+                return new IntPtr(data.ToInt32(Endianness.Little));
+            else if (IntPtr.Size == sizeof(long))
+                return new IntPtr(data.ToInt64(Endianness.Little));
+            else
+                throw new ArgumentException("data");
+        }
+
+        public static ushort ToUInt16(this byte[] data, Endianness type)
+        {
+            return ToUInt16(data, 0, type);
+        }
+
+        public static ushort ToUInt16(this byte[] data, int offset, Endianness type)
+        {
+            if (type == Endianness.Little)
+            {
+                return (ushort)(data[offset] | (data[offset + 1] << 8));
+            }
+            else if (type == Endianness.Big)
+            {
+                return (ushort)((data[offset] << 8) | data[offset + 1]);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
+        public static uint ToUInt32(this byte[] data, Endianness type)
+        {
+            return ToUInt32(data, 0, type);
+        }
+
+        public static uint ToUInt32(this byte[] data, int offset, Endianness type)
+        {
+            if (type == Endianness.Little)
+            {
+                return (uint)(data[offset]) | (uint)(data[offset + 1] << 8) |
+                    (uint)(data[offset + 2] << 16) | (uint)(data[offset + 3] << 24);
+            }
+            else if (type == Endianness.Big)
+            {
+                return (uint)(data[offset] << 24) | (uint)(data[offset + 1] << 16) |
+                    (uint)(data[offset + 2] << 8) | (uint)(data[offset + 3]);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
 
         public static int WindowsToNativeBasePriority(System.Diagnostics.ProcessPriorityClass priority)
@@ -930,270 +1182,5 @@ namespace ProcessHacker.Common
                     return 8;
             }
         }
-
-        #region Stuff from PNG.Net
-
-        public enum Endianness
-        {
-            Little, Big
-        }
-
-        public static bool ArrayContains<T>(T[] array, T element)
-        {
-            foreach (T e in array)
-                if (e.Equals(element))
-                    return true;
-
-            return false;
-        }
-
-        public static bool BytesEqual(byte[] b1, byte[] b2)
-        {
-            for (int i = 0; i < b1.Length; i++)
-                if (b1[i] != b2[i])
-                    return false;
-
-            return true;
-        }
-
-        public static int BytesToInt(byte[] data, Endianness type)
-        {
-            if (type == Endianness.Little)
-            {
-                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
-            }
-            else if (type == Endianness.Big)
-            {
-                return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | (data[3]);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-        }
-
-        public static long BytesToLong(byte[] data, Endianness type)
-        {
-            if (type == Endianness.Little)
-            {
-                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24) | 
-                    (data[4] << 32) | (data[5] << 40) | (data[6] << 48) | (data[7] << 56);
-            }
-            else if (type == Endianness.Big)
-            {
-                return (data[0] << 56) | (data[1] << 48) | (data[2] << 40) | (data[3] << 32) |
-                    (data[4] << 24) | (data[5] << 16) | (data[6] << 8) | (data[7]);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-        }
-
-        public static uint BytesToUInt(byte[] data, Endianness type)
-        {
-            return BytesToUInt(data, 0, type);
-        }
-
-        public static uint BytesToUInt(byte[] data, int offset, Endianness type)
-        {
-            if (type == Endianness.Little)
-            {
-                return (uint)(data[offset]) | (uint)(data[offset + 1] << 8) |
-                    (uint)(data[offset + 2] << 16) | (uint)(data[offset + 3] << 24);
-            }
-            else if (type == Endianness.Big)
-            {
-                return (uint)(data[offset] << 24) | (uint)(data[offset + 1] << 16) |
-                    (uint)(data[offset + 2] << 8) | (uint)(data[offset + 3]);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-        }
-
-        public static ushort BytesToUShort(byte[] data, Endianness type)
-        {
-            return BytesToUShort(data, 0, type);
-        }
-
-        public static ushort BytesToUShort(byte[] data, int offset, Endianness type)
-        {
-            if (type == Endianness.Little)
-            {
-                return (ushort)(data[offset] | (data[offset + 1] << 8));
-            }
-            else if (type == Endianness.Big)
-            {
-                return (ushort)((data[offset] << 8) | data[offset + 1]);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-        }
-
-        public static string FlagsToString(Type e, long value)
-        {
-            string r = "";
-
-            for (int i = 0; i < 32; i++)
-            {
-                long fv = 1 << i;
-                                  
-                if ((value & fv) == fv)
-                {
-                    r += Enum.GetName(e, fv) + ", ";
-                }
-            }
-
-            if (r.EndsWith(", "))
-                r = r.Remove(r.Length - 2, 2);
-
-            return r;
-        }
-
-        public static int IntCeilDiv(int a, int b)
-        {
-            return (int)Math.Ceiling(((double)a / b));
-        }
-
-        public static byte[] IntToBytes(int n, Endianness type)
-        {
-            byte[] data = new byte[4];
-
-            if (type == Endianness.Little)
-            {
-                data[0] = (byte)(n & 0xff);
-                data[1] = (byte)((n >> 8) & 0xff);
-                data[2] = (byte)((n >> 16) & 0xff);
-                data[3] = (byte)((n >> 24) & 0xff);
-            }
-            else if (type == Endianness.Big)
-            {
-                data[0] = (byte)((n >> 24) & 0xff);
-                data[1] = (byte)((n >> 16) & 0xff);
-                data[2] = (byte)((n >> 8) & 0xff);
-                data[3] = (byte)(n & 0xff);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-
-            return data;
-        }
-
-        public static byte[] ReverseBytes(byte[] data)
-        {
-            byte[] newdata = new byte[data.Length];
-
-            for (int i = 0; i < data.Length; i++)
-                newdata[i] = data[data.Length - i - 1];
-
-            return newdata;
-        }
-
-        public static uint ReverseEndian(uint n)
-        {
-            uint b0 = n & 0xff;
-            uint b1 = (n >> 8) & 0xff;
-            uint b2 = (n >> 16) & 0xff;
-            uint b3 = (n >> 24) & 0xff;
-
-            b0 <<= 24;
-            b1 <<= 16;
-            b2 <<= 8;
-
-            return b0 | b1 | b2 | b3;
-        }
-
-        public static int ReadInt(Stream s, Endianness type)
-        {
-            byte[] buffer = new byte[4];
-
-            if (s.Read(buffer, 0, 4) == 0)
-                throw new EndOfStreamException();
-
-            return BytesToInt(buffer, type);
-        }
-
-        public static string ReadString(Stream s, int length)
-        {
-            byte[] buffer = new byte[length];
-
-            if (s.Read(buffer, 0, length) == 0)
-                throw new EndOfStreamException();
-
-            return System.Text.ASCIIEncoding.ASCII.GetString(buffer);
-        }
-
-        public static uint ReadUInt(Stream s, Endianness type)
-        {
-            byte[] buffer = new byte[4];
-
-            if (s.Read(buffer, 0, 4) == 0)
-                throw new EndOfStreamException();
-
-            return BytesToUInt(buffer, type);
-        }
-
-        public static uint RoundUpAddress(uint address, uint align)
-        {
-            uint t = (uint)Math.Ceiling((double)address / align);
-
-            return t * align;
-        }
-
-        public static byte[] UIntToBytes(uint n, Endianness type)
-        {
-            byte[] data = new byte[4];
-
-            if (type == Endianness.Little)
-            {
-                data[0] = (byte)(n & 0xff);
-                data[1] = (byte)((n >> 8) & 0xff);
-                data[2] = (byte)((n >> 16) & 0xff);
-                data[3] = (byte)((n >> 24) & 0xff);
-            }
-            else if (type == Endianness.Big)
-            {
-                data[0] = (byte)((n >> 24) & 0xff);
-                data[1] = (byte)((n >> 16) & 0xff);
-                data[2] = (byte)((n >> 8) & 0xff);
-                data[3] = (byte)(n & 0xff);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-
-            return data;
-        }
-
-        public static byte[] UShortToBytes(ushort n, Endianness type)
-        {
-            byte[] data = new byte[2];
-
-            if (type == Endianness.Little)
-            {
-                data[0] = (byte)(n & 0xff);
-                data[1] = (byte)((n >> 8) & 0xff);
-            }
-            else if (type == Endianness.Big)
-            {
-                data[0] = (byte)((n >> 8) & 0xff);
-                data[1] = (byte)(n & 0xff);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-
-            return data;
-        }
-
-        #endregion
     }
 }

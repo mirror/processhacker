@@ -149,7 +149,7 @@ namespace ProcessHacker
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Size of Optional Header", 
                 _peFile.COFFHeader.SizeOfOptionalHeader.ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Characteristics", 
-                Utils.FlagsToString(typeof(ImageCharacteristics), (long)_peFile.COFFHeader.Characteristics) }));
+                Utils.FormatFlags(typeof(ImageCharacteristics), (long)_peFile.COFFHeader.Characteristics) }));
 
             #endregion
 
@@ -201,7 +201,7 @@ namespace ProcessHacker
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Subsystem",
                 _peFile.COFFOptionalHeader.Subsystem.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "DLL Characteristics",
-                Utils.FlagsToString(typeof(DllCharacteristics), (long)_peFile.COFFOptionalHeader.DllCharacteristics) }));
+                Utils.FormatFlags(typeof(DllCharacteristics), (long)_peFile.COFFOptionalHeader.DllCharacteristics) }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Stack Reserve",
                 "0x" + _peFile.COFFOptionalHeader.SizeOfStackReserve.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Stack Commit",
@@ -251,7 +251,7 @@ namespace ProcessHacker
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.VirtualSize.ToString("x")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.PointerToRawData.ToString("x")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, 
-                    Utils.FlagsToString(typeof(SectionFlags), (long)sh.Characteristics)));
+                    Utils.FormatFlags(typeof(SectionFlags), (long)sh.Characteristics)));
 
                 listSections.Items.Add(item);
             }
