@@ -5,6 +5,7 @@ Process Hacker
    * #2845829 - "System uptime"
    * Update system
  * FIXED:
+   * #2820170 - "System.ArgumentOutOfRangeException in network list"
    * #2845427 - "Indicator integer overflow"
    * Critical KProcessHacker denial-of-service security issues
    * Incorrect menu items for System threads

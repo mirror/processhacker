@@ -450,17 +450,13 @@ namespace ProcessHacker.Components
                             if (!imageStillUsed)
                             {
                                 imageList.Images.RemoveByKey(item.Connection.Pid.ToString());
-                            }
-                        }
 
-                        // Do this outside of the lock; ResetImageKeys locks anyway
-                        if (!imageStillUsed)
-                        {
-                            // Set the item's icon to generic_process, otherwise we are going to 
-                            // get a blank space for the icon.
-                            litem.ImageKey = "generic_process";
-                            // Reset all the image keys (by now most items' icons have screwed up).
-                            this.ResetImageKeys();
+                                // Set the item's icon to generic_process, otherwise we are going to 
+                                // get a blank space for the icon.
+                                litem.ImageKey = "generic_process";
+                                // Reset all the image keys (by now most items' icons have screwed up).
+                                this.ResetImageKeys();
+                            }
                         }
 
                         litem.Remove();
