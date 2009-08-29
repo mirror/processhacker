@@ -41,6 +41,7 @@
             this.menuThread = new System.Windows.Forms.ContextMenu();
             this.inspectThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.terminateThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.forceTerminateThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.suspendThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.resumeThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.inspectTEBMenuItem = new System.Windows.Forms.MenuItem();
@@ -78,7 +79,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.fileModule = new ProcessHacker.Components.FileNameBox();
-            this.forceTerminateThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.tableInformation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
@@ -148,7 +148,7 @@
             this.inspectThreadMenuItem.DefaultItem = true;
             this.vistaMenu.SetImage(this.inspectThreadMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
             this.inspectThreadMenuItem.Index = 0;
-            this.inspectThreadMenuItem.Text = "&Inspect...";
+            this.inspectThreadMenuItem.Text = "&Inspect";
             this.inspectThreadMenuItem.Click += new System.EventHandler(this.inspectThreadMenuItem_Click);
             // 
             // terminateThreadMenuItem
@@ -157,6 +157,12 @@
             this.terminateThreadMenuItem.Index = 1;
             this.terminateThreadMenuItem.Text = "&Terminate";
             this.terminateThreadMenuItem.Click += new System.EventHandler(this.terminateThreadMenuItem_Click);
+            // 
+            // forceTerminateThreadMenuItem
+            // 
+            this.forceTerminateThreadMenuItem.Index = 2;
+            this.forceTerminateThreadMenuItem.Text = "Force Terminate";
+            this.forceTerminateThreadMenuItem.Click += new System.EventHandler(this.forceTerminateThreadMenuItem_Click);
             // 
             // suspendThreadMenuItem
             // 
@@ -175,7 +181,7 @@
             // inspectTEBMenuItem
             // 
             this.inspectTEBMenuItem.Index = 5;
-            this.inspectTEBMenuItem.Text = "Inspect TEB...";
+            this.inspectTEBMenuItem.Text = "Inspect TEB";
             this.inspectTEBMenuItem.Click += new System.EventHandler(this.inspectTEBMenuItem_Click);
             // 
             // menuItem4
@@ -495,12 +501,6 @@
             this.fileModule.ReadOnly = false;
             this.fileModule.Size = new System.Drawing.Size(368, 24);
             this.fileModule.TabIndex = 6;
-            // 
-            // forceTerminateThreadMenuItem
-            // 
-            this.forceTerminateThreadMenuItem.Index = 2;
-            this.forceTerminateThreadMenuItem.Text = "Force Terminate";
-            this.forceTerminateThreadMenuItem.Click += new System.EventHandler(this.forceTerminateThreadMenuItem_Click);
             // 
             // ThreadList
             // 

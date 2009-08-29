@@ -45,6 +45,7 @@
             this.copyModuleMenuItem = new System.Windows.Forms.MenuItem();
             this.openContainingFolderMenuItem = new System.Windows.Forms.MenuItem();
             this.propertiesMenuItem = new System.Windows.Forms.MenuItem();
+            this.unloadMenuItem = new System.Windows.Forms.MenuItem();
             this.menuModule = new System.Windows.Forms.ContextMenu();
             this.getFuncAddressMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
@@ -52,7 +53,6 @@
             this.copyFileNameMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllModuleMenuItem = new System.Windows.Forms.MenuItem();
-            this.unloadMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -99,6 +99,7 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
             // 
             // changeMemoryProtectionModuleMenuItem
             // 
@@ -111,14 +112,14 @@
             // 
             this.vistaMenu.SetImage(this.readMemoryModuleMenuItem, global::ProcessHacker.Properties.Resources.page);
             this.readMemoryModuleMenuItem.Index = 2;
-            this.readMemoryModuleMenuItem.Text = "Read Memory...";
+            this.readMemoryModuleMenuItem.Text = "Read Memory";
             this.readMemoryModuleMenuItem.Click += new System.EventHandler(this.readMemoryModuleMenuItem_Click);
             // 
             // inspectModuleMenuItem
             // 
             this.vistaMenu.SetImage(this.inspectModuleMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
             this.inspectModuleMenuItem.Index = 5;
-            this.inspectModuleMenuItem.Text = "&Inspect...";
+            this.inspectModuleMenuItem.Text = "&Inspect";
             this.inspectModuleMenuItem.Click += new System.EventHandler(this.inspectModuleMenuItem_Click);
             // 
             // copyModuleMenuItem
@@ -138,8 +139,15 @@
             // 
             this.vistaMenu.SetImage(this.propertiesMenuItem, global::ProcessHacker.Properties.Resources.application_view_detail);
             this.propertiesMenuItem.Index = 10;
-            this.propertiesMenuItem.Text = "Prope&rties...";
+            this.propertiesMenuItem.Text = "Prope&rties";
             this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
+            // 
+            // unloadMenuItem
+            // 
+            this.vistaMenu.SetImage(this.unloadMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.unloadMenuItem.Index = 3;
+            this.unloadMenuItem.Text = "&Unload";
+            this.unloadMenuItem.Click += new System.EventHandler(this.unloadMenuItem_Click);
             // 
             // menuModule
             // 
@@ -173,7 +181,7 @@
             // searchModuleMenuItem
             // 
             this.searchModuleMenuItem.Index = 6;
-            this.searchModuleMenuItem.Text = "&Search Online...";
+            this.searchModuleMenuItem.Text = "&Search Online";
             this.searchModuleMenuItem.Click += new System.EventHandler(this.searchModuleMenuItem_Click);
             // 
             // copyFileNameMenuItem
@@ -192,13 +200,6 @@
             this.selectAllModuleMenuItem.Index = 12;
             this.selectAllModuleMenuItem.Text = "Select &All";
             this.selectAllModuleMenuItem.Click += new System.EventHandler(this.selectAllModuleMenuItem_Click);
-            // 
-            // unloadMenuItem
-            // 
-            this.vistaMenu.SetImage(this.unloadMenuItem, global::ProcessHacker.Properties.Resources.cross);
-            this.unloadMenuItem.Index = 3;
-            this.unloadMenuItem.Text = "&Unload";
-            this.unloadMenuItem.Click += new System.EventHandler(this.unloadMenuItem_Click);
             // 
             // ModuleList
             // 

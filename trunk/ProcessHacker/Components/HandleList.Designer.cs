@@ -130,7 +130,7 @@
             // propertiesHandleMenuItem
             // 
             this.propertiesHandleMenuItem.Index = 5;
-            this.propertiesHandleMenuItem.Text = "&Properties...";
+            this.propertiesHandleMenuItem.Text = "&Properties";
             this.propertiesHandleMenuItem.Click += new System.EventHandler(this.propertiesHandleMenuItem_Click);
             // 
             // HandleList
