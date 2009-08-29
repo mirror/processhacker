@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.textUpdateInterval = new System.Windows.Forms.NumericUpDown();
             this.buttonOK = new System.Windows.Forms.Button();
@@ -101,7 +100,6 @@
             this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
             this.optUpdateBeta = new System.Windows.Forms.RadioButton();
             this.optUpdateStable = new System.Windows.Forms.RadioButton();
-            this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
@@ -126,8 +124,6 @@
             this.label1.Size = new System.Drawing.Size(83, 13);
             this.label1.TabIndex = 13;
             this.label1.Text = "Update Interval:";
-            this.toolTipProvider.SetToolTip(this.label1, "The number of milliseconds between each check for new, modified or removed object" +
-                    "s.");
             // 
             // textUpdateInterval
             // 
@@ -178,8 +174,6 @@
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 12;
             this.checkShowProcessDomains.Text = "Show user/group domains";
-            this.toolTipProvider.SetToolTip(this.checkShowProcessDomains, "Shows account domains. For example, \"MyUser\" would be displayed as \"ComputerName\\" +
-                    "MyUser\".");
             this.checkShowProcessDomains.UseVisualStyleBackColor = true;
             // 
             // checkWarnDangerous
@@ -191,8 +185,6 @@
             this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
             this.checkWarnDangerous.TabIndex = 5;
             this.checkWarnDangerous.Text = "Warn about potentially dangerous actions";
-            this.toolTipProvider.SetToolTip(this.checkWarnDangerous, "Warns about any attempts to terminate a process, suspend a system process, and si" +
-                    "milar actions.");
             this.checkWarnDangerous.UseVisualStyleBackColor = true;
             // 
             // label2
@@ -203,8 +195,6 @@
             this.label2.Size = new System.Drawing.Size(80, 13);
             this.label2.TabIndex = 15;
             this.label2.Text = "Search Engine:";
-            this.toolTipProvider.SetToolTip(this.label2, "The URL to open when searching for a process or module. \"%s\" is replaced with the" +
-                    " process/module name.");
             // 
             // textSearchEngine
             // 
@@ -280,7 +270,6 @@
             this.checkScrollDownProcessTree.Size = new System.Drawing.Size(213, 18);
             this.checkScrollDownProcessTree.TabIndex = 11;
             this.checkScrollDownProcessTree.Text = "Scroll down the process tree at startup";
-            this.toolTipProvider.SetToolTip(this.checkScrollDownProcessTree, "Scrolls down to the first process belonging to the current user on startup.");
             this.checkScrollDownProcessTree.UseVisualStyleBackColor = true;
             // 
             // checkAllowOnlyOneInstance
@@ -292,7 +281,6 @@
             this.checkAllowOnlyOneInstance.Size = new System.Drawing.Size(143, 18);
             this.checkAllowOnlyOneInstance.TabIndex = 9;
             this.checkAllowOnlyOneInstance.Text = "Allow only one instance";
-            this.toolTipProvider.SetToolTip(this.checkAllowOnlyOneInstance, "Process Hacker will detect a previous instance of itself and switch to it.");
             this.checkAllowOnlyOneInstance.UseVisualStyleBackColor = true;
             // 
             // buttonFont
@@ -303,7 +291,6 @@
             this.buttonFont.Size = new System.Drawing.Size(75, 23);
             this.buttonFont.TabIndex = 5;
             this.buttonFont.Text = "Font...";
-            this.toolTipProvider.SetToolTip(this.buttonFont, "The font to use for all lists and trees.");
             this.buttonFont.UseVisualStyleBackColor = true;
             this.buttonFont.Click += new System.EventHandler(this.buttonFont_Click);
             // 
@@ -324,7 +311,6 @@
             this.label21.Size = new System.Drawing.Size(100, 13);
             this.label21.TabIndex = 16;
             this.label21.Text = "Require Signatures:";
-            this.toolTipProvider.SetToolTip(this.label21, "A comma-separated list of process names to require valid signatures for.");
             // 
             // comboSizeUnits
             // 
@@ -351,7 +337,6 @@
             this.label18.Size = new System.Drawing.Size(78, 13);
             this.label18.TabIndex = 17;
             this.label18.Text = "Max. Size Unit:";
-            this.toolTipProvider.SetToolTip(this.label18, "The maximum unit of size to use.");
             // 
             // checkStartHidden
             // 
@@ -362,8 +347,6 @@
             this.checkStartHidden.Size = new System.Drawing.Size(89, 18);
             this.checkStartHidden.TabIndex = 8;
             this.checkStartHidden.Text = "Start hidden";
-            this.toolTipProvider.SetToolTip(this.checkStartHidden, "Starts Process Hacker hidden. To restore it, double-click on the notification ico" +
-                    "n.");
             this.checkStartHidden.UseVisualStyleBackColor = true;
             // 
             // checkHideWhenClosed
@@ -375,7 +358,6 @@
             this.checkHideWhenClosed.Size = new System.Drawing.Size(117, 18);
             this.checkHideWhenClosed.TabIndex = 7;
             this.checkHideWhenClosed.Text = "Hide when closed";
-            this.toolTipProvider.SetToolTip(this.checkHideWhenClosed, "Hides Process Hacker when it is closed.");
             this.checkHideWhenClosed.UseVisualStyleBackColor = true;
             // 
             // checkHideWhenMinimized
@@ -387,7 +369,6 @@
             this.checkHideWhenMinimized.Size = new System.Drawing.Size(131, 18);
             this.checkHideWhenMinimized.TabIndex = 6;
             this.checkHideWhenMinimized.Text = "Hide when minimized";
-            this.toolTipProvider.SetToolTip(this.checkHideWhenMinimized, "Hides Process Hacker when it is minimized.");
             this.checkHideWhenMinimized.UseVisualStyleBackColor = true;
             // 
             // label23
@@ -398,7 +379,6 @@
             this.label23.Size = new System.Drawing.Size(122, 13);
             this.label23.TabIndex = 14;
             this.label23.Text = "Processes in icon menu:";
-            this.toolTipProvider.SetToolTip(this.label23, "The number of processes to display in the Processes menu.");
             // 
             // textIconMenuProcesses
             // 
@@ -458,8 +438,6 @@
             this.checkHidePhConnections.Size = new System.Drawing.Size(235, 18);
             this.checkHidePhConnections.TabIndex = 7;
             this.checkHidePhConnections.Text = "Hide Process Hacker network connections";
-            this.toolTipProvider.SetToolTip(this.checkHidePhConnections, "Hides network connections made by Process Hacker. This may be useful when Process" +
-                    " Hacker is resolving addresses.");
             this.checkHidePhConnections.UseVisualStyleBackColor = true;
             // 
             // textMaxSamples
@@ -497,7 +475,6 @@
             this.label6.Size = new System.Drawing.Size(106, 13);
             this.label6.TabIndex = 9;
             this.label6.Text = "Max. Sample History:";
-            this.toolTipProvider.SetToolTip(this.label6, "The number of performance data samples that are retained.");
             // 
             // buttonChangeReplaceTaskManager
             // 
@@ -519,7 +496,6 @@
             this.checkReplaceTaskManager.Size = new System.Drawing.Size(245, 18);
             this.checkReplaceTaskManager.TabIndex = 3;
             this.checkReplaceTaskManager.Text = "Replace Task Manager with Process Hacker";
-            this.toolTipProvider.SetToolTip(this.checkReplaceTaskManager, "Launches Process Hacker instead of Task Manager.");
             this.checkReplaceTaskManager.UseVisualStyleBackColor = true;
             // 
             // checkEnableKPH
@@ -531,8 +507,6 @@
             this.checkEnableKPH.Size = new System.Drawing.Size(155, 18);
             this.checkEnableKPH.TabIndex = 0;
             this.checkEnableKPH.Text = "Enable kernel-mode driver";
-            this.toolTipProvider.SetToolTip(this.checkEnableKPH, "Enables the driver which allows Process Hacker to bypass rootkits and security so" +
-                    "ftware.");
             this.checkEnableKPH.UseVisualStyleBackColor = true;
             // 
             // checkHideHandlesWithNoName
@@ -544,7 +518,6 @@
             this.checkHideHandlesWithNoName.Size = new System.Drawing.Size(160, 18);
             this.checkHideHandlesWithNoName.TabIndex = 6;
             this.checkHideHandlesWithNoName.Text = "Hide handles with no name";
-            this.toolTipProvider.SetToolTip(this.checkHideHandlesWithNoName, "Hides unnamed handles by default. This can be changed in each process window.");
             this.checkHideHandlesWithNoName.UseVisualStyleBackColor = true;
             // 
             // checkVerifySignatures
@@ -556,8 +529,6 @@
             this.checkVerifySignatures.Size = new System.Drawing.Size(254, 18);
             this.checkVerifySignatures.TabIndex = 2;
             this.checkVerifySignatures.Text = "Verify signatures and perform additional checks";
-            this.toolTipProvider.SetToolTip(this.checkVerifySignatures, "Verifies the digital signatures of all processes and highlights certain types of " +
-                    "suspicious processes.");
             this.checkVerifySignatures.UseVisualStyleBackColor = true;
             // 
             // tabHighlighting
@@ -675,8 +646,6 @@
             this.label7.Size = new System.Drawing.Size(108, 13);
             this.label7.TabIndex = 6;
             this.label7.Text = "Highlighting Duration:";
-            this.toolTipProvider.SetToolTip(this.label7, "The number of milliseconds for which new or removed objects will be highlighted a" +
-                    "s such.");
             // 
             // label4
             // 
@@ -772,8 +741,6 @@
             this.checkPlotterAntialias.Size = new System.Drawing.Size(110, 18);
             this.checkPlotterAntialias.TabIndex = 0;
             this.checkPlotterAntialias.Text = "Use Anti-aliasing";
-            this.toolTipProvider.SetToolTip(this.checkPlotterAntialias, "Uses anti-aliasing for all graphs. This can cause higher CPU usage on older compu" +
-                    "ters.");
             this.checkPlotterAntialias.UseVisualStyleBackColor = true;
             // 
             // label12
@@ -784,7 +751,6 @@
             this.label12.Size = new System.Drawing.Size(92, 13);
             this.label12.TabIndex = 13;
             this.label12.Text = "I/O Reads+Other:";
-            this.toolTipProvider.SetToolTip(this.label12, "I/O reads and other operations - ReadFile, DeviceIoControl");
             // 
             // label13
             // 
@@ -794,7 +760,6 @@
             this.label13.Size = new System.Drawing.Size(59, 13);
             this.label13.TabIndex = 14;
             this.label13.Text = "I/O Writes:";
-            this.toolTipProvider.SetToolTip(this.label13, "I/O writes - WriteFile");
             // 
             // label14
             // 
@@ -804,7 +769,6 @@
             this.label14.Size = new System.Drawing.Size(69, 13);
             this.label14.TabIndex = 12;
             this.label14.Text = "Working Set:";
-            this.toolTipProvider.SetToolTip(this.label14, "The working set.");
             // 
             // label15
             // 
@@ -814,7 +778,6 @@
             this.label15.Size = new System.Drawing.Size(72, 13);
             this.label15.TabIndex = 11;
             this.label15.Text = "Private Bytes:";
-            this.toolTipProvider.SetToolTip(this.label15, "The amount of memory not shared with other processes.");
             // 
             // label16
             // 
@@ -824,7 +787,6 @@
             this.label16.Size = new System.Drawing.Size(83, 13);
             this.label16.TabIndex = 10;
             this.label16.Text = "CPU User Time:";
-            this.toolTipProvider.SetToolTip(this.label16, "Time spent in user-mode.");
             // 
             // label17
             // 
@@ -834,7 +796,6 @@
             this.label17.Size = new System.Drawing.Size(91, 13);
             this.label17.TabIndex = 9;
             this.label17.Text = "CPU Kernel Time:";
-            this.toolTipProvider.SetToolTip(this.label17, "Time spent in kernel-mode.");
             // 
             // colorIORO
             // 
@@ -909,7 +870,6 @@
             this.checkUndecorate.Size = new System.Drawing.Size(128, 18);
             this.checkUndecorate.TabIndex = 3;
             this.checkUndecorate.Text = "Undecorate symbols";
-            this.toolTipProvider.SetToolTip(this.checkUndecorate, "If selected, C++ symbol names will be undecorated.");
             this.checkUndecorate.UseVisualStyleBackColor = true;
             // 
             // textSearchPath
@@ -959,8 +919,6 @@
             this.label9.Size = new System.Drawing.Size(87, 13);
             this.label9.TabIndex = 4;
             this.label9.Text = "Dbghelp.dll path:";
-            this.toolTipProvider.SetToolTip(this.label9, "Select the most recent version of dbghelp.dll available, usually distributed with" +
-                    " Debugging Tools for Windows.");
             // 
             // tabUpdates
             // 
@@ -1016,14 +974,6 @@
             this.optUpdateStable.TabStop = true;
             this.optUpdateStable.Text = "Stable releases";
             this.optUpdateStable.UseVisualStyleBackColor = true;
-            // 
-            // toolTipProvider
-            // 
-            this.toolTipProvider.AutomaticDelay = 250;
-            this.toolTipProvider.AutoPopDelay = 5000;
-            this.toolTipProvider.InitialDelay = 250;
-            this.toolTipProvider.IsBalloon = true;
-            this.toolTipProvider.ReshowDelay = 50;
             // 
             // buttonCancel
             // 
@@ -1131,7 +1081,6 @@
         private System.Windows.Forms.TextBox textImposterNames;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Button buttonFont;
-        private System.Windows.Forms.ToolTip toolTipProvider;
         private System.Windows.Forms.NumericUpDown textIconMenuProcesses;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.CheckBox checkHideWhenClosed;

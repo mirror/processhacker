@@ -23,15 +23,25 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
     public class UsageIcon : IDisposable
     {
+        public static Size GetSmallIconSize()
+        {
+            return new Size(
+                Win32.GetSystemMetrics(49), // SM_CXSMICON
+                Win32.GetSystemMetrics(50) // SM_CYSMICON
+                );
+        }
+
         public event MouseEventHandler MouseClick;
         public event MouseEventHandler MouseDoubleClick;
 
         private Control _parent;
+        private Size _size;
         private NotifyIcon _notifyIcon;
 
         public UsageIcon()
@@ -40,6 +50,8 @@ namespace ProcessHacker
 
             _notifyIcon.MouseClick += new MouseEventHandler(notifyIcon_MouseClick);
             _notifyIcon.MouseDoubleClick += new MouseEventHandler(notifyIcon_MouseDoubleClick);
+
+            _size = GetSmallIconSize();
         }
 
         public virtual void Dispose()
@@ -86,6 +98,12 @@ namespace ProcessHacker
         {
             get { return _notifyIcon.Visible; }
             set { _notifyIcon.Visible = value; }
+        }
+
+        public Size Size
+        {
+            get { return _size; }
+            set { _size = value; }
         }
 
         protected string Text

@@ -20,11 +20,9 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Drawing;
-using System.Windows.Forms;
-using ProcessHacker.Components;
 using ProcessHacker.Common;
+using ProcessHacker.Components;
 
 namespace ProcessHacker
 {
@@ -33,8 +31,6 @@ namespace ProcessHacker
         private HistoryManager<bool, float> _floatHistory = new HistoryManager<bool, float>();
         private HistoryManager<bool, long> _longHistory = new HistoryManager<bool, long>();
         private Plotter _plotter;
-        private int _width;
-        private int _height;
 
         public PlotterIcon()
         {
@@ -43,11 +39,9 @@ namespace ProcessHacker
             _longHistory.Add(true);
             _longHistory.Add(false);
 
-            _width = 16;
-            _height = 16;
             _plotter = new Plotter()
             {
-                Size = new Size(_width, _height),
+                Size = this.Size,
                 ShowGrid = false,
                 BackColor = Color.Black,
                 MoveStep = 2,
@@ -91,8 +85,12 @@ namespace ProcessHacker
             Icon newIcon;
             Icon oldIcon = this.Icon;
 
-            using (Bitmap bm = new Bitmap(_width, _height))
+            using (Bitmap bm = new Bitmap(this.Size.Width, this.Size.Height))
             {
+                // Update the plotter size if our size has changed.
+                if (_plotter.Size != this.Size)
+                    _plotter.Size = this.Size;
+
                 _plotter.Draw();
                 _plotter.DrawToBitmap(bm, new Rectangle(new Point(0, 0), _plotter.Size));
 

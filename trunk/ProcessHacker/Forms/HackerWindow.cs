@@ -38,7 +38,6 @@ using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
-using System.Xml;
 
 namespace ProcessHacker
 {
@@ -799,7 +798,7 @@ namespace ProcessHacker
                             PhUtils.ShowException("Unable to inspect the process", ex);
                         }
                     });
-                    propertiesItem.Text = "Properties...";
+                    propertiesItem.Text = "Properties";
 
                     processItem.MenuItems.AddRange(new MenuItem[] { terminateItem, suspendItem, resumeItem, propertiesItem });
                     processesMenuItem.MenuItems.Add(processItem);
@@ -2759,6 +2758,12 @@ namespace ProcessHacker
                                 Logging.Log(ex);
                             }
                         }
+                    }
+                    break;
+
+                case (int)WindowMessage.SettingChange:
+                    {
+                        this.ExecuteOnIcons((icon) => icon.Size = UsageIcon.GetSmallIconSize());
                     }
                     break;
             }

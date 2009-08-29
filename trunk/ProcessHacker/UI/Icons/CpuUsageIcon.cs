@@ -20,10 +20,6 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
 using System.Drawing;
 
 namespace ProcessHacker
@@ -32,8 +28,6 @@ namespace ProcessHacker
     {
         private ProcessSystemProvider _provider = Program.ProcessProvider;
         private bool _enabled = false;
-        private int _width = 16;
-        private int _height = 16;
 
         public CpuUsageIcon()
         { }
@@ -76,13 +70,15 @@ namespace ProcessHacker
         {
             float k = _provider.CurrentCpuKernelUsage;
             float u = _provider.CurrentCpuUserUsage;
+            int height = this.Size.Height;
+            int width = this.Size.Width;
 
-            using (Bitmap b = new Bitmap(16, 16))
+            using (Bitmap b = new Bitmap(width, height))
             {
                 using (Graphics g = Graphics.FromImage(b))
                 {
-                    int kl = (int)(k * _height);
-                    int ul = (int)(u * _height);
+                    int kl = (int)(k * height);
+                    int ul = (int)(u * height);
                     Color kline = Properties.Settings.Default.PlotterCPUKernelColor;
                     Color kfill = Color.FromArgb(100, kline);
                     Color uline = Properties.Settings.Default.PlotterCPUUserColor;
@@ -91,15 +87,15 @@ namespace ProcessHacker
                     g.FillRectangle(new SolidBrush(Color.Black), g.ClipBounds);
 
                     if (kl + ul == 0)
-                        g.DrawLine(new Pen(uline), 0, _height - 1, _width - 1, _height - 1);
+                        g.DrawLine(new Pen(uline), 0, height - 1, width - 1, height - 1);
 
-                    g.FillRectangle(new SolidBrush(ufill), 0, _height - (ul + kl), _width, ul);
-                    g.DrawLine(new Pen(uline), 0, _height - (ul + kl) - 1, _width, _height - (ul + kl) - 1);
+                    g.FillRectangle(new SolidBrush(ufill), 0, height - (ul + kl), width, ul);
+                    g.DrawLine(new Pen(uline), 0, height - (ul + kl) - 1, width, height - (ul + kl) - 1);
 
                     if (kl > 0)
                     {
-                        g.FillRectangle(new SolidBrush(kfill), 0, _height - kl, _width, kl);
-                        g.DrawLine(new Pen(kline), 0, _height - kl - 1, _width, _height - kl - 1);
+                        g.FillRectangle(new SolidBrush(kfill), 0, height - kl, width, kl);
+                        g.DrawLine(new Pen(kline), 0, height - kl - 1, width, height - kl - 1);
                     }
                 }
 
