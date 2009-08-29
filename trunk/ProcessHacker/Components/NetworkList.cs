@@ -33,7 +33,6 @@ namespace ProcessHacker.Components
 {
     public partial class NetworkList : UserControl
     {
-        private object _imageListLock = new object();
         private NetworkProvider _provider;
         private int _runCount = 0;
         private List<ListViewItem> _needsAdd = new List<ListViewItem>();
@@ -213,7 +212,7 @@ namespace ProcessHacker.Components
         /// </remarks>
         private void ResetImageKeys()
         {
-            lock (_imageListLock)
+            lock (listNetwork)
             {
                 foreach (ListViewItem lvItem in listNetwork.Items)
                 {
@@ -278,33 +277,30 @@ namespace ProcessHacker.Components
 
         public void RefreshIcons(int searchPid)
         {
-            lock (_imageListLock)
+            lock (listNetwork)
             {
-                lock (listNetwork)
+                foreach (ListViewItem item in listNetwork.Items)
                 {
-                    foreach (ListViewItem item in listNetwork.Items)
+                    int pid = (int)item.Tag;
+
+                    if (searchPid != 0)
+                        if (pid != searchPid)
+                            continue;
+                    // If the item already has an icon, continue searching.
+                    if (item.ImageKey != "generic_process")
+                        continue;
+                    // If the PID is System Idle Process, continue searching.
+                    if (pid < 4)
+                        continue;
+
+                    if (Program.ProcessProvider.Dictionary.ContainsKey(pid) &&
+                        Program.ProcessProvider.Dictionary[pid].Icon != null)
                     {
-                        int pid = (int)item.Tag;
+                        if (!imageList.Images.ContainsKey(pid.ToString()))
+                            imageList.Images.Add(pid.ToString(),
+                                Program.ProcessProvider.Dictionary[pid].Icon);
 
-                        if (searchPid != 0)
-                            if (pid != searchPid)
-                                continue;
-                        // If the item already has an icon, continue searching.
-                        if (item.ImageKey != "generic_process")
-                            continue;
-                        // If the PID is System Idle Process, continue searching.
-                        if (pid < 4)
-                            continue;
-
-                        if (Program.ProcessProvider.Dictionary.ContainsKey(pid) && 
-                            Program.ProcessProvider.Dictionary[pid].Icon != null)
-                        {
-                            if (!imageList.Images.ContainsKey(pid.ToString()))
-                                imageList.Images.Add(pid.ToString(),
-                                    Program.ProcessProvider.Dictionary[pid].Icon);
-
-                            item.ImageKey = pid.ToString();
-                        }
+                        item.ImageKey = pid.ToString();
                     }
                 }
             }
@@ -343,7 +339,7 @@ namespace ProcessHacker.Components
 
             if (Program.ProcessProvider.Dictionary.ContainsKey(item.Connection.Pid))
             {
-                lock (_imageListLock)
+                lock (listNetwork)
                 {
                     if (imageList.Images.ContainsKey(item.Connection.Pid.ToString()))
                         imageList.Images.RemoveByKey(item.Connection.Pid.ToString());
@@ -354,7 +350,7 @@ namespace ProcessHacker.Components
 
             if (icon != null)
             {
-                lock (imageList)
+                lock (listNetwork)
                     imageList.Images.Add(item.Connection.Pid.ToString(), icon);
 
                 litem.ImageKey = item.Connection.Pid.ToString();
@@ -445,18 +441,15 @@ namespace ProcessHacker.Components
                             }
                         }
 
-                        lock (_imageListLock)
+                        if (!imageStillUsed)
                         {
-                            if (!imageStillUsed)
-                            {
-                                imageList.Images.RemoveByKey(item.Connection.Pid.ToString());
+                            imageList.Images.RemoveByKey(item.Connection.Pid.ToString());
 
-                                // Set the item's icon to generic_process, otherwise we are going to 
-                                // get a blank space for the icon.
-                                litem.ImageKey = "generic_process";
-                                // Reset all the image keys (by now most items' icons have screwed up).
-                                this.ResetImageKeys();
-                            }
+                            // Set the item's icon to generic_process, otherwise we are going to 
+                            // get a blank space for the icon.
+                            litem.ImageKey = "generic_process";
+                            // Reset all the image keys (by now most items' icons have screwed up).
+                            this.ResetImageKeys();
                         }
 
                         litem.Remove();
