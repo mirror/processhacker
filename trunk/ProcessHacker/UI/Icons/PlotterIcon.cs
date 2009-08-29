@@ -23,6 +23,7 @@
 using System.Drawing;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
+using System.Windows.Forms;
 
 namespace ProcessHacker
 {
