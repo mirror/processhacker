@@ -47,12 +47,14 @@
             this.flowInfo = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.labelTotalsUptime = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.labelTotalsProcesses = new System.Windows.Forms.Label();
             this.labelTotalsThreads = new System.Windows.Forms.Label();
             this.labelTotalsHandles = new System.Windows.Forms.Label();
+            this.label34 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
@@ -136,8 +138,6 @@
             this.label41 = new System.Windows.Forms.Label();
             this.labelCPUInterrupts = new System.Windows.Forms.Label();
             this.checkAlwaysOnTop = new System.Windows.Forms.CheckBox();
-            this.label34 = new System.Windows.Forms.Label();
-            this.labelTotalsUptime = new System.Windows.Forms.Label();
             this.gboxCPUPlotter.SuspendLayout();
             this.tableGraphs.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -471,6 +471,17 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(189, 65);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
+            // labelTotalsUptime
+            // 
+            this.labelTotalsUptime.AutoEllipsis = true;
+            this.labelTotalsUptime.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelTotalsUptime.Location = new System.Drawing.Point(65, 48);
+            this.labelTotalsUptime.Name = "labelTotalsUptime";
+            this.labelTotalsUptime.Size = new System.Drawing.Size(121, 17);
+            this.labelTotalsUptime.TabIndex = 2;
+            this.labelTotalsUptime.Text = "value";
+            this.labelTotalsUptime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // label6
             // 
             this.label6.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -533,6 +544,16 @@
             this.labelTotalsHandles.TabIndex = 1;
             this.labelTotalsHandles.Text = "value";
             this.labelTotalsHandles.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label34
+            // 
+            this.label34.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(3, 50);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(40, 13);
+            this.label34.TabIndex = 1;
+            this.label34.Text = "Uptime";
             // 
             // groupBox4
             // 
@@ -1413,8 +1434,10 @@
             // 
             // groupBox10
             // 
+            this.groupBox10.AutoSize = true;
             this.groupBox10.Controls.Add(this.tableLayoutPanel8);
             this.groupBox10.Location = new System.Drawing.Point(606, 3);
+            this.groupBox10.MinimumSize = new System.Drawing.Size(195, 76);
             this.groupBox10.Name = "groupBox10";
             this.groupBox10.Size = new System.Drawing.Size(195, 76);
             this.groupBox10.TabIndex = 8;
@@ -1423,6 +1446,7 @@
             // 
             // tableLayoutPanel8
             // 
+            this.tableLayoutPanel8.AutoSize = true;
             this.tableLayoutPanel8.ColumnCount = 2;
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -1465,6 +1489,7 @@
             // labelCPUContextSwitches
             // 
             this.labelCPUContextSwitches.AutoEllipsis = true;
+            this.labelCPUContextSwitches.AutoSize = true;
             this.labelCPUContextSwitches.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCPUContextSwitches.Location = new System.Drawing.Point(98, 0);
             this.labelCPUContextSwitches.Name = "labelCPUContextSwitches";
@@ -1476,6 +1501,7 @@
             // labelCPUSystemCalls
             // 
             this.labelCPUSystemCalls.AutoEllipsis = true;
+            this.labelCPUSystemCalls.AutoSize = true;
             this.labelCPUSystemCalls.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCPUSystemCalls.Location = new System.Drawing.Point(98, 38);
             this.labelCPUSystemCalls.Name = "labelCPUSystemCalls";
@@ -1497,6 +1523,7 @@
             // labelCPUInterrupts
             // 
             this.labelCPUInterrupts.AutoEllipsis = true;
+            this.labelCPUInterrupts.AutoSize = true;
             this.labelCPUInterrupts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelCPUInterrupts.Location = new System.Drawing.Point(98, 19);
             this.labelCPUInterrupts.Name = "labelCPUInterrupts";
@@ -1517,27 +1544,6 @@
             this.checkAlwaysOnTop.Text = "Always on Top";
             this.checkAlwaysOnTop.UseVisualStyleBackColor = true;
             this.checkAlwaysOnTop.CheckedChanged += new System.EventHandler(this.checkAlwaysOnTop_CheckedChanged);
-            // 
-            // label34
-            // 
-            this.label34.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(3, 50);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(40, 13);
-            this.label34.TabIndex = 1;
-            this.label34.Text = "Uptime";
-            // 
-            // labelTotalsUptime
-            // 
-            this.labelTotalsUptime.AutoEllipsis = true;
-            this.labelTotalsUptime.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelTotalsUptime.Location = new System.Drawing.Point(65, 48);
-            this.labelTotalsUptime.Name = "labelTotalsUptime";
-            this.labelTotalsUptime.Size = new System.Drawing.Size(121, 17);
-            this.labelTotalsUptime.TabIndex = 2;
-            this.labelTotalsUptime.Text = "value";
-            this.labelTotalsUptime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // SysInfoWindow
             // 
@@ -1563,6 +1569,7 @@
             this.groupBox12.ResumeLayout(false);
             this.groupBox13.ResumeLayout(false);
             this.flowInfo.ResumeLayout(false);
+            this.flowInfo.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
@@ -1585,6 +1592,7 @@
             this.tableLayoutPanel7.ResumeLayout(false);
             this.tableLayoutPanel7.PerformLayout();
             this.groupBox10.ResumeLayout(false);
+            this.groupBox10.PerformLayout();
             this.tableLayoutPanel8.ResumeLayout(false);
             this.tableLayoutPanel8.PerformLayout();
             this.ResumeLayout(false);
