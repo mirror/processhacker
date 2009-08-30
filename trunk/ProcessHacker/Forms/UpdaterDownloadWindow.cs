@@ -164,6 +164,8 @@ public partial class UpdaterDownloadWindow : Form
 
         if (appUpdateMD5 == sb.ToString())
         {
+            buttonInstall.Enabled = true;
+            buttonInstall.Select();
             labelProgress.Text = "Download completed and SHA1 verified successfully.";
         }
         else
@@ -171,9 +173,7 @@ public partial class UpdaterDownloadWindow : Form
             labelProgress.Text = "SHA1 hash verification failed!";
             labelProgress.Font = new System.Drawing.Font(labelProgress.Font, System.Drawing.FontStyle.Bold);
         }
-
-        buttonInstall.Enabled = true;
-        buttonInstall.Select();
+      
         buttonStop.Text = "Close";
     }
 
@@ -201,14 +201,10 @@ public partial class UpdaterDownloadWindow : Form
                                 this.Handle
                                 );
         }
-        else if (Program.ElevationType == TokenElevationType.Full)
+        else
         {
             //If UAC disabled or PH already elevated, PH will not exit without this.
             success = true;
-            Program.TryStart(appUpdateFilenamePath);
-        }
-        else //Might need reworking -more tests pending-
-        {
             Program.TryStart(appUpdateFilenamePath);
         }
 
