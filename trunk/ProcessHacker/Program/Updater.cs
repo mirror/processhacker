@@ -189,7 +189,7 @@ namespace ProcessHacker
                 {
                     MessageBox.Show(
                         form,
-                        "Process Hacker is up-to-date", 
+                        "Process Hacker is up-to-date.", 
                         "No updates available", MessageBoxButtons.OK, MessageBoxIcon.Information
                         );
                 }
