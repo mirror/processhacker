@@ -76,7 +76,7 @@ namespace ProcessHacker
             {
                 if (update == null)
                     return true;
-                if ((int)update.Type > (int)preferredType)
+                if ((int)this.Type > (int)preferredType)
                     return false;
 
                 return this.Version > update.Version || this.Date > update.Date;
@@ -144,7 +144,7 @@ namespace ProcessHacker
                     td.PositionRelativeToWindow = true;
                     td.Content = 
                         "Your Version: " + currentVersion.Version.ToString() +
-                        "\nServer Version: " + bestUpdate.Version.ToString() + "\n\n" + bestUpdate.Message;
+                        "\nServer Version: " + bestUpdate.Version.ToString() + "\n\n" + "\n" + bestUpdate.Message;
                     td.MainInstruction = "Process Hacker update available";
                     td.WindowTitle = "Update available";
                     td.MainIcon = TaskDialogIcon.SecurityWarning;
