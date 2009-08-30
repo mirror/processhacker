@@ -524,11 +524,11 @@ namespace ProcessHacker
         }
 
         private void UpdateCheckMenuItem_Click(object sender, EventArgs e)
-        {
-            updateNowMenuItem.Enabled = false;
-
-            Thread t = new Thread(new ThreadStart(this.UpdateProgram));
-            t.IsBackground = true;
+        {        
+            checkForUpdatesMenuItem.Enabled = false;
+      
+            Thread t = new Thread(new ThreadStart(this.UpdateProgram));   
+            t.IsBackground = true;   
             t.Start();
         }
 
@@ -537,7 +537,7 @@ namespace ProcessHacker
             this.QueueMessage("Starting update check");
             Updater.Update(this);
             this.QueueMessage("Finished update check");
-            this.Invoke(new MethodInvoker(() => updateNowMenuItem.Enabled = true));
+            this.Invoke(new MethodInvoker(() => checkForUpdatesMenuItem.Enabled = true));
         }
 
         #region View
