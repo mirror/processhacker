@@ -946,9 +946,10 @@
             // optUpdateAlpha
             // 
             this.optUpdateAlpha.AutoSize = true;
+            this.optUpdateAlpha.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.optUpdateAlpha.Location = new System.Drawing.Point(68, 52);
             this.optUpdateAlpha.Name = "optUpdateAlpha";
-            this.optUpdateAlpha.Size = new System.Drawing.Size(94, 17);
+            this.optUpdateAlpha.Size = new System.Drawing.Size(100, 18);
             this.optUpdateAlpha.TabIndex = 23;
             this.optUpdateAlpha.Text = "Alpha releases";
             this.optUpdateAlpha.UseVisualStyleBackColor = true;
@@ -956,9 +957,10 @@
             // optUpdateBeta
             // 
             this.optUpdateBeta.AutoSize = true;
+            this.optUpdateBeta.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.optUpdateBeta.Location = new System.Drawing.Point(68, 29);
             this.optUpdateBeta.Name = "optUpdateBeta";
-            this.optUpdateBeta.Size = new System.Drawing.Size(89, 17);
+            this.optUpdateBeta.Size = new System.Drawing.Size(95, 18);
             this.optUpdateBeta.TabIndex = 22;
             this.optUpdateBeta.Text = "Beta releases";
             this.optUpdateBeta.UseVisualStyleBackColor = true;
@@ -967,9 +969,10 @@
             // 
             this.optUpdateStable.AutoSize = true;
             this.optUpdateStable.Checked = true;
+            this.optUpdateStable.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.optUpdateStable.Location = new System.Drawing.Point(68, 6);
             this.optUpdateStable.Name = "optUpdateStable";
-            this.optUpdateStable.Size = new System.Drawing.Size(97, 17);
+            this.optUpdateStable.Size = new System.Drawing.Size(103, 18);
             this.optUpdateStable.TabIndex = 21;
             this.optUpdateStable.TabStop = true;
             this.optUpdateStable.Text = "Stable releases";

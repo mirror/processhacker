@@ -37,6 +37,7 @@ public partial class UpdaterDownloadWindow : Form
     private Updater.UpdateItem _updateItem;
     private string _fileName;
     private WebClient _webClient;
+    private bool _redirected = false;
 
     public UpdaterDownloadWindow(Updater.UpdateItem updateItem)
     {   
@@ -49,7 +50,7 @@ public partial class UpdaterDownloadWindow : Form
     {
         string version;
 
-        version = _updateItem.Version.Major + "." + _updateItem.Version.MajorRevision;
+        version = _updateItem.Version.Major + "." + _updateItem.Version.Minor;
         _fileName = Path.GetTempPath() + "processhacker-" + version + "-setup.exe";
 
         labelTitle.Text = "Downloading: Process Hacker " + version;
@@ -74,6 +75,54 @@ public partial class UpdaterDownloadWindow : Form
 
     private void webClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
     {
+        // Check if the file is actually an executable file.
+        if (!_redirected)
+        {
+            try
+            {
+                bool isHtml = false;
+
+                using (var file = new BinaryReader(File.OpenRead(_fileName)))
+                {
+                    if (!file.ReadChars(2).Equals("MZ".ToCharArray()))
+                    {
+                        isHtml = true;
+                    }
+                }
+
+                _redirected = true;
+
+                if (isHtml)
+                {
+                    string text = File.ReadAllText(_fileName);
+
+                    // Assume this is from Ohloh.
+                    int iframeIndex = text.IndexOf("window.delayed_iframe");
+
+                    if (iframeIndex == -1)
+                        return;
+
+                    int httpIndex = text.IndexOf("http://", iframeIndex);
+
+                    if (httpIndex == -1)
+                        return;
+
+                    int quoteIndex = text.IndexOf("'", httpIndex);
+
+                    if (quoteIndex == -1)
+                        return;
+
+                    _webClient.DownloadFileAsync(new Uri(text.Substring(httpIndex, quoteIndex - httpIndex)), _fileName);
+
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
+        }
+
         if (!e.Cancelled)
         {
             verifyWorker.RunWorkerAsync(_fileName);
