@@ -41,12 +41,22 @@ namespace ProcessHacker
             XmlDocument xDoc = new XmlDocument();
 
             try
-            {
+            {   
                 xDoc.Load("http://processhacker.sourceforge.net/AppUpdate.xml");
+            }
+            catch (System.Net.Sockets.SocketException ex)
+            {
+                Program.HackerWindow.QueueMessage("Update Check SocketException: " + ex.Message);
+                return;
+            }
+            catch (System.Net.WebException ex)
+            {
+                Program.HackerWindow.QueueMessage("Update Check WebException: " + ex.Message + " - " + ex.Status);
+                return;
             }
             catch (Exception ex)
             {
-                Logging.Log(ex);
+                Program.HackerWindow.QueueMessage("Update Check Exception: " + ex.Message + " - " + ex.StackTrace);
                 return;
             }
 
@@ -204,8 +214,7 @@ namespace ProcessHacker
                 mainFrm.BeginInvoke(new Delegate(DoDownload), new object[] { mainFrm, appUpdateName, appUpdateURL, appUpdateVersion, appUpdateReleased, appUpdateHash });
                 return;
             }
-
-            //UpdaterDownloadWindow up = 
+            //Executed by HackerWindow thread
                 new UpdaterDownloadWindow(
                     appUpdateName, 
                     appUpdateURL, 
