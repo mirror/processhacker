@@ -55,9 +55,10 @@ namespace ProcessHacker
 
             public UpdateItem(XmlNode node)
             {
-                this.Name = node["name"].InnerText;
+                this.Name = node["title"].InnerText;
                 this.Version = new Version(node["version"].InnerText);
                 this.Date = DateTime.Parse(node["released"].InnerText, DateTimeFormatInfo.InvariantInfo);
+                this.Type = GetUpdateLevel(node["type"].InnerText);
                 this.Message = node["description"].InnerText;
                 this.Url = node["updateurl"].InnerText;
                 this.Hash = node["hash"].InnerText;
@@ -110,6 +111,8 @@ namespace ProcessHacker
                 return;
             }
 
+            var mainWindow = new WindowFromHandle(Program.HackerWindowHandle);
+
             UpdateItem currentVersion = new UpdateItem();
             UpdateItem bestUpdate = currentVersion;
 
@@ -151,12 +154,12 @@ namespace ProcessHacker
                         new TaskDialogButton((int)DialogResult.No, "Cancel"),
                     };
 
-                    dialogResult = (DialogResult)td.Show(form);
+                    dialogResult = (DialogResult)td.Show(mainWindow);
                 }
                 else
                 {
                     dialogResult = MessageBox.Show(
-                        form,
+                        mainWindow,
                         "Your Version: " + currentVersion.Version.ToString() +
                         "\nServer Version: " + bestUpdate.Version.ToString() + "\n\n" + bestUpdate.Message +
                         "\n\nDo you want to download the update now?",
@@ -183,12 +186,12 @@ namespace ProcessHacker
                     td.WindowTitle = "No updates available";
                     td.MainIcon = TaskDialogIcon.SecuritySuccess;
                     td.CommonButtons = TaskDialogCommonButtons.Ok;
-                    td.Show(form);
+                    td.Show(mainWindow);
                 }
                 else
                 {
                     MessageBox.Show(
-                        form,
+                        mainWindow,
                         "Process Hacker is up-to-date.", 
                         "No updates available", MessageBoxButtons.OK, MessageBoxIcon.Information
                         );
