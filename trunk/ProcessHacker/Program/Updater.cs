@@ -134,6 +134,17 @@ namespace ProcessHacker
                 }
             }
 
+            PromptWithUpdate(form, bestUpdate, currentVersion);
+        }
+
+        private static void PromptWithUpdate(Form form, UpdateItem bestUpdate, UpdateItem currentVersion)
+        {
+            if (form.InvokeRequired)
+            {
+                form.BeginInvoke(new MethodInvoker(() => PromptWithUpdate(form, bestUpdate, currentVersion)));
+                return;
+            }
+
             if (bestUpdate != currentVersion)
             {
                 DialogResult dialogResult;
@@ -142,7 +153,7 @@ namespace ProcessHacker
                 {
                     TaskDialog td = new TaskDialog();
                     td.PositionRelativeToWindow = true;
-                    td.Content = 
+                    td.Content =
                         "Your Version: " + currentVersion.Version.ToString() +
                         "\nServer Version: " + bestUpdate.Version.ToString() + "\n\n" + "\n" + bestUpdate.Message;
                     td.MainInstruction = "Process Hacker update available";
@@ -154,12 +165,12 @@ namespace ProcessHacker
                         new TaskDialogButton((int)DialogResult.No, "Cancel"),
                     };
 
-                    dialogResult = (DialogResult)td.Show(mainWindow);
+                    dialogResult = (DialogResult)td.Show(form);
                 }
                 else
                 {
                     dialogResult = MessageBox.Show(
-                        mainWindow,
+                        form,
                         "Your Version: " + currentVersion.Version.ToString() +
                         "\nServer Version: " + bestUpdate.Version.ToString() + "\n\n" + bestUpdate.Message +
                         "\n\nDo you want to download the update now?",
@@ -169,9 +180,9 @@ namespace ProcessHacker
 
                 if (dialogResult == DialogResult.Yes)
                 {
-                    DoDownload(form, bestUpdate);
+                    DownloadUpdate(form, bestUpdate);
                 }
-                
+
             }
             else
             {
@@ -179,36 +190,34 @@ namespace ProcessHacker
                 {
                     TaskDialog td = new TaskDialog();
                     td.PositionRelativeToWindow = true;
-                    td.Content = 
+                    td.Content =
                         "Your Version: " + currentVersion.Version.ToString() +
                         "\nServer Version: " + bestUpdate.Version.ToString();
                     td.MainInstruction = "Process Hacker is up-to-date";
                     td.WindowTitle = "No updates available";
                     td.MainIcon = TaskDialogIcon.SecuritySuccess;
                     td.CommonButtons = TaskDialogCommonButtons.Ok;
-                    td.Show(mainWindow);
+                    td.Show(form);
                 }
                 else
                 {
                     MessageBox.Show(
-                        mainWindow,
-                        "Process Hacker is up-to-date.", 
+                        form,
+                        "Process Hacker is up-to-date.",
                         "No updates available", MessageBoxButtons.OK, MessageBoxIcon.Information
                         );
                 }
             }
         }
 
-        private static void DoDownload(Form form, UpdateItem updateItem)
+        private static void DownloadUpdate(Form form, UpdateItem updateItem)
         {
-            //Updater executed on BackGround thread, We need to Invoke before calling DownloadWindow
             if (form.InvokeRequired)  
             {
-                form.BeginInvoke(new MethodInvoker(() => DoDownload(form, updateItem)));
+                form.BeginInvoke(new MethodInvoker(() => DownloadUpdate(form, updateItem)));
                 return;
             }
 
-            //Executed by HackerWindow thread
             new UpdaterDownloadWindow(updateItem).ShowDialog(form);
         }
 
@@ -248,6 +257,5 @@ namespace ProcessHacker
                 return (DateTime)AssemblyBuildDate;
             }
         }
-
     }
 }
