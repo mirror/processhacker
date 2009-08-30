@@ -31,52 +31,44 @@ using ProcessHacker;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
-  
+
 public partial class UpdaterDownloadWindow : Form  
 {
-    private string appUpdateName;
-    private string appUpdateURL;
-    private string appUpdateVersion;
-    private string appUpdateReleased;
-    private string appUpdateMD5;
-    private string appUpdateFilenamePath;
-    private WebClient webClient;
+    private Updater.UpdateItem _updateItem;
+    private string _fileName;
+    private WebClient _webClient;
 
-    public UpdaterDownloadWindow(string appName, string appURL, string appVer, string appReleased, string appHash)
+    public UpdaterDownloadWindow(Updater.UpdateItem updateItem)
     {   
         InitializeComponent();
 
-        appUpdateName = appName;
-        appUpdateURL = appURL;
-        appUpdateVersion = appVer;
-        appUpdateReleased = appReleased; 
-        appUpdateMD5 = appHash;
+        _updateItem = updateItem;
     }
 
     private void UpdaterDownload_Load(object sender, EventArgs e)
     {
-        if (appUpdateName != null && appUpdateURL != null && appUpdateVersion != null && appUpdateReleased != null && appUpdateMD5 != null)
+        string version;
+
+        version = _updateItem.Version.Major + "." + _updateItem.Version.MajorRevision;
+        _fileName = Path.GetTempPath() + "processhacker-" + version + "-setup.exe";
+
+        labelTitle.Text = "Downloading: Process Hacker " + version;
+        labelReleased.Text = "Released: " + _updateItem.Date.ToString();
+
+        _webClient = new WebClient();
+        _webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(webClient_DownloadProgressChanged);
+        _webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(webClient_DownloadFileCompleted);
+        _webClient.Headers.Add("User-Agent", "PH/" + version + " (compatible; PH " + 
+            version + "; PH " + version + "; .NET CLR " + Environment.Version.ToString() + ";)");
+
+        try
         {
-            appUpdateVersion = new Version(appUpdateVersion).Major + "." + new Version(appUpdateVersion).MajorRevision;
-            appUpdateFilenamePath = Path.GetTempPath() + "processhacker-" + appUpdateVersion + "-setup.exe";
-
-            labelTitle.Text = "Downloading: Process Hacker " + appUpdateVersion;
-            labelReleased.Text = "Released: " + appUpdateReleased;
-
-            webClient = new WebClient();
-            webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(webClient_DownloadProgressChanged);
-            webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(webClient_DownloadFileCompleted);
-            webClient.Headers.Add("user-agent", "PH/" + appUpdateVersion + " (compatible; PH " + appUpdateVersion + "; PH " + appUpdateVersion + "; .NET CLR " + Environment.Version + ";)");
-
-            try
-            {
-                webClient.DownloadFileAsync(new Uri(appUpdateURL), appUpdateFilenamePath);
-            }
-            catch (Exception ex)
-            {
-                PhUtils.ShowException("Unable to download Process Hacker", ex);
-                this.Close();
-            }
+            _webClient.DownloadFileAsync(new Uri(_updateItem.Url), _fileName);
+        }
+        catch (Exception ex)
+        {
+            PhUtils.ShowException("Unable to download Process Hacker", ex);
+            this.Close();
         }
     }
 
@@ -84,11 +76,16 @@ public partial class UpdaterDownloadWindow : Form
     {
         if (!e.Cancelled)
         {
-            verifyWorker.RunWorkerAsync(appUpdateFilenamePath);
+            verifyWorker.RunWorkerAsync(_fileName);
         }
-        else // Dont attempt Hashing after download Cancelation/Error
-        {    //(e.Error == WebExceptionStatus.UnknownError) - This needs work           
-            PhUtils.ShowException("Unable to download Process Hacker", e.Error);
+        else
+        {
+            var webException = e.Error as WebException;
+
+            if (webException != null && webException.Status != WebExceptionStatus.RequestCanceled)
+            {
+                PhUtils.ShowException("Unable to download the update", webException);
+            }
         }
     }
 
@@ -159,21 +156,21 @@ public partial class UpdaterDownloadWindow : Form
 
         foreach (byte b in (byte[])e.Result)
         {
-            sb.AppendFormat("{0:X2}", b);
+            sb.AppendFormat("{0:x2}", b);
         }
 
-        if (appUpdateMD5 == sb.ToString())
+        if (_updateItem.Hash.Equals(sb.ToString(), StringComparison.InvariantCultureIgnoreCase))
         {
+            labelProgress.Text = "Download completed and SHA1 verified successfully.";
             buttonInstall.Enabled = true;
             buttonInstall.Select();
-            labelProgress.Text = "Download completed and SHA1 verified successfully.";
         }
         else
         {
             labelProgress.Text = "SHA1 hash verification failed!";
             labelProgress.Font = new System.Drawing.Font(labelProgress.Font, System.Drawing.FontStyle.Bold);
         }
-      
+
         buttonStop.Text = "Close";
     }
 
@@ -194,7 +191,7 @@ public partial class UpdaterDownloadWindow : Form
         if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited)
         {
             Program.StartProgramAdmin(
-                                appUpdateFilenamePath,
+                                _fileName,
                                 "",
                                 new MethodInvoker(() => success = true),
                                 ShowWindowType.Normal,
@@ -203,9 +200,15 @@ public partial class UpdaterDownloadWindow : Form
         }
         else
         {
-            //If UAC disabled or PH already elevated, PH will not exit without this.
-            success = true;
-            Program.TryStart(appUpdateFilenamePath);
+            try
+            {
+                System.Diagnostics.Process.Start(_fileName);
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to start the installer", ex);
+            }
         }
 
         if (success)
@@ -228,8 +231,8 @@ public partial class UpdaterDownloadWindow : Form
 
     private void buttonStop_Click(object sender, EventArgs e)
     {
-        if (webClient.IsBusy)
-        { webClient.CancelAsync(); }
+        if (_webClient.IsBusy)
+            _webClient.CancelAsync();
 
         this.Close();
     }

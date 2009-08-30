@@ -339,17 +339,18 @@ namespace ProcessHacker
             catch
             { }
 
-            if (Properties.Settings.Default.AppUpdateStable)
+            switch ((AppUpdateLevel)Properties.Settings.Default.AppUpdateLevel)
             {
-                optUpdateStable.Checked = true;
-            }
-            else if (Properties.Settings.Default.AppUpdateBeta)
-            {
-                optUpdateBeta.Checked = true;
-            }
-            else if (Properties.Settings.Default.AppUpdateAlpha)
-            {
-                optUpdateAlpha.Checked = true;
+                case AppUpdateLevel.Stable:
+                default:
+                    optUpdateStable.Checked = true;
+                    break;
+                case AppUpdateLevel.Beta:
+                    optUpdateBeta.Checked = true;
+                    break;
+                case AppUpdateLevel.Alpha:
+                    optUpdateAlpha.Checked = true;
+                    break;
             }
         }
 
@@ -403,21 +404,15 @@ namespace ProcessHacker
 
             if (optUpdateStable.Checked)
             {
-                Properties.Settings.Default.AppUpdateStable = true;
-                Properties.Settings.Default.AppUpdateBeta = false;
-                Properties.Settings.Default.AppUpdateAlpha = false;
+                Properties.Settings.Default.AppUpdateLevel = (int)AppUpdateLevel.Stable;
             }
             else if (optUpdateBeta.Checked)
             {
-                Properties.Settings.Default.AppUpdateStable = false;
-                Properties.Settings.Default.AppUpdateBeta = true;
-                Properties.Settings.Default.AppUpdateAlpha = false;
+                Properties.Settings.Default.AppUpdateLevel = (int)AppUpdateLevel.Beta;
             }
             else if (optUpdateAlpha.Checked)
             {
-                Properties.Settings.Default.AppUpdateStable = false;
-                Properties.Settings.Default.AppUpdateBeta = false;
-                Properties.Settings.Default.AppUpdateAlpha = true;
+                Properties.Settings.Default.AppUpdateLevel = (int)AppUpdateLevel.Alpha;
             }
 
             Properties.Settings.Default.Save();

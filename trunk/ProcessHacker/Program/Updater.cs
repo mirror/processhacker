@@ -1,7 +1,8 @@
 ﻿/*
  * Process Hacker - 
- *   ProcessHacker Updater
+ *   Process Hacker updater
  * 
+ * Copyright (C) 2009 wj32
  * Copyright (C) 2009 dmex
  * 
  * This file is part of Process Hacker.
@@ -28,15 +29,74 @@ using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.UI;
 using System.Threading;
+using System.Globalization;
 
 namespace ProcessHacker
 {
+    public enum AppUpdateLevel
+    {
+        Stable = 0,
+        Beta = 1,
+        Alpha = 2
+    }
+
     /// <summary>
     /// Application Updater Class for Process Hacker
     /// </summary>
     public static class Updater
     {
-        public static void Update(Form mainFrm)
+        public class UpdateItem
+        {
+            public UpdateItem()
+            {
+                this.Version = new Version(Application.ProductVersion);
+                this.Date = GetAssemblyBuildDate();
+            }
+
+            public UpdateItem(XmlNode node)
+            {
+                this.Name = node["name"].InnerText;
+                this.Version = new Version(node["version"].InnerText);
+                this.Date = DateTime.Parse(node["released"].InnerText, DateTimeFormatInfo.InvariantInfo);
+                this.Message = node["description"].InnerText;
+                this.Url = node["updateurl"].InnerText;
+                this.Hash = node["hash"].InnerText;
+            }
+
+            public string Name { get; private set; }
+            public Version Version { get; private set; }
+            public DateTime Date { get; private set; }
+            public AppUpdateLevel Type { get; private set; }
+            public string Message { get; private set; }
+            public string Url { get; private set; }
+            public string Hash { get; private set; }
+
+            public bool IsBetterThan(UpdateItem update, AppUpdateLevel preferredType)
+            {
+                if (update == null)
+                    return true;
+                if ((int)update.Type > (int)preferredType)
+                    return false;
+
+                return this.Version > update.Version || this.Date > update.Date;
+            }
+        }
+
+        private static AppUpdateLevel GetUpdateLevel(string level)
+        {
+            switch (level.ToLowerInvariant())
+            {
+                case "stable":
+                    return AppUpdateLevel.Stable;
+                case "beta":
+                    return AppUpdateLevel.Beta;
+                case "alpha":
+                default:
+                    return AppUpdateLevel.Alpha;
+            }
+        }
+
+        public static void Update(Form form)
         {
             XmlDocument xDoc = new XmlDocument();
 
@@ -44,96 +104,34 @@ namespace ProcessHacker
             {   
                 xDoc.Load("http://processhacker.sourceforge.net/AppUpdate.xml");
             }
-            catch (System.Net.Sockets.SocketException ex)
-            {
-                Program.HackerWindow.QueueMessage("Update Check SocketException: " + ex.Message);
-                return;
-            }
-            catch (System.Net.WebException ex)
-            {
-                Program.HackerWindow.QueueMessage("Update Check WebException: " + ex.Message + " - " + ex.Status);
-                return;
-            }
             catch (Exception ex)
             {
-                Program.HackerWindow.QueueMessage("Update Check Exception: " + ex.Message + " - " + ex.StackTrace);
+                Program.HackerWindow.QueueMessage("Update check exception: " + ex.Message);
                 return;
             }
 
-            string appUpdateUrl = null;
-            string appUpdateHash = null;
-            string appUpdateName = null;
-            string appUpdateMessage = null;     
-            string appUpdateVersion = null;
-            string appUpdateRelease = null;
+            UpdateItem currentVersion = new UpdateItem();
+            UpdateItem bestUpdate = currentVersion;
 
-            int Release = 7;
-            int Beta = 4;
-            int Alpha = 5;
+            XmlNodeList nodes = xDoc.SelectNodes("//update");
 
-            XmlNodeList items = xDoc.SelectNodes("//update");
-            foreach (XmlNode xn in items)
+            foreach (XmlNode node in nodes)
             {
-                if (DateTime.Parse(xn["released"].InnerText) > GetAssemblyBuildDate() &&
-                    new Version(xn["version"].InnerText) > new Version(Application.ProductVersion) &&
-                    xn["type"].InnerText.Length == Release)
+                try
                 {
-                    Program.HackerWindow.QueueMessage(
-                        "Found New " + xn["type"].InnerText + 
-                        " Version: " + xn["version"].InnerText +
-                        " - Current Version: " + Application.ProductVersion.ToString());
-                   
-                    appUpdateUrl = xn["updateurl"].InnerText;
-                    appUpdateHash = xn["hash"].InnerText;
-                    appUpdateName = xn["title"].InnerText;
-                    appUpdateMessage = xn["description"].InnerText;
-                    appUpdateVersion = xn["version"].InnerText;
-                    appUpdateRelease = xn["released"].InnerText;
-                }
-                else if (Properties.Settings.Default.AppUpdateBeta)
-                {
-                    if (DateTime.Parse(xn["released"].InnerText) > GetAssemblyBuildDate() &&
-                        new Version(xn["version"].InnerText) > new Version(Application.ProductVersion) &&
-                        xn["type"].InnerText.Length == Release || 
-                        xn["type"].InnerText.Length == Beta) 
-                    {
-                        Program.HackerWindow.QueueMessage(
-                            "Found New " + xn["type"].InnerText + 
-                            " Version: " + xn["version"].InnerText +
-                            " - Current Version: " + Application.ProductVersion.ToString());
+                    UpdateItem update = new UpdateItem(node);
 
-                        appUpdateUrl = xn["updateurl"].InnerText;
-                        appUpdateHash = xn["hash"].InnerText;
-                        appUpdateName = xn["title"].InnerText;
-                        appUpdateMessage = xn["description"].InnerText;
-                        appUpdateVersion = xn["version"].InnerText;
-                        appUpdateRelease = xn["released"].InnerText;
-                    }
+                    // Check if this update is better than the one we already have.
+                    if (update.IsBetterThan(bestUpdate, (AppUpdateLevel)Properties.Settings.Default.AppUpdateLevel))
+                        bestUpdate = update;
                 }
-                else if (Properties.Settings.Default.AppUpdateAlpha)
+                catch (Exception ex)
                 {
-                    if (DateTime.Parse(xn["released"].InnerText) > GetAssemblyBuildDate() &&
-                        new Version(xn["version"].InnerText) > new Version(Application.ProductVersion) &&
-                        xn["type"].InnerText.Length == Release || 
-                        xn["type"].InnerText.Length == Beta || 
-                        xn["type"].InnerText.Length == Alpha)
-                    {
-                        Program.HackerWindow.QueueMessage(
-                            "Found New " + xn["type"].InnerText + 
-                            " Version: " + xn["version"].InnerText + 
-                            " - Current Version: " + Application.ProductVersion.ToString());
-
-                        appUpdateUrl = xn["updateurl"].InnerText;
-                        appUpdateHash = xn["hash"].InnerText;
-                        appUpdateName = xn["title"].InnerText;
-                        appUpdateMessage = xn["description"].InnerText;
-                        appUpdateVersion = xn["version"].InnerText;
-                        appUpdateRelease = xn["released"].InnerText;
-                    }
+                    Logging.Log(ex);
                 }
             }
 
-            if (appUpdateVersion != null && appUpdateMessage != null)
+            if (bestUpdate != currentVersion)
             {
                 DialogResult dialogResult;
 
@@ -142,10 +140,10 @@ namespace ProcessHacker
                     TaskDialog td = new TaskDialog();
                     td.PositionRelativeToWindow = true;
                     td.Content = 
-                        "Your Version: " + Application.ProductVersion + Environment.NewLine +
-                        "Server Version: " + appUpdateVersion + Environment.NewLine + Environment.NewLine + appUpdateMessage;
-                    td.MainInstruction = "Process Hacker Update Available";
-                    td.WindowTitle = "Update Available";
+                        "Your Version: " + currentVersion.Version.ToString() +
+                        "\nServer Version: " + bestUpdate.Version.ToString() + "\n\n" + bestUpdate.Message;
+                    td.MainInstruction = "Process Hacker update available";
+                    td.WindowTitle = "Update available";
                     td.MainIcon = TaskDialogIcon.SecurityWarning;
                     td.Buttons = new TaskDialogButton[]
                     {
@@ -153,29 +151,22 @@ namespace ProcessHacker
                         new TaskDialogButton((int)DialogResult.No, "Cancel"),
                     };
 
-                    dialogResult = (DialogResult)td.Show(Program.HackerWindowHandle);
+                    dialogResult = (DialogResult)td.Show(form);
                 }
                 else
                 {
                     dialogResult = MessageBox.Show(
-                        new WindowFromHandle(Program.HackerWindowHandle),
-                        "Your Version: " + Application.ProductVersion + Environment.NewLine +
-                        "Server Version: " + appUpdateVersion + Environment.NewLine + Environment.NewLine +
-                        appUpdateMessage + Environment.NewLine + Environment.NewLine +
-                        "Do you want to download the update now?",
-                        "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation
+                        form,
+                        "Your Version: " + currentVersion.Version.ToString() +
+                        "\nServer Version: " + bestUpdate.Version.ToString() + "\n\n" + bestUpdate.Message +
+                        "\n\nDo you want to download the update now?",
+                        "Update available", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation
                         );
                 }
 
                 if (dialogResult == DialogResult.Yes)
                 {
-                    DoDownload(
-                        mainFrm, 
-                        appUpdateName,
-                        appUpdateUrl,
-                        appUpdateVersion,
-                        appUpdateRelease,
-                        appUpdateHash);
+                    DoDownload(form, bestUpdate);
                 }
                 
             }
@@ -186,41 +177,36 @@ namespace ProcessHacker
                     TaskDialog td = new TaskDialog();
                     td.PositionRelativeToWindow = true;
                     td.Content = 
-                        "Your Version: " + Application.ProductVersion  + Environment.NewLine + Environment.NewLine + 
-                        "Server Version: " + appUpdateVersion;
+                        "Your Version: " + currentVersion.Version.ToString() +
+                        "\nServer Version: " + bestUpdate.Version.ToString();
                     td.MainInstruction = "Process Hacker is up-to-date";
-                    td.WindowTitle = "No Updates Available";
+                    td.WindowTitle = "No updates available";
                     td.MainIcon = TaskDialogIcon.SecuritySuccess;
                     td.CommonButtons = TaskDialogCommonButtons.Ok;
-                    td.Show(Program.HackerWindowHandle);
+                    td.Show(form);
                 }
                 else
                 {
                     MessageBox.Show(
-                        new WindowFromHandle(Program.HackerWindowHandle),
+                        form,
                         "Process Hacker is up-to-date", 
-                        "No Updates Available", MessageBoxButtons.OK, MessageBoxIcon.Information
+                        "No updates available", MessageBoxButtons.OK, MessageBoxIcon.Information
                         );
                 }
             }
         }
 
-        private delegate void Delegate(Form mainFrm, string appUpdateName, string appUpdateURL, string appUpdateVersion, string appUpdateReleased, string appUpdateHash);
-        private static void DoDownload(Form mainFrm, string appUpdateName, string appUpdateURL, string appUpdateVersion, string appUpdateReleased, string appUpdateHash)
+        private static void DoDownload(Form form, UpdateItem updateItem)
         {
             //Updater executed on BackGround thread, We need to Invoke before calling DownloadWindow
-            if (mainFrm.InvokeRequired)  
+            if (form.InvokeRequired)  
             {
-                mainFrm.BeginInvoke(new Delegate(DoDownload), new object[] { mainFrm, appUpdateName, appUpdateURL, appUpdateVersion, appUpdateReleased, appUpdateHash });
+                form.BeginInvoke(new MethodInvoker(() => DoDownload(form, updateItem)));
                 return;
             }
+
             //Executed by HackerWindow thread
-                new UpdaterDownloadWindow(
-                    appUpdateName, 
-                    appUpdateURL, 
-                    appUpdateVersion, 
-                    appUpdateReleased, 
-                    appUpdateHash).ShowDialog(new WindowFromHandle(Program.HackerWindowHandle));
+            new UpdaterDownloadWindow(updateItem).ShowDialog(form);
         }
 
         private static DateTime? AssemblyBuildDate = null;
