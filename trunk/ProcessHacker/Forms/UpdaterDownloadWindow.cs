@@ -66,6 +66,7 @@ public partial class UpdaterDownloadWindow : Form
             webClient = new WebClient();
             webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(webClient_DownloadProgressChanged);
             webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(webClient_DownloadFileCompleted);
+            webClient.Headers.Add("user-agent", "PH/" + appUpdateVersion + " (compatible; PH " + appUpdateVersion + "; PH " + appUpdateVersion + "; .NET CLR " + Environment.Version + ";)");
 
             try
             {
@@ -81,7 +82,14 @@ public partial class UpdaterDownloadWindow : Form
 
     private void webClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
     {
-        verifyWorker.RunWorkerAsync(appUpdateFilenamePath);
+        if (!e.Cancelled)
+        {
+            verifyWorker.RunWorkerAsync(appUpdateFilenamePath);
+        }
+        else // Dont attempt Hashing after download Cancelation/Error
+        {    //(e.Error == WebExceptionStatus.UnknownError) - This needs work           
+            PhUtils.ShowException("Unable to download Process Hacker", e.Error);
+        }
     }
 
     private void webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -193,7 +201,13 @@ public partial class UpdaterDownloadWindow : Form
                                 this.Handle
                                 );
         }
-        else
+        else if (Program.ElevationType == TokenElevationType.Full)
+        {
+            //If UAC disabled or PH already elevated, PH will not exit without this.
+            success = true;
+            Program.TryStart(appUpdateFilenamePath);
+        }
+        else //Might need reworking -more tests pending-
         {
             Program.TryStart(appUpdateFilenamePath);
         }
@@ -219,7 +233,7 @@ public partial class UpdaterDownloadWindow : Form
     private void buttonStop_Click(object sender, EventArgs e)
     {
         if (webClient.IsBusy)
-            webClient.CancelAsync();
+        { webClient.CancelAsync(); }
 
         this.Close();
     }
