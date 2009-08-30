@@ -124,8 +124,6 @@ namespace ProcessHacker
                     bestUpdate = update;    
                 }
             }
-            Program.HackerWindow.QueueMessage("Found New Update: " + bestUpdate.appUpdateVersion + " " + bestUpdate.appUpdateType);
-
             PromptWithUpdate(form, bestUpdate, currentVersion);
         }
 
