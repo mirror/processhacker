@@ -50,11 +50,11 @@ public partial class UpdaterDownloadWindow : Form
     {
         string version;
 
-        version = _updateItem.Version.Major + "." + _updateItem.Version.Minor;
+        version = _updateItem.appUpdateVersion.Major + "." + _updateItem.appUpdateVersion.Minor;
         _fileName = Path.GetTempPath() + "processhacker-" + version + "-setup.exe";
 
         labelTitle.Text = "Downloading: Process Hacker " + version;
-        labelReleased.Text = "Released: " + _updateItem.Date.ToString();
+        labelReleased.Text = "Released: " + _updateItem.appUpdateDate.ToString();
 
         _webClient = new WebClient();
         _webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(webClient_DownloadProgressChanged);
@@ -64,7 +64,7 @@ public partial class UpdaterDownloadWindow : Form
 
         try
         {
-            _webClient.DownloadFileAsync(new Uri(_updateItem.Url), _fileName);
+            _webClient.DownloadFileAsync(new Uri(_updateItem.appUpdateUrl), _fileName);
         }
         catch (Exception ex)
         {
@@ -208,7 +208,7 @@ public partial class UpdaterDownloadWindow : Form
             sb.AppendFormat("{0:x2}", b);
         }
 
-        if (_updateItem.Hash.Equals(sb.ToString(), StringComparison.InvariantCultureIgnoreCase))
+        if (_updateItem.appUpdateHash.Equals(sb.ToString(), StringComparison.InvariantCultureIgnoreCase))
         {
             labelProgress.Text = "Download completed and SHA1 verified successfully.";
             buttonInstall.Enabled = true;
