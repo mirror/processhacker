@@ -120,6 +120,7 @@ public partial class UpdaterDownloadWindow : Form
             catch (Exception ex)
             {
                 Logging.Log(ex);
+                return;
             }
         }
 
