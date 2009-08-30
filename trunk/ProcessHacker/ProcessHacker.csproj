@@ -357,6 +357,9 @@
       <SubType>Form</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UpdaterDownloadWindow.resx">
+      <DependentUpon>UpdaterDownloadWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Resources\information.png" />
     <None Include="Resources\page_save.png" />
     <None Include="Resources\arrow_up.png" />
@@ -478,6 +481,12 @@
     </Compile>
     <Compile Include="Program\Settings.cs" />
     <Compile Include="Program\Updater.cs" />
+    <Compile Include="Forms\UpdaterDownloadWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UpdaterDownloadWindow.Designer.cs">
+      <DependentUpon>UpdaterDownloadWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Actions\SessionActions.cs" />
     <Compile Include="UI\GenericViewMenu.cs" />
     <Compile Include="UI\Icons\CommitHistoryIcon.cs" />
@@ -896,6 +905,7 @@
     </Content>
     <None Include="Resources\mouse.png" />
     <None Include="Resources\application_go.png" />
+    <None Include="Resources\sflogo.gif" />
     <Content Include="SharpDevelop\LICENSE.txt" />
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />

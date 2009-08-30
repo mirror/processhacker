@@ -535,7 +535,7 @@ namespace ProcessHacker
         private void UpdateProgram()
         {
             this.QueueMessage("Starting update check");
-            Updater.Update();
+            Updater.Update(this);
             this.QueueMessage("Finished update check");
             this.Invoke(new MethodInvoker(() => updateNowMenuItem.Enabled = true));
         }
@@ -2771,7 +2771,7 @@ namespace ProcessHacker
             base.WndProc(ref m);
         }
 
-        private void Exit()
+        public void Exit()
         {
             //processP.Dispose();
             //serviceP.Dispose();
