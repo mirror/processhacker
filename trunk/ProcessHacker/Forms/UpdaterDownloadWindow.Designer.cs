@@ -27,84 +27,90 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdaterDownloadWindow));
-            this.lblProgress = new System.Windows.Forms.Label();
-            this.proDownload = new System.Windows.Forms.ProgressBar();
+            this.labelProgress = new System.Windows.Forms.Label();
+            this.progressDownload = new System.Windows.Forms.ProgressBar();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.lblTitle = new System.Windows.Forms.Label();
-            this.lblReleased = new System.Windows.Forms.Label();
-            this.installBtn = new System.Windows.Forms.Button();
+            this.labelTitle = new System.Windows.Forms.Label();
+            this.labelReleased = new System.Windows.Forms.Label();
+            this.buttonStop = new System.Windows.Forms.Button();
             this.verifyWorker = new System.ComponentModel.BackgroundWorker();
+            this.buttonInstall = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
-            // lblProgress
+            // labelProgress
             // 
-            this.lblProgress.AutoSize = true;
-            this.lblProgress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblProgress.Location = new System.Drawing.Point(7, 65);
-            this.lblProgress.Name = "lblProgress";
-            this.lblProgress.Size = new System.Drawing.Size(97, 13);
-            this.lblProgress.TabIndex = 17;
-            this.lblProgress.Text = "Initiating Download";
+            this.labelProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelProgress.AutoSize = true;
+            this.labelProgress.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelProgress.Location = new System.Drawing.Point(12, 92);
+            this.labelProgress.Name = "labelProgress";
+            this.labelProgress.Size = new System.Drawing.Size(101, 13);
+            this.labelProgress.TabIndex = 17;
+            this.labelProgress.Text = "Starting download...";
             // 
-            // proDownload
+            // progressDownload
             // 
-            this.proDownload.Location = new System.Drawing.Point(10, 84);
-            this.proDownload.Name = "proDownload";
-            this.proDownload.Size = new System.Drawing.Size(372, 23);
-            this.proDownload.TabIndex = 13;
+            this.progressDownload.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressDownload.Location = new System.Drawing.Point(12, 112);
+            this.progressDownload.Name = "progressDownload";
+            this.progressDownload.Size = new System.Drawing.Size(367, 23);
+            this.progressDownload.TabIndex = 13;
             // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::ProcessHacker.Properties.Resources.ProcessHacker;
-            this.pictureBox1.Location = new System.Drawing.Point(10, 5);
+            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(57, 52);
+            this.pictureBox1.Size = new System.Drawing.Size(48, 48);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 19;
             this.pictureBox1.TabStop = false;
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Image = global::ProcessHacker.Properties.Resources.sflogo;
-            this.pictureBox2.Location = new System.Drawing.Point(291, 9);
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Location = new System.Drawing.Point(299, 12);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(86, 18);
+            this.pictureBox2.Size = new System.Drawing.Size(80, 20);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox2.TabIndex = 21;
             this.pictureBox2.TabStop = false;
             // 
-            // lblTitle
+            // labelTitle
             // 
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitle.Location = new System.Drawing.Point(73, 12);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(169, 13);
-            this.lblTitle.TabIndex = 22;
-            this.lblTitle.Text = "Downloading: Process Hacker 0.0";
+            this.labelTitle.AutoSize = true;
+            this.labelTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTitle.Location = new System.Drawing.Point(66, 12);
+            this.labelTitle.Name = "labelTitle";
+            this.labelTitle.Size = new System.Drawing.Size(169, 13);
+            this.labelTitle.TabIndex = 22;
+            this.labelTitle.Text = "Downloading: Process Hacker 0.0";
             // 
-            // lblReleased
+            // labelReleased
             // 
-            this.lblReleased.AutoSize = true;
-            this.lblReleased.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblReleased.Location = new System.Drawing.Point(73, 32);
-            this.lblReleased.Name = "lblReleased";
-            this.lblReleased.Size = new System.Drawing.Size(180, 13);
-            this.lblReleased.TabIndex = 23;
-            this.lblReleased.Text = "Released: 00/00/0000 00:00:00 AM";
+            this.labelReleased.AutoSize = true;
+            this.labelReleased.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelReleased.Location = new System.Drawing.Point(66, 31);
+            this.labelReleased.Name = "labelReleased";
+            this.labelReleased.Size = new System.Drawing.Size(180, 13);
+            this.labelReleased.TabIndex = 23;
+            this.labelReleased.Text = "Released: 00/00/0000 00:00:00 AM";
             // 
-            // installBtn
+            // buttonStop
             // 
-            this.installBtn.Location = new System.Drawing.Point(302, 55);
-            this.installBtn.Name = "installBtn";
-            this.installBtn.Size = new System.Drawing.Size(75, 23);
-            this.installBtn.TabIndex = 24;
-            this.installBtn.Text = "Stop";
-            this.installBtn.UseVisualStyleBackColor = true;
-            this.installBtn.Click += new System.EventHandler(this.installBtn_Click);
+            this.buttonStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonStop.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonStop.Location = new System.Drawing.Point(304, 83);
+            this.buttonStop.Name = "buttonStop";
+            this.buttonStop.Size = new System.Drawing.Size(75, 23);
+            this.buttonStop.TabIndex = 1;
+            this.buttonStop.Text = "Stop";
+            this.buttonStop.UseVisualStyleBackColor = true;
+            this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
             // 
             // verifyWorker
             // 
@@ -114,19 +120,33 @@
             this.verifyWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.verifyWorker_RunWorkerCompleted);
             this.verifyWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.verifyWorker_ProgressChanged);
             // 
+            // buttonInstall
+            // 
+            this.buttonInstall.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonInstall.Enabled = false;
+            this.buttonInstall.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonInstall.Location = new System.Drawing.Point(304, 54);
+            this.buttonInstall.Name = "buttonInstall";
+            this.buttonInstall.Size = new System.Drawing.Size(75, 23);
+            this.buttonInstall.TabIndex = 0;
+            this.buttonInstall.Text = "Install";
+            this.buttonInstall.UseVisualStyleBackColor = true;
+            this.buttonInstall.Click += new System.EventHandler(this.buttonInstall_Click);
+            // 
             // UpdaterDownloadWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(391, 114);
-            this.Controls.Add(this.installBtn);
-            this.Controls.Add(this.lblReleased);
-            this.Controls.Add(this.lblTitle);
+            this.ClientSize = new System.Drawing.Size(391, 147);
+            this.Controls.Add(this.buttonInstall);
+            this.Controls.Add(this.buttonStop);
+            this.Controls.Add(this.labelReleased);
+            this.Controls.Add(this.labelTitle);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.lblProgress);
-            this.Controls.Add(this.proDownload);
+            this.Controls.Add(this.labelProgress);
+            this.Controls.Add(this.progressDownload);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -144,12 +164,13 @@
 
         #endregion
 
-        private System.Windows.Forms.Label lblProgress;
-        private System.Windows.Forms.ProgressBar proDownload;
+        private System.Windows.Forms.Label labelProgress;
+        private System.Windows.Forms.ProgressBar progressDownload;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Label lblReleased;
-        private System.Windows.Forms.Button installBtn;
+        private System.Windows.Forms.Label labelTitle;
+        private System.Windows.Forms.Label labelReleased;
+        private System.Windows.Forms.Button buttonStop;
         private System.ComponentModel.BackgroundWorker verifyWorker;
+        private System.Windows.Forms.Button buttonInstall;
     }

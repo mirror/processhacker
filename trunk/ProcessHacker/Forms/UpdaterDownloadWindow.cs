@@ -2,6 +2,7 @@
  * Process Hacker - 
  *   ProcessHacker Updater Download
  * 
+ * Copyright (C) 2009 wj32
  * Copyright (C) 2009 dmex
  * 
  * This file is part of Process Hacker.
@@ -21,16 +22,15 @@
  */
 
 using System;
-using System.Net;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.IO;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
-using System.Threading;
-using System.IO;
+using ProcessHacker;
 using ProcessHacker.Common;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
   
 public partial class UpdaterDownloadWindow : Form  
 {
@@ -40,7 +40,8 @@ public partial class UpdaterDownloadWindow : Form
     private string appUpdateReleased;
     private string appUpdateMD5;
     private string appUpdateFilenamePath;
-    
+    private WebClient webClient;
+
     public UpdaterDownloadWindow(string appName, string appURL, string appVer, string appReleased, string appHash)
     {   
         InitializeComponent();
@@ -57,50 +58,41 @@ public partial class UpdaterDownloadWindow : Form
         if (appUpdateName != null && appUpdateURL != null && appUpdateVersion != null && appUpdateReleased != null && appUpdateMD5 != null)
         {
             appUpdateVersion = new Version(appUpdateVersion).Major + "." + new Version(appUpdateVersion).MajorRevision;
-            appUpdateFilenamePath = Path.GetTempPath() + "ProcessHacker " + appUpdateVersion + " Setup.exe";
+            appUpdateFilenamePath = Path.GetTempPath() + "processhacker-" + appUpdateVersion + "-setup.exe";
 
-            lblTitle.Text = "Downloading: Process Hacker " + appUpdateVersion;
-            lblReleased.Text = "Released: " + appUpdateReleased;
+            labelTitle.Text = "Downloading: Process Hacker " + appUpdateVersion;
+            labelReleased.Text = "Released: " + appUpdateReleased;
 
-            WebClient wc = new WebClient();
-            wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-            wc.DownloadFileCompleted += new AsyncCompletedEventHandler(wc_DownloadFileCompleted);
+            webClient = new WebClient();
+            webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(webClient_DownloadProgressChanged);
+            webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(webClient_DownloadFileCompleted);
 
             try
             {
-                wc.DownloadFileAsync(new Uri(appUpdateURL), appUpdateFilenamePath);
-            }
-            catch (WebException ex)
-            {
-                MessageBox.Show(null, ex.Message, "Update Exception", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                this.Close();
+                webClient.DownloadFileAsync(new Uri(appUpdateURL), appUpdateFilenamePath);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(null, ex.Message, "Update Exception", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                PhUtils.ShowException("Unable to download Process Hacker", ex);
                 this.Close();
             }
         }
-        else
-        { 
-       
-        }
     }
 
-    private void wc_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+    private void webClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
     {
         verifyWorker.RunWorkerAsync(appUpdateFilenamePath);
     }
 
-    private void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+    private void webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
     {
-        lblProgress.Text = 
+        labelProgress.Text = 
             "Downloaded " + 
             Utils.FormatSize(e.BytesReceived) + "/" + 
             Utils.FormatSize(e.TotalBytesToReceive) + 
             " (" + e.ProgressPercentage.ToString() + "%)"; 
 
-        proDownload.Value = e.ProgressPercentage;
+        progressDownload.Value = e.ProgressPercentage;
     }
 
     private void verifyWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -150,12 +142,13 @@ public partial class UpdaterDownloadWindow : Form
 
     private void verifyWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
     {
-        this.proDownload.Value = e.ProgressPercentage;
+        this.progressDownload.Value = e.ProgressPercentage;
     }
 
     private void verifyWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
     {
         StringBuilder sb = new StringBuilder();
+
         foreach (byte b in (byte[])e.Result)
         {
             sb.AppendFormat("{0:X2}", b);
@@ -163,28 +156,72 @@ public partial class UpdaterDownloadWindow : Form
 
         if (appUpdateMD5 == sb.ToString())
         {
-            lblProgress.Text = "Download Completed and SHA1 Verified Successfully";
-            installBtn.Text = "Install";
+            labelProgress.Text = "Download completed and SHA1 verified successfully.";
         }
         else
         {
-            lblProgress.Text = "SHA1 Hash Verification Failed";
-            installBtn.Text = "Close";
+            labelProgress.Text = "SHA1 hash verification failed!";
+            labelProgress.Font = new System.Drawing.Font(labelProgress.Font, System.Drawing.FontStyle.Bold);
+        }
+
+        buttonInstall.Enabled = true;
+        buttonInstall.Select();
+        buttonStop.Text = "Close";
+    }
+
+    private void buttonInstall_Click(object sender, EventArgs e)
+    {
+        // We need to close our handle to the PH mutex in order to 
+        // let the installer continue.
+        if (Program.GlobalMutex != null)
+        {
+            Program.GlobalMutex.Dispose();
+            Program.GlobalMutex = null;
+        }
+
+        bool success = false;
+
+        // Force elevation if required to prevent an exception if the user 
+        // clicks no. Otherwise, start it normally.
+        if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited)
+        {
+            Program.StartProgramAdmin(
+                                appUpdateFilenamePath,
+                                "",
+                                new MethodInvoker(() => success = true),
+                                ShowWindowType.Normal,
+                                this.Handle
+                                );
+        }
+        else
+        {
+            Program.TryStart(appUpdateFilenamePath);
+        }
+
+        if (success)
+        {
+            Program.HackerWindow.Exit();
+        }
+        else
+        {
+            // User canceled. Re-open the mutex.
+            try
+            {
+                Program.GlobalMutex = new ProcessHacker.Native.Threading.Mutant(Program.GlobalMutexName);
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
     }
 
-    private void installBtn_Click(object sender, EventArgs e)
+    private void buttonStop_Click(object sender, EventArgs e)
     {
-        if (installBtn.Text.Length == 7 /*Install*/) 
-        {
-            System.Diagnostics.Process.Start(appUpdateFilenamePath);
-            new ProcessHacker.HackerWindow().Exit();        
-        }
-        else
-        {  
-            this.Close();
-        }
+        if (webClient.IsBusy)
+            webClient.CancelAsync();
 
+        this.Close();
     }
 }
 

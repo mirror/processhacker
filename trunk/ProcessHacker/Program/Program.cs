@@ -89,16 +89,19 @@ namespace ProcessHacker
         public static ProcessSystemProvider ProcessProvider;
         public static ServiceProvider ServiceProvider;
         public static NetworkProvider NetworkProvider;
-        public static System.Collections.Specialized.StringCollection ImposterNames = 
-            new System.Collections.Specialized.StringCollection();
+
         public static bool BadConfig = false;
+        public static TokenElevationType ElevationType;
+        public static ProcessHacker.Native.Threading.Mutant GlobalMutex;
+        public static string GlobalMutexName = @"\BaseNamedObjects\ProcessHackerMutex";
+        public static System.Collections.Specialized.StringCollection ImposterNames =
+            new System.Collections.Specialized.StringCollection();
         public static bool NoKph = false;
+        public static string SelectTab = "Processes";
         public static bool StartHidden = false;
         public static bool StartVisible = false;
-        public static string SelectTab = "Processes";
-        public static TokenElevationType ElevationType;
-        public static SharedThreadProvider SharedThreadProvider;
         public static SharedThreadProvider SecondarySharedThreadProvider;
+        public static SharedThreadProvider SharedThreadProvider;
         public static ProcessHacker.Native.Threading.Waiter SharedWaiter;
 
         private static object CollectWorkerThreadsLock = new object();
@@ -179,7 +182,14 @@ namespace ProcessHacker
             WorkQueue.GlobalWorkQueue.MaxWorkerThreads = 3;
 
             // Create or open the Process Hacker mutex, used only by the installer.
-            Win32.CreateMutex(IntPtr.Zero, false, "Global\\ProcessHackerMutex");
+            try
+            {
+                GlobalMutex = new ProcessHacker.Native.Threading.Mutant(GlobalMutexName);
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
 
             try
             {
