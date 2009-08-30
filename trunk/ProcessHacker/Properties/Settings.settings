@@ -6,7 +6,7 @@
       <Value Profile="(Default)">1000</Value>
     </Setting>
     <Setting Name="WindowSize" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">825, 549</Value>
+      <Value Profile="(Default)">830, 550</Value>
     </Setting>
     <Setting Name="WindowLocation" Type="System.Drawing.Point" Scope="User">
       <Value Profile="(Default)">200, 200</Value>
