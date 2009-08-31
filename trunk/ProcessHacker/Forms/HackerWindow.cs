@@ -614,11 +614,11 @@ namespace ProcessHacker
 
                 foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
-                    if (item.SubItems[3].Text == "TCP")
+                    if (item.SubItems[5].Text == "TCP")
                     {
-                        if (item.SubItems[4].Text != "Listening" &&
-                            item.SubItems[4].Text != "CloseWait" &&
-                            item.SubItems[4].Text != "TimeWait")
+                        if (item.SubItems[6].Text != "Listening" &&
+                            item.SubItems[6].Text != "CloseWait" &&
+                            item.SubItems[6].Text != "TimeWait")
                         {
                             hasValid = true;
                             break;
@@ -654,8 +654,8 @@ namespace ProcessHacker
             {
                 foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
-                    if (item.SubItems[3].Text != "TCP" ||
-                        item.SubItems[4].Text != "Established")
+                    if (item.SubItems[5].Text != "TCP" ||
+                        item.SubItems[6].Text != "Established")
                         continue;
 
                     try
@@ -682,7 +682,8 @@ namespace ProcessHacker
             {
                 foreach (ListViewItem item in listNetwork.SelectedItems)
                     item.Selected = false;
-            }
+            }          
+
         }
 
         private void selectAllNetworkMenuItem_Click(object sender, EventArgs e)
@@ -3244,5 +3245,24 @@ namespace ProcessHacker
                 catch { }
             }
         }
+
+        private void menuItem10_Click(object sender, EventArgs e)
+        {
+            if (listNetwork.SelectedItems[0].SubItems[3].Text.Length > 0)
+            {
+               string[] split = listNetwork.SelectedItems[0].SubItems[3].Text.Split(new Char[] { '(', ')' });
+
+               try
+               {
+                   IPInfoWindow iw = new IPInfoWindow(split[1].ToString(), IpAction.Whois);
+                   iw.ShowDialog(this);
+               }
+               catch (Exception)
+               {  }       
+            }
+        }
+
     }
 }
+
+

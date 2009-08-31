@@ -135,7 +135,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ServiceListViewColumns" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">0,150|1,300|2,120|3,80|4,80|5,60|</Value>
     </Setting>
     <Setting Name="HandleListViewColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -210,7 +210,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="NetworkListViewColumns" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">0,137|1,160|2,71|3,195|4,75|5,80|6,70|</Value>
     </Setting>
     <Setting Name="EnableKPH" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

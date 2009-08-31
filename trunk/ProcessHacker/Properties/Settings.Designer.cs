@@ -553,7 +553,7 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0,150|1,300|2,120|3,80|4,80|5,60|")]
         public string ServiceListViewColumns {
             get {
                 return ((string)(this["ServiceListViewColumns"]));
@@ -853,7 +853,7 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0,137|1,160|2,71|3,195|4,75|5,80|6,70|")]
         public string NetworkListViewColumns {
             get {
                 return ((string)(this["NetworkListViewColumns"]));

@@ -245,6 +245,9 @@
       <DependentUpon>GetProcAddressWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\IPInfoWindow.resx">
+      <DependentUpon>IPInfoWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\JobWindow.resx">
       <DependentUpon>JobWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -448,6 +451,12 @@
     </Compile>
     <Compile Include="Forms\HeapsWindow.Designer.cs">
       <DependentUpon>HeapsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\IPInfoWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\IPInfoWindow.Designer.cs">
+      <DependentUpon>IPInfoWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\JobWindow.cs">
       <SubType>Form</SubType>

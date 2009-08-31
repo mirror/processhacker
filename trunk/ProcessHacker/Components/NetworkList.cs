@@ -311,26 +311,27 @@ namespace ProcessHacker.Components
             if (item.Connection.Local != null && item.Connection.Local.ToString() != "0.0.0.0:0")
             {
                 if (item.LocalString != null)
-                    litem.SubItems[1].Text = item.LocalString + ":" + item.Connection.Local.Port.ToString() +
-                        " (" + item.Connection.Local.ToString() + ")";
+                {
+                    litem.SubItems[1].Text = item.LocalString +" (" + item.Connection.Local.Address.ToString() + ")";
+                }
                 else
+                {
                     litem.SubItems[1].Text = item.Connection.Local.ToString();
+                }
             }
 
             if (item.Connection.Remote != null && item.Connection.Remote.ToString() != "0.0.0.0:0")
             {
                 if (item.RemoteString != null)
-                    litem.SubItems[2].Text = item.RemoteString + ":" + item.Connection.Remote.Port.ToString() +
-                        " (" + item.Connection.Remote.ToString() + ")";
+                    litem.SubItems[3].Text = item.RemoteString + " (" + item.Connection.Remote.Address.ToString() + ")";
                 else
-                    litem.SubItems[2].Text = item.Connection.Remote.ToString();
+                    litem.SubItems[3].Text = item.Connection.Remote.ToString();
             }
         }
 
         private void provider_DictionaryAdded(NetworkItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
-                (int)item.Tag > 0 && _runCount > 0);
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, (int)item.Tag > 0 && _runCount > 0);
 
             litem.Name = item.Id;
             litem.Tag = item.Connection.Pid;
@@ -375,14 +376,26 @@ namespace ProcessHacker.Components
             }
 
             if (item.Connection.Local != null && item.Connection.Local.ToString() != "0.0.0.0:0")
+            {
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Local.ToString()));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Local.Port.ToString()));
+            }
             else
+            {
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+            }
 
             if (item.Connection.Remote != null && item.Connection.Remote.ToString() != "0.0.0.0:0")
+            {
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Remote.ToString()));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Remote.Port.ToString()));
+            }
             else
+            {
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+            }
 
             this.FillNetworkItemAddresses(litem, item);
 
@@ -407,7 +420,7 @@ namespace ProcessHacker.Components
 
                         this.FillNetworkItemAddresses(litem, newItem);
 
-                        litem.SubItems[4].Text = newItem.Connection.State != 0 ? newItem.Connection.State.ToString() : "";
+                        litem.SubItems[6].Text = newItem.Connection.State != 0 ? newItem.Connection.State.ToString() : "";
                         _needsSort = true;
                     }
                 }));

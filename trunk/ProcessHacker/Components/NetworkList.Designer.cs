@@ -37,7 +37,9 @@
             this.listNetwork = new System.Windows.Forms.ListView();
             this.columnProcess = new System.Windows.Forms.ColumnHeader();
             this.columnLocal = new System.Windows.Forms.ColumnHeader();
+            this.columnLocalPort = new System.Windows.Forms.ColumnHeader();
             this.columnRemote = new System.Windows.Forms.ColumnHeader();
+            this.columnRemotePort = new System.Windows.Forms.ColumnHeader();
             this.columnProtocol = new System.Windows.Forms.ColumnHeader();
             this.columnState = new System.Windows.Forms.ColumnHeader();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
@@ -49,7 +51,9 @@
             this.listNetwork.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnProcess,
             this.columnLocal,
+            this.columnLocalPort,
             this.columnRemote,
+            this.columnRemotePort,
             this.columnProtocol,
             this.columnState});
             this.listNetwork.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -72,23 +76,33 @@
             // 
             // columnLocal
             // 
-            this.columnLocal.Text = "Local";
-            this.columnLocal.Width = 250;
+            this.columnLocal.Text = "Local Address";
+            this.columnLocal.Width = 108;
+            // 
+            // columnLocalPort
+            // 
+            this.columnLocalPort.Text = "Local Port";
+            this.columnLocalPort.Width = 71;
             // 
             // columnRemote
             // 
-            this.columnRemote.Text = "Remote";
-            this.columnRemote.Width = 250;
+            this.columnRemote.Text = "Remote Address";
+            this.columnRemote.Width = 175;
+            // 
+            // columnRemotePort
+            // 
+            this.columnRemotePort.Text = "Remote Port";
+            this.columnRemotePort.Width = 52;
             // 
             // columnProtocol
             // 
             this.columnProtocol.Text = "Protocol";
-            this.columnProtocol.Width = 52;
+            this.columnProtocol.Width = 80;
             // 
             // columnState
             // 
             this.columnState.Text = "State";
-            this.columnState.Width = 80;
+            this.columnState.Width = 70;
             // 
             // imageList
             // 
@@ -113,9 +127,11 @@
         private System.Windows.Forms.ListView listNetwork;
         private System.Windows.Forms.ColumnHeader columnLocal;
         private System.Windows.Forms.ColumnHeader columnRemote;
+        private System.Windows.Forms.ColumnHeader columnRemotePort;
         private System.Windows.Forms.ColumnHeader columnProtocol;
-        private System.Windows.Forms.ColumnHeader columnState;
         private System.Windows.Forms.ColumnHeader columnProcess;
         private System.Windows.Forms.ImageList imageList;
+        private System.Windows.Forms.ColumnHeader columnLocalPort;
+        private System.Windows.Forms.ColumnHeader columnState;
     }
 }
