@@ -394,7 +394,12 @@ namespace ProcessHacker
             OptionsWindow options = new OptionsWindow();
 
             options.TopMost = this.TopMost;
-            options.ShowDialog();
+            DialogResult result = options.ShowDialog();
+
+           if (result == DialogResult.OK)
+           {
+               this.LoadOtherSettings();
+           }
         }
 
         private void freeMemoryMenuItem_Click(object sender, EventArgs e)
@@ -420,6 +425,9 @@ namespace ProcessHacker
         {
             toolbarMenuItem.Checked = !toolbarMenuItem.Checked;
             toolStrip.Visible = toolbarMenuItem.Checked;
+
+            Properties.Settings.Default.ToolbarVisible = toolStrip.Visible;
+            Properties.Settings.Default.Save();
         }
 
         private void updateNowMenuItem_Click(object sender, EventArgs e)
@@ -2354,7 +2362,32 @@ namespace ProcessHacker
             PromptBox.LastValue = Properties.Settings.Default.PromptBoxText;
             toolbarMenuItem.Checked = toolStrip.Visible = Properties.Settings.Default.ToolbarVisible;
 
-            ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessTreeColumns, treeProcesses.Tree);
+            if (Properties.Settings.Default.ToolStripDisplayStyle == 1)
+            {
+                findHandlesToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+                sysInfoToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+                refreshToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+                optionsToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+                shutDownToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            }
+            else if (Properties.Settings.Default.ToolStripDisplayStyle == 2)
+            {
+                refreshToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+                optionsToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+                shutDownToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+                findHandlesToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+                sysInfoToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;   
+            }
+            else
+            {
+                refreshToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+                optionsToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+                shutDownToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Image;
+                findHandlesToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+                sysInfoToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;   
+            }
+
+                ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessTreeColumns, treeProcesses.Tree);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ServiceListViewColumns, listServices.List);
             ColumnSettings.LoadSettings(Properties.Settings.Default.NetworkListViewColumns, listNetwork.List);
 

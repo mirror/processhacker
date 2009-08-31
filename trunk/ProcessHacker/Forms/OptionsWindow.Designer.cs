@@ -70,8 +70,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.tabPlotting = new System.Windows.Forms.TabPage();
             this.textStep = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -82,12 +80,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
-            this.colorIORO = new ProcessHacker.Components.ColorModifier();
-            this.colorIOW = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.tabSymbols = new System.Windows.Forms.TabPage();
             this.checkUndecorate = new System.Windows.Forms.CheckBox();
             this.textSearchPath = new System.Windows.Forms.TextBox();
@@ -96,14 +88,25 @@
             this.textDbghelpPath = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.tabUpdates = new System.Windows.Forms.TabPage();
+            this.textUpdateUrl = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
             this.optUpdateBeta = new System.Windows.Forms.RadioButton();
             this.optUpdateStable = new System.Windows.Forms.RadioButton();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.label19 = new System.Windows.Forms.Label();
-            this.textUpdateUrl = new System.Windows.Forms.TextBox();
+            this.menuStyleComboBox = new System.Windows.Forms.ComboBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorIORO = new ProcessHacker.Components.ColorModifier();
+            this.colorIOW = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -226,6 +229,8 @@
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.label20);
+            this.tabGeneral.Controls.Add(this.menuStyleComboBox);
             this.tabGeneral.Controls.Add(this.checkFloatChildWindows);
             this.tabGeneral.Controls.Add(this.checkScrollDownProcessTree);
             this.tabGeneral.Controls.Add(this.checkAllowOnlyOneInstance);
@@ -667,22 +672,6 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "New Objects:";
             // 
-            // colorRemovedProcesses
-            // 
-            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
-            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
-            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorRemovedProcesses.TabIndex = 2;
-            // 
-            // colorNewProcesses
-            // 
-            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
-            this.colorNewProcesses.Name = "colorNewProcesses";
-            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorNewProcesses.TabIndex = 1;
-            // 
             // tabPlotting
             // 
             this.tabPlotting.Controls.Add(this.textStep);
@@ -799,54 +788,6 @@
             this.label17.TabIndex = 9;
             this.label17.Text = "CPU Kernel Time:";
             // 
-            // colorIORO
-            // 
-            this.colorIORO.Color = System.Drawing.Color.Transparent;
-            this.colorIORO.Location = new System.Drawing.Point(124, 163);
-            this.colorIORO.Name = "colorIORO";
-            this.colorIORO.Size = new System.Drawing.Size(40, 20);
-            this.colorIORO.TabIndex = 6;
-            // 
-            // colorIOW
-            // 
-            this.colorIOW.Color = System.Drawing.Color.Transparent;
-            this.colorIOW.Location = new System.Drawing.Point(124, 189);
-            this.colorIOW.Name = "colorIOW";
-            this.colorIOW.Size = new System.Drawing.Size(40, 20);
-            this.colorIOW.TabIndex = 7;
-            // 
-            // colorMemoryWS
-            // 
-            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
-            this.colorMemoryWS.Name = "colorMemoryWS";
-            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryWS.TabIndex = 5;
-            // 
-            // colorMemoryPB
-            // 
-            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
-            this.colorMemoryPB.Name = "colorMemoryPB";
-            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryPB.TabIndex = 4;
-            // 
-            // colorCPUUT
-            // 
-            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
-            this.colorCPUUT.Name = "colorCPUUT";
-            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUUT.TabIndex = 3;
-            // 
-            // colorCPUKT
-            // 
-            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
-            this.colorCPUKT.Name = "colorCPUKT";
-            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUKT.TabIndex = 2;
-            // 
             // tabSymbols
             // 
             this.tabSymbols.Controls.Add(this.checkUndecorate);
@@ -924,6 +865,7 @@
             // 
             // tabUpdates
             // 
+            this.tabUpdates.Controls.Add(this.checkBox1);
             this.tabUpdates.Controls.Add(this.textUpdateUrl);
             this.tabUpdates.Controls.Add(this.label19);
             this.tabUpdates.Controls.Add(this.label5);
@@ -938,10 +880,28 @@
             this.tabUpdates.Text = "Updates";
             this.tabUpdates.UseVisualStyleBackColor = true;
             // 
+            // textUpdateUrl
+            // 
+            this.textUpdateUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textUpdateUrl.Location = new System.Drawing.Point(97, 93);
+            this.textUpdateUrl.Name = "textUpdateUrl";
+            this.textUpdateUrl.Size = new System.Drawing.Size(307, 20);
+            this.textUpdateUrl.TabIndex = 26;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 96);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(85, 13);
+            this.label19.TabIndex = 25;
+            this.label19.Text = "Update location:";
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 8);
+            this.label5.Location = new System.Drawing.Point(6, 9);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(56, 13);
             this.label5.TabIndex = 24;
@@ -951,7 +911,7 @@
             // 
             this.optUpdateAlpha.AutoSize = true;
             this.optUpdateAlpha.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateAlpha.Location = new System.Drawing.Point(97, 52);
+            this.optUpdateAlpha.Location = new System.Drawing.Point(97, 53);
             this.optUpdateAlpha.Name = "optUpdateAlpha";
             this.optUpdateAlpha.Size = new System.Drawing.Size(100, 18);
             this.optUpdateAlpha.TabIndex = 23;
@@ -962,7 +922,7 @@
             // 
             this.optUpdateBeta.AutoSize = true;
             this.optUpdateBeta.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateBeta.Location = new System.Drawing.Point(97, 29);
+            this.optUpdateBeta.Location = new System.Drawing.Point(97, 30);
             this.optUpdateBeta.Name = "optUpdateBeta";
             this.optUpdateBeta.Size = new System.Drawing.Size(95, 18);
             this.optUpdateBeta.TabIndex = 22;
@@ -974,7 +934,7 @@
             this.optUpdateStable.AutoSize = true;
             this.optUpdateStable.Checked = true;
             this.optUpdateStable.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateStable.Location = new System.Drawing.Point(97, 6);
+            this.optUpdateStable.Location = new System.Drawing.Point(97, 7);
             this.optUpdateStable.Name = "optUpdateStable";
             this.optUpdateStable.Size = new System.Drawing.Size(103, 18);
             this.optUpdateStable.TabIndex = 21;
@@ -1007,23 +967,101 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
-            // label19
+            // menuStyleComboBox
             // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(6, 79);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(85, 13);
-            this.label19.TabIndex = 25;
-            this.label19.Text = "Update location:";
+            this.menuStyleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.menuStyleComboBox.FormattingEnabled = true;
+            this.menuStyleComboBox.Items.AddRange(new object[] {
+            "Show Only Icons",
+            "Show Selective Text",
+            "Show All Text Labels"});
+            this.menuStyleComboBox.Location = new System.Drawing.Point(340, 110);
+            this.menuStyleComboBox.Name = "menuStyleComboBox";
+            this.menuStyleComboBox.Size = new System.Drawing.Size(135, 21);
+            this.menuStyleComboBox.TabIndex = 18;
             // 
-            // textUpdateUrl
+            // label20
             // 
-            this.textUpdateUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.textUpdateUrl.Location = new System.Drawing.Point(97, 76);
-            this.textUpdateUrl.Name = "textUpdateUrl";
-            this.textUpdateUrl.Size = new System.Drawing.Size(378, 20);
-            this.textUpdateUrl.TabIndex = 26;
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(225, 113);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(109, 13);
+            this.label20.TabIndex = 19;
+            this.label20.Text = "Toolbar Display Style:";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(248, 31);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(120, 17);
+            this.checkBox1.TabIndex = 27;
+            this.checkBox1.Text = "Auto Update Check";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // colorRemovedProcesses
+            // 
+            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
+            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
+            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorRemovedProcesses.TabIndex = 2;
+            // 
+            // colorNewProcesses
+            // 
+            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
+            this.colorNewProcesses.Name = "colorNewProcesses";
+            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorNewProcesses.TabIndex = 1;
+            // 
+            // colorIORO
+            // 
+            this.colorIORO.Color = System.Drawing.Color.Transparent;
+            this.colorIORO.Location = new System.Drawing.Point(124, 163);
+            this.colorIORO.Name = "colorIORO";
+            this.colorIORO.Size = new System.Drawing.Size(40, 20);
+            this.colorIORO.TabIndex = 6;
+            // 
+            // colorIOW
+            // 
+            this.colorIOW.Color = System.Drawing.Color.Transparent;
+            this.colorIOW.Location = new System.Drawing.Point(124, 189);
+            this.colorIOW.Name = "colorIOW";
+            this.colorIOW.Size = new System.Drawing.Size(40, 20);
+            this.colorIOW.TabIndex = 7;
+            // 
+            // colorMemoryWS
+            // 
+            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
+            this.colorMemoryWS.Name = "colorMemoryWS";
+            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryWS.TabIndex = 5;
+            // 
+            // colorMemoryPB
+            // 
+            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
+            this.colorMemoryPB.Name = "colorMemoryPB";
+            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryPB.TabIndex = 4;
+            // 
+            // colorCPUUT
+            // 
+            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
+            this.colorCPUUT.Name = "colorCPUUT";
+            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUUT.TabIndex = 3;
+            // 
+            // colorCPUKT
+            // 
+            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
+            this.colorCPUKT.Name = "colorCPUKT";
+            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUKT.TabIndex = 2;
             // 
             // OptionsWindow
             // 
@@ -1145,5 +1183,8 @@
         private System.Windows.Forms.RadioButton optUpdateStable;
         private System.Windows.Forms.TextBox textUpdateUrl;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.ComboBox menuStyleComboBox;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }

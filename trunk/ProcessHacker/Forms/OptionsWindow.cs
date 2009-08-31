@@ -354,6 +354,24 @@ namespace ProcessHacker
             }
 
             textUpdateUrl.Text = Properties.Settings.Default.AppUpdateUrl;
+
+            switch (Properties.Settings.Default.ToolStripDisplayStyle)
+            {
+                case 0:
+                    menuStyleComboBox.SelectedIndex = 0;
+                    break;
+                case 1:
+                    menuStyleComboBox.SelectedIndex = 1;
+                    break;
+                case 2:
+                    menuStyleComboBox.SelectedIndex = 2;
+                    break;
+                default:
+                    menuStyleComboBox.SelectedIndex = 1;
+                    break;
+            }
+
+
         }
 
         private void SaveSettings()
@@ -415,6 +433,22 @@ namespace ProcessHacker
             else if (optUpdateAlpha.Checked)
             {
                 Properties.Settings.Default.AppUpdateLevel = (int)AppUpdateLevel.Alpha;
+            }
+
+            switch (menuStyleComboBox.SelectedIndex)
+            {
+                case 0:
+                    Properties.Settings.Default.ToolStripDisplayStyle = 0;
+                    break;
+                case 1:
+                    Properties.Settings.Default.ToolStripDisplayStyle = 1;
+                    break;
+                case 2:
+                    Properties.Settings.Default.ToolStripDisplayStyle = 2;
+                    break;
+                default:
+                    Properties.Settings.Default.ToolStripDisplayStyle = 0;
+                    break;
             }
 
             Properties.Settings.Default.AppUpdateUrl = textUpdateUrl.Text;
@@ -502,11 +536,15 @@ namespace ProcessHacker
             if (!this._dontApply)
                 this.ApplySettings();
 
+            DialogResult = DialogResult.OK;
+
             this.Close();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
+            DialogResult = DialogResult.Cancel;
+
             this.Close();
         }
 

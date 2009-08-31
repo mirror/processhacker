@@ -401,5 +401,8 @@
     <Setting Name="AppUpdateUrl" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://processhacker.sourceforge.net/AppUpdate.xml</Value>
     </Setting>
+    <Setting Name="ToolStripDisplayStyle" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
