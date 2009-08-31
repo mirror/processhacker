@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
@@ -37,13 +38,21 @@ namespace ProcessHacker
 
                     ObjectInformation info;
 
-                    if (pid != -1)
+                    try
                     {
-                        info = handle.GetHandleInfo(phandle, false);
+                        if (pid != -1)
+                        {
+                            info = handle.GetHandleInfo(phandle, false);
+                        }
+                        else
+                        {
+                            info = handle.GetHandleInfo(false);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        info = handle.GetHandleInfo(false);
+                        Logging.Log(ex);
+                        info = new ObjectInformation() { TypeName = "(unknown)" };
                     }
 
                     if (typeStats.ContainsKey(info.TypeName))
