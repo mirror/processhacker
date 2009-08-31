@@ -33,6 +33,7 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
+using ProcessHacker.UI.Actions;
 
 namespace ProcessHacker
 {
@@ -222,9 +223,7 @@ namespace ProcessHacker
 
             if (Program.ProcessProvider.Dictionary.ContainsKey(pid))
             {
-                Program.GetProcessWindow(
-                    Program.ProcessProvider.Dictionary[pid],
-                    (f) => Program.FocusWindow(f));
+                ProcessActions.ShowProperties(this, pid, Program.ProcessProvider.Dictionary[pid].Name);
             }
             else
             {

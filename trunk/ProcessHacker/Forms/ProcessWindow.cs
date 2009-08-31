@@ -1063,13 +1063,11 @@ namespace ProcessHacker
         {
             try
             {
-                ProcessWindow pForm = Program.GetProcessWindow(
-                    Program.ProcessProvider.Dictionary[_processItem.ParentPid],
-                    new Program.PWindowInvokeAction(delegate(ProcessWindow f)
-                    {
-                        f.Show();
-                        f.Activate();
-                    }));
+                ProcessActions.ShowProperties(
+                    this,
+                    _processItem.ParentPid,
+                    Program.ProcessProvider.Dictionary[_processItem.ParentPid].Name
+                    );
             }
             catch (KeyNotFoundException)
             {

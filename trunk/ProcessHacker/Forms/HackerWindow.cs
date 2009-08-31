@@ -296,9 +296,7 @@ namespace ProcessHacker
         {
             Program.StartProcessHackerAdmin("-v", () =>
                 {
-                    this.SaveSettings();
-                    this.ExecuteOnIcons((icon) => icon.Visible = false);
-                    Win32.ExitProcess(0);
+                    this.Exit();
                 }, this.Handle);
         }
 
@@ -1273,18 +1271,7 @@ namespace ProcessHacker
             if (processSelectedPid == -1)
                 return;
 
-            try
-            {
-                ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[processSelectedPid],
-                    new Program.PWindowInvokeAction(delegate(ProcessWindow f)
-                {
-                    Program.FocusWindow(f);
-                }));
-            }
-            catch (Exception ex)
-            {
-                PhUtils.ShowException("Unable to inspect the process", ex);
-            }
+            ProcessActions.ShowProperties(this, processSelectedPid, treeProcesses.SelectedNodes[0].Name);
         }
 
         private void affinityProcessMenuItem_Click(object sender, EventArgs e)
@@ -1748,6 +1735,16 @@ namespace ProcessHacker
             {
                 UpdateStatusInfo();
             }));
+        }
+
+        private void processP_FileProcessingReceived(int stage, int pid)
+        {
+            // Check if we need to inspect a process at startup.
+            if (stage == 0x1 && Program.InspectPid != -1 && pid == Program.InspectPid)
+            {
+                processP.FileProcessingReceived -= processP_FileProcessingReceived;
+                ProcessActions.ShowProperties(this, pid, processP.Dictionary[pid].Name);
+            }
         }
 
         public void processP_DictionaryAdded(ProcessItem item)
@@ -2967,6 +2964,7 @@ namespace ProcessHacker
             this.Cursor = Cursors.WaitCursor;
             processP.Updated += processP_Updated;
             processP.Updated += processP_InfoUpdater;
+            if (Program.InspectPid != -1) processP.FileProcessingReceived += processP_FileProcessingReceived;
             processP.RunOnceAsync();
             processP.Enabled = true;
             updateProcessesMenuItem.Checked = true;
@@ -3078,6 +3076,7 @@ namespace ProcessHacker
             if (OSVersion.HasUac &&
                 Program.ElevationType == TokenElevationType.Full)
             {
+                this.Text += " (Administrator)";
                 Win32.ChangeWindowMessageFilter((WindowMessage)0x9991, UipiFilterFlag.Add);
             }
         }

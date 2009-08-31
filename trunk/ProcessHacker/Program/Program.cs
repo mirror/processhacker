@@ -96,6 +96,7 @@ namespace ProcessHacker
         public static string GlobalMutexName = @"\BaseNamedObjects\ProcessHackerMutex";
         public static System.Collections.Specialized.StringCollection ImposterNames =
             new System.Collections.Specialized.StringCollection();
+        public static int InspectPid = -1;
         public static bool NoKph = false;
         public static string SelectTab = "Processes";
         public static bool StartHidden = false;
@@ -444,6 +445,9 @@ namespace ProcessHacker
 
                 return true;
             }
+
+            if (pArgs.ContainsKey("-ip"))
+                InspectPid = int.Parse(pArgs["-ip"]);
 
             if (pArgs.ContainsKey("-pw"))
             {
