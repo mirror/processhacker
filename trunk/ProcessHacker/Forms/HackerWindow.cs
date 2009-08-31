@@ -3246,7 +3246,7 @@ namespace ProcessHacker
             }
         }
 
-        private void menuItem10_Click(object sender, EventArgs e)
+        private void whoisNetworkMenuItem_Click(object sender, EventArgs e)
         {
             if (listNetwork.SelectedItems[0].SubItems[3].Text.Length > 0)
             {

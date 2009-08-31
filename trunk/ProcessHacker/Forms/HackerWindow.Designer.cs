@@ -1269,7 +1269,7 @@
             // 
             this.whoisNetworkMenuItem.Index = 0;
             this.whoisNetworkMenuItem.Text = "Whois Infomation";
-            this.whoisNetworkMenuItem.Click += new System.EventHandler(this.menuItem10_Click);
+            this.whoisNetworkMenuItem.Click += new System.EventHandler(this.whoisNetworkMenuItem_Click);
             // 
             // menuItem6
             // 
