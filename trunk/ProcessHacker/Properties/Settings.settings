@@ -6,7 +6,7 @@
       <Value Profile="(Default)">1000</Value>
     </Setting>
     <Setting Name="WindowSize" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">820, 549</Value>
+      <Value Profile="(Default)">844, 550</Value>
     </Setting>
     <Setting Name="WindowLocation" Type="System.Drawing.Point" Scope="User">
       <Value Profile="(Default)">200, 200</Value>
@@ -397,6 +397,9 @@
     </Setting>
     <Setting Name="AppUpdateLevel" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="AppUpdateUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://processhacker.sourceforge.net/AppUpdate.xml</Value>
     </Setting>
   </Settings>
 </SettingsFile>

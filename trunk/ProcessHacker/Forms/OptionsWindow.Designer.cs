@@ -102,6 +102,8 @@
             this.optUpdateStable = new System.Windows.Forms.RadioButton();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
+            this.label19 = new System.Windows.Forms.Label();
+            this.textUpdateUrl = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -922,6 +924,8 @@
             // 
             // tabUpdates
             // 
+            this.tabUpdates.Controls.Add(this.textUpdateUrl);
+            this.tabUpdates.Controls.Add(this.label19);
             this.tabUpdates.Controls.Add(this.label5);
             this.tabUpdates.Controls.Add(this.optUpdateAlpha);
             this.tabUpdates.Controls.Add(this.optUpdateBeta);
@@ -947,7 +951,7 @@
             // 
             this.optUpdateAlpha.AutoSize = true;
             this.optUpdateAlpha.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateAlpha.Location = new System.Drawing.Point(68, 52);
+            this.optUpdateAlpha.Location = new System.Drawing.Point(97, 52);
             this.optUpdateAlpha.Name = "optUpdateAlpha";
             this.optUpdateAlpha.Size = new System.Drawing.Size(100, 18);
             this.optUpdateAlpha.TabIndex = 23;
@@ -958,7 +962,7 @@
             // 
             this.optUpdateBeta.AutoSize = true;
             this.optUpdateBeta.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateBeta.Location = new System.Drawing.Point(68, 29);
+            this.optUpdateBeta.Location = new System.Drawing.Point(97, 29);
             this.optUpdateBeta.Name = "optUpdateBeta";
             this.optUpdateBeta.Size = new System.Drawing.Size(95, 18);
             this.optUpdateBeta.TabIndex = 22;
@@ -970,7 +974,7 @@
             this.optUpdateStable.AutoSize = true;
             this.optUpdateStable.Checked = true;
             this.optUpdateStable.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateStable.Location = new System.Drawing.Point(68, 6);
+            this.optUpdateStable.Location = new System.Drawing.Point(97, 6);
             this.optUpdateStable.Name = "optUpdateStable";
             this.optUpdateStable.Size = new System.Drawing.Size(103, 18);
             this.optUpdateStable.TabIndex = 21;
@@ -1002,6 +1006,24 @@
             this.buttonApply.Text = "&Apply";
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 79);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(85, 13);
+            this.label19.TabIndex = 25;
+            this.label19.Text = "Update location:";
+            // 
+            // textUpdateUrl
+            // 
+            this.textUpdateUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textUpdateUrl.Location = new System.Drawing.Point(97, 76);
+            this.textUpdateUrl.Name = "textUpdateUrl";
+            this.textUpdateUrl.Size = new System.Drawing.Size(378, 20);
+            this.textUpdateUrl.TabIndex = 26;
             // 
             // OptionsWindow
             // 
@@ -1121,5 +1143,7 @@
         private System.Windows.Forms.RadioButton optUpdateAlpha;
         private System.Windows.Forms.RadioButton optUpdateBeta;
         private System.Windows.Forms.RadioButton optUpdateStable;
+        private System.Windows.Forms.TextBox textUpdateUrl;
+        private System.Windows.Forms.Label label19;
     }
 }

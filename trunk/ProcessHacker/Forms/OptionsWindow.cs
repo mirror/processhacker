@@ -352,6 +352,8 @@ namespace ProcessHacker
                     optUpdateAlpha.Checked = true;
                     break;
             }
+
+            textUpdateUrl.Text = Properties.Settings.Default.AppUpdateUrl;
         }
 
         private void SaveSettings()
@@ -414,6 +416,8 @@ namespace ProcessHacker
             {
                 Properties.Settings.Default.AppUpdateLevel = (int)AppUpdateLevel.Alpha;
             }
+
+            Properties.Settings.Default.AppUpdateUrl = textUpdateUrl.Text;
 
             Properties.Settings.Default.Save();
 

@@ -1,4 +1,6 @@
-﻿    partial class UpdaterDownloadWindow
+﻿namespace ProcessHacker
+{
+    partial class UpdaterDownloadWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -174,3 +176,4 @@
         private System.ComponentModel.BackgroundWorker verifyWorker;
         private System.Windows.Forms.Button buttonInstall;
     }
+}

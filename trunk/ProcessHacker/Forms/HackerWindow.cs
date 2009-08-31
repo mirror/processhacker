@@ -527,16 +527,14 @@ namespace ProcessHacker
         {        
             checkForUpdatesMenuItem.Enabled = false;
       
-            Thread t = new Thread(new ThreadStart(this.UpdateProgram));   
+            Thread t = new Thread(new ThreadStart(() => this.UpdateProgram(true)));   
             t.IsBackground = true;   
             t.Start();
         }
 
-        private void UpdateProgram()
+        private void UpdateProgram(bool interactive)
         {
-            this.QueueMessage("Starting update check");
-            Updater.Update(this);
-            this.QueueMessage("Finished update check");
+            Updater.Update(this, true);
             this.Invoke(new MethodInvoker(() => checkForUpdatesMenuItem.Enabled = true));
         }
 

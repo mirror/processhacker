@@ -37,7 +37,7 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("820, 549")]
+        [global::System.Configuration.DefaultSettingValueAttribute("844, 550")]
         public global::System.Drawing.Size WindowSize {
             get {
                 return ((global::System.Drawing.Size)(this["WindowSize"]));
@@ -1606,6 +1606,18 @@ namespace ProcessHacker.Properties {
             }
             set {
                 this["AppUpdateLevel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://processhacker.sourceforge.net/AppUpdate.xml")]
+        public string AppUpdateUrl {
+            get {
+                return ((string)(this["AppUpdateUrl"]));
+            }
+            set {
+                this["AppUpdateUrl"] = value;
             }
         }
     }

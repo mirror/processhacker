@@ -97,21 +97,23 @@ namespace ProcessHacker
             }
         }
 
-        public static void Update(Form form)
+        public static void Update(Form form, bool interactive)
         {
             XmlDocument xDoc = new XmlDocument();
 
             try
             {   
-                xDoc.Load("http://processhacker.sourceforge.net/AppUpdate.xml");
+                xDoc.Load(Properties.Settings.Default.AppUpdateUrl);
             }
             catch (Exception ex)
             {
-                Program.HackerWindow.QueueMessage("Update check exception: " + ex.Message);
+                if (interactive)
+                    PhUtils.ShowException("Unable to download update information", ex);
+                else
+                    Program.HackerWindow.QueueMessage("Unable to download update information: " + ex.Message);
+
                 return;
             }
-
-            var mainWindow = new WindowFromHandle(Program.HackerWindowHandle);
 
             UpdateItem currentVersion = new UpdateItem();
             UpdateItem bestUpdate = currentVersion;
@@ -134,14 +136,14 @@ namespace ProcessHacker
                 }
             }
 
-            PromptWithUpdate(form, bestUpdate, currentVersion);
+            PromptWithUpdate(form, bestUpdate, currentVersion, interactive);
         }
 
-        private static void PromptWithUpdate(Form form, UpdateItem bestUpdate, UpdateItem currentVersion)
+        private static void PromptWithUpdate(Form form, UpdateItem bestUpdate, UpdateItem currentVersion, bool interactive)
         {
             if (form.InvokeRequired)
             {
-                form.BeginInvoke(new MethodInvoker(() => PromptWithUpdate(form, bestUpdate, currentVersion)));
+                form.BeginInvoke(new MethodInvoker(() => PromptWithUpdate(form, bestUpdate, currentVersion, interactive)));
                 return;
             }
 
@@ -184,7 +186,7 @@ namespace ProcessHacker
                 }
 
             }
-            else
+            else if (interactive)
             {
                 if (OSVersion.HasTaskDialogs)
                 {
