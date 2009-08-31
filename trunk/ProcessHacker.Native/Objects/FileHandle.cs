@@ -107,12 +107,40 @@ namespace ProcessHacker.Native.Objects
             return fileSize;
         }
 
+        public string GetVolumeFsName()
+        {
+            NtStatus status;
+            IoStatusBlock ioStatusBlock;
+
+            using (var data = new MemoryAlloc(0x200))
+            {
+                if ((status = Win32.NtQueryVolumeInformationFile(
+                    this,
+                    out ioStatusBlock,
+                    data,
+                    data.Size,
+                    FsInformationClass.FileFsAttributeInformation
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                if (ioStatusBlock.Status >= NtStatus.Error)
+                    Win32.ThrowLastError(ioStatusBlock.Status);
+
+                FileFsAttributeInformation info = data.ReadStruct<FileFsAttributeInformation>();
+
+                return Marshal.PtrToStringUni(
+                    data.Memory.Increment(Marshal.OffsetOf(typeof(FileFsAttributeInformation), "FileSystemName")),
+                    info.FileSystemNameLength / 2
+                    );
+            }
+        }
+
         public string GetVolumeLabel()
         {
             NtStatus status;
             IoStatusBlock ioStatusBlock;
 
-            using (var data = new MemoryAlloc(0x400))
+            using (var data = new MemoryAlloc(0x200))
             {
                 if ((status = Win32.NtQueryVolumeInformationFile(
                     this,
