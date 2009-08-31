@@ -22,14 +22,12 @@
  */
 
 using System;
+using System.Globalization;
 using System.Windows.Forms;
 using System.Xml;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
-using ProcessHacker.UI;
-using System.Threading;
-using System.Globalization;
 
 namespace ProcessHacker
 {
@@ -102,7 +100,8 @@ namespace ProcessHacker
             XmlDocument xDoc = new XmlDocument();
 
             try
-            {   
+            {
+                System.Net.WebRequest.DefaultWebProxy = System.Net.WebRequest.GetSystemWebProxy();
                 xDoc.Load(Properties.Settings.Default.AppUpdateUrl);
             }
             catch (Exception ex)
