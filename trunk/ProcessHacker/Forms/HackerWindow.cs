@@ -1275,85 +1275,20 @@ namespace ProcessHacker
             if (processSelectedPid == -1)
                 return;
 
-            int[] pids = new int[treeProcesses.SelectedNodes.Count];
-            string[] names = new string[pids.Length];
-
-            for (int i = 0; i < treeProcesses.SelectedNodes.Count; i++)
+            try
             {
-                pids[i] = treeProcesses.SelectedNodes[i].Pid;
-                names[i] = treeProcesses.SelectedNodes[i].Name;
+                ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[processSelectedPid],
+                    new Program.PWindowInvokeAction(delegate(ProcessWindow f)
+                {
+                    Program.FocusWindow(f);
+                }));
             }
-
-            DialogResult result = DialogResult.No; //default result
-
-            if (OSVersion.HasUac && Program.ElevationType == ProcessHacker.Native.Api.TokenElevationType.Limited)
+            catch (Exception ex)
             {
-                try //do something that will cause exception if selected process elevation type > current current elevation
-                {
-                    foreach (int pid in pids)
-                    {
-                        using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
-                        { }
-                    }
-                }
-                catch (WindowsException ex)
-                {
-                    TaskDialog td = new TaskDialog();
-                    td.WindowTitle = "Process Hacker";
-                    td.MainIcon = TaskDialogIcon.Warning;
-                    td.PositionRelativeToWindow = true;
-                    td.MainInstruction = "Do you want to elevate the action?";
-                    td.Content = "The selected process is elevated and its properties cannot be viewed in the current security context. " +
-                        "Do you want to elevate Process Hacker so the full properties of the elevated process can be viewed?";
-
-                    td.ExpandedInformation = "Error: " + ex.Message + " (0x" + ex.ErrorCode.ToString("x") + ")";
-                    td.ExpandFooterArea = true;
-
-                    td.Buttons = new TaskDialogButton[]
-                    {
-                        new TaskDialogButton((int)DialogResult.Yes, "Elevate\nPrompt for credentials and elevate the action."),
-                        new TaskDialogButton((int)DialogResult.No, "Continue\nAttempt to perform the action without elevation.")
-                    };
-                    td.CommonButtons = TaskDialogCommonButtons.Cancel;
-                    td.UseCommandLinks = true;
-                    td.Callback = (taskDialog, args, userData) =>
-                    {
-                        if (args.Notification == TaskDialogNotification.Created)
-                        {
-                            taskDialog.SetButtonElevationRequiredState((int)DialogResult.Yes, true);
-                        }
-                        return false;
-                    };
-                    result = (DialogResult)td.Show(this);
-                }
-            }
-
-            if (result == DialogResult.Yes)
-            {
-                Program.StartProcessHackerAdmin("-v", () =>
-                {
-                    this.SaveSettings();
-                    this.ExecuteOnIcons((icon) => icon.Visible = false);
-                    Win32.ExitProcess(0);
-                }, this.Handle);
-            }
-            else
-            {
-                try
-                {
-                    ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[processSelectedPid],
-                        new Program.PWindowInvokeAction(delegate(ProcessWindow f)
-                        {
-                            Program.FocusWindow(f);
-                        }));
-                }
-                catch (Exception exx)
-                {
-                    PhUtils.ShowException("Unable to inspect the process", exx);
-                }
+                PhUtils.ShowException("Unable to inspect the process", ex);
             }
         }
-        
+
         private void affinityProcessMenuItem_Click(object sender, EventArgs e)
         {
             ProcessAffinity affForm = new ProcessAffinity(processSelectedPid);
@@ -3144,8 +3079,7 @@ namespace ProcessHacker
             // Allow only one instance to work.
             if (OSVersion.HasUac &&
                 Program.ElevationType == TokenElevationType.Full)
-            {   
-                this.Text = this.Text + " [Administrator]";
+            {
                 Win32.ChangeWindowMessageFilter((WindowMessage)0x9991, UipiFilterFlag.Add);
             }
         }

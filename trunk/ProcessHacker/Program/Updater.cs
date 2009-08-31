@@ -33,7 +33,7 @@ using System.Globalization;
 
 namespace ProcessHacker
 {
-    public enum AppUpdateLevel: int
+    public enum AppUpdateLevel
     {
         Stable = 0,
         Beta = 1,
@@ -49,36 +49,37 @@ namespace ProcessHacker
         {
             public UpdateItem()
             {
-                this.appUpdateVersion = new Version(Application.ProductVersion);
+                this.Version = new Version(Application.ProductVersion);
+                this.Date = GetAssemblyBuildDate();
             }
-
-            public string appUpdateName { get; private set; }
-            public Version appUpdateVersion { get; private set; }
-            public DateTime appUpdateDate { get; private set; }
-            public AppUpdateLevel appUpdateType { get; private set; }
-            public string appUpdateMessage { get; private set; }
-            public string appUpdateUrl { get; private set; }
-            public string appUpdateHash { get; private set; }
 
             public UpdateItem(XmlNode node)
             {
-                this.appUpdateName = node["title"].InnerText;
-                this.appUpdateVersion = new Version(node["version"].InnerText);
-                this.appUpdateDate = DateTime.Parse(node["released"].InnerText, DateTimeFormatInfo.InvariantInfo);
-                this.appUpdateType = GetUpdateLevel(node["type"].InnerText);
-                this.appUpdateMessage = node["description"].InnerText;
-                this.appUpdateUrl = node["updateurl"].InnerText;
-                this.appUpdateHash = node["hash"].InnerText;
+                this.Name = node["title"].InnerText;
+                this.Version = new Version(node["version"].InnerText);
+                this.Date = DateTime.Parse(node["released"].InnerText, DateTimeFormatInfo.InvariantInfo);
+                this.Type = GetUpdateLevel(node["type"].InnerText);
+                this.Message = node["description"].InnerText;
+                this.Url = node["updateurl"].InnerText;
+                this.Hash = node["hash"].InnerText;
             }
 
-            public bool IsBetterThan(UpdateItem update, AppUpdateLevel preferredUpdateType)
+            public string Name { get; private set; }
+            public Version Version { get; private set; }
+            public DateTime Date { get; private set; }
+            public AppUpdateLevel Type { get; private set; }
+            public string Message { get; private set; }
+            public string Url { get; private set; }
+            public string Hash { get; private set; }
+
+            public bool IsBetterThan(UpdateItem update, AppUpdateLevel preferredType)
             {
-                if (this.appUpdateType == preferredUpdateType && this.appUpdateVersion > update.appUpdateVersion) 
-                    return true; 
-                else if (this.appUpdateType == AppUpdateLevel.Stable && this.appUpdateVersion > update.appUpdateVersion)
-                    return true; 
-                else
-                    return false; 
+                if (update == null)
+                    return true;
+                if ((int)this.Type > (int)preferredType)
+                    return false;
+
+                return this.Version > update.Version || this.Date > update.Date;
             }
         }
 
@@ -102,7 +103,7 @@ namespace ProcessHacker
 
             try
             {   
-                xDoc.Load(Properties.Settings.Default.AppUpdateURL);
+                xDoc.Load("http://processhacker.sourceforge.net/AppUpdate.xml");
             }
             catch (Exception ex)
             {
@@ -110,20 +111,29 @@ namespace ProcessHacker
                 return;
             }
 
+            var mainWindow = new WindowFromHandle(Program.HackerWindowHandle);
+
             UpdateItem currentVersion = new UpdateItem();
             UpdateItem bestUpdate = currentVersion;
 
             XmlNodeList nodes = xDoc.SelectNodes("//update");
-            foreach (XmlNode node in nodes)
-            {                
-                UpdateItem update = new UpdateItem(node);
 
-                // Check if this update is better than the one we already have.            
-                if (update.IsBetterThan(bestUpdate, (AppUpdateLevel)Properties.Settings.Default.AppUpdateLevel))
-                {      
-                    bestUpdate = update;    
+            foreach (XmlNode node in nodes)
+            {
+                try
+                {
+                    UpdateItem update = new UpdateItem(node);
+
+                    // Check if this update is better than the one we already have.
+                    if (update.IsBetterThan(bestUpdate, (AppUpdateLevel)Properties.Settings.Default.AppUpdateLevel))
+                        bestUpdate = update;
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
                 }
             }
+
             PromptWithUpdate(form, bestUpdate, currentVersion);
         }
 
@@ -144,8 +154,8 @@ namespace ProcessHacker
                     TaskDialog td = new TaskDialog();
                     td.PositionRelativeToWindow = true;
                     td.Content =
-                        "Your Version: " + currentVersion.appUpdateVersion.ToString() +
-                        "\nServer Version: " + bestUpdate.appUpdateVersion.ToString() + "\n\n" + "\n" + bestUpdate.appUpdateMessage;
+                        "Your Version: " + currentVersion.Version.ToString() +
+                        "\nServer Version: " + bestUpdate.Version.ToString() + "\n\n" + "\n" + bestUpdate.Message;
                     td.MainInstruction = "Process Hacker update available";
                     td.WindowTitle = "Update available";
                     td.MainIcon = TaskDialogIcon.SecurityWarning;
@@ -161,8 +171,8 @@ namespace ProcessHacker
                 {
                     dialogResult = MessageBox.Show(
                         form,
-                        "Your Version: " + currentVersion.appUpdateVersion.ToString() +
-                        "\nServer Version: " + bestUpdate.appUpdateVersion.ToString() + "\n\n" + bestUpdate.appUpdateMessage +
+                        "Your Version: " + currentVersion.Version.ToString() +
+                        "\nServer Version: " + bestUpdate.Version.ToString() + "\n\n" + bestUpdate.Message +
                         "\n\nDo you want to download the update now?",
                         "Update available", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation
                         );
@@ -172,6 +182,7 @@ namespace ProcessHacker
                 {
                     DownloadUpdate(form, bestUpdate);
                 }
+
             }
             else
             {
@@ -180,8 +191,8 @@ namespace ProcessHacker
                     TaskDialog td = new TaskDialog();
                     td.PositionRelativeToWindow = true;
                     td.Content =
-                        "Your Version: " + currentVersion.appUpdateVersion.ToString() +
-                        "\nServer Version: " + bestUpdate.appUpdateVersion.ToString();
+                        "Your Version: " + currentVersion.Version.ToString() +
+                        "\nServer Version: " + bestUpdate.Version.ToString();
                     td.MainInstruction = "Process Hacker is up-to-date";
                     td.WindowTitle = "No updates available";
                     td.MainIcon = TaskDialogIcon.SecuritySuccess;
@@ -208,6 +219,43 @@ namespace ProcessHacker
             }
 
             new UpdaterDownloadWindow(updateItem).ShowDialog(form);
+        }
+
+        private static DateTime? AssemblyBuildDate = null;
+        private static DateTime GetAssemblyBuildDate()
+        {
+            if (AssemblyBuildDate != null) //Performance fix - Prevent reading current Assembly multiple times
+            { 
+                return (DateTime)AssemblyBuildDate;              
+            }
+            else
+            {
+                const int PeHeaderOffset = 60;
+                const int LinkerTimestampOffset = 8;
+
+                byte[] b = new byte[2048];
+                System.IO.Stream s = default(System.IO.Stream);
+                try
+                {
+                    s = new System.IO.FileStream(System.Reflection.Assembly.GetExecutingAssembly().Location, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                    s.Read(b, 0, 2048);
+                }
+                finally
+                {
+                    if ((s != null))
+                        s.Close();
+                }
+
+                int i = BitConverter.ToInt32(b, PeHeaderOffset);
+                int SecondsSince1970 = BitConverter.ToInt32(b, i + LinkerTimestampOffset);
+                DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
+                dt = dt.AddSeconds(SecondsSince1970);
+                dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
+
+                AssemblyBuildDate = dt;
+
+                return (DateTime)AssemblyBuildDate;
+            }
         }
     }
 }

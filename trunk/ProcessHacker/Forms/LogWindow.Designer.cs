@@ -64,7 +64,7 @@
             // columnTime
             // 
             this.columnTime.Text = "Time";
-            this.columnTime.Width = 132;
+            this.columnTime.Width = 130;
             // 
             // columnMessage
             // 
