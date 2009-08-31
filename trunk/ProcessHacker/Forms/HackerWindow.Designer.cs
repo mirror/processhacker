@@ -171,7 +171,6 @@
             this.goToProcessNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.copyNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.closeNetworkMenuItem = new System.Windows.Forms.MenuItem();
-            this.panelHack = new System.Windows.Forms.Panel();
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
@@ -186,7 +185,6 @@
             this.tabServices.SuspendLayout();
             this.tabNetwork.SuspendLayout();
             this.toolStrip.SuspendLayout();
-            this.panelHack.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -890,10 +888,10 @@
             this.tabControl.Controls.Add(this.tabServices);
             this.tabControl.Controls.Add(this.tabNetwork);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl.Location = new System.Drawing.Point(3, 3);
+            this.tabControl.Location = new System.Drawing.Point(0, 25);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(798, 376);
+            this.tabControl.Size = new System.Drawing.Size(804, 379);
             this.tabControl.TabIndex = 6;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControlBig_SelectedIndexChanged);
             // 
@@ -903,7 +901,7 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(790, 350);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 353);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
@@ -915,7 +913,7 @@
             this.treeProcesses.Location = new System.Drawing.Point(3, 3);
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.Provider = null;
-            this.treeProcesses.Size = new System.Drawing.Size(784, 344);
+            this.treeProcesses.Size = new System.Drawing.Size(790, 347);
             this.treeProcesses.TabIndex = 4;
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
             this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
@@ -1247,16 +1245,6 @@
             this.closeNetworkMenuItem.Text = "Close";
             this.closeNetworkMenuItem.Click += new System.EventHandler(this.closeNetworkMenuItem_Click);
             // 
-            // panelHack
-            // 
-            this.panelHack.Controls.Add(this.tabControl);
-            this.panelHack.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelHack.Location = new System.Drawing.Point(0, 25);
-            this.panelHack.Name = "panelHack";
-            this.panelHack.Padding = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.panelHack.Size = new System.Drawing.Size(804, 379);
-            this.panelHack.TabIndex = 5;
-            // 
             // menuNetwork
             // 
             this.menuNetwork.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
@@ -1288,7 +1276,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(804, 426);
-            this.Controls.Add(this.panelHack);
+            this.Controls.Add(this.tabControl);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.statusBar);
             this.DoubleBuffered = true;
@@ -1312,7 +1300,6 @@
             this.tabNetwork.ResumeLayout(false);
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
-            this.panelHack.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1436,7 +1423,6 @@
         private System.Windows.Forms.ToolStripDropDownButton shutDownToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton optionsToolStripButton;
         private System.Windows.Forms.MenuItem toolbarMenuItem;
-        private System.Windows.Forms.Panel panelHack;
         private System.Windows.Forms.MenuItem saveMenuItem;
         private System.Windows.Forms.ContextMenu menuNetwork;
         private System.Windows.Forms.MenuItem goToProcessNetworkMenuItem;
