@@ -358,16 +358,16 @@ namespace ProcessHacker
             switch (Properties.Settings.Default.ToolStripDisplayStyle)
             {
                 case 0:
-                    menuStyleComboBox.SelectedIndex = 0;
+                    comboToolbarStyle.SelectedIndex = 0;
                     break;
                 case 1:
-                    menuStyleComboBox.SelectedIndex = 1;
+                    comboToolbarStyle.SelectedIndex = 1;
                     break;
                 case 2:
-                    menuStyleComboBox.SelectedIndex = 2;
+                    comboToolbarStyle.SelectedIndex = 2;
                     break;
                 default:
-                    menuStyleComboBox.SelectedIndex = 1;
+                    comboToolbarStyle.SelectedIndex = 1;
                     break;
             }
 
@@ -435,7 +435,7 @@ namespace ProcessHacker
                 Properties.Settings.Default.AppUpdateLevel = (int)AppUpdateLevel.Alpha;
             }
 
-            switch (menuStyleComboBox.SelectedIndex)
+            switch (comboToolbarStyle.SelectedIndex)
             {
                 case 0:
                     Properties.Settings.Default.ToolStripDisplayStyle = 0;
@@ -600,12 +600,16 @@ namespace ProcessHacker
         {
             foreach (ListViewItem item in listHighlightingColors.Items)
                 item.Checked = true;
+
+            this.EnableApplyButton();
         }
 
         private void buttonDisableAll_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem item in listHighlightingColors.Items)
                 item.Checked = false;
+
+            this.EnableApplyButton();
         }
 
         private void buttonDbghelpBrowse_Click(object sender, EventArgs e)

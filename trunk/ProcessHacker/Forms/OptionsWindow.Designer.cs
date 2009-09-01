@@ -37,6 +37,8 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.label20 = new System.Windows.Forms.Label();
+            this.comboToolbarStyle = new System.Windows.Forms.ComboBox();
             this.checkFloatChildWindows = new System.Windows.Forms.CheckBox();
             this.checkScrollDownProcessTree = new System.Windows.Forms.CheckBox();
             this.checkAllowOnlyOneInstance = new System.Windows.Forms.CheckBox();
@@ -70,6 +72,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.tabPlotting = new System.Windows.Forms.TabPage();
             this.textStep = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -80,6 +84,12 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
+            this.colorIORO = new ProcessHacker.Components.ColorModifier();
+            this.colorIOW = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.tabSymbols = new System.Windows.Forms.TabPage();
             this.checkUndecorate = new System.Windows.Forms.CheckBox();
             this.textSearchPath = new System.Windows.Forms.TextBox();
@@ -88,6 +98,7 @@
             this.textDbghelpPath = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.tabUpdates = new System.Windows.Forms.TabPage();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.textUpdateUrl = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -96,17 +107,6 @@
             this.optUpdateStable = new System.Windows.Forms.RadioButton();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.menuStyleComboBox = new System.Windows.Forms.ComboBox();
-            this.label20 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorIORO = new ProcessHacker.Components.ColorModifier();
-            this.colorIOW = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -162,7 +162,7 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonOK.Location = new System.Drawing.Point(264, 333);
+            this.buttonOK.Location = new System.Drawing.Point(264, 352);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 1;
@@ -174,7 +174,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(211, 213);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(211, 245);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 12;
@@ -224,13 +224,13 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(489, 315);
+            this.tabControl.Size = new System.Drawing.Size(489, 334);
             this.tabControl.TabIndex = 0;
             // 
             // tabGeneral
             // 
             this.tabGeneral.Controls.Add(this.label20);
-            this.tabGeneral.Controls.Add(this.menuStyleComboBox);
+            this.tabGeneral.Controls.Add(this.comboToolbarStyle);
             this.tabGeneral.Controls.Add(this.checkFloatChildWindows);
             this.tabGeneral.Controls.Add(this.checkScrollDownProcessTree);
             this.tabGeneral.Controls.Add(this.checkAllowOnlyOneInstance);
@@ -252,16 +252,39 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(481, 289);
+            this.tabGeneral.Size = new System.Drawing.Size(481, 308);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(6, 140);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(109, 13);
+            this.label20.TabIndex = 19;
+            this.label20.Text = "Toolbar Display Style:";
+            // 
+            // comboToolbarStyle
+            // 
+            this.comboToolbarStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboToolbarStyle.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.comboToolbarStyle.FormattingEnabled = true;
+            this.comboToolbarStyle.Items.AddRange(new object[] {
+            "Show Only Icons",
+            "Show Selective Text",
+            "Show All Text Labels"});
+            this.comboToolbarStyle.Location = new System.Drawing.Point(134, 137);
+            this.comboToolbarStyle.Name = "comboToolbarStyle";
+            this.comboToolbarStyle.Size = new System.Drawing.Size(135, 21);
+            this.comboToolbarStyle.TabIndex = 18;
             // 
             // checkFloatChildWindows
             // 
             this.checkFloatChildWindows.AutoSize = true;
             this.checkFloatChildWindows.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkFloatChildWindows.Location = new System.Drawing.Point(211, 166);
+            this.checkFloatChildWindows.Location = new System.Drawing.Point(211, 198);
             this.checkFloatChildWindows.Name = "checkFloatChildWindows";
             this.checkFloatChildWindows.Size = new System.Drawing.Size(124, 18);
             this.checkFloatChildWindows.TabIndex = 10;
@@ -272,7 +295,7 @@
             // 
             this.checkScrollDownProcessTree.AutoSize = true;
             this.checkScrollDownProcessTree.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkScrollDownProcessTree.Location = new System.Drawing.Point(211, 189);
+            this.checkScrollDownProcessTree.Location = new System.Drawing.Point(211, 221);
             this.checkScrollDownProcessTree.Name = "checkScrollDownProcessTree";
             this.checkScrollDownProcessTree.Size = new System.Drawing.Size(213, 18);
             this.checkScrollDownProcessTree.TabIndex = 11;
@@ -283,7 +306,7 @@
             // 
             this.checkAllowOnlyOneInstance.AutoSize = true;
             this.checkAllowOnlyOneInstance.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(6, 237);
+            this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(6, 269);
             this.checkAllowOnlyOneInstance.Name = "checkAllowOnlyOneInstance";
             this.checkAllowOnlyOneInstance.Size = new System.Drawing.Size(143, 18);
             this.checkAllowOnlyOneInstance.TabIndex = 9;
@@ -293,7 +316,7 @@
             // buttonFont
             // 
             this.buttonFont.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonFont.Location = new System.Drawing.Point(6, 136);
+            this.buttonFont.Location = new System.Drawing.Point(6, 168);
             this.buttonFont.Name = "buttonFont";
             this.buttonFont.Size = new System.Drawing.Size(75, 23);
             this.buttonFont.TabIndex = 5;
@@ -322,6 +345,7 @@
             // comboSizeUnits
             // 
             this.comboSizeUnits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboSizeUnits.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.comboSizeUnits.FormattingEnabled = true;
             this.comboSizeUnits.Items.AddRange(new object[] {
             "B",
@@ -349,7 +373,7 @@
             // 
             this.checkStartHidden.AutoSize = true;
             this.checkStartHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkStartHidden.Location = new System.Drawing.Point(6, 213);
+            this.checkStartHidden.Location = new System.Drawing.Point(6, 245);
             this.checkStartHidden.Name = "checkStartHidden";
             this.checkStartHidden.Size = new System.Drawing.Size(89, 18);
             this.checkStartHidden.TabIndex = 8;
@@ -360,7 +384,7 @@
             // 
             this.checkHideWhenClosed.AutoSize = true;
             this.checkHideWhenClosed.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenClosed.Location = new System.Drawing.Point(6, 189);
+            this.checkHideWhenClosed.Location = new System.Drawing.Point(6, 221);
             this.checkHideWhenClosed.Name = "checkHideWhenClosed";
             this.checkHideWhenClosed.Size = new System.Drawing.Size(117, 18);
             this.checkHideWhenClosed.TabIndex = 7;
@@ -371,7 +395,7 @@
             // 
             this.checkHideWhenMinimized.AutoSize = true;
             this.checkHideWhenMinimized.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenMinimized.Location = new System.Drawing.Point(6, 165);
+            this.checkHideWhenMinimized.Location = new System.Drawing.Point(6, 197);
             this.checkHideWhenMinimized.Name = "checkHideWhenMinimized";
             this.checkHideWhenMinimized.Size = new System.Drawing.Size(131, 18);
             this.checkHideWhenMinimized.TabIndex = 6;
@@ -420,7 +444,7 @@
             this.tabAdvanced.Location = new System.Drawing.Point(4, 22);
             this.tabAdvanced.Name = "tabAdvanced";
             this.tabAdvanced.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAdvanced.Size = new System.Drawing.Size(481, 289);
+            this.tabAdvanced.Size = new System.Drawing.Size(481, 308);
             this.tabAdvanced.TabIndex = 3;
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
@@ -553,7 +577,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(481, 289);
+            this.tabHighlighting.Size = new System.Drawing.Size(481, 308);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -562,7 +586,7 @@
             // 
             this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 265);
+            this.label11.Location = new System.Drawing.Point(6, 284);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(165, 13);
             this.label11.TabIndex = 9;
@@ -572,7 +596,7 @@
             // 
             this.buttonDisableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDisableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDisableAll.Location = new System.Drawing.Point(400, 260);
+            this.buttonDisableAll.Location = new System.Drawing.Point(400, 279);
             this.buttonDisableAll.Name = "buttonDisableAll";
             this.buttonDisableAll.Size = new System.Drawing.Size(75, 23);
             this.buttonDisableAll.TabIndex = 5;
@@ -584,7 +608,7 @@
             // 
             this.buttonEnableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonEnableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonEnableAll.Location = new System.Drawing.Point(319, 260);
+            this.buttonEnableAll.Location = new System.Drawing.Point(319, 279);
             this.buttonEnableAll.Name = "buttonEnableAll";
             this.buttonEnableAll.Size = new System.Drawing.Size(75, 23);
             this.buttonEnableAll.TabIndex = 4;
@@ -607,7 +631,7 @@
             this.listHighlightingColors.MultiSelect = false;
             this.listHighlightingColors.Name = "listHighlightingColors";
             this.listHighlightingColors.ShowItemToolTips = true;
-            this.listHighlightingColors.Size = new System.Drawing.Size(469, 194);
+            this.listHighlightingColors.Size = new System.Drawing.Size(469, 213);
             this.listHighlightingColors.TabIndex = 3;
             this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
             this.listHighlightingColors.View = System.Windows.Forms.View.Details;
@@ -672,6 +696,22 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "New Objects:";
             // 
+            // colorRemovedProcesses
+            // 
+            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
+            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
+            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorRemovedProcesses.TabIndex = 2;
+            // 
+            // colorNewProcesses
+            // 
+            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
+            this.colorNewProcesses.Name = "colorNewProcesses";
+            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorNewProcesses.TabIndex = 1;
+            // 
             // tabPlotting
             // 
             this.tabPlotting.Controls.Add(this.textStep);
@@ -692,7 +732,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(481, 289);
+            this.tabPlotting.Size = new System.Drawing.Size(481, 308);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -788,6 +828,54 @@
             this.label17.TabIndex = 9;
             this.label17.Text = "CPU Kernel Time:";
             // 
+            // colorIORO
+            // 
+            this.colorIORO.Color = System.Drawing.Color.Transparent;
+            this.colorIORO.Location = new System.Drawing.Point(124, 163);
+            this.colorIORO.Name = "colorIORO";
+            this.colorIORO.Size = new System.Drawing.Size(40, 20);
+            this.colorIORO.TabIndex = 6;
+            // 
+            // colorIOW
+            // 
+            this.colorIOW.Color = System.Drawing.Color.Transparent;
+            this.colorIOW.Location = new System.Drawing.Point(124, 189);
+            this.colorIOW.Name = "colorIOW";
+            this.colorIOW.Size = new System.Drawing.Size(40, 20);
+            this.colorIOW.TabIndex = 7;
+            // 
+            // colorMemoryWS
+            // 
+            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
+            this.colorMemoryWS.Name = "colorMemoryWS";
+            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryWS.TabIndex = 5;
+            // 
+            // colorMemoryPB
+            // 
+            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
+            this.colorMemoryPB.Name = "colorMemoryPB";
+            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryPB.TabIndex = 4;
+            // 
+            // colorCPUUT
+            // 
+            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
+            this.colorCPUUT.Name = "colorCPUUT";
+            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUUT.TabIndex = 3;
+            // 
+            // colorCPUKT
+            // 
+            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
+            this.colorCPUKT.Name = "colorCPUKT";
+            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUKT.TabIndex = 2;
+            // 
             // tabSymbols
             // 
             this.tabSymbols.Controls.Add(this.checkUndecorate);
@@ -799,7 +887,7 @@
             this.tabSymbols.Location = new System.Drawing.Point(4, 22);
             this.tabSymbols.Name = "tabSymbols";
             this.tabSymbols.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSymbols.Size = new System.Drawing.Size(481, 289);
+            this.tabSymbols.Size = new System.Drawing.Size(481, 308);
             this.tabSymbols.TabIndex = 4;
             this.tabSymbols.Text = "Symbols";
             this.tabSymbols.UseVisualStyleBackColor = true;
@@ -875,10 +963,20 @@
             this.tabUpdates.Location = new System.Drawing.Point(4, 22);
             this.tabUpdates.Name = "tabUpdates";
             this.tabUpdates.Padding = new System.Windows.Forms.Padding(3);
-            this.tabUpdates.Size = new System.Drawing.Size(481, 289);
+            this.tabUpdates.Size = new System.Drawing.Size(481, 308);
             this.tabUpdates.TabIndex = 5;
             this.tabUpdates.Text = "Updates";
             this.tabUpdates.UseVisualStyleBackColor = true;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(248, 31);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(120, 17);
+            this.checkBox1.TabIndex = 27;
+            this.checkBox1.Text = "Auto Update Check";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // textUpdateUrl
             // 
@@ -946,7 +1044,7 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCancel.Location = new System.Drawing.Point(345, 333);
+            this.buttonCancel.Location = new System.Drawing.Point(345, 352);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 2;
@@ -959,7 +1057,7 @@
             this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonApply.Enabled = false;
             this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonApply.Location = new System.Drawing.Point(426, 333);
+            this.buttonApply.Location = new System.Drawing.Point(426, 352);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(75, 23);
             this.buttonApply.TabIndex = 3;
@@ -967,108 +1065,12 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
-            // menuStyleComboBox
-            // 
-            this.menuStyleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.menuStyleComboBox.FormattingEnabled = true;
-            this.menuStyleComboBox.Items.AddRange(new object[] {
-            "Show Only Icons",
-            "Show Selective Text",
-            "Show All Text Labels"});
-            this.menuStyleComboBox.Location = new System.Drawing.Point(340, 110);
-            this.menuStyleComboBox.Name = "menuStyleComboBox";
-            this.menuStyleComboBox.Size = new System.Drawing.Size(135, 21);
-            this.menuStyleComboBox.TabIndex = 18;
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(225, 113);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(109, 13);
-            this.label20.TabIndex = 19;
-            this.label20.Text = "Toolbar Display Style:";
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(248, 31);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(120, 17);
-            this.checkBox1.TabIndex = 27;
-            this.checkBox1.Text = "Auto Update Check";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // colorRemovedProcesses
-            // 
-            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
-            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
-            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorRemovedProcesses.TabIndex = 2;
-            // 
-            // colorNewProcesses
-            // 
-            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
-            this.colorNewProcesses.Name = "colorNewProcesses";
-            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorNewProcesses.TabIndex = 1;
-            // 
-            // colorIORO
-            // 
-            this.colorIORO.Color = System.Drawing.Color.Transparent;
-            this.colorIORO.Location = new System.Drawing.Point(124, 163);
-            this.colorIORO.Name = "colorIORO";
-            this.colorIORO.Size = new System.Drawing.Size(40, 20);
-            this.colorIORO.TabIndex = 6;
-            // 
-            // colorIOW
-            // 
-            this.colorIOW.Color = System.Drawing.Color.Transparent;
-            this.colorIOW.Location = new System.Drawing.Point(124, 189);
-            this.colorIOW.Name = "colorIOW";
-            this.colorIOW.Size = new System.Drawing.Size(40, 20);
-            this.colorIOW.TabIndex = 7;
-            // 
-            // colorMemoryWS
-            // 
-            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
-            this.colorMemoryWS.Name = "colorMemoryWS";
-            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryWS.TabIndex = 5;
-            // 
-            // colorMemoryPB
-            // 
-            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
-            this.colorMemoryPB.Name = "colorMemoryPB";
-            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryPB.TabIndex = 4;
-            // 
-            // colorCPUUT
-            // 
-            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
-            this.colorCPUUT.Name = "colorCPUUT";
-            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUUT.TabIndex = 3;
-            // 
-            // colorCPUKT
-            // 
-            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
-            this.colorCPUKT.Name = "colorCPUKT";
-            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUKT.TabIndex = 2;
-            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(513, 368);
+            this.ClientSize = new System.Drawing.Size(513, 387);
             this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.tabControl);
@@ -1184,7 +1186,7 @@
         private System.Windows.Forms.TextBox textUpdateUrl;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.ComboBox menuStyleComboBox;
+        private System.Windows.Forms.ComboBox comboToolbarStyle;
         private System.Windows.Forms.CheckBox checkBox1;
     }
 }

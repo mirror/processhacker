@@ -172,7 +172,7 @@
             this.copyNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.closeNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
-            this.menuItem9 = new System.Windows.Forms.MenuItem();
+            this.toolsNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.whoisNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
@@ -1230,7 +1230,7 @@
             // 
             this.goToProcessNetworkMenuItem.DefaultItem = true;
             this.vistaMenu.SetImage(this.goToProcessNetworkMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
-            this.goToProcessNetworkMenuItem.Index = 1;
+            this.goToProcessNetworkMenuItem.Index = 0;
             this.goToProcessNetworkMenuItem.Text = "&Go to Process";
             this.goToProcessNetworkMenuItem.Click += new System.EventHandler(this.goToProcessNetworkMenuItem_Click);
             // 
@@ -1250,25 +1250,25 @@
             // menuNetwork
             // 
             this.menuNetwork.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItem9,
             this.goToProcessNetworkMenuItem,
+            this.toolsNetworkMenuItem,
             this.closeNetworkMenuItem,
             this.menuItem6,
             this.copyNetworkMenuItem,
             this.selectAllNetworkMenuItem});
             this.menuNetwork.Popup += new System.EventHandler(this.menuNetwork_Popup);
             // 
-            // menuItem9
+            // toolsNetworkMenuItem
             // 
-            this.menuItem9.Index = 0;
-            this.menuItem9.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.toolsNetworkMenuItem.Index = 1;
+            this.toolsNetworkMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.whoisNetworkMenuItem});
-            this.menuItem9.Text = "Network-Tools";
+            this.toolsNetworkMenuItem.Text = "Tools";
             // 
             // whoisNetworkMenuItem
             // 
             this.whoisNetworkMenuItem.Index = 0;
-            this.whoisNetworkMenuItem.Text = "Whois Infomation";
+            this.whoisNetworkMenuItem.Text = "Whois";
             this.whoisNetworkMenuItem.Click += new System.EventHandler(this.whoisNetworkMenuItem_Click);
             // 
             // menuItem6
@@ -1469,7 +1469,7 @@
         private System.Windows.Forms.MenuItem menuItem15;
         private System.Windows.Forms.MenuItem closeProcessMenuItem;
         private System.Windows.Forms.MenuItem checkForUpdatesMenuItem;
-        private System.Windows.Forms.MenuItem menuItem9;
+        private System.Windows.Forms.MenuItem toolsNetworkMenuItem;
         private System.Windows.Forms.MenuItem whoisNetworkMenuItem;
     }
 }

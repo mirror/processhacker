@@ -77,17 +77,17 @@
             // columnLocal
             // 
             this.columnLocal.Text = "Local Address";
-            this.columnLocal.Width = 108;
+            this.columnLocal.Width = 130;
             // 
             // columnLocalPort
             // 
             this.columnLocalPort.Text = "Local Port";
-            this.columnLocalPort.Width = 71;
+            this.columnLocalPort.Width = 52;
             // 
             // columnRemote
             // 
             this.columnRemote.Text = "Remote Address";
-            this.columnRemote.Width = 175;
+            this.columnRemote.Width = 140;
             // 
             // columnRemotePort
             // 

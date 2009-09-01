@@ -312,11 +312,11 @@ namespace ProcessHacker.Components
             {
                 if (item.LocalString != null)
                 {
-                    litem.SubItems[1].Text = item.LocalString +" (" + item.Connection.Local.Address.ToString() + ")";
+                    litem.SubItems[1].Text = item.LocalString + " (" + item.Connection.Local.Address.ToString() + ")";
                 }
                 else
                 {
-                    litem.SubItems[1].Text = item.Connection.Local.ToString();
+                    litem.SubItems[1].Text = item.Connection.Local.Address.ToString();
                 }
             }
 
@@ -325,7 +325,7 @@ namespace ProcessHacker.Components
                 if (item.RemoteString != null)
                     litem.SubItems[3].Text = item.RemoteString + " (" + item.Connection.Remote.Address.ToString() + ")";
                 else
-                    litem.SubItems[3].Text = item.Connection.Remote.ToString();
+                    litem.SubItems[3].Text = item.Connection.Remote.Address.ToString();
             }
         }
 

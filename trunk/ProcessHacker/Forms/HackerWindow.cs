@@ -643,6 +643,24 @@ namespace ProcessHacker
             this.SelectProcess((int)listNetwork.SelectedItems[0].Tag);
         }
 
+        private void whoisNetworkMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listNetwork.SelectedItems[0].SubItems[3].Text.Length > 0)
+            {
+                string[] split = listNetwork.SelectedItems[0].SubItems[3].Text.Split(new Char[] { '(', ')' });
+
+                try
+                {
+                    IPInfoWindow iw = new IPInfoWindow(split[1].ToString(), IpAction.Whois);
+                    iw.ShowDialog(this);
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowException("Unable to query IP address information", ex);
+                }
+            }
+        }
+
         private void closeNetworkMenuItem_Click(object sender, EventArgs e)
         {
             if (listNetwork.SelectedItems.Count == 0)
@@ -3245,23 +3263,6 @@ namespace ProcessHacker
                 catch { }
             }
         }
-
-        private void whoisNetworkMenuItem_Click(object sender, EventArgs e)
-        {
-            if (listNetwork.SelectedItems[0].SubItems[3].Text.Length > 0)
-            {
-               string[] split = listNetwork.SelectedItems[0].SubItems[3].Text.Split(new Char[] { '(', ')' });
-
-               try
-               {
-                   IPInfoWindow iw = new IPInfoWindow(split[1].ToString(), IpAction.Whois);
-                   iw.ShowDialog(this);
-               }
-               catch (Exception)
-               {  }       
-            }
-        }
-
     }
 }
 
