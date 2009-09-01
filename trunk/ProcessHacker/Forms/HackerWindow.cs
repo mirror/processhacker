@@ -530,18 +530,8 @@ namespace ProcessHacker
         }
 
         private void UpdateCheckMenuItem_Click(object sender, EventArgs e)
-        {        
-            checkForUpdatesMenuItem.Enabled = false;
-      
-            Thread t = new Thread(new ThreadStart(() => this.UpdateProgram(true)));   
-            t.IsBackground = true;   
-            t.Start();
-        }
-
-        private void UpdateProgram(bool interactive)
         {
-            Updater.Update(this, true);
-            this.Invoke(new MethodInvoker(() => checkForUpdatesMenuItem.Enabled = true));
+            this.UpdateProgram(true);
         }
 
         #region View
@@ -2553,6 +2543,19 @@ namespace ProcessHacker
             }
         }
 
+        private void UpdateProgram(bool interactive)
+        {
+            checkForUpdatesMenuItem.Enabled = false;
+
+            Thread t = new Thread(new ThreadStart(() =>
+                {
+                    Updater.Update(this, true);
+                    this.Invoke(new MethodInvoker(() => checkForUpdatesMenuItem.Enabled = true));
+                }));
+            t.IsBackground = true;
+            t.Start();
+        }
+
         private void UpdateSessions()
         {
             var currentServer = TerminalServerHandle.GetCurrent();
@@ -3261,9 +3264,10 @@ namespace ProcessHacker
 
                 try { Win32.SetProcessShutdownParameters(0x100, 0); }
                 catch { }
+
+                if (Properties.Settings.Default.AppUpdateAutomatic)
+                    this.UpdateProgram(false);
             }
         }
     }
 }
-
-
