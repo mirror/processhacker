@@ -23,20 +23,21 @@ namespace ProcessHacker
 
             ipAddress = IPAddress;
             ipAction = action;
+
+            this.Text += " (" + IPAddress + ")";
         }
 
         private void IPInfoWindow_Load(object sender, EventArgs e)
-        {
-            try
-            {
-                if (ipAction == IpAction.Whois)
-                {
-                    System.Text.StringBuilder stringBuilderResult = new System.Text.StringBuilder();
-                    System.Net.Sockets.TcpClient tcpClinetWhois = new System.Net.Sockets.TcpClient("wq.apnic.net", 43);
-                    System.Net.Sockets.NetworkStream networkStreamWhois = tcpClinetWhois.GetStream();
-                    System.IO.BufferedStream bufferedStreamWhois = new System.IO.BufferedStream(networkStreamWhois);
-                    System.IO.StreamWriter streamWriter = new System.IO.StreamWriter(bufferedStreamWhois);
+        { 
+            if (ipAction == IpAction.Whois)
+            {  
+                System.Text.StringBuilder stringBuilderResult = new System.Text.StringBuilder();
 
+                using (System.Net.Sockets.TcpClient tcpClinetWhois = new System.Net.Sockets.TcpClient("wq.apnic.net", 43))
+                using (System.Net.Sockets.NetworkStream networkStreamWhois = tcpClinetWhois.GetStream())
+                using (System.IO.BufferedStream bufferedStreamWhois = new System.IO.BufferedStream(networkStreamWhois))
+                using (System.IO.StreamWriter streamWriter = new System.IO.StreamWriter(bufferedStreamWhois)) 
+                {   
                     if (IsNumber(ipAddress))
                     {
                         streamWriter.WriteLine(ipAddress);
@@ -44,48 +45,39 @@ namespace ProcessHacker
 
                         System.IO.StreamReader streamReaderReceive = new System.IO.StreamReader(bufferedStreamWhois);
 
-                        while (!streamReaderReceive.EndOfStream)
-                        {
+                        while (!streamReaderReceive.EndOfStream) 
+                        { 
                             stringBuilderResult.AppendLine(streamReaderReceive.ReadLine());
                         }
-
-                        //stringBuilderResult.Remove(0, 77); //cleanup return string, remove first line
-                        //stringBuilderResult.Remove(stringBuilderResult.Length - 68, 68); //remove last line
-
+                           
+                        //stringBuilderResult.Remove(0, 77); //cleanup return string, remove first line   
+                        //stringBuilderResult.Remove(stringBuilderResult.Length - 69, 69); //remove last line
+            
                         this.textInfo.AppendText(stringBuilderResult.ToString());
-                    }
+                    }  
                     else // value is not a number
-                    {
+                    {  
                         PhUtils.ShowError("Unable to get Whois information for the IP address " + ipAddress);
                         this.Close();
-                    }
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
-            }
-            catch (Exception ex)
-            {
-                PhUtils.ShowException("Unable to query IP address information", ex);
-                this.Close();
+                    }       
+                }  
+            }  
+            else 
+            {  
+                throw new NotSupportedException();
             }
         }
 
         private bool IsNumber(string text)
         {
-            foreach (char c in text)
-            {
-                if (c < '0' || c > '9')
-                    return false;
-            }
-
-            return true;
+            System.Text.RegularExpressions.Regex objNotWholePattern = new System.Text.RegularExpressions.Regex("[^0-9]");
+            return objNotWholePattern.IsMatch(text) && (text != "");  
         }
 
         private void buttonClose_Click(object sender, EventArgs e)
         {
             this.Close();
         }
+
     }
 }
