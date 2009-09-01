@@ -971,9 +971,10 @@
             // checkUpdateAutomatically
             // 
             this.checkUpdateAutomatically.AutoSize = true;
+            this.checkUpdateAutomatically.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkUpdateAutomatically.Location = new System.Drawing.Point(6, 77);
             this.checkUpdateAutomatically.Name = "checkUpdateAutomatically";
-            this.checkUpdateAutomatically.Size = new System.Drawing.Size(177, 17);
+            this.checkUpdateAutomatically.Size = new System.Drawing.Size(183, 18);
             this.checkUpdateAutomatically.TabIndex = 27;
             this.checkUpdateAutomatically.Text = "Check for updates automatically";
             this.checkUpdateAutomatically.UseVisualStyleBackColor = true;
