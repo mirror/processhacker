@@ -402,6 +402,18 @@ namespace ProcessHacker.Components
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Protocol.ToString().ToUpper()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.State != 0 ? item.Connection.State.ToString() : ""));
 
+            //We create a hidden collum containing the IP addresses
+            //Network-tools context menu uses this hidden collum for getting the user-selected IP address for querying
+            if (item.Connection.Remote != null && item.Connection.Remote.Address.ToString() != "0.0.0.0")
+            {
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Remote.Address.ToString()));
+            }
+            else
+            {
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+            }
+
+
             lock (_needsAdd)
                 _needsAdd.Add(litem);
             _needsImageKeyReset = true;
