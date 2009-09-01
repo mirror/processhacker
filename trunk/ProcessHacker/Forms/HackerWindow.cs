@@ -623,6 +623,37 @@ namespace ProcessHacker
             {
                 Logging.Log(ex);
             }
+
+            try
+            {
+                bool hasValid = false;
+
+                foreach (ListViewItem item in listNetwork.SelectedItems)
+                {
+                    if (item.SubItems[7].Text.Length > 0)
+                    {
+                        hasValid = true; 
+                        break;
+                    }
+                }
+
+                if (!hasValid)
+                {
+                    whoisNetworkMenuItem.Enabled = false;
+                    tracertNetworkMenuItem.Enabled = false;
+                    pingNetworkMenuItem.Enabled = false;
+                }
+                else
+                {
+                    whoisNetworkMenuItem.Enabled = true;
+                    tracertNetworkMenuItem.Enabled = true;
+                    pingNetworkMenuItem.Enabled = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         private void goToProcessNetworkMenuItem_Click(object sender, EventArgs e)
@@ -635,28 +666,52 @@ namespace ProcessHacker
 
         private void whoisNetworkMenuItem_Click(object sender, EventArgs e)
         {
-            if (listNetwork.SelectedItems[0].SubItems[7].Text.Length > 0)
+            if (listNetwork.SelectedItems.Count != 1)
+                return;
+
+            foreach (ListViewItem item in listNetwork.SelectedItems)
             {
-                IPInfoWindow iw = new IPInfoWindow(listNetwork.SelectedItems[0].SubItems[7].Text, IpAction.Whois);
-                iw.ShowDialog(this);
+                string SelectedItem = item.SubItems[7].Text; 
+
+                if (SelectedItem.Length > 0)
+                {
+                    IPInfoWindow iw = new IPInfoWindow(SelectedItem, IpAction.Whois);
+                    iw.ShowDialog(this);
+                }
             }
         }
 
         private void tracertNetworkMenuItem_Click(object sender, EventArgs e)
         {
-            if (listNetwork.SelectedItems[0].SubItems[7].Text.Length > 0)
+            if (listNetwork.SelectedItems.Count != 1)
+                return;
+
+            foreach (ListViewItem item in listNetwork.SelectedItems)
             {
-                IPInfoWindow iw = new IPInfoWindow(listNetwork.SelectedItems[0].SubItems[7].Text, IpAction.Tracert);
-                iw.ShowDialog(this);
+                string SelectedItem = item.SubItems[7].Text;
+
+                if (SelectedItem.Length > 0)
+                {
+                    IPInfoWindow iw = new IPInfoWindow(SelectedItem, IpAction.Tracert);
+                    iw.ShowDialog(this);
+                }
             }
         }
 
         private void pingNetworkMenuItem_Click(object sender, EventArgs e)
         {
-            if (listNetwork.SelectedItems[0].SubItems[7].Text.Length > 0)
+            if (listNetwork.SelectedItems.Count != 1)
+                return;
+
+            foreach (ListViewItem item in listNetwork.SelectedItems)
             {
-                IPInfoWindow iw = new IPInfoWindow(listNetwork.SelectedItems[0].SubItems[7].Text, IpAction.Ping);
-                iw.ShowDialog(this);
+                string SelectedItem = item.SubItems[7].Text;
+
+                if (SelectedItem.Length > 0)
+                {
+                    IPInfoWindow iw = new IPInfoWindow(SelectedItem, IpAction.Ping);
+                    iw.ShowDialog(this);
+                }
             }
         }
 
