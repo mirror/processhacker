@@ -98,7 +98,7 @@
             this.textDbghelpPath = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.tabUpdates = new System.Windows.Forms.TabPage();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkUpdateAutomatically = new System.Windows.Forms.CheckBox();
             this.textUpdateUrl = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -953,7 +953,7 @@
             // 
             // tabUpdates
             // 
-            this.tabUpdates.Controls.Add(this.checkBox1);
+            this.tabUpdates.Controls.Add(this.checkUpdateAutomatically);
             this.tabUpdates.Controls.Add(this.textUpdateUrl);
             this.tabUpdates.Controls.Add(this.label19);
             this.tabUpdates.Controls.Add(this.label5);
@@ -968,21 +968,21 @@
             this.tabUpdates.Text = "Updates";
             this.tabUpdates.UseVisualStyleBackColor = true;
             // 
-            // checkBox1
+            // checkUpdateAutomatically
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(248, 31);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(120, 17);
-            this.checkBox1.TabIndex = 27;
-            this.checkBox1.Text = "Auto Update Check";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkUpdateAutomatically.AutoSize = true;
+            this.checkUpdateAutomatically.Location = new System.Drawing.Point(6, 77);
+            this.checkUpdateAutomatically.Name = "checkUpdateAutomatically";
+            this.checkUpdateAutomatically.Size = new System.Drawing.Size(177, 17);
+            this.checkUpdateAutomatically.TabIndex = 27;
+            this.checkUpdateAutomatically.Text = "Check for updates automatically";
+            this.checkUpdateAutomatically.UseVisualStyleBackColor = true;
             // 
             // textUpdateUrl
             // 
             this.textUpdateUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textUpdateUrl.Location = new System.Drawing.Point(97, 93);
+            this.textUpdateUrl.Location = new System.Drawing.Point(97, 103);
             this.textUpdateUrl.Name = "textUpdateUrl";
             this.textUpdateUrl.Size = new System.Drawing.Size(307, 20);
             this.textUpdateUrl.TabIndex = 26;
@@ -990,7 +990,7 @@
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(6, 96);
+            this.label19.Location = new System.Drawing.Point(6, 106);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(85, 13);
             this.label19.TabIndex = 25;
@@ -1187,6 +1187,6 @@
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.ComboBox comboToolbarStyle;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkUpdateAutomatically;
     }
 }

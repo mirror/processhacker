@@ -1632,5 +1632,17 @@ namespace ProcessHacker.Properties {
                 this["ToolStripDisplayStyle"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AppUpdateAutomatic {
+            get {
+                return ((bool)(this["AppUpdateAutomatic"]));
+            }
+            set {
+                this["AppUpdateAutomatic"] = value;
+            }
+        }
     }
 }

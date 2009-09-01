@@ -254,6 +254,22 @@ namespace ProcessHacker
 
             textImposterNames.Text = Properties.Settings.Default.ImposterNames;
 
+            switch (Properties.Settings.Default.ToolStripDisplayStyle)
+            {
+                case 0:
+                    comboToolbarStyle.SelectedIndex = 0;
+                    break;
+                case 1:
+                    comboToolbarStyle.SelectedIndex = 1;
+                    break;
+                case 2:
+                    comboToolbarStyle.SelectedIndex = 2;
+                    break;
+                default:
+                    comboToolbarStyle.SelectedIndex = 1;
+                    break;
+            }
+
             // Highlighting       
             textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
             colorNewProcesses.Color = Properties.Settings.Default.ColorNew;
@@ -354,24 +370,7 @@ namespace ProcessHacker
             }
 
             textUpdateUrl.Text = Properties.Settings.Default.AppUpdateUrl;
-
-            switch (Properties.Settings.Default.ToolStripDisplayStyle)
-            {
-                case 0:
-                    comboToolbarStyle.SelectedIndex = 0;
-                    break;
-                case 1:
-                    comboToolbarStyle.SelectedIndex = 1;
-                    break;
-                case 2:
-                    comboToolbarStyle.SelectedIndex = 2;
-                    break;
-                default:
-                    comboToolbarStyle.SelectedIndex = 1;
-                    break;
-            }
-
-
+            checkUpdateAutomatically.Checked = Properties.Settings.Default.AppUpdateAutomatic;
         }
 
         private void SaveSettings()
@@ -452,6 +451,7 @@ namespace ProcessHacker
             }
 
             Properties.Settings.Default.AppUpdateUrl = textUpdateUrl.Text;
+            Properties.Settings.Default.AppUpdateAutomatic = checkUpdateAutomatically.Checked;
 
             Properties.Settings.Default.Save();
 
