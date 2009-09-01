@@ -966,26 +966,29 @@ namespace ProcessHacker
 
                         // Get the process' token's username.
 
-                        using (var queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                        try
                         {
-                            try
+                            using (var queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                             {
-                                using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
+                                try
                                 {
-                                    try
+                                    using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
                                     {
-                                        using (var sid = thandle.GetUser())
-                                            item.Username = sid.GetFullName(true);
+                                        try
+                                        {
+                                            using (var sid = thandle.GetUser())
+                                                item.Username = sid.GetFullName(true);
+                                        }
+                                        catch
+                                        { }
                                     }
-                                    catch
-                                    { }
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                Logging.Log(ex);
+                                catch
+                                { }
                             }
                         }
+                        catch
+                        { }
 
                         // Get a process handle with QUERY_INFORMATION access, and 
                         // see if it's being debugged.
