@@ -104,27 +104,9 @@ namespace ProcessHacker
         /// <returns></returns>
         private bool IsUserAdministrator()
         {
-            //bool value to hold our return value
-            bool isAdmin;
-
-            try
-            {
-                //get the currently logged in user
-                System.Security.Principal.WindowsIdentity user = System.Security.Principal.WindowsIdentity.GetCurrent();
-                System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(user);
-                isAdmin = principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                isAdmin = false;
-                Logging.Log(ex);
-            }
-            catch (Exception ex)
-            {
-                isAdmin = false;
-                Logging.Log(ex);
-            }
-            return isAdmin;
+            System.Security.Principal.WindowsIdentity identity = System.Security.Principal.WindowsIdentity.GetCurrent();
+            System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(identity);
+            return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
         }
 
         private void LoadStage1()
