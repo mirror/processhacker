@@ -802,7 +802,7 @@
             // 
             this.checkForUpdatesMenuItem.Index = 1;
             this.checkForUpdatesMenuItem.Text = "Check for Updates";
-            this.checkForUpdatesMenuItem.Click += new System.EventHandler(this.UpdateCheckMenuItem_Click);
+            this.checkForUpdatesMenuItem.Click += new System.EventHandler(this.checkForUpdatesMenuItem_Click);
             // 
             // menuItem1
             // 

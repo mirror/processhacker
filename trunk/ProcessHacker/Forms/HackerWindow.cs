@@ -529,7 +529,7 @@ namespace ProcessHacker
             createServiceWindow.ShowDialog();
         }
 
-        private void UpdateCheckMenuItem_Click(object sender, EventArgs e)
+        private void checkForUpdatesMenuItem_Click(object sender, EventArgs e)
         {
             this.UpdateProgram(true);
         }
@@ -2549,7 +2549,7 @@ namespace ProcessHacker
 
             Thread t = new Thread(new ThreadStart(() =>
                 {
-                    Updater.Update(this, true);
+                    Updater.Update(this, interactive);
                     this.Invoke(new MethodInvoker(() => checkForUpdatesMenuItem.Enabled = true));
                 }));
             t.IsBackground = true;
