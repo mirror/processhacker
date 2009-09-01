@@ -74,8 +74,18 @@ namespace ProcessHacker
 
         private bool IsNumber(string text)
         {
-            System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex("[0-9]"); 
-            return regex.IsMatch(text);
+            foreach (char c in text)
+            {
+                if (c < '0' || c > '9')
+                    return false;
+            }
+
+            return true;
+        }
+
+        private void buttonClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }
