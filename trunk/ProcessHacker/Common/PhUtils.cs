@@ -145,6 +145,39 @@ namespace ProcessHacker.Common
                 return Color.White;
         }
 
+        public static string GetIntegrity(this TokenHandle tokenHandle, out int integrityLevel)
+        {
+            var groups = tokenHandle.GetGroups();
+            string integrity = null;
+
+            integrityLevel = 0;
+
+            for (int i = 0; i < groups.Length; i++)
+            {
+                if ((groups[i].Attributes & SidAttributes.IntegrityEnabled) != 0)
+                {
+                    integrity = groups[i].GetFullName(false).Replace(" Mandatory Level", "");
+
+                    if (integrity == "Untrusted")
+                        integrityLevel = 0;
+                    else if (integrity == "Low")
+                        integrityLevel = 1;
+                    else if (integrity == "Medium")
+                        integrityLevel = 2;
+                    else if (integrity == "High")
+                        integrityLevel = 3;
+                    else if (integrity == "System")
+                        integrityLevel = 4;
+                    else if (integrity == "Installer")
+                        integrityLevel = 5;
+                }
+
+                groups[i].Dispose();
+            }
+
+            return integrity;
+        }
+
         /// <summary>
         /// Opens a registry key in the Registry Editor.
         /// </summary>

@@ -141,7 +141,7 @@ namespace ProcessHacker.Components
                     _provider.DictionaryModified -= provider_DictionaryModified;
                     _provider.DictionaryRemoved -= provider_DictionaryRemoved;
                     _provider.Updated -= provider_Updated;
-                    Program.ProcessProvider.FileProcessingReceived -= ProcessProvider_FileProcessingReceived;
+                    Program.ProcessProvider.ProcessQueryReceived -= ProcessProvider_FileProcessingReceived;
                 }
 
                 _provider = value;
@@ -150,7 +150,7 @@ namespace ProcessHacker.Components
 
                 if (_provider != null)
                 {                       
-                    Program.ProcessProvider.FileProcessingReceived += ProcessProvider_FileProcessingReceived;
+                    Program.ProcessProvider.ProcessQueryReceived += ProcessProvider_FileProcessingReceived;
 
                     foreach (NetworkItem item in _provider.Dictionary.Values)
                     {

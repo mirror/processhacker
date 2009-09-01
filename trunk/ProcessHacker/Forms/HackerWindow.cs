@@ -1681,7 +1681,7 @@ namespace ProcessHacker
         {
             try
             {
-                processP.QueueFileProcessing(processSelectedPid);
+                processP.QueueProcessQuery(processSelectedPid);
             }
             catch (Exception ex)
             {
@@ -1759,7 +1759,7 @@ namespace ProcessHacker
             // Check if we need to inspect a process at startup.
             if (stage == 0x1 && Program.InspectPid != -1 && pid == Program.InspectPid)
             {
-                processP.FileProcessingReceived -= processP_FileProcessingReceived;
+                processP.ProcessQueryReceived -= processP_FileProcessingReceived;
                 ProcessActions.ShowProperties(this, pid, processP.Dictionary[pid].Name);
             }
         }
@@ -3019,7 +3019,7 @@ namespace ProcessHacker
             this.Cursor = Cursors.WaitCursor;
             processP.Updated += processP_Updated;
             processP.Updated += processP_InfoUpdater;
-            if (Program.InspectPid != -1) processP.FileProcessingReceived += processP_FileProcessingReceived;
+            if (Program.InspectPid != -1) processP.ProcessQueryReceived += processP_FileProcessingReceived;
             processP.RunOnceAsync();
             processP.Enabled = true;
             updateProcessesMenuItem.Checked = true;

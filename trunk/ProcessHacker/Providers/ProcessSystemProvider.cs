@@ -100,28 +100,38 @@ namespace ProcessHacker
 
     public class ProcessSystemProvider : Provider<int, ProcessItem>
     {
-        public class FileProcessMessage : Message
+        public class ProcessQueryMessage : Message
         {
             public int Stage;
             public int Pid;
             public string FileName;
+            public TokenElevationType ElevationType;
+            public bool IsElevated;
+            public string Integrity;
+            public int IntegrityLevel;
+            public string JobName;
+            public bool IsInJob;
+            public bool IsInSignificantJob;
+            public bool IsWow64;
             public Icon Icon;
             public Icon LargeIcon;
             public FileVersionInfo VersionInfo;
             public string CmdLine;
+
             public bool IsDotNet;
             public bool IsPacked;
             public bool IsPosix;
+
             public VerifyResult VerifyResult;
             public string VerifySignerName;
             public int ImportFunctions;
             public int ImportModules;
         }
 
-        public delegate void FileProcessingDelegate(int stage, int pid);
+        public delegate void ProcessQueryDelegate(int stage, int pid);
 
-        public event FileProcessingDelegate FileProcessingComplete;
-        public event FileProcessingDelegate FileProcessingReceived;
+        public event ProcessQueryDelegate ProcessQueryComplete;
+        public event ProcessQueryDelegate ProcessQueryReceived;
 
         private SystemBasicInformation _system;
         public SystemBasicInformation System
@@ -162,7 +172,7 @@ namespace ProcessHacker
         public ReadOnlyCollection<string> MostCpuHistory { get { return _mostUsageHistory[false]; } }
         public ReadOnlyCollection<string> MostIoHistory { get { return _mostUsageHistory[true]; } }
 
-        private delegate FileProcessMessage ProcessFileDelegate(int pid, string fileName, bool useCache);
+        private delegate ProcessQueryMessage QueryProcessDelegate(int pid, string fileName, bool useCache);
 
         private MessageQueue _messageQueue = new MessageQueue();
         private Dictionary<string, VerifyResult> _fileResults = new Dictionary<string, VerifyResult>();
@@ -205,13 +215,13 @@ namespace ProcessHacker
 
             // Add the file processing results listener.
             _messageQueue.AddListener(
-                new MessageQueueListener<FileProcessMessage>((message) =>
+                new MessageQueueListener<ProcessQueryMessage>((message) =>
                     {
                         if (this.Dictionary.ContainsKey(message.Pid))
                         {
                             ProcessItem item = this.Dictionary[message.Pid];
 
-                            this.FillFpResult(item, message);
+                            this.FillPqResult(item, message);
                             item.JustProcessed = true;
                         }
                     }));
@@ -304,17 +314,17 @@ namespace ProcessHacker
                  out _performance, Marshal.SizeOf(typeof(SystemPerformanceInformation)), out retLen);
         }
 
-        private FileProcessMessage ProcessFileStage1(int pid, string fileName, bool forced)
+        private ProcessQueryMessage QueryProcessStage1(int pid, string fileName, bool forced)
         {
-            return ProcessFileStage1(pid, fileName, forced, true);
+            return QueryProcessStage1(pid, fileName, forced, true);
         }
 
         /// <summary>
-        /// Stage 1 File Processing - gets the process file name, icon and command line.
+        /// Stage 1 Process Querying - gets the process file name, icon and command line.
         /// </summary>
-        private FileProcessMessage ProcessFileStage1(int pid, string fileName, bool forced, bool addToQueue)
+        private ProcessQueryMessage QueryProcessStage1(int pid, string fileName, bool forced, bool addToQueue)
         {
-            FileProcessMessage fpResult = new FileProcessMessage();
+            ProcessQueryMessage fpResult = new ProcessQueryMessage();
 
             fpResult.Pid = pid;
             fpResult.Stage = 0x1;
@@ -326,6 +336,88 @@ namespace ProcessHacker
                 Logging.Log(Logging.Importance.Warning, "Could not get file name for PID " + pid.ToString());
 
             fpResult.FileName = fileName;
+
+            try
+            {
+                using (var queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                {
+                    try
+                    {
+                        // Get a handle to the process' token and get its 
+                        // elevation type, and integrity.
+
+                        using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
+                        {
+                            try { fpResult.ElevationType = thandle.GetElevationType(); }
+                            catch { }
+                            try { fpResult.IsElevated = thandle.IsElevated(); }
+                            catch { }
+
+                            // Try to get the integrity level.
+                            try
+                            {
+                                fpResult.Integrity = thandle.GetIntegrity(out fpResult.IntegrityLevel);
+                            }
+                            catch
+                            { }
+                        }
+                    }
+                    catch
+                    { }
+
+                    // Is the process running under WOW64?
+                    if (IntPtr.Size == 8)
+                    {
+                        try
+                        {
+                            fpResult.IsWow64 = queryLimitedHandle.IsWow64();
+                        }
+                        catch
+                        { }
+                    }
+
+                    // Get the process' job if we have KProcessHacker. 
+                    // Otherwise, don't do anything.
+
+                    if (KProcessHacker.Instance != null)
+                    {
+                        try
+                        {
+                            var jhandle = queryLimitedHandle.GetJobObject(JobObjectAccess.Query);
+
+                            if (jhandle != null)
+                            {
+                                using (jhandle)
+                                {
+                                    var limits = jhandle.GetBasicLimitInformation();
+
+                                    fpResult.IsInJob = true;
+                                    fpResult.JobName = jhandle.GetObjectName();
+
+                                    // This is what Process Explorer does...
+                                    if (limits.LimitFlags != JobObjectLimitFlags.SilentBreakawayOk)
+                                    {
+                                        fpResult.IsInSignificantJob = true;
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logging.Log(ex);
+                            fpResult.IsInJob = false;
+                            fpResult.IsInSignificantJob = false;
+                        }
+                    }
+                    else
+                    {
+                        try { fpResult.IsInJob = queryLimitedHandle.IsInJob(); }
+                        catch { }
+                    }
+                }
+            }
+            catch
+            { }
 
             if (fileName != null)
             {
@@ -361,79 +453,70 @@ namespace ProcessHacker
                 _messageQueue.Enqueue(fpResult);
 
             WorkQueue.GlobalQueueWorkItemTag(
-                new ProcessFileDelegate(this.ProcessFileStage1a),
+                new QueryProcessDelegate(this.QueryProcessStage1a),
                 "process-stage1a",
                 pid, fileName, forced
                 );
             WorkQueue.GlobalQueueWorkItemTag(
-                new ProcessFileDelegate(this.ProcessFileStage2),
+                new QueryProcessDelegate(this.QueryProcessStage2),
                 "process-stage2",
                 pid, fileName, forced
                 );
 
-            if (this.FileProcessingComplete != null)
-                this.FileProcessingComplete(fpResult.Stage, pid);
+            if (this.ProcessQueryComplete != null)
+                this.ProcessQueryComplete(fpResult.Stage, pid);
 
             return fpResult;
         }
 
         /// <summary>
-        /// Stage 1A File Processing - gets whether the process is managed.
+        /// Stage 1A Process Querying - gets whether the process is managed.
         /// </summary>
-        /// <remarks>
-        /// This is present in a separate stage because it blocks on the GUI thread. It invokes 
-        /// the action on the GUI thread because COM interop requires that these calls are made 
-        /// on an STA thread. ThreadPool worker threads are all MTA.
-        /// </remarks>
-        private FileProcessMessage ProcessFileStage1a(int pid, string fileName, bool forced)
+        private ProcessQueryMessage QueryProcessStage1a(int pid, string fileName, bool forced)
         {
-            FileProcessMessage fpResult = new FileProcessMessage();
+            ProcessQueryMessage fpResult = new ProcessQueryMessage();
 
             fpResult.Pid = pid;
             fpResult.Stage = 0x1a;
 
-            // HACK
-            Program.HackerWindow.Invoke(new System.Windows.Forms.MethodInvoker(() =>
+            if (pid > 4)
             {
-                if (pid > 4)
+                try
                 {
+                    var publish = new Debugger.Core.Wrappers.CorPub.ICorPublish();
+                    Debugger.Core.Wrappers.CorPub.ICorPublishProcess process = null;
+
                     try
                     {
-                        var publish = new Debugger.Core.Wrappers.CorPub.ICorPublish();
-                        Debugger.Core.Wrappers.CorPub.ICorPublishProcess process = null;
-
-                        try
+                        process = publish.GetProcess(pid);
+                        fpResult.IsDotNet = process.IsManaged;
+                    }
+                    finally
+                    {
+                        if (process != null)
                         {
-                            process = publish.GetProcess(pid);
-                            fpResult.IsDotNet = process.IsManaged;
-                        }
-                        finally
-                        {
-                            if (process != null)
-                            {
-                                Debugger.Wrappers.ResourceManager.ReleaseCOMObject(process, process.GetType());
-                            }
+                            Debugger.Wrappers.ResourceManager.ReleaseCOMObject(process, process.GetType());
                         }
                     }
-                    catch
-                    { }
                 }
-            }));
+                catch
+                { }
+            }
 
             _messageQueue.Enqueue(fpResult);
 
-            if (this.FileProcessingComplete != null)
-                this.FileProcessingComplete(fpResult.Stage, pid);
+            if (this.ProcessQueryComplete != null)
+                this.ProcessQueryComplete(fpResult.Stage, pid);
 
             return fpResult;
         }
 
         /// <summary>
-        /// Stage 2 File Processing - gets whether the process file is packed or signed.
+        /// Stage 2 Process Querying - gets whether the process file is packed or signed.
         /// </summary>
-        private FileProcessMessage ProcessFileStage2(int pid, string fileName, bool forced)
+        private ProcessQueryMessage QueryProcessStage2(int pid, string fileName, bool forced)
         {
-            FileProcessMessage fpResult = new FileProcessMessage();
+            ProcessQueryMessage fpResult = new ProcessQueryMessage();
 
             fpResult.Pid = pid;
             fpResult.Stage = 0x2;
@@ -531,8 +614,8 @@ namespace ProcessHacker
 
             _messageQueue.Enqueue(fpResult);
 
-            if (this.FileProcessingComplete != null)
-                this.FileProcessingComplete(fpResult.Stage, pid);
+            if (this.ProcessQueryComplete != null)
+                this.ProcessQueryComplete(fpResult.Stage, pid);
 
             return fpResult;
         }
@@ -615,20 +698,28 @@ namespace ProcessHacker
             return fileName;
         }
 
-        public void QueueFileProcessing(int pid)
+        public void QueueProcessQuery(int pid)
         {
             WorkQueue.GlobalQueueWorkItemTag(
-                new ProcessFileDelegate(this.ProcessFileStage1),
+                new QueryProcessDelegate(this.QueryProcessStage1),
                 "process-stage1",
                 pid, this.Dictionary[pid].FileName, true
                 );
         }
 
-        private void FillFpResult(ProcessItem item, FileProcessMessage result)
+        private void FillPqResult(ProcessItem item, ProcessQueryMessage result)
         {
             if (result.Stage == 0x1)
             {
                 item.FileName = result.FileName;
+                item.ElevationType = result.ElevationType;
+                item.IsElevated = result.IsElevated;
+                item.Integrity = result.Integrity;
+                item.IntegrityLevel = result.IntegrityLevel;
+                item.IsWow64 = result.IsWow64;
+                item.IsInJob = result.IsInJob;
+                item.JobName = result.JobName;
+                item.IsInSignificantJob = result.IsInSignificantJob;
                 item.Icon = result.Icon;
                 item.LargeIcon = result.LargeIcon;
                 item.VersionInfo = result.VersionInfo;
@@ -655,8 +746,8 @@ namespace ProcessHacker
                 Logging.Log(Logging.Importance.Warning, "Unknown stage " + result.Stage.ToString("x"));
             }
 
-            if (this.FileProcessingReceived != null)
-                this.FileProcessingReceived(result.Stage, result.Pid);
+            if (this.ProcessQueryReceived != null)
+                this.ProcessQueryReceived(result.Stage, result.Pid);
         }
 
         private void UpdateOnce()
@@ -797,14 +888,6 @@ namespace ProcessHacker
                 if (!Dictionary.ContainsKey(pid))
                 {
                     ProcessItem item = new ProcessItem();
-                    ProcessHandle queryLimitedHandle = null;
-
-                    // Can't open System Idle Process or the fake processes (DPCs/Interrupts).
-                    if (pid > 0)
-                    {
-                        try { queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights); }
-                        catch (Exception ex) { Logging.Log(ex); }
-                    }
 
                     // Set up basic process information.
                     item.RunId = this.RunCount;
@@ -881,6 +964,29 @@ namespace ProcessHacker
                                 item.HasParent = false;
                         }
 
+                        // Get the process' token's username.
+
+                        using (var queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                        {
+                            try
+                            {
+                                using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
+                                {
+                                    try
+                                    {
+                                        using (var sid = thandle.GetUser())
+                                            item.Username = sid.GetFullName(true);
+                                    }
+                                    catch
+                                    { }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Logging.Log(ex);
+                            }
+                        }
+
                         // Get a process handle with QUERY_INFORMATION access, and 
                         // see if it's being debugged.
 
@@ -894,119 +1000,6 @@ namespace ProcessHacker
                             }
                             catch
                             { }
-                        }
-                        catch
-                        { }
-
-                        try
-                        {
-                            if (queryLimitedHandle != null)
-                            {
-                                try
-                                {
-                                    // Get a handle to the process' token and get its 
-                                    // username, elevation type, and integrity.
-
-                                    using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
-                                    {
-                                        try
-                                        {
-                                            using (var sid = thandle.GetUser())
-                                                item.Username = sid.GetFullName(true);
-                                        }
-                                        catch
-                                        { }
-
-                                        try { item.ElevationType = thandle.GetElevationType(); }
-                                        catch { }
-                                        try { item.IsElevated = thandle.IsElevated(); }
-                                        catch { }
-
-                                        // Try to get the integrity level. Messy.
-                                        try
-                                        {
-                                            var groups = thandle.GetGroups();
-
-                                            for (int i = 0; i < groups.Length; i++)
-                                            {
-                                                if ((groups[i].Attributes & SidAttributes.IntegrityEnabled) != 0)
-                                                {
-                                                    item.Integrity = groups[i].GetFullName(false).Replace(" Mandatory Level", "");
-
-                                                    if (item.Integrity == "Untrusted")
-                                                        item.IntegrityLevel = 0;
-                                                    else if (item.Integrity == "Low")
-                                                        item.IntegrityLevel = 1;
-                                                    else if (item.Integrity == "Medium")
-                                                        item.IntegrityLevel = 2;
-                                                    else if (item.Integrity == "High")
-                                                        item.IntegrityLevel = 3;
-                                                    else if (item.Integrity == "System")
-                                                        item.IntegrityLevel = 4;
-                                                    else if (item.Integrity == "Installer")
-                                                        item.IntegrityLevel = 5;
-                                                }
-
-                                                groups[i].Dispose();
-                                            }
-                                        }
-                                        catch
-                                        { }
-                                    }
-                                }
-                                catch
-                                { }
-
-                                // Is the process running under WOW64?
-                                if (IntPtr.Size == 8)
-                                {
-                                    try
-                                    {
-                                        item.IsWow64 = queryLimitedHandle.IsWow64();
-                                    }
-                                    catch
-                                    { }
-                                }
-
-                                // Get the process' job if we have KProcessHacker. 
-                                // Otherwise, don't do anything.
-
-                                if (KProcessHacker.Instance != null)
-                                {
-                                    try
-                                    {
-                                        var jhandle = queryLimitedHandle.GetJobObject(JobObjectAccess.Query);
-
-                                        if (jhandle != null)
-                                        {
-                                            using (jhandle)
-                                            {
-                                                var limits = jhandle.GetBasicLimitInformation();
-
-                                                item.IsInJob = true;
-                                                item.JobName = jhandle.GetObjectName();
-
-                                                // This is what Process Explorer does...
-                                                if (limits.LimitFlags != JobObjectLimitFlags.SilentBreakawayOk)
-                                                {
-                                                    item.IsInSignificantJob = true;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Logging.Log(ex);
-                                        item.IsInJob = false;
-                                        item.IsInSignificantJob = false;
-                                    }
-                                }
-                                else
-                                {
-                                    try { item.IsInJob = queryLimitedHandle.IsInJob(); }
-                                    catch { }
-                                }
-                            }
                         }
                         catch
                         { }
@@ -1029,17 +1022,17 @@ namespace ProcessHacker
                         item.HasParent = true;
                     }
 
-                    // If this is not the first run, we process the file immediately.
+                    // If this is not the first run, we process the item immediately.
                     if (this.RunCount > 0)
                     {
-                        this.FillFpResult(item, this.ProcessFileStage1(pid, null, false, false));
+                        this.FillPqResult(item, this.QueryProcessStage1(pid, null, false, false));
                     }
                     else
                     {
                         if (pid > 0)
                         {
                             WorkQueue.GlobalQueueWorkItemTag(
-                                new ProcessFileDelegate(this.ProcessFileStage1),
+                                new QueryProcessDelegate(this.QueryProcessStage1),
                                 "process-stage1",
                                 pid, item.FileName, false);
                         }
@@ -1073,9 +1066,6 @@ namespace ProcessHacker
                         catch
                         { }
                     }
-
-                    if (queryLimitedHandle != null)
-                        queryLimitedHandle.Dispose();
 
                     newdictionary.Add(pid, item);
                     this.OnDictionaryAdded(item);
@@ -1171,7 +1161,7 @@ namespace ProcessHacker
                         if (item.IsPacked && item.ProcessingAttempts < 3)
                         {
                             WorkQueue.GlobalQueueWorkItemTag(
-                                new ProcessFileDelegate(this.ProcessFileStage2),
+                                new QueryProcessDelegate(this.QueryProcessStage2),
                                 "process-stage2",
                                 pid, item.FileName, true
                                 );
