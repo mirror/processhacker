@@ -129,11 +129,8 @@
             this.timerMessages = new System.Windows.Forms.Timer(this.components);
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcesses = new System.Windows.Forms.TabPage();
-            this.treeProcesses = new ProcessHacker.ProcessTree();
             this.tabServices = new System.Windows.Forms.TabPage();
-            this.listServices = new ProcessHacker.Components.ServiceList();
             this.tabNetwork = new System.Windows.Forms.TabPage();
-            this.listNetwork = new ProcessHacker.Components.NetworkList();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.optionsToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -174,8 +171,13 @@
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
             this.toolsNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.whoisNetworkMenuItem = new System.Windows.Forms.MenuItem();
+            this.tracertNetworkMenuItem = new System.Windows.Forms.MenuItem();
+            this.pingNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
+            this.treeProcesses = new ProcessHacker.ProcessTree();
+            this.listServices = new ProcessHacker.Components.ServiceList();
+            this.listNetwork = new ProcessHacker.Components.NetworkList();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
@@ -834,7 +836,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 383);
+            this.statusBar.Location = new System.Drawing.Point(0, 236);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -893,7 +895,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 25);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(804, 358);
+            this.tabControl.Size = new System.Drawing.Size(804, 211);
             this.tabControl.TabIndex = 6;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControlBig_SelectedIndexChanged);
             // 
@@ -903,23 +905,10 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 332);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 185);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
-            // 
-            // treeProcesses
-            // 
-            this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeProcesses.Draw = true;
-            this.treeProcesses.Location = new System.Drawing.Point(3, 3);
-            this.treeProcesses.Name = "treeProcesses";
-            this.treeProcesses.Provider = null;
-            this.treeProcesses.Size = new System.Drawing.Size(790, 326);
-            this.treeProcesses.TabIndex = 4;
-            this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
-            this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
-            this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeProcesses_KeyDown);
             // 
             // tabServices
             // 
@@ -927,22 +916,10 @@
             this.tabServices.Location = new System.Drawing.Point(4, 22);
             this.tabServices.Name = "tabServices";
             this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(796, 332);
+            this.tabServices.Size = new System.Drawing.Size(796, 206);
             this.tabServices.TabIndex = 1;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
-            // 
-            // listServices
-            // 
-            this.listServices.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listServices.DoubleBuffered = true;
-            this.listServices.Location = new System.Drawing.Point(3, 3);
-            this.listServices.Name = "listServices";
-            this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 326);
-            this.listServices.TabIndex = 0;
-            this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
-            this.listServices.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listServices_KeyDown);
             // 
             // tabNetwork
             // 
@@ -950,22 +927,10 @@
             this.tabNetwork.Location = new System.Drawing.Point(4, 22);
             this.tabNetwork.Name = "tabNetwork";
             this.tabNetwork.Padding = new System.Windows.Forms.Padding(3);
-            this.tabNetwork.Size = new System.Drawing.Size(796, 332);
+            this.tabNetwork.Size = new System.Drawing.Size(796, 206);
             this.tabNetwork.TabIndex = 2;
             this.tabNetwork.Text = "Network";
             this.tabNetwork.UseVisualStyleBackColor = true;
-            // 
-            // listNetwork
-            // 
-            this.listNetwork.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listNetwork.DoubleBuffered = true;
-            this.listNetwork.Location = new System.Drawing.Point(3, 3);
-            this.listNetwork.Name = "listNetwork";
-            this.listNetwork.Provider = null;
-            this.listNetwork.Size = new System.Drawing.Size(790, 326);
-            this.listNetwork.TabIndex = 0;
-            this.listNetwork.DoubleClick += new System.EventHandler(this.listNetwork_DoubleClick);
-            this.listNetwork.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listNetwork_KeyDown);
             // 
             // toolStrip
             // 
@@ -1262,7 +1227,9 @@
             // 
             this.toolsNetworkMenuItem.Index = 1;
             this.toolsNetworkMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.whoisNetworkMenuItem});
+            this.whoisNetworkMenuItem,
+            this.tracertNetworkMenuItem,
+            this.pingNetworkMenuItem});
             this.toolsNetworkMenuItem.Text = "Tools";
             // 
             // whoisNetworkMenuItem
@@ -1270,6 +1237,18 @@
             this.whoisNetworkMenuItem.Index = 0;
             this.whoisNetworkMenuItem.Text = "Whois";
             this.whoisNetworkMenuItem.Click += new System.EventHandler(this.whoisNetworkMenuItem_Click);
+            // 
+            // tracertNetworkMenuItem
+            // 
+            this.tracertNetworkMenuItem.Index = 1;
+            this.tracertNetworkMenuItem.Text = "Tracert";
+            this.tracertNetworkMenuItem.Click += new System.EventHandler(this.tracertNetworkMenuItem_Click);
+            // 
+            // pingNetworkMenuItem
+            // 
+            this.pingNetworkMenuItem.Index = 2;
+            this.pingNetworkMenuItem.Text = "Ping";
+            this.pingNetworkMenuItem.Click += new System.EventHandler(this.pingNetworkMenuItem_Click);
             // 
             // menuItem6
             // 
@@ -1282,6 +1261,43 @@
             this.selectAllNetworkMenuItem.Text = "Select &All";
             this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
             // 
+            // treeProcesses
+            // 
+            this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeProcesses.Draw = true;
+            this.treeProcesses.Location = new System.Drawing.Point(3, 3);
+            this.treeProcesses.Name = "treeProcesses";
+            this.treeProcesses.Provider = null;
+            this.treeProcesses.Size = new System.Drawing.Size(790, 179);
+            this.treeProcesses.TabIndex = 4;
+            this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
+            this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
+            this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeProcesses_KeyDown);
+            // 
+            // listServices
+            // 
+            this.listServices.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listServices.DoubleBuffered = true;
+            this.listServices.Location = new System.Drawing.Point(3, 3);
+            this.listServices.Name = "listServices";
+            this.listServices.Provider = null;
+            this.listServices.Size = new System.Drawing.Size(790, 200);
+            this.listServices.TabIndex = 0;
+            this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
+            this.listServices.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listServices_KeyDown);
+            // 
+            // listNetwork
+            // 
+            this.listNetwork.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listNetwork.DoubleBuffered = true;
+            this.listNetwork.Location = new System.Drawing.Point(3, 3);
+            this.listNetwork.Name = "listNetwork";
+            this.listNetwork.Provider = null;
+            this.listNetwork.Size = new System.Drawing.Size(790, 200);
+            this.listNetwork.TabIndex = 0;
+            this.listNetwork.DoubleClick += new System.EventHandler(this.listNetwork_DoubleClick);
+            this.listNetwork.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listNetwork_KeyDown);
+            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
@@ -1291,7 +1307,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 405);
+            this.ClientSize = new System.Drawing.Size(804, 258);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.statusBar);
@@ -1471,6 +1487,8 @@
         private System.Windows.Forms.MenuItem checkForUpdatesMenuItem;
         private System.Windows.Forms.MenuItem toolsNetworkMenuItem;
         private System.Windows.Forms.MenuItem whoisNetworkMenuItem;
+        private System.Windows.Forms.MenuItem tracertNetworkMenuItem;
+        private System.Windows.Forms.MenuItem pingNetworkMenuItem;
     }
 }
 

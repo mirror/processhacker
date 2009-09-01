@@ -642,6 +642,25 @@ namespace ProcessHacker
             }
         }
 
+        private void tracertNetworkMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listNetwork.SelectedItems[0].SubItems[7].Text.Length > 0)
+            {
+                IPInfoWindow iw = new IPInfoWindow(listNetwork.SelectedItems[0].SubItems[7].Text, IpAction.Tracert);
+                iw.ShowDialog(this);
+            }
+        }
+
+        private void pingNetworkMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listNetwork.SelectedItems[0].SubItems[7].Text.Length > 0)
+            {
+                IPInfoWindow iw = new IPInfoWindow(listNetwork.SelectedItems[0].SubItems[7].Text, IpAction.Ping);
+                iw.ShowDialog(this);
+            }
+        }
+
+
         private void closeNetworkMenuItem_Click(object sender, EventArgs e)
         {
             if (listNetwork.SelectedItems.Count == 0)
@@ -3260,5 +3279,6 @@ namespace ProcessHacker
                     this.UpdateProgram(false);
             }
         }
+
     }
 }
