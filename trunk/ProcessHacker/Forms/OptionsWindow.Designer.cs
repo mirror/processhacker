@@ -107,7 +107,6 @@
             this.optUpdateStable = new System.Windows.Forms.RadioButton();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.buttonChangeUpdateURL = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -954,7 +953,6 @@
             // 
             // tabUpdates
             // 
-            this.tabUpdates.Controls.Add(this.buttonChangeUpdateURL);
             this.tabUpdates.Controls.Add(this.checkUpdateAutomatically);
             this.tabUpdates.Controls.Add(this.textUpdateUrl);
             this.tabUpdates.Controls.Add(this.label19);
@@ -987,8 +985,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textUpdateUrl.Location = new System.Drawing.Point(97, 103);
             this.textUpdateUrl.Name = "textUpdateUrl";
-            this.textUpdateUrl.ReadOnly = true;
-            this.textUpdateUrl.Size = new System.Drawing.Size(297, 20);
+            this.textUpdateUrl.Size = new System.Drawing.Size(307, 20);
             this.textUpdateUrl.TabIndex = 26;
             // 
             // label19
@@ -1068,17 +1065,6 @@
             this.buttonApply.Text = "&Apply";
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
-            // 
-            // buttonChangeUpdateURL
-            // 
-            this.buttonChangeUpdateURL.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonChangeUpdateURL.Location = new System.Drawing.Point(400, 101);
-            this.buttonChangeUpdateURL.Name = "buttonChangeUpdateURL";
-            this.buttonChangeUpdateURL.Size = new System.Drawing.Size(75, 23);
-            this.buttonChangeUpdateURL.TabIndex = 28;
-            this.buttonChangeUpdateURL.Text = "Change";
-            this.buttonChangeUpdateURL.UseVisualStyleBackColor = true;
-            this.buttonChangeUpdateURL.Click += new System.EventHandler(this.buttonChangeUpdateURL_Click);
             // 
             // OptionsWindow
             // 
@@ -1203,6 +1189,5 @@
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.ComboBox comboToolbarStyle;
         private System.Windows.Forms.CheckBox checkUpdateAutomatically;
-        private System.Windows.Forms.Button buttonChangeUpdateURL;
     }
 }

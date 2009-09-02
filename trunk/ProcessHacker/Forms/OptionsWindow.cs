@@ -97,18 +97,6 @@ namespace ProcessHacker
             base.WndProc(ref m);
         }
 
-        /// <summary>
-        /// method for checking to see if the logged in user
-        /// is in the Administrator's group
-        /// </summary>
-        /// <returns></returns>
-        private bool IsUserAdministrator()
-        {
-            System.Security.Principal.WindowsIdentity identity = System.Security.Principal.WindowsIdentity.GetCurrent();
-            System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(identity);
-            return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
-        }
-
         private void LoadStage1()
         {
             this.InitializeHighlightingColors();
@@ -643,17 +631,5 @@ namespace ProcessHacker
             this.buttonOK.Select();
         }
 
-        private void buttonChangeUpdateURL_Click(object sender, EventArgs e)
-        {
-            if (IsUserAdministrator() == true)
-            {
-                textUpdateUrl.ReadOnly = false;
-                buttonChangeUpdateURL.Enabled = false;
-            }
-            else
-            {
-                PhUtils.ShowError("Update URL can only be changed by Administrators!");
-            }
-        } 
     }
 }
