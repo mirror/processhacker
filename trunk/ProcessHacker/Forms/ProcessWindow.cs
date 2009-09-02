@@ -443,6 +443,7 @@ namespace ProcessHacker
                 try
                 {
                     pictureIcon.Image = _processImage = _processItem.LargeIcon.ToBitmap();
+                    pictureIcon.SizeMode = PictureBoxSizeMode.CenterImage;
                 }
                 catch 
                 {

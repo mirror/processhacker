@@ -715,7 +715,6 @@ namespace ProcessHacker
             }
         }
 
-
         private void closeNetworkMenuItem_Click(object sender, EventArgs e)
         {
             if (listNetwork.SelectedItems.Count == 0)
@@ -3334,6 +3333,5 @@ namespace ProcessHacker
                     this.UpdateProgram(false);
             }
         }
-
     }
 }

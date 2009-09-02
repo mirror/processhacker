@@ -856,10 +856,9 @@ namespace ProcessHacker
                         item.ProcessQueryHandle.Dispose();
 
                     if (item.Icon != null)
-                    {
                         Win32.DestroyIcon(item.Icon.Handle);
+                    if (item.LargeIcon != null)
                         Win32.DestroyIcon(item.LargeIcon.Handle);
-                    }
 
                     // Remove process protection if needed.
                     if (KProcessHacker.Instance != null)

@@ -522,9 +522,9 @@ namespace ProcessHacker
             // 
             // pictureIcon
             // 
-            this.pictureIcon.Location = new System.Drawing.Point(6, 20);
+            this.pictureIcon.Location = new System.Drawing.Point(6, 19);
             this.pictureIcon.Name = "pictureIcon";
-            this.pictureIcon.Size = new System.Drawing.Size(32, 33);
+            this.pictureIcon.Size = new System.Drawing.Size(32, 32);
             this.pictureIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureIcon.TabIndex = 1;
             this.pictureIcon.TabStop = false;
@@ -645,14 +645,14 @@ namespace ProcessHacker
             this.indicatorIO.BackColor = System.Drawing.Color.Black;
             this.indicatorIO.Color1 = System.Drawing.Color.Cyan;
             this.indicatorIO.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.indicatorIO.Data1 = 0;
-            this.indicatorIO.Data2 = 0;
+            this.indicatorIO.Data1 = ((long)(0));
+            this.indicatorIO.Data2 = ((long)(0));
             this.indicatorIO.Dock = System.Windows.Forms.DockStyle.Fill;
             this.indicatorIO.ForeColor = System.Drawing.Color.Lime;
             this.indicatorIO.GraphWidth = 33;
             this.indicatorIO.Location = new System.Drawing.Point(3, 16);
-            this.indicatorIO.Maximum = 2147483647;
-            this.indicatorIO.Minimum = 0;
+            this.indicatorIO.Maximum = ((long)(2147483647));
+            this.indicatorIO.Minimum = ((long)(0));
             this.indicatorIO.Name = "indicatorIO";
             this.indicatorIO.Size = new System.Drawing.Size(74, 103);
             this.indicatorIO.TabIndex = 1;
@@ -674,14 +674,14 @@ namespace ProcessHacker
             this.indicatorPvt.BackColor = System.Drawing.Color.Black;
             this.indicatorPvt.Color1 = System.Drawing.Color.Orange;
             this.indicatorPvt.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.indicatorPvt.Data1 = 0;
-            this.indicatorPvt.Data2 = 0;
+            this.indicatorPvt.Data1 = ((long)(0));
+            this.indicatorPvt.Data2 = ((long)(0));
             this.indicatorPvt.Dock = System.Windows.Forms.DockStyle.Fill;
             this.indicatorPvt.ForeColor = System.Drawing.Color.Lime;
             this.indicatorPvt.GraphWidth = 33;
             this.indicatorPvt.Location = new System.Drawing.Point(3, 16);
-            this.indicatorPvt.Maximum = 2147483647;
-            this.indicatorPvt.Minimum = 0;
+            this.indicatorPvt.Maximum = ((long)(2147483647));
+            this.indicatorPvt.Minimum = ((long)(0));
             this.indicatorPvt.Name = "indicatorPvt";
             this.indicatorPvt.Size = new System.Drawing.Size(74, 103);
             this.indicatorPvt.TabIndex = 1;
@@ -820,14 +820,14 @@ namespace ProcessHacker
             this.indicatorCpu.BackColor = System.Drawing.Color.Black;
             this.indicatorCpu.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.indicatorCpu.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.indicatorCpu.Data1 = 0;
-            this.indicatorCpu.Data2 = 0;
+            this.indicatorCpu.Data1 = ((long)(0));
+            this.indicatorCpu.Data2 = ((long)(0));
             this.indicatorCpu.Dock = System.Windows.Forms.DockStyle.Fill;
             this.indicatorCpu.ForeColor = System.Drawing.Color.Lime;
             this.indicatorCpu.GraphWidth = 33;
             this.indicatorCpu.Location = new System.Drawing.Point(3, 16);
-            this.indicatorCpu.Maximum = 2147483647;
-            this.indicatorCpu.Minimum = 0;
+            this.indicatorCpu.Maximum = ((long)(2147483647));
+            this.indicatorCpu.Minimum = ((long)(0));
             this.indicatorCpu.Name = "indicatorCpu";
             this.indicatorCpu.Size = new System.Drawing.Size(74, 103);
             this.indicatorCpu.TabIndex = 0;

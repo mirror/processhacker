@@ -61,7 +61,6 @@ namespace ProcessHacker
             this.Close();
         }
 
-
         private void Ping(object ip)
         {
             using (Ping pingSender = new Ping())
@@ -188,16 +187,18 @@ namespace ProcessHacker
             }
         }
 
-
         private void WriteResult(string info)
         {
+            if (!this.IsHandleCreated)
+                return;
+
             if (this.InvokeRequired)
             {
                 this.BeginInvoke(new MethodInvoker(() => WriteResult(info)));
                 return;
             }
+
             textInfo.AppendText(info);
         }
-
     }
 }
