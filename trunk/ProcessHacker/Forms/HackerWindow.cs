@@ -2892,6 +2892,9 @@ namespace ProcessHacker
             //networkP.Dispose();
 
             this.ExecuteOnIcons((icon) => icon.Visible = false);
+            this.ExecuteOnIcons((icon) => icon.Dispose());
+
+
             SaveSettings();
             this.Visible = false;
 
