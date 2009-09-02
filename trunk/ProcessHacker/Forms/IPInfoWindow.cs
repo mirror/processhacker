@@ -50,25 +50,35 @@ namespace ProcessHacker
 
             ipAddress = IPAddress;
             ipAction = action;
-
-            this.Text += " (" + IPAddress + ")";
         }
 
         private void IPInfoWindow_Load(object sender, EventArgs e)
         {
-            Thread t = null;
+           Thread t = null;
 
             if (ipAction == IpAction.Whois)
             {
-                t = new Thread(new ParameterizedThreadStart(Whois)); //Whois(ipAddress);    
+                t = new Thread(new ParameterizedThreadStart(Whois));
+                label1.Text = "Whois Host Infomation for Address: " + ipAddress;
+                label2.Text = "Checking...";
+                listView1.Columns.Add("Results", 410);
             }
             else if (ipAction == IpAction.Tracert)
             {
-                t = new Thread(new ParameterizedThreadStart(Tracert)); // Tracert(ipAddress);
+                ProcessHacker.Common.PhUtils.SetTheme(listView1, "explorer");
+                t = new Thread(new ParameterizedThreadStart(Tracert));
+                label2.Text = "Tracing route...";
+                listView1.Columns.Add("Count", 30);
+                listView1.Columns.Add("Reply Time", 60);
+                listView1.Columns.Add("IP Address", 100);
+                listView1.Columns.Add("Hostname", 200);
             }
             else if (ipAction == IpAction.Ping)
             {
-                t = new Thread(new ParameterizedThreadStart(Ping)); // Ping(ipAddress);
+                ProcessHacker.Common.PhUtils.SetTheme(listView1, "explorer");
+                t = new Thread(new ParameterizedThreadStart(Ping));
+                label2.Text = "Pinging...";
+                listView1.Columns.Add("Results", 400);
             }
 
             t.IsBackground = true;
@@ -101,7 +111,7 @@ namespace ProcessHacker
                 pingOptions.DontFragment = true;
                 //pingOptions.Ttl = 128;
 
-                WriteResult(string.Format("Pinging {0} with {1} bytes of data:", ipAddress, byteSize) + Environment.NewLine);
+                WriteStatus(string.Format("Pinging {0} with {1} bytes of data:", ipAddress, byteSize) + Environment.NewLine, true);
 
                 for (int i = 0; i < numberOfPings; i++)
                 {
@@ -111,7 +121,7 @@ namespace ProcessHacker
 
                     if (pingReply.Status == IPStatus.Success)
                     {
-                        WriteResult(Environment.NewLine + string.Format("Reply from {0}: bytes={1} time={2}ms TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingReply.Options.Ttl));
+                        WriteResult(string.Format("Reply from {0}: bytes={1} time={2}ms TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingReply.Options.Ttl), "", "");
 
                         if (minPingResponse == 0)
                         {
@@ -131,18 +141,19 @@ namespace ProcessHacker
                     }
                     else
                     {
-                        WriteResult(Environment.NewLine + pingReply.Status.ToString());
+                        WriteResult(pingReply.Status.ToString(), "", "");
                         lostPings++;
                     }
                 }
-
-                WriteResult(Environment.NewLine + Environment.NewLine + string.Format("Ping statistics for {0}:", ipAddress));
-                WriteResult(Environment.NewLine + string.Format("\tPackets: Sent = {0}, Received = {1}, Lost = {2}", sentPings, receivedPings, lostPings));
-                WriteResult(Environment.NewLine + "Approximate round trip times in milli-seconds:");
-                WriteResult(Environment.NewLine + string.Format("\tMinimum = {0}ms, Maximum = {1}ms", minPingResponse, maxPingResponse));
+                WriteResult("", "", "");
+                WriteResult(string.Format("Ping statistics for {0}:", ipAddress), "", "");
+                WriteResult(Environment.NewLine + string.Format("\tPackets: Sent = {0}, Received = {1}, Lost = {2}", sentPings, receivedPings, lostPings), "", "");
+                WriteResult(Environment.NewLine + "Approximate round trip times in milli-seconds:", "", "");
+                WriteResult(Environment.NewLine + string.Format("\tMinimum = {0}ms, Maximum = {1}ms", minPingResponse, maxPingResponse), "", "");
             }
+            WriteStatus("Ping complete.", false);
         }
-
+         
         private void Tracert(object ip)
         {
             IPAddress ipAddress = IPAddress.Parse(ip.ToString());
@@ -157,10 +168,7 @@ namespace ProcessHacker
                 pingOptions.Ttl = 1;
                 int maxHops = 30;
 
-                WriteResult(string.Format(
-                    "Tracing route to {0} over a maximum of {1} hops:",
-                    ipAddress,
-                    maxHops) + Environment.NewLine + Environment.NewLine);
+                WriteStatus(string.Format("Tracing route to {0} over a maximum of {1} hops:", ipAddress, maxHops), true);
 
                 for (int i = 1; i < maxHops + 1; i++)
                 {
@@ -171,20 +179,18 @@ namespace ProcessHacker
 
                     stopWatch.Stop();
 
-                    WriteResult(string.Format(
-                        "{0}\t{1} ms\t{2}",
-                        i,
-                        stopWatch.ElapsedMilliseconds,
-                        pingReply.Address) + Environment.NewLine); //Dns.GetHostEntry(pingReply.Address).HostName)
+                    WriteResult(string.Format("{0}" , i), string.Format("{0} ms",  stopWatch.ElapsedMilliseconds), string.Format("{0}", pingReply.Address));
 
                     if (pingReply.Status == IPStatus.Success)
                     {
-                        WriteResult(Environment.NewLine + "Trace complete.");
+                        WriteStatus("Trace complete.", false);
                         break;
                     }
-                    pingOptions.Ttl++;
+
+                    pingOptions.Ttl ++;
                 }
             }
+            WriteStatus("Trace complete.", false);
         }
 
         private void Whois(object ip)
@@ -201,23 +207,59 @@ namespace ProcessHacker
 
                 while (!streamReaderReceive.EndOfStream)
                 {
-                    WriteResult(Environment.NewLine + streamReaderReceive.ReadLine());
+                    string data = streamReaderReceive.ReadLine();
+                    if (!data.Contains("#") | !data.Contains("?"))
+                    {
+                        WriteResult(data, "", "");
+                    }
                 }
             }
+            WriteStatus("Whois complete.", false);
         }
 
-        private void WriteResult(string info)
+        private void WriteStatus(string info, bool title)
         {
             if (!this.IsHandleCreated)
                 return;
 
             if (this.InvokeRequired)
             {
-                this.BeginInvoke(new MethodInvoker(() => WriteResult(info)));
+                this.BeginInvoke(new MethodInvoker(() => WriteStatus(info, title)));
                 return;
             }
 
-            textInfo.AppendText(info);
+            if (title)
+            {
+                label1.Text = info;
+            }
+            else
+            {
+                label2.Text = info;
+            }
         }
+
+        private void WriteResult(string hop, string time, string ip)
+        {
+            if (!this.IsHandleCreated)
+                return;
+
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new MethodInvoker(() => WriteResult(hop, time, ip)));
+                return;
+            }
+
+            ListViewItem litem = new ListViewItem(hop);
+            litem.SubItems.Add(time);
+            litem.SubItems.Add(ip);
+          
+            if (ip != string.Empty)
+            {
+                //litem.SubItems.Add(Dns.GetHostEntry(ip).HostName);
+            }
+
+            listView1.Items.Add(litem);
+        }
+
     }
 }
