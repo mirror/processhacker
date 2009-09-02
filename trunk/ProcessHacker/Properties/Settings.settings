@@ -39,7 +39,7 @@
       <Value Profile="(Default)">504, 482</Value>
     </Setting>
     <Setting Name="ModuleListViewColumns" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">0,115|1,80|2,70|3,188|</Value>
     </Setting>
     <Setting Name="MemoryListViewColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

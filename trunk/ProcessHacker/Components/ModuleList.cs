@@ -267,6 +267,11 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(ModuleItem item)
         {
+            try
+            { itemImageList.Images.Add(item.Name, System.Drawing.Icon.ExtractAssociatedIcon(item.FileName)); }
+            catch (Exception)
+            { itemImageList.Images.Add(item.Name, SystemIcons.Exclamation); }
+           
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
                 item.RunId > 0 && _runCount > 0);
 
@@ -275,6 +280,7 @@ namespace ProcessHacker.Components
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Utils.FormatAddress(item.BaseAddress)));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Utils.FormatSize(item.Size)));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
+            litem.ImageKey = item.Name;
             litem.ToolTipText = item.FileName;
             litem.Tag = item;
             litem.NormalColor = this.GetModuleColor(item);

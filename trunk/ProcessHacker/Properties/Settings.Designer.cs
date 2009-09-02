@@ -169,7 +169,7 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0,115|1,80|2,70|3,188|")]
         public string ModuleListViewColumns {
             get {
                 return ((string)(this["ModuleListViewColumns"]));

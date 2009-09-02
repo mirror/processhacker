@@ -38,7 +38,7 @@
             this.columnBaseAddress = new System.Windows.Forms.ColumnHeader();
             this.columnSize = new System.Windows.Forms.ColumnHeader();
             this.columnDesc = new System.Windows.Forms.ColumnHeader();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.itemImageList = new System.Windows.Forms.ImageList(this.components);
             this.changeMemoryProtectionModuleMenuItem = new System.Windows.Forms.MenuItem();
             this.readMemoryModuleMenuItem = new System.Windows.Forms.MenuItem();
             this.inspectModuleMenuItem = new System.Windows.Forms.MenuItem();
@@ -53,6 +53,7 @@
             this.copyFileNameMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllModuleMenuItem = new System.Windows.Forms.MenuItem();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -71,6 +72,7 @@
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
             this.listModules.Size = new System.Drawing.Size(450, 472);
+            this.listModules.SmallImageList = this.itemImageList;
             this.listModules.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listModules.TabIndex = 3;
             this.listModules.UseCompatibleStateImageBehavior = false;
@@ -79,7 +81,7 @@
             // columnName
             // 
             this.columnName.Text = "Name";
-            this.columnName.Width = 100;
+            this.columnName.Width = 99;
             // 
             // columnBaseAddress
             // 
@@ -94,12 +96,13 @@
             // columnDesc
             // 
             this.columnDesc.Text = "Description";
-            this.columnDesc.Width = 200;
+            this.columnDesc.Width = 188;
             // 
-            // vistaMenu
+            // itemImageList
             // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
+            this.itemImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.itemImageList.ImageSize = new System.Drawing.Size(18, 18);
+            this.itemImageList.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // changeMemoryProtectionModuleMenuItem
             // 
@@ -201,6 +204,11 @@
             this.selectAllModuleMenuItem.Text = "Select &All";
             this.selectAllModuleMenuItem.Click += new System.EventHandler(this.selectAllModuleMenuItem_Click);
             // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
+            // 
             // ModuleList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -236,5 +244,6 @@
         private System.Windows.Forms.MenuItem menuItem6;
         private System.Windows.Forms.MenuItem selectAllModuleMenuItem;
         private System.Windows.Forms.MenuItem unloadMenuItem;
+        private System.Windows.Forms.ImageList itemImageList;
     }
 }
