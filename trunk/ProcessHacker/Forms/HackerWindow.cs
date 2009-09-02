@@ -2887,26 +2887,28 @@ namespace ProcessHacker
 
         public void Exit()
         {
-            //processP.Dispose();
-            //serviceP.Dispose();
-            //networkP.Dispose();
+            processP.Dispose();
+            serviceP.Dispose();
+            networkP.Dispose();
 
             this.ExecuteOnIcons((icon) => icon.Visible = false);
             this.ExecuteOnIcons((icon) => icon.Dispose());
 
-
             SaveSettings();
+
             this.Visible = false;
 
             if (KProcessHacker.Instance != null)
                 KProcessHacker.Instance.Close();
 
-            try
-            {
-                Win32.ExitProcess(0);
-            }
-            catch
-            { }
+            Application.Exit();
+
+            //try
+            //{
+            // Win32.ExitProcess(0);
+            //}
+            //catch
+            //{ }
         }
 
         private void HackerWindow_FormClosing(object sender, FormClosingEventArgs e)
