@@ -38,7 +38,6 @@
             this.columnBaseAddress = new System.Windows.Forms.ColumnHeader();
             this.columnSize = new System.Windows.Forms.ColumnHeader();
             this.columnDesc = new System.Windows.Forms.ColumnHeader();
-            this.itemImageList = new System.Windows.Forms.ImageList(this.components);
             this.changeMemoryProtectionModuleMenuItem = new System.Windows.Forms.MenuItem();
             this.readMemoryModuleMenuItem = new System.Windows.Forms.MenuItem();
             this.inspectModuleMenuItem = new System.Windows.Forms.MenuItem();
@@ -72,7 +71,6 @@
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
             this.listModules.Size = new System.Drawing.Size(450, 472);
-            this.listModules.SmallImageList = this.itemImageList;
             this.listModules.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listModules.TabIndex = 3;
             this.listModules.UseCompatibleStateImageBehavior = false;
@@ -97,12 +95,6 @@
             // 
             this.columnDesc.Text = "Description";
             this.columnDesc.Width = 188;
-            // 
-            // itemImageList
-            // 
-            this.itemImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.itemImageList.ImageSize = new System.Drawing.Size(18, 18);
-            this.itemImageList.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // changeMemoryProtectionModuleMenuItem
             // 
@@ -244,6 +236,5 @@
         private System.Windows.Forms.MenuItem menuItem6;
         private System.Windows.Forms.MenuItem selectAllModuleMenuItem;
         private System.Windows.Forms.MenuItem unloadMenuItem;
-        private System.Windows.Forms.ImageList itemImageList;
     }
 }
