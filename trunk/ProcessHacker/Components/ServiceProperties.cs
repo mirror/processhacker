@@ -135,6 +135,9 @@ namespace ProcessHacker.Components
 
         private void _provider_DictionaryModified(ServiceItem oldItem, ServiceItem newItem)
         {
+            if (!this.IsHandleCreated)
+                return;
+
             this.BeginInvoke(new MethodInvoker(() =>
                 {
                     // update the state of the service
