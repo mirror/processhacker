@@ -2,6 +2,7 @@ Process Hacker
 
 1.6
  * NEW/IMPROVED:
+   * #2817429 - "Add Port and IP Address columns to Network tab"
    * #2845829 - "System uptime"
    * Update system
    * Two new terminator tests: W1 (send WM_DESTROY messages) and 
