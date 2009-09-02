@@ -145,7 +145,7 @@ namespace ProcessHacker
 
         private void Tracert(object ip)
         {
-            IPAddress ipAddress = Dns.GetHostEntry(ip.ToString()).AddressList[0];
+            IPAddress ipAddress = IPAddress.Parse(ip.ToString());
 
             using (Ping pingSender = new Ping())
             {
