@@ -630,6 +630,5 @@ namespace ProcessHacker
             this.buttonApply.Enabled = false;
             this.buttonOK.Select();
         }
-
     }
 }
