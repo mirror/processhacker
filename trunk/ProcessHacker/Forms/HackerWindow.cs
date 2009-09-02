@@ -49,6 +49,1102 @@ namespace ProcessHacker
 
         // This entire file is a big monolithic mess.
 
+        #region "MenuItems"
+
+        private MenuItem terminateMenuItem;
+        private MenuItem suspendMenuItem;
+        private MenuItem resumeMenuItem;
+        private MenuItem menuItem5;
+        private MenuItem priorityMenuItem;
+        private MenuItem menuItem7;
+        private MenuItem realTimeMenuItem;
+        private MenuItem highMenuItem;
+        private MenuItem aboveNormalMenuItem;
+        private MenuItem normalMenuItem;
+        private MenuItem belowNormalMenuItem;
+        private MenuItem idleMenuItem;
+        private MenuItem hackerMenuItem;
+        private MenuItem aboutMenuItem;
+        private MenuItem optionsMenuItem;
+        private MenuItem helpMenuItem;
+        private MenuItem exitMenuItem;
+        private MenuItem windowMenuItem;
+        private MenuItem inspectPEFileMenuItem;
+        private MenuItem propertiesProcessMenuItem;
+        private MenuItem searchProcessMenuItem;
+        private MenuItem propertiesServiceMenuItem;
+        private MenuItem startServiceMenuItem;
+        private MenuItem pauseServiceMenuItem;
+        private MenuItem stopServiceMenuItem;
+        private MenuItem deleteServiceMenuItem;
+        private MenuItem continueServiceMenuItem;
+        private MenuItem goToProcessServiceMenuItem;
+        private MenuItem menuItem8;
+        private MenuItem copyServiceMenuItem;
+        private MenuItem selectAllServiceMenuItem;
+        private MenuItem toolsMenuItem;
+        private MenuItem showHideMenuItem;
+        private MenuItem exitTrayMenuItem;
+        private MenuItem notificationsMenuItem;
+        private MenuItem NPMenuItem;
+        private MenuItem TPMenuItem;
+        private MenuItem NSMenuItem;
+        private MenuItem startedSMenuItem;
+        private MenuItem stoppedSMenuItem;
+        private MenuItem DSMenuItem;
+        private MenuItem findHandlesMenuItem;
+        private MenuItem affinityProcessMenuItem;
+        private MenuItem runAsServiceMenuItem;
+        private MenuItem runAsProcessMenuItem;
+        private MenuItem launchAsUserProcessMenuItem;
+        private MenuItem launchAsThisUserProcessMenuItem;
+        private MenuItem sysInfoMenuItem;
+        private MenuItem copyProcessMenuItem;
+        private MenuItem selectAllProcessMenuItem;
+        private MenuItem terminatorProcessMenuItem;
+        private MenuItem menuItem2;
+        private MenuItem logMenuItem;
+        private MenuItem reloadStructsMenuItem;
+        private MenuItem sysInformationIconMenuItem;
+        private MenuItem hiddenProcessesMenuItem;
+        private MenuItem viewMenuItem;
+        private MenuItem updateNowMenuItem;
+        private MenuItem updateProcessesMenuItem;
+        private MenuItem updateServicesMenuItem;
+        private MenuItem processesMenuItem;
+        private MenuItem restartProcessMenuItem;
+        private MenuItem setTokenProcessMenuItem;
+        private MenuItem helpMenu;
+        private MenuItem menuItem3;
+        private MenuItem verifyFileSignatureMenuItem;
+        private MenuItem enableAllNotificationsMenuItem;
+        private MenuItem disableAllNotificationsMenuItem;
+        private MenuItem menuItem4;
+        private MenuItem shutdownTrayMenuItem;
+        private MenuItem shutdownMenuItem;
+        private MenuItem runAsAdministratorMenuItem;
+        private MenuItem showDetailsForAllProcessesMenuItem;
+        private MenuItem uacSeparatorMenuItem;
+        private MenuItem runMenuItem;
+        private MenuItem runAsMenuItem;
+        private MenuItem freeMemoryMenuItem;
+        private MenuItem menuItem1;
+        private MenuItem reanalyzeProcessMenuItem;
+        private MenuItem reduceWorkingSetProcessMenuItem;
+        private MenuItem virtualizationProcessMenuItem;
+        private MenuItem toolbarMenuItem;
+        private MenuItem saveMenuItem;
+        private MenuItem goToProcessNetworkMenuItem;
+        private MenuItem copyNetworkMenuItem;
+        private MenuItem menuItem6;
+        private MenuItem selectAllNetworkMenuItem;
+        private MenuItem injectDllProcessMenuItem;
+        private MenuItem terminateProcessTreeMenuItem;
+        private MenuItem trayIconsMenuItem;
+        private MenuItem cpuHistoryMenuItem;
+        private MenuItem cpuUsageMenuItem;
+        private MenuItem ioHistoryMenuItem;
+        private MenuItem commitHistoryMenuItem;
+        private MenuItem physMemHistoryMenuItem;
+        private MenuItem closeNetworkMenuItem;
+        private MenuItem protectionProcessMenuItem;
+        private MenuItem createDumpFileProcessMenuItem;
+        private MenuItem miscellaneousProcessMenuItem;
+        private MenuItem detachFromDebuggerProcessMenuItem;
+        private MenuItem usersMenuItem;
+        private MenuItem createServiceMenuItem;
+        private MenuItem heapsProcessMenuItem;
+        private MenuItem windowProcessMenuItem;
+        private MenuItem bringToFrontProcessMenuItem;
+        private MenuItem restoreProcessMenuItem;
+        private MenuItem minimizeProcessMenuItem;
+        private MenuItem maximizeProcessMenuItem;
+        private MenuItem menuItem15;
+        private MenuItem closeProcessMenuItem;
+        private MenuItem checkForUpdatesMenuItem;
+        private MenuItem toolsNetworkMenuItem;
+        private MenuItem whoisNetworkMenuItem;
+        private MenuItem tracertNetworkMenuItem;
+        private MenuItem pingNetworkMenuItem;
+
+        #endregion
+
+        private void CreateHackerMainMenu()
+        {
+            MainMenu HackerMenu = new MainMenu();
+
+            this.hackerMenuItem = new MenuItem();
+            this.runMenuItem = new MenuItem();
+            this.runAsAdministratorMenuItem = new MenuItem();
+            this.runAsMenuItem = new MenuItem();
+            this.runAsServiceMenuItem = new MenuItem();
+            this.showDetailsForAllProcessesMenuItem = new MenuItem();
+            this.uacSeparatorMenuItem = new MenuItem();
+            this.saveMenuItem = new MenuItem();
+            this.findHandlesMenuItem = new MenuItem();
+            this.inspectPEFileMenuItem = new MenuItem();
+            this.reloadStructsMenuItem = new MenuItem();
+            this.optionsMenuItem = new MenuItem();
+            this.menuItem2 = new MenuItem();
+            this.shutdownMenuItem = new MenuItem();
+            this.exitMenuItem = new MenuItem();
+            this.viewMenuItem = new MenuItem();
+            this.toolbarMenuItem = new MenuItem();
+            this.sysInfoMenuItem = new MenuItem();
+            this.trayIconsMenuItem = new MenuItem();
+            this.cpuHistoryMenuItem = new MenuItem();
+            this.cpuUsageMenuItem = new MenuItem();
+            this.ioHistoryMenuItem = new MenuItem();
+            this.commitHistoryMenuItem = new MenuItem();
+            this.physMemHistoryMenuItem = new MenuItem();
+            this.menuItem3 = new MenuItem();
+            this.updateNowMenuItem = new MenuItem();
+            this.updateProcessesMenuItem = new MenuItem();
+            this.updateServicesMenuItem = new MenuItem();
+            this.toolsMenuItem = new MenuItem();
+            this.createServiceMenuItem = new MenuItem();
+            this.hiddenProcessesMenuItem = new MenuItem();
+            this.verifyFileSignatureMenuItem = new MenuItem();
+            this.usersMenuItem = new MenuItem();
+            this.windowMenuItem = new MenuItem();
+            this.helpMenu = new MenuItem();
+            this.freeMemoryMenuItem = new MenuItem();
+            this.checkForUpdatesMenuItem = new MenuItem();
+            this.menuItem1 = new MenuItem();
+            this.logMenuItem = new MenuItem();
+            this.helpMenuItem = new MenuItem();
+            this.aboutMenuItem = new MenuItem();
+            this.goToProcessServiceMenuItem = new MenuItem();
+            this.startServiceMenuItem = new MenuItem();
+            this.continueServiceMenuItem = new MenuItem();
+            this.pauseServiceMenuItem = new MenuItem();
+            this.stopServiceMenuItem = new MenuItem();
+            this.deleteServiceMenuItem = new MenuItem();
+            this.propertiesServiceMenuItem = new MenuItem();
+            this.menuItem8 = new MenuItem();
+            this.copyServiceMenuItem = new MenuItem();
+            this.selectAllServiceMenuItem = new MenuItem();
+            this.showHideMenuItem = new MenuItem();
+            this.sysInformationIconMenuItem = new MenuItem();
+            this.notificationsMenuItem = new MenuItem();
+            this.enableAllNotificationsMenuItem = new MenuItem();
+            this.disableAllNotificationsMenuItem = new MenuItem();
+            this.menuItem4 = new MenuItem();
+            this.NPMenuItem = new MenuItem();
+            this.TPMenuItem = new MenuItem();
+            this.NSMenuItem = new MenuItem();
+            this.startedSMenuItem = new MenuItem();
+            this.stoppedSMenuItem = new MenuItem();
+            this.DSMenuItem = new MenuItem();
+            this.processesMenuItem = new MenuItem();
+            this.shutdownTrayMenuItem = new MenuItem();
+            this.exitTrayMenuItem = new MenuItem();
+            this.goToProcessNetworkMenuItem = new MenuItem();
+            this.copyNetworkMenuItem = new MenuItem();
+            this.closeNetworkMenuItem = new MenuItem();
+            this.toolsNetworkMenuItem = new MenuItem();
+            this.whoisNetworkMenuItem = new MenuItem();
+            this.tracertNetworkMenuItem = new MenuItem();
+            this.pingNetworkMenuItem = new MenuItem();
+            this.menuItem6 = new MenuItem();
+            this.selectAllNetworkMenuItem = new MenuItem();
+            this.terminateMenuItem = new MenuItem();
+            this.terminateProcessTreeMenuItem = new MenuItem();
+            this.suspendMenuItem = new MenuItem();
+            this.resumeMenuItem = new MenuItem();
+            this.restartProcessMenuItem = new MenuItem();
+            this.reduceWorkingSetProcessMenuItem = new MenuItem();
+            this.virtualizationProcessMenuItem = new MenuItem();
+            this.menuItem5 = new System.Windows.Forms.MenuItem();
+            this.affinityProcessMenuItem = new MenuItem();
+            this.createDumpFileProcessMenuItem = new MenuItem();
+            this.terminatorProcessMenuItem = new MenuItem();
+            this.miscellaneousProcessMenuItem = new MenuItem();
+            this.detachFromDebuggerProcessMenuItem = new MenuItem();
+            this.heapsProcessMenuItem = new MenuItem();
+            this.injectDllProcessMenuItem = new MenuItem();
+            this.protectionProcessMenuItem = new MenuItem();
+            this.setTokenProcessMenuItem = new MenuItem();
+            this.priorityMenuItem = new MenuItem();
+            this.realTimeMenuItem = new MenuItem();
+            this.highMenuItem = new MenuItem();
+            this.aboveNormalMenuItem = new MenuItem();
+            this.normalMenuItem = new MenuItem();
+            this.belowNormalMenuItem = new MenuItem();
+            this.idleMenuItem = new MenuItem();
+            this.runAsProcessMenuItem = new MenuItem();
+            this.launchAsUserProcessMenuItem = new MenuItem();
+            this.launchAsThisUserProcessMenuItem = new MenuItem();
+            this.windowProcessMenuItem = new MenuItem();
+            this.bringToFrontProcessMenuItem = new MenuItem();
+            this.restoreProcessMenuItem = new MenuItem();
+            this.minimizeProcessMenuItem = new MenuItem();
+            this.maximizeProcessMenuItem = new MenuItem();
+            this.menuItem15 = new MenuItem();
+            this.closeProcessMenuItem = new MenuItem();
+            this.propertiesProcessMenuItem = new MenuItem();
+            this.menuItem7 = new MenuItem();
+            this.searchProcessMenuItem = new MenuItem();
+            this.reanalyzeProcessMenuItem = new MenuItem();
+            this.copyProcessMenuItem = new MenuItem();
+            this.selectAllProcessMenuItem = new MenuItem();
+
+            Menu = HackerMenu;
+
+            HackerMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.hackerMenuItem,
+            this.viewMenuItem,
+            this.toolsMenuItem,
+            this.usersMenuItem,
+            this.windowMenuItem,
+            this.helpMenu});
+            // 
+            // menuProcess
+            // 
+            this.menuProcess.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.terminateMenuItem,
+            this.terminateProcessTreeMenuItem,
+            this.suspendMenuItem,
+            this.resumeMenuItem,
+            this.restartProcessMenuItem,
+            this.reduceWorkingSetProcessMenuItem,
+            this.virtualizationProcessMenuItem,
+            this.menuItem5,
+            this.affinityProcessMenuItem,
+            this.createDumpFileProcessMenuItem,
+            this.terminatorProcessMenuItem,
+            this.miscellaneousProcessMenuItem,
+            this.priorityMenuItem,
+            this.runAsProcessMenuItem,
+            this.windowProcessMenuItem,
+            this.propertiesProcessMenuItem,
+            this.menuItem7,
+            this.searchProcessMenuItem,
+            this.reanalyzeProcessMenuItem,
+            this.copyProcessMenuItem,
+            this.selectAllProcessMenuItem});
+            this.menuProcess.Popup += new System.EventHandler(this.menuProcess_Popup);
+            // 
+            // terminateMenuItem
+            // 
+            this.vistaMenu.SetImage(this.terminateMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.terminateMenuItem.Index = 0;
+            this.terminateMenuItem.Shortcut = System.Windows.Forms.Shortcut.Del;
+            this.terminateMenuItem.Text = "&Terminate";
+            this.terminateMenuItem.Click += new System.EventHandler(this.terminateMenuItem_Click);
+            // 
+            // terminateProcessTreeMenuItem
+            // 
+            this.terminateProcessTreeMenuItem.Index = 1;
+            this.terminateProcessTreeMenuItem.Text = "Terminate Process Tree";
+            this.terminateProcessTreeMenuItem.Click += new System.EventHandler(this.terminateProcessTreeMenuItem_Click);
+            // 
+            // suspendMenuItem
+            // 
+            this.vistaMenu.SetImage(this.suspendMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
+            this.suspendMenuItem.Index = 2;
+            this.suspendMenuItem.Text = "&Suspend";
+            this.suspendMenuItem.Click += new System.EventHandler(this.suspendMenuItem_Click);
+            // 
+            // resumeMenuItem
+            // 
+            this.vistaMenu.SetImage(this.resumeMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
+            this.resumeMenuItem.Index = 3;
+            this.resumeMenuItem.Text = "&Resume";
+            this.resumeMenuItem.Click += new System.EventHandler(this.resumeMenuItem_Click);
+            // 
+            // restartProcessMenuItem
+            // 
+            this.restartProcessMenuItem.Index = 4;
+            this.restartProcessMenuItem.Text = "Restart";
+            this.restartProcessMenuItem.Click += new System.EventHandler(this.restartProcessMenuItem_Click);
+            // 
+            // reduceWorkingSetProcessMenuItem
+            // 
+            this.reduceWorkingSetProcessMenuItem.Index = 5;
+            this.reduceWorkingSetProcessMenuItem.Text = "Reduce Working Set";
+            this.reduceWorkingSetProcessMenuItem.Click += new System.EventHandler(this.reduceWorkingSetProcessMenuItem_Click);
+            // 
+            // virtualizationProcessMenuItem
+            // 
+            this.virtualizationProcessMenuItem.Index = 6;
+            this.virtualizationProcessMenuItem.Text = "Virtualization";
+            this.virtualizationProcessMenuItem.Click += new System.EventHandler(this.virtualizationProcessMenuItem_Click);
+            // 
+            // menuItem5
+            // 
+            this.menuItem5.Index = 7;
+            this.menuItem5.Text = "-";
+            // 
+            // affinityProcessMenuItem
+            // 
+            this.affinityProcessMenuItem.Index = 8;
+            this.affinityProcessMenuItem.Text = "Affinity...";
+            this.affinityProcessMenuItem.Click += new System.EventHandler(this.affinityProcessMenuItem_Click);
+            // 
+            // createDumpFileProcessMenuItem
+            // 
+            this.createDumpFileProcessMenuItem.Index = 9;
+            this.createDumpFileProcessMenuItem.Text = "Create Dump File...";
+            this.createDumpFileProcessMenuItem.Click += new System.EventHandler(this.createDumpFileProcessMenuItem_Click);
+            // 
+            // terminatorProcessMenuItem
+            // 
+            this.terminatorProcessMenuItem.Index = 10;
+            this.terminatorProcessMenuItem.Text = "Terminator";
+            this.terminatorProcessMenuItem.Click += new System.EventHandler(this.terminatorProcessMenuItem_Click);
+            // 
+            // miscellaneousProcessMenuItem
+            // 
+            this.miscellaneousProcessMenuItem.Index = 11;
+            this.miscellaneousProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.detachFromDebuggerProcessMenuItem,
+            this.heapsProcessMenuItem,
+            this.injectDllProcessMenuItem,
+            this.protectionProcessMenuItem,
+            this.setTokenProcessMenuItem});
+            this.miscellaneousProcessMenuItem.Text = "Miscellaneous";
+            // 
+            // detachFromDebuggerProcessMenuItem
+            // 
+            this.detachFromDebuggerProcessMenuItem.Index = 0;
+            this.detachFromDebuggerProcessMenuItem.Text = "Detach from Debugger";
+            this.detachFromDebuggerProcessMenuItem.Click += new System.EventHandler(this.detachFromDebuggerProcessMenuItem_Click);
+            // 
+            // heapsProcessMenuItem
+            // 
+            this.heapsProcessMenuItem.Index = 1;
+            this.heapsProcessMenuItem.Text = "Heaps";
+            this.heapsProcessMenuItem.Click += new System.EventHandler(this.heapsProcessMenuItem_Click);
+            // 
+            // injectDllProcessMenuItem
+            // 
+            this.injectDllProcessMenuItem.Index = 2;
+            this.injectDllProcessMenuItem.Text = "Inject DLL...";
+            this.injectDllProcessMenuItem.Click += new System.EventHandler(this.injectDllProcessMenuItem_Click);
+            // 
+            // protectionProcessMenuItem
+            // 
+            this.protectionProcessMenuItem.Index = 3;
+            this.protectionProcessMenuItem.Text = "Protection";
+            this.protectionProcessMenuItem.Click += new System.EventHandler(this.protectionProcessMenuItem_Click);
+            // 
+            // setTokenProcessMenuItem
+            // 
+            this.setTokenProcessMenuItem.Index = 4;
+            this.setTokenProcessMenuItem.Text = "Set Token...";
+            this.setTokenProcessMenuItem.Click += new System.EventHandler(this.setTokenProcessMenuItem_Click);
+            // 
+            // priorityMenuItem
+            // 
+            this.vistaMenu.SetImage(this.priorityMenuItem, global::ProcessHacker.Properties.Resources.control_equalizer_blue);
+            this.priorityMenuItem.Index = 12;
+            this.priorityMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.realTimeMenuItem,
+            this.highMenuItem,
+            this.aboveNormalMenuItem,
+            this.normalMenuItem,
+            this.belowNormalMenuItem,
+            this.idleMenuItem});
+            this.priorityMenuItem.Text = "&Priority";
+            // 
+            // realTimeMenuItem
+            // 
+            this.realTimeMenuItem.Index = 0;
+            this.realTimeMenuItem.RadioCheck = true;
+            this.realTimeMenuItem.Text = "Real Time";
+            this.realTimeMenuItem.Click += new System.EventHandler(this.realTimeMenuItem_Click);
+            // 
+            // highMenuItem
+            // 
+            this.highMenuItem.Index = 1;
+            this.highMenuItem.RadioCheck = true;
+            this.highMenuItem.Text = "High";
+            this.highMenuItem.Click += new System.EventHandler(this.highMenuItem_Click);
+            // 
+            // aboveNormalMenuItem
+            // 
+            this.aboveNormalMenuItem.Index = 2;
+            this.aboveNormalMenuItem.RadioCheck = true;
+            this.aboveNormalMenuItem.Text = "Above Normal";
+            this.aboveNormalMenuItem.Click += new System.EventHandler(this.aboveNormalMenuItem_Click);
+            // 
+            // normalMenuItem
+            // 
+            this.normalMenuItem.Index = 3;
+            this.normalMenuItem.RadioCheck = true;
+            this.normalMenuItem.Text = "Normal";
+            this.normalMenuItem.Click += new System.EventHandler(this.normalMenuItem_Click);
+            // 
+            // belowNormalMenuItem
+            // 
+            this.belowNormalMenuItem.Index = 4;
+            this.belowNormalMenuItem.RadioCheck = true;
+            this.belowNormalMenuItem.Text = "Below Normal";
+            this.belowNormalMenuItem.Click += new System.EventHandler(this.belowNormalMenuItem_Click);
+            // 
+            // idleMenuItem
+            // 
+            this.idleMenuItem.Index = 5;
+            this.idleMenuItem.RadioCheck = true;
+            this.idleMenuItem.Text = "Idle";
+            this.idleMenuItem.Click += new System.EventHandler(this.idleMenuItem_Click);
+            // 
+            // runAsProcessMenuItem
+            // 
+            this.runAsProcessMenuItem.Index = 13;
+            this.runAsProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.launchAsUserProcessMenuItem,
+            this.launchAsThisUserProcessMenuItem});
+            this.runAsProcessMenuItem.Text = "Run As";
+            // 
+            // launchAsUserProcessMenuItem
+            // 
+            this.launchAsUserProcessMenuItem.Index = 0;
+            this.launchAsUserProcessMenuItem.Text = "Launch As User...";
+            this.launchAsUserProcessMenuItem.Click += new System.EventHandler(this.launchAsUserProcessMenuItem_Click);
+            // 
+            // launchAsThisUserProcessMenuItem
+            // 
+            this.launchAsThisUserProcessMenuItem.Index = 1;
+            this.launchAsThisUserProcessMenuItem.Text = "Launch As This User...";
+            this.launchAsThisUserProcessMenuItem.Click += new System.EventHandler(this.launchAsThisUserProcessMenuItem_Click);
+            // 
+            // windowProcessMenuItem
+            // 
+            this.windowProcessMenuItem.Index = 14;
+            this.windowProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.bringToFrontProcessMenuItem,
+            this.restoreProcessMenuItem,
+            this.minimizeProcessMenuItem,
+            this.maximizeProcessMenuItem,
+            this.menuItem15,
+            this.closeProcessMenuItem});
+            this.windowProcessMenuItem.Text = "&Window";
+            // 
+            // bringToFrontProcessMenuItem
+            // 
+            this.bringToFrontProcessMenuItem.Index = 0;
+            this.bringToFrontProcessMenuItem.Text = "&Bring to Front";
+            this.bringToFrontProcessMenuItem.Click += new System.EventHandler(this.bringToFrontProcessMenuItem_Click);
+            // 
+            // restoreProcessMenuItem
+            // 
+            this.restoreProcessMenuItem.Index = 1;
+            this.restoreProcessMenuItem.Text = "&Restore";
+            this.restoreProcessMenuItem.Click += new System.EventHandler(this.restoreProcessMenuItem_Click);
+            // 
+            // minimizeProcessMenuItem
+            // 
+            this.minimizeProcessMenuItem.Index = 2;
+            this.minimizeProcessMenuItem.Text = "&Minimize";
+            this.minimizeProcessMenuItem.Click += new System.EventHandler(this.minimizeProcessMenuItem_Click);
+            // 
+            // maximizeProcessMenuItem
+            // 
+            this.maximizeProcessMenuItem.Index = 3;
+            this.maximizeProcessMenuItem.Text = "Ma&ximize";
+            this.maximizeProcessMenuItem.Click += new System.EventHandler(this.maximizeProcessMenuItem_Click);
+            // 
+            // menuItem15
+            // 
+            this.menuItem15.Index = 4;
+            this.menuItem15.Text = "-";
+            // 
+            // closeProcessMenuItem
+            // 
+            this.closeProcessMenuItem.Index = 5;
+            this.closeProcessMenuItem.Text = "&Close";
+            this.closeProcessMenuItem.Click += new System.EventHandler(this.closeProcessMenuItem_Click);
+            // 
+            // propertiesProcessMenuItem
+            // 
+            this.propertiesProcessMenuItem.DefaultItem = true;
+            this.vistaMenu.SetImage(this.propertiesProcessMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
+            this.propertiesProcessMenuItem.Index = 15;
+            this.propertiesProcessMenuItem.Text = "&Properties";
+            this.propertiesProcessMenuItem.Click += new System.EventHandler(this.propertiesProcessMenuItem_Click);
+            // 
+            // menuItem7
+            // 
+            this.menuItem7.Index = 16;
+            this.menuItem7.Text = "-";
+            // 
+            // searchProcessMenuItem
+            // 
+            this.searchProcessMenuItem.Index = 17;
+            this.searchProcessMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlM;
+            this.searchProcessMenuItem.Text = "&Search Online";
+            this.searchProcessMenuItem.Click += new System.EventHandler(this.searchProcessMenuItem_Click);
+            // 
+            // reanalyzeProcessMenuItem
+            // 
+            this.reanalyzeProcessMenuItem.Index = 18;
+            this.reanalyzeProcessMenuItem.Text = "Re-analyze";
+            this.reanalyzeProcessMenuItem.Click += new System.EventHandler(this.reanalyzeProcessMenuItem_Click);
+            // 
+            // copyProcessMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyProcessMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyProcessMenuItem.Index = 19;
+            this.copyProcessMenuItem.Text = "&Copy";
+            // 
+            // selectAllProcessMenuItem
+            // 
+            this.selectAllProcessMenuItem.Index = 20;
+            this.selectAllProcessMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
+            this.selectAllProcessMenuItem.Text = "Select &All";
+            this.selectAllProcessMenuItem.Click += new System.EventHandler(this.selectAllProcessMenuItem_Click);
+            // 
+            // hackerMenuItem
+            // 
+            this.hackerMenuItem.Index = 0;
+            this.hackerMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.runMenuItem,
+            this.runAsAdministratorMenuItem,
+            this.runAsMenuItem,
+            this.runAsServiceMenuItem,
+            this.showDetailsForAllProcessesMenuItem,
+            this.uacSeparatorMenuItem,
+            this.saveMenuItem,
+            this.findHandlesMenuItem,
+            this.inspectPEFileMenuItem,
+            this.reloadStructsMenuItem,
+            this.optionsMenuItem,
+            this.menuItem2,
+            this.shutdownMenuItem,
+            this.exitMenuItem});
+            this.hackerMenuItem.Text = "&Hacker";
+            // 
+            // runMenuItem
+            // 
+            this.runMenuItem.Index = 0;
+            this.runMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlR;
+            this.runMenuItem.Text = "&Run...";
+            this.runMenuItem.Click += new System.EventHandler(this.runMenuItem_Click);
+            // 
+            // runAsAdministratorMenuItem
+            // 
+            this.runAsAdministratorMenuItem.Index = 1;
+            this.runAsAdministratorMenuItem.Text = "Run As Administrator...";
+            this.runAsAdministratorMenuItem.Click += new System.EventHandler(this.runAsAdministratorMenuItem_Click);
+            // 
+            // runAsMenuItem
+            // 
+            this.runAsMenuItem.Index = 2;
+            this.runAsMenuItem.Text = "Run As...";
+            this.runAsMenuItem.Visible = false;
+            this.runAsMenuItem.Click += new System.EventHandler(this.runAsMenuItem_Click);
+            // 
+            // runAsServiceMenuItem
+            // 
+            this.runAsServiceMenuItem.Index = 3;
+            this.runAsServiceMenuItem.Text = "Run As...";
+            this.runAsServiceMenuItem.Click += new System.EventHandler(this.runAsServiceMenuItem_Click);
+            // 
+            // showDetailsForAllProcessesMenuItem
+            // 
+            this.showDetailsForAllProcessesMenuItem.Index = 4;
+            this.showDetailsForAllProcessesMenuItem.Text = "Show Details for All Processes";
+            this.showDetailsForAllProcessesMenuItem.Click += new System.EventHandler(this.showDetailsForAllProcessesMenuItem_Click);
+            // 
+            // uacSeparatorMenuItem
+            // 
+            this.uacSeparatorMenuItem.Index = 5;
+            this.uacSeparatorMenuItem.Text = "-";
+            // 
+            // saveMenuItem
+            // 
+            this.vistaMenu.SetImage(this.saveMenuItem, global::ProcessHacker.Properties.Resources.disk);
+            this.saveMenuItem.Index = 6;
+            this.saveMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
+            this.saveMenuItem.Text = "Save...";
+            this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
+            // 
+            // findHandlesMenuItem
+            // 
+            this.vistaMenu.SetImage(this.findHandlesMenuItem, global::ProcessHacker.Properties.Resources.find);
+            this.findHandlesMenuItem.Index = 7;
+            this.findHandlesMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlF;
+            this.findHandlesMenuItem.Text = "&Find Handles or DLLs...";
+            this.findHandlesMenuItem.Click += new System.EventHandler(this.findHandlesMenuItem_Click);
+            // 
+            // inspectPEFileMenuItem
+            // 
+            this.vistaMenu.SetImage(this.inspectPEFileMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
+            this.inspectPEFileMenuItem.Index = 8;
+            this.inspectPEFileMenuItem.Text = "Inspect &PE File...";
+            this.inspectPEFileMenuItem.Click += new System.EventHandler(this.inspectPEFileMenuItem_Click);
+            // 
+            // reloadStructsMenuItem
+            // 
+            this.vistaMenu.SetImage(this.reloadStructsMenuItem, global::ProcessHacker.Properties.Resources.arrow_refresh);
+            this.reloadStructsMenuItem.Index = 9;
+            this.reloadStructsMenuItem.Text = "Reload Struct Definitions";
+            this.reloadStructsMenuItem.Click += new System.EventHandler(this.reloadStructsMenuItem_Click);
+            // 
+            // optionsMenuItem
+            // 
+            this.vistaMenu.SetImage(this.optionsMenuItem, global::ProcessHacker.Properties.Resources.page_gear);
+            this.optionsMenuItem.Index = 10;
+            this.optionsMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlO;
+            this.optionsMenuItem.Text = "&Options...";
+            this.optionsMenuItem.Click += new System.EventHandler(this.optionsMenuItem_Click);
+            // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 11;
+            this.menuItem2.Text = "-";
+            // 
+            // shutdownMenuItem
+            // 
+            this.shutdownMenuItem.Index = 12;
+            this.shutdownMenuItem.Text = "Shutdown";
+            // 
+            // exitMenuItem
+            // 
+            this.vistaMenu.SetImage(this.exitMenuItem, global::ProcessHacker.Properties.Resources.door_out);
+            this.exitMenuItem.Index = 13;
+            this.exitMenuItem.Text = "E&xit";
+            this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
+            // 
+            // viewMenuItem
+            // 
+            this.viewMenuItem.Index = 1;
+            this.viewMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.toolbarMenuItem,
+            this.sysInfoMenuItem,
+            this.trayIconsMenuItem,
+            this.menuItem3,
+            this.updateNowMenuItem,
+            this.updateProcessesMenuItem,
+            this.updateServicesMenuItem});
+            this.viewMenuItem.Text = "&View";
+            // 
+            // toolbarMenuItem
+            // 
+            this.toolbarMenuItem.Index = 0;
+            this.toolbarMenuItem.Text = "Toolbar";
+            this.toolbarMenuItem.Click += new System.EventHandler(this.toolbarMenuItem_Click);
+            // 
+            // sysInfoMenuItem
+            // 
+            this.sysInfoMenuItem.Index = 1;
+            this.sysInfoMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlI;
+            this.sysInfoMenuItem.Text = "System &Information";
+            this.sysInfoMenuItem.Click += new System.EventHandler(this.sysInfoMenuItem_Click);
+            // 
+            // trayIconsMenuItem
+            // 
+            this.trayIconsMenuItem.Index = 2;
+            this.trayIconsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.cpuHistoryMenuItem,
+            this.cpuUsageMenuItem,
+            this.ioHistoryMenuItem,
+            this.commitHistoryMenuItem,
+            this.physMemHistoryMenuItem});
+            this.trayIconsMenuItem.Text = "Tray Icons";
+            // 
+            // cpuHistoryMenuItem
+            // 
+            this.cpuHistoryMenuItem.Index = 0;
+            this.cpuHistoryMenuItem.Text = "CPU History";
+            this.cpuHistoryMenuItem.Click += new System.EventHandler(this.cpuHistoryMenuItem_Click);
+            // 
+            // cpuUsageMenuItem
+            // 
+            this.cpuUsageMenuItem.Index = 1;
+            this.cpuUsageMenuItem.Text = "CPU Usage";
+            this.cpuUsageMenuItem.Click += new System.EventHandler(this.cpuUsageMenuItem_Click);
+            // 
+            // ioHistoryMenuItem
+            // 
+            this.ioHistoryMenuItem.Index = 2;
+            this.ioHistoryMenuItem.Text = "I/O History";
+            this.ioHistoryMenuItem.Click += new System.EventHandler(this.ioHistoryMenuItem_Click);
+            // 
+            // commitHistoryMenuItem
+            // 
+            this.commitHistoryMenuItem.Index = 3;
+            this.commitHistoryMenuItem.Text = "Commit History";
+            this.commitHistoryMenuItem.Click += new System.EventHandler(this.commitHistoryMenuItem_Click);
+            // 
+            // physMemHistoryMenuItem
+            // 
+            this.physMemHistoryMenuItem.Index = 4;
+            this.physMemHistoryMenuItem.Text = "Physical Memory History";
+            this.physMemHistoryMenuItem.Click += new System.EventHandler(this.physMemHistoryMenuItem_Click);
+            // 
+            // menuItem3
+            // 
+            this.menuItem3.Index = 3;
+            this.menuItem3.Text = "-";
+            // 
+            // updateNowMenuItem
+            // 
+            this.vistaMenu.SetImage(this.updateNowMenuItem, global::ProcessHacker.Properties.Resources.arrow_refresh);
+            this.updateNowMenuItem.Index = 4;
+            this.updateNowMenuItem.Shortcut = System.Windows.Forms.Shortcut.F5;
+            this.updateNowMenuItem.Text = "&Refresh";
+            this.updateNowMenuItem.Click += new System.EventHandler(this.updateNowMenuItem_Click);
+            // 
+            // updateProcessesMenuItem
+            // 
+            this.updateProcessesMenuItem.Index = 5;
+            this.updateProcessesMenuItem.Text = "Update &Processes";
+            this.updateProcessesMenuItem.Click += new System.EventHandler(this.updateProcessesMenuItem_Click);
+            // 
+            // updateServicesMenuItem
+            // 
+            this.updateServicesMenuItem.Index = 6;
+            this.updateServicesMenuItem.Text = "Update &Services";
+            this.updateServicesMenuItem.Click += new System.EventHandler(this.updateServicesMenuItem_Click);
+            // 
+            // toolsMenuItem
+            // 
+            this.toolsMenuItem.Index = 2;
+            this.toolsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.createServiceMenuItem,
+            this.hiddenProcessesMenuItem,
+            this.verifyFileSignatureMenuItem});
+            this.toolsMenuItem.Text = "&Tools";
+            // 
+            // createServiceMenuItem
+            // 
+            this.createServiceMenuItem.Index = 0;
+            this.createServiceMenuItem.Text = "Create &Service...";
+            this.createServiceMenuItem.Click += new System.EventHandler(this.createServiceMenuItem_Click);
+            // 
+            // hiddenProcessesMenuItem
+            // 
+            this.hiddenProcessesMenuItem.Index = 1;
+            this.hiddenProcessesMenuItem.Text = "&Hidden Processes";
+            this.hiddenProcessesMenuItem.Click += new System.EventHandler(this.hiddenProcessesMenuItem_Click);
+            // 
+            // verifyFileSignatureMenuItem
+            // 
+            this.verifyFileSignatureMenuItem.Index = 2;
+            this.verifyFileSignatureMenuItem.Text = "&Verify File Signature...";
+            this.verifyFileSignatureMenuItem.Click += new System.EventHandler(this.verifyFileSignatureMenuItem_Click);
+            // 
+            // usersMenuItem
+            // 
+            this.usersMenuItem.Index = 3;
+            this.usersMenuItem.Text = "&Users";
+            // 
+            // windowMenuItem
+            // 
+            this.windowMenuItem.Index = 4;
+            this.windowMenuItem.Text = "&Window";
+            // 
+            // helpMenu
+            // 
+            this.helpMenu.Index = 5;
+            this.helpMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.freeMemoryMenuItem,
+            this.checkForUpdatesMenuItem,
+            this.menuItem1,
+            this.logMenuItem,
+            this.helpMenuItem,
+            this.aboutMenuItem});
+            this.helpMenu.Text = "H&elp";
+            // 
+            // freeMemoryMenuItem
+            // 
+            this.freeMemoryMenuItem.Index = 0;
+            this.freeMemoryMenuItem.Text = "Free Memory";
+            this.freeMemoryMenuItem.Click += new System.EventHandler(this.freeMemoryMenuItem_Click);
+            // 
+            // checkForUpdatesMenuItem
+            // 
+            this.checkForUpdatesMenuItem.Index = 1;
+            this.checkForUpdatesMenuItem.Text = "Check for Updates";
+            this.checkForUpdatesMenuItem.Click += new System.EventHandler(this.checkForUpdatesMenuItem_Click);
+            // 
+            // menuItem1
+            // 
+            this.menuItem1.Index = 2;
+            this.menuItem1.Text = "-";
+            // 
+            // logMenuItem
+            // 
+            this.vistaMenu.SetImage(this.logMenuItem, global::ProcessHacker.Properties.Resources.page_white_text);
+            this.logMenuItem.Index = 3;
+            this.logMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlL;
+            this.logMenuItem.Text = "&Log";
+            this.logMenuItem.Click += new System.EventHandler(this.logMenuItem_Click);
+            // 
+            // helpMenuItem
+            // 
+            this.vistaMenu.SetImage(this.helpMenuItem, global::ProcessHacker.Properties.Resources.help);
+            this.helpMenuItem.Index = 4;
+            this.helpMenuItem.Shortcut = System.Windows.Forms.Shortcut.F1;
+            this.helpMenuItem.Text = "&Help";
+            this.helpMenuItem.Click += new System.EventHandler(this.helpMenuItem_Click);
+            // 
+            // aboutMenuItem
+            // 
+            this.vistaMenu.SetImage(this.aboutMenuItem, global::ProcessHacker.Properties.Resources.information);
+            this.aboutMenuItem.Index = 5;
+            this.aboutMenuItem.Text = "&About";
+            this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
+            // 
+            // menuService
+            // 
+            this.menuService.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.goToProcessServiceMenuItem,
+            this.startServiceMenuItem,
+            this.continueServiceMenuItem,
+            this.pauseServiceMenuItem,
+            this.stopServiceMenuItem,
+            this.deleteServiceMenuItem,
+            this.propertiesServiceMenuItem,
+            this.menuItem8,
+            this.copyServiceMenuItem,
+            this.selectAllServiceMenuItem});
+            this.menuService.Popup += new System.EventHandler(this.menuService_Popup);
+            // 
+            // goToProcessServiceMenuItem
+            // 
+            this.vistaMenu.SetImage(this.goToProcessServiceMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
+            this.goToProcessServiceMenuItem.Index = 0;
+            this.goToProcessServiceMenuItem.Text = "&Go to Process";
+            this.goToProcessServiceMenuItem.Click += new System.EventHandler(this.goToProcessServiceMenuItem_Click);
+            // 
+            // startServiceMenuItem
+            // 
+            this.vistaMenu.SetImage(this.startServiceMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
+            this.startServiceMenuItem.Index = 1;
+            this.startServiceMenuItem.Text = "&Start";
+            this.startServiceMenuItem.Click += new System.EventHandler(this.startServiceMenuItem_Click);
+            // 
+            // continueServiceMenuItem
+            // 
+            this.continueServiceMenuItem.Index = 2;
+            this.continueServiceMenuItem.Text = "&Continue";
+            this.continueServiceMenuItem.Click += new System.EventHandler(this.continueServiceMenuItem_Click);
+            // 
+            // pauseServiceMenuItem
+            // 
+            this.vistaMenu.SetImage(this.pauseServiceMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
+            this.pauseServiceMenuItem.Index = 3;
+            this.pauseServiceMenuItem.Text = "&Pause";
+            this.pauseServiceMenuItem.Click += new System.EventHandler(this.pauseServiceMenuItem_Click);
+            // 
+            // stopServiceMenuItem
+            // 
+            this.vistaMenu.SetImage(this.stopServiceMenuItem, global::ProcessHacker.Properties.Resources.control_stop_blue);
+            this.stopServiceMenuItem.Index = 4;
+            this.stopServiceMenuItem.Text = "S&top";
+            this.stopServiceMenuItem.Click += new System.EventHandler(this.stopServiceMenuItem_Click);
+            // 
+            // deleteServiceMenuItem
+            // 
+            this.vistaMenu.SetImage(this.deleteServiceMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.deleteServiceMenuItem.Index = 5;
+            this.deleteServiceMenuItem.Shortcut = System.Windows.Forms.Shortcut.Del;
+            this.deleteServiceMenuItem.Text = "Delete";
+            this.deleteServiceMenuItem.Click += new System.EventHandler(this.deleteServiceMenuItem_Click);
+            // 
+            // propertiesServiceMenuItem
+            // 
+            this.propertiesServiceMenuItem.DefaultItem = true;
+            this.vistaMenu.SetImage(this.propertiesServiceMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
+            this.propertiesServiceMenuItem.Index = 6;
+            this.propertiesServiceMenuItem.Text = "&Properties";
+            this.propertiesServiceMenuItem.Click += new System.EventHandler(this.propertiesServiceMenuItem_Click);
+            // 
+            // menuItem8
+            // 
+            this.menuItem8.Index = 7;
+            this.menuItem8.Text = "-";
+            // 
+            // copyServiceMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyServiceMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyServiceMenuItem.Index = 8;
+            this.copyServiceMenuItem.Text = "Copy";
+            // 
+            // selectAllServiceMenuItem
+            // 
+            this.selectAllServiceMenuItem.Index = 9;
+            this.selectAllServiceMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
+            this.selectAllServiceMenuItem.Text = "Select &All";
+            this.selectAllServiceMenuItem.Click += new System.EventHandler(this.selectAllServiceMenuItem_Click);
+            // 
+            // menuIcon
+            // 
+            this.menuIcon.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.showHideMenuItem,
+            this.sysInformationIconMenuItem,
+            this.notificationsMenuItem,
+            this.processesMenuItem,
+            this.shutdownTrayMenuItem,
+            this.exitTrayMenuItem});
+            this.menuIcon.Popup += new System.EventHandler(this.menuIcon_Popup);
+            // 
+            // showHideMenuItem
+            // 
+            this.showHideMenuItem.Index = 0;
+            this.showHideMenuItem.Text = "&Show/Hide Process Hacker";
+            this.showHideMenuItem.Click += new System.EventHandler(this.showHideMenuItem_Click);
+            // 
+            // sysInformationIconMenuItem
+            // 
+            this.sysInformationIconMenuItem.Index = 1;
+            this.sysInformationIconMenuItem.Text = "System &Information";
+            this.sysInformationIconMenuItem.Click += new System.EventHandler(this.sysInformationIconMenuItem_Click);
+            // 
+            // notificationsMenuItem
+            // 
+            this.notificationsMenuItem.Index = 2;
+            this.notificationsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.enableAllNotificationsMenuItem,
+            this.disableAllNotificationsMenuItem,
+            this.menuItem4,
+            this.NPMenuItem,
+            this.TPMenuItem,
+            this.NSMenuItem,
+            this.startedSMenuItem,
+            this.stoppedSMenuItem,
+            this.DSMenuItem});
+            this.notificationsMenuItem.Text = "&Notifications";
+            // 
+            // enableAllNotificationsMenuItem
+            // 
+            this.enableAllNotificationsMenuItem.Index = 0;
+            this.enableAllNotificationsMenuItem.Text = "&Enable All";
+            this.enableAllNotificationsMenuItem.Click += new System.EventHandler(this.enableAllNotificationsMenuItem_Click);
+            // 
+            // disableAllNotificationsMenuItem
+            // 
+            this.disableAllNotificationsMenuItem.Index = 1;
+            this.disableAllNotificationsMenuItem.Text = "&Disable All";
+            this.disableAllNotificationsMenuItem.Click += new System.EventHandler(this.disableAllNotificationsMenuItem_Click);
+            // 
+            // menuItem4
+            // 
+            this.menuItem4.Index = 2;
+            this.menuItem4.Text = "-";
+            // 
+            // NPMenuItem
+            // 
+            this.NPMenuItem.Index = 3;
+            this.NPMenuItem.Text = "New Processes";
+            // 
+            // TPMenuItem
+            // 
+            this.TPMenuItem.Index = 4;
+            this.TPMenuItem.Text = "Terminated Processes";
+            // 
+            // NSMenuItem
+            // 
+            this.NSMenuItem.Index = 5;
+            this.NSMenuItem.Text = "New Services";
+            // 
+            // startedSMenuItem
+            // 
+            this.startedSMenuItem.Index = 6;
+            this.startedSMenuItem.Text = "Started Services";
+            // 
+            // stoppedSMenuItem
+            // 
+            this.stoppedSMenuItem.Index = 7;
+            this.stoppedSMenuItem.Text = "Stopped Services";
+            // 
+            // DSMenuItem
+            // 
+            this.DSMenuItem.Index = 8;
+            this.DSMenuItem.Text = "Deleted Services";
+            // 
+            // processesMenuItem
+            // 
+            this.processesMenuItem.Index = 3;
+            this.processesMenuItem.Text = "&Processes";
+            // 
+            // shutdownTrayMenuItem
+            // 
+            this.shutdownTrayMenuItem.Index = 4;
+            this.shutdownTrayMenuItem.Text = "Shutdown";
+            // 
+            // exitTrayMenuItem
+            // 
+            // this.vistaMenu.SetImage(this.exitTrayMenuItem, global::ProcessHacker.Properties.Resources.door_out);
+            this.exitTrayMenuItem.Index = 5;
+            this.exitTrayMenuItem.Text = "E&xit";
+            this.exitTrayMenuItem.Click += new System.EventHandler(this.exitTrayMenuItem_Click);
+            // 
+            // goToProcessNetworkMenuItem
+            // 
+            this.goToProcessNetworkMenuItem.DefaultItem = true;
+            //this.vistaMenu.SetImage(this.goToProcessNetworkMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
+            this.goToProcessNetworkMenuItem.Index = 0;
+            this.goToProcessNetworkMenuItem.Text = "&Go to Process";
+            this.goToProcessNetworkMenuItem.Click += new System.EventHandler(this.goToProcessNetworkMenuItem_Click);
+            // 
+            // copyNetworkMenuItem
+            // 
+            //this.vistaMenu.SetImage(this.copyNetworkMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyNetworkMenuItem.Index = 4;
+            this.copyNetworkMenuItem.Text = "&Copy";
+            // 
+            // closeNetworkMenuItem
+            // 
+            //this.vistaMenu.SetImage(this.closeNetworkMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.closeNetworkMenuItem.Index = 2;
+            this.closeNetworkMenuItem.Text = "Close";
+            this.closeNetworkMenuItem.Click += new System.EventHandler(this.closeNetworkMenuItem_Click);
+            // 
+            // menuNetwork
+            // 
+            this.menuNetwork.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.goToProcessNetworkMenuItem,
+            this.toolsNetworkMenuItem,
+            this.closeNetworkMenuItem,
+            this.menuItem6,
+            this.copyNetworkMenuItem,
+            this.selectAllNetworkMenuItem});
+            this.menuNetwork.Popup += new System.EventHandler(this.menuNetwork_Popup);
+            // 
+            // toolsNetworkMenuItem
+            // 
+            this.toolsNetworkMenuItem.Index = 1;
+            this.toolsNetworkMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.whoisNetworkMenuItem,
+            this.tracertNetworkMenuItem,
+            this.pingNetworkMenuItem});
+            this.toolsNetworkMenuItem.Text = "Tools";
+            // 
+            // whoisNetworkMenuItem
+            // 
+            this.whoisNetworkMenuItem.Index = 0;
+            this.whoisNetworkMenuItem.Text = "Whois";
+            this.whoisNetworkMenuItem.Click += new System.EventHandler(this.whoisNetworkMenuItem_Click);
+            // 
+            // tracertNetworkMenuItem
+            // 
+            this.tracertNetworkMenuItem.Index = 1;
+            this.tracertNetworkMenuItem.Text = "Tracert";
+            this.tracertNetworkMenuItem.Click += new System.EventHandler(this.tracertNetworkMenuItem_Click);
+            // 
+            // pingNetworkMenuItem
+            // 
+            this.pingNetworkMenuItem.Index = 2;
+            this.pingNetworkMenuItem.Text = "Ping";
+            this.pingNetworkMenuItem.Click += new System.EventHandler(this.pingNetworkMenuItem_Click);
+            // 
+            // menuItem6
+            // 
+            this.menuItem6.Index = 3;
+            this.menuItem6.Text = "-";
+            // 
+            // selectAllNetworkMenuItem
+            // 
+            this.selectAllNetworkMenuItem.Index = 5;
+            this.selectAllNetworkMenuItem.Text = "Select &All";
+            this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
+        }
+
         #region Variables
 
         // One-instance windows.
@@ -3208,6 +4304,9 @@ namespace ProcessHacker
             networkP = Program.NetworkProvider;
 
             InitializeComponent();
+
+            CreateHackerMainMenu();
+
             this.AddEscapeToClose();
 
             // Force the handle to be created
