@@ -429,7 +429,7 @@ namespace ProcessHacker
 
                 if (fileName == null)
                 {
-                    pictureIcon.Image = ProcessHacker.Properties.Resources.Process.ToBitmap();
+                    pictureIcon.Image = _processImage = ProcessHacker.Properties.Resources.Process.ToBitmap();
                     return;
                 }
 
@@ -443,7 +443,6 @@ namespace ProcessHacker
                 try
                 {
                     pictureIcon.Image = _processImage = _processItem.LargeIcon.ToBitmap();
-                    pictureIcon.SizeMode = PictureBoxSizeMode.CenterImage;
                 }
                 catch 
                 {
