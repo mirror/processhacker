@@ -2892,33 +2892,37 @@ namespace ProcessHacker
             //networkP.Dispose();
 
             this.ExecuteOnIcons((icon) => icon.Visible = false);
-            this.ExecuteOnIcons((icon) => icon.Dispose());
-
             SaveSettings();
-
             this.Visible = false;
 
             if (KProcessHacker.Instance != null)
                 KProcessHacker.Instance.Close();
 
-            Application.Exit();
+            try
+            {
+                Win32.ExitProcess(0);
+            }
+            catch
+            { }
         }
 
         private void HackerWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (this.GetIconsVisibleCount() > 0 && 
-                Properties.Settings.Default.HideWhenClosed)
-            {  
-                e.Cancel = true;
-                showHideMenuItem_Click(sender, null); 
-                return;
-            }
-             
-            if (e.CloseReason != CloseReason.ApplicationExitCall)   
+            if (e.CloseReason == CloseReason.WindowsShutDown)
             {
                 this.Exit();
                 return;
             }
+
+            if (this.GetIconsVisibleCount() > 0 &&
+                Properties.Settings.Default.HideWhenClosed)
+            {
+                e.Cancel = true;
+                showHideMenuItem_Click(sender, null);
+                return;
+            }
+
+            this.Exit();
         }
 
         private void CheckedMenuItem_Click(object sender, EventArgs e)
