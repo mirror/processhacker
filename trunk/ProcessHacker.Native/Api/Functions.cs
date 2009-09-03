@@ -1721,7 +1721,7 @@ namespace ProcessHacker.Native.Api
             [Out] IntPtr Table,
             ref int Size,
             [In] bool Order,
-            [In] int IpVersion, // 2 for IPv4
+            [In] ai_family IpVersion,
             [In] TcpTableClass TableClass,
             [In] int Reserved
             );
@@ -1737,6 +1737,12 @@ namespace ProcessHacker.Native.Api
             ref int pdwSize, 
             [In] bool bOrder
             );
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public static extern int GetTcp6Table(
+            [Out] byte[] tcpTable,
+            ref int pdwSize,
+            [In] bool bOrder);
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
         public extern static int AllocateAndGetTcpExTableFromStack(
@@ -2086,7 +2092,7 @@ namespace ProcessHacker.Native.Api
             [Out] IntPtr Table, 
             ref int Size,
             [In] bool Order,
-            [In] int IpVersion, // 2 for IPv4
+            [In] ai_family IpVersion,
             [In] UdpTableClass TableClass,
             [In] int Reserved
             );

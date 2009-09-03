@@ -317,12 +317,11 @@ namespace ProcessHacker.Native
             var retDict = new Dictionary<int, List<NetworkConnection>>();
             int length = 0;
 
-            Win32.GetExtendedTcpTable(IntPtr.Zero, ref length, false, 2, TcpTableClass.OwnerPidAll, 0);
+            Win32.GetExtendedTcpTable(IntPtr.Zero, ref length, false, ai_family.AF_INET, TcpTableClass.OwnerPidAll, 0);
 
             using (var mem = new MemoryAlloc(length))
             {
-                if (Win32.GetExtendedTcpTable(mem, ref length, false, 2,
-                    TcpTableClass.OwnerPidAll, 0) != 0)
+                if (Win32.GetExtendedTcpTable(mem, ref length, false, ai_family.AF_INET, TcpTableClass.OwnerPidAll, 0) != 0)
                     Win32.ThrowLastError();
 
                 int count = mem.ReadInt32(0);
@@ -345,11 +344,11 @@ namespace ProcessHacker.Native
                 }
             }
 
-            Win32.GetExtendedUdpTable(IntPtr.Zero, ref length, false, 2, UdpTableClass.OwnerPid, 0);
+            Win32.GetExtendedUdpTable(IntPtr.Zero, ref length, false, ai_family.AF_INET, UdpTableClass.OwnerPid, 0);
 
             using (var mem = new MemoryAlloc(length))
             {
-                if (Win32.GetExtendedUdpTable(mem, ref length, false, 2, UdpTableClass.OwnerPid, 0) != 0)
+                if (Win32.GetExtendedUdpTable(mem, ref length, false, ai_family.AF_INET, UdpTableClass.OwnerPid, 0) != 0)
                     Win32.ThrowLastError();
 
                 int count = mem.ReadInt32(0);

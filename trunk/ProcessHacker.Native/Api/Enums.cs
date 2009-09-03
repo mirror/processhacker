@@ -641,6 +641,16 @@ namespace ProcessHacker.Native.Api
         OwnerModuleAll
     }
 
+    public enum ai_family : int
+    {
+        AF_UNSPEC = 0, //The address family is unspecified.
+        AF_INET = 2, //The Internet Protocol version 4 (IPv4) address family.
+        AF_NETBIOS = 17, //The NetBIOS address family. This address family is only supported if a Windows Sockets provider for NetBIOS is installed.
+        AF_INET6 = 23, //The Internet Protocol version 6 (IPv6) address family.
+        AF_IRDA = 26, //The Infrared Data Association (IrDA) address family. This address family is only supported if the computer has an infrared port and driver installed.
+        AF_BTH = 32 //The Bluetooth address family. This address family is only supported if a Bluetooth adapter is installed on Windows Server 2003 or later.
+    }
+    
     public enum UipiFilterFlag : uint
     {
         Add = 1,
