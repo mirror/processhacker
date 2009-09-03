@@ -154,7 +154,9 @@ namespace ProcessHacker
                 return new TreePath(node);
 
             if (node == null)
+            {
                 return TreePath.Empty;
+            }
             else
             {
                 ProcessNode currentNode = node;
