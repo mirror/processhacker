@@ -29,39 +29,6 @@ using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Api
 {
-    [StructLayoutAttribute(LayoutKind.Sequential)]
-    public struct Ano6
-    {
-        public uint bitvector1;
-        public uint SpecificPortBind
-        {
-            get
-            {
-                return ((uint)((this.bitvector1 & 1u)));
-            }
-            set
-            {
-                this.bitvector1 = ((uint)((value | this.bitvector1)));
-            }
-        }
-    }
-
-    [StructLayoutAttribute(LayoutKind.Sequential)]
-    public struct Anon6
-    {
-        public uint LowPart;
-        public int HighPart;
-    }
-
-    [StructLayoutAttribute(LayoutKind.Explicit)]
-    public struct Anony6
-    {
-        [FieldOffsetAttribute(0)]
-        public Ano6 Struct1;
-        [FieldOffsetAttribute(0)]
-        public int Flags;
-    }
-
     [StructLayout(LayoutKind.Sequential)]
     public struct Address64
     {
@@ -165,22 +132,16 @@ namespace ProcessHacker.Native.Api
         public long Address;
     }
 
-    [StructLayoutAttribute(LayoutKind.Explicit)]
-    public struct _in6_addr
+    [StructLayout(LayoutKind.Explicit)]
+    public struct INet6Address
     {
-        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 16, ArraySubType = UnmanagedType.I1)]
-        [FieldOffsetAttribute(0)]
-        public byte[] Byte;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        [FieldOffset(0)]
+        public byte[] Bytes;
 
-        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 8, ArraySubType = UnmanagedType.U2)]
-        [FieldOffsetAttribute(0)]
-        public ushort[] Word;
-    }
-
-    [StructLayoutAttribute(LayoutKind.Sequential)]
-    public struct in6_addr
-    {
-        public _in6_addr u;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        [FieldOffset(0)]
+        public ushort[] Words;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -200,17 +161,6 @@ namespace ProcessHacker.Native.Api
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
         public long[] Reserved;
-    }
-
-    [StructLayoutAttribute(LayoutKind.Explicit)]
-    public struct LARGE_INTEGER
-    {
-        [FieldOffsetAttribute(0)]
-        public Anon6 Struct1;
-        [FieldOffsetAttribute(0)]
-        public Anon6 u;
-        [FieldOffsetAttribute(0)]
-        public long QuadPart;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -279,29 +229,29 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct Mib_Tcp6Row 
+    public struct MibTcp6Row 
     {
         public MibTcpState State;
         public uint LocalAddress;
         public uint LocalScopeId;
-        public uint LocalPort;
+        public int LocalPort;
         public uint RemoteAddr;
         public int RemoteScopeId;
         public int RemotePort;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct Mib_Tcp6Row2
+    public struct MibTcp6Row2
     {
-        public in6_addr LocalAddr;
+        public INet6Address LocalAddr;
         public uint LocalScopeId;
-        public uint LocalPort;
-        public in6_addr RemoteAddr;
+        public int LocalPort;
+        public INet6Address RemoteAddr;
         public uint RemoteScopeId;
-        public uint RemotePort;
+        public int RemotePort;
         public MibTcpState State;
-        public uint dwOwningPid;
-        TcpConnectionOffload_State dwOffloadState;
+        public int OwningPid;
+        public TcpConnectionOffloadState OffloadState;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -315,19 +265,19 @@ namespace ProcessHacker.Native.Api
         public int OwningProcessId;
     }
 
-    [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MibTcp6RowOwnerPid
     {
-        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 16)]
-        public string ucLocalAddr;
-        public uint dwLocalScopeId;
-        public uint dwLocalPort;
-        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 16)]
-        public string ucRemoteAddr;
-        public uint dwRemoteScopeId;
-        public uint dwRemotePort;
-        public uint dwState;
-        public uint dwOwningPid;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] LocalAddress;
+        public uint LocalScopeId;
+        public int LocalPort;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] RemoteAddress;
+        public uint RemoteScopeId;
+        public int RemotePort;
+        public MibTcpState State;
+        public int OwningPid;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -361,7 +311,7 @@ namespace ProcessHacker.Native.Api
     public struct MibTcp6Table
     {
         public int NumEntries;
-        public Mib_Tcp6Row[] Table;
+        public MibTcp6Row[] Table;
     }
         
     [StructLayout(LayoutKind.Sequential)]
@@ -388,9 +338,9 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct MibUdp6Row
     {
-        in6_addr LocalAddress;
+        public INet6Address LocalAddress;
         public uint LocalScopeId;
-        public uint LocalPort;
+        public int LocalPort;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -415,27 +365,28 @@ namespace ProcessHacker.Native.Api
         public int OwningProcessId;
     }
 
-    [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MibUdp6RowOwnerPid
     {
-        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 16)]
-        public string ucLocalAddr;
-        public uint dwLocalScopeId;
-        public uint dwLocalPort;
-        public uint dwOwningPid;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] LocalAddress;
+        public uint LocalScopeId;
+        public int LocalPort;
+        public int OwningPid;
     }
 
-    [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MibUdp6RowOwnerModule
     {
-        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 16)]
-        public string LocalAddr;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public byte[] LocalAddress;
         public uint LocalScopeId;
-        public uint LocalPort;
-        public uint OwningPid;
-        public LARGE_INTEGER liCreateTimestamp;
-        public Anony6 Union1;
-        public ulong[] OwningModuleInfo;
+        public int LocalPort;
+        public int OwningPid;
+        public long CreateTimestamp;
+        public int Flags;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+        public long[] OwningModuleInfo;
     }
 
     [StructLayout(LayoutKind.Sequential)]

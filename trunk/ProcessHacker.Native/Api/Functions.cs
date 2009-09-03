@@ -1721,7 +1721,7 @@ namespace ProcessHacker.Native.Api
             [Out] IntPtr Table,
             ref int Size,
             [In] bool Order,
-            [In] ai_family IpVersion,
+            [In] AiFamily IpVersion,
             [In] TcpTableClass TableClass,
             [In] int Reserved
             );
@@ -2092,7 +2092,7 @@ namespace ProcessHacker.Native.Api
             [Out] IntPtr Table, 
             ref int Size,
             [In] bool Order,
-            [In] ai_family IpVersion,
+            [In] AiFamily IpVersion,
             [In] UdpTableClass TableClass,
             [In] int Reserved
             );

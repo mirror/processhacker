@@ -245,11 +245,11 @@ namespace ProcessHacker.Native.Api
             MibTcpTableOwnerPid table = new MibTcpTableOwnerPid();
             int length = 0;
 
-            GetExtendedTcpTable(IntPtr.Zero, ref length, false, ai_family.AF_INET, TcpTableClass.OwnerPidAll, 0);
+            GetExtendedTcpTable(IntPtr.Zero, ref length, false, AiFamily.INet, TcpTableClass.OwnerPidAll, 0);
 
             using (MemoryAlloc mem = new MemoryAlloc(length))
             {
-                GetExtendedTcpTable(mem, ref length, false, ai_family.AF_INET, TcpTableClass.OwnerPidAll, 0);
+                GetExtendedTcpTable(mem, ref length, false, AiFamily.INet, TcpTableClass.OwnerPidAll, 0);
 
                 int count = mem.ReadInt32(0);
 
@@ -314,11 +314,11 @@ namespace ProcessHacker.Native.Api
             MibUdpTableOwnerPid table = new MibUdpTableOwnerPid();
             int length = 0;
 
-            GetExtendedUdpTable(IntPtr.Zero, ref length, false, ai_family.AF_INET, UdpTableClass.OwnerPid, 0);
+            GetExtendedUdpTable(IntPtr.Zero, ref length, false, AiFamily.INet, UdpTableClass.OwnerPid, 0);
 
             using (MemoryAlloc mem = new MemoryAlloc(length))
             {
-                GetExtendedUdpTable(mem, ref length, false, ai_family.AF_INET, UdpTableClass.OwnerPid, 0);
+                GetExtendedUdpTable(mem, ref length, false, AiFamily.INet, UdpTableClass.OwnerPid, 0);
                         
                 int count = mem.ReadInt32(0);
 

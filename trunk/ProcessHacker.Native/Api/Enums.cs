@@ -34,14 +34,36 @@ namespace ProcessHacker.Native.Api
         AddrModeFlat
     }
 
-    public enum ai_family : int
+    public enum AiFamily : int
     {
-        AF_UNSPEC = 0, //The address family is unspecified.
-        AF_INET = 2, //The Internet Protocol version 4 (IPv4) address family.
-        AF_NETBIOS = 17, //The NetBIOS address family. This address family is only supported if a Windows Sockets provider for NetBIOS is installed.
-        AF_INET6 = 23, //The Internet Protocol version 6 (IPv6) address family.
-        AF_IRDA = 26, //The Infrared Data Association (IrDA) address family. This address family is only supported if the computer has an infrared port and driver installed.
-        AF_BTH = 32 //The Bluetooth address family. This address family is only supported if a Bluetooth adapter is installed on Windows Server 2003 or later.
+        /// <summary>
+        /// The address family is unspecified.
+        /// </summary>
+        Unspecified = 0,
+        /// <summary>
+        /// The Internet Protocol version 4 (IPv4) address family.
+        /// </summary>
+        INet = 2,
+        /// <summary>
+        /// The NetBIOS address family. This address family is only supported 
+        /// if a Windows Sockets provider for NetBIOS is installed.
+        /// </summary>
+        NetBios = 17,
+        /// <summary>
+        /// The Internet Protocol version 6 (IPv6) address family.
+        /// </summary>
+        INet6 = 23,
+        /// <summary>
+        /// The Infrared Data Association (IrDA) address family. This address 
+        /// family is only supported if the computer has an infrared port and 
+        /// driver installed.
+        /// </summary>
+        IrDA = 26,
+        /// <summary>
+        /// The Bluetooth address family. This address family is only supported 
+        /// if a Bluetooth adapter is installed on Windows Server 2003 or later.
+        /// </summary>
+        Bth = 32
     }
 
     [Flags]
@@ -638,13 +660,13 @@ namespace ProcessHacker.Native.Api
         ParentWin = 0x80,
     }
 
-    public enum TcpConnectionOffload_State 
+    public enum TcpConnectionOffloadState 
     {
-        TcpConnectionOffloadStateInHost       = 0,
-        TcpConnectionOffloadStateOffloading   = 1,
-        TcpConnectionOffloadStateOffloaded    = 2,
-        TcpConnectionOffloadStateUploading    = 3,
-        TcpConnectionOffloadStateMax          = 4 
+        InHost = 0,
+        Offloading = 1,
+        Offloaded = 2,
+        Uploading = 3,
+        Max = 4 
     }
 
     public enum TcpTableClass : int
