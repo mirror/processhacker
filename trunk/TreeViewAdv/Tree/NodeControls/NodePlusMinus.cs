@@ -13,12 +13,16 @@ namespace Aga.Controls.Tree.NodeControls
         private TreeViewAdv _tree;
 		public const int ImageSize = 9;
 		public const int Width = 16;
+        private bool _useVisualStyles;
+        private VisualStyleRenderer _openedRenderer;
+        private VisualStyleRenderer _closedRenderer;
 		private Bitmap _plus;
 		private Bitmap _minus;
 
 		public NodePlusMinus(TreeViewAdv tree)
 		{
             _tree = tree;
+            this.RefreshVisualStyles();
 		}
 
         private Bitmap Plus
@@ -43,6 +47,26 @@ namespace Aga.Controls.Tree.NodeControls
             }
         }
 
+        public void RefreshVisualStyles()
+        {
+            bool useVisualStyles = Application.RenderWithVisualStyles;
+
+            if (useVisualStyles)
+            {
+                try
+                {
+                    _openedRenderer = new VisualStyleRenderer(VisualStyleElement.TreeView.Glyph.Opened);
+                    _closedRenderer = new VisualStyleRenderer(VisualStyleElement.TreeView.Glyph.Closed);
+                }
+                catch
+                {
+                    useVisualStyles = false;
+                }
+            }
+
+            _useVisualStyles = useVisualStyles;
+        }
+
 		public override Size MeasureSize(TreeNodeAdv node, DrawContext context)
 		{
 			return new Size(Width, Width);
@@ -54,24 +78,29 @@ namespace Aga.Controls.Tree.NodeControls
 			{
 				Rectangle r = context.Bounds;
 				int dy = (int)Math.Round((float)(r.Height - ImageSize) / 2);
-				if (Application.RenderWithVisualStyles)
-				{
-					VisualStyleRenderer renderer;
-					if (node.IsExpanded)
-						renderer = new VisualStyleRenderer(VisualStyleElement.TreeView.Glyph.Opened);
-					else
-						renderer = new VisualStyleRenderer(VisualStyleElement.TreeView.Glyph.Closed);
-					renderer.DrawBackground(context.Graphics, new Rectangle(r.X, r.Y + dy, ImageSize, ImageSize));
-				}
-				else
-				{
-					Image img;
-					if (node.IsExpanded)
-						img = this.Minus;
-					else
-						img = this.Plus;
-					context.Graphics.DrawImageUnscaled(img, new Point(r.X, r.Y + dy));
-				}
+
+                if (_useVisualStyles)
+                {
+                    VisualStyleRenderer renderer;
+
+                    if (node.IsExpanded)
+                        renderer = _openedRenderer;
+                    else
+                        renderer = _closedRenderer;
+
+                    renderer.DrawBackground(context.Graphics, new Rectangle(r.X, r.Y + dy, ImageSize, ImageSize));
+                }
+                else
+                {
+                    Image img;
+
+                    if (node.IsExpanded)
+                        img = this.Minus;
+                    else
+                        img = this.Plus;
+
+                    context.Graphics.DrawImageUnscaled(img, new Point(r.X, r.Y + dy));
+                }
 			}
 		}
 

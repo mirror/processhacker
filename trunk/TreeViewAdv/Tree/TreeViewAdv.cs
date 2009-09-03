@@ -673,6 +673,11 @@ namespace Aga.Controls.Tree
 				UnsafeFullUpdate();
 		}
 
+        public void RefreshVisualStyles()
+        {
+            _plusMinus.RefreshVisualStyles();
+        }
+
 		private void UnsafeFullUpdate()
 		{
 			_rowLayout.ClearCache();

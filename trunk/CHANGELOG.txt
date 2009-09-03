@@ -13,6 +13,7 @@ Process Hacker
    * #2820170 - "System.ArgumentOutOfRangeException in network list"
    * #2845427 - "Indicator integer overflow"
    * #2847691 - "Apply button bug"
+   * #2849052 - "not defined by current visual style"
    * Critical KProcessHacker denial-of-service security issues
    * Incorrect menu items for System threads
    * Crash when viewing error details in the event 

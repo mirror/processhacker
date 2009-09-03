@@ -2877,7 +2877,10 @@ namespace ProcessHacker
 
                 case (int)WindowMessage.SettingChange:
                     {
+                        // Refresh icon sizes.
                         this.ExecuteOnIcons((icon) => icon.Size = UsageIcon.GetSmallIconSize());
+                        // Refresh the tree view visual style.
+                        treeProcesses.Tree.RefreshVisualStyles();
                     }
                     break;
             }
