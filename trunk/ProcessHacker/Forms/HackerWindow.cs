@@ -2895,6 +2895,8 @@ namespace ProcessHacker
             //networkP.Dispose();
 
             this.ExecuteOnIcons((icon) => icon.Visible = false);
+            this.ExecuteOnIcons((icon) => icon.Dispose());
+
             SaveSettings();
             this.Visible = false;
 
@@ -2911,13 +2913,7 @@ namespace ProcessHacker
 
         private void HackerWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.WindowsShutDown)
-            {
-                this.Exit();
-                return;
-            }
-
-            if (this.GetIconsVisibleCount() > 0 &&
+             if (this.GetIconsVisibleCount() > 0 &&
                 Properties.Settings.Default.HideWhenClosed)
             {
                 e.Cancel = true;
@@ -2925,7 +2921,11 @@ namespace ProcessHacker
                 return;
             }
 
-            this.Exit();
+             if (e.CloseReason != CloseReason.ApplicationExitCall)
+             {
+                 this.Exit();
+                 return;
+             }
         }
 
         private void CheckedMenuItem_Click(object sender, EventArgs e)
