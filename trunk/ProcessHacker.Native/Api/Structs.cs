@@ -29,6 +29,39 @@ using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Api
 {
+    [StructLayoutAttribute(LayoutKind.Sequential)]
+    public struct Ano6
+    {
+        public uint bitvector1;
+        public uint SpecificPortBind
+        {
+            get
+            {
+                return ((uint)((this.bitvector1 & 1u)));
+            }
+            set
+            {
+                this.bitvector1 = ((uint)((value | this.bitvector1)));
+            }
+        }
+    }
+
+    [StructLayoutAttribute(LayoutKind.Sequential)]
+    public struct Anon6
+    {
+        public uint LowPart;
+        public int HighPart;
+    }
+
+    [StructLayoutAttribute(LayoutKind.Explicit)]
+    public struct Anony6
+    {
+        [FieldOffsetAttribute(0)]
+        public Ano6 Struct1;
+        [FieldOffsetAttribute(0)]
+        public int Flags;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct Address64
     {
@@ -132,6 +165,24 @@ namespace ProcessHacker.Native.Api
         public long Address;
     }
 
+    [StructLayoutAttribute(LayoutKind.Explicit)]
+    public struct _in6_addr
+    {
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 16, ArraySubType = UnmanagedType.I1)]
+        [FieldOffsetAttribute(0)]
+        public byte[] Byte;
+
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 8, ArraySubType = UnmanagedType.U2)]
+        [FieldOffsetAttribute(0)]
+        public ushort[] Word;
+    }
+
+    [StructLayoutAttribute(LayoutKind.Sequential)]
+    public struct in6_addr
+    {
+        public _in6_addr u;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct KdHelp64
     {
@@ -149,6 +200,17 @@ namespace ProcessHacker.Native.Api
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
         public long[] Reserved;
+    }
+
+    [StructLayoutAttribute(LayoutKind.Explicit)]
+    public struct LARGE_INTEGER
+    {
+        [FieldOffsetAttribute(0)]
+        public Anon6 Struct1;
+        [FieldOffsetAttribute(0)]
+        public Anon6 u;
+        [FieldOffsetAttribute(0)]
+        public long QuadPart;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -217,6 +279,32 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct Mib_Tcp6Row 
+    {
+        public MibTcpState State;
+        public uint LocalAddress;
+        public uint LocalScopeId;
+        public uint LocalPort;
+        public uint RemoteAddr;
+        public int RemoteScopeId;
+        public int RemotePort;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Mib_Tcp6Row2
+    {
+        public in6_addr LocalAddr;
+        public uint LocalScopeId;
+        public uint LocalPort;
+        public in6_addr RemoteAddr;
+        public uint RemoteScopeId;
+        public uint RemotePort;
+        public MibTcpState State;
+        public uint dwOwningPid;
+        TcpConnectionOffload_State dwOffloadState;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct MibTcpRowOwnerPid
     {
         public MibTcpState State;
@@ -225,6 +313,21 @@ namespace ProcessHacker.Native.Api
         public uint RemoteAddress;
         public int RemotePort;
         public int OwningProcessId;
+    }
+
+    [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct MibTcp6RowOwnerPid
+    {
+        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 16)]
+        public string ucLocalAddr;
+        public uint dwLocalScopeId;
+        public uint dwLocalPort;
+        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 16)]
+        public string ucRemoteAddr;
+        public uint dwRemoteScopeId;
+        public uint dwRemotePort;
+        public uint dwState;
+        public uint dwOwningPid;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -255,12 +358,26 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct MibTcp6Table
+    {
+        public int NumEntries;
+        public Mib_Tcp6Row[] Table;
+    }
+        
+    [StructLayout(LayoutKind.Sequential)]
     public struct MibTcpTableOwnerPid
     {
         public int NumEntries;
         public MibTcpRowOwnerPid[] Table;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MibTcp6TableOwnerPid
+    {
+        public int NumEntries;
+        public MibTcp6RowOwnerPid[] Table;
+    }
+    
     [StructLayout(LayoutKind.Sequential)]
     public struct MibUdpRow
     {
@@ -269,10 +386,25 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct MibUdp6Row
+    {
+        in6_addr LocalAddress;
+        public uint LocalScopeId;
+        public uint LocalPort;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct MibUdpTable
     {
-        public int NumEntries;
+        public uint NumEntries;
         public MibUdpRow[] Table;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MibUdp6Table
+    {
+        public int NumEntries;
+        public MibUdp6Row[] Table;
     }
  
     [StructLayout(LayoutKind.Sequential)]
@@ -281,6 +413,29 @@ namespace ProcessHacker.Native.Api
         public uint LocalAddress;
         public int LocalPort;
         public int OwningProcessId;
+    }
+
+    [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct MibUdp6RowOwnerPid
+    {
+        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 16)]
+        public string ucLocalAddr;
+        public uint dwLocalScopeId;
+        public uint dwLocalPort;
+        public uint dwOwningPid;
+    }
+
+    [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct MibUdp6RowOwnerModule
+    {
+        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 16)]
+        public string LocalAddr;
+        public uint LocalScopeId;
+        public uint LocalPort;
+        public uint OwningPid;
+        public LARGE_INTEGER liCreateTimestamp;
+        public Anony6 Union1;
+        public ulong[] OwningModuleInfo;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -298,6 +453,13 @@ namespace ProcessHacker.Native.Api
     {
         public int NumEntries;
         public MibUdpRowOwnerPid[] Table;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MibUdp6TableOwnerPid
+    {
+        public int NumEntries;
+        public MibUdp6RowOwnerPid[] Table;
     }
 
     [StructLayout(LayoutKind.Sequential)]
