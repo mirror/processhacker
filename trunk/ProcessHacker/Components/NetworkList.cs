@@ -281,7 +281,7 @@ namespace ProcessHacker.Components
             {
                 foreach (ListViewItem item in listNetwork.Items)
                 {
-                    int pid = (int)item.Tag;
+                    int pid = ((NetworkItem)item.Tag).Connection.Pid;
 
                     if (searchPid != 0)
                         if (pid != searchPid)
@@ -308,24 +308,28 @@ namespace ProcessHacker.Components
 
         private void FillNetworkItemAddresses(ListViewItem litem, NetworkItem item)
         {
-            if (item.Connection.Local != null && item.Connection.Local.ToString() != "0.0.0.0:0")
+            if (item.Connection.Local != null && !item.Connection.Local.IsEmpty())
             {
-                if (item.LocalString != null)
+                string addressString = item.Connection.Local.Address.ToString();
+
+                if (item.LocalString != null && item.LocalString != addressString)
                 {
-                    litem.SubItems[1].Text = item.LocalString + " (" + item.Connection.Local.Address.ToString() + ")";
+                    litem.SubItems[1].Text = item.LocalString + " (" + addressString + ")";
                 }
                 else
                 {
-                    litem.SubItems[1].Text = item.Connection.Local.Address.ToString();
+                    litem.SubItems[1].Text = addressString;
                 }
             }
 
-            if (item.Connection.Remote != null && item.Connection.Remote.ToString() != "0.0.0.0:0")
+            if (item.Connection.Remote != null && !item.Connection.Remote.IsEmpty())
             {
-                if (item.RemoteString != null)
-                    litem.SubItems[3].Text = item.RemoteString + " (" + item.Connection.Remote.Address.ToString() + ")";
+                string addressString = item.Connection.Remote.Address.ToString();
+
+                if (item.RemoteString != null && item.RemoteString != addressString)
+                    litem.SubItems[3].Text = item.RemoteString + " (" + addressString + ")";
                 else
-                    litem.SubItems[3].Text = item.Connection.Remote.Address.ToString();
+                    litem.SubItems[3].Text = addressString;
             }
         }
 
@@ -334,7 +338,7 @@ namespace ProcessHacker.Components
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, (int)item.Tag > 0 && _runCount > 0);
 
             litem.Name = item.Id;
-            litem.Tag = item.Connection.Pid;
+            litem.Tag = item;
 
             Icon icon = null;
 
@@ -375,7 +379,7 @@ namespace ProcessHacker.Components
                 litem.Text = "Unknown Process (" + item.Connection.Pid.ToString() + ")";
             }
 
-            if (item.Connection.Local != null && item.Connection.Local.ToString() != "0.0.0.0:0")
+            if (item.Connection.Local != null && !item.Connection.Local.IsEmpty())
             {
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Local.ToString()));
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Local.Port.ToString()));
@@ -386,7 +390,7 @@ namespace ProcessHacker.Components
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
             }
 
-            if (item.Connection.Remote != null && item.Connection.Remote.ToString() != "0.0.0.0:0")
+            if (item.Connection.Remote != null && !item.Connection.Remote.IsEmpty())
             {
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Remote.ToString()));
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Remote.Port.ToString()));
@@ -401,18 +405,6 @@ namespace ProcessHacker.Components
 
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Protocol.ToString().ToUpper()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.State != 0 ? item.Connection.State.ToString() : ""));
-
-            //We create a hidden collum containing the IP addresses
-            //Network-tools context menu uses this hidden collum for getting the user-selected IP address for querying
-            if (item.Connection.Remote != null && item.Connection.Remote.Address.ToString() != "0.0.0.0")
-            {
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Remote.Address.ToString()));
-            }
-            else
-            {
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
-            }
-
 
             lock (_needsAdd)
                 _needsAdd.Add(litem);

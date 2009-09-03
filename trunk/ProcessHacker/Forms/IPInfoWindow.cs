@@ -40,30 +40,30 @@ namespace ProcessHacker
 
     public partial class IPInfoWindow : Form
     {
-        private string ipAddress;
-        private IpAction ipAction;
+        private IPAddress _ipAddress;
+        private IpAction _ipAction;
 
-        public IPInfoWindow(string IPAddress, IpAction action)
+        public IPInfoWindow(IPAddress ipAddress, IpAction action)
         {
             InitializeComponent();
             this.AddEscapeToClose();
 
-            ipAddress = IPAddress;
-            ipAction = action;
+            _ipAddress = ipAddress;
+            _ipAction = action;
         }
 
         private void IPInfoWindow_Load(object sender, EventArgs e)
         {
            Thread t = null;
 
-            if (ipAction == IpAction.Whois)
+            if (_ipAction == IpAction.Whois)
             {
                 t = new Thread(new ParameterizedThreadStart(Whois));
-                label1.Text = "Whois Host Infomation for Address: " + ipAddress;
+                label1.Text = "Whois Host Infomation for Address: " + _ipAddress.ToString();
                 label2.Text = "Checking...";
                 listView1.Columns.Add("Results", 410);
             }
-            else if (ipAction == IpAction.Tracert)
+            else if (_ipAction == IpAction.Tracert)
             {
                 ProcessHacker.Common.PhUtils.SetTheme(listView1, "explorer");
                 t = new Thread(new ParameterizedThreadStart(Tracert));
@@ -73,7 +73,7 @@ namespace ProcessHacker
                 listView1.Columns.Add("IP Address", 100);
                 listView1.Columns.Add("Hostname", 200);
             }
-            else if (ipAction == IpAction.Ping)
+            else if (_ipAction == IpAction.Ping)
             {
                 ProcessHacker.Common.PhUtils.SetTheme(listView1, "explorer");
                 t = new Thread(new ParameterizedThreadStart(Ping));
@@ -82,7 +82,7 @@ namespace ProcessHacker
             }
 
             t.IsBackground = true;
-            t.Start(ipAddress);
+            t.Start(_ipAddress);
         }
 
         private void buttonClose_Click(object sender, EventArgs e)
@@ -97,7 +97,7 @@ namespace ProcessHacker
                 PingOptions pingOptions = new PingOptions();
                 PingReply pingReply = null;
 
-                IPAddress ipAddress = IPAddress.Parse(ip.ToString());
+                IPAddress ipAddress = (IPAddress)ip;
                 int numberOfPings = 4;
                 int pingTimeout = 1000;
                 int byteSize = 32;
@@ -156,7 +156,7 @@ namespace ProcessHacker
          
         private void Tracert(object ip)
         {
-            IPAddress ipAddress = IPAddress.Parse(ip.ToString());
+            IPAddress ipAddress = (IPAddress)ip;
 
             using (Ping pingSender = new Ping())
             {
@@ -200,7 +200,7 @@ namespace ProcessHacker
             using (BufferedStream bufferedStreamWhois = new BufferedStream(networkStreamWhois))
             using (StreamWriter streamWriter = new StreamWriter(bufferedStreamWhois))
             {
-                streamWriter.WriteLine(ip);
+                streamWriter.WriteLine(((IPAddress)ip).ToString());
                 streamWriter.Flush();
 
                 StreamReader streamReaderReceive = new StreamReader(bufferedStreamWhois);

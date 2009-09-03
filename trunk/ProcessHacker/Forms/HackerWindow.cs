@@ -661,7 +661,7 @@ namespace ProcessHacker
             if (listNetwork.SelectedItems.Count != 1)
                 return;
 
-            this.SelectProcess((int)listNetwork.SelectedItems[0].Tag);
+            this.SelectProcess(((NetworkItem)listNetwork.SelectedItems[0].Tag).Connection.Pid);
         }
 
         private void whoisNetworkMenuItem_Click(object sender, EventArgs e)
@@ -671,11 +671,11 @@ namespace ProcessHacker
 
             foreach (ListViewItem item in listNetwork.SelectedItems)
             {
-                string SelectedItem = item.SubItems[7].Text; 
+                var remote = ((NetworkItem)item.Tag).Connection.Remote;
 
-                if (SelectedItem.Length > 0)
+                if (remote != null)
                 {
-                    IPInfoWindow iw = new IPInfoWindow(SelectedItem, IpAction.Whois);
+                    IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Whois);
                     iw.ShowDialog(this);
                 }
             }
@@ -688,11 +688,11 @@ namespace ProcessHacker
 
             foreach (ListViewItem item in listNetwork.SelectedItems)
             {
-                string SelectedItem = item.SubItems[7].Text;
+                var remote = ((NetworkItem)item.Tag).Connection.Remote;
 
-                if (SelectedItem.Length > 0)
+                if (remote != null)
                 {
-                    IPInfoWindow iw = new IPInfoWindow(SelectedItem, IpAction.Tracert);
+                    IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Tracert);
                     iw.ShowDialog(this);
                 }
             }
@@ -705,11 +705,11 @@ namespace ProcessHacker
 
             foreach (ListViewItem item in listNetwork.SelectedItems)
             {
-                string SelectedItem = item.SubItems[7].Text;
+                var remote = ((NetworkItem)item.Tag).Connection.Remote;
 
-                if (SelectedItem.Length > 0)
+                if (remote != null)
                 {
-                    IPInfoWindow iw = new IPInfoWindow(SelectedItem, IpAction.Ping);
+                    IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Ping);
                     iw.ShowDialog(this);
                 }
             }

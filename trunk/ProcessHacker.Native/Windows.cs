@@ -315,8 +315,11 @@ namespace ProcessHacker.Native
         public static Dictionary<int, List<NetworkConnection>> GetNetworkConnections()
         {
             var retDict = new Dictionary<int, List<NetworkConnection>>();
-            int length = 0;
+            int length;
 
+            // TCP IPv4
+
+            length = 0;
             Win32.GetExtendedTcpTable(IntPtr.Zero, ref length, false, AiFamily.INet, TcpTableClass.OwnerPidAll, 0);
 
             using (var mem = new MemoryAlloc(length))
@@ -344,6 +347,9 @@ namespace ProcessHacker.Native
                 }
             }
 
+            // UDP IPv4
+
+            length = 0;
             Win32.GetExtendedUdpTable(IntPtr.Zero, ref length, false, AiFamily.INet, UdpTableClass.OwnerPid, 0);
 
             using (var mem = new MemoryAlloc(length))
@@ -365,6 +371,65 @@ namespace ProcessHacker.Native
                         {
                             Protocol = NetworkProtocol.Udp,
                             Local = new IPEndPoint(struc.LocalAddress, ((ushort)struc.LocalPort).Reverse()),
+                            Pid = struc.OwningProcessId
+                        });
+                }
+            }
+
+            // TCP IPv6
+
+            length = 0;
+            Win32.GetExtendedTcpTable(IntPtr.Zero, ref length, false, AiFamily.INet6, TcpTableClass.OwnerPidAll, 0);
+
+            using (var mem = new MemoryAlloc(length))
+            {
+                if (Win32.GetExtendedTcpTable(mem, ref length, false, AiFamily.INet6, TcpTableClass.OwnerPidAll, 0) != 0)
+                    Win32.ThrowLastError();
+
+                int count = mem.ReadInt32(0);
+
+                for (int i = 0; i < count; i++)
+                {
+                    var struc = mem.ReadStruct<MibTcp6RowOwnerPid>(sizeof(int), i);
+
+                    if (!retDict.ContainsKey(struc.OwningProcessId))
+                        retDict.Add(struc.OwningProcessId, new List<NetworkConnection>());
+
+                    retDict[struc.OwningProcessId].Add(new NetworkConnection()
+                    {
+                        Protocol = NetworkProtocol.Tcp6,
+                        Local = new IPEndPoint(new IPAddress(struc.LocalAddress, struc.LocalScopeId), ((ushort)struc.LocalPort).Reverse()),
+                        Remote = new IPEndPoint(new IPAddress(struc.RemoteAddress, struc.RemoteScopeId), ((ushort)struc.RemotePort).Reverse()),
+                        State = struc.State,
+                        Pid = struc.OwningProcessId
+                    });
+                }
+            }
+
+            // UDP IPv6
+
+            length = 0;
+            Win32.GetExtendedUdpTable(IntPtr.Zero, ref length, false, AiFamily.INet6, UdpTableClass.OwnerPid, 0);
+
+            using (var mem = new MemoryAlloc(length))
+            {
+                if (Win32.GetExtendedUdpTable(mem, ref length, false, AiFamily.INet6, UdpTableClass.OwnerPid, 0) != 0)
+                    Win32.ThrowLastError();
+
+                int count = mem.ReadInt32(0);
+
+                for (int i = 0; i < count; i++)
+                {
+                    var struc = mem.ReadStruct<MibUdp6RowOwnerPid>(sizeof(int), i);
+
+                    if (!retDict.ContainsKey(struc.OwningProcessId))
+                        retDict.Add(struc.OwningProcessId, new List<NetworkConnection>());
+
+                    retDict[struc.OwningProcessId].Add(
+                        new NetworkConnection()
+                        {
+                            Protocol = NetworkProtocol.Udp6,
+                            Local = new IPEndPoint(new IPAddress(struc.LocalAddress, struc.LocalScopeId), ((ushort)struc.LocalPort).Reverse()),
                             Pid = struc.OwningProcessId
                         });
                 }
@@ -767,7 +832,10 @@ namespace ProcessHacker.Native
 
     public enum NetworkProtocol
     {
-        Tcp, Udp
+        Tcp,
+        Udp,
+        Tcp6,
+        Udp6
     }
 
     public struct ObjectInformation

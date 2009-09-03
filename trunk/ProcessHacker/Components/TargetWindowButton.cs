@@ -49,24 +49,6 @@ namespace ProcessHacker.Components
             _dummy.MouseUp += dummy_MouseUp;
         }
 
-        ~TargetWindowButton()
-        {
-            _dummy.MouseMove -= dummy_MouseMove;
-            _dummy.MouseUp -= dummy_MouseUp;
-
-            if (_dummy != null)
-            {
-                _dummy.Dispose();
-                _dummy = null;
-            }
-
-            if (_parent != null)
-            {
-                _parent.Dispose();
-                _parent = null;
-            }
-        }
-
         private Form FindParentForm(Control c)
         {
             if (c == null)

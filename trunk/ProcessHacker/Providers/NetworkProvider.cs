@@ -60,8 +60,7 @@ namespace ProcessHacker
         }
 
         private MessageQueue _messageQueue = new MessageQueue();
-        private Dictionary<long, string> _resolveCache =
-            new Dictionary<long, string>();
+        private Dictionary<IPAddress, string> _resolveCache = new Dictionary<IPAddress, string>();
 
         public NetworkProvider()
             : base()
@@ -94,7 +93,7 @@ namespace ProcessHacker
             Dictionary<string, NetworkItem> newDict =
                 new Dictionary<string, NetworkItem>(this.Dictionary);
 
-            // flattens list, assigns IDs and counts
+            // Flattens list, assigns IDs and counts
             foreach (var list in networkDict.Values)
             {
                 foreach (var connection in list)
@@ -114,7 +113,7 @@ namespace ProcessHacker
                 }
             }
 
-            // merges counts into IDs
+            // Merges counts into IDs
             foreach (string s in preKeyDict.Keys)
             {
                 var connection = preKeyDict[s].Value;
@@ -146,15 +145,15 @@ namespace ProcessHacker
                     // Resolve the IP addresses.
                     if (connection.Connection.Local != null)
                     {
-                        if (connection.Connection.Local.Address.ToString() != "0.0.0.0")
+                        if (!connection.Connection.Local.Address.GetAddressBytes().IsEmpty())
                         {
                             // See if IP address is in the cache.
                             lock (_resolveCache)
                             {
-                                if (_resolveCache.ContainsKey(connection.Connection.Local.Address.Address))
+                                if (_resolveCache.ContainsKey(connection.Connection.Local.Address))
                                 {
                                     // We have the resolved address.
-                                    connection.LocalString = _resolveCache[connection.Connection.Local.Address.Address];
+                                    connection.LocalString = _resolveCache[connection.Connection.Local.Address];
                                 }
                                 else
                                 {
@@ -173,14 +172,14 @@ namespace ProcessHacker
 
                     if (connection.Connection.Remote != null)
                     {
-                        if (connection.Connection.Remote.Address.ToString() != "0.0.0.0")
+                        if (!connection.Connection.Remote.Address.GetAddressBytes().IsEmpty())
                         {
                             lock (_resolveCache)
                             {
-                                if (_resolveCache.ContainsKey(connection.Connection.Remote.Address.Address))
+                                if (_resolveCache.ContainsKey(connection.Connection.Remote.Address))
                                 {
                                     // We have the resolved address.
-                                    connection.RemoteString = _resolveCache[connection.Connection.Remote.Address.Address];
+                                    connection.RemoteString = _resolveCache[connection.Connection.Remote.Address];
                                 }
                                 else
                                 {
@@ -228,9 +227,9 @@ namespace ProcessHacker
             // Last minute check of the cache.
             lock (_resolveCache)
             {
-                if (_resolveCache.ContainsKey(address.Address))
+                if (_resolveCache.ContainsKey(address))
                 {
-                    hostName = _resolveCache[address.Address];
+                    hostName = _resolveCache[address];
                     inCache = true;
                 }
             }
@@ -253,8 +252,10 @@ namespace ProcessHacker
                 {
                     // Add the name if not present already.
                     if (!string.IsNullOrEmpty(hostName))
-                        if (!_resolveCache.ContainsKey(address.Address))
-                            _resolveCache.Add(address.Address, hostName);
+                    {
+                        if (!_resolveCache.ContainsKey(address))
+                            _resolveCache.Add(address, hostName);
+                    }
                 }
             }
 

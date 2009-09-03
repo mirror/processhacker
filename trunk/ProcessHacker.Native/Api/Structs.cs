@@ -277,7 +277,7 @@ namespace ProcessHacker.Native.Api
         public uint RemoteScopeId;
         public int RemotePort;
         public MibTcpState State;
-        public int OwningPid;
+        public int OwningProcessId;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -372,7 +372,7 @@ namespace ProcessHacker.Native.Api
         public byte[] LocalAddress;
         public uint LocalScopeId;
         public int LocalPort;
-        public int OwningPid;
+        public int OwningProcessId;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -382,7 +382,7 @@ namespace ProcessHacker.Native.Api
         public byte[] LocalAddress;
         public uint LocalScopeId;
         public int LocalPort;
-        public int OwningPid;
+        public int OwningProcessId;
         public long CreateTimestamp;
         public int Flags;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]

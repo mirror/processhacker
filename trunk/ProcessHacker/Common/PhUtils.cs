@@ -23,13 +23,14 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Net;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
+using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.UI;
-using ProcessHacker.Components;
 
 namespace ProcessHacker.Common
 {
@@ -176,6 +177,11 @@ namespace ProcessHacker.Common
             }
 
             return integrity;
+        }
+
+        public static bool IsEmpty(this IPEndPoint endPoint)
+        {
+            return endPoint.Address.GetAddressBytes().IsEmpty() && endPoint.Port == 0;
         }
 
         /// <summary>

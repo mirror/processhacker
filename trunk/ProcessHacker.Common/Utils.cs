@@ -762,20 +762,15 @@ namespace ProcessHacker.Common
         /// </summary>
         /// <param name="array">The array to search.</param>
         /// <returns>True if the array is empty; otherwise false.</returns>
-        public static bool IsEmpty(byte[] array)
+        public static bool IsEmpty(this byte[] array)
         {
-            bool empty = true;
-
             foreach (byte b in array)
             {
                 if (b != 0)
-                {
-                    empty = false;
-                    break;
-                }
+                    return false;
             }
 
-            return empty;
+            return true;
         }
 
         /// <summary>
