@@ -28,6 +28,8 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using System.Windows.Forms;
+using ProcessHacker.Common;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
@@ -50,35 +52,40 @@ namespace ProcessHacker
 
             _ipAddress = ipAddress;
             _ipAction = action;
+
+            listInfo.AddShortcuts();
+            listInfo.ContextMenu = listInfo.GetCopyMenu();
+            listInfo.SetTheme("explorer");
+            listInfo.SetDoubleBuffered(true);
         }
 
         private void IPInfoWindow_Load(object sender, EventArgs e)
         {
-           Thread t = null;
+            Thread t = null;
 
             if (_ipAction == IpAction.Whois)
             {
                 t = new Thread(new ParameterizedThreadStart(Whois));
-                label1.Text = "Whois Host Infomation for Address: " + _ipAddress.ToString();
-                label2.Text = "Checking...";
-                listView1.Columns.Add("Results", 410);
+                labelInfo.Text = "Whois host infomation for address: " + _ipAddress.ToString();
+                labelStatus.Text = "Checking...";
+                listInfo.Columns.Add("Results", 410);
             }
             else if (_ipAction == IpAction.Tracert)
             {
-                ProcessHacker.Common.PhUtils.SetTheme(listView1, "explorer");
+                ProcessHacker.Common.PhUtils.SetTheme(listInfo, "explorer");
                 t = new Thread(new ParameterizedThreadStart(Tracert));
-                label2.Text = "Tracing route...";
-                listView1.Columns.Add("Count", 30);
-                listView1.Columns.Add("Reply Time", 60);
-                listView1.Columns.Add("IP Address", 100);
-                listView1.Columns.Add("Hostname", 200);
+                labelStatus.Text = "Tracing route...";
+                listInfo.Columns.Add("Count", 30);
+                listInfo.Columns.Add("Reply Time", 60);
+                listInfo.Columns.Add("IP Address", 100);
+                listInfo.Columns.Add("Hostname", 200);
             }
             else if (_ipAction == IpAction.Ping)
             {
-                ProcessHacker.Common.PhUtils.SetTheme(listView1, "explorer");
+                ProcessHacker.Common.PhUtils.SetTheme(listInfo, "explorer");
                 t = new Thread(new ParameterizedThreadStart(Ping));
-                label2.Text = "Pinging...";
-                listView1.Columns.Add("Results", 400);
+                labelStatus.Text = "Pinging...";
+                listInfo.Columns.Add("Results", 400);
             }
 
             t.IsBackground = true;
@@ -181,13 +188,42 @@ namespace ProcessHacker
 
                     WriteResult(string.Format("{0}" , i), string.Format("{0} ms",  stopWatch.ElapsedMilliseconds), string.Format("{0}", pingReply.Address));
 
+                    WorkQueue.GlobalQueueWorkItemTag(new Action<IPAddress, int>((address, hopNumber) =>
+                        {
+                            string hostName;
+
+                            try
+                            {
+                                hostName = Dns.GetHostEntry(address).HostName;
+                            }
+                            catch
+                            {
+                                hostName = "";
+                            }
+
+                            if (this.IsHandleCreated)
+                            {
+                                this.BeginInvoke(new MethodInvoker(() =>
+                                    {
+                                        foreach (ListViewItem item in listInfo.Items)
+                                        {
+                                            if (item.Text == hopNumber.ToString())
+                                            {
+                                                item.SubItems[3].Text = hostName;
+                                                break;
+                                            }
+                                        }
+                                    }));
+                            }
+                        }), "ipinfowindow-resolveaddress", pingReply.Address, i);
+
                     if (pingReply.Status == IPStatus.Success)
                     {
                         WriteStatus("Trace complete.", false);
                         break;
                     }
 
-                    pingOptions.Ttl ++;
+                    pingOptions.Ttl++;
                 }
             }
             WriteStatus("Trace complete.", false);
@@ -195,26 +231,33 @@ namespace ProcessHacker
 
         private void Whois(object ip)
         {
-            using (TcpClient tcpClinetWhois = new TcpClient("wq.apnic.net", 43))
-            using (NetworkStream networkStreamWhois = tcpClinetWhois.GetStream())
-            using (BufferedStream bufferedStreamWhois = new BufferedStream(networkStreamWhois))
-            using (StreamWriter streamWriter = new StreamWriter(bufferedStreamWhois))
+            try
             {
-                streamWriter.WriteLine(((IPAddress)ip).ToString());
-                streamWriter.Flush();
-
-                StreamReader streamReaderReceive = new StreamReader(bufferedStreamWhois);
-
-                while (!streamReaderReceive.EndOfStream)
+                using (TcpClient tcpClinetWhois = new TcpClient("wq.apnic.net", 43))
+                using (NetworkStream networkStreamWhois = tcpClinetWhois.GetStream())
+                using (BufferedStream bufferedStreamWhois = new BufferedStream(networkStreamWhois))
+                using (StreamWriter streamWriter = new StreamWriter(bufferedStreamWhois))
                 {
-                    string data = streamReaderReceive.ReadLine();
-                    if (!data.Contains("#") | !data.Contains("?"))
+                    streamWriter.WriteLine(((IPAddress)ip).ToString());
+                    streamWriter.Flush();
+
+                    StreamReader streamReaderReceive = new StreamReader(bufferedStreamWhois);
+
+                    while (!streamReaderReceive.EndOfStream)
                     {
-                        WriteResult(data, "", "");
+                        string data = streamReaderReceive.ReadLine();
+                        if (!data.Contains("#") | !data.Contains("?"))
+                        {
+                            WriteResult(data, "", "");
+                        }
                     }
                 }
+                WriteStatus("Whois complete.", false);
             }
-            WriteStatus("Whois complete.", false);
+            catch (Exception ex)
+            {
+                WriteStatus("Whois error: " + ex.Message, false);
+            }
         }
 
         private void WriteStatus(string info, bool title)
@@ -230,11 +273,11 @@ namespace ProcessHacker
 
             if (title)
             {
-                label1.Text = info;
+                labelInfo.Text = info;
             }
             else
             {
-                label2.Text = info;
+                labelStatus.Text = info;
             }
         }
 
@@ -252,14 +295,9 @@ namespace ProcessHacker
             ListViewItem litem = new ListViewItem(hop);
             litem.SubItems.Add(time);
             litem.SubItems.Add(ip);
-          
-            if (ip != string.Empty)
-            {
-                //litem.SubItems.Add(Dns.GetHostEntry(ip).HostName);
-            }
+            litem.SubItems.Add("");
 
-            listView1.Items.Add(litem);
+            listInfo.Items.Add(litem);
         }
-
     }
 }

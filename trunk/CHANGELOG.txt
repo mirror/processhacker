@@ -5,6 +5,7 @@ Process Hacker
    * #2817429 - "Add Port and IP Address columns to Network tab"
    * #2845829 - "System uptime"
    * Update system
+   * Network tools: ping, traceroute and whois
    * Displays IPv6 network connections
    * Two new terminator tests: W1 (send WM_DESTROY messages) and 
      W2 (send WM_QUIT messages)
