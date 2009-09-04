@@ -27,7 +27,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
-using ProcessHacker;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
@@ -224,6 +223,10 @@ namespace ProcessHacker
             // Allow the user to install in both cases, just in case our supplied hash is wrong.
             buttonInstall.Enabled = true;
             buttonStop.Text = "Close";
+
+            // Is elevation needed?
+            if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited)
+                buttonInstall.SetShieldIcon(true);
         }
 
         private void buttonInstall_Click(object sender, EventArgs e)
