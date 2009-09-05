@@ -44,7 +44,7 @@ namespace ProcessHacker.Common.Threading
 
         public bool WaitRead(int timeout)
         {
-            return _readSemaphore.WaitOne(timeout);
+            return _readSemaphore.WaitOne(timeout, false);
         }
 
         public void WaitWrite()
@@ -54,7 +54,7 @@ namespace ProcessHacker.Common.Threading
 
         public bool WaitWrite(int timeout)
         {
-            return _writeSemaphore.WaitOne(timeout);
+            return _writeSemaphore.WaitOne(timeout, false);
         }
     }
 }

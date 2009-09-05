@@ -42,27 +42,27 @@ namespace ProcessHacker.Common.Threading
         {
             throw new NotImplementedException();
 
-            FastQueueNode<T> tail;
-            FastQueueNode<T> tailNext;
-            FastQueueNode<T> node;
+            //FastQueueNode<T> tail;
+            //FastQueueNode<T> tailNext;
+            //FastQueueNode<T> node;
 
-            // Create a new queue node.
-            node = new FastQueueNode<T>();
-            node.Value = value;
-            node.Next = null;
+            //// Create a new queue node.
+            //node = new FastQueueNode<T>();
+            //node.Value = value;
+            //node.Next = null;
 
-            // Add the node to the tail of the list, atomically. 
-            // We have to set the next pointer of the current tail node 
-            // and then replace the tail pointer with our new node.
-            while (true)
-            {
-                tailNext = _tail.Next;
+            //// Add the node to the tail of the list, atomically. 
+            //// We have to set the next pointer of the current tail node 
+            //// and then replace the tail pointer with our new node.
+            //while (true)
+            //{
+            //    tailNext = _tail.Next;
 
-                while (true)
-                {
-                    tail = _tail;
-                }
-            }
+            //    while (true)
+            //    {
+            //        tail = _tail;
+            //    }
+            //}
         }
 
         public IEnumerator<T> GetEnumerator()
