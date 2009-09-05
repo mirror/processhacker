@@ -124,7 +124,15 @@ namespace ProcessHacker
                 {
                     sentPings++;
 
-                    pingReply = pingSender.Send(ipAddress, pingTimeout, buffer, pingOptions);
+                    try
+                    {
+                        pingReply = pingSender.Send(ipAddress, pingTimeout, buffer, pingOptions);
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteStatus("Ping error: " + ex.Message, false);
+                        break;
+                    }
 
                     if (pingReply.Status == IPStatus.Success)
                     {
@@ -182,9 +190,21 @@ namespace ProcessHacker
                     stopWatch.Reset();
                     stopWatch.Start();
 
-                    PingReply pingReply = pingSender.Send(ipAddress, 5000, new byte[32], pingOptions);
+                    PingReply pingReply;
 
-                    stopWatch.Stop();
+                    try
+                    {
+                        pingReply = pingSender.Send(ipAddress, 5000, new byte[32], pingOptions);
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteStatus("Trace error: " + ex.Message, false);
+                        break;
+                    }
+                    finally
+                    {
+                        stopWatch.Stop();
+                    }
 
                     WriteResult(string.Format("{0}" , i), string.Format("{0} ms",  stopWatch.ElapsedMilliseconds), string.Format("{0}", pingReply.Address));
 
