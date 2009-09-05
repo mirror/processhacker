@@ -110,7 +110,10 @@ namespace Aga.Controls.Tree
 
             Rectangle focusRect = new Rectangle(OffsetX, rowRect.Y, ClientRectangle.Width, rowRect.Height);
 
-            e.Graphics.FillRectangle(new SolidBrush(node.BackColor), focusRect);
+            if (!FullRowSelect || (FullRowSelect &&
+                context.DrawSelection != DrawSelectionMode.Active && 
+                context.DrawSelection != DrawSelectionMode.Inactive))
+                e.Graphics.FillRectangle(new SolidBrush(node.BackColor), focusRect);
 
             if (FullRowSelect)
             {
@@ -254,6 +257,5 @@ namespace Aga.Controls.Tree
 
 			gr.ResetClip();
 		}
-
 	}
 }

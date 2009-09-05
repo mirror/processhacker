@@ -77,6 +77,7 @@
     <Compile Include="Threading\FastStack.cs" />
     <Compile Include="Threading\WaitableQueue.cs" />
     <Compile Include="Tokenizer.cs" />
+    <Compile Include="Ui\ColumnHeaderExtensions.cs" />
     <Compile Include="Ui\SortedListViewComparer.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

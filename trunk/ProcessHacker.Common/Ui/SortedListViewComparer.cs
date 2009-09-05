@@ -102,6 +102,7 @@ namespace ProcessHacker.Common.Ui
             _sortColumn = 0;
             _sortOrder = SortOrder.Ascending;
             _comparer = new DefaultComparer(this);
+            this.SetSortIcon();
         }
 
         /// <summary>
@@ -167,7 +168,11 @@ namespace ProcessHacker.Common.Ui
         public int SortColumn
         {
             get { return _sortColumn; }
-            set { _sortColumn = value; }
+            set
+            {
+                _sortColumn = value;
+                this.SetSortIcon();
+            }
         }
 
         /// <summary>
@@ -176,7 +181,11 @@ namespace ProcessHacker.Common.Ui
         public SortOrder SortOrder
         {
             get { return _sortOrder; }
-            set { _sortOrder = value; }
+            set
+            {
+                _sortOrder = value;
+                this.SetSortIcon();
+            }
         }
 
         /// <summary>
@@ -216,8 +225,15 @@ namespace ProcessHacker.Common.Ui
                 _sortOrder = SortOrder.Ascending;
             }
 
+            this.SetSortIcon();
+
             if (!_virtualMode)
                 _list.Sort();
+        }
+
+        private void SetSortIcon()
+        {
+            _list.Columns[_sortColumn].SetSortIcon(_sortOrder);
         }
 
         private ListViewItem GetItem(int index)
