@@ -111,7 +111,7 @@ namespace ProcessHacker
             }
         }
 
-        public ProcessNode Parent
+        public new ProcessNode Parent
         {
             get { return _parent; }
             set { _parent = value; }

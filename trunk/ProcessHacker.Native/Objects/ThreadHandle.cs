@@ -1037,6 +1037,11 @@ namespace ProcessHacker.Native.Objects
         /// Walks the call stack for the thread.
         /// </summary>
         /// <param name="walkStackCallback">A callback to execute.</param>
+        /// <param name="architecture">
+        /// The type of stack walk. On 32-bit systems, this value is ignored. 
+        /// On 64-bit systems, this value can be set to I386 to walk the 
+        /// 32-bit stack.
+        /// </param>
         public void WalkStack(WalkStackDelegate walkStackCallback, OSArch architecture)
         {
             if (KProcessHacker.Instance != null)

@@ -65,7 +65,6 @@ namespace ProcessHacker.Native
         private static int _pageSize = 0;
         private static IntPtr _kernelBase = IntPtr.Zero;
         private static string _kernelFileName = null;
-        private static KernelModule _kernelModule;
 
         /// <summary>
         /// Gets the number of active processors.
