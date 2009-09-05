@@ -104,16 +104,19 @@ namespace ProcessHacker.Native
 
         public static void RefreshDriveDevicePrefixes()
         {
-            // just create a new dictionary to avoid having to lock the existing one
+            // Just create a new dictionary to avoid having to lock the existing one.
             var newPrefixes = new Dictionary<string, string>();
 
             for (char c = 'A'; c <= 'Z'; c++)
             {
-                StringBuilder target = new StringBuilder(1024);
-
-                if (Win32.QueryDosDevice(c.ToString() + ":", target, 1024) != 0)
+                using (var data = new MemoryAlloc(1024))
                 {
-                    newPrefixes.Add(target.ToString(), c.ToString() + ":");
+                    int length;
+
+                    if ((length = Win32.QueryDosDevice(c.ToString() + ":", data, data.Size / 2)) > 2)
+                    {
+                        newPrefixes.Add(data.ReadUnicodeString(0, length - 2), c.ToString() + ":");
+                    }
                 }
             }
 

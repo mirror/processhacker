@@ -147,7 +147,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int QueryDosDevice(
             [In] [Optional] string DeviceName,
-            [Out] StringBuilder TargetPath,
+            [In] IntPtr TargetPath,
             [In] int MaxLength
             );
 
@@ -2594,7 +2594,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int InternalGetWindowText(
             [In] IntPtr hWnd, 
-            [Out] StringBuilder String, 
+            [In] IntPtr String, 
             [In] int MaxCount
             );
 

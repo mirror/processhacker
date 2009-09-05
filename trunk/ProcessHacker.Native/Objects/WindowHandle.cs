@@ -142,12 +142,14 @@ namespace ProcessHacker.Native.Objects
 
         public string GetText()
         {
-            StringBuilder sb = new StringBuilder(0x1000);
             int retChars;
 
-            retChars = Win32.InternalGetWindowText(this, sb, sb.Capacity - 1);
+            using (var data = new MemoryAlloc(0x200))
+            {
+                retChars = Win32.InternalGetWindowText(this, data, data.Size / 2);
 
-            return sb.ToString(0, retChars);
+                return data.ReadUnicodeString(0, retChars);
+            }
         }
 
         public bool IsHung()
