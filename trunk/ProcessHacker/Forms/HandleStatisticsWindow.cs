@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Ui;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -24,6 +25,7 @@ namespace ProcessHacker
             listTypes.SetTheme("explorer");
             listTypes.AddShortcuts();
             listTypes.ContextMenu = listTypes.GetCopyMenu();
+            listTypes.ListViewItemSorter = new SortedListViewComparer(listTypes);
 
             var typeStats = new Dictionary<string, int>();
 

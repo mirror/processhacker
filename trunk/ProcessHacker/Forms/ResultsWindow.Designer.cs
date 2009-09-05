@@ -73,6 +73,7 @@ namespace ProcessHacker
             this.columnLength,
             this.columnString});
             this.listResults.FullRowSelect = true;
+            this.listResults.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listResults.HideSelection = false;
             this.listResults.Location = new System.Drawing.Point(12, 35);
             this.listResults.Name = "listResults";

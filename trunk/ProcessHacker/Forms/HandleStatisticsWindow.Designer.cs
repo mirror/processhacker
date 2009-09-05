@@ -55,7 +55,6 @@
             this.columnType,
             this.columnNumber});
             this.listTypes.FullRowSelect = true;
-            this.listTypes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listTypes.HideSelection = false;
             this.listTypes.Location = new System.Drawing.Point(12, 12);
             this.listTypes.Name = "listTypes";
