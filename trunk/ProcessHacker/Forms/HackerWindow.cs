@@ -2481,15 +2481,24 @@ namespace ProcessHacker
 
             // If this is the first time Process Hacker is being run, try to 
             // set up symbols automatically to make the user happy :).
-            if (Properties.Settings.Default.FirstRun)
+            // We need the exception handler because some people have their 
+            // ProgramFiles variable set incorrectly.
+            try
             {
-                string defaultDbghelp = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
-                    "\\Debugging Tools for Windows (" +
-                    (IntPtr.Size == 4 ? "x86" : "x64") + 
-                    ")\\dbghelp.dll";
+                if (Properties.Settings.Default.FirstRun)
+                {
+                    string defaultDbghelp = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
+                        "\\Debugging Tools for Windows (" +
+                        (IntPtr.Size == 4 ? "x86" : "x64") +
+                        ")\\dbghelp.dll";
 
-                if (System.IO.File.Exists(defaultDbghelp))
-                    Properties.Settings.Default.DbgHelpPath = defaultDbghelp;
+                    if (System.IO.File.Exists(defaultDbghelp))
+                        Properties.Settings.Default.DbgHelpPath = defaultDbghelp;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
             }
 
             // If we couldn't load dbghelp.dll from the user's location, load the default one 
