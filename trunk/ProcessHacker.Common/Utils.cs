@@ -231,6 +231,36 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Performs an action on a control after its handle has been created. 
+        /// If the control's handle has already been created, the action is 
+        /// executed immediately.
+        /// </summary>
+        /// <param name="control">The control is execute the action on.</param>
+        /// <param name="action">The action to execute.</param>
+        public static void DoDelayed(this Control control, Action<Control> action)
+        {
+            if (control.IsHandleCreated)
+            {
+                action(control);
+            }
+            else
+            {
+                LayoutEventHandler handler = null;
+
+                handler = (sender, e) =>
+                {
+                    if (control.IsHandleCreated)
+                    {
+                        control.Layout -= handler;
+                        action(control);
+                    }
+                };
+
+                control.Layout += handler;
+            }
+        }
+
+        /// <summary>
         /// Duplicates the specified array.
         /// </summary>
         /// <typeparam name="T">The type of array to duplicate.</typeparam>

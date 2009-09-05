@@ -233,7 +233,10 @@ namespace ProcessHacker.Common.Ui
 
         private void SetSortIcon()
         {
-            _list.Columns[_sortColumn].SetSortIcon(_sortOrder);
+            // Avoid forcing handle creation before all other initialization 
+            // has finished. This is done by handling the Layout event and 
+            // performing the icon setting there.
+            _list.DoDelayed((control) => _list.Columns[_sortColumn].SetSortIcon(_sortOrder));
         }
 
         private ListViewItem GetItem(int index)

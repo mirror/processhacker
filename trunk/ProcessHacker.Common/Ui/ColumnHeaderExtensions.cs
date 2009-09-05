@@ -40,16 +40,16 @@ namespace ProcessHacker.Common.Ui
         public static void SetSortIcon(this ColumnHeader column, SortOrder order)
         {
             ListView listView = column.ListView;
-            IntPtr ColumnHeader = SendMessage(listView.Handle, LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero);
+            IntPtr columnHeader = SendMessage(listView.Handle, LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero);
 
-            for (int ColumnNumber = 0; ColumnNumber <= listView.Columns.Count - 1; ColumnNumber++)
+            for (int i = 0; i <= listView.Columns.Count - 1; i++)
             {
-                IntPtr ColumnPtr = new IntPtr(ColumnNumber);
+                IntPtr ColumnPtr = new IntPtr(i);
                 LVCOLUMN lvColumn = new LVCOLUMN();
                 lvColumn.mask = HDI_FORMAT;
-                SendMessage(ColumnHeader, HDM_GETITEM, ColumnPtr, ref lvColumn);
+                SendMessage(columnHeader, HDM_GETITEM, ColumnPtr, ref lvColumn);
 
-                if (!(order == SortOrder.None) && ColumnNumber == column.Index)
+                if (!(order == SortOrder.None) && i == column.Index)
                 {
                     switch (order)
                     {
@@ -68,7 +68,7 @@ namespace ProcessHacker.Common.Ui
                     lvColumn.fmt &= ~HDF_SORTDOWN & ~HDF_SORTUP;
                 }
 
-                SendMessage(ColumnHeader, HDM_SETITEM, ColumnPtr, ref lvColumn);
+                SendMessage(columnHeader, HDM_SETITEM, ColumnPtr, ref lvColumn);
             }
         }
     }
