@@ -40,10 +40,19 @@ namespace ProcessHacker
 
         public string GetToolTip(TreeNodeAdv node, Aga.Controls.Tree.NodeControls.NodeControl nodeControl)
         {
+            var pNode = _tree.FindNode(node);
+
+            // Use the process node's tooltip mechanism to allow caching.
+            if (pNode != null)
+                return pNode.GetTooltipText(this);
+            else
+                return "";
+        }
+
+        public string GetToolTip(ProcessNode pNode)
+        {
             try
             {
-                ProcessNode pNode = _tree.FindNode(node);
-
                 string cmdText = (pNode.ProcessItem.CmdLine != null ?
                         (Utils.CreateEllipsis(pNode.ProcessItem.CmdLine.Replace("\0", ""), 100) + "\n") : "");
 

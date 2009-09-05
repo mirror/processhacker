@@ -42,6 +42,9 @@ namespace ProcessHacker
         private bool _wasNoIcon = false;
         private Bitmap _icon;
 
+        private string _tooltipText;
+        private int _lastTooltipTickCount = 0;
+
         public ProcessNode(ProcessItem pitem)
         {
             _pitem = pitem;
@@ -125,6 +128,19 @@ namespace ProcessHacker
         public TreePath TreePath
         {
             get { return _treePath; }
+        }
+
+        public string GetTooltipText(ProcessToolTipProvider provider)
+        {
+            int tickCount = Environment.TickCount;
+
+            if (tickCount - _lastTooltipTickCount >= Settings.RefreshInterval)
+            {
+                _tooltipText = provider.GetToolTip(this);
+                _lastTooltipTickCount = tickCount;
+            }
+
+            return _tooltipText;
         }
 
         public TreePath RefreshTreePath()

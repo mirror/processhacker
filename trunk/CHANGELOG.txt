@@ -11,6 +11,7 @@ Process Hacker
      W2 (send WM_QUIT messages)
    * Elevation prompt when attempting to view process properties
    * All list views now have sort arrows
+   * Network list now displays process tooltips
    * Decreased memory and CPU usage
  * FIXED:
    * #2820170 - "System.ArgumentOutOfRangeException in network list"

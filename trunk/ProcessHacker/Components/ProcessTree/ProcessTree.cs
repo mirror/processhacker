@@ -35,6 +35,7 @@ namespace ProcessHacker
     {
         private ProcessSystemProvider _provider;
         private ProcessTreeModel _treeModel;
+        private ProcessToolTipProvider _tooltipProvider;
         private int _runCount = 0;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
@@ -75,7 +76,7 @@ namespace ProcessHacker
             treeProcesses.MouseUp += new MouseEventHandler(treeProcesses_MouseUp);
             treeProcesses.DoubleClick += new EventHandler(treeProcesses_DoubleClick);
 
-            nodeName.ToolTipProvider = new ProcessToolTipProvider(this);
+            nodeName.ToolTipProvider = _tooltipProvider = new ProcessToolTipProvider(this);
 
             // make it draw when we want it to draw :)
             treeProcesses.BeginUpdate();
@@ -216,6 +217,11 @@ namespace ProcessHacker
                         //}));
                 }
             }
+        }
+
+        public ProcessToolTipProvider TooltipProvider
+        {
+            get { return _tooltipProvider; }
         }
 
         #endregion

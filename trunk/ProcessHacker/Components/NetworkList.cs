@@ -41,6 +41,7 @@ namespace ProcessHacker.Components
         private bool _needsImageKeyReset = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
+        public new event MouseEventHandler MouseMove;
         public new event MouseEventHandler MouseUp;
         public new event EventHandler DoubleClick;
         public event EventHandler SelectedIndexChanged;
@@ -54,6 +55,7 @@ namespace ProcessHacker.Components
             listNetwork.ListViewItemSorter = new SortedListViewComparer(listNetwork);
             listNetwork.KeyDown += new KeyEventHandler(NetworkList_KeyDown);
             listNetwork.MouseDown += new MouseEventHandler(listNetwork_MouseDown);
+            listNetwork.MouseMove += new MouseEventHandler(listNetwork_MouseMove);
             listNetwork.MouseUp += new MouseEventHandler(listNetwork_MouseUp);
             listNetwork.DoubleClick += new EventHandler(listNetwork_DoubleClick);
             listNetwork.SelectedIndexChanged += new System.EventHandler(listNetwork_SelectedIndexChanged);
@@ -75,6 +77,23 @@ namespace ProcessHacker.Components
         {
             if (this.MouseDown != null)
                 this.MouseDown(sender, e);
+        }
+
+        private void listNetwork_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (this.MouseMove != null)
+                this.MouseMove(sender, e);
+
+            ListViewItem litem = listNetwork.GetItemAt(e.X, e.Y);
+
+            if (litem != null)
+            {
+                NetworkItem item = (NetworkItem)litem.Tag;
+                var tree = Program.HackerWindow.ProcessTree;
+
+                if (tree.Model.Nodes.ContainsKey(item.Connection.Pid))
+                    litem.ToolTipText = tree.Model.Nodes[item.Connection.Pid].GetTooltipText(tree.TooltipProvider);
+            }
         }
 
         private void listNetwork_SelectedIndexChanged(object sender, System.EventArgs e)
