@@ -58,8 +58,12 @@ namespace ProcessHacker.Native
         public Section(string name, FileHandle fileHandle, bool image, MemoryProtection protection)
         {
             _originalProtection = protection;
+
             this.Handle = SectionHandle.Create(
                 SectionAccess.All,
+                name,
+                ObjectFlags.OpenIf,
+                null,
                 fileHandle.GetSize(),
                 image ? SectionAttributes.Image : SectionAttributes.Commit,
                 protection,
@@ -93,11 +97,16 @@ namespace ProcessHacker.Native
         public Section(string name, long maximumSize, MemoryProtection protection)
         {        
             _originalProtection = protection;
+
             this.Handle = SectionHandle.Create(
                 SectionAccess.All,
+                name,
+                ObjectFlags.OpenIf,
+                null,
                 maximumSize,
                 SectionAttributes.Commit,
-                protection
+                protection,
+                null
                 );
         }
 

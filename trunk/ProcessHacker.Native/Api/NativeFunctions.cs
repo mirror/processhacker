@@ -2546,6 +2546,13 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr Length
             );
 
+        [DllImport("ntdll.dll")]
+        public unsafe static extern void RtlMoveMemory(
+            [In] void* Destination,
+            [In] void* Source,
+            [In] IntPtr Length
+            );
+
         #endregion
 
         #region Message Resources

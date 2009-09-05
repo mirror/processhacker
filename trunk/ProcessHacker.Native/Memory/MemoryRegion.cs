@@ -217,6 +217,7 @@ namespace ProcessHacker.Native
         /// <typeparam name="T">The type of the struct.</typeparam>
         /// <returns>The new struct.</returns>
         public T ReadStruct<T>()
+            where T : struct
         {
             return this.ReadStruct<T>(0);
         }
@@ -229,6 +230,7 @@ namespace ProcessHacker.Native
         /// the size of the struct.</param>
         /// <returns>The new struct.</returns>
         public T ReadStruct<T>(int index)
+            where T : struct
         {
             return this.ReadStruct<T>(0, index);
         }
@@ -242,6 +244,7 @@ namespace ProcessHacker.Native
         /// the size of the struct.</param>
         /// <returns>The new struct.</returns>
         public T ReadStruct<T>(int offset, int index)
+            where T : struct
         {
             return (T)Marshal.PtrToStructure(
                 _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index), typeof(T));
@@ -297,16 +300,19 @@ namespace ProcessHacker.Native
         }
 
         public void WriteStruct<T>(T s)
+            where T : struct
         {
             this.WriteStruct<T>(0, s);
         }
 
         public void WriteStruct<T>(int index, T s)
+            where T : struct
         {
             this.WriteStruct<T>(0, index, s);
         }
 
         public void WriteStruct<T>(int offset, int index, T s)
+            where T : struct
         {
             Marshal.StructureToPtr(s,
                 _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index), false);

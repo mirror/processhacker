@@ -63,6 +63,7 @@
     <Compile Include="Debugging\LockInformation.cs" />
     <Compile Include="Debugging\ModuleInformation.cs" />
     <Compile Include="ILoadedModule.cs" />
+    <Compile Include="Ipc\IpcCircularBuffer.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Lpc\Port.cs" />
     <Compile Include="Lpc\PortMessage.cs" />

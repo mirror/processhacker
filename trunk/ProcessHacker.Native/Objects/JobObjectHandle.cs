@@ -137,6 +137,7 @@ namespace ProcessHacker.Native.Objects
         }
 
         private T QueryStruct<T>(JobObjectInformationClass informationClass)
+            where T : struct
         {
             int retLength;
 

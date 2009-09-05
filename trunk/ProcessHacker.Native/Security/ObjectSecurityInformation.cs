@@ -39,15 +39,17 @@ namespace ProcessHacker.Native.Security
         }
 
         private MemoryAlloc AllocateStruct<T>(T value)
+            where T : struct
         {
             MemoryAlloc alloc = new MemoryAlloc(Marshal.SizeOf(typeof(T)));
 
             alloc.WriteStruct<T>(0, value);
 
             return alloc;
-        }     
+        }
 
         private MemoryAlloc AllocateStructFromPool<T>(T value)
+            where T : struct
         {
             MemoryAlloc m = this.AllocateStruct<T>(value);
             _pool.Add(m);
@@ -55,6 +57,7 @@ namespace ProcessHacker.Native.Security
         }
 
         private MemoryAlloc AllocateStructArray<T>(T[] value)
+            where T : struct
         {
             MemoryAlloc alloc = new MemoryAlloc(Marshal.SizeOf(typeof(T)) * value.Length);
 
@@ -62,9 +65,10 @@ namespace ProcessHacker.Native.Security
                 alloc.WriteStruct<T>(i * Marshal.SizeOf(typeof(T)), value[i]);
 
             return alloc;
-        }  
+        }
 
         private MemoryAlloc AllocateStructArrayFromPool<T>(T[] value)
+            where T : struct
         {
             MemoryAlloc m = this.AllocateStructArray<T>(value);
             _pool.Add(m);
