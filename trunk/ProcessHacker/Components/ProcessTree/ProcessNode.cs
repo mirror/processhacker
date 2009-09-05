@@ -34,7 +34,10 @@ namespace ProcessHacker
 {
     public class ProcessNode : Node, IDisposable
     {
+        private ProcessNode _parent = null;
         private List<ProcessNode> _children = new List<ProcessNode>();
+        private TreePath _treePath = null;
+
         private ProcessItem _pitem;
         private bool _wasNoIcon = false;
         private Bitmap _icon;
@@ -108,9 +111,36 @@ namespace ProcessHacker
             }
         }
 
+        public ProcessNode Parent
+        {
+            get { return _parent; }
+            set { _parent = value; }
+        }
+
         public List<ProcessNode> Children
         {
             get { return _children; }
+        }
+
+        public TreePath TreePath
+        {
+            get { return _treePath; }
+        }
+
+        public TreePath RefreshTreePath()
+        {
+            ProcessNode currentNode = this;
+            Stack<ProcessNode> stack = new Stack<ProcessNode>();
+
+            while (currentNode != null)
+            {
+                stack.Push(currentNode);
+                currentNode = currentNode.Parent;
+            }
+
+            _treePath = new TreePath(stack.ToArray());
+
+            return _treePath;
         }
 
         public ProcessHacker.Components.NodePlotter.PlotterInfo CpuHistory

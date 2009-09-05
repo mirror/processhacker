@@ -949,7 +949,7 @@ namespace ProcessHacker
                         item.ParentPid = processInfo.InheritedFromProcessId;
                         item.HasParent = true;
 
-                        if (!procs.ContainsKey(item.ParentPid))
+                        if (!procs.ContainsKey(item.ParentPid) || item.ParentPid == pid)
                         {
                             item.HasParent = false;
                         }

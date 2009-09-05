@@ -50,10 +50,16 @@ namespace ProcessHacker
         {
             ProcessNode itemNode = new ProcessNode(item);
 
+            // Add the process to the list of all processes.
+            _processes.Add(item.Pid, itemNode);
+
             // Find the process' parent and add the process to it if we found it.
             if (item.HasParent && _processes.ContainsKey(item.ParentPid))
             {
-                _processes[item.ParentPid].Children.Add(itemNode);
+                ProcessNode parent = _processes[item.ParentPid];
+
+                parent.Children.Add(itemNode);
+                itemNode.Parent = parent;
             }
             else
             {
@@ -61,18 +67,27 @@ namespace ProcessHacker
                 _roots.Add(itemNode);
             }
 
-            // Add the process to the list of all processes.
-            _processes.Add(item.Pid, itemNode);
+            itemNode.RefreshTreePath();
 
-            // Find this process' children and add them.  
+            // Find this process' children and fix them up.
+
+            // We need to create a copy of the array because we may need 
+            // to modify the roots list.
             ProcessNode[] roots = _roots.ToArray();
 
             foreach (ProcessNode node in roots)
             {
-                if (node.ProcessItem.HasParent && node.PPid == item.Pid)
+                // Notice that we don't replace a node's parent if it 
+                // already has one. This is to break potential cyclic 
+                // references.
+                if (node.Parent == null && node.ProcessItem.HasParent && node.PPid == item.Pid)
                 {
+                    // Remove the node from the root list and add it to our 
+                    // process' child list.
                     _roots.Remove(node);
                     itemNode.Children.Add(node);
+                    node.Parent = itemNode;
+                    node.RefreshTreePath();
                 }
             }
 
@@ -93,35 +108,31 @@ namespace ProcessHacker
 
         public void Remove(ProcessItem item)
         {
-            ProcessNode targetNode = _processes[item.Pid];
-            ProcessNode[] targetChildren = null;
+            ProcessNode itemNode = _processes[item.Pid];
+            ProcessNode[] itemChildren = null;
 
             // Dispose of the process node we're removing.
-            targetNode.Dispose();
+            itemNode.Dispose();
 
-            // Check if the process is a root.
-            ProcessNode rootNode = _roots.Find(node => node.Pid == item.Pid);
+            itemChildren = itemNode.Children.ToArray();
 
-            if (rootNode != null)
+            // Check if the node has a parent.
+            if (itemNode.Parent == null)
             {
-                // Remove the process from the roots and make its children root nodes.
-                _roots.Remove(rootNode);
-                this.MoveChildrenToRoot(rootNode);
+                if (_roots.Contains(itemNode))
+                {
+                    // Remove the process from the roots and make its children root nodes.
+                    _roots.Remove(itemNode);
+                    this.MoveChildrenToRoot(itemNode);
+                }
             }
             else
             {
-                // The process isn't a root, so we have to search for the process' parent.
-                if (targetNode.ProcessItem.HasParent && _processes.ContainsKey(targetNode.PPid))
+                if (itemNode.Parent.Children.Contains(itemNode))
                 {
-                    ProcessNode parentNode = _processes[targetNode.PPid];
-
-                    if (parentNode != null)
-                    {
-                        // Remove the node from its parent and make its children root nodes.
-                        parentNode.Children.Remove(targetNode);
-                        targetChildren = targetNode.Children.ToArray();
-                        this.MoveChildrenToRoot(targetNode);
-                    }
+                    // Remove the node from its parent and make its children root nodes.
+                    itemNode.Parent.Children.Remove(itemNode);
+                    this.MoveChildrenToRoot(itemNode);
                 }
             }
 
@@ -130,9 +141,9 @@ namespace ProcessHacker
             this.StructureChanged(this, new TreePathEventArgs(new TreePath()));
 
             // Expand the children because TreeViewAdv collapses them by default.
-            if (targetChildren != null)
+            if (itemChildren != null)
             {
-                foreach (ProcessNode n in targetChildren)
+                foreach (ProcessNode n in itemChildren)
                 {
                     try
                     {
@@ -150,44 +161,28 @@ namespace ProcessHacker
 
         public TreePath GetPath(ProcessNode node)
         {
-            if (this.GetSortColumn() != "")
-                return new TreePath(node);
-
             if (node == null)
-            {
                 return TreePath.Empty;
+
+            if (this.GetSortColumn() != "")
+            {
+                return new TreePath(node);
             }
             else
             {
-                ProcessNode currentNode = node;
-                Stack<ProcessNode> stack = new Stack<ProcessNode>();
-
-                while (true)
-                {
-                    stack.Push(currentNode);
-
-                    if (currentNode.ProcessItem.HasParent && _processes.ContainsKey(currentNode.PPid))
-                    {
-                        ProcessNode newNode = _processes[currentNode.PPid];
-
-                        if (newNode == currentNode)
-                            break;
-
-                        currentNode = newNode;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                return new TreePath(stack.ToArray());
+                return node.TreePath;
             }
         }
 
         public void MoveChildrenToRoot(ProcessNode node)
         {
             ProcessNode[] children = node.Children.ToArray();
+
+            foreach (ProcessNode child in children)
+            {
+                child.Parent = null;
+                child.RefreshTreePath();
+            }
 
             _roots.AddRange(children);
         }
