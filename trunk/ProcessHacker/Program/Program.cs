@@ -292,11 +292,17 @@ namespace ProcessHacker
         {
             PhUtils.ShowInformation(
                 "Usage:\n" +
+                "\t-a\tAggressive mode.\n" +
+                "\t-h\tDisplays command line usage information.\n" +
+                "\t-ip pid\tDisplays the main window, then properties for the specified process.\n" +
                 "\t-m\tStarts Process Hacker hidden.\n" +
-                "\t-v\tStarts Process Hacker visible.\n" +
-                "\t-nokph\tDisables KProcessHacker. Use this if you are encountering BSODs.\n" + 
+                "\t-nokph\tDisables KProcessHacker. Use this if you are encountering BSODs.\n" +
                 "\t-o\tShows Options.\n" +
-                "\t-t n\tShows the specified tab. 0 is Processes, 1 is Services and 2 is Network."
+                "\t-pw pid\tDisplays properties for the specified process.\n" +
+                "\t-pt pid\tDisplays properties for the specified process' token.\n" +
+                "\t-t n\tShows the specified tab. 0 is Processes, 1 is Services and 2 is Network.\n" +
+                "\t-v\tStarts Process Hacker visible.\n" +
+                ""
                 );
         }
 

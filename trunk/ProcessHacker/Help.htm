@@ -36,6 +36,34 @@ pre {
     <code>AppData\Local\wj32</code>. On Windows XP, they are stored in 
     <code>Local Settings\Application Data\wj32</code>.</p>
     
+    <h2>Command Line Options</h2>
+    <dl>
+      <dt>-a</dt>
+      <dd>Aggressive mode. Attempts to unhook all system call stubs and hooks certain system calls 
+      to use KProcessHacker.</dd>
+      <dt>-e</dt>
+      <dd>Enables extended command line processing (not documented at the present time).</dd>
+      <dt>-h, -help, -?</dt>
+      <dd>Shows a list of available command line options.</dd>
+      <dt>-ip pid</dt>
+      <dd>Opens process properties for the specified process after all other loading has completed.</dd>
+      <dt>-m</dt>
+      <dd>Starts Process Hacker hidden, regardless of any settings.</dd>
+      <dt>-nokph</dt>
+      <dd>Disables KProcessHacker.</dd>
+      <dt>-o [-hwnd hWnd] [-rect x,y,width,height]</dt>
+      <dd>Opens Process Hacker options without the main window. Note that the width and height parts of 
+      the rectangle parameter are ignored.</dd>
+      <dt>-pw pid</dt>
+      <dd>Opens process properties for the specified process without the main window.</dd>
+      <dt>-pt pid</dt>
+      <dd>Opens token properties for the token of the specified process without the main window.</dd>
+      <dt>-t tab</dt>
+      <dd>Opens the specified tab at startup. Use 0 for Processes, 1 for Services and 2 for Network.</dd>
+      <dt>-v</dt>
+      <dd>Starts Process Hacker visible, regardless of any settings.</dd>
+    </dl>
+    
     <h1 id="options">Options</h1>
     <p>Process Hacker's options are accessible from the <strong>Options</strong> menu item 
     in the <strong>Hacker</strong> menu.</p>
@@ -507,6 +535,103 @@ pre {
       
       <dt>Save...</dt>
       <dd>This allows you to save the search results to a text file.</dd>
+    </dl>
+    
+    <h1 id="glossary">Glossary</h1>
+    <dl>
+      <dt>Affinity</dt>
+      <dd>The set of processors on which a thread or collection of threads (process) is allowed to 
+      execute on.</dd>
+      <dt>Child Process</dt>
+      <dd>A new process started by an existing one.</dd>
+      <dt>Command Line</dt>
+      <dd>A <em>string</em> describing a program to start and any parameters to pass to it. Examples: 
+      <code>C:\Windows\notepad.exe C:\Windows\win.ini</code>, <code>cmd /TF0</code></dd>
+      <dt>Commit</dt>
+      <dd>A committed page or memory region contains actual data. Compare with <em>reserve</em>.</dd>
+      <dt>Context Switch</dt>
+      <dd>The act of switching a processor to run another thread. Since processors can only run one task 
+      at a time, context switching gives the illusion of multi-tasking.</dd>
+      <dt>Data Execution Prevention</dt>
+      <dd>The Windows implementation of NX (No eXecute) technology, designed to prevent the execution of data 
+      regions as code. This can prevent certain types of software attacks.</dd>
+      <dt>Elevation (UAC)</dt>
+      <dd>Under UAC, a process which is elevated has full administrative rights to system resources.</dd>
+      <dt>Environment Variable</dt>
+      <dd>A variable accessible to processes describing the operating system environment. Environment variables 
+      are normally inherited by <em>child processes</em>.</dd>
+      <dt>Handle</dt>
+      <dd>A reference to a shared operating object or resource, e.g. a handle to an event, file or process.</dd>
+      <dt>Heap</dt>
+      <dd>A process-managed structure from which memory can be allocated. Since <em>pages</em> can only be 
+      allocated in large chunks, using a heap will reduce wastage of memory for small allocations.</dd>
+      <dt>Image</dt>
+      <dd>A "package" containing executable code.</dd>
+      <dt>Interrupt</dt>
+      <dd>An event, usually signaled by hardware, that is handled by the operating system through a 
+      <em>interrupt handler</em>.</dd>
+      <dt>Kernel</dt>
+      <dd>A collection of code that manages system-wide resources such as I/O, processes and threads, and 
+      security. System calls are also handled by the kernel.</dd>
+      <dt>Kernel-mode</dt>
+      <dd>A processor mode in which code can access hardware directly and access all memory. For example, when 
+      a <em>system call</em> is made, the processor switches to kernel-mode in order to perform an action on 
+      the requester's behalf. When the system call finishes, it switches back to user-mode and the requester 
+      continues normal execution.</dd>
+      <dt>Kernel-mode thread</dt>
+      <dd>A thread that runs solely in kernel-mode. These are usually worker threads that carry out delayed 
+      operating system tasks. Most kernel-mode threads are contained in the System process, but in some systems 
+      csrss.exe also runs kernel-mode threads.</dd>
+      <dt>LPC</dt>
+      <dd>Local inter-Process Communication (or Local Procedure Call). A Windows NT mechanism which enables 
+      processes to communicate with each other.</dd>
+      <dt>LUID</dt>
+      <dd>Locally Unique IDentifier. A value which is unique on the local system until it is rebooted.</dd>
+      <dt>Module</dt>
+      <dd>An executable image which can be loaded by processes. Through this mechanism, code and resources 
+      may be shared.</dd>
+      <dt>Page</dt>
+      <dd>A block of memory, 4 kB in size on x86 and AMD64 processors.</dd>
+      <dt>PEB</dt>
+      <dd>Process Environment Block. The PEB contains a variety of data used by the process.</dd>
+      <dt>Privilege</dt>
+      <dd>A privilege belonging to a process. It can be enabled or disabled, and certain system calls require 
+      the presence of specific privileges to work.</dd>
+      <dt>Process</dt>
+      <dd>A collection of <em>threads</em> along with virtual memory, <em>handles</em> and other resources.</dd>
+      <dt>Protection (DRM)</dt>
+      <dd>Process and thread protection introduced in Windows Vista, designed to enhance support for digital 
+      restrictions management. Examples of processes protected by this mechanism include System and audiodg.exe.</dd>
+      <dt>Reserve</dt>
+      <dd>A reserved page or memory region does not contain data and has not been allocated storage in physical 
+      memory. Reserving pages is commonly done to ensure a certain amount of contiguous address space is available 
+      without actually allocating storage. Compare with <em>commit</em>.</dd>
+      <dt>Service</dt>
+      <dd>A operating system managed program which runs in the background. They can be in shared processes 
+      (in svchost.exe instances), in separate processes, or drivers loaded into kernel-mode space.</dd>
+      <dt>SID</dt>
+      <dd>Security IDentifier. A unique identifier assigned to security-related objects such as users and groups.</dd>
+      <dt>String</dt>
+      <dd>A sequence of characters - text.</dd>
+      <dt>System Call</dt>
+      <dd>A request that is made by a thread to the <em>kernel</em> to perform a task on the thread's behalf. This done 
+      because most threads run in user-mode and are unable to access hardware directly. See <em>kernel-mode</em>.</dd>
+      <dt>System Thread</dt>
+      <dd>See <em>kernel-mode thread</em>.</dd>
+      <dt>Thread</dt>
+      <dd>A unit of execution belonging to a process, running code concurrently. Most threads run in <em>user-mode</em>, 
+      but some are <em>kernel-mode threads</em>.</dd>
+      <dt>User Account Control</dt>
+      <dd>Refers to restrictions on normal processes preventing them from modifying system-wide files and settings. 
+      Processes which are <em>elevated</em> have full administrative access to system resources.</dd>
+      <dt>Virtualization (UAC)</dt>
+      <dd>A technology which redirects writes to the file system and registry for processes which are not 
+      <em>elevated</em>.</dd>
+      <dt>Working set</dt>
+      <dd>The collection of <em>pages</em> recently referenced by a process. These pages are in physical 
+      memory, while other pages may be in the pagefile.</dd>
+      <dt>WOW64</dt>
+      <dd>A technology which enables 32-bit programs to run on 64-bit Windows systems.</dd>
     </dl>
     
     <h1 id="copyright">Copyright Information</h1>

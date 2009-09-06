@@ -170,7 +170,7 @@ namespace ProcessHacker
 
         private void FixTabs()
         {
-            if (_pid < 0)
+            if (_pid <= 0)
             {
                 // this "process" is probably DPCs or Interrupts, so we won't try to load any more information
                 buttonEditDEP.Enabled = false;
@@ -590,6 +590,10 @@ namespace ProcessHacker
             processStats.Dock = DockStyle.Fill;
             tabStatistics.Controls.Add(processStats);
             _processStats = processStats;
+
+            // If this is a non-process, we need to clear the statistics first.
+            if (_pid <= 0)
+                _processStats.ClearStatistics();
 
             try
             {

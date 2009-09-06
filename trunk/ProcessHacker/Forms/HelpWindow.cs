@@ -37,6 +37,7 @@ namespace ProcessHacker
                                          new string[] {"Process Properties", "procprops"},
                                          new string[] {"Searching Memory", "memsearch"},
                                          new string[] {"Results Window", "results"},
+                                         new string[] {"Glossary", "glossary"},
                                          new string[] {"Copyright Information", "copyright"}
                                      };
 

@@ -121,27 +121,38 @@ namespace ProcessHacker.Components
 
             labelOtherHandles.Text = ((ulong)item.Process.HandleCount).ToString("N0");
 
-            try
+            if (_pid > 0)
             {
-                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                try
                 {
-                    labelOtherGDIHandles.Text = phandle.GetGuiResources(false).ToString("N0");
-                    labelOtherUSERHandles.Text = phandle.GetGuiResources(true).ToString("N0");
-
-                    if (OSVersion.HasCycleTime)
-                        labelCPUCycles.Text = phandle.GetCycleTime().ToString("N0");
-                    else
-                        labelCPUCycles.Text = "N/A";
-
-                    if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                    using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                     {
-                        labelMemoryPP.Text = phandle.GetPagePriority().ToString();
-                        labelIOPriority.Text = phandle.GetIoPriority().ToString();
+                        labelOtherGDIHandles.Text = phandle.GetGuiResources(false).ToString("N0");
+                        labelOtherUSERHandles.Text = phandle.GetGuiResources(true).ToString("N0");
+
+                        if (OSVersion.HasCycleTime)
+                            labelCPUCycles.Text = phandle.GetCycleTime().ToString("N0");
+                        else
+                            labelCPUCycles.Text = "N/A";
+
+                        if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                        {
+                            labelMemoryPP.Text = phandle.GetPagePriority().ToString();
+                            labelIOPriority.Text = phandle.GetIoPriority().ToString();
+                        }
                     }
                 }
+                catch
+                { }
             }
-            catch
-            { }
+            else
+            {
+                labelOtherGDIHandles.Text = "0";
+                labelOtherUSERHandles.Text = "0";
+                labelCPUCycles.Text = "0";
+                labelMemoryPP.Text = "0";
+                labelIOPriority.Text = "0";
+            }
         }
 
         private void buttonHandleDetails_Click(object sender, EventArgs e)
