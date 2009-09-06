@@ -159,6 +159,14 @@ namespace ProcessHacker
             return _treePath;
         }
 
+        public void RefreshTreePathRecursive()
+        {
+            foreach (var child in _children)
+                child.RefreshTreePathRecursive();
+
+            this.RefreshTreePath();
+        }
+
         public ProcessHacker.Components.NodePlotter.PlotterInfo CpuHistory
         {
             get

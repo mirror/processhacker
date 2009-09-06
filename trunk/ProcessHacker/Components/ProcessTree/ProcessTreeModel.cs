@@ -87,7 +87,7 @@ namespace ProcessHacker
                     _roots.Remove(node);
                     itemNode.Children.Add(node);
                     node.Parent = itemNode;
-                    node.RefreshTreePath();
+                    node.RefreshTreePathRecursive();
                 }
             }
 
@@ -181,7 +181,7 @@ namespace ProcessHacker
             foreach (ProcessNode child in children)
             {
                 child.Parent = null;
-                child.RefreshTreePath();
+                child.RefreshTreePathRecursive();
             }
 
             _roots.AddRange(children);
