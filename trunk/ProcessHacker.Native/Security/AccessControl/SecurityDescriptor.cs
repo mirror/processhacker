@@ -58,6 +58,14 @@ namespace ProcessHacker.Native.Security.AccessControl
             }
         }
 
+        public SecurityDescriptor(Sid owner, Sid group, Acl dacl, Acl sacl)
+        {
+            this.Owner = owner;
+            this.Group = group;
+            this.Dacl = dacl;
+            this.Sacl = sacl;
+        }
+
         public SecurityDescriptor(IntPtr memory)
             : this(new MemoryRegion(memory), false)
         { }

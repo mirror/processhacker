@@ -152,23 +152,26 @@ namespace ProcessHacker
             try
             {
                 string binPath;
+                string mailslotName;
                 bool omitUserAndType = false;
 
                 if (_pid != -1)
                     omitUserAndType = true;
 
+                mailslotName = "ProcessHackerAssistant" + Utils.CreateRandomString(8);
                 binPath = "\"" + Application.StartupPath + "\\Assistant.exe\" " +
                     (omitUserAndType ? "" :
                     ("-u \"" + comboUsername.Text + "\" -t " + comboType.SelectedItem.ToString().ToLower() + " ")) +
                     (_pid != -1 ? ("-P " + _pid.ToString() + " ") : "") + "-p \"" +
                     textPassword.Text.Replace("\"", "\\\"") + "\" -s " + textSessionID.Text + " -c \"" +
-                    textCmdLine.Text.Replace("\"", "\\\"") + "\"";
+                    textCmdLine.Text.Replace("\"", "\\\"") + "\" -E " + mailslotName;
 
                 if (Program.ElevationType == TokenElevationType.Limited)
                 {
                     var result = Program.StartProcessHackerAdminWait(
-                        "-e -type processhacker -action runas -obj \"" + binPath.Replace("\"", "\\\"") + "\" " +
-                        "-hwnd " + this.Handle.ToString(), this.Handle, 5000);
+                        "-e -type processhacker -action runas -obj \"" + binPath.Replace("\"", "\\\"") +
+                        "\" -mailslot " + mailslotName +
+                        " -hwnd " + this.Handle.ToString(), this.Handle, 5000);
 
                     if (result == WaitResult.Object0)
                         this.Close();
@@ -190,9 +193,18 @@ namespace ProcessHacker
                             "LocalSystem",
                             null))
                         {
-                            try { service.Start(); }
-                            catch { }
-                            service.Delete();
+                            // Create a mailslot so we can receive the error code for Assistant.
+                            using (var mhandle = MailslotHandle.Create(@"\\.\mailslot\" + mailslotName, 0, 5000))
+                            {
+                                try { service.Start(); }
+                                catch { }
+                                service.Delete();
+
+                                int errorCode = mhandle.Read(4).ToInt32();
+
+                                if (errorCode != 0)
+                                    throw new WindowsException(errorCode);
+                            }
                         }
                     }
 

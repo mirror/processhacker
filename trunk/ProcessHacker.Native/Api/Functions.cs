@@ -410,6 +410,18 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Mailslots
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr CreateMailslot(
+            [In] string Name,
+            [In] int MaxMessageSize,
+            [In] int ReadTimeout,
+            [In] IntPtr SecurityAttributes
+            );
+
+        #endregion
+
         #region Memory
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -622,12 +634,6 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool DisconnectNamedPipe(
-            [In] IntPtr NamedPipe
-            );
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ConnectNamedPipe(
             [In] IntPtr NamedPipe, 
             [Optional] IntPtr Overlapped
@@ -647,6 +653,12 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DisconnectNamedPipe(
+            [In] IntPtr NamedPipe
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetNamedPipeClientProcessId(
             [In] IntPtr NamedPipeHandle, 
             [Out] out int ServerProcessId
@@ -662,6 +674,13 @@ namespace ProcessHacker.Native.Api
             [Out] [Optional] out int CollectDataTimeout,
             [Out] [Optional] out int UserName,
             [In] int MaxUserNameSize
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WaitNamedPipe(
+            [In] string Name,
+            [In] int Timeout
             );
 
         #endregion

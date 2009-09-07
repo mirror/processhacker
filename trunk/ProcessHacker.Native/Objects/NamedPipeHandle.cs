@@ -30,14 +30,35 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public sealed class NamedPipeHandle : FileHandle
     {
+        /// <summary>
+        /// Waits for an instance of the specified named pipe to 
+        /// become available for connection.
+        /// </summary>
+        /// <param name="name">The name of the named pipe.</param>
+        /// <param name="timeout">
+        /// The timeout, in milliseconds. Use zero for the default timeout interval 
+        /// and -1 for an infinite timeout.
+        /// </param>
+        /// <returns>
+        /// True if an instance of the pipe was available before the timeout 
+        /// interval elapsed, otherwise false.
+        /// </returns>
+        public static bool Wait(string name, int timeout)
+        {
+            return Win32.WaitNamedPipe(name, timeout);
+        }
+
         public NamedPipeHandle(string name, PipeAccessMode openMode, PipeMode pipeMode, int maxInstances,
             int outBufferSize, int inBufferSize, int defaultTimeOut)
         {
             this.Handle = Win32.CreateNamedPipe(name, openMode, pipeMode, maxInstances,
                 outBufferSize, inBufferSize, defaultTimeOut, IntPtr.Zero);
 
-            if (this.Handle.ToInt32() == -1)
+            if (this.Handle == NativeHandle.MinusOne)
+            {
+                this.MarkAsInvalid();
                 Win32.ThrowLastError();
+            }
         }
 
         public void Connect()

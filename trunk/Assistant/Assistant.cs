@@ -22,40 +22,24 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using ProcessHacker.Native;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace Assistant
 {
     static class Program
     {
-        static void SetAllAccess(IntPtr handle)
-        {
-            using (var sd = new LocalMemoryAlloc(Win32.SecurityDescriptorMinLength))
-            {
-                if (!Win32.InitializeSecurityDescriptor(sd, Win32.SecurityDescriptorRevision))
-                    Win32.ThrowLastError();
-
-                if (!Win32.SetSecurityDescriptorDacl(sd, true, IntPtr.Zero, false))
-                    Win32.ThrowLastError();
-
-                SiRequested si = SiRequested.DaclSecurityInformation;
-
-                if (!Win32.SetUserObjectSecurity(handle, ref si, sd))
-                    Win32.ThrowLastError();
-            }
-        }
-
         static void SetDesktopWinStaAccess()
         {
-            using (var wshandle = new WindowStationHandle("WinSta0", (WindowStationAccess)StandardRights.WriteDac))
-                SetAllAccess(wshandle);
+            using (var wsHandle = new WindowStationHandle("WinSta0", (WindowStationAccess)StandardRights.WriteDac))
+                wsHandle.SetSecurity(SecurityInformation.Dacl, new SecurityDescriptor());
 
-            using (var dhandle = new DesktopHandle("Default", false, 
+            using (var dhandle = new DesktopHandle("Default", false,
                 (DesktopAccess)StandardRights.WriteDac | DesktopAccess.ReadObjects | DesktopAccess.WriteObjects))
-                SetAllAccess(dhandle);
+                dhandle.SetSecurity(SecurityInformation.Dacl, new SecurityDescriptor());
         }
 
         static Dictionary<string, string> ParseArgs(string[] args)
@@ -97,7 +81,7 @@ namespace Assistant
         {
             Console.Write("Process Hacker Assistant\nCopyright (c) 2008 wj32. Licensed under the GNU GPL v3.\n\nUsage:\n" +
                 "\tassistant [-w] [-k] [-P pid] [-u username] [-p password] [-t logontype] [-s sessionid] [-d dir] " + 
-                "[-c cmdline] [-f filename]\n\n" +
+                "[-c cmdline] [-f filename] [-E name]\n\n" +
                 "-w\t\tSpecifies that the permissions of WinSta0 and WinSta0\\Default should be " +
                 "modified with all access. You should use this option as a normal user (\"assistant -w\") before attempting to " +
                 "use this program as a Windows service.\n" + 
@@ -114,7 +98,9 @@ namespace Assistant
                 "-s sessionid\tSpecifies the session ID under which the program should be run.\n" +
                 "-d dir\t\tSpecifies the current directory for the program.\n" +
                 "-c cmdline\tSpecifies the command line for the program. You must not use the -f option if you use this.\n" +
-                "-f filename\tSpecifies the full path to the program.\n\n" + 
+                "-f filename\tSpecifies the full path to the program.\n" +
+                "-E name\tSpecifies the partial name of the mailslot to write a 4-byte error code to.\n" +
+                "\n" +
                 "This application is not useful by itself; even Administrators do not normally have " + 
                 "SeAssignPrimaryTokenPrivilege and SeTcbPrivilege, both of which are required for the useful " + 
                 "functioning of this program. You must create a Windows service for this program:\n" + 
@@ -128,6 +114,14 @@ namespace Assistant
         {
             if (args.ContainsKey("-k"))
                 System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
+
+            if (args.ContainsKey("-E"))
+            {
+                string mailslotName = args["-E"];
+
+                using (var fhandle = new FileHandle(@"\\.\mailslot\" + mailslotName, FileAccess.GenericWrite))
+                    fhandle.Write(exitCode.GetBytes());
+            }
 
             Environment.Exit(exitCode);
         }
@@ -143,8 +137,7 @@ namespace Assistant
         {
             try
             {
-                using (var thandle = ProcessHandle.GetCurrent().GetToken(TokenAccess.AdjustPrivileges))
-                    thandle.SetPrivilege(name, SePrivilegeAttributes.Enabled);
+                Privilege.Enable(name);
                 return true;
             }
             catch

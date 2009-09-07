@@ -664,6 +664,11 @@ namespace ProcessHacker.Common
                 time.Milliseconds);
         }
 
+        public static byte[] GetBytes(this int n)
+        {
+            return n.GetBytes(Endianness.Little);
+        }
+
         public static byte[] GetBytes(this int n, Endianness type)
         {
             byte[] data = new byte[4];
@@ -690,6 +695,11 @@ namespace ProcessHacker.Common
             return data;
         }
 
+        public static byte[] GetBytes(this uint n)
+        {
+            return n.GetBytes(Endianness.Little);
+        }
+
         public static byte[] GetBytes(this uint n, Endianness type)
         {
             byte[] data = new byte[4];
@@ -714,6 +724,11 @@ namespace ProcessHacker.Common
             }
 
             return data;
+        }
+
+        public static byte[] GetBytes(this ushort n)
+        {
+            return n.GetBytes(Endianness.Little);
         }
 
         public static byte[] GetBytes(this ushort n, Endianness type)
@@ -1096,6 +1111,11 @@ namespace ProcessHacker.Common
             return nameList;
         }
 
+        public static int ToInt32(this byte[] data)
+        {
+            return data.ToInt32(Endianness.Little);
+        }
+
         public static int ToInt32(this byte[] data, Endianness type)
         {
             if (type == Endianness.Little)
@@ -1110,6 +1130,11 @@ namespace ProcessHacker.Common
             {
                 throw new ArgumentException();
             }
+        }
+
+        public static long ToInt64(this byte[] data)
+        {
+            return data.ToInt64(Endianness.Little);
         }
 
         public static long ToInt64(this byte[] data, Endianness type)

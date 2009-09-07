@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -91,10 +92,20 @@ namespace ProcessHacker
                                                 "",
                                                 "LocalSystem",
                                                 null))
-                                            {
-                                                try { service.Start(); }
-                                                catch { }
-                                                service.Delete();
+                                            { 
+                                                // Create a mailslot so we can receive the error code for Assistant.
+                                                using (var mhandle = MailslotHandle.Create(
+                                                    @"\\.\mailslot\" + args["-mailslot"], 0, 5000))
+                                                {
+                                                    try { service.Start(); }
+                                                    catch { }
+                                                    service.Delete();
+
+                                                    int errorCode = mhandle.Read(4).ToInt32();
+
+                                                    if (errorCode != 0)
+                                                        throw new WindowsException(errorCode);
+                                                }
                                             }
                                         }
                                     }

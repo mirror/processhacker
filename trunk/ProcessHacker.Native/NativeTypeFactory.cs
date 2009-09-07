@@ -150,6 +150,8 @@ namespace ProcessHacker.Native
                 return ObjectType.AlpcPort;
             if (string.Equals(typeName, "Port", StringComparison.InvariantCultureIgnoreCase))
                 return ObjectType.AlpcPort;
+            if (string.Equals(typeName, "WaitablePort", StringComparison.InvariantCultureIgnoreCase))
+                return ObjectType.AlpcPort;
 
             throw new NotSupportedException();
         }

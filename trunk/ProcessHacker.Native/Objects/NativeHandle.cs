@@ -38,6 +38,11 @@ namespace ProcessHacker.Native.Objects
             get { return IntPtr.Zero; }
         }
 
+        public static IntPtr MinusOne
+        {
+            get { return (-1).ToIntPtr(); }
+        }
+
         public static bool IsInvalid(IntPtr handle)
         {
             return handle == Invalid;

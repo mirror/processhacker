@@ -32,6 +32,22 @@ namespace ProcessHacker.Native.Objects
         public static PortHandle Create(
             string name,
             ObjectFlags objectFlags,
+            DirectoryHandle rootDirectory
+            )
+        {
+            return Create(
+                name,
+                objectFlags,
+                rootDirectory,
+                Win32.PortMessageMaxDataLength,
+                Win32.PortMessageMaxLength,
+                0
+                );
+        }
+
+        public static PortHandle Create(
+            string name,
+            ObjectFlags objectFlags,
             DirectoryHandle rootDirectory,
             int maxConnectionInfoLength,
             int maxMessageLength,
@@ -59,6 +75,22 @@ namespace ProcessHacker.Native.Objects
             }
 
             return new PortHandle(handle, true);
+        }
+
+        public static PortHandle CreateWaitable(
+            string name,
+            ObjectFlags objectFlags,
+            DirectoryHandle rootDirectory
+            )
+        {
+            return CreateWaitable(
+                name,
+                objectFlags,
+                rootDirectory,
+                Win32.PortMessageMaxDataLength,
+                Win32.PortMessageMaxLength,
+                0
+                );
         }
 
         public static PortHandle CreateWaitable(

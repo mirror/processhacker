@@ -76,6 +76,7 @@
     <Compile Include="Memory\VirtualMemoryAlloc.cs" />
     <Compile Include="NativeUtils.cs" />
     <Compile Include="NProcessHacker.cs" />
+    <Compile Include="Objects\MailslotHandle.cs" />
     <Compile Include="Objects\EnlistmentHandle.cs" />
     <Compile Include="Objects\TransactionHandle.cs" />
     <Compile Include="Objects\DriverHandle.cs" />
