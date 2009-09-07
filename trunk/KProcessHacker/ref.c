@@ -78,7 +78,7 @@ NTSTATUS KphRefInit()
 
 /* KphRefDeinit
  * 
- * Frees all objets created by the KPH object manager.
+ * Frees all objects created by the KPH object manager.
  * 
  * IRQL: = PASSIVE_LEVEL
  */
