@@ -66,6 +66,8 @@
             this.textFilter.Size = new System.Drawing.Size(395, 20);
             this.textFilter.TabIndex = 1;
             this.textFilter.TextChanged += new System.EventHandler(this.textFilter_TextChanged);
+            this.textFilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textFilter_KeyPress);
+            this.textFilter.Enter += new System.EventHandler(this.textFilter_Enter);
             // 
             // buttonFind
             // 
@@ -102,6 +104,7 @@
             this.listHandles.UseCompatibleStateImageBehavior = false;
             this.listHandles.View = System.Windows.Forms.View.Details;
             this.listHandles.DoubleClick += new System.EventHandler(this.listHandles_DoubleClick);
+            this.listHandles.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listHandles_KeyDown);
             // 
             // columnProcess
             // 

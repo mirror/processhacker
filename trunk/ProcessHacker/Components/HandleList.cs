@@ -38,6 +38,184 @@ namespace ProcessHacker.Components
 {
     public partial class HandleList : UserControl
     {
+        public static bool ConfirmHandleClose()
+        {
+            if (Properties.Settings.Default.WarnDangerous)
+            {
+                return PhUtils.ShowConfirmMessage(
+                    "close",
+                    "the selected handle(s)",
+                    "Closing handles may cause system instability and data corruption.",
+                    false
+                    );
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public static void ShowHandleProperties(SystemHandleEntry handleInfo)
+        {
+            try
+            {
+                HandlePropertiesWindow window = new HandlePropertiesWindow(handleInfo);
+                IntPtr handle = new IntPtr(handleInfo.Handle);
+                ProcessHandle phandle = new ProcessHandle(handleInfo.ProcessId, ProcessAccess.DupHandle);
+                GenericHandle dupHandle; 
+
+                window.HandlePropertiesCallback += (control, name, typeName) =>
+                    {
+                        switch (typeName.ToLower())
+                        {
+                            // Objects with separate property windows:
+                            case "file":
+                            case "job":
+                            case "key":
+                            case "token":
+                            case "process":
+                                {
+                                    Button b = new Button();
+
+                                    b.FlatStyle = FlatStyle.System;
+                                    b.Text = "Properties...";
+                                    b.Click += (sender, e) =>
+                                        {
+                                            try
+                                            {
+                                                switch (typeName.ToLower())
+                                                {
+                                                    case "file":
+                                                        {
+                                                            FileUtils.ShowProperties(name);
+                                                        }
+                                                        break;
+                                                    case "job":
+                                                        {
+                                                            dupHandle =
+                                                                new GenericHandle(
+                                                                    phandle, handle, 
+                                                                    (int)JobObjectAccess.Query);
+                                                            (new JobWindow(JobObjectHandle.FromHandle(dupHandle))).ShowDialog();
+                                                        }
+                                                        break;
+                                                    case "key":
+                                                        {
+                                                            try
+                                                            {
+                                                                PhUtils.OpenKeyInRegedit(Form.ActiveForm, name);
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                                PhUtils.ShowException("Unable to open the Registry Editor", ex);
+                                                            }
+                                                        }
+                                                        break;
+                                                    case "token":
+                                                        {
+                                                            (new TokenWindow(new RemoteTokenHandle(phandle, 
+                                                                handle))).ShowDialog();
+                                                        }
+                                                        break;
+                                                    case "process":
+                                                        {
+                                                            int pid;
+
+                                                            if (KProcessHacker.Instance != null)
+                                                            {
+                                                                pid = KProcessHacker.Instance.KphGetProcessId(phandle, handle);
+                                                            }
+                                                            else
+                                                            {
+                                                                dupHandle =
+                                                                    new GenericHandle(
+                                                                        phandle, handle,
+                                                                        (int)OSVersion.MinProcessQueryInfoAccess);
+                                                                pid = ProcessHandle.FromHandle(dupHandle).GetProcessId();
+                                                            }
+
+                                                            Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],
+                                                                (f) => Program.FocusWindow(f));
+                                                        }
+                                                        break;
+                                                }
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                PhUtils.ShowException("Unable to show object properties", ex);
+                                            }
+                                        };
+
+                                    control.Controls.Add(b);
+                                }
+                                break;
+                            case "event":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)EventAccess.QueryState);
+                                    var eventProps = new EventProperties(EventHandle.FromHandle(dupHandle));
+                                    control.Controls.Add(eventProps);
+                                }
+                                break;
+                            case "eventpair":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)EventPairAccess.All);
+                                    var eventPairProps = new EventPairProperties(EventPairHandle.FromHandle(dupHandle));
+                                    control.Controls.Add(eventPairProps);
+                                }
+                                break;
+                            case "mutant":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)MutantAccess.QueryState);
+                                    var mutantProps = new MutantProperties(MutantHandle.FromHandle(dupHandle));
+                                    control.Controls.Add(mutantProps);
+                                }
+                                break;
+                            case "section":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)SectionAccess.Query);
+                                    var sectionProps = new SectionProperties(SectionHandle.FromHandle(dupHandle));
+                                    control.Controls.Add(sectionProps);
+                                }
+                                break;
+                            case "semaphore":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)SemaphoreAccess.QueryState);
+                                    var semaphoreProps = new SemaphoreProperties(SemaphoreHandle.FromHandle(dupHandle));
+                                    control.Controls.Add(semaphoreProps);
+                                }
+                                break;
+                            case "timer":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)TimerAccess.QueryState);
+                                    var timerProps = new TimerProperties(TimerHandle.FromHandle(dupHandle));
+                                    control.Controls.Add(timerProps);
+                                }
+                                break;
+                            case "tmrm":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)ResourceManagerAccess.QueryInformation);
+                                    var tmRmProps = new TmRmProperties(ResourceManagerHandle.FromHandle(dupHandle));
+                                    control.Controls.Add(tmRmProps);
+                                }
+                                break;
+                            case "tmtm":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)TmAccess.QueryInformation);
+                                    var tmTmProps = new TmTmProperties(TmHandle.FromHandle(dupHandle));
+                                    control.Controls.Add(tmTmProps);
+                                }
+                                break;
+                        }
+                    };
+
+                window.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to show handle properties", ex);
+            }
+        }
+
         private object _listLock = new object();
         private HandleProvider _provider;
         private int _runCount = 0;
@@ -110,6 +288,13 @@ namespace ProcessHacker.Components
                 if (e.KeyCode == Keys.Enter)
                 {
                     propertiesHandleMenuItem_Click(null, null);
+                }
+                else if (e.KeyCode == Keys.Delete)
+                {
+                    if (ConfirmHandleClose())
+                    {
+                        closeHandleMenuItem_Click(null, null);
+                    }
                 }
             }
         }
@@ -320,167 +505,6 @@ namespace ProcessHacker.Components
                 propertiesHandleMenuItem.Enabled = false;
                 protectedMenuItem.Enabled = false;
                 inheritMenuItem.Enabled = false;
-            }
-        }
-
-        public static void ShowHandleProperties(SystemHandleEntry handleInfo)
-        {
-            try
-            {
-                HandlePropertiesWindow window = new HandlePropertiesWindow(handleInfo);
-                IntPtr handle = new IntPtr(handleInfo.Handle);
-                ProcessHandle phandle = new ProcessHandle(handleInfo.ProcessId, ProcessAccess.DupHandle);
-                GenericHandle dupHandle; 
-
-                window.HandlePropertiesCallback += (control, name, typeName) =>
-                    {
-                        switch (typeName.ToLower())
-                        {
-                            // Objects with separate property windows:
-                            case "file":
-                            case "job":
-                            case "key":
-                            case "token":
-                            case "process":
-                                {
-                                    Button b = new Button();
-
-                                    b.FlatStyle = FlatStyle.System;
-                                    b.Text = "Properties...";
-                                    b.Click += (sender, e) =>
-                                        {
-                                            try
-                                            {
-                                                switch (typeName.ToLower())
-                                                {
-                                                    case "file":
-                                                        {
-                                                            FileUtils.ShowProperties(name);
-                                                        }
-                                                        break;
-                                                    case "job":
-                                                        {
-                                                            dupHandle =
-                                                                new GenericHandle(
-                                                                    phandle, handle, 
-                                                                    (int)JobObjectAccess.Query);
-                                                            (new JobWindow(JobObjectHandle.FromHandle(dupHandle))).ShowDialog();
-                                                        }
-                                                        break;
-                                                    case "key":
-                                                        {
-                                                            try
-                                                            {
-                                                                PhUtils.OpenKeyInRegedit(Form.ActiveForm, name);
-                                                            }
-                                                            catch (Exception ex)
-                                                            {
-                                                                PhUtils.ShowException("Unable to open the Registry Editor", ex);
-                                                            }
-                                                        }
-                                                        break;
-                                                    case "token":
-                                                        {
-                                                            (new TokenWindow(new RemoteTokenHandle(phandle, 
-                                                                handle))).ShowDialog();
-                                                        }
-                                                        break;
-                                                    case "process":
-                                                        {
-                                                            int pid;
-
-                                                            if (KProcessHacker.Instance != null)
-                                                            {
-                                                                pid = KProcessHacker.Instance.KphGetProcessId(phandle, handle);
-                                                            }
-                                                            else
-                                                            {
-                                                                dupHandle =
-                                                                    new GenericHandle(
-                                                                        phandle, handle,
-                                                                        (int)OSVersion.MinProcessQueryInfoAccess);
-                                                                pid = ProcessHandle.FromHandle(dupHandle).GetProcessId();
-                                                            }
-
-                                                            Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],
-                                                                (f) => Program.FocusWindow(f));
-                                                        }
-                                                        break;
-                                                }
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                PhUtils.ShowException("Unable to show object properties", ex);
-                                            }
-                                        };
-
-                                    control.Controls.Add(b);
-                                }
-                                break;
-                            case "event":
-                                {
-                                    dupHandle = new GenericHandle(phandle, handle, (int)EventAccess.QueryState);
-                                    var eventProps = new EventProperties(EventHandle.FromHandle(dupHandle));
-                                    control.Controls.Add(eventProps);
-                                }
-                                break;
-                            case "eventpair":
-                                {
-                                    dupHandle = new GenericHandle(phandle, handle, (int)EventPairAccess.All);
-                                    var eventPairProps = new EventPairProperties(EventPairHandle.FromHandle(dupHandle));
-                                    control.Controls.Add(eventPairProps);
-                                }
-                                break;
-                            case "mutant":
-                                {
-                                    dupHandle = new GenericHandle(phandle, handle, (int)MutantAccess.QueryState);
-                                    var mutantProps = new MutantProperties(MutantHandle.FromHandle(dupHandle));
-                                    control.Controls.Add(mutantProps);
-                                }
-                                break;
-                            case "section":
-                                {
-                                    dupHandle = new GenericHandle(phandle, handle, (int)SectionAccess.Query);
-                                    var sectionProps = new SectionProperties(SectionHandle.FromHandle(dupHandle));
-                                    control.Controls.Add(sectionProps);
-                                }
-                                break;
-                            case "semaphore":
-                                {
-                                    dupHandle = new GenericHandle(phandle, handle, (int)SemaphoreAccess.QueryState);
-                                    var semaphoreProps = new SemaphoreProperties(SemaphoreHandle.FromHandle(dupHandle));
-                                    control.Controls.Add(semaphoreProps);
-                                }
-                                break;
-                            case "timer":
-                                {
-                                    dupHandle = new GenericHandle(phandle, handle, (int)TimerAccess.QueryState);
-                                    var timerProps = new TimerProperties(TimerHandle.FromHandle(dupHandle));
-                                    control.Controls.Add(timerProps);
-                                }
-                                break;
-                            case "tmrm":
-                                {
-                                    dupHandle = new GenericHandle(phandle, handle, (int)ResourceManagerAccess.QueryInformation);
-                                    var tmRmProps = new TmRmProperties(ResourceManagerHandle.FromHandle(dupHandle));
-                                    control.Controls.Add(tmRmProps);
-                                }
-                                break;
-                            case "tmtm":
-                                {
-                                    dupHandle = new GenericHandle(phandle, handle, (int)TmAccess.QueryInformation);
-                                    var tmTmProps = new TmTmProperties(TmHandle.FromHandle(dupHandle));
-                                    control.Controls.Add(tmTmProps);
-                                }
-                                break;
-                        }
-                    };
-
-                window.ShowDialog();
-            }
-            catch (Exception ex)
-            {
-                PhUtils.ShowException("Unable to show handle properties", ex);
             }
         }
 

@@ -87,6 +87,7 @@ namespace ProcessHacker
             if (this.Visible)
             {
                 this.SetPhParent();
+                textFilter.SelectAll();
             }
         }
 
@@ -256,7 +257,21 @@ namespace ProcessHacker
         private void listHandles_DoubleClick(object sender, EventArgs e)
         {
             propertiesMenuItem_Click(sender, e);
-        } 
+        }
+
+        private void listHandles_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (listHandles.SelectedIndices.Count == 0)
+                    return;
+
+                if (HandleList.ConfirmHandleClose())
+                {
+                    closeMenuItem_Click(sender, null);
+                }
+            }
+        }
 
         private void textFilter_TextChanged(object sender, EventArgs e)
         {
@@ -264,6 +279,21 @@ namespace ProcessHacker
                 buttonFind.Enabled = false;
             else
                 buttonFind.Enabled = true;
+        }
+
+        private void textFilter_Enter(object sender, EventArgs e)
+        {
+            // Select all *after* this event, since the selection due to 
+            // the user's mouse click will be made after this code 
+            // executes.
+            this.BeginInvoke(new MethodInvoker(textFilter.SelectAll));
+        }
+
+        private void textFilter_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Prevent the beep when the user presses Escape.
+            if (e.KeyChar == (char)Keys.Escape)
+                e.Handled = true;
         }
     }
 }
