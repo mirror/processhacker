@@ -521,33 +521,43 @@ namespace ProcessHacker
                 textStartTime.Text = "(" + ex.Message + ")";
             }
 
-            try
+            // The System process doesn't have a current directory or PEB address.
+            if (_pid > 4)
             {
-                using (ProcessHandle phandle
-                    = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                try
                 {
-                    fileCurrentDirectory.Text =
-                        phandle.GetPebString(PebOffset.CurrentDirectoryPath);
+                    using (ProcessHandle phandle
+                        = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                    {
+                        fileCurrentDirectory.Text =
+                            phandle.GetPebString(PebOffset.CurrentDirectoryPath);
+                    }
+
+                    fileCurrentDirectory.Enabled = true;
+                }
+                catch (Exception ex)
+                {
+                    fileCurrentDirectory.Text = "(" + ex.Message + ")";
+                    fileCurrentDirectory.Enabled = false;
                 }
 
-                fileCurrentDirectory.Enabled = true;
+                try
+                {
+                    using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    {
+                        textPEBAddress.Text = Utils.FormatAddress(phandle.GetBasicInformation().PebBaseAddress);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    textPEBAddress.Text = "(" + ex.Message + ")";
+                    buttonInspectPEB.Enabled = false;
+                }
             }
-            catch (Exception ex)
+            else
             {
-                fileCurrentDirectory.Text = "(" + ex.Message + ")";
                 fileCurrentDirectory.Enabled = false;
-            }
-
-            try
-            {
-                using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                {
-                    textPEBAddress.Text = Utils.FormatAddress(phandle.GetBasicInformation().PebBaseAddress);
-                }
-            }
-            catch (Exception ex)
-            {
-                textPEBAddress.Text = "(" + ex.Message + ")";
+                buttonInspectPEB.Enabled = false;
             }
 
             if (_processItem.HasParent)
