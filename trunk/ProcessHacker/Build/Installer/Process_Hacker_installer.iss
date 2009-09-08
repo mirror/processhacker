@@ -1,4 +1,4 @@
-; ISTool v5.3.0/Inno Setup v5.3.3, Script by XhmikosR
+; ISTool v5.3.0/Inno Setup v5.3.4, Script by XhmikosR
 ;
 ; Requirements:
 ; *Inno Setup QuickStart Pack:
@@ -107,13 +107,13 @@ Name: startup_task; Description: {cm:tsk_startupdescr}; GroupDescription: {cm:ts
 Name: startup_task\minimized; Description: {cm:tsk_startupdescrmin}; GroupDescription: {cm:tsk_startup}; Check: StartupCheck(); Flags: unchecked
 Name: remove_startup_task; Description: {cm:tsk_removestartup}; GroupDescription: {cm:tsk_startup}; Check: NOT StartupCheck(); Flags: unchecked
 
+Name: create_KPH_service; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
+Name: delete_KPH_service; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND NOT KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
+
 Name: reset_settings; Description: {cm:tsk_resetsettings}; GroupDescription: {cm:tsk_other}; Check: SettingsExistCheck(); Flags: unchecked checkablealone
 
 Name: set_default_taskmgr; Description: {cm:tsk_setdefaulttaskmgr}; GroupDescription: {cm:tsk_other}; Check: PHDefaulTaskmgrCheck(); Flags: unchecked dontinheritcheck
 Name: restore_taskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {cm:tsk_other}; Check: NOT PHDefaulTaskmgrCheck(); Flags: unchecked dontinheritcheck
-
-Name: create_KPH_service; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
-Name: delete_KPH_service; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND NOT KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
 
 
 [Icons]
