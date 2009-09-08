@@ -197,7 +197,10 @@ namespace ProcessHacker
             cd.FullOpen = true;
 
             if (cd.ShowDialog() == DialogResult.OK)
+            {
                 listHighlightingColors.SelectedItems[0].BackColor = cd.Color;
+                listHighlightingColors.SelectedItems[0].ForeColor = TreeNodeAdv.GetForeColor(cd.Color);
+            }
         }
 
         private void textUpdateInterval_Leave(object sender, EventArgs e)
@@ -281,6 +284,7 @@ namespace ProcessHacker
                 bool use = (bool)Properties.Settings.Default["Use" + item.Name];
 
                 item.BackColor = c;
+                item.ForeColor = TreeNodeAdv.GetForeColor(item.BackColor);
                 item.Checked = use;
             }
 
