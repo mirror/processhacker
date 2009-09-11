@@ -1355,6 +1355,15 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryMutant(
+            [In] IntPtr MutantHandle,
+            [In] MutantInformationClass MutantInformationClass,
+            [Out] out MutantOwnerInformation MutantInformation,
+            [In] int MutantInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtQueryObject(
             [In] IntPtr Handle,
             [In] ObjectInformationClass ObjectInformationClass,

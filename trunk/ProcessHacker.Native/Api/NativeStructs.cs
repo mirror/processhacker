@@ -1112,8 +1112,16 @@ namespace ProcessHacker.Native.Api
     public struct MutantBasicInformation
     {
         public int CurrentCount;
-        public byte OwnedByCaller;
-        public byte AbandonedState;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool OwnedByCaller;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool AbandonedState;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MutantOwnerInformation
+    {
+        public ClientId ClientId;
     }
 
     [StructLayout(LayoutKind.Sequential)]

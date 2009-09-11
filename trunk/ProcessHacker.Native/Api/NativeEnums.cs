@@ -667,7 +667,8 @@ namespace ProcessHacker.Native.Api
 
     public enum MutantInformationClass : int
     {
-        MutantBasicInformation
+        MutantBasicInformation,
+        MutantOwnerInformation
     }
 
     [Flags]

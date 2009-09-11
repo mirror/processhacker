@@ -290,14 +290,23 @@ namespace ProcessHacker.UI.Actions
         {
             ElevationAction result;
 
-            result = PromptForElevation(
-                window,
-                new int[] { pid },
-                new string[] { name },
-                Program.MinProcessQueryRights,
-                "restart Process Hacker elevated",
-                "show properties for"
-                );
+            // If we're viewing System, don't prompt for elevation since we can view 
+            // thread and module information without it.
+            if (pid != 4)
+            {
+                result = PromptForElevation(
+                    window,
+                    new int[] { pid },
+                    new string[] { name },
+                    Program.MinProcessQueryRights,
+                    "restart Process Hacker elevated",
+                    "show properties for"
+                    );
+            }
+            else
+            {
+                result = ElevationAction.NotRequired;
+            }
 
             if (result == ElevationAction.Elevate)
             {

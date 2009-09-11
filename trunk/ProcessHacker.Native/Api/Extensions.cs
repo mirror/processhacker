@@ -28,7 +28,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native
 {
-    public static class SystemHandleInformationExtensions
+    public static class NativeExtensions
     {
         public static ObjectBasicInformation GetBasicInfo(this SystemHandleEntry thisHandle)
         {
@@ -81,6 +81,33 @@ namespace ProcessHacker.Native
             {
                 if (objectHandle != null)
                     objectHandle.Dispose();
+            }
+        }
+
+        public static string GetName(this ClientId clientId)
+        {
+            return clientId.GetName(true);
+        }
+
+        public static string GetName(this ClientId clientId, bool includeThread)
+        {
+            string processName = Windows.GetProcessName(clientId.ProcessId);
+
+            if (includeThread)
+            {
+                if (processName != null)
+                    return processName + " (" + clientId.ProcessId.ToString() + "): " +
+                        clientId.ThreadId.ToString();
+                else
+                    return "Non-existent process (" + clientId.ProcessId.ToString() + "): " +
+                        clientId.ThreadId.ToString();
+            }
+            else
+            {
+                if (processName != null)
+                    return processName + " (" + clientId.ProcessId.ToString() + ")";
+                else
+                    return "Non-existent process (" + clientId.ProcessId.ToString() + ")";
             }
         }
 
@@ -334,12 +361,7 @@ namespace ProcessHacker.Native
                                 }
                             }
 
-                            string processName = Windows.GetProcessName(processId);
-
-                            if (processName != null)
-                                info.BestName = processName + " (" + processId.ToString() + ")";
-                            else
-                                info.BestName = "Non-existent process (" + processId.ToString() + ")";
+                            info.BestName = (new ClientId(processId, 0)).GetName(false);
                         }
 
                         break;
@@ -368,14 +390,7 @@ namespace ProcessHacker.Native
                                 }
                             }
 
-                            string processName = Windows.GetProcessName(processId);
-
-                            if (processName != null)
-                                info.BestName = processName + " (" + processId.ToString() + "): " +
-                                    threadId.ToString();
-                            else
-                                info.BestName = "Non-existent process (" + processId.ToString() + "): " +
-                                    threadId.ToString();
+                            info.BestName = (new ClientId(processId, threadId)).GetName(true);
                         }
 
                         break;

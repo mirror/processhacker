@@ -105,6 +105,19 @@ namespace ProcessHacker.Native.Objects
             return mbi;
         }
 
+        public MutantOwnerInformation GetOwnerInformation()
+        {
+            NtStatus status;
+            MutantOwnerInformation moi;
+            int retLength;
+
+            if ((status = Win32.NtQueryMutant(this, MutantInformationClass.MutantOwnerInformation,
+                out moi, Marshal.SizeOf(typeof(MutantOwnerInformation)), out retLength)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return moi;
+        }
+
         public int Release()
         {
             NtStatus status;

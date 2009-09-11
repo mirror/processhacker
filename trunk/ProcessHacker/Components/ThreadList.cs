@@ -664,7 +664,7 @@ namespace ProcessHacker.Components
                 if (!PhUtils.ShowConfirmMessage(
                     "terminate",
                     "the selected system thread(s)",
-                    "Terminating system threads may cause the system to crash.",
+                    "Forcibly terminating system threads may cause the system to crash.",
                     true
                     ))
                     return;
@@ -745,7 +745,7 @@ namespace ProcessHacker.Components
             if (!PhUtils.ShowConfirmMessage(
                 "force terminate",
                 "the selected thread(s)",
-                "Forcefully terminating threads may cause the system to crash.",
+                "Forcibly terminating threads may cause the system to crash.",
                 true
                 ))
                 return;

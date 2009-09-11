@@ -10,6 +10,7 @@ Process Hacker
    * Displays IPv6 network connections
    * Two new terminator tests: W1 (send WM_DESTROY messages) and 
      W2 (send WM_QUIT messages)
+   * Mutant owner information
    * Elevation prompt when attempting to view process properties
    * All list views now have sort arrows
    * Network list now displays process tooltips

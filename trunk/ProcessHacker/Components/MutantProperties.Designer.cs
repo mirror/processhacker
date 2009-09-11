@@ -35,6 +35,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.labelCurrentCount = new System.Windows.Forms.Label();
             this.labelAbandoned = new System.Windows.Forms.Label();
+            this.labelLabelOwner = new System.Windows.Forms.Label();
+            this.labelOwner = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -73,17 +75,39 @@
             this.labelAbandoned.TabIndex = 0;
             this.labelAbandoned.Text = "False";
             // 
+            // labelLabelOwner
+            // 
+            this.labelLabelOwner.AutoSize = true;
+            this.labelLabelOwner.Location = new System.Drawing.Point(6, 49);
+            this.labelLabelOwner.Name = "labelLabelOwner";
+            this.labelLabelOwner.Size = new System.Drawing.Size(41, 13);
+            this.labelLabelOwner.TabIndex = 1;
+            this.labelLabelOwner.Text = "Owner:";
+            // 
+            // labelOwner
+            // 
+            this.labelOwner.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelOwner.AutoEllipsis = true;
+            this.labelOwner.Location = new System.Drawing.Point(102, 49);
+            this.labelOwner.Name = "labelOwner";
+            this.labelOwner.Size = new System.Drawing.Size(104, 21);
+            this.labelOwner.TabIndex = 2;
+            this.labelOwner.Text = "Unknown";
+            // 
             // MutantProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.labelOwner);
+            this.Controls.Add(this.labelLabelOwner);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.labelAbandoned);
             this.Controls.Add(this.labelCurrentCount);
             this.Controls.Add(this.label1);
             this.Name = "MutantProperties";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.Size = new System.Drawing.Size(183, 50);
+            this.Size = new System.Drawing.Size(212, 78);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -95,5 +119,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label labelCurrentCount;
         private System.Windows.Forms.Label labelAbandoned;
+        private System.Windows.Forms.Label labelLabelOwner;
+        private System.Windows.Forms.Label labelOwner;
     }
 }
