@@ -2384,6 +2384,51 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Security Objects
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCopySecurityDescriptor(
+            [In] IntPtr InputSecurityDescriptor,
+            [Out] out IntPtr OutputSecurityDescriptor
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCreateUserSecurityObject(
+            [In] RtlAceData[] AceData,
+            [In] int AceCount,
+            [In] IntPtr OwnerSid, // Sid*
+            [In] IntPtr GroupSid, // Sid*
+            [In] bool IsDirectoryObject,
+            [In] ref GenericMapping GenericMapping,
+            [Out] out IntPtr NewDescriptor // SecurityDescriptor**
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDeleteSecurityObject(
+            ref IntPtr ObjectDescriptor // SecurityDescriptor**
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlNewSecurityObject(
+            [In] IntPtr ParentDescriptor,
+            [In] IntPtr CreatorDescriptor,
+            [Out] out IntPtr NewDescriptor, // SecurityDescriptor**
+            [In] bool IsDirectoryObject,
+            [In] IntPtr Token,
+            [In] ref GenericMapping GenericMapping
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetSecurityObject(
+            [In] SecurityInformation SecurityInformation,
+            [In] IntPtr ModificationDescriptor,
+            [Out] out IntPtr ObjectsSecurityDescriptor, // SecurityDescriptor**
+            [In] ref GenericMapping GenericMapping,
+            [In] IntPtr Token
+            );
+
+        #endregion
+
         #endregion
 
         #region Debugging

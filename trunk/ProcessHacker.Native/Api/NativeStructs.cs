@@ -68,6 +68,16 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct AceData
+    {
+        public AceType AceType;
+        public byte InheritFlags;
+        public AceFlags AceFlags;
+        public int Mask;
+        public IntPtr Sid; // Sid**
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct AceHeader
     {
         public AceType AceType;
@@ -905,7 +915,7 @@ namespace ProcessHacker.Native.Api
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 7)]
         public int[] Reserved2;
 
-        public NtProductType NtProductType;
+        public WinNtProductType NtProductType;
         [MarshalAs(UnmanagedType.U1)]
         public bool ProductTypeIsValid;
 

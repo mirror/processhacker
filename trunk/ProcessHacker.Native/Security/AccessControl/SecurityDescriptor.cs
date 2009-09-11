@@ -59,6 +59,7 @@ namespace ProcessHacker.Native.Security.AccessControl
         }
 
         public SecurityDescriptor(Sid owner, Sid group, Acl dacl, Acl sacl)
+            : this()
         {
             this.Owner = owner;
             this.Group = group;
@@ -147,6 +148,13 @@ namespace ProcessHacker.Native.Security.AccessControl
                 return (this.ControlFlags & SecurityDescriptorControlFlags.DaclDefaulted) == 
                     SecurityDescriptorControlFlags.DaclDefaulted;
             }
+            set
+            {
+                if (value)
+                    this.ControlFlags |= SecurityDescriptorControlFlags.DaclDefaulted;
+                else
+                    this.ControlFlags &= ~SecurityDescriptorControlFlags.DaclDefaulted;
+            }
         }
 
         public Sid Group
@@ -173,6 +181,13 @@ namespace ProcessHacker.Native.Security.AccessControl
             {
                 return (this.ControlFlags & SecurityDescriptorControlFlags.GroupDefaulted) ==
                     SecurityDescriptorControlFlags.GroupDefaulted;
+            }
+            set
+            {
+                if (value)
+                    this.ControlFlags |= SecurityDescriptorControlFlags.GroupDefaulted;
+                else
+                    this.ControlFlags &= ~SecurityDescriptorControlFlags.GroupDefaulted;
             }
         }
 
@@ -211,6 +226,13 @@ namespace ProcessHacker.Native.Security.AccessControl
                 return (this.ControlFlags & SecurityDescriptorControlFlags.OwnerDefaulted) ==
                     SecurityDescriptorControlFlags.OwnerDefaulted;
             }
+            set
+            {
+                if (value)
+                    this.ControlFlags |= SecurityDescriptorControlFlags.OwnerDefaulted;
+                else
+                    this.ControlFlags &= ~SecurityDescriptorControlFlags.OwnerDefaulted;
+            }
         }
 
         public Acl Sacl
@@ -238,6 +260,13 @@ namespace ProcessHacker.Native.Security.AccessControl
             {
                 return (this.ControlFlags & SecurityDescriptorControlFlags.SaclDefaulted) ==
                     SecurityDescriptorControlFlags.SaclDefaulted;
+            }
+            set
+            {
+                if (value)
+                    this.ControlFlags |= SecurityDescriptorControlFlags.SaclDefaulted;
+                else
+                    this.ControlFlags &= ~SecurityDescriptorControlFlags.SaclDefaulted;
             }
         }
 
@@ -355,6 +384,30 @@ namespace ProcessHacker.Native.Security.AccessControl
         private void SwapSacl(Acl sacl)
         {
             BaseObject.SwapRef<Acl>(ref _sacl, sacl);
+        }
+
+        public SecurityDescriptor ToSelfRelative()
+        {
+            NtStatus status;
+            int retLength;
+            var data = new MemoryAlloc(Win32.SecurityDescriptorMinLength);
+
+            retLength = data.Size;
+            status = Win32.RtlMakeSelfRelativeSD(this, data, ref retLength);
+
+            if (status == NtStatus.BufferTooSmall)
+            {
+                data.Resize(retLength);
+                status = Win32.RtlMakeSelfRelativeSD(this, data, ref retLength);
+            }
+
+            if (status >= NtStatus.Error)
+            {
+                data.Dispose();
+                Win32.ThrowLastError(status);
+            }
+
+            return new SecurityDescriptor(data, true);
         }
     }
 }

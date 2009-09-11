@@ -705,13 +705,6 @@ namespace ProcessHacker.Native.Api
         CommitFinalize = 0x40000000
     }
 
-    public enum NtProductType : int
-    {
-        WinNt = 1,
-        LanManNt,
-        Server
-    }
-
     [Flags]
     public enum ObjectAceFlags : uint
     {
@@ -993,6 +986,7 @@ namespace ProcessHacker.Native.Api
         ViewUnmap = 2
     }
 
+    [Flags]
     public enum SecurityDescriptorControlFlags : ushort
     {
         OwnerDefaulted = 0x0001,
@@ -1041,6 +1035,7 @@ namespace ProcessHacker.Native.Api
         SemaphoreBasicInformation
     }
 
+    [Flags]
     public enum SidAttributes : uint
     {
         Mandatory = 0x00000001,
@@ -1440,6 +1435,13 @@ namespace ProcessHacker.Native.Api
         WinBuiltinEventLogReadersGroup = 76,
         WinNewEnterpriseReadonlyControllersSid = 77,
         WinBuiltinCertSvcDComAccessGroup = 78
+    }
+
+    public enum WinNtProductType : int
+    {
+        WinNt = 1,
+        LanManNt,
+        Server
     }
 
     [Flags]
