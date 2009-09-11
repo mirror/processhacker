@@ -27,6 +27,7 @@ namespace ProcessHacker.Native.Api
 {
     public delegate void ApcCallbackDelegate(NtStatus ioStatus, IntPtr apcContext, IntPtr context);
     public delegate void ApcRoutine(IntPtr parameter);
+    public delegate void IoApcRoutine(IntPtr apcContext, ref IoStatusBlock ioStatusBlock, int reserved);
     public delegate void TimerApcRoutine(IntPtr context, int lowValue, int highValue);
     public delegate void WaitOrTimerCallbackDelegate(IntPtr context, bool timeout);
     public delegate void WorkerCallbackDelegate(IntPtr context);

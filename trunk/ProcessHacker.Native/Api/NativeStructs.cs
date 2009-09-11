@@ -427,6 +427,9 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct FileDirectoryInformation
     {
+        public static int FileNameOffset = 
+            Marshal.OffsetOf(typeof(FileDirectoryInformation), "FileName").ToInt32();
+
         public int NextEntryOffset;
         public int FileIndex;
         public long CreationTime;

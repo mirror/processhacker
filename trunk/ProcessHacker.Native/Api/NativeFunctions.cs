@@ -1068,6 +1068,21 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryDirectoryFile(
+            [In] IntPtr FileHandle,
+            [In] [Optional] IntPtr Event,
+            [In] [Optional] IoApcRoutine ApcRoutine,
+            [In] [Optional] IntPtr ApcContext,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] IntPtr FileInformation,
+            [In] int Length,
+            [In] FileInformationClass FileInformationClass,
+            [In] bool ReturnSingleEntry,
+            [In] [Optional] IntPtr FileName,
+            [In] bool RestartScan
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtQueryDirectoryObject(
             [In] IntPtr DirectoryHandle,
             [In] IntPtr Buffer,

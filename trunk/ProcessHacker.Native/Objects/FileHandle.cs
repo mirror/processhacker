@@ -24,6 +24,7 @@ using System;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using System.Collections.Generic;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -95,6 +96,13 @@ namespace ProcessHacker.Native.Objects
                     info.FileNameLength / 2
                     );
             }
+        }
+
+        public FileEntry[] GetFiles()
+        {
+            List<FileEntry> files = new List<FileEntry>();
+
+            return files.ToArray();
         }
 
         public long GetSize()
@@ -298,5 +306,21 @@ namespace ProcessHacker.Native.Objects
 
             return bytesWritten;
         }
+    }
+
+    public class FileEntry
+    {
+        public string Name;
+        public int Index;
+
+        public DateTime CreationTime;
+        public DateTime LastAccessTime;
+        public DateTime LastWriteTime;
+        public DateTime ChangeTime;
+
+        public long Size;
+        public long AllocationSize;
+
+        public int Attributes;
     }
 }
