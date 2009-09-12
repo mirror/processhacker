@@ -862,6 +862,39 @@ namespace ProcessHacker.Common
                 return ProcessPriorityClass.Idle;
         }
 
+        public static Dictionary<string, string> ParseCommandLine(string[] args)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            string argPending = null;
+
+            foreach (string s in args)
+            {
+                if (s.StartsWith("-"))
+                {
+                    if (dict.ContainsKey(s))
+                        throw new ArgumentException("Option already specified.");
+
+                    dict.Add(s, "");
+                    argPending = s;
+                }
+                else
+                {
+                    if (argPending != null)
+                    {
+                        dict[argPending] = s;
+                        argPending = null;
+                    }
+                    else
+                    {
+                        if (!dict.ContainsKey(""))
+                            dict.Add("", s);
+                    }
+                }
+            }
+
+            return dict;
+        }
+
         public static int ReadInt32(Stream s, Endianness type)
         {
             byte[] buffer = new byte[4];
