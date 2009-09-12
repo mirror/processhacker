@@ -80,9 +80,8 @@ namespace ProcessHacker.Native.Objects
         {
             using (var fhandle = new FileHandle(
                 fileName,
-                (FileAccess)StandardRights.Synchronize | FileAccess.Execute | FileAccess.ReadData,
-                FileShareMode.Delete | FileShareMode.Read,
-                FileCreationDisposition.OpenAlways
+                FileShareMode.Read | FileShareMode.Delete,
+                (FileAccess)StandardRights.Synchronize | FileAccess.Execute | FileAccess.ReadData
                 ))
             {
                 using (var shandle =
@@ -2224,7 +2223,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="type">The type of minidump to write.</param>
         public void WriteDump(string fileName, MinidumpType type)
         {
-            using (var fhandle = new FileHandle(fileName, FileAccess.GenericWrite))
+            using (var fhandle = FileHandle.CreateWin32(fileName, FileAccess.GenericWrite))
                 this.WriteDump(fhandle, type);
         }
 

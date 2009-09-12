@@ -155,8 +155,8 @@ namespace ProcessHacker.Native
 
             if (result == VerifyResult.NoSignature)
             {
-                using (FileHandle sourceFile = new FileHandle(fileName, FileAccess.GenericRead, FileShareMode.Read,
-                    FileCreationDisposition.OpenExisting))
+                using (FileHandle sourceFile = FileHandle.CreateWin32(fileName, FileAccess.GenericRead, FileShareMode.Read,
+                    FileCreationDispositionWin32.OpenExisting))
                 {
                     byte[] hash = new byte[256];
                     int hashLength = 256;

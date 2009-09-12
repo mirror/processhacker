@@ -456,7 +456,7 @@ namespace ProcessHacker.Components
                 try
                 {
                     using (var phandle = new ProcessHandle(_pid, ProcessAccess.VmRead))
-                    using (var fhandle = new FileHandle(sfd.FileName, FileAccess.GenericWrite, FileShareMode.Read))
+                    using (var fhandle = FileHandle.CreateWin32(sfd.FileName, FileAccess.GenericWrite, FileShareMode.Read))
                     {
                         foreach (ListViewItem litem in listMemory.SelectedItems)
                         {

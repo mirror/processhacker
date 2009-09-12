@@ -157,7 +157,7 @@ namespace ProcessHacker.Native.Api
             [In] FileAccess DesiredAccess,
             [In] FileShareMode ShareMode,
             [In] [Optional] int SecurityAttributes,
-            [In] FileCreationDisposition CreationDisposition,
+            [In] FileCreationDispositionWin32 CreationDisposition,
             [In] int FlagsAndAttributes,
             [In] [Optional] IntPtr TemplateFile
             );

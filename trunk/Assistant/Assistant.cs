@@ -119,7 +119,7 @@ namespace Assistant
             {
                 string mailslotName = args["-E"];
 
-                using (var fhandle = new FileHandle(@"\\.\mailslot\" + mailslotName, FileAccess.GenericWrite))
+                using (var fhandle = new FileHandle(@"\Device\Mailslot\" + mailslotName, 0, FileAccess.GenericWrite))
                     fhandle.Write(exitCode.GetBytes());
             }
 

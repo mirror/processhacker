@@ -140,7 +140,7 @@ namespace ProcessHacker.Native.Api
         ForceIfHung = 0x10
     }
 
-    public enum FileCreationDisposition : uint
+    public enum FileCreationDispositionWin32 : uint
     {
         /// <summary>
         /// Creates a new file. The function fails if the specified file already exists.
@@ -163,17 +163,6 @@ namespace ProcessHacker.Native.Api
         /// The function fails if the file does not exist.
         /// </summary>
         TruncateExisting = 5
-    }
-
-    [Flags]
-    public enum FileShareMode : uint
-    {
-        Exclusive = 0,
-        Read = 1,
-        Write = 2,
-        Delete = 4,
-        ReadWrite = Read | Write,
-        ReadWriteDelete = Read | Write | Delete
     }
 
     public enum GdiBlendMode : int

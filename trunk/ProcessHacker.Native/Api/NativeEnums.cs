@@ -238,6 +238,75 @@ namespace ProcessHacker.Native.Api
         FiveHundredAndTwelveByte = 0x1ff
     }
 
+    [Flags]
+    public enum FileAttributes : uint
+    {
+        ReadOnly = 0x1,
+        Hidden = 0x2,
+        System = 0x4,
+
+        Directory = 0x10,
+        Archive = 0x20,
+        Device = 0x40,
+        Normal = 0x80,
+
+        Temporary = 0x100,
+        SparseFile = 0x200,
+        ReparsePoint = 0x400,
+        Compressed = 0x800,
+
+        Offline = 0x1000,
+        NotContextIndexed = 0x2000,
+        Encrypted = 0x4000
+    }
+
+    [Flags]
+    public enum FileCreateOptions : uint
+    {
+        DirectoryFile = 0x1,
+        WriteThrough = 0x2,
+        SequentialOnly = 0x4,
+        NoIntermediateBuffering = 0x8,
+
+        SynchronousIoAlert = 0x10,
+        SynchronousIoNonAlert = 0x20,
+        NonDirectoryFile = 0x40,
+        CreateTreeConnection = 0x80,
+
+        CompleteIfOpLocked = 0x100,
+        NoEaKnowledge = 0x200,
+        OpenForRecovery = 0x400,
+        RandomAccess = 0x800,
+
+        DeleteOnClose = 0x1000,
+        OpenByFileId = 0x2000,
+        OpenForBackupIntent = 0x4000,
+        NoCompression = 0x8000,
+
+        ReserveOpFilter = 0x100000,
+        OpenReparsePoint = 0x200000,
+        OpenNoRecall = 0x400000,
+        OpenForFreeSpaceQuery = 0x800000,
+
+        CopyStructuredStorage = 0x41,
+        StructuredStorage = 0x441,
+
+        ValidOptionFlags = 0xffffff,
+        ValidPipeOptionFlags = 0x32,
+        ValidMailslotOptionFlags = 0x32,
+        ValidSetFlags = 0x36
+    }
+
+    public enum FileCreationDisposition : int
+    {
+        Supersede = 0x0,
+        Open = 0x1,
+        Create = 0x2,
+        OpenIf = 0x3,
+        Overwrite = 0x4,
+        OverwriteIf = 0x5
+    }
+
     public enum FileInformationClass : int
     {
         FileDirectoryInformation = 1, // dir
@@ -334,6 +403,18 @@ namespace ProcessHacker.Native.Api
         SkipCompletionPort = 0x02000000,
         SkipSetEvent = 0x04000000,
         SkipSetFastIo = 0x08000000
+    }
+
+    [Flags]
+    public enum FileShareMode : uint
+    {
+        Exclusive = 0x0,
+        Read = 0x1,
+        Write = 0x2,
+        Delete = 0x4,
+
+        ReadWrite = Read | Write,
+        ReadWriteDelete = Read | Write | Delete
     }
 
     public enum FsInformationClass : int
@@ -753,12 +834,6 @@ namespace ProcessHacker.Native.Api
         Inbound = 0,
         Outbound = 1,
         FullDuplex = 2
-    }
-
-    public enum PipeReadMode : int
-    {
-        ByteStream = 0,
-        Message = 1
     }
 
     public enum PipeState : uint

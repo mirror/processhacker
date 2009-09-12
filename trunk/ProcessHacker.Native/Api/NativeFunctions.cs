@@ -134,6 +134,18 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCancelIoFile(
+            [In] IntPtr FileHandle,
+            [Out] out IoStatusBlock IoStatusBlock
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCancelIoFile(
+            [In] IntPtr FileHandle,
+            [In] IntPtr IoStatusBlock
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtCancelTimer(
             [In] IntPtr TimerHandle,
             [Out] [Optional] out bool CurrentState
@@ -293,6 +305,21 @@ namespace ProcessHacker.Native.Api
             [Out] out IntPtr EventPairHandle,
             [In] EventPairAccess DesiredAccess,
             [In] [Optional] IntPtr ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateFile(
+            [Out] out IntPtr FileHandle,
+            [In] FileAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] [Optional] ref long allocationSize,
+            [In] FileAttributes fileAttributes,
+            [In] FileShareMode shareAccess,
+            [In] FileCreationDisposition createDisposition,
+            [In] FileCreateOptions createOptions,
+            [In] [Optional] IntPtr EaBuffer,
+            [In] int EaLength
             );
 
         [DllImport("ntdll.dll")]
@@ -859,7 +886,7 @@ namespace ProcessHacker.Native.Api
             [In] ref ObjectAttributes ObjectAttributes,
             [Out] out IoStatusBlock IoStatusBlock,
             [In] FileShareMode ShareAccess,
-            [In] FileCreationDisposition OpenOptions
+            [In] FileCreateOptions OpenOptions
             );
 
         [DllImport("ntdll.dll")]
@@ -1529,6 +1556,45 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtReadFile(
+            [In] IntPtr FileHandle,
+            [In] [Optional] IntPtr Event,
+            [In] [Optional] IoApcRoutine ApcRoutine,
+            [In] [Optional] IntPtr ApcContext,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] IntPtr Buffer,
+            [In] int Length,
+            [In] [Optional] ref long ByteOffset,
+            [In] [Optional] ref int Key
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtReadFile(
+            [In] IntPtr FileHandle,
+            [In] [Optional] IntPtr Event,
+            [In] [Optional] IoApcRoutine ApcRoutine,
+            [In] [Optional] IntPtr ApcContext,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] IntPtr Buffer,
+            [In] int Length,
+            [In] [Optional] IntPtr ByteOffset,
+            [In] [Optional] IntPtr Key
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtReadFile(
+            [In] IntPtr FileHandle,
+            [In] [Optional] IntPtr Event,
+            [In] [Optional] IoApcRoutine ApcRoutine,
+            [In] [Optional] IntPtr ApcContext,
+            [In] IntPtr IoStatusBlock,
+            [In] IntPtr Buffer,
+            [In] int Length,
+            [In] [Optional] IntPtr ByteOffset,
+            [In] [Optional] IntPtr Key
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtReadOnlyEnlistment(
             [In] IntPtr EnlistmentHandle,
             [In] [Optional] ref long TmVirtualClock
@@ -1739,6 +1805,15 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr DebugObjectInformation,
             [In] int DebugObjectInformationLength,
             [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetInformationFile(
+            [In] IntPtr FileHandle,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] IntPtr FileInformation,
+            [In] int Length,
+            [In] FileInformationClass FileInformationClass
             );
 
         [DllImport("ntdll.dll")]
@@ -1980,6 +2055,45 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtWaitLowEventPair(
             [In] IntPtr EventPairHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtWriteFile(
+            [In] IntPtr FileHandle,
+            [In] [Optional] IntPtr Event,
+            [In] [Optional] IoApcRoutine ApcRoutine,
+            [In] [Optional] IntPtr ApcContext,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] IntPtr Buffer,
+            [In] int Length,
+            [In] [Optional] ref long ByteOffset,
+            [In] [Optional] ref int Key
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtWriteFile(
+            [In] IntPtr FileHandle,
+            [In] [Optional] IntPtr Event,
+            [In] [Optional] IoApcRoutine ApcRoutine,
+            [In] [Optional] IntPtr ApcContext,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] IntPtr Buffer,
+            [In] int Length,
+            [In] [Optional] IntPtr ByteOffset,
+            [In] [Optional] IntPtr Key
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtWriteFile(
+            [In] IntPtr FileHandle,
+            [In] [Optional] IntPtr Event,
+            [In] [Optional] IoApcRoutine ApcRoutine,
+            [In] [Optional] IntPtr ApcContext,
+            [In] IntPtr IoStatusBlock,
+            [In] IntPtr Buffer,
+            [In] int Length,
+            [In] [Optional] IntPtr ByteOffset,
+            [In] [Optional] IntPtr Key
             );
 
         [DllImport("ntdll.dll")]

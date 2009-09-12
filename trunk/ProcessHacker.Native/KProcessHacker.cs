@@ -180,10 +180,9 @@ namespace ProcessHacker.Native
             { }
 
             _fileHandle = new FileHandle(
-                "\\\\.\\" + deviceName, 
-                FileAccess.GenericRead | FileAccess.GenericWrite,
-                FileShareMode.Read | FileShareMode.Write,
-                FileCreationDisposition.OpenAlways
+                @"\Device\" + deviceName,
+                0,
+                FileAccess.GenericRead | FileAccess.GenericWrite
                 );
             _fileHandle.SetHandleFlags(Win32HandleFlags.ProtectFromClose, Win32HandleFlags.ProtectFromClose);
 

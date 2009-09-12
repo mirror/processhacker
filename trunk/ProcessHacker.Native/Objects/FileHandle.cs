@@ -21,10 +21,12 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using ProcessHacker.Common;
+using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using System.Collections.Generic;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -33,6 +35,8 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class FileHandle : NativeHandle<FileAccess>
     {
+        public delegate bool EnumFilesDelegate(FileEntry file);
+
         public static FileHandle FromFileStream(System.IO.FileStream fileStream)
         {
             return FromHandle(fileStream.SafeFileHandle.DangerousGetHandle());
@@ -43,6 +47,108 @@ namespace ProcessHacker.Native.Objects
             return new FileHandle(handle, false);
         }
 
+        public static FileHandle Create(
+            FileAccess access,
+            string fileName,
+            FileShareMode shareMode,
+            FileCreationDisposition creationDisposition,
+            FileCreateOptions createOptions
+            )
+        {
+            return Create(access, fileName, null, shareMode, creationDisposition, createOptions);
+        }
+
+        public static FileHandle Create(
+            FileAccess access,
+            string fileName,
+            FileHandle rootDirectory,
+            FileShareMode shareMode,
+            FileCreationDisposition creationDisposition,
+            FileCreateOptions createOptions
+            )
+        {
+            FileIoStatus status;
+
+            return Create(
+                access,
+                fileName,
+                rootDirectory,
+                shareMode,
+                creationDisposition,
+                0,
+                FileAttributes.Normal,
+                createOptions,
+                out status
+                );
+        }
+
+        public static FileHandle Create(
+            FileAccess access,
+            string fileName,
+            FileHandle rootDirectory,
+            FileShareMode shareMode,
+            FileCreationDisposition creationDisposition,
+            long allocationSize,
+            FileAttributes attributes,
+            FileCreateOptions createOptions,
+            out FileIoStatus ioStatus
+            )
+        {
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(fileName, 0, rootDirectory);
+            IoStatusBlock isb;
+            IntPtr handle;
+
+            try
+            {
+                if ((status = Win32.NtCreateFile(
+                    out handle,
+                    access,
+                    ref oa,
+                    out isb,
+                    ref allocationSize,
+                    attributes,
+                    shareMode,
+                    creationDisposition,
+                    createOptions,
+                    IntPtr.Zero,
+                    0
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                ioStatus = (FileIoStatus)isb.Information.ToInt32();
+            }
+            finally
+            {
+                oa.Dispose();
+            }
+
+            return new FileHandle(handle, true);
+        }
+
+        public static FileHandle CreateWin32(string fileName, FileAccess desiredAccess)
+        {
+            return CreateWin32(fileName, desiredAccess, FileShareMode.Exclusive);
+        }
+
+        public static FileHandle CreateWin32(string fileName, FileAccess desiredAccess, FileShareMode shareMode)
+        {
+            return CreateWin32(fileName, desiredAccess, shareMode, FileCreationDispositionWin32.OpenAlways);
+        }
+
+        public static FileHandle CreateWin32(string fileName, FileAccess desiredAccess, FileShareMode shareMode,
+            FileCreationDispositionWin32 creationDisposition)
+        {
+            IntPtr handle;
+            
+            handle = Win32.CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, IntPtr.Zero);
+
+            if (handle == NativeHandle.MinusOne)
+                Win32.ThrowLastError();
+
+            return new FileHandle(handle, true);
+        }
+
         protected FileHandle()
         { }
 
@@ -50,44 +156,193 @@ namespace ProcessHacker.Native.Objects
             : base(handle, owned)
         { }
 
-        public FileHandle(string fileName, FileAccess desiredAccess)
-            : this(fileName, desiredAccess, FileShareMode.Exclusive)
+        /// <summary>
+        /// Opens an existing file for synchronous access.
+        /// </summary>
+        /// <param name="fileName">An object name identifying the file to open.</param>
+        /// <param name="shareMode">The share mode to use.</param>
+        /// <param name="access">The desired access to the file.</param>
+        public FileHandle(string fileName, FileShareMode shareMode, FileAccess access)
+            : this(fileName, null, shareMode, FileCreateOptions.NonDirectoryFile | FileCreateOptions.SynchronousIoNonAlert, access)
         { }
 
-        public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode)
-            : this(fileName, desiredAccess, shareMode, FileCreationDisposition.OpenAlways)
+        /// <summary>
+        /// Opens an existing file for synchronous access.
+        /// </summary>
+        /// <param name="fileName">An object name identifying the file to open.</param>
+        /// <param name="shareMode">The share mode to use.</param>
+        /// <param name="openOptions">
+        /// Open options to use. Most callers will specify NonDirectoryFile and 
+        /// SynchronousIoNonAlert for working with normal files.
+        /// </param>
+        /// <param name="access">The desired access to the file.</param>
+        public FileHandle(string fileName, FileShareMode shareMode, FileCreateOptions openOptions, FileAccess access)
+            : this(fileName, null, shareMode, openOptions, access)
         { }
 
-        public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode,
-            FileCreationDisposition creationDisposition)
+        /// <summary>
+        /// Opens an existing file for synchronous access.
+        /// </summary>
+        /// <param name="fileName">An object name identifying the file to open.</param>
+        /// <param name="rootDirectory">The directory to open the file relative to.</param>
+        /// <param name="shareMode">The share mode to use.</param>
+        /// <param name="openOptions">
+        /// Open options to use. Most callers will specify NonDirectoryFile and 
+        /// SynchronousIoNonAlert for working with normal files.
+        /// </param>
+        /// <param name="access">The desired access to the file.</param>
+        public FileHandle(
+            string fileName,
+            FileHandle rootDirectory,
+            FileShareMode shareMode,
+            FileCreateOptions openOptions,
+            FileAccess access
+            )
         {
-            this.Handle = Win32.CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, IntPtr.Zero);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(fileName, 0, rootDirectory);
+            IoStatusBlock isb;
+            IntPtr handle;
 
-            if (this.Handle.ToInt32() == -1)
+            try
             {
-                this.MarkAsInvalid();
-                Win32.ThrowLastError();
+                if ((status = Win32.NtOpenFile(
+                    out handle,
+                    access,
+                    ref oa,
+                    out isb,
+                    shareMode,
+                    openOptions
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
             }
+            finally
+            {
+                oa.Dispose();
+            }
+
+            this.Handle = handle;
+        }
+
+        public IoStatusBlock CancelIo()
+        {
+            NtStatus status;
+            IoStatusBlock isb;
+
+            if ((status = Win32.NtCancelIoFile(this, out isb)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return isb;
+        }
+
+        internal void CancelIo(IntPtr isb)
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtCancelIoFile(this, isb)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
+
+        public void EnumFiles(EnumFilesDelegate callback)
+        {
+            NtStatus status;
+            IoStatusBlock isb;
+            bool firstTime = true;
+
+            using (var data = new MemoryAlloc(0x100))
+            {
+                while (true)
+                {
+                    // Query the directory, doubling the buffer size each 
+                    // time NtQueryDirectoryFile fails.
+
+                    while (true)
+                    {
+                        status = Win32.NtQueryDirectoryFile(
+                            this,
+                            IntPtr.Zero,
+                            null,
+                            IntPtr.Zero,
+                            out isb,
+                            data,
+                            data.Size,
+                            FileInformationClass.FileDirectoryInformation,
+                            false,
+                            IntPtr.Zero,
+                            firstTime
+                            );
+
+                        if (status == NtStatus.BufferOverflow)
+                            data.Resize(data.Size * 2);
+                        else
+                            break;
+                    }
+
+                    // If we don't have any entries to read, exit.
+                    if (status == NtStatus.NoMoreFiles)
+                        break;
+
+                    // Handle any errors.
+                    if (status >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+
+                    // Read the list of files we got in this batch.
+
+                    int i = 0;
+
+                    while (true)
+                    {
+                        FileDirectoryInformation info = data.ReadStruct<FileDirectoryInformation>(i, 0);
+                        string name = data.ReadUnicodeString(
+                            i + FileDirectoryInformation.FileNameOffset,
+                            info.FileNameLength / 2
+                            );
+
+                        callback(new FileEntry(
+                            name,
+                            info.FileIndex,
+                            Utils.GetDateTimeFromLongTime(info.CreationTime),
+                            Utils.GetDateTimeFromLongTime(info.LastAccessTime),
+                            Utils.GetDateTimeFromLongTime(info.LastWriteTime),
+                            Utils.GetDateTimeFromLongTime(info.ChangeTime),
+                            info.EndOfFile,
+                            info.AllocationSize,
+                            info.FileAttributes
+                            ));
+
+                        if (info.NextEntryOffset == 0)
+                            break;
+                        else
+                            i += info.NextEntryOffset;
+                    }
+
+                    firstTime = false;
+
+                    // Go back and get another batch of file entries.
+                }
+            }
+        }
+
+        public FileBasicInformation GetBasicInformation()
+        {
+            return this.QueryStruct<FileBasicInformation>(FileInformationClass.FileBasicInformation);
         }
 
         public string GetFileName()
         {
             NtStatus status;
-            IoStatusBlock ioStatusBlock;
+            IoStatusBlock isb;
 
             using (var data = new MemoryAlloc(0x1000))
             {
                 if ((status = Win32.NtQueryInformationFile(
                     this,
-                    out ioStatusBlock,
+                    out isb,
                     data,
                     data.Size,
                     FileInformationClass.FileNameInformation
                     )) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
-
-                if (ioStatusBlock.Status >= NtStatus.Error)
-                    Win32.ThrowLastError(ioStatusBlock.Status);
 
                 FileNameInformation info = data.ReadStruct<FileNameInformation>();
 
@@ -102,37 +357,40 @@ namespace ProcessHacker.Native.Objects
         {
             List<FileEntry> files = new List<FileEntry>();
 
+            this.EnumFiles((file) =>
+                {
+                    files.Add(file);
+                    return true;
+                });
+
             return files.ToArray();
         }
 
         public long GetSize()
         {
-            long fileSize;
+            return this.GetStandardInformation().EndOfFile;
+        }
 
-            if (!Win32.GetFileSizeEx(this, out fileSize))
-                Win32.ThrowLastError();
-
-            return fileSize;
+        public FileStandardInformation GetStandardInformation()
+        {
+            return this.QueryStruct<FileStandardInformation>(FileInformationClass.FileStandardInformation);
         }
 
         public string GetVolumeFsName()
         {
             NtStatus status;
-            IoStatusBlock ioStatusBlock;
+            IoStatusBlock isb;
 
             using (var data = new MemoryAlloc(0x200))
             {
                 if ((status = Win32.NtQueryVolumeInformationFile(
                     this,
-                    out ioStatusBlock,
+                    out isb,
                     data,
                     data.Size,
                     FsInformationClass.FileFsAttributeInformation
                     )) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
-
-                if (ioStatusBlock.Status >= NtStatus.Error)
-                    Win32.ThrowLastError(ioStatusBlock.Status);
 
                 FileFsAttributeInformation info = data.ReadStruct<FileFsAttributeInformation>();
 
@@ -146,21 +404,18 @@ namespace ProcessHacker.Native.Objects
         public string GetVolumeLabel()
         {
             NtStatus status;
-            IoStatusBlock ioStatusBlock;
+            IoStatusBlock isb;
 
             using (var data = new MemoryAlloc(0x200))
             {
                 if ((status = Win32.NtQueryVolumeInformationFile(
                     this,
-                    out ioStatusBlock,
+                    out isb,
                     data,
                     data.Size,
                     FsInformationClass.FileFsVolumeInformation
                     )) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
-
-                if (ioStatusBlock.Status >= NtStatus.Error)
-                    Win32.ThrowLastError(ioStatusBlock.Status);
 
                 FileFsVolumeInformation info = data.ReadStruct<FileFsVolumeInformation>();
 
@@ -247,6 +502,27 @@ namespace ProcessHacker.Native.Objects
             return isb.Information.ToInt32();
         }
 
+        private T QueryStruct<T>(FileInformationClass infoClass)
+            where T : struct
+        {
+            NtStatus status;
+            IoStatusBlock isb;
+
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(T))))
+            {
+                if ((status = Win32.NtQueryInformationFile(
+                    this,
+                    out isb,
+                    data,
+                    data.Size,
+                    infoClass
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                return data.ReadStruct<T>();
+            }
+        }
+
         /// <summary>
         /// Reads data from the file.
         /// </summary>
@@ -268,12 +544,86 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The number of bytes read from the file.</returns>
         public int Read(byte[] buffer)
         {
-            int bytesRead;
+            unsafe
+            {
+                fixed (byte* bufferPtr = buffer)
+                {
+                    return this.Read(bufferPtr, buffer.Length);
+                }
+            }
+        }
 
-            if (!Win32.ReadFile(this, buffer, buffer.Length, out bytesRead, IntPtr.Zero))
-                Win32.ThrowLastError();
+        public unsafe int Read(void* buffer, int length)
+        {
+            NtStatus status;
+            IoStatusBlock isb;
 
-            return bytesRead;
+            if ((status = Win32.NtReadFile(
+                this,
+                IntPtr.Zero,
+                null,
+                IntPtr.Zero,
+                out isb,
+                new IntPtr(buffer),
+                length,
+                IntPtr.Zero,
+                IntPtr.Zero
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return isb.Information.ToInt32();
+        }
+
+        public NtStatus Read(MemoryRegion buffer, AsyncIoContext asyncContext)
+        {
+            NtStatus status;
+
+            asyncContext.KeepAlive(buffer);
+
+            if ((status = Win32.NtReadFile(
+                this,
+                asyncContext.EventHandle,
+                null,
+                IntPtr.Zero,
+                asyncContext.StatusMemory,
+                buffer,
+                buffer.Size,
+                IntPtr.Zero,
+                IntPtr.Zero
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return status;
+        }
+
+        public void SetIoCompletion(IoCompletionHandle ioCompletionHandle, IntPtr keyContext)
+        {
+            FileCompletionInformation info = new FileCompletionInformation();
+
+            info.Port = ioCompletionHandle;
+            info.Key = keyContext;
+            this.SetStruct<FileCompletionInformation>(FileInformationClass.FileCompletionInformation, info);
+        }
+
+        private void SetStruct<T>(FileInformationClass infoClass, T info)
+            where T : struct
+        {
+            NtStatus status;
+            IoStatusBlock isb;
+
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(T))))
+            {
+                data.WriteStruct<T>(info);
+
+                if ((status = Win32.NtSetInformationFile(
+                    this,
+                    out isb,
+                    data,
+                    data.Size,
+                    infoClass
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
         }
 
         /// <summary>
@@ -283,12 +633,13 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The number of bytes written to the file.</returns>
         public int Write(byte[] buffer)
         {
-            int bytesWritten;
-
-            if (!Win32.WriteFile(this, buffer, buffer.Length, out bytesWritten, IntPtr.Zero))
-                Win32.ThrowLastError();
-
-            return bytesWritten;
+            unsafe
+            {
+                fixed (byte* bufferPtr = buffer)
+                {
+                    return this.Write(bufferPtr, buffer.Length);
+                }
+            }
         }
 
         /// <summary>
@@ -299,28 +650,199 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The number of bytes written to the file.</returns>
         public unsafe int Write(void* buffer, int length)
         {
-            int bytesWritten;
+            NtStatus status;
+            IoStatusBlock isb;
 
-            if (!Win32.WriteFile(this, buffer, length, out bytesWritten, IntPtr.Zero))
-                Win32.ThrowLastError();
+            if ((status = Win32.NtWriteFile(
+                this,
+                IntPtr.Zero,
+                null,
+                IntPtr.Zero,
+                out isb,
+                new IntPtr(buffer),
+                length,
+                IntPtr.Zero,
+                IntPtr.Zero
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
 
-            return bytesWritten;
+            return isb.Information.ToInt32();
+        }
+
+        public NtStatus Write(MemoryRegion buffer, AsyncIoContext asyncContext)
+        {
+            NtStatus status;
+
+            asyncContext.KeepAlive(buffer);
+
+            if ((status = Win32.NtWriteFile(
+                this,
+                asyncContext.EventHandle,
+                null,
+                IntPtr.Zero,
+                asyncContext.StatusMemory,
+                buffer,
+                buffer.Size,
+                IntPtr.Zero,
+                IntPtr.Zero
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return status;
+        }
+    }
+
+    public sealed class AsyncIoContext : BaseObject
+    {
+        private EventHandle _eventHandle;
+        private FileHandle _fileHandle;
+        private MemoryAlloc _isb;
+        private bool _canceled = false;
+
+        private List<BaseObject> _keepAliveList = new List<BaseObject>();
+        private object _tag;
+
+        public AsyncIoContext(FileHandle fileHandle)
+        {
+            _eventHandle = EventHandle.Create(EventAccess.All, EventType.NotificationEvent, false);
+            _fileHandle = fileHandle;
+            _isb = new MemoryAlloc(Marshal.SizeOf(typeof(IoStatusBlock)));
+
+            _fileHandle.Reference();
+        }
+
+        protected override void DisposeObject(bool disposing)
+        {
+            if (!this.Completed)
+            {
+                throw new InvalidOperationException(
+                    "An attempt was made to dispose an asynchronous I/O context object " +
+                    "before the I/O operation has finished."
+                    );
+            }
+
+            this.ClearKeepAlive();
+
+            if (_eventHandle != null)
+                _eventHandle.Dispose();
+            if (_fileHandle != null)
+                _fileHandle.Dereference();
+            if (_isb != null)
+                _isb.Dispose();
+        }
+
+        public bool Canceled
+        {
+            get { return _canceled; }
+        }
+
+        public bool Completed
+        {
+            get { return _eventHandle.GetBasicInformation().EventState != 0; }
+        }
+
+        public EventHandle EventHandle
+        {
+            get { return _eventHandle; }
+        }
+
+        public FileHandle FileHandle
+        {
+            get { return _fileHandle; }
+        }
+
+        public IoStatusBlock Status
+        {
+            get
+            {
+                if (!this.Completed)
+                    throw new InvalidOperationException("The I/O operation has not yet completed.");
+
+                return _isb.ReadStruct<IoStatusBlock>();
+            }
+        }
+
+        internal MemoryRegion StatusMemory
+        {
+            get { return _isb; }
+        }
+
+        public object Tag
+        {
+            get { return _tag; }
+            set { _tag = value; }
+        }
+
+        public void Cancel()
+        {
+            _fileHandle.CancelIo(_isb);
+            _canceled = true;
+            _eventHandle.Set();
+
+            this.ClearKeepAlive();
+        }
+
+        private void ClearKeepAlive()
+        {
+            foreach (var obj in _keepAliveList)
+                obj.Dereference();
+
+            _keepAliveList.Clear();
+        }
+
+        internal void KeepAlive(BaseObject obj)
+        {
+            _keepAliveList.Add(obj);
+            obj.Reference();
+        }
+
+        public void Wait()
+        {
+            _eventHandle.Wait();
+        }
+
+        public void Wait(int timeoutMilliseconds)
+        {
+            _eventHandle.Wait(timeoutMilliseconds * Win32.TimeMsTo100Ns);
         }
     }
 
     public class FileEntry
     {
-        public string Name;
-        public int Index;
+        public FileEntry(
+            string name,
+            int index,
+            DateTime creationTime,
+            DateTime lastAccessTime,
+            DateTime lastWriteTime,
+            DateTime changeTime,
+            long size,
+            long allocationSize,
+            int attributes
+            )
+        {
+            this.Name = name;
+            this.Index = index;
+            this.CreationTime = creationTime;
+            this.LastAccessTime = lastAccessTime;
+            this.LastWriteTime = lastWriteTime;
+            this.ChangeTime = changeTime;
+            this.Size = size;
+            this.AllocationSize = allocationSize;
+            this.Attributes = attributes;
+        }
 
-        public DateTime CreationTime;
-        public DateTime LastAccessTime;
-        public DateTime LastWriteTime;
-        public DateTime ChangeTime;
+        public string Name { get; private set; }
+        public int Index { get; private set; }
 
-        public long Size;
-        public long AllocationSize;
+        public DateTime CreationTime { get; private set; }
+        public DateTime LastAccessTime { get; private set; }
+        public DateTime LastWriteTime { get; private set; }
+        public DateTime ChangeTime { get; private set; }
 
-        public int Attributes;
+        public long Size { get; private set; }
+        public long AllocationSize { get; private set; }
+
+        public int Attributes { get; private set; }
     }
 }

@@ -435,6 +435,13 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct FileCompletionInformation
+    {
+        public IntPtr Port;
+        public IntPtr Key;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct FileDirectoryInformation
     {
         public static int FileNameOffset = 
@@ -561,6 +568,20 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct FileStreamInformation
+    {
+        public static int StreamNameOffset = 
+            Marshal.OffsetOf(typeof(FileStreamInformation), "StreamName").ToInt32();
+
+        public int NextEntryOffset;
+        public int StreamNameLength;
+        public long StreamSize;
+        public long StreamAllocationSize;
+        public char StreamName;
+        // Stream name string follows (WCHAR).
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct FloatingSaveArea
     {
         public int ControlWord;
@@ -635,7 +656,7 @@ namespace ProcessHacker.Native.Api
         public ulong OtherTransferCount;
     }
 
-    [StructLayout(LayoutKind.Explicit)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct IoStatusBlock
     {
         public IoStatusBlock(NtStatus status)
@@ -645,8 +666,8 @@ namespace ProcessHacker.Native.Api
         public IoStatusBlock(NtStatus status, IntPtr information)
         {
             this.Pointer = IntPtr.Zero;
-            this.Status = status;
             this.Information = information;
+            this.Status = status;
         }
 
         public IoStatusBlock(IntPtr pointer)
@@ -655,19 +676,26 @@ namespace ProcessHacker.Native.Api
 
         public IoStatusBlock(IntPtr pointer, IntPtr information)
         {
-            this.Status = NtStatus.Success;
             this.Pointer = pointer;
             this.Information = information;
         }
 
-        [FieldOffset(0)]
-        public NtStatus Status;
-        [FieldOffset(0)]
         public IntPtr Pointer;
-
-        // HACK, offset is 8 on x64
-        [FieldOffset(4)]
         public IntPtr Information;
+
+        public unsafe NtStatus Status
+        {
+            get
+            {
+                fixed (IoStatusBlock* thisPtr = &this)
+                    return *(NtStatus*)&thisPtr->Pointer;
+            }
+            set
+            {
+                fixed (IoStatusBlock* thisPtr = &this)
+                    *(NtStatus*)&thisPtr->Pointer = value;
+            }
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
