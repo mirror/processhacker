@@ -223,9 +223,9 @@ namespace ProcessHacker.Native
             get { return _features; }
         }
 
-        private uint CtlCode(Control ctl)
+        private int CtlCode(Control ctl)
         {
-            return _baseControlNumber + ((uint)ctl * 4);
+            return (int)(_baseControlNumber + ((uint)ctl * 4));
         }
 
         /// <summary>

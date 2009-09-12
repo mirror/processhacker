@@ -224,6 +224,41 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
+        public AsyncIoContext BeginIoControl(int controlCode, MemoryRegion inBuffer, MemoryRegion outBuffer)
+        {            
+            NtStatus status;
+            AsyncIoContext asyncContext = new AsyncIoContext(this);
+
+            int inLen = inBuffer != null ? inBuffer.Size : 0;
+            int outLen = outBuffer != null ? outBuffer.Size : 0;
+
+            if (inBuffer != null)
+                asyncContext.KeepAlive(inBuffer);
+            if (outBuffer != null)
+                asyncContext.KeepAlive(outBuffer);
+
+            if ((status = Win32.NtDeviceIoControlFile(
+                this,
+                asyncContext.EventHandle,
+                null,
+                IntPtr.Zero,
+                asyncContext.StatusMemory,
+                controlCode,
+                inBuffer,
+                inLen,
+                outBuffer,
+                outLen
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            asyncContext.NotifyStarted();
+
+            if (status == NtStatus.Success)
+                asyncContext.CompletedSynchronously = true;
+
+            return asyncContext;
+        }
+
         public AsyncIoContext BeginRead(MemoryRegion buffer)
         {
             NtStatus status;
@@ -243,6 +278,8 @@ namespace ProcessHacker.Native.Objects
                 IntPtr.Zero
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+
+            asyncContext.NotifyStarted();
 
             if (status == NtStatus.Success)
                 asyncContext.CompletedSynchronously = true;
@@ -270,6 +307,8 @@ namespace ProcessHacker.Native.Objects
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
+            asyncContext.NotifyStarted();
+
             if (status == NtStatus.Success)
                 asyncContext.CompletedSynchronously = true;
 
@@ -293,6 +332,16 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtCancelIoFile(this, isb)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+        }
+
+        public int EndIoControl(AsyncIoContext asyncContext)
+        {
+            asyncContext.Wait();
+
+            if (asyncContext.Status.Status >= NtStatus.Error)
+                Win32.ThrowLastError(asyncContext.Status.Status);
+
+            return asyncContext.Status.Information.ToInt32();
         }
 
         public int EndRead(AsyncIoContext asyncContext)
@@ -321,12 +370,13 @@ namespace ProcessHacker.Native.Objects
             IoStatusBlock isb;
             bool firstTime = true;
 
-            using (var data = new MemoryAlloc(0x100))
+            using (var data = new MemoryAlloc(0x20))
             {
                 while (true)
                 {
                     // Query the directory, doubling the buffer size each 
-                    // time NtQueryDirectoryFile fails.
+                    // time NtQueryDirectoryFile fails. We will also handle 
+                    // any pending status.
 
                     while (true)
                     {
@@ -344,10 +394,16 @@ namespace ProcessHacker.Native.Objects
                             firstTime
                             );
 
-                        if (status == NtStatus.BufferOverflow)
+                        if (status == NtStatus.BufferTooSmall || status == NtStatus.InfoLengthMismatch)
                             data.Resize(data.Size * 2);
                         else
                             break;
+                    }
+
+                    if (status == NtStatus.Pending)
+                    {
+                        this.Wait();
+                        status = isb.Status;
                     }
 
                     // If we don't have any entries to read, exit.
@@ -505,7 +561,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="inBuffer">The input.</param>
         /// <param name="outBuffer">The output buffer.</param>
         /// <returns>The bytes returned in the output buffer.</returns>
-        public unsafe int IoControl(uint controlCode, byte[] inBuffer, byte[] outBuffer)
+        public unsafe int IoControl(int controlCode, byte[] inBuffer, byte[] outBuffer)
         {
             byte[] inArr = inBuffer;
             int inLen = inArr != null ? inBuffer.Length : 0;
@@ -521,9 +577,12 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        public unsafe int IoControl(uint controlCode,
-            byte* inBuffer, int inBufferLength,
-            byte[] outBuffer)
+        public unsafe int IoControl(
+            int controlCode,
+            byte* inBuffer,
+            int inBufferLength,
+            byte[] outBuffer
+            )
         {
             int outLen = outBuffer != null ? outBuffer.Length : 0;
 
@@ -533,42 +592,33 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        public unsafe int IoControl(uint controlCode,
-            byte* inBuffer, int inBufferLength,
-            byte* outBuffer, int outBufferLength)
+        public unsafe int IoControl(
+            int controlCode,
+            byte* inBuffer,
+            int inBufferLength,
+            byte* outBuffer,
+            int outBufferLength
+            )
         {
-            byte* dummy = stackalloc byte[0];
-            int inLen = inBuffer != null ? inBufferLength : 0;
-            int outLen = outBuffer != null ? outBufferLength : 0;
-
-            if (inBuffer == null)
-                inBuffer = dummy;
-            if (outBuffer == null)
-                outBuffer = dummy;
-
             NtStatus status;
             IoStatusBlock isb;
 
-            // The reason I'm using NtDeviceIoControlFile is because DeviceIoControl 
-            // converts the NTSTATUS to a Win32 error, and sometimes I need 
-            // the actual NTSTATUS value.
+            int inLen = inBuffer != null ? inBufferLength : 0;
+            int outLen = outBuffer != null ? outBufferLength : 0;
+
             if ((status = Win32.NtDeviceIoControlFile(
                 this,
                 IntPtr.Zero,
-                IntPtr.Zero,
+                null,
                 IntPtr.Zero,
                 out isb,
-                (int)controlCode,
+                controlCode,
                 inBuffer,
                 inLen,
                 outBuffer,
                 outLen
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
-
-            // Not a good idea, but...
-            if (isb.Status >= NtStatus.Error)
-                Win32.ThrowLastError(isb.Status);
 
             // Information contains the return length.
             return isb.Information.ToInt32();
@@ -727,6 +777,7 @@ namespace ProcessHacker.Native.Objects
         private MemoryAlloc _isb;
         private bool _canceled = false;
         private bool _completedSynchronously = false;
+        private bool _started = false;
 
         private List<BaseObject> _keepAliveList = new List<BaseObject>();
         private object _tag;
@@ -742,7 +793,7 @@ namespace ProcessHacker.Native.Objects
 
         protected override void DisposeObject(bool disposing)
         {
-            if (!this.Completed)
+            if (_started && !this.Completed)
             {
                 throw new InvalidOperationException(
                     "An attempt was made to dispose an asynchronous I/O context object " +
@@ -786,6 +837,11 @@ namespace ProcessHacker.Native.Objects
             get { return _fileHandle; }
         }
 
+        public bool Started
+        {
+            get { return _started; }
+        }
+
         public IoStatusBlock Status
         {
             get
@@ -810,6 +866,9 @@ namespace ProcessHacker.Native.Objects
 
         public void Cancel()
         {
+            if (!_started)
+                return;
+
             _fileHandle.CancelIo(_isb);
             _canceled = true;
             _eventHandle.Set();
@@ -829,6 +888,11 @@ namespace ProcessHacker.Native.Objects
         {
             _keepAliveList.Add(obj);
             obj.Reference();
+        }
+
+        internal void NotifyStarted()
+        {
+            _started = true;
         }
 
         #region ISynchronizable Members
