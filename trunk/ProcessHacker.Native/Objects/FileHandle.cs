@@ -224,6 +224,58 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
+        public AsyncIoContext BeginRead(MemoryRegion buffer)
+        {
+            NtStatus status;
+            AsyncIoContext asyncContext = new AsyncIoContext(this);
+
+            asyncContext.KeepAlive(buffer);
+
+            if ((status = Win32.NtReadFile(
+                this,
+                asyncContext.EventHandle,
+                null,
+                IntPtr.Zero,
+                asyncContext.StatusMemory,
+                buffer,
+                buffer.Size,
+                IntPtr.Zero,
+                IntPtr.Zero
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            if (status == NtStatus.Success)
+                asyncContext.CompletedSynchronously = true;
+
+            return asyncContext;
+        }
+
+        public AsyncIoContext BeginWrite(MemoryRegion buffer)
+        {
+            NtStatus status;
+            AsyncIoContext asyncContext = new AsyncIoContext(this);
+
+            asyncContext.KeepAlive(buffer);
+
+            if ((status = Win32.NtWriteFile(
+                this,
+                asyncContext.EventHandle,
+                null,
+                IntPtr.Zero,
+                asyncContext.StatusMemory,
+                buffer,
+                buffer.Size,
+                IntPtr.Zero,
+                IntPtr.Zero
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            if (status == NtStatus.Success)
+                asyncContext.CompletedSynchronously = true;
+
+            return asyncContext;
+        }
+
         public IoStatusBlock CancelIo()
         {
             NtStatus status;
@@ -241,6 +293,26 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtCancelIoFile(this, isb)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+        }
+
+        public int EndRead(AsyncIoContext asyncContext)
+        {
+            asyncContext.Wait();
+
+            if (asyncContext.Status.Status >= NtStatus.Error)
+                Win32.ThrowLastError(asyncContext.Status.Status);
+
+            return asyncContext.Status.Information.ToInt32();
+        }
+
+        public int EndWrite(AsyncIoContext asyncContext)
+        {
+            asyncContext.Wait();
+
+            if (asyncContext.Status.Status >= NtStatus.Error)
+                Win32.ThrowLastError(asyncContext.Status.Status);
+
+            return asyncContext.Status.Information.ToInt32();
         }
 
         public void EnumFiles(EnumFilesDelegate callback)
@@ -574,28 +646,6 @@ namespace ProcessHacker.Native.Objects
             return isb.Information.ToInt32();
         }
 
-        public NtStatus Read(MemoryRegion buffer, AsyncIoContext asyncContext)
-        {
-            NtStatus status;
-
-            asyncContext.KeepAlive(buffer);
-
-            if ((status = Win32.NtReadFile(
-                this,
-                asyncContext.EventHandle,
-                null,
-                IntPtr.Zero,
-                asyncContext.StatusMemory,
-                buffer,
-                buffer.Size,
-                IntPtr.Zero,
-                IntPtr.Zero
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
-
-            return status;
-        }
-
         public void SetIoCompletion(IoCompletionHandle ioCompletionHandle, IntPtr keyContext)
         {
             FileCompletionInformation info = new FileCompletionInformation();
@@ -668,36 +718,15 @@ namespace ProcessHacker.Native.Objects
 
             return isb.Information.ToInt32();
         }
-
-        public NtStatus Write(MemoryRegion buffer, AsyncIoContext asyncContext)
-        {
-            NtStatus status;
-
-            asyncContext.KeepAlive(buffer);
-
-            if ((status = Win32.NtWriteFile(
-                this,
-                asyncContext.EventHandle,
-                null,
-                IntPtr.Zero,
-                asyncContext.StatusMemory,
-                buffer,
-                buffer.Size,
-                IntPtr.Zero,
-                IntPtr.Zero
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
-
-            return status;
-        }
     }
 
-    public sealed class AsyncIoContext : BaseObject
+    public sealed class AsyncIoContext : BaseObject, ISynchronizable
     {
         private EventHandle _eventHandle;
         private FileHandle _fileHandle;
         private MemoryAlloc _isb;
         private bool _canceled = false;
+        private bool _completedSynchronously = false;
 
         private List<BaseObject> _keepAliveList = new List<BaseObject>();
         private object _tag;
@@ -741,7 +770,13 @@ namespace ProcessHacker.Native.Objects
             get { return _eventHandle.GetBasicInformation().EventState != 0; }
         }
 
-        public EventHandle EventHandle
+        public bool CompletedSynchronously
+        {
+            get { return _completedSynchronously; }
+            internal set { _completedSynchronously = value; }
+        }
+
+        internal EventHandle EventHandle
         {
             get { return _eventHandle; }
         }
@@ -796,15 +831,30 @@ namespace ProcessHacker.Native.Objects
             obj.Reference();
         }
 
-        public void Wait()
+        #region ISynchronizable Members
+
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public IntPtr Handle
         {
-            _eventHandle.Wait();
+            get { return _eventHandle.Handle; }
         }
 
-        public void Wait(int timeoutMilliseconds)
+        public NtStatus Wait()
         {
-            _eventHandle.Wait(timeoutMilliseconds * Win32.TimeMsTo100Ns);
+            return _eventHandle.Wait();
         }
+
+        public NtStatus Wait(bool alertable)
+        {
+            return _eventHandle.Wait(alertable);
+        }
+
+        public NtStatus Wait(bool alertable, long timeout)
+        {
+            return _eventHandle.Wait(alertable, timeout);
+        }
+
+        #endregion
     }
 
     public class FileEntry
