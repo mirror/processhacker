@@ -376,6 +376,18 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateMailslotFile(
+            [Out] out IntPtr FileHandle,
+            [In] FileAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] FileCreateOptions CreateOptions,
+            [In] int MailslotQuota,
+            [In] int MaximumMessageSize,
+            [In] ref long ReadTimeout
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtCreateMutant(
             [Out] out IntPtr MutantHandle,
             [In] MutantAccess DesiredAccess,
@@ -389,6 +401,24 @@ namespace ProcessHacker.Native.Api
             [In] MutantAccess DesiredAccess,
             [In] [Optional] IntPtr ObjectAttributes,
             [In] bool InitialOwner
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateNamedPipeFile(
+            [Out] out IntPtr FileHandle,
+            [In] FileAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] FileShareMode ShareAccess,
+            [In] FileCreationDisposition CreateDisposition,
+            [In] FileCreateOptions CreateOptions,
+            [In] PipeType NamedPipeType,
+            [In] PipeType ReadMode,
+            [In] PipeCompletionMode CompletionMode,
+            [In] int MaximumInstances,
+            [In] int InboundQuota,
+            [In] int OutboundQuota,
+            [In] [Optional] ref long DefaultTimeout
             );
 
         [DllImport("ntdll.dll")]
@@ -642,6 +672,11 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtDeleteFile(
+            [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtDeviceIoControlFile(
             [In] IntPtr FileHandle,
             [In] IntPtr Event,
@@ -666,20 +701,6 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr InputBuffer,
             [In] int InputBufferLength,
             [In] IntPtr OutputBuffer,
-            [In] int OutputBufferLength
-            );
-
-        [DllImport("ntdll.dll")]
-        public unsafe static extern NtStatus NtDeviceIoControlFile(
-            [In] IntPtr FileHandle,
-            [In] IntPtr Event,
-            [In] IoApcRoutine ApcRoutine,
-            [In] IntPtr ApcContext,
-            [Out] out IoStatusBlock IoStatusBlock,
-            [In] int IoControlCode,
-            [In] void* InputBuffer,
-            [In] int InputBufferLength,
-            [In] void* OutputBuffer,
             [In] int OutputBufferLength
             );
 
@@ -730,6 +751,12 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtFlushBuffersFile(
+            [In] IntPtr FileHandle,
+            [Out] out IoStatusBlock IoStatusBlock
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtFlushVirtualMemory(
             [In] IntPtr ProcessHandle,
             ref IntPtr BaseAddress,
@@ -743,6 +770,34 @@ namespace ProcessHacker.Native.Api
             ref IntPtr BaseAddress,
             ref IntPtr RegionSize,
             [In] MemoryFlags FreeType
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtFsControlFile(
+            [In] IntPtr FileHandle,
+            [In] IntPtr Event,
+            [In] IoApcRoutine ApcRoutine,
+            [In] IntPtr ApcContext,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] int FsControlCode,
+            [In] IntPtr InputBuffer,
+            [In] int InputBufferLength,
+            [In] IntPtr OutputBuffer,
+            [In] int OutputBufferLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtFsControlFile(
+            [In] IntPtr FileHandle,
+            [In] IntPtr Event,
+            [In] IoApcRoutine ApcRoutine,
+            [In] IntPtr ApcContext,
+            [In] IntPtr IoStatusBlock,
+            [In] int FsControlCode,
+            [In] IntPtr InputBuffer,
+            [In] int InputBufferLength,
+            [In] IntPtr OutputBuffer,
+            [In] int OutputBufferLength
             );
 
         [DllImport("ntdll.dll")]

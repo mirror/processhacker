@@ -224,6 +224,41 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
+        public AsyncIoContext BeginFsControl(int controlCode, MemoryRegion inBuffer, MemoryRegion outBuffer)
+        {
+            NtStatus status;
+            AsyncIoContext asyncContext = new AsyncIoContext(this);
+
+            int inLen = inBuffer != null ? inBuffer.Size : 0;
+            int outLen = outBuffer != null ? outBuffer.Size : 0;
+
+            if (inBuffer != null)
+                asyncContext.KeepAlive(inBuffer);
+            if (outBuffer != null)
+                asyncContext.KeepAlive(outBuffer);
+
+            if ((status = Win32.NtFsControlFile(
+                this,
+                asyncContext.EventHandle,
+                null,
+                IntPtr.Zero,
+                asyncContext.StatusMemory,
+                controlCode,
+                inBuffer,
+                inLen,
+                outBuffer,
+                outLen
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            asyncContext.NotifyStarted();
+
+            if (status == NtStatus.Success)
+                asyncContext.CompletedSynchronously = true;
+
+            return asyncContext;
+        }
+
         public AsyncIoContext BeginIoControl(int controlCode, MemoryRegion inBuffer, MemoryRegion outBuffer)
         {            
             NtStatus status;
@@ -332,6 +367,16 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtCancelIoFile(this, isb)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+        }
+
+        public int EndFsControl(AsyncIoContext asyncContext)
+        {
+            asyncContext.Wait();
+
+            if (asyncContext.Status.Status >= NtStatus.Error)
+                Win32.ThrowLastError(asyncContext.Status.Status);
+
+            return asyncContext.Status.Information.ToInt32();
         }
 
         public int EndIoControl(AsyncIoContext asyncContext)
@@ -449,6 +494,50 @@ namespace ProcessHacker.Native.Objects
                     // Go back and get another batch of file entries.
                 }
             }
+        }
+
+        public void Flush()
+        {
+            NtStatus status;
+            IoStatusBlock isb;
+
+            if ((status = Win32.NtFlushBuffersFile(
+                this,
+                out isb
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
+
+        public unsafe int FsControl(
+            int controlCode,
+            void* inBuffer,
+            int inBufferLength,
+            void* outBuffer,
+            int outBufferLength
+            )
+        {
+            NtStatus status;
+            IoStatusBlock isb;
+
+            int inLen = inBuffer != null ? inBufferLength : 0;
+            int outLen = outBuffer != null ? outBufferLength : 0;
+
+            if ((status = Win32.NtFsControlFile(
+                this,
+                IntPtr.Zero,
+                null,
+                IntPtr.Zero,
+                out isb,
+                controlCode,
+                new IntPtr(inBuffer),
+                inLen,
+                new IntPtr(outBuffer),
+                outLen
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            // Information contains the return length.
+            return isb.Information.ToInt32();
         }
 
         public FileBasicInformation GetBasicInformation()
@@ -594,9 +683,9 @@ namespace ProcessHacker.Native.Objects
 
         public unsafe int IoControl(
             int controlCode,
-            byte* inBuffer,
+            void* inBuffer,
             int inBufferLength,
-            byte* outBuffer,
+            void* outBuffer,
             int outBufferLength
             )
         {
@@ -613,9 +702,9 @@ namespace ProcessHacker.Native.Objects
                 IntPtr.Zero,
                 out isb,
                 controlCode,
-                inBuffer,
+                new IntPtr(inBuffer),
                 inLen,
-                outBuffer,
+                new IntPtr(outBuffer),
                 outLen
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
