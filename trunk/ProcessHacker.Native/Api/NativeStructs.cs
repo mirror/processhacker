@@ -504,6 +504,22 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct FileMailslotQueryInformation
+    {
+        public int MaximumMessageSize;
+        public int MailslotQuota;
+        public int NextMessageSize;
+        public int MessagesAvailable;
+        public long ReadTimeout;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileMailslotSetInformation
+    {
+        public long ReadTimeout;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct FileModeInformation
     {
         public int Mode;
@@ -546,23 +562,23 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct FilePipeInformation
     {
-        public int ReadMode;
-        public int CompletionMode;
+        public PipeType ReadMode;
+        public PipeCompletionMode CompletionMode;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct FilePipeLocalInformation
     {
-        public int NamedPipeType;
-        public int NamedPipeConfiguration;
+        public PipeType NamedPipeType;
+        public PipeConfiguration NamedPipeConfiguration;
         public int MaximumInstances;
         public int CurrentInstances;
         public int InboundQuota;
         public int ReadDataAvailable;
         public int OutboundQuota;
         public int WriteQuotaAvailable;
-        public int NamedPipeState;
-        public int NamedPipeEnd;
+        public PipeState NamedPipeState;
+        public PipeEnd NamedPipeEnd;
     }
 
     [StructLayout(LayoutKind.Sequential)]

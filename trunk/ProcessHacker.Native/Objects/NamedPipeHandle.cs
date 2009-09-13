@@ -118,6 +118,11 @@ namespace ProcessHacker.Native.Objects
             return new NamedPipeHandle(handle, true);
         }
 
+        public new static NamedPipeHandle FromHandle(IntPtr handle)
+        {
+            return new NamedPipeHandle(handle, false);
+        }
+
         /// <summary>
         /// Waits for an instance of the specified named pipe to 
         /// become available for connection.
@@ -162,6 +167,21 @@ namespace ProcessHacker.Native.Objects
         public void Disconnect()
         {
             this.FsControl(FsCtlDisconnect, IntPtr.Zero, 0, IntPtr.Zero, 0);
+        }
+
+        private FilePipeInformation GetInformation()
+        {
+            return this.QueryStruct<FilePipeInformation>(FileInformationClass.FilePipeInformation);
+        }
+
+        private FilePipeLocalInformation GetLocalInformation()
+        {
+            return this.QueryStruct<FilePipeLocalInformation>(FileInformationClass.FilePipeLocalInformation);
+        }
+
+        public PipeType GetPipeType()
+        {
+            return this.GetInformation().ReadMode;
         }
 
         public bool Listen()

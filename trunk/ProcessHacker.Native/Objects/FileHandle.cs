@@ -905,7 +905,7 @@ namespace ProcessHacker.Native.Objects
             return status;
         }
 
-        private T QueryStruct<T>(FileInformationClass infoClass)
+        protected T QueryStruct<T>(FileInformationClass infoClass)
             where T : struct
         {
             NtStatus status;
@@ -926,7 +926,7 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        private MemoryAlloc QueryVariableSize(FileInformationClass infoClass)
+        protected MemoryAlloc QueryVariableSize(FileInformationClass infoClass)
         {
             NtStatus status;
             IoStatusBlock isb;
@@ -1029,7 +1029,7 @@ namespace ProcessHacker.Native.Objects
             this.SetStruct<FileCompletionInformation>(FileInformationClass.FileCompletionInformation, info);
         }
 
-        private void SetStruct<T>(FileInformationClass infoClass, T info)
+        protected void SetStruct<T>(FileInformationClass infoClass, T info)
             where T : struct
         {
             NtStatus status;
