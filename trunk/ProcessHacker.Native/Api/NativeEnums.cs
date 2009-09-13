@@ -451,6 +451,40 @@ namespace ProcessHacker.Native.Api
         DoesNotExist = 5
     }
 
+    public enum FileNotifyAction : int
+    {
+        Added = 0x1,
+        Removed = 0x2,
+        Modified = 0x3,
+        RenamedOldName = 0x4,
+        RenamedNewName = 0x5,
+        AddedStream = 0x6,
+        RemovedStream = 0x7,
+        ModifiedStream = 0x8,
+        RemovedByDelete = 0x9,
+        IdNotTunnelled = 0xa,
+        TunnelledIdCollision = 0xb
+    }
+
+    [Flags]
+    public enum FileNotifyFlags : int
+    {
+        FileName = 0x1,
+        DirName = 0x2,
+        Name = 0x3,
+        Attributes = 0x4,
+        Size = 0x8,
+        LastWrite = 0x10,
+        LastAccess = 0x20,
+        Creation = 0x40,
+        Ea = 0x80,
+        Security = 0x100,
+        StreamName = 0x200,
+        StreamSize = 0x400,
+        StreamWrite = 0x800,
+        Valid = 0xfff
+    }
+
     [Flags]
     public enum FileObjectFlags : int
     {

@@ -883,7 +883,35 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtLoadDriver(
-            [In] ref UnicodeString DriverPath
+            [In] ref UnicodeString DriverServiceName
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtLockFile(
+            [In] IntPtr FileHandle,
+            [In] [Optional] IntPtr Event,
+            [In] [Optional] IoApcRoutine ApcRoutine,
+            [In] [Optional] IntPtr ApcContext,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] ref long ByteOffset,
+            [In] ref long Length,
+            [In] int Key,
+            [In] bool FailImmediately,
+            [In] bool ExclusiveLock
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtLockFile(
+            [In] IntPtr FileHandle,
+            [In] [Optional] IntPtr Event,
+            [In] [Optional] IoApcRoutine ApcRoutine,
+            [In] [Optional] IntPtr ApcContext,
+            [In] IntPtr IoStatusBlock,
+            [In] ref long ByteOffset,
+            [In] ref long Length,
+            [In] int Key,
+            [In] bool FailImmediately,
+            [In] bool ExclusiveLock
             );
 
         [DllImport("ntdll.dll")]
@@ -916,6 +944,32 @@ namespace ProcessHacker.Native.Api
             [In] SectionInherit InheritDisposition,
             [In] MemoryFlags AllocationType,
             [In] MemoryProtection Win32Protect
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtNotifyChangeDirectoryFile(
+            [In] IntPtr FileHandle,
+            [In] [Optional] IntPtr Event,
+            [In] [Optional] IoApcRoutine ApcRoutine,
+            [In] [Optional] IntPtr ApcContext,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] IntPtr Buffer,
+            [In] int Length,
+            [In] FileNotifyFlags CompletionFilter,
+            [In] bool WatchTree
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtNotifyChangeDirectoryFile(
+            [In] IntPtr FileHandle,
+            [In] [Optional] IntPtr Event,
+            [In] [Optional] IoApcRoutine ApcRoutine,
+            [In] [Optional] IntPtr ApcContext,
+            [In] IntPtr IoStatusBlock,
+            [In] IntPtr Buffer,
+            [In] int Length,
+            [In] FileNotifyFlags CompletionFilter,
+            [In] bool WatchTree
             );
 
         [DllImport("ntdll.dll")]
@@ -2058,7 +2112,16 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtUnloadDriver(
-            [In] ref UnicodeString DriverPath
+            [In] ref UnicodeString DriverServiceName
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtUnlockFile(
+            [In] IntPtr FileHandle,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] ref long ByteOffset,
+            [In] ref long Length,
+            [In] int Key
             );
 
         [DllImport("ntdll.dll")]

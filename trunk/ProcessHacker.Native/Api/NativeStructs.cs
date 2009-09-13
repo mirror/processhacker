@@ -512,6 +512,9 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct FileNameInformation
     {
+        public static int FileNameOffset = 
+            Marshal.OffsetOf(typeof(FileNameInformation), "FileName").ToInt32();
+
         public int FileNameLength;
         public char FileName;
         // File name string follows (WCHAR).
@@ -525,6 +528,19 @@ namespace ProcessHacker.Native.Api
         public int FileNameLength;
         public char FileName;
         // File name string follows (WCHAR).
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileNotifyInformation
+    {
+        public static int FileNameOffset = 
+            Marshal.OffsetOf(typeof(FileNotifyInformation), "FileName").ToInt32();
+
+        public int NextEntryOffset;
+        public FileNotifyAction Action;
+        public int FileNameLength;
+        public char FileName;
+        // Unicode file name string follows.
     }
 
     [StructLayout(LayoutKind.Sequential)]

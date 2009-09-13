@@ -110,7 +110,7 @@ namespace ProcessHacker.Native.Objects
             bool firstTime = true;
             int retLength;
 
-            using (var data = new MemoryAlloc(0x10))
+            using (var data = new MemoryAlloc(0x200))
             {
                 while (true)
                 {

@@ -36,6 +36,7 @@ namespace ProcessHacker.Native.Objects
     public class FileHandle : NativeHandle<FileAccess>
     {
         public delegate bool EnumFilesDelegate(FileEntry file);
+        public delegate bool EnumStreamsDelegate(FileStreamEntry stream);
 
         public static FileHandle FromFileStream(System.IO.FileStream fileStream)
         {
@@ -45,6 +46,20 @@ namespace ProcessHacker.Native.Objects
         public static FileHandle FromHandle(IntPtr handle)
         {
             return new FileHandle(handle, false);
+        }
+
+        /// <summary>
+        /// Creates or opens a file for synchronous access.
+        /// </summary>
+        /// <param name="access">The desired access to the file.</param>
+        /// <param name="fileName">
+        /// An object name identifying the file to open. To use a DOS format 
+        /// file name, prepend "\??\" to the file name.
+        /// </param>
+        /// <param name="createOptions">Options to use when creating the file.</param>
+        public static FileHandle Create(FileAccess access, string fileName, FileCreateOptions createOptions)
+        {
+            return Create(access, fileName, FileShareMode.Exclusive, FileCreationDisposition.OpenIf, createOptions);
         }
 
         public static FileHandle Create(
@@ -151,6 +166,22 @@ namespace ProcessHacker.Native.Objects
             return new FileHandle(handle, true);
         }
 
+        public static void Delete(string fileName, ObjectFlags objectFlags)
+        {
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, null);
+
+            try
+            {
+                if ((status = Win32.NtDeleteFile(ref oa)) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+            finally
+            {
+                oa.Dispose();
+            }
+        }
+
         protected FileHandle()
         { }
 
@@ -161,7 +192,22 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Opens an existing file for synchronous access.
         /// </summary>
-        /// <param name="fileName">An object name identifying the file to open.</param>
+        /// <param name="fileName">
+        /// An object name identifying the file to open. To use a DOS format 
+        /// file name, prepend "\??\" to the file name.
+        /// </param>
+        /// <param name="access">The desired access to the file.</param>
+        public FileHandle(string fileName, FileAccess access)
+            : this(fileName, FileShareMode.Exclusive, access)
+        { }
+
+        /// <summary>
+        /// Opens an existing file for synchronous access.
+        /// </summary>
+        /// <param name="fileName">
+        /// An object name identifying the file to open. To use a DOS format 
+        /// file name, prepend "\??\" to the file name.
+        /// </param>
         /// <param name="shareMode">The share mode to use.</param>
         /// <param name="access">The desired access to the file.</param>
         public FileHandle(string fileName, FileShareMode shareMode, FileAccess access)
@@ -169,9 +215,12 @@ namespace ProcessHacker.Native.Objects
         { }
 
         /// <summary>
-        /// Opens an existing file for synchronous access.
+        /// Opens an existing file.
         /// </summary>
-        /// <param name="fileName">An object name identifying the file to open.</param>
+        /// <param name="fileName">
+        /// An object name identifying the file to open. To use a DOS format 
+        /// file name, prepend "\??\" to the file name.
+        /// </param>
         /// <param name="shareMode">The share mode to use.</param>
         /// <param name="openOptions">Open options to use.</param>
         /// <param name="access">The desired access to the file.</param>
@@ -180,9 +229,12 @@ namespace ProcessHacker.Native.Objects
         { }
 
         /// <summary>
-        /// Opens an existing file for synchronous access.
+        /// Opens an existing file.
         /// </summary>
-        /// <param name="fileName">An object name identifying the file to open.</param>
+        /// <param name="fileName">
+        /// An object name identifying the file to open. To use a DOS format 
+        /// file name, prepend "\??\" to the file name.
+        /// </param>
         /// <param name="objectFlags">Flags to use when opening the object.</param>
         /// <param name="rootDirectory">The directory to open the file relative to.</param>
         /// <param name="shareMode">The share mode to use.</param>
@@ -424,7 +476,7 @@ namespace ProcessHacker.Native.Objects
             IoStatusBlock isb;
             bool firstTime = true;
 
-            using (var data = new MemoryAlloc(0x20))
+            using (var data = new MemoryAlloc(0x400))
             {
                 while (true)
                 {
@@ -504,6 +556,31 @@ namespace ProcessHacker.Native.Objects
                     firstTime = false;
 
                     // Go back and get another batch of file entries.
+                }
+            }
+        }
+
+        public void EnumStreams(EnumStreamsDelegate callback)
+        {
+            using (var data = this.QueryVariableSize(FileInformationClass.FileStreamInformation))
+            {
+                int i = 0;
+
+                while (true)
+                {
+                    FileStreamInformation info = data.ReadStruct<FileStreamInformation>(i, 0);
+                    string name = data.ReadUnicodeString(
+                        i + FileStreamInformation.StreamNameOffset,
+                        info.StreamNameLength / 2
+                        );
+
+                    if (!callback(new FileStreamEntry(name, info.StreamSize, info.StreamAllocationSize)))
+                        return;
+
+                    if (info.NextEntryOffset == 0)
+                        break;
+                    else
+                        i += info.NextEntryOffset;
                 }
             }
         }
@@ -622,24 +699,12 @@ namespace ProcessHacker.Native.Objects
 
         public string GetFileName()
         {
-            NtStatus status;
-            IoStatusBlock isb;
-
-            using (var data = new MemoryAlloc(0x1000))
+            using (var data = this.QueryVariableSize(FileInformationClass.FileNameInformation))
             {
-                if ((status = Win32.NtQueryInformationFile(
-                    this,
-                    out isb,
-                    data,
-                    data.Size,
-                    FileInformationClass.FileNameInformation
-                    )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
-
                 FileNameInformation info = data.ReadStruct<FileNameInformation>();
 
-                return Marshal.PtrToStringUni(
-                    data.Memory.Increment(Marshal.OffsetOf(typeof(FileNameInformation), "FileName")),
+                return data.ReadUnicodeString(
+                    FileNameInformation.FileNameOffset,
                     info.FileNameLength / 2
                     );
             }
@@ -656,6 +721,19 @@ namespace ProcessHacker.Native.Objects
                 });
 
             return files.ToArray();
+        }
+
+        public FileStreamEntry[] GetStreams()
+        {
+            List<FileStreamEntry> streams = new List<FileStreamEntry>();
+
+            this.EnumStreams((file) =>
+            {
+                streams.Add(file);
+                return true;
+            });
+
+            return streams.ToArray();
         }
 
         public long GetSize()
@@ -846,6 +924,41 @@ namespace ProcessHacker.Native.Objects
 
                 return data.ReadStruct<T>();
             }
+        }
+
+        private MemoryAlloc QueryVariableSize(FileInformationClass infoClass)
+        {
+            NtStatus status;
+            IoStatusBlock isb;
+            var data = new MemoryAlloc(0x200);
+
+            while (true)
+            {
+                status = Win32.NtQueryInformationFile(
+                    this,
+                    out isb,
+                    data,
+                    data.Size,
+                    infoClass
+                    );
+
+                if (
+                    status == NtStatus.BufferOverflow || 
+                    status == NtStatus.BufferTooSmall || 
+                    status == NtStatus.InfoLengthMismatch
+                    )
+                    data.Resize(data.Size * 2);
+                else
+                    break;
+            }
+
+            if (status >= NtStatus.Error)
+            {
+                data.Dispose();
+                Win32.ThrowLastError(status);
+            }
+
+            return data;
         }
 
         /// <summary>
@@ -1203,5 +1316,19 @@ namespace ProcessHacker.Native.Objects
         public long AllocationSize { get; private set; }
 
         public FileAttributes Attributes { get; private set; }
+    }
+
+    public class FileStreamEntry
+    {
+        public FileStreamEntry(string name, long size, long allocationSize)
+        {
+            this.Name = name;
+            this.Size = size;
+            this.AllocationSize = allocationSize;
+        }
+
+        public string Name { get; private set; }
+        public long Size { get; private set; }
+        public long AllocationSize { get; private set; }
     }
 }
