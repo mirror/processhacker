@@ -62,6 +62,21 @@ namespace ProcessHacker.Native.Objects
             return Create(access, fileName, FileShareMode.Exclusive, FileCreationDisposition.OpenIf, createOptions);
         }
 
+        /// <summary>
+        /// Creates or opens a file for synchronous access.
+        /// </summary>
+        /// <param name="access">The desired access to the file.</param>
+        /// <param name="fileName">
+        /// An object name identifying the file to open. To use a DOS format 
+        /// file name, prepend "\??\" to the file name.
+        /// </param>
+        /// <param name="shareMode">The types of access to the file to grant to other threads.</param>
+        /// <param name="createOptions">Options to use when creating the file.</param>
+        public static FileHandle Create(FileAccess access, string fileName, FileShareMode shareMode, FileCreateOptions createOptions)
+        {
+            return Create(access, fileName, shareMode, FileCreationDisposition.OpenIf, createOptions);
+        }
+
         public static FileHandle Create(
             FileAccess access,
             string fileName,
