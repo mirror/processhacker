@@ -1119,9 +1119,61 @@ namespace ProcessHacker.Native.Objects
 
     public sealed class AsyncIoContext : BaseObject, ISynchronizable
     {
+        private unsafe sealed class UnmanagedIsb : BaseObject
+        {
+            private static readonly int _isbSize = Marshal.SizeOf(typeof(IoStatusBlock));
+
+            public static implicit operator IntPtr(UnmanagedIsb isb)
+            {
+                return isb.Memory;
+            }
+
+            private IoStatusBlock* _ioStatusBlock;
+
+            public UnmanagedIsb()
+            {
+                _ioStatusBlock = (IoStatusBlock*)Heap.FromHandle(MemoryAlloc.PrivateHeap).Allocate(0, _isbSize).ToPointer();
+            }
+
+            protected override void DisposeObject(bool disposing)
+            {
+                if (_ioStatusBlock != null)
+                    Heap.FromHandle(MemoryAlloc.PrivateHeap).Free(0, new IntPtr(_ioStatusBlock));
+            }
+
+            public IntPtr Information
+            {
+                get { return _ioStatusBlock->Information; }
+                set { _ioStatusBlock->Information = value; }
+            }
+
+            public IntPtr Memory
+            {
+                get { return new IntPtr(_ioStatusBlock); }
+            }
+
+            public IntPtr Pointer
+            {
+                get { return _ioStatusBlock->Pointer; }
+                set { _ioStatusBlock->Pointer = value; }
+            }
+
+            public NtStatus Status
+            {
+                get { return _ioStatusBlock->Status; }
+                set { _ioStatusBlock->Status = value; }
+            }
+
+            public IoStatusBlock Struct
+            {
+                get { return *_ioStatusBlock; }
+                set { *_ioStatusBlock = value; }
+            }
+        }
+
         private EventHandle _eventHandle;
         private FileHandle _fileHandle;
-        private MemoryAlloc _isb;
+        private UnmanagedIsb _isb;
         private bool _completedSynchronously = false;
         private bool _started = false;
 
@@ -1132,7 +1184,8 @@ namespace ProcessHacker.Native.Objects
         {
             _eventHandle = EventHandle.Create(EventAccess.All, EventType.NotificationEvent, false);
             _fileHandle = fileHandle;
-            _isb = new MemoryAlloc(Marshal.SizeOf(typeof(IoStatusBlock)));
+            _isb = new UnmanagedIsb();
+            _isb.Status = NtStatus.Pending;
 
             _fileHandle.Reference();
         }
@@ -1161,7 +1214,7 @@ namespace ProcessHacker.Native.Objects
         {
             get
             {
-                return _completedSynchronously || _eventHandle.GetBasicInformation().EventState != 0;
+                return _isb.Status != NtStatus.Pending;
             }
         }
 
@@ -1187,7 +1240,7 @@ namespace ProcessHacker.Native.Objects
 
         public int Information
         {
-            get { return this.StatusBlock.Information.ToInt32(); }
+            get { return _isb.Information.ToInt32(); }
         }
 
         public bool Started
@@ -1197,26 +1250,23 @@ namespace ProcessHacker.Native.Objects
 
         public NtStatus Status
         {
-            get { return this.StatusBlock.Status; }
-            set { this.StatusBlock = new IoStatusBlock(value, this.StatusBlock.Information); }
+            get { return _isb.Status; }
+            internal set { _isb.Status = value; }
         }
 
         public IoStatusBlock StatusBlock
         {
             get
             {
-                if (!this.Completed)
-                    throw new InvalidOperationException("The I/O operation has not yet completed.");
-
-                return _isb.ReadStruct<IoStatusBlock>();
+                return _isb.Struct;
             }
             internal set
             {
-                _isb.WriteStruct<IoStatusBlock>(value);
+                _isb.Struct = value;
             }
         }
 
-        internal MemoryRegion StatusMemory
+        internal IntPtr StatusMemory
         {
             get { return _isb; }
         }
