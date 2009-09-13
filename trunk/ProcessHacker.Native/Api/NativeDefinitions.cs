@@ -76,5 +76,13 @@ namespace ProcessHacker.Native.Api
         public static readonly int SecurityMaxSidSize =
             Marshal.SizeOf(typeof(SidStruct)) - sizeof(int) + (SidMaxSubAuthorities * sizeof(int));
         public static readonly IntPtr UserSharedData = new IntPtr(0x7ffe0000);
+
+        public static int CtlCode(DeviceType type, int function, DeviceControlMethod method, DeviceControlAccess access)
+        {
+            return ((int)type << 16) |
+                ((int)access << 14) |
+                (function << 2) |
+                (int)method;
+        }
     }
 }

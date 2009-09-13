@@ -455,7 +455,7 @@ namespace ProcessHacker.Native.Api
         public long ChangeTime;
         public long EndOfFile;
         public long AllocationSize;
-        public int FileAttributes;
+        public FileAttributes FileAttributes;
         public int FileNameLength;
         public char FileName;
         // File name string follows (WCHAR).

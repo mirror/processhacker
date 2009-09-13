@@ -194,7 +194,9 @@ namespace ProcessHacker
                             null))
                         {
                             // Create a mailslot so we can receive the error code for Assistant.
-                            using (var mhandle = MailslotHandle.Create(@"\\.\mailslot\" + mailslotName, 0, 5000))
+                            using (var mhandle = MailslotHandle.Create(
+                                FileAccess.GenericRead, @"\Device\Mailslot\" + mailslotName, 0, 5000)
+                                )
                             {
                                 try { service.Start(); }
                                 catch { }

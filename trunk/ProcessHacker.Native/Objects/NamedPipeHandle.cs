@@ -22,6 +22,7 @@
 
 using System;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -30,6 +31,93 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public sealed class NamedPipeHandle : FileHandle
     {
+        public static readonly int FsCtlAssignEvent = Win32.CtlCode(DeviceType.NamedPipe, 0, DeviceControlMethod.Buffered, DeviceControlAccess.Any);
+        public static readonly int FsCtlDisconnect = Win32.CtlCode(DeviceType.NamedPipe, 1, DeviceControlMethod.Buffered, DeviceControlAccess.Any);
+        public static readonly int FsCtlListen = Win32.CtlCode(DeviceType.NamedPipe, 2, DeviceControlMethod.Buffered, DeviceControlAccess.Any);
+        public static readonly int FsCtlPeek = Win32.CtlCode(DeviceType.NamedPipe, 3, DeviceControlMethod.Buffered, DeviceControlAccess.Read);
+        public static readonly int FsCtlQueryEvent = Win32.CtlCode(DeviceType.NamedPipe, 4, DeviceControlMethod.Buffered, DeviceControlAccess.Any);
+        public static readonly int FsCtlTransceive = Win32.CtlCode(DeviceType.NamedPipe, 5, DeviceControlMethod.Neither, DeviceControlAccess.Read | DeviceControlAccess.Write);
+        public static readonly int FsCtlWait = Win32.CtlCode(DeviceType.NamedPipe, 6, DeviceControlMethod.Buffered, DeviceControlAccess.Any);
+        public static readonly int FsCtlImpersonate = Win32.CtlCode(DeviceType.NamedPipe, 7, DeviceControlMethod.Buffered, DeviceControlAccess.Any);
+        public static readonly int FsCtlSetClientProcess = Win32.CtlCode(DeviceType.NamedPipe, 8, DeviceControlMethod.Buffered, DeviceControlAccess.Any);
+        public static readonly int FsCtlQueryClientProcess = Win32.CtlCode(DeviceType.NamedPipe, 9, DeviceControlMethod.Buffered, DeviceControlAccess.Any);
+
+        public static NamedPipeHandle Create(
+            FileAccess access,
+            string fileName,
+            PipeType type,
+            int maximumInstances,
+            long defaultTimeout
+            )
+        {
+            return Create(
+                access,
+                fileName,
+                ObjectFlags.CaseInsensitive,
+                null,
+                FileShareMode.ReadWrite,
+                FileCreationDisposition.OpenIf,
+                0,
+                type,
+                type,
+                PipeCompletionMode.Queue,
+                maximumInstances,
+                0,
+                0,
+                defaultTimeout
+                );
+        }
+
+        public static NamedPipeHandle Create(
+            FileAccess access,
+            string fileName,
+            ObjectFlags objectFlags,
+            FileHandle rootDirectory,
+            FileShareMode shareMode,
+            FileCreationDisposition creationDisposition,
+            FileCreateOptions createOptions,
+            PipeType type,
+            PipeType readMode,
+            PipeCompletionMode completionMode,
+            int maximumInstances,
+            int inboundQuota,
+            int outboundQuota,
+            long defaultTimeout
+            )
+        {
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
+            IoStatusBlock isb;
+            IntPtr handle;
+
+            try
+            {
+                if ((status = Win32.NtCreateNamedPipeFile(
+                    out handle,
+                    access,
+                    ref oa,
+                    out isb,
+                    shareMode,
+                    creationDisposition,
+                    createOptions,
+                    type,
+                    readMode,
+                    completionMode,
+                    maximumInstances,
+                    inboundQuota,
+                    outboundQuota,
+                    ref defaultTimeout
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+            finally
+            {
+                oa.Dispose();
+            }
+
+            return new NamedPipeHandle(handle, true);
+        }
+
         /// <summary>
         /// Waits for an instance of the specified named pipe to 
         /// become available for connection.
@@ -48,29 +136,48 @@ namespace ProcessHacker.Native.Objects
             return Win32.WaitNamedPipe(name, timeout);
         }
 
-        public NamedPipeHandle(string name, PipeAccessMode openMode, PipeMode pipeMode, int maxInstances,
-            int outBufferSize, int inBufferSize, int defaultTimeOut)
-        {
-            this.Handle = Win32.CreateNamedPipe(name, openMode, pipeMode, maxInstances,
-                outBufferSize, inBufferSize, defaultTimeOut, IntPtr.Zero);
+        private NamedPipeHandle(IntPtr handle, bool owned)
+            : base(handle, owned)
+        { }
 
-            if (this.Handle == NativeHandle.MinusOne)
-            {
-                this.MarkAsInvalid();
-                Win32.ThrowLastError();
-            }
+        public AsyncIoContext BeginListen()
+        {
+            return this.BeginFsControl(FsCtlListen, null, null);
         }
 
-        public void Connect()
+        public bool EndListen(AsyncIoContext asyncContext)
         {
-            if (!Win32.ConnectNamedPipe(this, IntPtr.Zero))
-                Win32.ThrowLastError();
+            asyncContext.Wait();
+            asyncContext.NotifyEnd();
+
+            if (asyncContext.Status == NtStatus.PipeConnected)
+                return true;
+
+            if (asyncContext.StatusBlock.Status >= NtStatus.Error)
+                Win32.ThrowLastError(asyncContext.StatusBlock.Status);
+
+            return false;
         }
 
         public void Disconnect()
         {
-            if (!Win32.DisconnectNamedPipe(this))
-                Win32.ThrowLastError();
+            this.FsControl(FsCtlDisconnect, IntPtr.Zero, 0, IntPtr.Zero, 0);
+        }
+
+        public bool Listen()
+        {
+            NtStatus status;
+            int returnLength;
+
+            status = this.FsControl(FsCtlListen, IntPtr.Zero, 0, IntPtr.Zero, 0, out returnLength);
+
+            if (status == NtStatus.PipeConnected)
+                return true;
+
+            if (status >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return false;
         }
     }
 }

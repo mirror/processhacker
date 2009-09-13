@@ -95,7 +95,8 @@ namespace ProcessHacker
                                             { 
                                                 // Create a mailslot so we can receive the error code for Assistant.
                                                 using (var mhandle = MailslotHandle.Create(
-                                                    @"\\.\mailslot\" + args["-mailslot"], 0, 5000))
+                                                    FileAccess.GenericRead, @"\Device\Mailslot\" + args["-mailslot"], 0, 5000)
+                                                    )
                                                 {
                                                     try { service.Start(); }
                                                     catch { }

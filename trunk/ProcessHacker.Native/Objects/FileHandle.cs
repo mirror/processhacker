@@ -72,6 +72,7 @@ namespace ProcessHacker.Native.Objects
             return Create(
                 access,
                 fileName,
+                ObjectFlags.CaseInsensitive,
                 rootDirectory,
                 shareMode,
                 creationDisposition,
@@ -85,6 +86,7 @@ namespace ProcessHacker.Native.Objects
         public static FileHandle Create(
             FileAccess access,
             string fileName,
+            ObjectFlags objectFlags,
             FileHandle rootDirectory,
             FileShareMode shareMode,
             FileCreationDisposition creationDisposition,
@@ -95,7 +97,7 @@ namespace ProcessHacker.Native.Objects
             )
         {
             NtStatus status;
-            ObjectAttributes oa = new ObjectAttributes(fileName, 0, rootDirectory);
+            ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
             IoStatusBlock isb;
             IntPtr handle;
 
@@ -152,7 +154,7 @@ namespace ProcessHacker.Native.Objects
         protected FileHandle()
         { }
 
-        private FileHandle(IntPtr handle, bool owned)
+        protected FileHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
@@ -163,7 +165,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="shareMode">The share mode to use.</param>
         /// <param name="access">The desired access to the file.</param>
         public FileHandle(string fileName, FileShareMode shareMode, FileAccess access)
-            : this(fileName, null, shareMode, FileCreateOptions.NonDirectoryFile | FileCreateOptions.SynchronousIoNonAlert, access)
+            : this(fileName, shareMode, FileCreateOptions.NonDirectoryFile | FileCreateOptions.SynchronousIoNonAlert, access)
         { }
 
         /// <summary>
@@ -171,28 +173,24 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="fileName">An object name identifying the file to open.</param>
         /// <param name="shareMode">The share mode to use.</param>
-        /// <param name="openOptions">
-        /// Open options to use. Most callers will specify NonDirectoryFile and 
-        /// SynchronousIoNonAlert for working with normal files.
-        /// </param>
+        /// <param name="openOptions">Open options to use.</param>
         /// <param name="access">The desired access to the file.</param>
         public FileHandle(string fileName, FileShareMode shareMode, FileCreateOptions openOptions, FileAccess access)
-            : this(fileName, null, shareMode, openOptions, access)
+            : this(fileName, ObjectFlags.CaseInsensitive, null, shareMode, openOptions, access)
         { }
 
         /// <summary>
         /// Opens an existing file for synchronous access.
         /// </summary>
         /// <param name="fileName">An object name identifying the file to open.</param>
+        /// <param name="objectFlags">Flags to use when opening the object.</param>
         /// <param name="rootDirectory">The directory to open the file relative to.</param>
         /// <param name="shareMode">The share mode to use.</param>
-        /// <param name="openOptions">
-        /// Open options to use. Most callers will specify NonDirectoryFile and 
-        /// SynchronousIoNonAlert for working with normal files.
-        /// </param>
+        /// <param name="openOptions">Open options to use.</param>
         /// <param name="access">The desired access to the file.</param>
         public FileHandle(
             string fileName,
+            ObjectFlags objectFlags,
             FileHandle rootDirectory,
             FileShareMode shareMode,
             FileCreateOptions openOptions,
@@ -200,7 +198,7 @@ namespace ProcessHacker.Native.Objects
             )
         {
             NtStatus status;
-            ObjectAttributes oa = new ObjectAttributes(fileName, 0, rootDirectory);
+            ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
             IoStatusBlock isb;
             IntPtr handle;
 
@@ -237,24 +235,29 @@ namespace ProcessHacker.Native.Objects
             if (outBuffer != null)
                 asyncContext.KeepAlive(outBuffer);
 
-            if ((status = Win32.NtFsControlFile(
+            status = Win32.NtFsControlFile(
                 this,
                 asyncContext.EventHandle,
                 null,
                 IntPtr.Zero,
                 asyncContext.StatusMemory,
                 controlCode,
-                inBuffer,
+                inBuffer ?? IntPtr.Zero,
                 inLen,
-                outBuffer,
+                outBuffer ?? IntPtr.Zero,
                 outLen
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                );
 
-            asyncContext.NotifyStarted();
+            asyncContext.NotifyBegin();
 
-            if (status == NtStatus.Success)
+            if (status != NtStatus.Pending)
+            {
+                // The operation finished synchronously.
                 asyncContext.CompletedSynchronously = true;
+
+                if (status >= NtStatus.Error)
+                    asyncContext.Status = status;
+            }
 
             return asyncContext;
         }
@@ -272,24 +275,29 @@ namespace ProcessHacker.Native.Objects
             if (outBuffer != null)
                 asyncContext.KeepAlive(outBuffer);
 
-            if ((status = Win32.NtDeviceIoControlFile(
+            status = Win32.NtDeviceIoControlFile(
                 this,
                 asyncContext.EventHandle,
                 null,
                 IntPtr.Zero,
                 asyncContext.StatusMemory,
                 controlCode,
-                inBuffer,
+                inBuffer ?? IntPtr.Zero,
                 inLen,
-                outBuffer,
+                outBuffer ?? IntPtr.Zero,
                 outLen
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                );
 
-            asyncContext.NotifyStarted();
+            asyncContext.NotifyBegin();
 
-            if (status == NtStatus.Success)
+            if (status != NtStatus.Pending)
+            {
+                // The operation finished synchronously.
                 asyncContext.CompletedSynchronously = true;
+
+                if (status >= NtStatus.Error)
+                    asyncContext.Status = status;
+            }
 
             return asyncContext;
         }
@@ -301,7 +309,7 @@ namespace ProcessHacker.Native.Objects
 
             asyncContext.KeepAlive(buffer);
 
-            if ((status = Win32.NtReadFile(
+            status = Win32.NtReadFile(
                 this,
                 asyncContext.EventHandle,
                 null,
@@ -311,13 +319,18 @@ namespace ProcessHacker.Native.Objects
                 buffer.Size,
                 IntPtr.Zero,
                 IntPtr.Zero
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                );
 
-            asyncContext.NotifyStarted();
+            asyncContext.NotifyBegin();
 
-            if (status == NtStatus.Success)
+            if (status != NtStatus.Pending)
+            {
+                // The operation finished synchronously.
                 asyncContext.CompletedSynchronously = true;
+
+                if (status >= NtStatus.Error)
+                    asyncContext.Status = status;
+            }
 
             return asyncContext;
         }
@@ -329,7 +342,7 @@ namespace ProcessHacker.Native.Objects
 
             asyncContext.KeepAlive(buffer);
 
-            if ((status = Win32.NtWriteFile(
+            status = Win32.NtWriteFile(
                 this,
                 asyncContext.EventHandle,
                 null,
@@ -339,13 +352,18 @@ namespace ProcessHacker.Native.Objects
                 buffer.Size,
                 IntPtr.Zero,
                 IntPtr.Zero
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                );
 
-            asyncContext.NotifyStarted();
+            asyncContext.NotifyBegin();
 
-            if (status == NtStatus.Success)
+            if (status != NtStatus.Pending)
+            {
+                // The operation finished synchronously.
                 asyncContext.CompletedSynchronously = true;
+
+                if (status >= NtStatus.Error)
+                    asyncContext.Status = status;
+            }
 
             return asyncContext;
         }
@@ -371,42 +389,33 @@ namespace ProcessHacker.Native.Objects
 
         public int EndFsControl(AsyncIoContext asyncContext)
         {
+            return this.EndIo(asyncContext);
+        }
+
+        public int EndIo(AsyncIoContext asyncContext)
+        {
             asyncContext.Wait();
+            asyncContext.NotifyEnd();
 
-            if (asyncContext.Status.Status >= NtStatus.Error)
-                Win32.ThrowLastError(asyncContext.Status.Status);
+            if (asyncContext.Status >= NtStatus.Error)
+                Win32.ThrowLastError(asyncContext.Status);
 
-            return asyncContext.Status.Information.ToInt32();
+            return asyncContext.StatusBlock.Information.ToInt32();
         }
 
         public int EndIoControl(AsyncIoContext asyncContext)
         {
-            asyncContext.Wait();
-
-            if (asyncContext.Status.Status >= NtStatus.Error)
-                Win32.ThrowLastError(asyncContext.Status.Status);
-
-            return asyncContext.Status.Information.ToInt32();
+            return this.EndIo(asyncContext);
         }
 
         public int EndRead(AsyncIoContext asyncContext)
         {
-            asyncContext.Wait();
-
-            if (asyncContext.Status.Status >= NtStatus.Error)
-                Win32.ThrowLastError(asyncContext.Status.Status);
-
-            return asyncContext.Status.Information.ToInt32();
+            return this.EndIo(asyncContext);
         }
 
         public int EndWrite(AsyncIoContext asyncContext)
         {
-            asyncContext.Wait();
-
-            if (asyncContext.Status.Status >= NtStatus.Error)
-                Win32.ThrowLastError(asyncContext.Status.Status);
-
-            return asyncContext.Status.Information.ToInt32();
+            return this.EndIo(asyncContext);
         }
 
         public void EnumFiles(EnumFilesDelegate callback)
@@ -439,16 +448,18 @@ namespace ProcessHacker.Native.Objects
                             firstTime
                             );
 
-                        if (status == NtStatus.BufferTooSmall || status == NtStatus.InfoLengthMismatch)
+                        // Our ISB is on the stack, so we have to wait for the operation to complete 
+                        // before continuing.
+                        if (status == NtStatus.Pending)
+                        {
+                            this.Wait();
+                            status = isb.Status;
+                        }
+
+                        if (status == NtStatus.BufferOverflow || status == NtStatus.InfoLengthMismatch)
                             data.Resize(data.Size * 2);
                         else
                             break;
-                    }
-
-                    if (status == NtStatus.Pending)
-                    {
-                        this.Wait();
-                        status = isb.Status;
                     }
 
                     // If we don't have any entries to read, exit.
@@ -471,7 +482,7 @@ namespace ProcessHacker.Native.Objects
                             info.FileNameLength / 2
                             );
 
-                        callback(new FileEntry(
+                        if (!callback(new FileEntry(
                             name,
                             info.FileIndex,
                             Utils.GetDateTimeFromLongTime(info.CreationTime),
@@ -481,7 +492,8 @@ namespace ProcessHacker.Native.Objects
                             info.EndOfFile,
                             info.AllocationSize,
                             info.FileAttributes
-                            ));
+                            )))
+                            return;
 
                         if (info.NextEntryOffset == 0)
                             break;
@@ -501,11 +513,36 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
             IoStatusBlock isb;
 
-            if ((status = Win32.NtFlushBuffersFile(
+            status = Win32.NtFlushBuffersFile(
                 this,
                 out isb
-                )) >= NtStatus.Error)
+                );
+
+            if (status == NtStatus.Pending)
+            {
+                this.Wait();
+                status = isb.Status;
+            }
+
+            if (status >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+        }
+
+        public int FsControl(int controlCode, byte[] inBuffer, byte[] outBuffer)
+        {
+            int inLen = inBuffer != null ? inBuffer.Length : 0;
+            int outLen = outBuffer != null ? outBuffer.Length : 0;
+
+            unsafe
+            {
+                fixed (byte* inBufferPtr = inBuffer)
+                {
+                    fixed (byte* outBufferPtr = outBuffer)
+                    {
+                        return this.FsControl(controlCode, inBufferPtr, inLen, outBufferPtr, outLen);
+                    }
+                }
+            }
         }
 
         public unsafe int FsControl(
@@ -516,28 +553,66 @@ namespace ProcessHacker.Native.Objects
             int outBufferLength
             )
         {
+            return this.FsControl(controlCode, new IntPtr(inBuffer), inBufferLength, new IntPtr(outBuffer), outBufferLength);
+        }
+
+        public int FsControl(
+            int controlCode,
+            IntPtr inBuffer,
+            int inBufferLength,
+            IntPtr outBuffer,
+            int outBufferLength
+            )
+        {
+            NtStatus status;
+            int returnLength;
+
+            status = this.FsControl(controlCode, inBuffer, inBufferLength, outBuffer, outBufferLength, out returnLength);
+
+            if (status >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return returnLength;
+        }
+
+        public NtStatus FsControl(
+            int controlCode,
+            IntPtr inBuffer,
+            int inBufferLength,
+            IntPtr outBuffer,
+            int outBufferLength,
+            out int returnLength
+            )
+        {
             NtStatus status;
             IoStatusBlock isb;
 
             int inLen = inBuffer != null ? inBufferLength : 0;
             int outLen = outBuffer != null ? outBufferLength : 0;
 
-            if ((status = Win32.NtFsControlFile(
+            status = Win32.NtFsControlFile(
                 this,
                 IntPtr.Zero,
                 null,
                 IntPtr.Zero,
                 out isb,
                 controlCode,
-                new IntPtr(inBuffer),
+                inBuffer,
                 inLen,
-                new IntPtr(outBuffer),
+                outBuffer,
                 outLen
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                );
+
+            if (status == NtStatus.Pending)
+            {
+                this.Wait();
+                status = isb.Status;
+            }
 
             // Information contains the return length.
-            return isb.Information.ToInt32();
+            returnLength = isb.Information.ToInt32();
+
+            return status;
         }
 
         public FileBasicInformation GetBasicInformation()
@@ -650,18 +725,19 @@ namespace ProcessHacker.Native.Objects
         /// <param name="inBuffer">The input.</param>
         /// <param name="outBuffer">The output buffer.</param>
         /// <returns>The bytes returned in the output buffer.</returns>
-        public unsafe int IoControl(int controlCode, byte[] inBuffer, byte[] outBuffer)
+        public int IoControl(int controlCode, byte[] inBuffer, byte[] outBuffer)
         {
-            byte[] inArr = inBuffer;
-            int inLen = inArr != null ? inBuffer.Length : 0;
-            byte[] outArr = outBuffer;
-            int outLen = outArr != null ? outBuffer.Length : 0;
+            int inLen = inBuffer != null ? inBuffer.Length : 0;
+            int outLen = outBuffer != null ? outBuffer.Length : 0;
 
-            fixed (byte* inArrPtr = inArr)
+            unsafe
             {
-                fixed (byte* outArrPtr = outArr)
+                fixed (byte* inBufferPtr = inBuffer)
                 {
-                    return this.IoControl(controlCode, inArrPtr, inLen, outArrPtr, outLen);
+                    fixed (byte* outBufferPtr = outBuffer)
+                    {
+                        return this.IoControl(controlCode, inBufferPtr, inLen, outBufferPtr, outLen);
+                    }
                 }
             }
         }
@@ -689,28 +765,66 @@ namespace ProcessHacker.Native.Objects
             int outBufferLength
             )
         {
+            return this.IoControl(controlCode, new IntPtr(inBuffer), inBufferLength, new IntPtr(outBuffer), outBufferLength);
+        }
+
+        public int IoControl(
+            int controlCode,
+            IntPtr inBuffer,
+            int inBufferLength,
+            IntPtr outBuffer,
+            int outBufferLength
+            )
+        {
+            NtStatus status;
+            int returnLength;
+
+            status = this.IoControl(controlCode, inBuffer, inBufferLength, outBuffer, outBufferLength, out returnLength);
+
+            if (status >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return returnLength;
+        }
+
+        public NtStatus IoControl(
+            int controlCode,
+            IntPtr inBuffer,
+            int inBufferLength,
+            IntPtr outBuffer,
+            int outBufferLength,
+            out int returnLength
+            )
+        {
             NtStatus status;
             IoStatusBlock isb;
 
             int inLen = inBuffer != null ? inBufferLength : 0;
             int outLen = outBuffer != null ? outBufferLength : 0;
 
-            if ((status = Win32.NtDeviceIoControlFile(
+            status = Win32.NtDeviceIoControlFile(
                 this,
                 IntPtr.Zero,
                 null,
                 IntPtr.Zero,
                 out isb,
                 controlCode,
-                new IntPtr(inBuffer),
+                inBuffer,
                 inLen,
-                new IntPtr(outBuffer),
+                outBuffer,
                 outLen
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                );
+
+            if (status == NtStatus.Pending)
+            {
+                this.Wait();
+                status = isb.Status;
+            }
 
             // Information contains the return length.
-            return isb.Information.ToInt32();
+            returnLength = isb.Information.ToInt32();
+
+            return status;
         }
 
         private T QueryStruct<T>(FileInformationClass infoClass)
@@ -769,7 +883,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
             IoStatusBlock isb;
 
-            if ((status = Win32.NtReadFile(
+            status = Win32.NtReadFile(
                 this,
                 IntPtr.Zero,
                 null,
@@ -779,7 +893,15 @@ namespace ProcessHacker.Native.Objects
                 length,
                 IntPtr.Zero,
                 IntPtr.Zero
-                )) >= NtStatus.Error)
+                );
+
+            if (status == NtStatus.Pending)
+            {
+                this.Wait();
+                status = isb.Status;
+            }
+
+            if (status >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return isb.Information.ToInt32();
@@ -842,7 +964,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
             IoStatusBlock isb;
 
-            if ((status = Win32.NtWriteFile(
+            status = Win32.NtWriteFile(
                 this,
                 IntPtr.Zero,
                 null,
@@ -852,7 +974,15 @@ namespace ProcessHacker.Native.Objects
                 length,
                 IntPtr.Zero,
                 IntPtr.Zero
-                )) >= NtStatus.Error)
+                );
+
+            if (status == NtStatus.Pending)
+            {
+                this.Wait();
+                status = isb.Status;
+            }
+
+            if (status >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return isb.Information.ToInt32();
@@ -907,13 +1037,20 @@ namespace ProcessHacker.Native.Objects
 
         public bool Completed
         {
-            get { return _eventHandle.GetBasicInformation().EventState != 0; }
+            get
+            {
+                return _completedSynchronously || _eventHandle.GetBasicInformation().EventState != 0;
+            }
         }
 
         public bool CompletedSynchronously
         {
             get { return _completedSynchronously; }
-            internal set { _completedSynchronously = value; }
+            internal set
+            {
+                _completedSynchronously = value;
+                _eventHandle.Set();
+            }
         }
 
         internal EventHandle EventHandle
@@ -926,12 +1063,23 @@ namespace ProcessHacker.Native.Objects
             get { return _fileHandle; }
         }
 
+        public int Information
+        {
+            get { return this.StatusBlock.Information.ToInt32(); }
+        }
+
         public bool Started
         {
             get { return _started; }
         }
 
-        public IoStatusBlock Status
+        public NtStatus Status
+        {
+            get { return this.StatusBlock.Status; }
+            set { this.StatusBlock = new IoStatusBlock(value, this.StatusBlock.Information); }
+        }
+
+        public IoStatusBlock StatusBlock
         {
             get
             {
@@ -939,6 +1087,10 @@ namespace ProcessHacker.Native.Objects
                     throw new InvalidOperationException("The I/O operation has not yet completed.");
 
                 return _isb.ReadStruct<IoStatusBlock>();
+            }
+            internal set
+            {
+                _isb.WriteStruct<IoStatusBlock>(value);
             }
         }
 
@@ -961,8 +1113,7 @@ namespace ProcessHacker.Native.Objects
             _fileHandle.CancelIo(_isb);
             _canceled = true;
             _eventHandle.Set();
-
-            this.ClearKeepAlive();
+            this.NotifyEnd();
         }
 
         private void ClearKeepAlive()
@@ -979,9 +1130,14 @@ namespace ProcessHacker.Native.Objects
             obj.Reference();
         }
 
-        internal void NotifyStarted()
+        internal void NotifyBegin()
         {
             _started = true;
+        }
+
+        internal void NotifyEnd()
+        {
+            this.ClearKeepAlive();
         }
 
         #region ISynchronizable Members
@@ -1021,7 +1177,7 @@ namespace ProcessHacker.Native.Objects
             DateTime changeTime,
             long size,
             long allocationSize,
-            int attributes
+            FileAttributes attributes
             )
         {
             this.Name = name;
@@ -1046,6 +1202,6 @@ namespace ProcessHacker.Native.Objects
         public long Size { get; private set; }
         public long AllocationSize { get; private set; }
 
-        public int Attributes { get; private set; }
+        public FileAttributes Attributes { get; private set; }
     }
 }

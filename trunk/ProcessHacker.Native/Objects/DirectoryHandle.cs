@@ -32,6 +32,8 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class DirectoryHandle : NativeHandle<DirectoryAccess>
     {
+        public delegate bool EnumObjectsDelegate(ObjectEntry obj);
+
         public struct ObjectEntry
         {
             private string _name;
@@ -101,54 +103,79 @@ namespace ProcessHacker.Native.Objects
             : this(name, 0, null, access)
         { }
 
+        public void EnumObjects(EnumObjectsDelegate callback)
+        {
+            NtStatus status;
+            int context = 0;
+            bool firstTime = true;
+            int retLength;
+
+            using (var data = new MemoryAlloc(0x10))
+            {
+                while (true)
+                {
+                    while ((status = Win32.NtQueryDirectoryObject(
+                        this,
+                        data,
+                        data.Size,
+                        false,
+                        firstTime,
+                        ref context,
+                        out retLength
+                        )) == NtStatus.MoreEntries)
+                    {
+                        // Check if we have at least one entry. If not, 
+                        // we need to double the buffer size and try again.
+                        if (data.ReadStruct<ObjectDirectoryInformation>(0).Name.Buffer != IntPtr.Zero)
+                            break;
+
+                        if (data.Size > 16 * 1024 * 1024)
+                            Win32.ThrowLastError(status);
+
+                        data.Resize(data.Size * 2);
+                    }
+
+                    if (status >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+
+                    int i = 0;
+
+                    while (true)
+                    {
+                        ObjectDirectoryInformation info = data.ReadStruct<ObjectDirectoryInformation>(i);
+
+                        if (info.Name.Buffer == IntPtr.Zero)
+                            break;
+
+                        if (!callback(new ObjectEntry(info.Name.Read(), info.TypeName.Read())))
+                            return;
+
+                        i++;
+                    }
+
+                    if (status != NtStatus.MoreEntries)
+                        break;
+
+                    firstTime = false;
+                }
+            }
+        }
+
         /// <summary>
         /// Gets the objects contained in the directory object.
         /// </summary>
         /// <returns>An array of object entries.</returns>
         public ObjectEntry[] GetObjects()
         {
-            NtStatus status;
-            int context = 0;
-            int retLength;
-            var objectList = new List<ObjectEntry>();
+            var objects = new List<ObjectEntry>();
 
-            using (var data = new MemoryAlloc(0x400))
-            {
-                // NtQueryDirectoryObject isn't very nice.
-                while ((status = Win32.NtQueryDirectoryObject(
-                    this,
-                    data,
-                    data.Size,
-                    false,
-                    true,
-                    ref context,
-                    out retLength
-                    )) == NtStatus.MoreEntries)
+            this.EnumObjects((obj) =>
                 {
-                    if (data.Size > 16 * 1024 * 1024)
-                        Win32.ThrowLastError(status);
+                    objects.Add(obj);
+                    return true;
+                });
 
-                    data.Resize(data.Size * 2);
-                }
-
-                if (status < 0)
-                    Win32.ThrowLastError(status);
-
-                int i = 0;
-
-                while (true)
-                {
-                    ObjectDirectoryInformation info = data.ReadStruct<ObjectDirectoryInformation>(i);
-
-                    if (info.Name.Buffer == IntPtr.Zero)
-                        break;
-
-                    objectList.Add(new ObjectEntry(info.Name.Read(), info.TypeName.Read()));
-                    i++;
-                }
-            }
-
-            return objectList.ToArray();
+            return objects.ToArray();
         }
     }
 }

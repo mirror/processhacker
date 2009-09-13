@@ -175,6 +175,85 @@ namespace ProcessHacker.Native.Api
         MaxDebugObjectInfoClass
     }
 
+    public enum DeviceControlAccess : int
+    {
+        Any = 0,
+        Special = Any,
+        Read = 1,
+        Write = 2
+    }
+
+    public enum DeviceControlMethod : int
+    {
+        Buffered = 0,
+        InDirect = 1,
+        OutDirect = 2,
+        Neither = 3
+    }
+
+    public enum DeviceType : int
+    {
+        Beep = 0x1,
+        CdRom = 0x2,
+        CdRomFileSystem = 0x3,
+        Controller = 0x4,
+        DataLink = 0x5,
+        Dfs = 0x6,
+        Disk = 0x7,
+        DiskFileSystem = 0x8,
+        FileSystem = 0x9,
+        InportPort = 0xa,
+        Keyboard = 0xb,
+        Mailslot = 0xc,
+        MidiIn = 0xd,
+        MidiOut = 0xe,
+        Mouse = 0xf,
+        MultiUncProvider = 0x10,
+        NamedPipe = 0x11,
+        Network = 0x12,
+        NetworkBrowser = 0x13,
+        NetworkFileSystem = 0x14,
+        Null = 0x15,
+        ParallelPort = 0x16,
+        PhysicalNetCard = 0x17,
+        Printer = 0x18,
+        Scanner = 0x19,
+        SerialMousePort = 0x1a,
+        SerialPort = 0x1b,
+        Screen = 0x1c,
+        Sound = 0x1d,
+        Streams = 0x1e,
+        Tape = 0x1f,
+        TapeFileSystem = 0x20,
+        Transport = 0x21,
+        Unknown = 0x22,
+        Video = 0x23,
+        VirtualDisk = 0x24,
+        WaveIn = 0x25,
+        WaveOut = 0x26,
+        EightZeroFourTwoPort = 0x27,
+        NetworkRedirector = 0x28,
+        Battery = 0x29,
+        BusExtender = 0x2a,
+        Modem = 0x2b,
+        Vdm = 0x2c,
+        MassStorage = 0x2d,
+        Smb = 0x2e,
+        Ks = 0x2f,
+        Changer = 0x30,
+        SmartCard = 0x31,
+        Acpi = 0x32,
+        Dvd = 0x33,
+        FullscreenVideo = 0x34,
+        DfsFileSystem = 0x35,
+        DfsVolume = 0x36,
+        Serenum = 0x37,
+        TermSrv = 0x38,
+        KSec = 0x39,
+        Fips = 0x3a,
+        Infiniband = 0x3b
+    }
+
     [Flags]
     public enum DbgState : int
     {

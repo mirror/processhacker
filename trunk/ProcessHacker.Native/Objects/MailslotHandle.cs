@@ -22,6 +22,7 @@
 
 using System;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -30,21 +31,60 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public sealed class MailslotHandle : FileHandle
     {
-        public static MailslotHandle Create(string name, int maxMessageSize, int readTimeout)
+        public static MailslotHandle Create(FileAccess access, string fileName, int maxMessageSize, long readTimeout)
         {
+            return Create(
+                access,
+                fileName,
+                ObjectFlags.CaseInsensitive,
+                null,
+                0,
+                maxMessageSize,
+                readTimeout,
+                0
+                );
+        }
+
+        public static MailslotHandle Create(
+            FileAccess access,
+            string fileName,
+            ObjectFlags objectFlags,
+            FileHandle rootDirectory,
+            int quota,
+            int maxMessageSize,
+            long readTimeout,
+            FileCreateOptions createOptions
+            )
+        {
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
+            IoStatusBlock isb;
             IntPtr handle;
 
-            handle = Win32.CreateMailslot(name, maxMessageSize, readTimeout, IntPtr.Zero);
+            try
+            {
+                if ((status = Win32.NtCreateMailslotFile(
+                    out handle,
+                    access,
+                    ref oa,
+                    out isb,
+                    createOptions,
+                    quota,
+                    maxMessageSize,
+                    ref readTimeout
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+            finally
+            {
+                oa.Dispose();
+            }
 
-            if (handle == NativeHandle.MinusOne)
-                Win32.ThrowLastError();
-
-            return new MailslotHandle(handle);
+            return new MailslotHandle(handle, true);
         }
 
-        private MailslotHandle(IntPtr handle)
-        {
-            this.Handle = handle;
-        }
+        private MailslotHandle(IntPtr handle, bool owned)
+            : base(handle, owned)
+        { }
     }
 }
