@@ -321,9 +321,7 @@ namespace ProcessHacker.Native.Objects
             {
                 // The operation finished synchronously.
                 asyncContext.CompletedSynchronously = true;
-
-                if (status >= NtStatus.Error)
-                    asyncContext.Status = status;
+                asyncContext.Status = status;
             }
 
             return asyncContext;
@@ -361,9 +359,7 @@ namespace ProcessHacker.Native.Objects
             {
                 // The operation finished synchronously.
                 asyncContext.CompletedSynchronously = true;
-
-                if (status >= NtStatus.Error)
-                    asyncContext.Status = status;
+                asyncContext.Status = status;
             }
 
             return asyncContext;
@@ -394,9 +390,7 @@ namespace ProcessHacker.Native.Objects
             {
                 // The operation finished synchronously.
                 asyncContext.CompletedSynchronously = true;
-
-                if (status >= NtStatus.Error)
-                    asyncContext.Status = status;
+                asyncContext.Status = status;
             }
 
             return asyncContext;
@@ -427,9 +421,7 @@ namespace ProcessHacker.Native.Objects
             {
                 // The operation finished synchronously.
                 asyncContext.CompletedSynchronously = true;
-
-                if (status >= NtStatus.Error)
-                    asyncContext.Status = status;
+                asyncContext.Status = status;
             }
 
             return asyncContext;
@@ -1208,6 +1200,11 @@ namespace ProcessHacker.Native.Objects
                 _fileHandle.Dereference();
             if (_isb != null)
                 _isb.Dispose();
+        }
+
+        public bool Cancelled
+        {
+            get { return this.Status == NtStatus.Cancelled; }
         }
 
         public bool Completed
