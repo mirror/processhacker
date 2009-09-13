@@ -1107,7 +1107,6 @@ namespace ProcessHacker.Native.Objects
         private EventHandle _eventHandle;
         private FileHandle _fileHandle;
         private MemoryAlloc _isb;
-        private bool _canceled = false;
         private bool _completedSynchronously = false;
         private bool _started = false;
 
@@ -1141,11 +1140,6 @@ namespace ProcessHacker.Native.Objects
                 _fileHandle.Dereference();
             if (_isb != null)
                 _isb.Dispose();
-        }
-
-        public bool Canceled
-        {
-            get { return _canceled; }
         }
 
         public bool Completed
@@ -1223,9 +1217,8 @@ namespace ProcessHacker.Native.Objects
             if (!_started)
                 return;
 
-            _fileHandle.CancelIo(_isb);
-            _canceled = true;
-            _eventHandle.Set();
+            _fileHandle.CancelIo();
+            this.Wait();
             this.NotifyEnd();
         }
 
