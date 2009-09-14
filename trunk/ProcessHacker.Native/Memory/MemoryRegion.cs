@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   memory region
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -57,6 +57,7 @@ namespace ProcessHacker.Native
             return (int*)memory.Memory;
         }
 
+        private MemoryRegion _parent;
         private IntPtr _memory;
         private int _size;
 
@@ -80,8 +81,16 @@ namespace ProcessHacker.Native
         { }
 
         protected MemoryRegion(IntPtr memory, int size, bool owned)
+            : this(null, memory, size, owned)
+        { }
+
+        protected MemoryRegion(MemoryRegion parent, IntPtr memory, int size, bool owned)
             : base(owned)
-        {
+        {       
+            if (parent != null)
+                parent.Reference();
+
+            _parent = parent;
             _memory = memory;
             _size = size;
         }
@@ -89,6 +98,9 @@ namespace ProcessHacker.Native
         protected sealed override void DisposeObject(bool disposing)
         {
             this.Free();
+
+            if (_parent != null)
+                _parent.Dereference(disposing);
         }
 
         protected virtual void Free()
@@ -101,6 +113,11 @@ namespace ProcessHacker.Native
         {
             get { return _memory; }
             protected set { _memory = value; }
+        }
+
+        public MemoryRegion Parent
+        {
+            get { return _parent; }
         }
 
         /// <summary>
@@ -123,6 +140,11 @@ namespace ProcessHacker.Native
                 _sizeCache.Add(structType, Marshal.SizeOf(structType));
 
             return _sizeCache[structType];
+        }
+
+        public MemoryRegion MakeChild(int offset, int size)
+        {
+            return new MemoryRegion(this, _memory.Increment(offset), size, true);
         }
 
         public string ReadAnsiString(int offset)
@@ -188,6 +210,15 @@ namespace ProcessHacker.Native
         public IntPtr ReadIntPtr(int offset, int index)
         {
             return Marshal.ReadIntPtr(_memory, offset + index * IntPtr.Size);
+        }
+
+        public void ReadMemory(IntPtr buffer, int destOffset, int srcOffset, int length)
+        {
+            ProcessHacker.Native.Api.Win32.RtlMoveMemory(
+                buffer.Increment(destOffset),
+                _memory.Increment(srcOffset),
+                length.ToIntPtr()
+                );
         }
 
         /// <summary>
@@ -290,11 +321,11 @@ namespace ProcessHacker.Native
             Marshal.WriteIntPtr(this, offset, i);
         }
 
-        public void WriteMemory(int destOffset, IntPtr data, int srcOffset, int length)
+        public void WriteMemory(int destOffset, IntPtr buffer, int srcOffset, int length)
         {
             ProcessHacker.Native.Api.Win32.RtlMoveMemory(
                 _memory.Increment(destOffset),
-                data.Increment(srcOffset),
+                buffer.Increment(srcOffset),
                 length.ToIntPtr()
                 );
         }

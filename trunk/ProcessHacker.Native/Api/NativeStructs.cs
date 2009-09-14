@@ -431,7 +431,7 @@ namespace ProcessHacker.Native.Api
         public long LastAccessTime;
         public long LastWriteTime;
         public long ChangeTime;
-        public int FileAttributes;
+        public FileAttributes FileAttributes;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -457,8 +457,15 @@ namespace ProcessHacker.Native.Api
         public long AllocationSize;
         public FileAttributes FileAttributes;
         public int FileNameLength;
-        public char FileName;
+        public short FileName;
         // File name string follows (WCHAR).
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileDispositionInformation
+    {
+        [MarshalAs(UnmanagedType.I1)]
+        public bool DeleteFile;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -468,12 +475,18 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct FileEndOfFileInformation
+    {
+        public long EndOfFile;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct FileFsAttributeInformation
     {
         public int FileSystemAttributes;
         public int MaximumComponentNameLength;
         public int FileSystemNameLength;
-        public char FileSystemName;
+        public short FileSystemName;
         // File system name string follows (WCHAR).
     }
 
@@ -481,7 +494,7 @@ namespace ProcessHacker.Native.Api
     public struct FileFsLabelInformation
     {
         public int VolumeLabelLength;
-        public char VolumeLabel;
+        public short VolumeLabel;
         // Volume label string follows (WCHAR).
     }
 
@@ -493,7 +506,7 @@ namespace ProcessHacker.Native.Api
         public int VolumeLabelLength;
         [MarshalAs(UnmanagedType.I1)]
         public bool SupportsObjects;
-        public char VolumeLabel;
+        public short VolumeLabel;
         // Volume label string follows (WCHAR).
     }
 
@@ -522,7 +535,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct FileModeInformation
     {
-        public int Mode;
+        public FileObjectFlags Mode;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -532,7 +545,7 @@ namespace ProcessHacker.Native.Api
             Marshal.OffsetOf(typeof(FileNameInformation), "FileName").ToInt32();
 
         public int FileNameLength;
-        public char FileName;
+        public short FileName;
         // File name string follows (WCHAR).
     }
 
@@ -542,7 +555,7 @@ namespace ProcessHacker.Native.Api
         public int NextEntryOffset;
         public int FileIndex;
         public int FileNameLength;
-        public char FileName;
+        public short FileName;
         // File name string follows (WCHAR).
     }
 
@@ -555,7 +568,7 @@ namespace ProcessHacker.Native.Api
         public int NextEntryOffset;
         public FileNotifyAction Action;
         public int FileNameLength;
-        public char FileName;
+        public short FileName;
         // Unicode file name string follows.
     }
 
@@ -579,6 +592,32 @@ namespace ProcessHacker.Native.Api
         public int WriteQuotaAvailable;
         public PipeState NamedPipeState;
         public PipeEnd NamedPipeEnd;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FilePipePeekBuffer
+    {
+        public static readonly int DataOffset =
+            Marshal.OffsetOf(typeof(FilePipePeekBuffer), "Data").ToInt32();
+
+        public PipeState NamedPipeState;
+        public int ReadDataAvailable;
+        public int NumberOfMessages;
+        public int MessageLength;
+        public byte Data;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FilePipeWaitForBuffer
+    {
+        public static readonly int NameOffset =
+            Marshal.OffsetOf(typeof(FilePipeWaitForBuffer), "Name").ToInt32();
+
+        public long Timeout;
+        public int NameLength;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool TimeoutSpecified;
+        public short Name;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -609,7 +648,7 @@ namespace ProcessHacker.Native.Api
         public int StreamNameLength;
         public long StreamSize;
         public long StreamAllocationSize;
-        public char StreamName;
+        public short StreamName;
         // Stream name string follows (WCHAR).
     }
 
@@ -803,7 +842,7 @@ namespace ProcessHacker.Native.Api
         public LargeInteger LastWriteTime;
         public int TitleIndex;
         public int NameLength;
-        public char Name;
+        public short Name;
         // Variable length string follows.
     }
 
@@ -818,7 +857,7 @@ namespace ProcessHacker.Native.Api
         public int MaxValueNameLen;
         public int MaxValueDataLen;
         public int NameLength;
-        public char Name;
+        public short Name;
         // Variable length string follows.
     }
 
@@ -841,7 +880,7 @@ namespace ProcessHacker.Native.Api
         public int Values;
         public int MaxValueNameLen;
         public int MaxValueDataLen;
-        public char Class;
+        public short Class;
         // Variable length string follows.
     }
 
@@ -849,7 +888,7 @@ namespace ProcessHacker.Native.Api
     public struct KeyNameInformation
     {
         public int NameLength;
-        public char Name;
+        public short Name;
         // Variable length string follows.
     }
 
@@ -861,7 +900,7 @@ namespace ProcessHacker.Native.Api
         public int ClassOffset;
         public int ClassLength;
         public int NameLength;
-        public char Name;
+        public short Name;
         // Variable length string follows.
     }
 
@@ -877,7 +916,7 @@ namespace ProcessHacker.Native.Api
         public int TitleIndex;
         public int Type;
         public int NameLength;
-        public char Name;
+        public short Name;
         // Variable length string follows.
     }
 
@@ -898,7 +937,7 @@ namespace ProcessHacker.Native.Api
         public int DataOffset;
         public int DataLength;
         public int NameLength;
-        public char Name;
+        public short Name;
         // Variable length string follows.
     }
 
@@ -1531,7 +1570,7 @@ namespace ProcessHacker.Native.Api
     {
         public IntPtr Handle;
         public int TotalTraces;
-        public char HandleTrace;
+        public byte HandleTrace;
         // An array of ProcessHandleTracingEntry structures follows.
     }
 
@@ -1666,7 +1705,7 @@ namespace ProcessHacker.Native.Api
         public int ReservedMemory;
         public int NumberOfBackTraceLookups;
         public int NumberOfBackTraces;
-        public char BackTraces; // RtlProcessBackTraceInformation[] BackTraces
+        public byte BackTraces; // RtlProcessBackTraceInformation[] BackTraces
         // Array of RtlProcessBackTraceInformation structures follows.
     }
 
@@ -2400,7 +2439,7 @@ namespace ProcessHacker.Native.Api
         /// <summary>
         /// The first byte of the log path string.
         /// </summary>
-        public byte LogPath; // wchar[]
+        public short LogPath; // wchar[]
         // Log path follows.
     }
 

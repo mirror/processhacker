@@ -37,6 +37,8 @@ namespace ProcessHacker.Native.Api
         public const int AclRevision = 2;
         public const int AclRevisionDs = 4;
         public const int ExceptionMaximumParameters = 15;
+        public const uint FileWriteToEndOfFile = 0xffffffff;
+        public const uint FileUseFilePointerPosition = 0xfffffffe;
         public const int FlsMaximumAvailable = 128;
 #if _WIN64
         public const int GdiHandleBufferSize = 60;
@@ -60,11 +62,13 @@ namespace ProcessHacker.Native.Api
         public const int SizeOf80387Registers = 80;
         public const int TimeMsTo100Ns = 10000;
 
-        // KTM object paths
-        public const string TransactionManagerObjectPath = "\\TransactionManager\\";
-        public const string TransactionObjectPath = "\\Transaction\\";
-        public const string EnlistmentObjectPath = "\\Enlistment\\";
-        public const string ResourceManagerObjectPath = "\\ResourceManager\\";
+        // Known object paths
+        public const string EnlistmentPath = @"\Enlistment";
+        public const string MailslotPath = @"\Device\Mailslot";
+        public const string NamedPipePath = @"\Device\NamedPipe";
+        public const string ResourceManagerPath = @"\ResourceManager";
+        public const string TransactionPath = @"\Transaction";
+        public const string TransactionManagerPath = @"\TransactionManager";
 
         public static readonly IntPtr KnownAceSidStartOffset = Marshal.OffsetOf(typeof(KnownAceStruct), "SidStart");
         public static readonly IntPtr PebLdrOffset = Marshal.OffsetOf(typeof(Peb), "Ldr");

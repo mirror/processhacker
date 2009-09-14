@@ -1245,6 +1245,38 @@ namespace ProcessHacker.Common
             }
         }
 
+        public static void ValidateBuffer(byte[] buffer, int offset, int length)
+        {
+            ValidateBuffer(buffer, offset, length, false);
+        }
+
+        public static void ValidateBuffer(byte[] buffer, int offset, int length, bool canBeNull)
+        {
+            // Make sure the offset isn't negative.
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException("offset");
+
+            // Make sure the length isn't negative.
+            if (length < 0)
+                throw new ArgumentOutOfRangeException("length");
+
+            // Make sure we won't overrun the buffer.
+            if (buffer != null)
+            {
+                if (buffer.Length - offset < length)
+                    throw new ArgumentOutOfRangeException("The buffer is too small for the specified offset and length.");
+            }
+            else
+            {
+                if (!canBeNull)
+                    throw new ArgumentException("The buffer cannot be null.");
+
+                // We don't have a buffer, so make sure the offset and length are zero.
+                if (offset != 0 || length != 0)
+                    throw new ArgumentOutOfRangeException("The offset and length must be zero for a null buffer.");
+            }
+        }
+
         public static int WindowsToNativeBasePriority(System.Diagnostics.ProcessPriorityClass priority)
         {
             switch (priority)

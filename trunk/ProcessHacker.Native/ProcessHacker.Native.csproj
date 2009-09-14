@@ -72,6 +72,7 @@
     <Compile Include="Memory\MemoryRegion.cs" />
     <Compile Include="Memory\PhysicalPages.cs" />
     <Compile Include="Memory\PhysicalPagesMapping.cs" />
+    <Compile Include="Memory\PinnedObject.cs" />
     <Compile Include="Memory\Section.cs" />
     <Compile Include="Memory\VirtualMemoryAlloc.cs" />
     <Compile Include="NativeUtils.cs" />
