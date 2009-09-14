@@ -469,7 +469,7 @@ namespace ProcessHacker.Components
                                     unsafe
                                     {
                                         phandle.ReadMemory(item.Address, alloc, (int)item.Size);
-                                        fhandle.Write(alloc, (int)item.Size);
+                                        fhandle.Write(alloc.Memory, (int)item.Size);
                                     }
                                 }
                                 catch (WindowsException)

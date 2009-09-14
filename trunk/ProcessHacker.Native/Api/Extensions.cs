@@ -148,7 +148,7 @@ namespace ProcessHacker.Native
                     var str = oni.Name;
 
                     if (KProcessHacker.Instance != null)
-                        str.Buffer = str.Buffer.Increment(-baseAddress + oniMem);
+                        str.Buffer = str.Buffer.Increment(oniMem.Memory.Decrement(baseAddress));
 
                     return str.Read();
                 }
@@ -244,7 +244,7 @@ namespace ProcessHacker.Native
                             var str = oti.Name;
 
                             if (KProcessHacker.Instance != null)
-                                str.Buffer = str.Buffer.Increment(-baseAddress + otiMem);
+                                str.Buffer = str.Buffer.Increment(otiMem.Memory.Decrement(baseAddress));
 
                             info.TypeName = str.Read();
                             Windows.ObjectTypes.Add(thisHandle.ObjectTypeNumber, info.TypeName);

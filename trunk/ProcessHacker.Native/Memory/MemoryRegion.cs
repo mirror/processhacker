@@ -32,29 +32,14 @@ namespace ProcessHacker.Native
     {
         private static Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
 
-        public static implicit operator int(MemoryRegion memory)
-        {
-            return memory.Memory.ToInt32();
-        }
-
         public static implicit operator IntPtr(MemoryRegion memory)
         {
             return memory.Memory;
         }
 
-        public unsafe static implicit operator byte*(MemoryRegion memory)
+        public unsafe static implicit operator void*(MemoryRegion memory)
         {
-            return (byte*)memory.Memory;
-        }
-
-        public unsafe static explicit operator void*(MemoryRegion memory)
-        {
-            return (void*)memory.Memory;
-        }
-
-        public unsafe static explicit operator int*(MemoryRegion memory)
-        {
-            return (int*)memory.Memory;
+            return memory.Memory.ToPointer();
         }
 
         private MemoryRegion _parent;
