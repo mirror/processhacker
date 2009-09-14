@@ -289,6 +289,49 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
+        public AsyncIoContext BeginFsControl(
+            int controlCode,
+            byte[] inBuffer,
+            int inBufferOffset,
+            int inBufferLength,
+            byte[] outBuffer,
+            int outBufferOffset,
+            int outBufferLength
+            )
+        {
+            AsyncIoContext asyncContext;
+            PinnedObject<byte[]> pinnedInBuffer = null;
+            PinnedObject<byte[]> pinnedOutBuffer = null;
+
+            Utils.ValidateBuffer(inBuffer, inBufferOffset, inBufferLength, true);
+            Utils.ValidateBuffer(outBuffer, outBufferOffset, outBufferLength, true);
+
+            asyncContext = new AsyncIoContext(this);
+
+            if (inBuffer != null)
+            {
+                pinnedInBuffer = new PinnedObject<byte[]>(inBuffer);
+                asyncContext.KeepAlive(pinnedInBuffer);
+            }
+
+            if (outBuffer != null)
+            {
+                pinnedOutBuffer = new PinnedObject<byte[]>(outBuffer);
+                asyncContext.KeepAlive(pinnedOutBuffer);
+            }
+
+            this.BeginFsControl(
+                asyncContext,
+                controlCode,
+                pinnedInBuffer != null ? pinnedInBuffer.Address.Increment(inBufferOffset) : IntPtr.Zero,
+                inBufferLength,
+                pinnedOutBuffer != null ? pinnedOutBuffer.Address.Increment(outBufferOffset) : IntPtr.Zero,
+                outBufferLength
+                );
+
+            return asyncContext;
+        }
+
         public AsyncIoContext BeginFsControl(int controlCode, MemoryRegion inBuffer, MemoryRegion outBuffer)
         {
             AsyncIoContext asyncContext = new AsyncIoContext(this);
@@ -339,6 +382,49 @@ namespace ProcessHacker.Native.Objects
                 asyncContext.CompletedSynchronously = true;
                 asyncContext.Status = status;
             }
+        }
+
+        public AsyncIoContext BeginIoControl(
+            int controlCode,
+            byte[] inBuffer,
+            int inBufferOffset,
+            int inBufferLength,
+            byte[] outBuffer,
+            int outBufferOffset,
+            int outBufferLength
+            )
+        {
+            AsyncIoContext asyncContext;
+            PinnedObject<byte[]> pinnedInBuffer = null;
+            PinnedObject<byte[]> pinnedOutBuffer = null;
+
+            Utils.ValidateBuffer(inBuffer, inBufferOffset, inBufferLength, true);
+            Utils.ValidateBuffer(outBuffer, outBufferOffset, outBufferLength, true);
+
+            asyncContext = new AsyncIoContext(this);
+
+            if (inBuffer != null)
+            {
+                pinnedInBuffer = new PinnedObject<byte[]>(inBuffer);
+                asyncContext.KeepAlive(pinnedInBuffer);
+            }
+
+            if (outBuffer != null)
+            {
+                pinnedOutBuffer = new PinnedObject<byte[]>(outBuffer);
+                asyncContext.KeepAlive(pinnedOutBuffer);
+            }
+
+            this.BeginIoControl(
+                asyncContext,
+                controlCode,
+                pinnedInBuffer != null ? pinnedInBuffer.Address.Increment(inBufferOffset) : IntPtr.Zero,
+                inBufferLength,
+                pinnedOutBuffer != null ? pinnedOutBuffer.Address.Increment(outBufferOffset) : IntPtr.Zero,
+                outBufferLength
+                );
+
+            return asyncContext;
         }
 
         public AsyncIoContext BeginIoControl(int controlCode, MemoryRegion inBuffer, MemoryRegion outBuffer)
@@ -759,6 +845,30 @@ namespace ProcessHacker.Native.Objects
 
         public int FsControl(int controlCode, byte[] inBuffer, byte[] outBuffer)
         {
+            return this.FsControl(
+                controlCode,
+                inBuffer,
+                0,
+                inBuffer != null ? inBuffer.Length : 0,
+                outBuffer,
+                0,
+                outBuffer != null ? outBuffer.Length : 0
+                );
+        }
+
+        public int FsControl(
+            int controlCode,
+            byte[] inBuffer,
+            int inBufferOffset,
+            int inBufferLength,
+            byte[] outBuffer,
+            int outBufferOffset,
+            int outBufferLength
+            )
+        {
+            Utils.ValidateBuffer(inBuffer, inBufferOffset, inBufferLength, true);
+            Utils.ValidateBuffer(outBuffer, outBufferOffset, outBufferLength, true);
+
             unsafe
             {
                 fixed (byte* inBufferPtr = inBuffer)
@@ -767,9 +877,9 @@ namespace ProcessHacker.Native.Objects
                     {
                         return this.FsControl(
                             controlCode,
-                            inBufferPtr,
+                            &inBufferPtr[inBufferOffset],
                             inBuffer != null ? inBuffer.Length : 0,
-                            outBufferPtr,
+                            &outBufferPtr[outBufferOffset],
                             outBuffer != null ? outBuffer.Length : 0
                             );
                     }
@@ -967,6 +1077,30 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The bytes returned in the output buffer.</returns>
         public int IoControl(int controlCode, byte[] inBuffer, byte[] outBuffer)
         {
+            return this.IoControl(
+                controlCode,
+                inBuffer,
+                0,
+                inBuffer != null ? inBuffer.Length : 0,
+                outBuffer,
+                0,
+                outBuffer != null ? outBuffer.Length : 0
+                );
+        }
+
+        public int IoControl(
+            int controlCode,
+            byte[] inBuffer,
+            int inBufferOffset,
+            int inBufferLength,
+            byte[] outBuffer,
+            int outBufferOffset,
+            int outBufferLength
+            )
+        {
+            Utils.ValidateBuffer(inBuffer, inBufferOffset, inBufferLength, true);
+            Utils.ValidateBuffer(outBuffer, outBufferOffset, outBufferLength, true);
+
             unsafe
             {
                 fixed (byte* inBufferPtr = inBuffer)
@@ -975,9 +1109,9 @@ namespace ProcessHacker.Native.Objects
                     {
                         return this.IoControl(
                             controlCode,
-                            inBufferPtr,
+                            &inBufferPtr[inBufferOffset],
                             inBuffer != null ? inBuffer.Length : 0,
-                            outBufferPtr,
+                            &outBufferPtr[outBufferOffset],
                             outBuffer != null ? outBuffer.Length : 0
                             );
                     }

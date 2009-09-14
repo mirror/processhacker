@@ -190,6 +190,31 @@ namespace ProcessHacker.Native.Objects
             return this.BeginFsControl(FsCtlListen, null, null);
         }
 
+        public AsyncIoContext BeginTransceive(
+            byte[] inBuffer,
+            int inBufferOffset,
+            int inBufferLength,
+            byte[] outBuffer,
+            int outBufferOffset,
+            int outBufferLength
+            )
+        {
+            return this.BeginFsControl(
+                FsCtlTransceive,
+                inBuffer,
+                inBufferOffset,
+                inBufferLength,
+                outBuffer,
+                outBufferOffset,
+                outBufferLength
+                );
+        }
+
+        public AsyncIoContext BeginTransceive(MemoryRegion inBuffer, MemoryRegion outBuffer)
+        {
+            return this.BeginFsControl(FsCtlTransceive, inBuffer, outBuffer);
+        }
+
         public bool EndListen(AsyncIoContext asyncContext)
         {
             asyncContext.Wait();
@@ -202,6 +227,11 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(asyncContext.StatusBlock.Status);
 
             return false;
+        }
+
+        public int EndTransceive(AsyncIoContext asyncContext)
+        {
+            return this.EndCommonIo(asyncContext);
         }
 
         public void Disconnect()
