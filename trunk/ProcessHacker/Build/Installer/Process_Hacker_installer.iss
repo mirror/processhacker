@@ -137,8 +137,8 @@ Type: files; Name: {app}\psvince.dll
 Type: files; Name: {app}\Homepage.url
 Type: files; Name: {app}\kprocesshacker.sys; Check: Is64BitInstallMode()
 
-Type: files; Name: {userdesktop}\Process Hacker.lnk
-Type: files; Name: {commondesktop}\Process Hacker.lnk
+Type: files; Name: {userdesktop}\Process Hacker.lnk; Check: NOT IsTaskSelected('desktopicon\user')
+Type: files; Name: {commondesktop}\Process Hacker.lnk; Check: NOT IsTaskSelected('desktopicon\common')
 
 ; Remove other languages' shortcuts in Start Menu
 Type: files; Name: {group}\Process Hacker's Readme file.lnk
