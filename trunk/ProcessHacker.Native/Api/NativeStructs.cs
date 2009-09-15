@@ -1627,6 +1627,20 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct RtlBitmap
+    {
+        public int SizeOfBitMap;
+        public IntPtr Buffer; // int*
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RtlBitmapRun
+    {
+        public int StartingIndex;
+        public int NumberOfBits;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct RtlDebugInformation
     {
         public IntPtr SectionHandleClient;

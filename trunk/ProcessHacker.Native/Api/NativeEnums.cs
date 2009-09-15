@@ -251,7 +251,10 @@ namespace ProcessHacker.Native.Api
         TermSrv = 0x38,
         KSec = 0x39,
         Fips = 0x3a,
-        Infiniband = 0x3b
+        Infiniband = 0x3b,
+
+        MountMgr = 'm',
+        MountMgrDevice = 'M'
     }
 
     [Flags]

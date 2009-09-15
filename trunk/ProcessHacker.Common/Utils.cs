@@ -231,6 +231,23 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Performs a divide operation, rounding up.
+        /// </summary>
+        /// <param name="dividend">
+        /// The positive number to divide. The result is undefined if the dividend 
+        /// is negative or zero.
+        /// </param>
+        /// <param name="divisor">
+        /// The positive number to divide by. The result is undefined if the divisor 
+        /// is negative or zero.
+        /// </param>
+        /// <returns>A rounded-up quotient.</returns>
+        public static int DivideUp(int dividend, int divisor)
+        {
+            return (dividend - 1) / divisor + 1;
+        }
+
+        /// <summary>
         /// Performs an action on a control after its handle has been created. 
         /// If the control's handle has already been created, the action is 
         /// executed immediately.

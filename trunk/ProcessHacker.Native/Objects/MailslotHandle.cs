@@ -85,6 +85,29 @@ namespace ProcessHacker.Native.Objects
 
         private MailslotHandle(IntPtr handle, bool owned)
             : base(handle, owned)
+        { }  
+
+        public MailslotHandle(string fileName, FileAccess access)
+            : base(fileName, access)
+        { }
+
+        public MailslotHandle(string fileName, FileShareMode shareMode, FileAccess access)
+            : base(fileName, shareMode, access)
+        { }
+
+        public MailslotHandle(string fileName, FileShareMode shareMode, FileCreateOptions openOptions, FileAccess access)
+            : base(fileName, shareMode, openOptions, access)
+        { }
+
+        public MailslotHandle(
+            string fileName,
+            ObjectFlags objectFlags,
+            FileHandle rootDirectory,
+            FileShareMode shareMode,
+            FileCreateOptions openOptions,
+            FileAccess access
+            )
+            : base(fileName, objectFlags, rootDirectory, shareMode, openOptions, access)
         { }
     }
 }

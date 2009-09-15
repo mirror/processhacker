@@ -185,6 +185,29 @@ namespace ProcessHacker.Native.Objects
             : base(handle, owned)
         { }
 
+        public NamedPipeHandle(string fileName, FileAccess access)
+            : base(fileName, access)
+        { }
+
+        public NamedPipeHandle(string fileName, FileShareMode shareMode, FileAccess access)
+            : base(fileName, shareMode, access)
+        { }
+
+        public NamedPipeHandle(string fileName, FileShareMode shareMode, FileCreateOptions openOptions, FileAccess access)
+            : base(fileName, shareMode, openOptions, access)
+        { }
+
+        public NamedPipeHandle(
+            string fileName,
+            ObjectFlags objectFlags,
+            FileHandle rootDirectory,
+            FileShareMode shareMode,
+            FileCreateOptions openOptions,
+            FileAccess access
+            )
+            : base(fileName, objectFlags, rootDirectory, shareMode, openOptions, access)
+        { }
+
         public AsyncIoContext BeginListen()
         {
             return this.BeginFsControl(FsCtlListen, null, null);
@@ -252,6 +275,11 @@ namespace ProcessHacker.Native.Objects
         public PipeType GetPipeType()
         {
             return this.GetInformation().ReadMode;
+        }
+
+        public void ImpersonateClient()
+        {
+            this.FsControl(FsCtlImpersonate, null, null);
         }
 
         public bool Listen()

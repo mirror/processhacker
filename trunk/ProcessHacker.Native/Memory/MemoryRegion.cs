@@ -114,6 +114,15 @@ namespace ProcessHacker.Native
             protected set { _size = value; }
         }
 
+        public void Fill(int offset, int length, byte value)
+        {
+            ProcessHacker.Native.Api.Win32.RtlFillMemory(
+                _memory.Increment(offset),
+                length.ToIntPtr(),
+                value
+                );
+        }
+
         public MemoryRegionStream GetStream()
         {
             return new MemoryRegionStream(this);
@@ -345,6 +354,14 @@ namespace ProcessHacker.Native
 
             for (int i = 0; i < b.Length; i++)
                 Marshal.WriteByte(this.Memory, offset + i, b[i]);
+        }
+
+        public void Zero(int offset, int length)
+        {
+            ProcessHacker.Native.Api.Win32.RtlZeroMemory(
+                _memory.Increment(offset),
+                length.ToIntPtr()
+                );
         }
     }
 }

@@ -130,7 +130,7 @@ namespace ProcessHacker.Native
         /// <returns>The number of pages needed.</returns>
         public static int BytesToPages(int bytes)
         {
-            return (bytes - 1) / PageSize + 1;
+            return Utils.DivideUp(bytes, PageSize);
         }
 
         /// <summary>

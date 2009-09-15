@@ -65,6 +65,7 @@ namespace ProcessHacker.Native.Api
         // Known object paths
         public const string EnlistmentPath = @"\Enlistment";
         public const string MailslotPath = @"\Device\Mailslot";
+        public const string MountMgrDeviceName = @"\Device\MountPointManager";
         public const string NamedPipePath = @"\Device\NamedPipe";
         public const string ResourceManagerPath = @"\ResourceManager";
         public const string TransactionPath = @"\Transaction";

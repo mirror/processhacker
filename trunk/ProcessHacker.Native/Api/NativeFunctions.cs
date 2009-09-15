@@ -2677,6 +2677,172 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Bitmaps
+
+        [DllImport("ntdll.dll")]
+        public static extern bool RtlAreBitsClear(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int StartingIndex,
+            [In] int Length
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern bool RtlAreBitsSet(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int StartingIndex,
+            [In] int Length
+            );
+
+        public static int RtlCheckBit(
+            ref RtlBitmap BitMapHeader,
+            int BitPosition
+            )
+        {
+            unsafe
+            {
+                int* buffer = (int*)BitMapHeader.Buffer.ToPointer();
+
+                return (buffer[BitPosition / 32] >> (BitPosition % 32)) & 0x1;
+            }
+        }
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlClearAllBits(
+            [In] ref RtlBitmap BitMapHeader
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlClearBit(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int BitNumber
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlClearBits(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int StartingIndex,
+            [In] int NumberToClear
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlFindClearBits(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int NumberToFind,
+            [In] int HintIndex
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlFindClearBitsAndSet(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int NumberToFind,
+            [In] int HintIndex
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlFindClearRuns(
+            [In] ref RtlBitmap BitMapHeader,
+            RtlBitmapRun[] RunArray,
+            [In] int SizeOfRunArray,
+            [In] bool LocateLongestRuns
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlFindLastBackwardRunClear(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int FromIndex,
+            [Out] out int StartingRunIndex
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlFindNextForwardRunClear(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int FromIndex,
+            [Out] out int StartingRunIndex
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlFindSetBits(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int NumberToFind,
+            [In] int HintIndex
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlFindSetBitsAndClear(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int NumberToFind,
+            [In] int HintIndex
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlInitializeBitMap(
+            [Out] out RtlBitmap BitMapHeader,
+            [In] IntPtr BitMapBuffer, // int*
+            [In] int SizeOfBitMap
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlFindFirstRunClear(
+            [In] ref RtlBitmap BitMapHeader,
+            [Out] out int StartingIndex
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlFindLongestRunClear(
+            [In] ref RtlBitmap BitMapHeader,
+            [Out] out int StartingIndex
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlNumberOfClearBits(
+            [In] ref RtlBitmap BitMapHeader
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlNumberOfSetBits(
+            [In] ref RtlBitmap BitMapHeader
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlSetBit(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int BitNumber
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlSetBits(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int StartingIndex,
+            [In] int NumberToSet
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlSetAllBits(
+            [In] ref RtlBitmap BitMapHeader
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern bool RtlTestBit(
+            [In] ref RtlBitmap BitMapHeader,
+            [In] int BitNumber
+            );
+
+        #endregion
+
+        #region Bits
+
+        [DllImport("ntdll.dll")]
+        public static extern sbyte RtlFindLeastSignificantBit(
+            [In] long Set
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern sbyte RtlFindMostSignificantBit(
+            [In] long Set
+            );
+
+        #endregion
+
         #region Debugging
 
         [DllImport("ntdll.dll")]
@@ -2855,6 +3021,20 @@ namespace ProcessHacker.Native.Api
         #region Memory
 
         [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlCompareMemory(
+            [In] IntPtr Source1,
+            [In] IntPtr Source2,
+            [In] IntPtr Length
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlFillMemory(
+            [In] IntPtr Destination,
+            [In] IntPtr Length,
+            [In] byte Fill
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern void RtlMoveMemory(
             [In] IntPtr Destination,
             [In] IntPtr Source,
@@ -2862,9 +3042,8 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public unsafe static extern void RtlMoveMemory(
-            [In] void* Destination,
-            [In] void* Source,
+        public static extern void RtlZeroMemory(
+            [In] IntPtr Destination,
             [In] IntPtr Length
             );
 

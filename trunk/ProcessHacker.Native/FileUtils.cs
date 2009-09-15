@@ -88,7 +88,6 @@ namespace ProcessHacker.Native
 
         public static string DeviceFileNameToDos(string fileName)
         {
-            // don't know if this is really necessary...
             var prefixes = _driveDevicePrefixes;
 
             foreach (var pair in prefixes)
