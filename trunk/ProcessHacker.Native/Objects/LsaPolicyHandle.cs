@@ -20,22 +20,22 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using System;
 
 namespace ProcessHacker.Native.Objects
 {
     /// <summary>
     /// Represents a handle to the LSA policy.
     /// </summary>
-    public sealed class LsaPolicyHandle : LsaHandle<PolicyAccess>
+    public sealed class LsaPolicyHandle : LsaHandle<LsaPolicyAccess>
     {
         /// <summary>
         /// Connects to the local LSA policy.
         /// </summary>
         /// <param name="access">The desired access to the policy.</param>
-        public LsaPolicyHandle(PolicyAccess access)
+        public LsaPolicyHandle(LsaPolicyAccess access)
         {
             NtStatus status;
             ObjectAttributes attributes = new ObjectAttributes();

@@ -993,7 +993,7 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus LsaOpenPolicy(
             [In] IntPtr SystemName, 
             [In] ref ObjectAttributes ObjectAttributes,
-            [In] PolicyAccess DesiredAccess,
+            [In] LsaPolicyAccess DesiredAccess,
             ref IntPtr PolicyHandle
             );
 

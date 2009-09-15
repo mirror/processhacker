@@ -56,7 +56,7 @@ namespace ProcessHacker
             try
             {
                 using (var policy =
-                    new LsaPolicyHandle(PolicyAccess.LookupNames | PolicyAccess.ViewLocalInformation))
+                    new LsaPolicyHandle(LsaPolicyAccess.LookupNames | LsaPolicyAccess.ViewLocalInformation))
                 {
                     foreach (var sid in policy.GetAccounts())
                         if (sid.NameUse == SidNameUse.User)

@@ -93,6 +93,9 @@
     <Compile Include="Security\AccessControl\Ace.cs" />
     <Compile Include="Security\AccessControl\Acl.cs" />
     <Compile Include="Security\AccessControl\KnownAce.cs" />
+    <Compile Include="Security\LsaSecretAccess.cs" />
+    <Compile Include="Security\LsaTrustedAccess.cs" />
+    <Compile Include="Security\LsaAccountAccess.cs" />
     <Compile Include="Security\EnlistmentAccess.cs" />
     <Compile Include="Security\ResourceManagerAccess.cs" />
     <Compile Include="Security\IoCompletionAccess.cs" />
@@ -184,7 +187,7 @@
     <Compile Include="Security\MutantAccess.cs" />
     <Compile Include="Security\EventAccess.cs" />
     <Compile Include="Security\JobObjectAccess.cs" />
-    <Compile Include="Security\PolicyAccess.cs" />
+    <Compile Include="Security\LsaPolicyAccess.cs" />
     <Compile Include="Security\ProcessAccess.cs" />
     <Compile Include="Security\ScManagerAccess.cs" />
     <Compile Include="Security\SectionAccess.cs" />
