@@ -31,22 +31,34 @@ namespace ProcessHacker.Native
     /// </summary>
     public sealed class LsaMemoryAlloc : MemoryAlloc
     {
+        private bool _secur32;
+
         public LsaMemoryAlloc(IntPtr memory)
-            : this(memory, true)
+            : this(memory, false)
+        { }
+
+        public LsaMemoryAlloc(IntPtr memory, bool secur32)
+            : this(memory, secur32, true)
         { }
 
         /// <summary>
         /// Creates a memory allocation from an existing LSA managed allocation. 
         /// </summary>
         /// <param name="memory">A pointer to the allocated memory.</param>
+        /// <param name="secur32">True if the memory was allocated by secur32, otherwise false.</param>
         /// <param name="owned">Whether the memory allocation should be freed automatically.</param>
-        public LsaMemoryAlloc(IntPtr memory, bool owned)
+        public LsaMemoryAlloc(IntPtr memory, bool secur32, bool owned)
             : base(memory, owned)
-        { }
+        {
+            _secur32 = secur32;
+        }
 
         protected override void Free()
         {
-            Win32.LsaFreeMemory(this);
+            if (!_secur32)
+                Win32.LsaFreeMemory(this);
+            else
+                Win32.LsaFreeReturnBuffer(this);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

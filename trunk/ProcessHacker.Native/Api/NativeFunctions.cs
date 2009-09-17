@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker - 
  *   native API functions
- *                       
+ *
  * Copyright (C) 2009 Flavio Erlich
  * Copyright (C) 2008-2009 wj32
  * 
@@ -19,6 +19,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* This file contains function declarations for the Native API.
+ * 
+ * Only functions from ntdll.dll are considered to be part of the 
+ * Native API.
  */
 
 // Parameter 'parameter' has no matching param tag in the XML comment for 'parameter' (but other parameters do)

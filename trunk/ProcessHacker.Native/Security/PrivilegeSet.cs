@@ -55,13 +55,16 @@ namespace ProcessHacker.Native.Security
         public PrivilegeSet(IntPtr memory)
         {
             MemoryRegion memoryRegion = new MemoryRegion(memory);
-            int count = memoryRegion.ReadInt32(0);
-            PrivilegeSetFlags flags = (PrivilegeSetFlags)memoryRegion.ReadInt32(4);
+            PrivilegeSetStruct privilegeSet = memoryRegion.ReadStruct<PrivilegeSetStruct>();
 
-            _privileges = new List<Privilege>(count);
+            _flags = privilegeSet.Flags;
 
-            for (int i = 0; i < count; i++)
-                _privileges.Add(new Privilege(memoryRegion.ReadStruct<LuidAndAttributes>(8, i)));
+            _privileges = new List<Privilege>(privilegeSet.Count);
+
+            for (int i = 0; i < privilegeSet.Count; i++)
+            {
+                _privileges.Add(new Privilege(memoryRegion.ReadStruct<LuidAndAttributes>(PrivilegeSetStruct.PrivilegesOffset, i)));
+            }
         }
 
         public PrivilegeSetFlags Flags
@@ -82,17 +85,6 @@ namespace ProcessHacker.Native.Security
                 memory.WriteStruct<LuidAndAttributes>(8, i, _privileges[i].ToLuidAndAttributes());
 
             return memory;
-        }
-
-        public PrivilegeSetStruct ToPrivilegeSet()
-        {
-            return new PrivilegeSetStruct()
-            {
-                Count = _privileges.Count,
-                Flags = _flags,
-                Privileges = _privileges.ConvertAll<LuidAndAttributes>(
-                (privilege) => privilege.ToLuidAndAttributes()).ToArray()
-            };
         }
 
         public TokenPrivileges ToTokenPrivileges()

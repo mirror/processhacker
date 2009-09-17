@@ -23,6 +23,12 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* This file contains function declarations for the Win32 API.
+ * 
+ * All functions which do not belong in any other category 
+ * are placed in this file.
+ */
+
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -965,44 +971,6 @@ namespace ProcessHacker.Native.Api
         #endregion
 
         #region Security
-
-        #region LSA
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern NtStatus LsaFreeMemory(
-            [In] IntPtr Memory
-            );
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern NtStatus LsaEnumerateAccountsWithUserRight(
-            [In] IntPtr PolicyHandle, 
-            [In] IntPtr UserRights,
-            [Out] out IntPtr SIDs,
-            [Out] out int CountReturned
-            );
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern NtStatus LsaAddAccountRights(
-            [In] IntPtr PolicyHandle, 
-            [In] IntPtr AccountSid,
-            [In] UnicodeString[] UserRights, 
-            [In] uint CountOfRights
-            );
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern NtStatus LsaOpenPolicy(
-            [In] IntPtr SystemName, 
-            [In] ref ObjectAttributes ObjectAttributes,
-            [In] LsaPolicyAccess DesiredAccess,
-            ref IntPtr PolicyHandle
-            );
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern NtStatus LsaClose(
-            [In] IntPtr Handle
-            );
-
-        #endregion
 
         [DllImport("advapi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]

@@ -22,6 +22,12 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* This file contains enumeration declarations for the Win32 API.
+ * 
+ * All enumerations which do not belong in any other category 
+ * are placed in this file.
+ */
+
 using System;
 
 namespace ProcessHacker.Native.Api

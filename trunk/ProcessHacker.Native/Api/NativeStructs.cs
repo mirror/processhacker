@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker - 
  *   native API structs
- *                       
+ *
  * Copyright (C) 2009 Flavio Erlich
  * Copyright (C) 2008-2009 wj32
  * 
@@ -19,6 +19,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* This file contains structure declarations for the Native API.
+ * Structures shared between the Native API and Win32 are placed 
+ * in this file.
  */
 
 using System;
@@ -1524,10 +1529,12 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct PrivilegeSetStruct
     {
+        public static int PrivilegesOffset =
+            Marshal.OffsetOf(typeof(PrivilegeSetStruct), "Privileges").ToInt32();
+
         public int Count;
         public PrivilegeSetFlags Flags;
-        [MarshalAs(UnmanagedType.ByValArray)]
-        public LuidAndAttributes[] Privileges;
+        public LuidAndAttributes Privileges;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1572,17 +1579,6 @@ namespace ProcessHacker.Native.Api
         public int TotalTraces;
         public byte HandleTrace;
         // An array of ProcessHandleTracingEntry structures follows.
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct QuotaLimits
-    {
-        public int PagedPoolLimit;
-        public int NonPagedPoolLimit;
-        public int MinimumWorkingSetSize;
-        public int MaximumWorkingSetSizse;
-        public int PagefileLimit;
-        public long TimeLimit;
     }
 
     [StructLayout(LayoutKind.Sequential)]

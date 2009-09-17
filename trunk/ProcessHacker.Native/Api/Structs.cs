@@ -22,6 +22,12 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* This file contains structure declarations for the Win32 API.
+ * 
+ * All structures which do not belong in any other category 
+ * are placed in this file.
+ */
+
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;

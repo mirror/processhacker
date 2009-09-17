@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker - 
  *   native API enumerations
- *                       
+ *
  * Copyright (C) 2009 Flavio Erlich
  * Copyright (C) 2008-2009 wj32
  * 
@@ -19,6 +19,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* This file contains enumeration declarations for the Native API.
+ * Enumerations shared between the Native API and Win32 are placed 
+ * in this file.
  */
 
 using System;

@@ -91,6 +91,7 @@ namespace ProcessHacker.Native.Api
         DeviceBusy = 0x80000011,
         InvalidEaName = 0x80000013,
         EaListInconsistent = 0x80000014,
+        NoMoreEntries = 0x8000001a,
         LongJump = 0x80000026,
         DllMightBeInsecure = 0x8000002b,
 
