@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
@@ -16,12 +14,12 @@ namespace ProcessHacker.Native
 
         protected override void Free()
         {
-            base.Free();
+            ProcessHandle.Current.FreeMemory(this, this.Size);
         }
 
         public override void Resize(int newSize)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

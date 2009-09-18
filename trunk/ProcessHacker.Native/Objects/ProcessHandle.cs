@@ -834,6 +834,16 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="baseAddress">The address of the region to free.</param>
         /// <param name="size">The size to free.</param>
+        public void FreeMemory(IntPtr baseAddress, int size)
+        {
+            this.FreeMemory(baseAddress, size, false);
+        }
+
+        /// <summary>
+        /// Frees a memory region in the process' virtual memory.
+        /// </summary>
+        /// <param name="baseAddress">The address of the region to free.</param>
+        /// <param name="size">The size to free.</param>
         /// <param name="reserveOnly">Specifies whether or not to only 
         /// reserve the memory instead of freeing it.</param>
         public void FreeMemory(IntPtr baseAddress, int size, bool reserveOnly)
