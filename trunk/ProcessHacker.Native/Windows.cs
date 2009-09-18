@@ -307,6 +307,60 @@ namespace ProcessHacker.Native
             return kernelModules.ToArray();
         }
 
+        public static SystemLogonSession GetLogonSession(Luid logonId)
+        {
+            NtStatus status;
+            IntPtr logonSessionData;
+
+            if ((status = Win32.LsaGetLogonSessionData(
+                ref logonId,
+                out logonSessionData
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            using (var logonSessionDataAlloc = new LsaMemoryAlloc(logonSessionData, true))
+            {
+                var info = logonSessionDataAlloc.ReadStruct<SecurityLogonSessionData>();
+
+                return new SystemLogonSession(
+                    info.AuthenticationPackage.Read(),
+                    info.DnsDomainName.Read(),
+                    info.LogonDomain.Read(),
+                    info.LogonId,
+                    info.LogonServer.Read(),
+                    DateTime.FromFileTime(info.LogonTime),
+                    info.LogonType,
+                    info.Session,
+                    new Sid(info.Sid),
+                    info.Upn.Read(),
+                    info.UserName.Read()
+                    );
+            }
+        }
+
+        public static Luid[] GetLogonSessions()
+        {
+            NtStatus status;
+            int logonSessionCount;
+            IntPtr logonSessionList;
+
+            if ((status = Win32.LsaEnumerateLogonSessions(
+                out logonSessionCount,
+                out logonSessionList
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            Luid[] logonSessions = new Luid[logonSessionCount];
+
+            using (var logonSessionListAlloc = new LsaMemoryAlloc(logonSessionList, true))
+            {
+                for (int i = 0; i < logonSessionCount; i++)
+                    logonSessions[i] = logonSessionListAlloc.ReadStruct<Luid>(i);
+
+                return logonSessions;
+            }
+        }
+
         /// <summary>
         /// Gets the network connections currently active.
         /// </summary>
@@ -914,6 +968,48 @@ namespace ProcessHacker.Native
         /// The file name of the module (e.g. C:\Windows\system32\module.dll).
         /// </summary>
         public string FileName { get; private set; }
+    }
+
+    public class SystemLogonSession
+    {
+        public SystemLogonSession(
+            string authenticationPackage,
+            string dnsDomainName,
+            string logonDomain,
+            Luid logonId,
+            string logonServer,
+            DateTime logonTime,
+            LogonType logonType,
+            int session,
+            Sid sid,
+            string upn,
+            string userName
+            )
+        {
+            this.AuthenticationPackage = authenticationPackage;
+            this.DnsDomainName = dnsDomainName;
+            this.LogonDomain = logonDomain;
+            this.LogonId = logonId;
+            this.LogonServer = logonServer;
+            this.LogonTime = logonTime;
+            this.LogonType = logonType;
+            this.Session = session;
+            this.Sid = sid;
+            this.Upn = upn;
+            this.UserName = userName;
+        }
+
+        public string AuthenticationPackage { get; private set; }
+        public string DnsDomainName { get; private set; }
+        public string LogonDomain { get; private set; }
+        public Luid LogonId { get; private set; }
+        public string LogonServer { get; private set; }
+        public DateTime LogonTime { get; private set; }
+        public LogonType LogonType { get; private set; }
+        public int Session { get; private set; }
+        public Sid Sid { get; private set; }
+        public string Upn { get; private set; }
+        public string UserName { get; private set; }
     }
 
     public class SystemPagefile
