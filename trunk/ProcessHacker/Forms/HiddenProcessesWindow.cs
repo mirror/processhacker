@@ -97,12 +97,12 @@ namespace ProcessHacker
             // Check if the process has terminated. This is possible because 
             // a process can be terminated while its object is still being 
             // referenced.
-            DateTime exitTime = DateTime.MinValue;
+            DateTime exitTime = DateTime.FromFileTime(0);
 
             try { exitTime = phandle.GetExitTime(); }
             catch { }
 
-            if (exitTime.ToFileTime() == 0)
+            if (exitTime.ToFileTime() != 0)
             {
                 item.BackColor = Color.DarkGray;
                 item.ForeColor = Color.White;
