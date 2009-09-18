@@ -16,6 +16,7 @@ Process Hacker
    * Network list now displays process tooltips
    * Decreased memory and CPU usage
    * Added a glossary to Help
+   * Configurable elevation prompts
  * FIXED:
    * #2820170 - "System.ArgumentOutOfRangeException in network list"
    * #2845427 - "Indicator integer overflow"

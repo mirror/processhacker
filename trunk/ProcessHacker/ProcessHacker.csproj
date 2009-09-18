@@ -496,6 +496,7 @@
     <Compile Include="Forms\UpdaterDownloadWindow.Designer.cs">
       <DependentUpon>UpdaterDownloadWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Actions\ElevationLevel.cs" />
     <Compile Include="UI\Actions\SessionActions.cs" />
     <Compile Include="UI\GenericViewMenu.cs" />
     <Compile Include="UI\Icons\CommitHistoryIcon.cs" />

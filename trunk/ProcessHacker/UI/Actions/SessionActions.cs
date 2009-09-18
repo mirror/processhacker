@@ -42,6 +42,9 @@ namespace ProcessHacker.UI.Actions
 
         private static void ElevateIfRequired(IWin32Window window, int session, string actionName, Action action)
         {
+            if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Never)
+                return;
+
             try
             {
                 action();
@@ -52,34 +55,43 @@ namespace ProcessHacker.UI.Actions
                     OSVersion.HasUac &&
                     Program.ElevationType == ProcessHacker.Native.Api.TokenElevationType.Limited)
                 {
-                    TaskDialog td = new TaskDialog();
+                    DialogResult result;
 
-                    td.WindowTitle = "Process Hacker";
-                    td.MainIcon = TaskDialogIcon.Warning;
-                    td.MainInstruction = "Do you want to elevate the action?";
-                    td.Content = "The action could not be performed in the current security context. " +
-                        "Do you want Process Hacker to prompt for the appropriate credentials and elevate the action?";
-
-                    td.ExpandedInformation = "Error: " + ex.Message + " (0x" + ex.ErrorCode.ToString("x") + ")";
-                    td.ExpandFooterArea = true;
-
-                    td.Buttons = new TaskDialogButton[]
+                    if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Elevate)
                     {
-                        new TaskDialogButton((int)DialogResult.Yes, "Elevate\nPrompt for credentials and elevate the action.")
-                    };
-                    td.CommonButtons = TaskDialogCommonButtons.Cancel;
-                    td.UseCommandLinks = true;
-                    td.Callback = (taskDialog, args, userData) =>
+                        result = DialogResult.Yes;
+                    }
+                    else
                     {
-                        if (args.Notification == TaskDialogNotification.Created)
+                        TaskDialog td = new TaskDialog();
+
+                        td.WindowTitle = "Process Hacker";
+                        td.MainIcon = TaskDialogIcon.Warning;
+                        td.MainInstruction = "Do you want to elevate the action?";
+                        td.Content = "The action could not be performed in the current security context. " +
+                            "Do you want Process Hacker to prompt for the appropriate credentials and elevate the action?";
+
+                        td.ExpandedInformation = "Error: " + ex.Message + " (0x" + ex.ErrorCode.ToString("x") + ")";
+                        td.ExpandFooterArea = true;
+
+                        td.Buttons = new TaskDialogButton[]
                         {
-                            taskDialog.SetButtonElevationRequiredState((int)DialogResult.Yes, true);
-                        }
+                            new TaskDialogButton((int)DialogResult.Yes, "Elevate\nPrompt for credentials and elevate the action.")
+                        };
+                        td.CommonButtons = TaskDialogCommonButtons.Cancel;
+                        td.UseCommandLinks = true;
+                        td.Callback = (taskDialog, args, userData) =>
+                        {
+                            if (args.Notification == TaskDialogNotification.Created)
+                            {
+                                taskDialog.SetButtonElevationRequiredState((int)DialogResult.Yes, true);
+                            }
 
-                        return false;
-                    };
+                            return false;
+                        };
 
-                    DialogResult result = (DialogResult)td.Show(window);
+                        result = (DialogResult)td.Show(window);
+                    }
 
                     if (result == DialogResult.Yes)
                     {

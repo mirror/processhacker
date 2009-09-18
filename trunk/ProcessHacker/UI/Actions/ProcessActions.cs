@@ -181,6 +181,9 @@ namespace ProcessHacker.UI.Actions
         private static ElevationAction PromptForElevation(IWin32Window window, int[] pids, string[] names,
             ProcessAccess access, string elevateAction, string action)
         {
+            if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Never)
+                return ElevationAction.NotRequired;
+
             if (
                 OSVersion.HasUac &&
                 Program.ElevationType == ProcessHacker.Native.Api.TokenElevationType.Limited &&
@@ -199,6 +202,9 @@ namespace ProcessHacker.UI.Actions
                 {
                     if (ex.ErrorCode != 5)
                         return ElevationAction.NotRequired;
+
+                    if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Elevate)
+                        return ElevationAction.Elevate;
 
                     TaskDialog td = new TaskDialog();
 

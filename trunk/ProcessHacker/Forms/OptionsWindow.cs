@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.UI;
@@ -101,6 +102,9 @@ namespace ProcessHacker
         {
             this.InitializeHighlightingColors();
             this.LoadSettings();
+
+            if (!OSVersion.HasUac)
+                comboElevationLevel.Enabled = false;
 
             foreach (TabPage tab in tabControl.TabPages)
             {
@@ -255,6 +259,15 @@ namespace ProcessHacker
             checkFloatChildWindows.Checked = Properties.Settings.Default.FloatChildWindows;
             checkHidePhConnections.Checked = Properties.Settings.Default.HideProcessHackerNetworkConnections;
 
+            if (OSVersion.HasUac)
+            {
+                comboElevationLevel.SelectedIndex = Properties.Settings.Default.ElevationLevel;
+            }
+            else
+            {
+                comboElevationLevel.SelectedIndex = 0;
+            }
+
             textImposterNames.Text = Properties.Settings.Default.ImposterNames;
 
             switch (Properties.Settings.Default.ToolStripDisplayStyle)
@@ -397,6 +410,7 @@ namespace ProcessHacker
             Properties.Settings.Default.EnableExperimentalFeatures = checkEnableExperimentalFeatures.Checked;
             Properties.Settings.Default.ImposterNames = textImposterNames.Text.ToLower();
             Properties.Settings.Default.HideProcessHackerNetworkConnections = checkHidePhConnections.Checked;
+            Properties.Settings.Default.ElevationLevel = comboElevationLevel.SelectedIndex;
 
             Properties.Settings.Default.MaxSamples = (int)textMaxSamples.Value;
             HistoryManager.GlobalMaxCount = Properties.Settings.Default.MaxSamples;

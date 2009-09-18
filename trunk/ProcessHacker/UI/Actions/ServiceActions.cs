@@ -67,6 +67,9 @@ namespace ProcessHacker.UI.Actions
         private static bool ElevateIfRequired(IWin32Window window, string service,
             ServiceAccess access, string action)
         {
+            if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Never)
+                return false;
+
             if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited)
             {
                 try
@@ -76,35 +79,44 @@ namespace ProcessHacker.UI.Actions
                 }
                 catch (WindowsException ex)
                 {
-                    TaskDialog td = new TaskDialog();
+                    DialogResult result;
 
-                    td.WindowTitle = "Process Hacker";
-                    td.MainIcon = TaskDialogIcon.Warning;
-                    td.MainInstruction = "Do you want to elevate the action?";
-                    td.Content = "The action cannot be performed in the current security context. " +
-                        "Do you want Process Hacker to prompt for the appropriate credentials and elevate the action?";
-
-                    td.ExpandedInformation = "Error: " + ex.Message + " (0x" + ex.ErrorCode.ToString("x") + ")";
-                    td.ExpandFooterArea = true;
-
-                    td.Buttons = new TaskDialogButton[]
+                    if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Elevate)
                     {
-                        new TaskDialogButton((int)DialogResult.Yes, "Elevate\nPrompt for credentials and elevate the action."),
-                        new TaskDialogButton((int)DialogResult.No, "Continue\nAttempt to perform the action without elevation.")
-                    };
-                    td.CommonButtons = TaskDialogCommonButtons.Cancel;
-                    td.UseCommandLinks = true;
-                    td.Callback = (taskDialog, args, userData) =>
+                        result = DialogResult.Yes;
+                    }
+                    else
+                    {
+                        TaskDialog td = new TaskDialog();
+
+                        td.WindowTitle = "Process Hacker";
+                        td.MainIcon = TaskDialogIcon.Warning;
+                        td.MainInstruction = "Do you want to elevate the action?";
+                        td.Content = "The action cannot be performed in the current security context. " +
+                            "Do you want Process Hacker to prompt for the appropriate credentials and elevate the action?";
+
+                        td.ExpandedInformation = "Error: " + ex.Message + " (0x" + ex.ErrorCode.ToString("x") + ")";
+                        td.ExpandFooterArea = true;
+
+                        td.Buttons = new TaskDialogButton[]
                         {
-                            if (args.Notification == TaskDialogNotification.Created)
-                            {
-                                taskDialog.SetButtonElevationRequiredState((int)DialogResult.Yes, true);
-                            }
-
-                            return false;
+                            new TaskDialogButton((int)DialogResult.Yes, "Elevate\nPrompt for credentials and elevate the action."),
+                            new TaskDialogButton((int)DialogResult.No, "Continue\nAttempt to perform the action without elevation.")
                         };
+                        td.CommonButtons = TaskDialogCommonButtons.Cancel;
+                        td.UseCommandLinks = true;
+                        td.Callback = (taskDialog, args, userData) =>
+                            {
+                                if (args.Notification == TaskDialogNotification.Created)
+                                {
+                                    taskDialog.SetButtonElevationRequiredState((int)DialogResult.Yes, true);
+                                }
 
-                    DialogResult result = (DialogResult)td.Show(window);
+                                return false;
+                            };
+
+                        result = (DialogResult)td.Show(window);
+                    }
 
                     if (result == DialogResult.Yes)
                     {

@@ -33,6 +33,7 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
+using ProcessHacker.UI.Actions;
 
 namespace ProcessHacker.Components
 {
@@ -696,7 +697,8 @@ namespace ProcessHacker.Components
                 return;
 
             if (Program.ElevationType == TokenElevationType.Limited && 
-                KProcessHacker.Instance == null)
+                KProcessHacker.Instance == null &&
+                Properties.Settings.Default.ElevationLevel != (int)ElevationLevel.Never)
             {
                 try
                 {
@@ -783,7 +785,8 @@ namespace ProcessHacker.Components
             //}
 
             if (Program.ElevationType == TokenElevationType.Limited &&
-                KProcessHacker.Instance == null)
+                KProcessHacker.Instance == null &&
+                Properties.Settings.Default.ElevationLevel != (int)ElevationLevel.Never)
             {
                 try
                 {
@@ -840,7 +843,8 @@ namespace ProcessHacker.Components
             //}
 
             if (Program.ElevationType == TokenElevationType.Limited &&
-                KProcessHacker.Instance == null)
+                KProcessHacker.Instance == null &&
+                Properties.Settings.Default.ElevationLevel != (int)ElevationLevel.Never)
             {
                 try
                 {

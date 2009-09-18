@@ -107,6 +107,8 @@
             this.optUpdateStable = new System.Windows.Forms.RadioButton();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
+            this.label22 = new System.Windows.Forms.Label();
+            this.comboElevationLevel = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -431,6 +433,8 @@
             // 
             // tabAdvanced
             // 
+            this.tabAdvanced.Controls.Add(this.comboElevationLevel);
+            this.tabAdvanced.Controls.Add(this.label22);
             this.tabAdvanced.Controls.Add(this.checkEnableExperimentalFeatures);
             this.tabAdvanced.Controls.Add(this.checkHidePhConnections);
             this.tabAdvanced.Controls.Add(this.textMaxSamples);
@@ -478,7 +482,7 @@
             0,
             0,
             0});
-            this.textMaxSamples.Location = new System.Drawing.Point(118, 178);
+            this.textMaxSamples.Location = new System.Drawing.Point(118, 201);
             this.textMaxSamples.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -501,7 +505,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 180);
+            this.label6.Location = new System.Drawing.Point(6, 203);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(106, 13);
             this.label6.TabIndex = 9;
@@ -1066,6 +1070,29 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(6, 177);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(54, 13);
+            this.label22.TabIndex = 10;
+            this.label22.Text = "Elevation:";
+            // 
+            // comboElevationLevel
+            // 
+            this.comboElevationLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboElevationLevel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.comboElevationLevel.FormattingEnabled = true;
+            this.comboElevationLevel.Items.AddRange(new object[] {
+            "Never elevate",
+            "Prompt for elevation",
+            "Always elevate"});
+            this.comboElevationLevel.Location = new System.Drawing.Point(66, 174);
+            this.comboElevationLevel.Name = "comboElevationLevel";
+            this.comboElevationLevel.Size = new System.Drawing.Size(194, 21);
+            this.comboElevationLevel.TabIndex = 11;
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
@@ -1189,5 +1216,7 @@
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.ComboBox comboToolbarStyle;
         private System.Windows.Forms.CheckBox checkUpdateAutomatically;
+        private System.Windows.Forms.ComboBox comboElevationLevel;
+        private System.Windows.Forms.Label label22;
     }
 }
