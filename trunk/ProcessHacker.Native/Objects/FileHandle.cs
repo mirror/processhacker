@@ -775,10 +775,10 @@ namespace ProcessHacker.Native.Objects
                         if (!callback(new FileEntry(
                             name,
                             info.FileIndex,
-                            Utils.GetDateTimeFromLongTime(info.CreationTime),
-                            Utils.GetDateTimeFromLongTime(info.LastAccessTime),
-                            Utils.GetDateTimeFromLongTime(info.LastWriteTime),
-                            Utils.GetDateTimeFromLongTime(info.ChangeTime),
+                            DateTime.FromFileTime(info.CreationTime),
+                            DateTime.FromFileTime(info.LastAccessTime),
+                            DateTime.FromFileTime(info.LastWriteTime),
+                            DateTime.FromFileTime(info.ChangeTime),
                             info.EndOfFile,
                             info.AllocationSize,
                             info.FileAttributes

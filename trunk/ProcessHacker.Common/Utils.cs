@@ -771,15 +771,6 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Converts a 64-bit Windows time value to a DateTime object.
-        /// </summary>
-        /// <param name="time">The Windows time value.</param>
-        public static DateTime GetDateTimeFromLongTime(long time)
-        {
-            return (new DateTime(1601, 1, 1)).AddTicks(time).ToLocalTime();
-        }
-
-        /// <summary>
         /// Converts a 32-bit Unix time value into a DateTime object.
         /// </summary>
         /// <param name="time">The Unix time value.</param>

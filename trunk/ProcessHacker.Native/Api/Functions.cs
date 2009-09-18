@@ -1486,10 +1486,10 @@ namespace ProcessHacker.Native.Api
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetProcessTimes(
             [In] IntPtr ProcessHandle,
-            [Out] out FileTime CreationTime,
-            [Out] out FileTime ExitTime,
-            [Out] out FileTime KernelTime,
-            [Out] out FileTime UserTime
+            [Out] out LargeInteger CreationTime,
+            [Out] out LargeInteger ExitTime,
+            [Out] out LargeInteger KernelTime,
+            [Out] out LargeInteger UserTime
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -1502,20 +1502,19 @@ namespace ProcessHacker.Native.Api
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetSystemTimes(
-            [Out] out FileTime IdleTime,
-            [Out] out FileTime KernelTime,
-            [Out] out FileTime UserTime
+            [Out] out LargeInteger IdleTime,
+            [Out] out LargeInteger KernelTime,
+            [Out] out LargeInteger UserTime
             );
 
-        // From MSDN: Do not cast a pointer to a FILETIME structure to either a ULARGE_INTEGER* or __int64* value because it can cause alignment faults on 64-bit Windows.
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetThreadTimes(
-            [In] IntPtr hThread,
-            [Out] out FileTime lpCreationTime,
-            [Out] out FileTime lpExitTime,
-            [Out] out FileTime lpKernelTime,
-            [Out] out FileTime lpUserTime
+            [In] IntPtr ThreadHandle,
+            [Out] out LargeInteger CreationTime,
+            [Out] out LargeInteger ExitTime,
+            [Out] out LargeInteger KernelTime,
+            [Out] out LargeInteger UserTime
             );
 
         #endregion

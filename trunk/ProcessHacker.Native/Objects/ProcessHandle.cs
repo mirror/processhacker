@@ -934,9 +934,9 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the creation time of the process.
         /// </summary>
-        public long GetCreateTime()
+        public DateTime GetCreateTime()
         {
-            return this.GetTimes()[0];
+            return DateTime.FromFileTime(this.GetTimes()[0]);
         }
 
         /// <summary>
@@ -1111,9 +1111,9 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the exit time of the process.
         /// </summary>
-        public long GetExitTime()
+        public DateTime GetExitTime()
         {
-            return this.GetTimes()[1];
+            return DateTime.FromFileTime(this.GetTimes()[1]);
         }
 
         /// <summary>
@@ -1713,12 +1713,12 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Gets an array of FileTimes for the process.
+        /// Gets an array of times for the process.
         /// </summary>
         /// <returns>An array of times: creation time, exit time, kernel time, user time.</returns>
-        private FileTime[] GetTimes()
+        private LargeInteger[] GetTimes()
         {
-            FileTime[] times = new FileTime[4];
+            LargeInteger[] times = new LargeInteger[4];
 
             if (!Win32.GetProcessTimes(this, out times[0], out times[1], out times[2], out times[3]))
                 Win32.ThrowLastError();

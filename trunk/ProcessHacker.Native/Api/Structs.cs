@@ -79,21 +79,6 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct FileTime
-    {
-        public uint LowDateTime;
-        public int HighDateTime;
-
-        public static implicit operator long(FileTime fileTime)
-        {
-            LargeInteger integer = new LargeInteger();
-            integer.LowPart = fileTime.LowDateTime;
-            integer.HighPart = fileTime.HighDateTime;
-            return integer.QuadPart;
-        }
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct FpoData
     {
         public int ulOffStart;

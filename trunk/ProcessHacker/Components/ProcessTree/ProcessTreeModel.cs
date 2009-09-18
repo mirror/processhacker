@@ -218,7 +218,7 @@ namespace ProcessHacker
         public int ModifySort(int sortResult, SortOrder order)
         {
             if (order == SortOrder.Ascending)
-                return sortResult * -1;
+                return -sortResult;
             else if (order == SortOrder.Descending)
                 return sortResult;
             else
@@ -314,8 +314,10 @@ namespace ProcessHacker
                             case "page priority":
                                 return ModifySort(n1.PagePriority.CompareTo(n2.PagePriority), sortO);
                             case "start time":
-                            case "start time (relative)":
                                 return ModifySort(n1.ProcessItem.CreateTime.CompareTo(n2.ProcessItem.CreateTime), sortO);
+                            case "start time (relative)":
+                                // Invert the order - bigger dates are actually smaller if we use the relative time span.
+                                return -ModifySort(n1.ProcessItem.CreateTime.CompareTo(n2.ProcessItem.CreateTime), sortO);
                             case "total cpu time":
                                 return ModifySort((n1.ProcessItem.Process.KernelTime + n1.ProcessItem.Process.UserTime).
                                     CompareTo(n2.ProcessItem.Process.KernelTime + n2.ProcessItem.Process.UserTime), sortO);

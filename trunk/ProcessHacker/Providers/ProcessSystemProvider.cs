@@ -939,7 +939,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.CreateTime = Utils.GetDateTimeFromLongTime(processInfo.CreateTime);
+                        item.CreateTime = DateTime.FromFileTime(processInfo.CreateTime);
                     }
                     catch
                     { }

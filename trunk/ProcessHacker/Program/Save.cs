@@ -265,7 +265,7 @@ namespace ProcessHacker
                         sb.AppendLine("Version info section failed! " + ex2.Message);
                     }
 
-                    sb.AppendLine("Started: " + Utils.GetDateTimeFromLongTime(phandle.GetCreateTime()).ToString());
+                    sb.AppendLine("Started: " + phandle.GetCreateTime().ToString());
 
                     var memoryInfo = phandle.GetMemoryStatistics();
 

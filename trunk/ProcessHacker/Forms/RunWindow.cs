@@ -55,10 +55,9 @@ namespace ProcessHacker
 
             try
             {
-                using (var policy =
-                    new LsaPolicyHandle(LsaPolicyAccess.LookupNames | LsaPolicyAccess.ViewLocalInformation))
+                using (var phandle = new LsaPolicyHandle(LsaPolicyAccess.ViewLocalInformation))
                 {
-                    foreach (var sid in policy.GetAccounts())
+                    foreach (var sid in phandle.GetAccounts())
                         if (sid.NameUse == SidNameUse.User)
                             users.Add(sid.GetFullName(true));
                 }

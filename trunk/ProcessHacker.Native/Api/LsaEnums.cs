@@ -27,6 +27,7 @@ using System.Text;
 
 namespace ProcessHacker.Native.Api
 {
+    [Flags]
     public enum LsaOperationalMode
     {
         PasswordProtected = 0x1,
@@ -85,6 +86,7 @@ namespace ProcessHacker.Native.Api
         CachedUnlock
     }
 
+    [Flags]
     public enum SecuritySystemAccess : int
     {
         Interactive = 0x1,
