@@ -97,10 +97,9 @@ namespace ProcessHacker.Native.Security
             if (!hasLuid)
             {
                 if (_name == null)
-                    throw new Exception("You must specify either a LUID or a name.");
+                    throw new ArgumentException("You must specify either a LUID or a name.");
 
-                if (!Win32.LookupPrivilegeValue(null, _name, out _luid))
-                    throw new Exception("Invalid privilege name '" + _name + "'.");
+                _luid = LsaPolicyHandle.LookupPolicyHandle.LookupPrivilegeValue(_name);
             }
             else
             {
@@ -138,19 +137,7 @@ namespace ProcessHacker.Native.Security
             {
                 if (_displayName == null)
                 {
-                    StringBuilder sb = new StringBuilder(0x100);
-                    int size = sb.Capacity;
-                    int languageId = 0;
-
-                    if (!Win32.LookupPrivilegeDisplayName(null, this.Name, sb, ref size, out languageId))
-                    {
-                        sb.EnsureCapacity(size);
-
-                        if (!Win32.LookupPrivilegeDisplayName(null, this.Name, sb, ref size, out languageId))
-                            Win32.ThrowLastError();
-                    }
-
-                    _displayName = sb.ToString();
+                    _displayName = LsaPolicyHandle.LookupPolicyHandle.LookupPrivilegeDisplayName(this.Name);
                 }
 
                 return _displayName;
@@ -194,18 +181,7 @@ namespace ProcessHacker.Native.Security
             {
                 if (_name == null)
                 {
-                    StringBuilder sb = new StringBuilder(0x100);
-                    int size = sb.Capacity;
-
-                    if (!Win32.LookupPrivilegeName(null, ref _luid, sb, ref size))
-                    {
-                        sb.EnsureCapacity(size);
-
-                        if (!Win32.LookupPrivilegeName(null, ref _luid, sb, ref size))
-                            Win32.ThrowLastError();
-                    }
-
-                    _name = sb.ToString();
+                    _name = LsaPolicyHandle.LookupPolicyHandle.LookupPrivilegeName(_luid);
                 }
 
                 return _name;

@@ -25,6 +25,7 @@ using System.Text;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Security
 {
@@ -41,21 +42,9 @@ namespace ProcessHacker.Native.Security
         private static readonly byte[] _ntAuthority = { 0, 0, 0, 0, 0, 5 };
         private static readonly byte[] _resourceManagerAuthority = { 0, 0, 0, 0, 0, 9 };
 
-        public static Sid FromAccountName(string accountName)
+        public static Sid FromName(string name)
         {
-            using (MemoryAlloc memory = new MemoryAlloc(Win32.SecurityMaxSidSize))
-            {
-                int memorySize = memory.Size;
-                StringBuilder domainSb = new StringBuilder(0x400);
-                int domainSbSize = domainSb.Capacity;
-                SidNameUse nameUse;
-
-                if (!Win32.LookupAccountName(null, accountName, memory, ref memorySize,
-                    domainSb, ref domainSbSize, out nameUse))
-                    Win32.ThrowLastError();
-
-                return new Sid(memory);
-            }
+            return LsaPolicyHandle.LookupPolicyHandle.LookupSid(name);
         }
 
         public static Sid FromPointer(IntPtr sid)
@@ -356,25 +345,26 @@ namespace ProcessHacker.Native.Security
             }
         }
 
-        private void GetNameAndUse(out string domain, out string name, out SidNameUse nameUse)
+        public override int GetHashCode()
         {
-            StringBuilder nameSb = new StringBuilder(256);
-            StringBuilder domainSb = new StringBuilder(256);
-            int nameLen = 256;
-            int domainLen = 256;
+            int hashCode = 0x12345678;
+            byte[] identifierAuthority = this.IdentifierAuthority;
+            int[] subAuthorities = this.SubAuthorities;
 
-            if (!Win32.LookupAccountSid(_systemName, this, nameSb, ref nameLen, domainSb, ref domainLen, out nameUse))
+            for (int i = 0; i < subAuthorities.Length; i++)
             {
-                // if the name is longer than 256 characters, increase the capacity.
-                nameSb.EnsureCapacity(nameLen);
-                domainSb.EnsureCapacity(domainLen);
-
-                if (!Win32.LookupAccountSid(_systemName, this, nameSb, ref nameLen, domainSb, ref domainLen, out nameUse))
-                    Win32.ThrowLastError();
+                hashCode ^= identifierAuthority[(uint)hashCode % identifierAuthority.Length];
+                // Reverse and XOR.
+                hashCode ^= (hashCode >> 24) | ((hashCode >> 16) << 8) | ((hashCode >> 24) << 16) | (hashCode << 24);
+                hashCode ^= subAuthorities[(uint)hashCode % subAuthorities.Length];
             }
 
-            domain = domainSb.ToString();
-            name = nameSb.ToString();
+            return hashCode;
+        }
+
+        private void GetNameAndUse(out string domain, out string name, out SidNameUse nameUse)
+        {
+            name = LsaPolicyHandle.LookupPolicyHandle.LookupName(this, out nameUse, out domain);
         }
 
         public WellKnownSidIdentifierAuthority GetWellKnownIdentifierAuthority()

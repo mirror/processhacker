@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -32,6 +33,40 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public sealed class LsaPolicyHandle : LsaHandle<LsaPolicyAccess>
     {
+        private static WeakReference<LsaPolicyHandle> _lookupPolicyHandle;
+        private static int _lookupPolicyHandleMisses = 0;
+
+        public static LsaPolicyHandle LookupPolicyHandle
+        {
+            get
+            {
+                WeakReference<LsaPolicyHandle> weakRef = _lookupPolicyHandle;
+                LsaPolicyHandle policyHandle = null;
+
+                if (weakRef != null)
+                {
+                    policyHandle = weakRef.Target;
+                }
+
+                if (policyHandle == null)
+                {
+                    System.Threading.Interlocked.Increment(ref _lookupPolicyHandleMisses);
+
+                    policyHandle = new LsaPolicyHandle(LsaPolicyAccess.LookupNames);
+
+                    if (policyHandle != null)
+                        _lookupPolicyHandle = new WeakReference<LsaPolicyHandle>(policyHandle);
+                }
+
+                return policyHandle;
+            }
+        }
+
+        public static int LookupPolicyHandleMisses
+        {
+            get { return _lookupPolicyHandleMisses; }
+        }
+
         public delegate bool EnumAccountsDelegate(Sid sid);
         public delegate bool EnumPrivilegesDelegate(Privilege privilege);
 

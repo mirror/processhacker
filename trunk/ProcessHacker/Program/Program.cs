@@ -828,6 +828,10 @@ namespace ProcessHacker
                 info.AppendLine("KProcessHacker: " + KProcessHacker.Instance.Features.ToString());
 
             info.AppendLine();
+            info.AppendLine("PERFORMANCE COUNTERS");
+            info.AppendLine("LSA lookup policy handle misses: " + LsaPolicyHandle.LookupPolicyHandleMisses.ToString());
+
+            info.AppendLine();
             info.AppendLine("OBJECTS");
             info.AppendLine("Created: " + BaseObject.CreatedCount.ToString());
             info.AppendLine("Freed: " + BaseObject.FreedCount.ToString());
