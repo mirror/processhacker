@@ -3,7 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessHacker", "ProcessHacker\ProcessHacker.csproj", "{EEEA1778-1702-4964-8793-A98FE37E4D2B}"
 	ProjectSection(ProjectDependencies) = postProject
-		{AA74B826-4519-4F3E-8136-68394B849B5E} = {AA74B826-4519-4F3E-8136-68394B849B5E}
 		{0710ADEF-F89E-4CBC-8150-B340460BC9D6} = {0710ADEF-F89E-4CBC-8150-B340460BC9D6}
 	EndProjectSection
 EndProject
@@ -14,8 +13,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessHacker.Native", "ProcessHacker.Native\ProcessHacker.Native.csproj", "{8A448157-E1A7-4DDF-954E-287F1117832B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aga.Controls", "TreeViewAdv\Aga.Controls.csproj", "{E73BB233-D88B-44A7-A98F-D71EE158381D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMLUpdateEditor", "XmlUpdateEditor\XMLUpdateEditor.csproj", "{AA74B826-4519-4F3E-8136-68394B849B5E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,10 +40,6 @@ Global
 		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AA74B826-4519-4F3E-8136-68394B849B5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA74B826-4519-4F3E-8136-68394B849B5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA74B826-4519-4F3E-8136-68394B849B5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA74B826-4519-4F3E-8136-68394B849B5E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
