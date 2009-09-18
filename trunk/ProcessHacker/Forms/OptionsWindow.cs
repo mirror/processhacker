@@ -106,10 +106,22 @@ namespace ProcessHacker
             if (!OSVersion.HasUac)
                 comboElevationLevel.Enabled = false;
 
+            bool visualStyles = Application.RenderWithVisualStyles;
+
             foreach (TabPage tab in tabControl.TabPages)
             {
                 foreach (Control c in tab.Controls)
                 {
+                    // If we don't have visual styles or we're on XP, fix control backgrounds.
+                    if (!visualStyles || OSVersion.IsBelowOrEqual(WindowsVersion.XP))
+                    {
+                        if (c is CheckBox)
+                            (c as CheckBox).FlatStyle = FlatStyle.Standard;
+                        if (c is RadioButton)
+                            (c as RadioButton).FlatStyle = FlatStyle.Standard;
+                    }
+
+                    // Add event handlers to enable the apply button.
                     if (c is CheckBox || c is ListView)
                         c.Click += (sender, e) => this.EnableApplyButton();
                     else if (c is TextBox)
