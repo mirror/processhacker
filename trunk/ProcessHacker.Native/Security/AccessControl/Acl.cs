@@ -30,6 +30,11 @@ namespace ProcessHacker.Native.Security.AccessControl
 {
     public sealed class Acl : BaseObject, IEnumerable<Ace>
     {
+        public static Acl FromPointer(IntPtr memory)
+        {
+            return new Acl(new MemoryRegion(memory));
+        }
+
         public static implicit operator IntPtr(Acl acl)
         {
             return acl.Memory;
@@ -45,7 +50,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             if (size < 8)
                 throw new ArgumentException("Size must be greater than or equal to 8 bytes.");
 
-            // Allocate the number of size.
+            // Allocate some memory.
             _memory = new MemoryAlloc(size);
 
             // Initialize the ACL.
@@ -57,50 +62,40 @@ namespace ProcessHacker.Native.Security.AccessControl
             {
                 // Dispose memory and disable ownership.
                 _memory.Dispose();
+                _memory = null;
                 this.DisableOwnership(false);
             }
+
+            _memory.Reference();
+            _memory.Dispose();
         }
 
-        public Acl(IntPtr memory)
-            : this(memory, false)
-        { }
-
-        public Acl(IntPtr memory, bool copy)
-            : base(copy)
+        public Acl(Acl existingAcl)
         {
-            if (copy)
-            {
-                Acl existingAcl = new Acl(memory);
-
-                // Allocate memory for the new ACL.
-                _memory = new MemoryAlloc(existingAcl.Size);
-                // Copy the ACL.
-                _memory.WriteMemory(0, existingAcl, 0, existingAcl.Size);
-            }
-            else
-            {
-                _memory = new MemoryRegion(memory);
-            }
-        }
-
-        public Acl(IntPtr memory, int newSize)
-        {
-            Acl existingAcl = new Acl(memory);
-
-            // Can't create an ACL smaller than the existing one.
-            if (newSize < existingAcl.Size)
-                throw new ArgumentException("Cannot create a new ACL smaller than the existing ACL.");
-
-            // Allocate some memory.
-            _memory = new MemoryAlloc(newSize);
-            // Copy the existing ACL.
+            // Allocate memory for the new ACL.
+            _memory = new MemoryAlloc(existingAcl.Size);
+            // Copy the ACL.
             _memory.WriteMemory(0, existingAcl, 0, existingAcl.Size);
+            _memory.Reference();
+            _memory.Dispose();
+        }
+
+        public Acl(Acl existingAcl, int newSize)
+            : this(newSize)
+        {
+            this.AddRange(0, existingAcl);
+        }
+
+        public Acl(MemoryRegion memory)
+        {
+            _memory = memory;
+            _memory.Reference();
         }
 
         protected override void DisposeObject(bool disposing)
         {
             if (_memory != null)
-                _memory.Dispose();
+                _memory.Dereference(disposing);
         }
 
         public Ace this[int index]
@@ -245,14 +240,12 @@ namespace ProcessHacker.Native.Security.AccessControl
 
         public void AddRange(int index, IEnumerable<Ace> aceList)
         {
-            int totalCount = 0;
             int totalSize = 0;
 
-            // Compute the total size, in bytes, and the number of ACEs.
+            // Compute the total size, in bytes.
             foreach (Ace ace in aceList)
             {
                 totalSize += ace.Size;
-                totalCount++;
             }
 
             using (var aceListMemory = new MemoryAlloc(totalSize))
@@ -274,7 +267,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                     Win32.AclRevision,
                     index,
                     aceListMemory,
-                    totalCount
+                    totalSize
                     )) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }

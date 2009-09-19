@@ -49,7 +49,7 @@ namespace ProcessHacker.Native.Security
 
         public static Sid FromPointer(IntPtr sid)
         {
-            return new Sid(sid, false);
+            return new Sid(new MemoryRegion(sid), false);
         }
 
         public static Sid GetWellKnownSid(WellKnownSidType sidType)
@@ -112,7 +112,7 @@ namespace ProcessHacker.Native.Security
             return sid.Memory;
         }
 
-        private MemoryAlloc _memory;
+        private MemoryRegion _memory;
         private string _systemName;
         private bool _hasAttributes;
         private SidAttributes _attributes;
@@ -122,10 +122,10 @@ namespace ProcessHacker.Native.Security
         private string _name;
         private SidNameUse _nameUse = 0;
 
-        private Sid(IntPtr sid, bool owned)
+        private Sid(MemoryRegion sid, bool owned)
             : base(owned)
         {
-            _memory = new MemoryAlloc(sid, owned);
+            _memory = sid;
         }
 
         /// <summary>

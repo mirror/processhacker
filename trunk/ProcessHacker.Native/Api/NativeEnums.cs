@@ -48,24 +48,24 @@ namespace ProcessHacker.Native.Api
 
     public enum AceType : byte
     {
-        Mininum = 0x0,
+        //Mininum = 0x0,
         AccessAllowed = 0x0,
         AccessDenied = 0x1,
         SystemAudit = 0x2,
         SystemAlarm = 0x3,
-        MaximumV2 = 0x3,
+        //MaximumV2 = 0x3,
 
         AccessAllowedCompound = 0x4,
-        MaximumV3 = 0x4,
+        //MaximumV3 = 0x4,
 
-        MinimumObject = 0x5,
+        //MinimumObject = 0x5,
         AccessAllowedObject = 0x5,
         AccessDeniedObject = 0x6,
         SystemAuditObject = 0x7,
         SystemAlarmObject = 0x8,
-        MaximumObject = 0x8,
-        MaximumV4 = 0x8,
-        Maximum = 0x8,
+        //MaximumObject = 0x8,
+        //MaximumV4 = 0x8,
+        //Maximum = 0x8,
 
         AccessAllowedCallback = 0x9,
         AccessDeniedCallback = 0xa,
@@ -75,7 +75,7 @@ namespace ProcessHacker.Native.Api
         SystemAlarmCallback = 0xe,
         SystemAuditCallbackObject = 0xf,
         SystemAlarmCallbackObject = 0x10,
-        MaximumV5 = 0x10
+        //MaximumV5 = 0x10
     }
 
     public enum AclInformationClass : int
@@ -664,8 +664,8 @@ namespace ProcessHacker.Native.Api
     [Flags]
     public enum KeyCreationDisposition : int
     {
-        CreatedNewKey,
-        OpenedExistingKey
+        CreatedNewKey = 0x1,
+        OpenedExistingKey = 0x2
     }
 
     public enum KeyInformationClass : int
@@ -1063,7 +1063,7 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
-    public enum RegOption : int
+    public enum RegOptions : int
     {
         Reserved = 0x0,
         NonVolatile = 0x0,

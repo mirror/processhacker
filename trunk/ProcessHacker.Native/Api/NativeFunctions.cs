@@ -366,6 +366,28 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateKey(
+            [Out] out IntPtr KeyHandle,
+            [In] KeyAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [In] int TitleIndex,
+            [In] [Optional] ref UnicodeString Class,
+            [In] RegOptions CreateOptions,
+            [Out] [Optional] out KeyCreationDisposition Disposition
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateKey(
+            [Out] out IntPtr KeyHandle,
+            [In] KeyAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [In] int TitleIndex,
+            [In] [Optional] IntPtr Class,
+            [In] RegOptions CreateOptions,
+            [Out] [Optional] out KeyCreationDisposition Disposition
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtCreateKeyedEvent(
             [Out] out IntPtr KeyedEventHandle,
             [In] KeyedEventAccess DesiredAccess,
@@ -683,6 +705,17 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtDeleteKey(
+            [In] IntPtr KeyHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtDeleteValueKey(
+            [In] IntPtr KeyHandle,
+            [In] ref UnicodeString ValueName
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtDeviceIoControlFile(
             [In] IntPtr FileHandle,
             [In] IntPtr Event,
@@ -760,6 +793,11 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtFlushBuffersFile(
             [In] IntPtr FileHandle,
             [Out] out IoStatusBlock IoStatusBlock
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtFlushKey(
+            [In] IntPtr KeyHandle
             );
 
         [DllImport("ntdll.dll")]
@@ -1029,6 +1067,13 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtOpenJobObject(
             [Out] out IntPtr JobHandle,
             [In] JobObjectAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenKey(
+            [Out] out IntPtr KeyHandle,
+            [In] KeyAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
             );
 

@@ -64,7 +64,7 @@ namespace ProcessHacker.Native.Objects
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
-            return new SecurityDescriptor(new LsaMemoryAlloc(securityDescriptor), true);
+            return new SecurityDescriptor(new LsaMemoryAlloc(securityDescriptor));
         }
 
         public override void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)

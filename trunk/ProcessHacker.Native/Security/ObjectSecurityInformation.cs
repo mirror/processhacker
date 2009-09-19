@@ -122,7 +122,7 @@ namespace ProcessHacker.Native.Security
             {
                 ProcessHandle.Current.SetSecurity(
                     SecurityInformation, 
-                    new SecurityDescriptor(SecurityDescriptor)
+                    new SecurityDescriptor(new MemoryRegion(SecurityDescriptor))
                     );
             }
             catch (WindowsException ex)

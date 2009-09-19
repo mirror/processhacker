@@ -35,7 +35,6 @@ namespace ProcessHacker.Native.Security.AccessControl
         }
 
         private MemoryRegion _memory;
-        private bool _memoryOwned = true;
         private Acl _dacl;
         private Acl _sacl;
         private Sid _owner;
@@ -53,9 +52,13 @@ namespace ProcessHacker.Native.Security.AccessControl
                 )) >= NtStatus.Error)
             {
                 _memory.Dispose();
+                _memory = null;
                 this.DisableOwnership(false);
                 Win32.ThrowLastError(status);
             }
+
+            _memory.Reference();
+            _memory.Dispose();
         }
 
         public SecurityDescriptor(Sid owner, Sid group, Acl dacl, Acl sacl)
@@ -67,29 +70,25 @@ namespace ProcessHacker.Native.Security.AccessControl
             this.Sacl = sacl;
         }
 
-        public SecurityDescriptor(IntPtr memory)
-            : this(new MemoryRegion(memory), false)
-        { }
-
-        public SecurityDescriptor(MemoryRegion memory, bool owned)
+        public SecurityDescriptor(MemoryRegion memory)
         {
             _memory = memory;
-            _memoryOwned = owned;
+            _memory.Reference();
             this.Read();
         }
 
         protected override void DisposeObject(bool disposing)
         {
             if (_dacl != null)
-                _dacl.Dereference();
+                _dacl.Dereference(disposing);
             if (_sacl != null)
-                _sacl.Dereference();
+                _sacl.Dereference(disposing);
             if (_owner != null)
-                _owner.Dereference();
+                _owner.Dereference(disposing);
             if (_group != null)
-                _group.Dereference();
-            if (_memory != null && _memoryOwned)
-                _memory.Dispose();
+                _group.Dereference(disposing);
+            if (_memory != null)
+                _memory.Dereference(disposing);
         }
 
         public SecurityDescriptorControlFlags ControlFlags
@@ -321,7 +320,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 Win32.ThrowLastError(status);
 
             if (present)
-                this.SwapDacl(new Acl(dacl, true));
+                this.SwapDacl(new Acl(Acl.FromPointer(dacl)));
             else
                 this.SwapDacl(null);
 
@@ -335,7 +334,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 Win32.ThrowLastError(status);
 
             if (present)
-                this.SwapSacl(new Acl(sacl, true));
+                this.SwapSacl(new Acl(Acl.FromPointer(sacl)));
             else
                 this.SwapSacl(null);
 
@@ -390,24 +389,23 @@ namespace ProcessHacker.Native.Security.AccessControl
         {
             NtStatus status;
             int retLength;
-            var data = new MemoryAlloc(Win32.SecurityDescriptorMinLength);
 
-            retLength = data.Size;
-            status = Win32.RtlMakeSelfRelativeSD(this, data, ref retLength);
-
-            if (status == NtStatus.BufferTooSmall)
+            using (var data = new MemoryAlloc(Win32.SecurityDescriptorMinLength))
             {
-                data.Resize(retLength);
+                retLength = data.Size;
                 status = Win32.RtlMakeSelfRelativeSD(this, data, ref retLength);
-            }
 
-            if (status >= NtStatus.Error)
-            {
-                data.Dispose();
-                Win32.ThrowLastError(status);
-            }
+                if (status == NtStatus.BufferTooSmall)
+                {
+                    data.Resize(retLength);
+                    status = Win32.RtlMakeSelfRelativeSD(this, data, ref retLength);
+                }
 
-            return new SecurityDescriptor(data, true);
+                if (status >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                return new SecurityDescriptor(data);
+            }
         }
     }
 }

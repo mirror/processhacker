@@ -67,6 +67,10 @@ namespace ProcessHacker.Native.Objects
             : base(handle, owned)
         { }
 
+        public EventHandle(string name, EventAccess access)
+            : this(name, 0, null, access)
+        { }
+
         public EventHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, EventAccess access)
         {
             NtStatus status;
@@ -85,10 +89,6 @@ namespace ProcessHacker.Native.Objects
 
             this.Handle = handle;
         }
-
-        public EventHandle(string name, EventAccess access)
-            : this(name, 0, null, access)
-        { }
 
         public void Clear()
         {

@@ -63,6 +63,10 @@ namespace ProcessHacker.Native.Objects
             : base(handle, owned)
         { }
 
+        public KeyedEventHandle(string name, KeyedEventAccess access)
+            : this(name, null, 0, access)
+        { }
+
         public KeyedEventHandle(string name, DirectoryHandle rootDirectory, ObjectFlags objectFlags, KeyedEventAccess access)
         {
             NtStatus status;
@@ -81,10 +85,6 @@ namespace ProcessHacker.Native.Objects
 
             this.Handle = handle;
         }
-
-        public KeyedEventHandle(string name, KeyedEventAccess access)
-            : this(name, null, 0, access)
-        { }
 
         public NtStatus ReleaseKey(int key)
         {

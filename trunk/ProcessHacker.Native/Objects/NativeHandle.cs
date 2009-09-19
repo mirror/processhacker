@@ -287,7 +287,37 @@ namespace ProcessHacker.Native.Objects
 
         public virtual SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
         {
-            return this.GetSecurity(SeObjectType.KernelObject, securityInformation);
+            NtStatus status;
+            int retLength;
+
+            using (var data = new MemoryAlloc(0x100))
+            {
+                status = Win32.NtQuerySecurityObject(
+                    this,
+                    securityInformation,
+                    data,
+                    data.Size,
+                    out retLength
+                    );
+
+                if (status == NtStatus.BufferTooSmall)
+                {
+                    data.Resize(retLength);
+
+                    status = Win32.NtQuerySecurityObject(
+                        this,
+                        securityInformation,
+                        data,
+                        data.Size,
+                        out retLength
+                        );
+                }
+
+                if (status >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                return new SecurityDescriptor(data);
+            }
         }
 
         protected SecurityDescriptor GetSecurity(SeObjectType objectType, SecurityInformation securityInformation)
@@ -304,7 +334,7 @@ namespace ProcessHacker.Native.Objects
                 )) != 0)
                 Win32.ThrowLastError(result);
 
-            return new SecurityDescriptor(new LocalMemoryAlloc(securityDescriptor), true);
+            return new SecurityDescriptor(new LocalMemoryAlloc(securityDescriptor));
         }
 
         /// <summary>
@@ -353,7 +383,14 @@ namespace ProcessHacker.Native.Objects
 
         public virtual void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
         {
-            this.SetSecurity(SeObjectType.KernelObject, securityInformation, securityDescriptor);
+            NtStatus status;
+
+            if ((status = Win32.NtSetSecurityObject(
+                this,
+                securityInformation,
+                securityDescriptor
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         protected void SetSecurity(SeObjectType objectType, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
