@@ -10,6 +10,7 @@ using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.Native.SsLogging;
 using ProcessHacker.Native.Symbols;
 
@@ -40,10 +41,23 @@ namespace SysCallHacker
 
             SymbolProvider.Options |= SymbolOptions.PublicsOnly;
 
+            IntPtr ntdllBase = Loader.GetDllHandle("ntdll.dll");
+            FileHandle ntdllFileHandle = null;
+            Section section = null;
+
             ProcessHandle.Current.EnumModules((module) =>
                 {
                     if (module.BaseName.Equals("ntdll.dll", StringComparison.InvariantCultureIgnoreCase))
                     {
+                        section = new Section(
+                            ntdllFileHandle = new FileHandle(@"\??\" + module.FileName,
+                                FileShareMode.ReadWrite,
+                                FileAccess.GenericExecute | FileAccess.GenericRead
+                                ),
+                            true,
+                            MemoryProtection.ExecuteRead
+                            );
+
                         symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
                         return false;
                     }
@@ -51,18 +65,25 @@ namespace SysCallHacker
                     return true;
                 });
 
-            symbols.EnumSymbols("ntdll!Nt*", (symbol) =>
+            SectionView view = section.MapView((int)ntdllFileHandle.GetSize());
+
+            ntdllFileHandle.Dispose();
+
+            symbols.EnumSymbols("ntdll!Zw*", (symbol) =>
                 {
-                    if (!symbol.Name.StartsWith("Ntdll"))
-                    {
-                        _sysCallNames.Add(
-                            Marshal.ReadInt32(symbol.Address.ToIntPtr().Increment(1)),
-                            symbol.Name
-                            );
-                    }
+                    int number = Marshal.ReadInt32(
+                        (symbol.Address.ToIntPtr().Decrement(ntdllBase)).Increment(view.Memory).Increment(1));
+
+                    _sysCallNames.Add(
+                        number,
+                        "Nt" + symbol.Name.Substring(2)
+                        );
 
                     return true;
                 });
+
+            view.Dispose();
+            section.Dispose();
 
             symbols.Dispose();
 
@@ -182,6 +203,15 @@ namespace SysCallHacker
         private void listEvents_DoubleClick(object sender, EventArgs e)
         {
             this.ShowProperties(listEvents.SelectedIndices[0]);
+        }
+
+        private void clearHackerMenuItem_Click(object sender, EventArgs e)
+        {
+            lock (_events)
+            {
+                listEvents.VirtualListSize = 0;
+                _events.Clear();
+            }
         }
 
         private void removeAllFiltersMenuItem_Click(object sender, EventArgs e)

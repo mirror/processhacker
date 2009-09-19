@@ -33,6 +33,9 @@
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.hackerMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.removeAllFiltersMenuItem = new System.Windows.Forms.MenuItem();
+            this.addProcessFiltersMenuItem = new System.Windows.Forms.MenuItem();
             this.listEvents = new System.Windows.Forms.ListView();
             this.columnTime = new System.Windows.Forms.ColumnHeader();
             this.columnClient = new System.Windows.Forms.ColumnHeader();
@@ -45,9 +48,7 @@
             this.toolBar = new System.Windows.Forms.ToolBar();
             this.statusBar = new System.Windows.Forms.StatusBar();
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
-            this.removeAllFiltersMenuItem = new System.Windows.Forms.MenuItem();
-            this.addProcessFiltersMenuItem = new System.Windows.Forms.MenuItem();
+            this.clearHackerMenuItem = new System.Windows.Forms.MenuItem();
             this.SuspendLayout();
             // 
             // mainMenu
@@ -60,14 +61,35 @@
             // 
             this.hackerMenuItem.Index = 0;
             this.hackerMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.clearHackerMenuItem,
             this.exitMenuItem});
             this.hackerMenuItem.Text = "Hacker";
             // 
             // exitMenuItem
             // 
-            this.exitMenuItem.Index = 0;
+            this.exitMenuItem.Index = 1;
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
+            // 
+            // menuItem1
+            // 
+            this.menuItem1.Index = 1;
+            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.removeAllFiltersMenuItem,
+            this.addProcessFiltersMenuItem});
+            this.menuItem1.Text = "Filters";
+            // 
+            // removeAllFiltersMenuItem
+            // 
+            this.removeAllFiltersMenuItem.Index = 0;
+            this.removeAllFiltersMenuItem.Text = "Remove All";
+            this.removeAllFiltersMenuItem.Click += new System.EventHandler(this.removeAllFiltersMenuItem_Click);
+            // 
+            // addProcessFiltersMenuItem
+            // 
+            this.addProcessFiltersMenuItem.Index = 1;
+            this.addProcessFiltersMenuItem.Text = "Add Process...";
+            this.addProcessFiltersMenuItem.Click += new System.EventHandler(this.addProcessFiltersMenuItem_Click);
             // 
             // listEvents
             // 
@@ -167,25 +189,11 @@
             this.timerUpdate.Interval = 500;
             this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
             // 
-            // menuItem1
+            // clearHackerMenuItem
             // 
-            this.menuItem1.Index = 1;
-            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.removeAllFiltersMenuItem,
-            this.addProcessFiltersMenuItem});
-            this.menuItem1.Text = "Filters";
-            // 
-            // removeAllFiltersMenuItem
-            // 
-            this.removeAllFiltersMenuItem.Index = 0;
-            this.removeAllFiltersMenuItem.Text = "Remove All";
-            this.removeAllFiltersMenuItem.Click += new System.EventHandler(this.removeAllFiltersMenuItem_Click);
-            // 
-            // addProcessFiltersMenuItem
-            // 
-            this.addProcessFiltersMenuItem.Index = 1;
-            this.addProcessFiltersMenuItem.Text = "Add Process...";
-            this.addProcessFiltersMenuItem.Click += new System.EventHandler(this.addProcessFiltersMenuItem_Click);
+            this.clearHackerMenuItem.Index = 0;
+            this.clearHackerMenuItem.Text = "Clear";
+            this.clearHackerMenuItem.Click += new System.EventHandler(this.clearHackerMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -225,6 +233,7 @@
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem removeAllFiltersMenuItem;
         private System.Windows.Forms.MenuItem addProcessFiltersMenuItem;
+        private System.Windows.Forms.MenuItem clearHackerMenuItem;
 
 
     }
