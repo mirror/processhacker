@@ -27,6 +27,7 @@ namespace SysCallHacker
         private SsLogger _logger;
         private List<LogEvent> _events = new List<LogEvent>();
         private LogEvent _lastEvent;
+        private List<IntPtr> _rules = new List<IntPtr>();
         private Dictionary<int, SystemProcess> _processes;
 
         public MainWindow()
@@ -67,10 +68,10 @@ namespace SysCallHacker
 
             KProcessHacker.Instance = new KProcessHacker();
 
-            _logger = new SsLogger(4096, true);
+            _logger = new SsLogger(4096, false);
             _logger.EventBlockReceived += new EventBlockReceivedDelegate(logger_EventBlockReceived);
             _logger.ArgumentBlockReceived += new ArgumentBlockReceivedDelegate(logger_ArgumentBlockReceived);
-            _logger.AddPreviousModeRule(FilterType.Exclude, KProcessorMode.KernelMode);
+            _logger.AddPreviousModeRule(FilterType.Include, KProcessorMode.UserMode);
             _logger.AddProcessIdRule(FilterType.Exclude, ProcessHandle.GetCurrentId());
             //_logger.Start();
 
@@ -181,6 +182,22 @@ namespace SysCallHacker
         private void listEvents_DoubleClick(object sender, EventArgs e)
         {
             this.ShowProperties(listEvents.SelectedIndices[0]);
+        }
+
+        private void removeAllFiltersMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (var rule in _rules)
+                _logger.RemoveRule(rule);
+
+            _rules.Clear();
+        }
+
+        private void addProcessFiltersMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessHacker.Native.Ui.ChooseProcessDialog cpd = new ProcessHacker.Native.Ui.ChooseProcessDialog();
+
+            if (cpd.ShowDialog() == DialogResult.OK)
+                _rules.Add(_logger.AddProcessIdRule(FilterType.Include, cpd.SelectedPid));
         }
     }
 }

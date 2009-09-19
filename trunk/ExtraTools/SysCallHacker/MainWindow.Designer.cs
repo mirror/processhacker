@@ -45,12 +45,16 @@
             this.toolBar = new System.Windows.Forms.ToolBar();
             this.statusBar = new System.Windows.Forms.StatusBar();
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.removeAllFiltersMenuItem = new System.Windows.Forms.MenuItem();
+            this.addProcessFiltersMenuItem = new System.Windows.Forms.MenuItem();
             this.SuspendLayout();
             // 
             // mainMenu
             // 
             this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.hackerMenuItem});
+            this.hackerMenuItem,
+            this.menuItem1});
             // 
             // hackerMenuItem
             // 
@@ -163,6 +167,26 @@
             this.timerUpdate.Interval = 500;
             this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
             // 
+            // menuItem1
+            // 
+            this.menuItem1.Index = 1;
+            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.removeAllFiltersMenuItem,
+            this.addProcessFiltersMenuItem});
+            this.menuItem1.Text = "Filters";
+            // 
+            // removeAllFiltersMenuItem
+            // 
+            this.removeAllFiltersMenuItem.Index = 0;
+            this.removeAllFiltersMenuItem.Text = "Remove All";
+            this.removeAllFiltersMenuItem.Click += new System.EventHandler(this.removeAllFiltersMenuItem_Click);
+            // 
+            // addProcessFiltersMenuItem
+            // 
+            this.addProcessFiltersMenuItem.Index = 1;
+            this.addProcessFiltersMenuItem.Text = "Add Process...";
+            this.addProcessFiltersMenuItem.Click += new System.EventHandler(this.addProcessFiltersMenuItem_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -198,6 +222,9 @@
         private System.Windows.Forms.StatusBar statusBar;
         private System.Windows.Forms.Timer timerUpdate;
         private System.Windows.Forms.ColumnHeader columnClient;
+        private System.Windows.Forms.MenuItem menuItem1;
+        private System.Windows.Forms.MenuItem removeAllFiltersMenuItem;
+        private System.Windows.Forms.MenuItem addProcessFiltersMenuItem;
 
 
     }
