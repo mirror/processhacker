@@ -558,14 +558,15 @@ namespace ProcessHacker.Components
                         {
                             // Use RtlCreateUserThread to bypass session boundaries. Since 
                             // LdrUnloadDll is a native function we don't need to notify CSR.
-                            thread = phandle.CreateNativeThread(
+                            thread = phandle.CreateThread(
                                 Loader.GetProcedure("ntdll.dll", "LdrUnloadDll"),
                                 baseAddress
                                 );
                         }
                         else
                         {
-                            thread = phandle.CreateThread(
+                            // On XP it seems we need to notify CSR...
+                            thread = phandle.CreateThreadWin32(
                                 Loader.GetProcedure("kernel32.dll", "FreeLibrary"),
                                 baseAddress
                                 );

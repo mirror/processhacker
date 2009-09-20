@@ -167,7 +167,7 @@ namespace ProcessHacker
                 {
                     // Use RtlCreateUserThread to cross session boundaries. RtlDestroyHeap doesn't need 
                     // the Win32 subsystem so we don't have to notify CSR.
-                    phandle.CreateNativeThread(
+                    phandle.CreateThread(
                         Win32.GetProcAddress(Win32.GetModuleHandle("ntdll.dll"), "RtlDestroyHeap"),
                         ((HeapInformation)listHeaps.SelectedItems[0].Tag).Address
                         ).Dispose();

@@ -507,42 +507,42 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Creates a thread in the process but does not notify the Win32 subsystem.
+        /// Creates a thread in the process.
         /// </summary>
         /// <param name="startAddress">The address at which to begin execution.</param>
         /// <param name="parameter">The parameter to pass to the function.</param>
         /// <returns>A handle to the new thread.</returns>
-        /// <remarks>This function will work across sessions, unlike CreateThread.</remarks>
-        public ThreadHandle CreateNativeThread(IntPtr startAddress, IntPtr parameter)
+        /// <remarks>This function will work across sessions, unlike CreateThreadWin32.</remarks>
+        public ThreadHandle CreateThread(IntPtr startAddress, IntPtr parameter)
         {
-            return this.CreateNativeThread(startAddress, parameter, false);
+            return this.CreateThread(startAddress, parameter, false);
         }
 
         /// <summary>
-        /// Creates a thread in the process but does not notify the Win32 subsystem.
+        /// Creates a thread in the process.
         /// </summary>
         /// <param name="startAddress">The address at which to begin execution.</param>
         /// <param name="parameter">The parameter to pass to the function.</param>
         /// <param name="createSuspended">Whether to create the thread suspended.</param>
         /// <returns>A handle to the new thread.</returns>
-        /// <remarks>This function will work across sessions, unlike CreateThread.</remarks>
-        public ThreadHandle CreateNativeThread(IntPtr startAddress, IntPtr parameter, bool createSuspended)
+        /// <remarks>This function will work across sessions, unlike CreateThreadWin32.</remarks>
+        public ThreadHandle CreateThread(IntPtr startAddress, IntPtr parameter, bool createSuspended)
         {
             int threadId;
 
-            return this.CreateNativeThread(startAddress, parameter, createSuspended, out threadId);
+            return this.CreateThread(startAddress, parameter, createSuspended, out threadId);
         }
 
         /// <summary>
-        /// Creates a thread in the process but does not notify the Win32 subsystem.
+        /// Creates a thread in the process.
         /// </summary>
         /// <param name="startAddress">The address at which to begin execution.</param>
         /// <param name="parameter">The parameter to pass to the function.</param>
         /// <param name="createSuspended">Whether to create the thread suspended.</param>
         /// <param name="threadId">The ID of the new thread.</param>
         /// <returns>A handle to the new thread.</returns>
-        /// <remarks>This function will work across sessions, unlike CreateThread.</remarks>
-        public ThreadHandle CreateNativeThread(IntPtr startAddress, IntPtr parameter, bool createSuspended, out int threadId)
+        /// <remarks>This function will work across sessions, unlike CreateThreadWin32.</remarks>
+        public ThreadHandle CreateThread(IntPtr startAddress, IntPtr parameter, bool createSuspended, out int threadId)
         {
             ClientId cid;
 
@@ -562,46 +562,51 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Creates a thread in the process.
+        /// Creates a thread in the process and notifies the Win32 subsystem.
         /// </summary>
         /// <param name="startAddress">The address at which to begin execution.</param>
         /// <param name="parameter">The parameter to pass to the function.</param>
         /// <returns>A handle to the new thread.</returns>
-        public ThreadHandle CreateThread(IntPtr startAddress, IntPtr parameter)
+        public ThreadHandle CreateThreadWin32(IntPtr startAddress, IntPtr parameter)
         {
-            return this.CreateThread(startAddress, parameter, false);
+            return this.CreateThreadWin32(startAddress, parameter, false);
         }
 
         /// <summary>
-        /// Creates a thread in the process.
+        /// Creates a thread in the process and notifies the Win32 subsystem.
         /// </summary>
         /// <param name="startAddress">The address at which to begin execution.</param>
         /// <param name="parameter">The parameter to pass to the function.</param>
         /// <param name="createSuspended">Whether to create the thread suspended.</param>
         /// <returns>A handle to the new thread.</returns>
-        public ThreadHandle CreateThread(IntPtr startAddress, IntPtr parameter, bool createSuspended)
+        public ThreadHandle CreateThreadWin32(IntPtr startAddress, IntPtr parameter, bool createSuspended)
         {
             int threadId;
 
-            return this.CreateThread(startAddress, parameter, createSuspended, out threadId);
+            return this.CreateThreadWin32(startAddress, parameter, createSuspended, out threadId);
         }
 
         /// <summary>
-        /// Creates a thread in the process.
+        /// Creates a thread in the process and notifies the Win32 subsystem.
         /// </summary>
         /// <param name="startAddress">The address at which to begin execution.</param>
         /// <param name="parameter">The parameter to pass to the function.</param>
         /// <param name="createSuspended">Whether to create the thread suspended.</param>
         /// <param name="threadId">The ID of the new thread.</param>
         /// <returns>A handle to the new thread.</returns>
-        public ThreadHandle CreateThread(IntPtr startAddress, IntPtr parameter, bool createSuspended, out int threadId)
+        public ThreadHandle CreateThreadWin32(IntPtr startAddress, IntPtr parameter, bool createSuspended, out int threadId)
         {
             IntPtr threadHandle;
 
             if ((threadHandle = Win32.CreateRemoteThread(
-                this, IntPtr.Zero, IntPtr.Zero, startAddress, parameter,
+                this,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                startAddress,
+                parameter,
                 createSuspended ? CreationFlags.CreateSuspended : 0,
-                out threadId)) == IntPtr.Zero)
+                out threadId
+                )) == IntPtr.Zero)
                 Win32.ThrowLastError();
 
             return new ThreadHandle(threadHandle, true);
@@ -1777,11 +1782,23 @@ namespace ProcessHacker.Native.Objects
 
             this.WriteMemory(stringPage, UnicodeEncoding.Unicode.GetBytes(path));
 
-            using (var thandle = this.CreateThread(
-                Loader.GetProcedure("kernel32.dll", "LoadLibraryW"),
-                stringPage
-                ))
-                thandle.Wait(timeout * Win32.TimeMsTo100Ns);
+            // Vista seems to support non-Win32 threads better than XP can.
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+            {
+                using (var thandle = this.CreateThread(
+                    Loader.GetProcedure("kernel32.dll", "LoadLibraryW"),
+                    stringPage
+                    ))
+                    thandle.Wait(timeout * Win32.TimeMsTo100Ns);
+            }
+            else
+            {
+                using (var thandle = this.CreateThreadWin32(
+                    Loader.GetProcedure("kernel32.dll", "LoadLibraryW"),
+                    stringPage
+                    ))
+                    thandle.Wait(timeout * Win32.TimeMsTo100Ns);
+            }
 
             this.FreeMemory(stringPage, path.Length * 2 + 2, false);
         }
@@ -2010,7 +2027,7 @@ namespace ProcessHacker.Native.Objects
             IntPtr rtlExitUserThread = Loader.GetProcedure("ntdll.dll", "RtlExitUserThread");
 
             // Create a suspended thread at RtlExitUserThread.
-            var thandle = this.CreateNativeThread(rtlExitUserThread, IntPtr.Zero, true);
+            var thandle = this.CreateThread(rtlExitUserThread, IntPtr.Zero, true);
 
             // Do the remote call on this thread.
             thandle.RemoteCall(this, address, arguments, true);

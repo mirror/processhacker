@@ -1037,10 +1037,14 @@ namespace ProcessHacker
                     virtualizationProcessMenuItem.Enabled = false;
                 }
 
-                // Enable/disable DLL injection based on the process' session ID.
+                // Enable/disable DLL injection based on the process' session ID. This only applies 
+                // on XP and above.
                 try
                 {
-                    if (processP.Dictionary[processSelectedPid].SessionId != Program.CurrentSessionId)
+                    if (
+                        OSVersion.IsBelowOrEqual(WindowsVersion.XP) &&
+                        processP.Dictionary[processSelectedPid].SessionId != Program.CurrentSessionId
+                        )
                         injectDllProcessMenuItem.Enabled = false;
                     else
                         injectDllProcessMenuItem.Enabled = true;

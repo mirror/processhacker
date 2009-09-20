@@ -14,6 +14,7 @@ Process Hacker
    * Elevation prompt when attempting to view process properties
    * All list views now have sort arrows
    * Network list now displays process tooltips
+   * Enabled DLL injection into processes from other sessions
    * Decreased memory and CPU usage
    * Added a glossary to Help
    * Configurable elevation prompts

@@ -289,11 +289,11 @@ namespace ProcessHacker
                 if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
                 {
                     // Vista and above export.
-                    phandle.CreateNativeThread(Loader.GetProcedure("ntdll.dll", "RtlExitUserProcess"), IntPtr.Zero);
+                    phandle.CreateThread(Loader.GetProcedure("ntdll.dll", "RtlExitUserProcess"), IntPtr.Zero);
                 }
                 else
                 {
-                    phandle.CreateNativeThread(Loader.GetProcedure("kernel32.dll", "ExitProcess"), IntPtr.Zero);
+                    phandle.CreateThread(Loader.GetProcedure("kernel32.dll", "ExitProcess"), IntPtr.Zero);
                 }
             }
         }
