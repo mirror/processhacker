@@ -49,6 +49,10 @@ namespace ProcessHacker
             listHeaps.ContextMenu = menuHeap;
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHeaps, null);
 
+            // Native threads don't work properly on XP.
+            if (OSVersion.IsBelowOrEqual(WindowsVersion.XP))
+                destroyMenuItem.Visible = false;
+
             var comparer = new SortedListViewComparer(listHeaps);
             listHeaps.ListViewItemSorter = comparer;
             comparer.CustomSorters.Add(1, (l1, l2) =>
