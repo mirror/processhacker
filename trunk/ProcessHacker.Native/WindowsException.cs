@@ -101,7 +101,15 @@ namespace ProcessHacker.Native
                 // message doesn't have any side-effects anyway.
                 if (_message == null)
                 {
-                    if (_isNtStatus)
+                    // We prefer native status messages because they are usually 
+                    // more detailed. However, for some status values we do 
+                    // prefer the shorter Win32 error message.
+
+                    if (
+                        _isNtStatus &&
+                        _status != NtStatus.AccessDenied &&
+                        _status != NtStatus.AccessViolation
+                        )
                     {
                         // Get the real NT status value.
 
@@ -148,7 +156,7 @@ namespace ProcessHacker.Native
                     }
                     else
                     {
-                        // Use the dumbass Win32 way.
+                        // Use the Win32 way. We get less detailed error messages.
                         _message = Win32.GetErrorMessage(_errorCode);
                     }
                 }
