@@ -630,7 +630,7 @@ namespace ProcessHacker
 
                 foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
-                    if (item.SubItems[7].Text.Length > 0)
+                    if (item.SubItems[3].Text.Length > 0)
                     {
                         hasValid = true; 
                         break;
