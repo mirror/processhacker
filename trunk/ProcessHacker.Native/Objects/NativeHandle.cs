@@ -322,7 +322,7 @@ namespace ProcessHacker.Native.Objects
 
         protected SecurityDescriptor GetSecurity(SeObjectType objectType, SecurityInformation securityInformation)
         {
-            int result;
+            Win32Error result;
             IntPtr dummy, securityDescriptor;
 
             if ((result = Win32.GetSecurityInfo(
@@ -395,7 +395,7 @@ namespace ProcessHacker.Native.Objects
 
         protected void SetSecurity(SeObjectType objectType, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
         {
-            int result;
+            Win32Error result;
             IntPtr dacl = IntPtr.Zero;
             IntPtr group = IntPtr.Zero;
             IntPtr owner = IntPtr.Zero;

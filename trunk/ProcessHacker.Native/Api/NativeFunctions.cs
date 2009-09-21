@@ -3250,7 +3250,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int RtlNtStatusToDosError(
+        public static extern Win32Error RtlNtStatusToDosError(
             [In] NtStatus Status
             );
 

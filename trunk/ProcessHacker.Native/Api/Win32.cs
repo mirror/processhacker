@@ -75,42 +75,9 @@ namespace ProcessHacker.Native.Api
 
         #region Errors
 
-        /// <summary>
-        /// Gets the error message associated with the specified error code.
-        /// </summary>
-        /// <param name="ErrorCode">The error code.</param>
-        /// <returns>An error message.</returns>
-        public static string GetErrorMessage(int ErrorCode)
+        public static Win32Error GetLastErrorCode()
         {
-            StringBuilder buffer = new StringBuilder(0x100);
-
-            if (FormatMessage(0x3200, IntPtr.Zero, ErrorCode, 0, buffer, buffer.Capacity, IntPtr.Zero) == 0)
-                return "Unknown error (0x" + ErrorCode.ToString("x") + ")";
-
-            StringBuilder result = new StringBuilder();
-            int i = 0;
-
-            while (i < buffer.Length)
-            {
-                if (!char.IsLetterOrDigit(buffer[i]) && 
-                    !char.IsPunctuation(buffer[i]) && 
-                    !char.IsSymbol(buffer[i]) && 
-                    !char.IsWhiteSpace(buffer[i]))
-                    break;
-
-                result.Append(buffer[i]);
-                i++;
-            }
-
-            return result.ToString().Replace("\r\n", "");
-        }
-
-        public static int GetHR(int error)
-        {
-            if ((error & 0x80000000) == 0x80000000)
-                return error;
-
-            return (int)(0x80070000 | (uint)(error & 0xffff));
+            return (Win32Error)Marshal.GetLastWin32Error();
         }
 
         /// <summary>
@@ -119,15 +86,15 @@ namespace ProcessHacker.Native.Api
         /// <returns>An error message.</returns>
         public static string GetLastErrorMessage()
         {
-            return GetErrorMessage(Marshal.GetLastWin32Error());
+            return GetLastErrorCode().GetMessage();
         }
 
         /// <summary>
-        /// Throws a Win32Exception with the last error that occurred.
+        /// Throws a WindowsException with the last error that occurred.
         /// </summary>
         public static void ThrowLastError()
         {
-            ThrowLastError(Marshal.GetLastWin32Error());
+            ThrowLastError(GetLastErrorCode());
         }
 
         public static void ThrowLastError(NtStatus status)
@@ -136,6 +103,11 @@ namespace ProcessHacker.Native.Api
         }
 
         public static void ThrowLastError(int error)
+        {
+            ThrowLastError((Win32Error)error);
+        }
+
+        public static void ThrowLastError(Win32Error error)
         {
             throw new WindowsException(error);
         }

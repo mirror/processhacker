@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
@@ -200,7 +201,7 @@ namespace ProcessHacker.UI.Actions
                 }
                 catch (WindowsException ex)
                 {
-                    if (ex.ErrorCode != 5)
+                    if (ex.ErrorCode != Win32Error.AccessDenied)
                         return ElevationAction.NotRequired;
 
                     if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Elevate)

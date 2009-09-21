@@ -60,6 +60,7 @@
     <Compile Include="Api\NativeStructs.cs">
     </Compile>
     <Compile Include="Api\NtStatus.cs" />
+    <Compile Include="Api\Win32Error.cs" />
     <Compile Include="NativeBitmap.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Debugging\DebugBuffer.cs" />

@@ -1013,7 +1013,7 @@ namespace ProcessHacker.Native.Objects
                 }
                 catch (WindowsException ex)
                 {
-                    if (ex.ErrorCode != 0x32) // ERROR_NOT_SUPPORTED
+                    if (ex.ErrorCode != Win32Error.NotSupported)
                         throw ex;
                 }
             }

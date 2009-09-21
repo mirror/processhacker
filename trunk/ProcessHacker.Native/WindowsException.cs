@@ -36,7 +36,7 @@ namespace ProcessHacker.Native
     public class WindowsException : Exception
     {
         private bool _isNtStatus = false;
-        private int _errorCode = 0;
+        private Win32Error _errorCode = 0;
         private NtStatus _status;
         private string _message = null;
 
@@ -50,7 +50,7 @@ namespace ProcessHacker.Native
         /// Creates an exception from a Win32 error code.
         /// </summary>
         /// <param name="errorCode">The Win32 error code.</param>
-        public WindowsException(int errorCode)
+        public WindowsException(Win32Error errorCode)
         {
             _errorCode = errorCode;
         }
@@ -77,7 +77,7 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Gets a Win32 error code which represents the exception.
         /// </summary>
-        public int ErrorCode
+        public Win32Error ErrorCode
         {
             get { return _errorCode; }
         }
@@ -111,53 +111,16 @@ namespace ProcessHacker.Native
                         _status != NtStatus.AccessViolation
                         )
                     {
-                        // Get the real NT status value.
+                        string message = _status.GetMessage();
 
-                        NtStatus status;
-                        IntPtr messageEntry;
+                        if (message == null)
+                            message = "Could not retrieve the error message (0x" + ((int)_status).ToString("x") + ").";
 
-                        status = Win32.RtlFindMessage(
-                            Loader.GetDllHandle("ntdll.dll"),
-                            0xb,
-                            System.Threading.Thread.CurrentThread.CurrentUICulture.LCID,
-                            (int)_status,
-                            out messageEntry
-                            );
-
-                        if (!status.IsError())
-                        {
-                            var region = new MemoryRegion(messageEntry);
-                            var entry = region.ReadStruct<MessageResourceEntry>();
-
-                            // Read the message, depending on format.
-                            if ((entry.Flags & MessageResourceFlags.Unicode) == MessageResourceFlags.Unicode)
-                            {
-                                _message = region.ReadUnicodeString(MessageResourceEntry.TextOffset);
-                            }
-                            else
-                            {
-                                _message = region.ReadAnsiString(MessageResourceEntry.TextOffset);
-                            }
-
-                            // Fix those messages which are formatted like:
-                            // {Asdf}\r\nAsdf asdf asdf...
-                            if (_message.StartsWith("{"))
-                            {
-                                string[] split = _message.Split('\n');
-
-                                if (split.Length > 1)
-                                    _message = split[1];
-                            }
-                        }
-                        else
-                        {
-                            _message = "Could not retrieve the error message (0x" + ((int)status).ToString("x") + ").";
-                        }
+                        _message = message;
                     }
                     else
                     {
-                        // Use the Win32 way. We get less detailed error messages.
-                        _message = Win32.GetErrorMessage(_errorCode);
+                        _message = _errorCode.GetMessage();
                     }
                 }
 

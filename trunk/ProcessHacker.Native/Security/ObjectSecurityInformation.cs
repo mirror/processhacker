@@ -110,7 +110,7 @@ namespace ProcessHacker.Native.Security
             {
                 SecurityDescriptor = IntPtr.Zero;
 
-                return Win32.GetHR(ex.ErrorCode);
+                return ex.ErrorCode.GetHResult();
             }
 
             return 0;
@@ -127,7 +127,7 @@ namespace ProcessHacker.Native.Security
             }
             catch (WindowsException ex)
             {
-                return Win32.GetHR(ex.ErrorCode);
+                return ex.ErrorCode.GetHResult();
             }
 
             return 0;

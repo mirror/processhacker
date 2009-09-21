@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
 using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
@@ -127,7 +128,7 @@ namespace ProcessHacker
             ref int totalCount, ref int hiddenCount, ref int terminatedCount
             )
         {
-            if (ex.ErrorCode == 87) // ERROR_INVALID_PARAMETER
+            if (ex.ErrorCode == Win32Error.InvalidParameter)
                 return;
 
             var item = listProcesses.Items.Add(new ListViewItem(new string[]

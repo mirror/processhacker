@@ -1045,7 +1045,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("advapi32.dll")]
-        public static extern int GetSecurityInfo(
+        public static extern Win32Error GetSecurityInfo(
             [In] IntPtr Handle,
             [In] SeObjectType ObjectType,
             [In] SecurityInformation SecurityInformation,
@@ -1057,7 +1057,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("advapi32.dll")]
-        public static extern int SetSecurityInfo(
+        public static extern Win32Error SetSecurityInfo(
             [In] IntPtr Handle,
             [In] SeObjectType ObjectType,
             [In] SecurityInformation SecurityInformation,

@@ -280,6 +280,38 @@ namespace ProcessHacker.Native.Api
     public static class NtStatusExtensions
     {
         /// <summary>
+        /// Gets a string which describes the NT status value.
+        /// </summary>
+        /// <param name="status">The NT status value.</param>
+        /// <returns>A message, or null if the message could not be retrieved.</returns>
+        public static string GetMessage(this NtStatus status)
+        {
+            string message;
+
+            message = NativeUtils.GetMessage(
+                 Loader.GetDllHandle("ntdll.dll"),
+                 0xb,
+                 System.Threading.Thread.CurrentThread.CurrentUICulture.LCID,
+                 (int)status
+                 );
+
+            if (message != null)
+            {
+                // Fix those messages which are formatted like:
+                // {Asdf}\r\nAsdf asdf asdf...
+                if (message.StartsWith("{"))
+                {
+                    string[] split = message.Split('\n');
+
+                    if (split.Length > 1)
+                        message = split[1];
+                }
+            }
+
+            return message;
+        }
+
+        /// <summary>
         /// Gets whether the NT status value indicates an error.
         /// </summary>
         /// <param name="status">The NT status value.</param>
@@ -339,7 +371,7 @@ namespace ProcessHacker.Native.Api
         /// </summary>
         /// <param name="status">The NT status value.</param>
         /// <returns>A DOS/Windows error code.</returns>
-        public static int ToDosError(this NtStatus status)
+        public static Win32Error ToDosError(this NtStatus status)
         {
             return Win32.RtlNtStatusToDosError(status);
         }

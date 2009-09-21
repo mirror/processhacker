@@ -1,4 +1,5 @@
 ﻿using System;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native
@@ -45,6 +46,39 @@ namespace ProcessHacker.Native
                 return "HKU" + nativeKeyName.Substring(hkuString.Length);
             else
                 return nativeKeyName;
+        }
+
+        public static string GetMessage(IntPtr dllHandle, int messageTableId, int messageLanguageId, int messageId)
+        {
+            NtStatus status;
+            IntPtr messageEntry;
+            string message;
+
+            status = Win32.RtlFindMessage(
+                dllHandle,
+                messageTableId,
+                messageLanguageId,
+                messageId,
+                out messageEntry
+                );
+
+            if (status.IsError())
+                return null;
+
+            var region = new MemoryRegion(messageEntry);
+            var entry = region.ReadStruct<MessageResourceEntry>();
+
+            // Read the message, depending on format.
+            if ((entry.Flags & MessageResourceFlags.Unicode) == MessageResourceFlags.Unicode)
+            {
+                message = region.ReadUnicodeString(MessageResourceEntry.TextOffset);
+            }
+            else
+            {
+                message = region.ReadAnsiString(MessageResourceEntry.TextOffset);
+            }
+
+            return message;
         }
     }
 }

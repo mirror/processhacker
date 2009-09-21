@@ -102,9 +102,9 @@ namespace ProcessHacker
                                                     catch { }
                                                     service.Delete();
 
-                                                    int errorCode = mhandle.Read(4).ToInt32();
+                                                    Win32Error errorCode = (Win32Error)mhandle.Read(4).ToInt32();
 
-                                                    if (errorCode != 0)
+                                                    if (errorCode != Win32Error.Success)
                                                         throw new WindowsException(errorCode);
                                                 }
                                             }

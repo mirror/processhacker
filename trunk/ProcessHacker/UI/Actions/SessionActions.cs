@@ -2,6 +2,7 @@
 using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.UI.Actions
@@ -51,7 +52,7 @@ namespace ProcessHacker.UI.Actions
             }
             catch (WindowsException ex)
             {
-                if (ex.ErrorCode == 5 && 
+                if (ex.ErrorCode == Win32Error.AccessDenied && 
                     OSVersion.HasUac &&
                     Program.ElevationType == ProcessHacker.Native.Api.TokenElevationType.Limited)
                 {
