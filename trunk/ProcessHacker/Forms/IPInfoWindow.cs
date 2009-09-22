@@ -97,9 +97,7 @@ namespace ProcessHacker
 
         private void Ping(object ip)
         {
-            try
-            {
-            using (Ping pingSender = new Ping())
+            using (Ping pingSender = new Ping()) 
             {
                 PingOptions pingOptions = new PingOptions();
                 PingReply pingReply = null;
@@ -115,7 +113,7 @@ namespace ProcessHacker
                 long minPingResponse = 0;
                 long maxPingResponse = 0;
 
-                pingOptions.DontFragment = true;
+                //pingOptions.DontFragment = true;
                 //pingOptions.Ttl = 128;
 
                 WriteStatus(string.Format("Pinging {0} with {1} bytes of data:", ipAddress, byteSize) + Environment.NewLine, true);
@@ -136,7 +134,14 @@ namespace ProcessHacker
 
                     if (pingReply.Status == IPStatus.Success)
                     {
-                        WriteResult(string.Format("Reply from {0}: bytes={1} time={2}ms TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingReply.Options.Ttl), "", "");
+                        if (pingReply.Options != null) //IPv6 ping causes pingReply.Options to become null 
+                        {
+                            WriteResult(string.Format("Reply from {0}:  bytes={1}  time={2}ms  TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingReply.Options.Ttl), "", "");
+                        }
+                        else
+                        {
+                            WriteResult(string.Format("Reply from {0}:  bytes={1}  time={2}ms  TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingOptions.Ttl), "", "");
+                        }
 
                         if (minPingResponse == 0)
                         {
@@ -167,12 +172,6 @@ namespace ProcessHacker
                 WriteResult(Environment.NewLine + string.Format("\tMinimum = {0}ms, Maximum = {1}ms", minPingResponse, maxPingResponse), "", "");
             }
             WriteStatus("Ping complete.", false);
-            }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
-                return;
-            }
         }
          
         private void Tracert(object ip)
