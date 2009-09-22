@@ -23,12 +23,27 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
     public class UsageIcon : IDisposable
     {
+        private static UsageIcon _activeUsageIcon;
+
+        public static UsageIcon ActiveUsageIcon
+        {
+            get { return _activeUsageIcon; }
+            set
+            {
+                _activeUsageIcon = value;
+
+                if (_activeUsageIcon == null)
+                    TaskbarLib.TaskbarClass.SetOverlayIcon(null, "");
+            }
+        }
+
         public static Size GetSmallIconSize()
         {
             return new Size(
@@ -91,7 +106,13 @@ namespace ProcessHacker
         public Icon Icon
         {
             get { return _notifyIcon.Icon; }
-            set { _notifyIcon.Icon = value; }
+            set
+            {
+                _notifyIcon.Icon = value;
+
+                if (this == _activeUsageIcon)
+                    TaskbarLib.TaskbarClass.SetOverlayIcon(_notifyIcon.Icon, "");
+            }
         }
 
         public bool Visible

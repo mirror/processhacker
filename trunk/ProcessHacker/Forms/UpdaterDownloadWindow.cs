@@ -63,8 +63,6 @@ namespace ProcessHacker
             _webClient.Headers.Add("User-Agent", "PH/" + version + " (compatible; PH " +
                 version + "; PH " + version + "; .NET CLR " + Environment.Version.ToString() + ";)");
 
-            TaskbarClass.SetProgressState(TaskbarLib.TBPFlag.NORMAL);
-
             try
             {
                 _webClient.DownloadFileAsync(new Uri(_updateItem.Url), _fileName);
@@ -74,6 +72,11 @@ namespace ProcessHacker
                 PhUtils.ShowException("Unable to download Process Hacker", ex);
                 this.Close();
             }
+        }
+
+        private void UpdaterDownloadWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            TaskbarLib.TaskbarClass.SetProgressState(TaskbarLib.TaskbarClass.TBPFlag.NOPROGRESS);
         }
 
         private void webClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
@@ -139,6 +142,8 @@ namespace ProcessHacker
                     PhUtils.ShowException("Unable to download the update", webException);
                 }
             }
+
+            TaskbarLib.TaskbarClass.SetProgressState(TaskbarLib.TaskbarClass.TBPFlag.NOPROGRESS);
         }
 
         private void webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -151,7 +156,7 @@ namespace ProcessHacker
 
             progressDownload.Value = e.ProgressPercentage;
 
-            TaskbarClass.SetProgressValue((uint)e.ProgressPercentage, 100);
+            TaskbarLib.TaskbarClass.SetProgressValue((ulong)e.ProgressPercentage, (ulong)e.TotalBytesToReceive);
         }
 
         private void verifyWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -201,14 +206,11 @@ namespace ProcessHacker
 
         private void verifyWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            TaskbarClass.SetProgressValue((uint)e.ProgressPercentage, 100);
             this.progressDownload.Value = e.ProgressPercentage;
         }
 
         private void verifyWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            TaskbarClass.SetProgressState(TaskbarLib.TBPFlag.NOPROGRESS);
-
             StringBuilder sb = new StringBuilder();
 
             foreach (byte b in (byte[])e.Result)

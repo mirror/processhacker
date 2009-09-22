@@ -24,6 +24,7 @@ using System.Drawing;
 using System.Windows.Forms; // DO NOT REMOVE, needed in Debug mode
 using ProcessHacker.Common;
 using ProcessHacker.Components;
+using TaskbarLib;
 
 namespace ProcessHacker
 {
@@ -97,8 +98,6 @@ namespace ProcessHacker
 
                 newIcon = Icon.FromHandle(bm.GetHicon());
             }
-
-            TaskbarClass.SetOverlayIcon(newIcon, "");
 
             this.Icon = newIcon;
             ProcessHacker.Native.Api.Win32.DestroyIcon(oldIcon.Handle);

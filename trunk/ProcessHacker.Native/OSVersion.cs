@@ -72,6 +72,7 @@ namespace ProcessHacker.Native
         private static ThreadAccess _minThreadSetInfoAccess = ThreadAccess.SetInformation;
 
         private static bool _hasCycleTime = false;
+        private static bool _hasExtendedTaskbar = false;
         private static bool _hasProtectedProcesses = false;
         private static bool _hasPsSuspendResumeProcess = false;
         private static bool _hasQueryLimitedInformation = false;
@@ -114,6 +115,11 @@ namespace ProcessHacker.Native
                 _hasUac = true;
                 _hasWin32ImageFileName = true;
             }
+
+            if (IsAboveOrEqual(WindowsVersion.Seven))
+            {
+                _hasExtendedTaskbar = true;
+            }
         }
 
         public static int Bits
@@ -154,6 +160,11 @@ namespace ProcessHacker.Native
         public static bool HasCycleTime
         {
             get { return _hasCycleTime; }
+        }
+
+        public static bool HasExtendedTaskbar
+        {
+            get { return _hasExtendedTaskbar; }
         }
 
         public static bool HasProtectedProcesses

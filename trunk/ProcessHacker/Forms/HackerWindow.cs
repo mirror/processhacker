@@ -2805,6 +2805,11 @@ namespace ProcessHacker
             ioHistoryIcon.Visible = ioHistoryIcon.Enabled = Properties.Settings.Default.IoHistoryIconVisible;
             commitHistoryIcon.Visible = commitHistoryIcon.Enabled = Properties.Settings.Default.CommitHistoryIconVisible;
             physMemHistoryIcon.Visible = physMemHistoryIcon.Enabled = Properties.Settings.Default.PhysMemHistoryIconVisible;
+
+            if (cpuHistoryIcon.Visible)
+                UsageIcon.ActiveUsageIcon = cpuHistoryIcon;
+            else
+                UsageIcon.ActiveUsageIcon = null;
         }
 
         #endregion

@@ -489,8 +489,7 @@
       <DependentUpon>SessionInformationWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Program\Settings.cs" />
-    <Compile Include="Common\TaskbarClass.cs" />
-    <Compile Include="Common\TaskbarNativeFunctions.cs" />
+    <Compile Include="Components\TaskbarLib\TaskbarClass.cs" />
     <Compile Include="Program\Updater.cs" />
     <Compile Include="Forms\UpdaterDownloadWindow.cs">
       <SubType>Form</SubType>
