@@ -72,7 +72,6 @@ namespace ProcessHacker
             }
             else if (_ipAction == IpAction.Tracert)
             {
-                ProcessHacker.Common.PhUtils.SetTheme(listInfo, "explorer");
                 t = new Thread(new ParameterizedThreadStart(Tracert));
                 labelStatus.Text = "Tracing route...";
                 listInfo.Columns.Add("Count", 30);
@@ -82,7 +81,6 @@ namespace ProcessHacker
             }
             else if (_ipAction == IpAction.Ping)
             {
-                ProcessHacker.Common.PhUtils.SetTheme(listInfo, "explorer");
                 t = new Thread(new ParameterizedThreadStart(Ping));
                 labelStatus.Text = "Pinging...";
                 listInfo.Columns.Add("Results", 400);
@@ -99,6 +97,8 @@ namespace ProcessHacker
 
         private void Ping(object ip)
         {
+            try
+            {
             using (Ping pingSender = new Ping())
             {
                 PingOptions pingOptions = new PingOptions();
@@ -167,6 +167,12 @@ namespace ProcessHacker
                 WriteResult(Environment.NewLine + string.Format("\tMinimum = {0}ms, Maximum = {1}ms", minPingResponse, maxPingResponse), "", "");
             }
             WriteStatus("Ping complete.", false);
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+                return;
+            }
         }
          
         private void Tracert(object ip)
