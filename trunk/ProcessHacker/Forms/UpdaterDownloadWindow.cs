@@ -156,7 +156,8 @@ namespace ProcessHacker
 
             progressDownload.Value = e.ProgressPercentage;
 
-            TaskbarLib.TaskbarClass.SetProgressValue((ulong)e.ProgressPercentage, (ulong)e.TotalBytesToReceive);
+            TaskbarLib.TaskbarClass.SetProgressState(TaskbarLib.TaskbarClass.TBPFlag.NORMAL);
+            TaskbarLib.TaskbarClass.SetProgressValue((ulong)e.BytesReceived, (ulong)e.TotalBytesToReceive);
         }
 
         private void verifyWorker_DoWork(object sender, DoWorkEventArgs e)
