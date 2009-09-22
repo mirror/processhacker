@@ -237,6 +237,15 @@ namespace ProcessHacker
 
                 nodes.Sort(new Comparison<ProcessNode>(delegate(ProcessNode n1, ProcessNode n2)
                     {
+                        // We have a problem here - the GdiHandlesNumber and UserHandlesNumber 
+                        // properties are dynamically retrieved, so if n1 == n2 we may end up 
+                        // getting different values for the same process due to the timing.
+                        // If we do, then Array.Sort will throw an exception.
+                        //
+                        // The temporary HACK used here is to return 0 whenever n1 == n2.
+                        if (n1 == n2)
+                            return 0;
+
                         switch (sortC)
                         {
                             case "name":
