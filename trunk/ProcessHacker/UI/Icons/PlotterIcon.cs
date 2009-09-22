@@ -46,6 +46,7 @@ namespace ProcessHacker
                 Size = this.Size,
                 ShowGrid = false,
                 BackColor = Color.Black,
+                IsControl = false,
                 MoveStep = 2,
                 Data1 = _floatHistory[true],
                 Data2 = _floatHistory[false],

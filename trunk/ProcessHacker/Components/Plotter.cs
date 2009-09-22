@@ -207,7 +207,8 @@ namespace ProcessHacker.Components
             if (_showToolTip)
                 this.ShowToolTip();
 
-            this.Refresh();
+            if (_isControl)
+                this.Refresh();
         }
 
         private void ShowToolTip()
@@ -450,6 +451,13 @@ namespace ProcessHacker.Components
         public int EffectiveMoveStep
         {
             get { return _moveStep == -1 ? GlobalMoveStep : _moveStep; }
+        }
+
+        private bool _isControl = true;
+        public bool IsControl
+        {
+            get { return _isControl; }
+            set { _isControl = value; }
         }
 
         private IList<float> _data1;
