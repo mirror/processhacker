@@ -186,7 +186,10 @@ namespace TaskbarLib
 
         #endregion
 
-        private static object _taskbarInstanceLock = new object();
+        // Make this thread static because COM is not thread-safe and throws 
+        // nasty exceptions if we try to use objects created on a different 
+        // thread.
+        [ThreadStatic]
         private static ITaskbarList _taskbar = null;
 
         private static ITaskbarList Taskbar
@@ -195,14 +198,8 @@ namespace TaskbarLib
             {
                 if (_taskbar == null)
                 {
-                    lock (_taskbarInstanceLock)
-                    {
-                        if (_taskbar == null)
-                        {
-                            _taskbar = (ITaskbarList)new TaskbarList();
-                            _taskbar.HrInit();
-                        }
-                    }
+                    _taskbar = (ITaskbarList)new TaskbarList();
+                    _taskbar.HrInit();
                 }
 
                 return _taskbar;
