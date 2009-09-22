@@ -416,6 +416,9 @@
     <Compile Include="Components\TargetWindowButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Components\TaskbarLib\IconHandle.cs" />
+    <Compile Include="Components\TaskbarLib\ThumbnailBarButton.cs" />
+    <Compile Include="Components\TaskbarLib\ThumbnailBarButtonBase.cs" />
     <Compile Include="Components\TimerProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>

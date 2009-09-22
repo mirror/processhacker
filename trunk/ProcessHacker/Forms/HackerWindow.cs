@@ -45,6 +45,8 @@ namespace ProcessHacker
     {
         public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
 
+        private static Dictionary<IntPtr, IList<TaskbarLib.ThumbnailBarButton>> thumbnailButtons;
+
         private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
 
         // This entire file is a big monolithic mess.
@@ -2768,6 +2770,15 @@ namespace ProcessHacker
             }
         }
 
+        public static uint HiWord(IntPtr i)
+        {
+            return ((uint)i.ToInt32()) >> 16;
+        }
+        public static uint LoWord(IntPtr i)
+        {
+            return (uint)(i.ToInt32() & 0xffff);
+        }
+
         #endregion
 
         #region Notification Icons
@@ -2810,6 +2821,77 @@ namespace ProcessHacker
                 UsageIcon.ActiveUsageIcon = cpuHistoryIcon;
             else
                 UsageIcon.ActiveUsageIcon = null;
+        }
+
+        #endregion
+
+        #region "Taskbar ThumbnailButtons"
+
+        private TaskbarLib.ThumbnailBarButton CreateThumbnailBarImageButton(Bitmap Image, string imageName, string tooltip, bool isHidden, bool isDisabled, bool isDismissedOnClick, bool hasBackground)
+        {
+            return new TaskbarLib.ThumbnailBarButton(Image, tooltip, isHidden, isDisabled, isDismissedOnClick, hasBackground);
+        }
+  
+        private static void AddThumbnailBarButtons(IntPtr windowHandle, IList<TaskbarLib.ThumbnailBarButton> buttons)
+        {
+            var unmanagedButtons = new TaskbarLib.TaskbarClass.THUMBBUTTON[buttons.Count];
+            for (int i = 0; i < buttons.Count; i++)
+            {
+                buttons[i].Initialize(windowHandle);
+                unmanagedButtons[i] = buttons[i].GetUnmanagedButton();
+            }
+
+            TaskbarLib.TaskbarClass.ThumbBarAddButtons(windowHandle, (uint)buttons.Count, unmanagedButtons);
+
+            if (!thumbnailButtons.ContainsKey(windowHandle))
+            {
+                thumbnailButtons.Add(windowHandle, buttons);
+            }
+        }
+
+        private void addTaskbarButtons()
+        {
+            IList<TaskbarLib.ThumbnailBarButton> thumbnailBarButtons = new List<TaskbarLib.ThumbnailBarButton>()
+                {
+                    this.CreateThumbnailBarImageButton(
+                    ProcessHacker.Properties.Resources.ProcessHacker, 
+                    "SysInfo", 
+                    "System Infomation", 
+                    false, false, true, true),
+
+                    this.CreateThumbnailBarImageButton(
+                    ProcessHacker.Properties.Resources.report, 
+                    "Logger", 
+                    "Application Log",
+                    false, false, true, true),
+
+                    this.CreateThumbnailBarImageButton(
+                    ProcessHacker.Properties.Resources.find, 
+                    "Searcher", 
+                    "Find Handle or DLLs", 
+                    false, false, true, true),
+                };
+
+            thumbnailBarButtons[0].Click += new EventHandler(thumbnailBarButton1_Click);
+            thumbnailBarButtons[1].Click += new EventHandler(thumbnailBarButton2_Click);
+            thumbnailBarButtons[2].Click += new EventHandler(thumbnailBarButton3_Click);
+
+            AddThumbnailBarButtons(this.Handle, thumbnailBarButtons);
+        }
+
+        private void thumbnailBarButton1_Click(object sender, EventArgs e)
+        {
+            new SysInfoWindow().Show();
+        }
+
+        private void thumbnailBarButton2_Click(object sender, EventArgs e)
+        {
+            new LogWindow().Show();
+        }
+
+        private void thumbnailBarButton3_Click(object sender, EventArgs e)
+        {
+            new HandleFilterWindow().Show();
         }
 
         #endregion
@@ -2899,6 +2981,26 @@ namespace ProcessHacker
                         this.ExecuteOnIcons((icon) => icon.Size = UsageIcon.GetSmallIconSize());
                         // Refresh the tree view visual style.
                         treeProcesses.Tree.RefreshVisualStyles();
+                    }
+                    break;
+
+                case (int)WindowMessage.Command:
+                    if (HiWord(m.WParam) == TaskbarLib.TaskbarClass.THUMBBUTTON.THBN_CLICKED)
+                    {
+                        var buttonId = LoWord(m.WParam);
+
+                        IList<TaskbarLib.ThumbnailBarButton> buttons;
+                        if (thumbnailButtons.TryGetValue(m.HWnd, out buttons))
+                        {
+                            foreach (var b in buttons)
+                            {
+                                if (b.Id == buttonId)
+                                {
+                                    b.FireClickEvent();
+                                    break;
+                                }
+                            }
+                        }
                     }
                     break;
             }
@@ -3352,7 +3454,14 @@ namespace ProcessHacker
 
                 if (Properties.Settings.Default.AppUpdateAutomatic)
                     this.UpdateProgram(false);
+
+                if (OSVersion.HasExtendedTaskbar)
+                {
+                    thumbnailButtons = new Dictionary<IntPtr, IList<TaskbarLib.ThumbnailBarButton>>();
+                    this.addTaskbarButtons();
+                }
             }
         }
+
     }
 }

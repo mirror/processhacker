@@ -359,4 +359,5 @@ namespace TaskbarLib
             return ((int)hResult < 0);
         }
     }
+
 }
