@@ -86,17 +86,27 @@ namespace ProcessHacker.Components
 
         public void Draw()
         {
+            this.Draw(_managedBackBuffer.Graphics);
+
+            if (_showToolTip)
+                this.ShowToolTip();
+
+            this.Refresh();
+        }
+
+        public void Draw(Graphics g)
+        {
             int tWidth = this.Width;
             int tHeight = this.Height;
             int moveStep = this.EffectiveMoveStep;
 
-            Graphics g = _managedBackBuffer.Graphics;
-            g.SmoothingMode = Properties.Settings.Default.PlotterAntialias ?
+            g.SmoothingMode = Properties.Settings.Default.PlotterAntialias ? 
                 SmoothingMode.AntiAlias : SmoothingMode.Default;
 
             g.FillRectangle(new SolidBrush(this.BackColor), 0, 0, tWidth, tHeight);
 
-            //draw grid
+            // Draw the grid (if enabled).
+
             if (_showGrid)
             {
                 int x = tWidth / _gridSize.Width;
@@ -118,6 +128,8 @@ namespace ProcessHacker.Components
                 }
             }
 
+            // Validate and if necessary, fix the data.
+
             if (_useLongData && (_longData1 == null || (this.UseSecondLine && _longData2 == null)))
                 return;
 
@@ -127,7 +139,8 @@ namespace ProcessHacker.Components
             if (_data1 == null || (this.UseSecondLine && _data2 == null))
                 return;
 
-            //draw lines
+            // Draw the lines.
+
             int px = tWidth - moveStep;
             int start = 0;
             Pen lGrid1 = new Pen(_lineColor1);
@@ -141,7 +154,8 @@ namespace ProcessHacker.Components
                 int h = (int)(tHeight - (tHeight * f));
                 int hPre = (int)(tHeight - (tHeight * fPre));
 
-                // fill in the area below the line
+                // Fill in the area below the line.
+
                 g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor1)),
                     new Point[] { new Point(px, h), new Point(px + moveStep, hPre), 
                         new Point(px + moveStep, tHeight), new Point(px, tHeight) });
@@ -166,7 +180,8 @@ namespace ProcessHacker.Components
                     h = (int)(tHeight - (tHeight * f));
                     hPre = (int)(tHeight - (tHeight * fPre));
 
-                    // draw the second line
+                    // Draw the second line.
+
                     if (this.OverlaySecondLine)
                     {
                         g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)),
@@ -193,22 +208,16 @@ namespace ProcessHacker.Components
                 start++;
             }
 
-            // draw text
+            // Draw the text, if any.
             if (!string.IsNullOrEmpty(_text))
             {
-                // draw the background for the text
+                // Draw the background for the text.
                 g.FillRectangle(new SolidBrush(_textBoxColor),
                     new Rectangle(_boxPosition, _boxSize));
 
-                // draw the text
+                // Draw the text.
                 TextRenderer.DrawText(g, _text, this.Font, _textPosition, _textColor);
             }
-
-            if (_showToolTip)
-                this.ShowToolTip();
-
-            if (_isControl)
-                this.Refresh();
         }
 
         private void ShowToolTip()
@@ -451,13 +460,6 @@ namespace ProcessHacker.Components
         public int EffectiveMoveStep
         {
             get { return _moveStep == -1 ? GlobalMoveStep : _moveStep; }
-        }
-
-        private bool _isControl = true;
-        public bool IsControl
-        {
-            get { return _isControl; }
-            set { _isControl = value; }
         }
 
         private IList<float> _data1;

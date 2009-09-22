@@ -46,7 +46,6 @@ namespace ProcessHacker
                 Size = this.Size,
                 ShowGrid = false,
                 BackColor = Color.Black,
-                IsControl = false,
                 MoveStep = 2,
                 Data1 = _floatHistory[true],
                 Data2 = _floatHistory[false],
@@ -75,16 +74,6 @@ namespace ProcessHacker
 
         public void Redraw()
         {
-            // If this is running in debug mode, we should do the usual 
-            // safe invoking. Otherwise, leave it out...
-#if DEBUG
-            if (this.Parent.InvokeRequired)
-            {
-                this.Parent.BeginInvoke(new MethodInvoker(this.Redraw));
-                return;
-            }
-#endif
-
             Icon newIcon;
             Icon oldIcon = this.Icon;
 
@@ -94,8 +83,8 @@ namespace ProcessHacker
                 if (_plotter.Size != this.Size)
                     _plotter.Size = this.Size;
 
-                _plotter.Draw();
-                _plotter.DrawToBitmap(bm, new Rectangle(new Point(0, 0), _plotter.Size));
+                using (Graphics g = Graphics.FromImage(bm))
+                    _plotter.Draw(g);
 
                 newIcon = Icon.FromHandle(bm.GetHicon());
             }
