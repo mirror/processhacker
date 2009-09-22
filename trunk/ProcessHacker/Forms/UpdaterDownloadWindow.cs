@@ -63,6 +63,8 @@ namespace ProcessHacker
             _webClient.Headers.Add("User-Agent", "PH/" + version + " (compatible; PH " +
                 version + "; PH " + version + "; .NET CLR " + Environment.Version.ToString() + ";)");
 
+            TaskbarClass.SetProgressState(TaskbarLib.TBPFlag.NORMAL);
+
             try
             {
                 _webClient.DownloadFileAsync(new Uri(_updateItem.Url), _fileName);
@@ -149,7 +151,7 @@ namespace ProcessHacker
 
             progressDownload.Value = e.ProgressPercentage;
 
-            TaskbarClass.SetProgressValue(Convert.ToUInt64(e.ProgressPercentage), Convert.ToUInt64(e.TotalBytesToReceive));
+            TaskbarClass.SetProgressValue((uint)e.ProgressPercentage, 100);
         }
 
         private void verifyWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -199,11 +201,14 @@ namespace ProcessHacker
 
         private void verifyWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+            TaskbarClass.SetProgressValue((uint)e.ProgressPercentage, 100);
             this.progressDownload.Value = e.ProgressPercentage;
         }
 
         private void verifyWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            TaskbarClass.SetProgressState(TaskbarLib.TBPFlag.NOPROGRESS);
+
             StringBuilder sb = new StringBuilder();
 
             foreach (byte b in (byte[])e.Result)
