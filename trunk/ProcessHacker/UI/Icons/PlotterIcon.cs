@@ -98,6 +98,8 @@ namespace ProcessHacker
                 newIcon = Icon.FromHandle(bm.GetHicon());
             }
 
+            TaskbarClass.SetOverlayIcon(newIcon, "");
+
             this.Icon = newIcon;
             ProcessHacker.Native.Api.Win32.DestroyIcon(oldIcon.Handle);
         }

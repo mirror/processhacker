@@ -148,6 +148,8 @@ namespace ProcessHacker
                 " (" + e.ProgressPercentage.ToString() + "%)";
 
             progressDownload.Value = e.ProgressPercentage;
+
+            TaskbarClass.SetProgressValue(Convert.ToUInt64(e.ProgressPercentage), Convert.ToUInt64(e.TotalBytesToReceive));
         }
 
         private void verifyWorker_DoWork(object sender, DoWorkEventArgs e)
