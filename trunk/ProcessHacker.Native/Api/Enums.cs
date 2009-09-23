@@ -932,7 +932,10 @@ namespace ProcessHacker.Native.Api
 
         BcmSetShield = 0x160c,
 
-        App = 0x8000
+        App = 0x8000,
+      
+        DWMSendIconicThumbnail = 0x0323,
+        DWMSendIconicLivePreviewBitmap = 0x0326
     }
 
     [Flags]

@@ -3314,13 +3314,32 @@ namespace ProcessHacker
             catch
             { }
 
-            // If it's Vista and we're elevated, we should allow the magic window message to allow 
-            // Allow only one instance to work.
-            if (OSVersion.HasUac &&
-                Program.ElevationType == TokenElevationType.Full)
+            // If it's Vista or above and we're elevated.
+            if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Full)
             {
                 this.Text += " (Administrator)";
-                Win32.ChangeWindowMessageFilter((WindowMessage)0x9991, UipiFilterFlag.Add);
+                this.AllowWindowMessagesThroughUIPI();
+            } 
+        }
+
+        /// <summary>
+        /// Specifies that System/Taskbar and DWM-related Windows Messages should
+        /// pass through the Windows UIPI (User Interface Privilege Isolation) mechanism.
+        /// Calling this method is not required unless the process is running elevated.
+        /// </summary>
+        private void AllowWindowMessagesThroughUIPI()
+        {
+            // we enable the magic window message to Allow only one instance to work.
+            Win32.ChangeWindowMessageFilter((WindowMessage)0x9991, UipiFilterFlag.Add);
+
+            if (OSVersion.HasExtendedTaskbar)
+            {
+                //Win32.ChangeWindowMessageFilter(WindowMessage.WM_TaskbarButtonCreated, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.DWMSendIconicThumbnail, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.DWMSendIconicLivePreviewBitmap, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.Command, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.SysCommand, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.Activate, UipiFilterFlag.Add);
             }
         }
 
@@ -3369,7 +3388,7 @@ namespace ProcessHacker
         {
             Program.UpdateWindowMenu(windowMenuItem, this);
             this.ApplyFont(Properties.Settings.Default.Font);
-            this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
+            this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs)); 
         }
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)
@@ -3456,6 +3475,7 @@ namespace ProcessHacker
                 if (Properties.Settings.Default.AppUpdateAutomatic)
                     this.UpdateProgram(false);
 
+                //TODO: fix, should be awaiting WM notification before adding taskbar buttons
                 if (OSVersion.HasExtendedTaskbar)
                 {
                     thumbnailButtons = new Dictionary<IntPtr, IList<ThumbnailBarButton>>();
