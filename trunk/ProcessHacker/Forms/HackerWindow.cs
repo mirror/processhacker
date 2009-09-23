@@ -45,7 +45,7 @@ namespace ProcessHacker
     {
         public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
 
-        private static Dictionary<IntPtr, IList<TaskbarLib.ThumbnailBarButton>> thumbnailButtons;
+        private static Dictionary<IntPtr, IList<ThumbnailBarButton>> thumbnailButtons;
 
         private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
 
@@ -2827,21 +2827,21 @@ namespace ProcessHacker
 
         #region "Taskbar ThumbnailButtons"
 
-        private TaskbarLib.ThumbnailBarButton CreateThumbnailBarImageButton(Bitmap Image, string imageName, string tooltip, bool isHidden, bool isDisabled, bool isDismissedOnClick, bool hasBackground)
+        private ThumbnailBarButton CreateThumbnailBarImageButton(Bitmap Image, string imageName, string tooltip, bool isHidden, bool isDisabled, bool isDismissedOnClick, bool hasBackground)
         {
-            return new TaskbarLib.ThumbnailBarButton(Image, tooltip, isHidden, isDisabled, isDismissedOnClick, hasBackground);
+            return new ThumbnailBarButton(Image, tooltip, isHidden, isDisabled, isDismissedOnClick, hasBackground);
         }
   
-        private static void AddThumbnailBarButtons(IntPtr windowHandle, IList<TaskbarLib.ThumbnailBarButton> buttons)
+        private static void AddThumbnailBarButtons(IntPtr windowHandle, IList<ThumbnailBarButton> buttons)
         {
-            var unmanagedButtons = new TaskbarLib.TaskbarClass.THUMBBUTTON[buttons.Count];
+            var unmanagedButtons = new TaskbarNative.THUMBBUTTON[buttons.Count];
             for (int i = 0; i < buttons.Count; i++)
             {
                 buttons[i].Initialize(windowHandle);
                 unmanagedButtons[i] = buttons[i].GetUnmanagedButton();
             }
 
-            TaskbarLib.TaskbarClass.ThumbBarAddButtons(windowHandle, (uint)buttons.Count, unmanagedButtons);
+            TaskbarClass.ThumbBarAddButtons(windowHandle, (uint)buttons.Count, unmanagedButtons);
 
             if (!thumbnailButtons.ContainsKey(windowHandle))
             {
@@ -2851,7 +2851,7 @@ namespace ProcessHacker
 
         private void addTaskbarButtons()
         {
-            IList<TaskbarLib.ThumbnailBarButton> thumbnailBarButtons = new List<TaskbarLib.ThumbnailBarButton>()
+            IList<ThumbnailBarButton> thumbnailBarButtons = new List<ThumbnailBarButton>()
                 {
                     this.CreateThumbnailBarImageButton(
                     ProcessHacker.Properties.Resources.ProcessHacker, 
@@ -2985,11 +2985,11 @@ namespace ProcessHacker
                     break;
 
                 case (int)WindowMessage.Command:
-                    if (HiWord(m.WParam) == TaskbarLib.TaskbarClass.THUMBBUTTON.THBN_CLICKED)
+                    if (HiWord(m.WParam) == TaskbarNative.THUMBBUTTON.THBN_CLICKED)
                     {
                         var buttonId = LoWord(m.WParam);
 
-                        IList<TaskbarLib.ThumbnailBarButton> buttons;
+                        IList<ThumbnailBarButton> buttons;
                         if (thumbnailButtons.TryGetValue(m.HWnd, out buttons))
                         {
                             foreach (var b in buttons)
@@ -3457,7 +3457,7 @@ namespace ProcessHacker
 
                 if (OSVersion.HasExtendedTaskbar)
                 {
-                    thumbnailButtons = new Dictionary<IntPtr, IList<TaskbarLib.ThumbnailBarButton>>();
+                    thumbnailButtons = new Dictionary<IntPtr, IList<ThumbnailBarButton>>();
                     this.addTaskbarButtons();
                 }
             }

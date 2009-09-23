@@ -40,7 +40,7 @@ namespace ProcessHacker
                 _activeUsageIcon = value;
 
                 if (_activeUsageIcon == null)
-                    TaskbarLib.TaskbarClass.SetOverlayIcon(null, "");
+                    TaskbarClass.SetOverlayIcon(null, "");
             }
         }
 
@@ -111,7 +111,7 @@ namespace ProcessHacker
                 _notifyIcon.Icon = value;
 
                 if (this == _activeUsageIcon)
-                    TaskbarLib.TaskbarClass.SetOverlayIcon(_notifyIcon.Icon, "");
+                    TaskbarClass.SetOverlayIcon(_notifyIcon.Icon, "");
             }
         }
 

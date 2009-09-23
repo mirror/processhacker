@@ -76,7 +76,7 @@ namespace ProcessHacker
 
         private void UpdaterDownloadWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            TaskbarLib.TaskbarClass.SetProgressState(TaskbarLib.TaskbarClass.TBPFlag.NOPROGRESS);
+            TaskbarClass.SetProgressState(TaskbarNative.TBPFlag.NOPROGRESS);
         }
 
         private void webClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
@@ -143,7 +143,7 @@ namespace ProcessHacker
                 }
             }
 
-            TaskbarLib.TaskbarClass.SetProgressState(TaskbarLib.TaskbarClass.TBPFlag.NOPROGRESS);
+            TaskbarClass.SetProgressState(TaskbarNative.TBPFlag.NOPROGRESS);
         }
 
         private void webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -156,8 +156,8 @@ namespace ProcessHacker
 
             progressDownload.Value = e.ProgressPercentage;
 
-            TaskbarLib.TaskbarClass.SetProgressState(TaskbarLib.TaskbarClass.TBPFlag.NORMAL);
-            TaskbarLib.TaskbarClass.SetProgressValue((ulong)e.BytesReceived, (ulong)e.TotalBytesToReceive);
+            TaskbarClass.SetProgressState(TaskbarNative.TBPFlag.NORMAL);
+            TaskbarClass.SetProgressValue((ulong)e.BytesReceived, (ulong)e.TotalBytesToReceive);
         }
 
         private void verifyWorker_DoWork(object sender, DoWorkEventArgs e)
