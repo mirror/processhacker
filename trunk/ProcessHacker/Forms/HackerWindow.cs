@@ -38,6 +38,7 @@ using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
+using TaskbarLib;
 
 namespace ProcessHacker
 {

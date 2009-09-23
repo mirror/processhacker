@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
+using TaskbarLib;
 
 namespace ProcessHacker
 {

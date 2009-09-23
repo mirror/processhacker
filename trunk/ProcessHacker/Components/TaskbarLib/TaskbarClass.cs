@@ -1,6 +1,6 @@
 ﻿/*
  * Process Hacker - 
- *   ProcessHacker Windows 7 Taskbar Extensions Class
+ *   Windows 7 taskbar extensions class
  * 
  * Copyright (C) 2009 dmex
  * 
@@ -30,8 +30,10 @@ using ProcessHacker.Native.Api;
 using TaskbarLib;
 using System.Runtime.InteropServices;
 
-public class TaskbarClass
+namespace TaskbarLib
 {
+    public class TaskbarClass
+    {
         // Make this thread static because COM is not thread-safe and throws 
         // nasty exceptions if we try to use objects created on a different 
         // thread.
@@ -155,7 +157,7 @@ public class TaskbarClass
             if (OSVersion.HasExtendedTaskbar)
             {
                 TaskbarNative.HRESULT result = Taskbar.SetTabActive(hwndTab, hwndInsertBefore, tbatFlags);
-                
+
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
             }
@@ -236,4 +238,5 @@ public class TaskbarClass
         {
             return (hResult != TaskbarNative.HRESULT.S_OK);
         }
+    }
 }

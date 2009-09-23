@@ -23,8 +23,8 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
+using TaskbarLib;
 
 namespace ProcessHacker
 {

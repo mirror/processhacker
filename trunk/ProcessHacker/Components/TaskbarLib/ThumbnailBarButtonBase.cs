@@ -2,29 +2,31 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-/// <summary>
-/// Represents a thumbnail toolbar button.
-/// </summary>
-public abstract class ThumbnailBarButtonBase : IDisposable
-{    
-    private static Dictionary<IntPtr, uint> idCounters;
-  
-    private uint id;  
-    private bool isDisabled; 
-    private bool isDismissedOnClick;
-    private bool hasBackground;  
-    private bool isHidden; 
-    private string tooltip;
+namespace TaskbarLib
+{
+    /// <summary>
+    /// Represents a thumbnail toolbar button.
+    /// </summary>
+    public abstract class ThumbnailBarButtonBase : IDisposable
+    {
+        private static Dictionary<IntPtr, uint> idCounters;
 
-    private SafeHandle iconHandle;
-    private IntPtr windowHandle;
-  
-    static ThumbnailBarButtonBase()
+        private uint id;
+        private bool isDisabled;
+        private bool isDismissedOnClick;
+        private bool hasBackground;
+        private bool isHidden;
+        private string tooltip;
+
+        private SafeHandle iconHandle;
+        private IntPtr windowHandle;
+
+        static ThumbnailBarButtonBase()
         {
             idCounters = new Dictionary<IntPtr, uint>();
         }
-  
-    protected ThumbnailBarButtonBase(string tooltip, bool isHidden, bool isDisabled, bool isDismissedOnClick, bool hasBackground)
+
+        protected ThumbnailBarButtonBase(string tooltip, bool isHidden, bool isDisabled, bool isDismissedOnClick, bool hasBackground)
         {
             this.isHidden = isHidden;
             this.isDisabled = isDisabled;
@@ -33,23 +35,23 @@ public abstract class ThumbnailBarButtonBase : IDisposable
             this.tooltip = tooltip;
         }
 
-    /// <summary>
-    /// Finalizer for <see cref="ThumbnailBarButton"/> type.
-    /// </summary>   
-    ~ThumbnailBarButtonBase()
+        /// <summary>
+        /// Finalizer for <see cref="ThumbnailBarButton"/> type.
+        /// </summary>   
+        ~ThumbnailBarButtonBase()
         {
             this.Dispose(false);
         }
-     
-    /// <summary>
-    /// Occurs when button is clicked.
-    /// </summary> 
-    public event EventHandler Click;
-   
-    /// <summary>
-    /// Specifies whether button is disabled.
-    /// </summary>   
-    public bool IsDisabled
+
+        /// <summary>
+        /// Occurs when button is clicked.
+        /// </summary> 
+        public event EventHandler Click;
+
+        /// <summary>
+        /// Specifies whether button is disabled.
+        /// </summary>   
+        public bool IsDisabled
         {
             get
             {
@@ -63,11 +65,11 @@ public abstract class ThumbnailBarButtonBase : IDisposable
                 this.Update();
             }
         }
-   
-    /// <summary>
-    /// Specifies whether button is dismissed after click.
-    /// </summary> 
-    public bool IsDismissedOnClick
+
+        /// <summary>
+        /// Specifies whether button is dismissed after click.
+        /// </summary> 
+        public bool IsDismissedOnClick
         {
             get
             {
@@ -81,11 +83,11 @@ public abstract class ThumbnailBarButtonBase : IDisposable
                 this.Update();
             }
         }
-       
-    /// <summary>
+
+        /// <summary>
         /// Specifies whether button has background.
         /// </summary>
-    public bool HasBackground
+        public bool HasBackground
         {
             get
             {
@@ -99,11 +101,11 @@ public abstract class ThumbnailBarButtonBase : IDisposable
                 this.Update();
             }
         }
-   
-    /// <summary>
-    /// Specifies whether button is hidden.
-    /// </summary> 
-    public bool IsHidden
+
+        /// <summary>
+        /// Specifies whether button is hidden.
+        /// </summary> 
+        public bool IsHidden
         {
             get
             {
@@ -117,11 +119,11 @@ public abstract class ThumbnailBarButtonBase : IDisposable
                 this.Update();
             }
         }
-  
-    /// <summary>
-    /// Tooltip for button.
-    /// </summary> 
-    public string Tooltip
+
+        /// <summary>
+        /// Tooltip for button.
+        /// </summary> 
+        public string Tooltip
         {
             get
             {
@@ -135,24 +137,24 @@ public abstract class ThumbnailBarButtonBase : IDisposable
                 this.Update();
             }
         }
-    
-    internal uint Id
+
+        internal uint Id
         {
             get
             {
                 return this.id;
             }
         }
-     
-    internal IntPtr WindowHandle
+
+        internal IntPtr WindowHandle
         {
             get
             {
                 return this.windowHandle;
             }
         }
-  
-    protected SafeHandle IconHandle
+
+        protected SafeHandle IconHandle
         {
             get
             {
@@ -169,16 +171,16 @@ public abstract class ThumbnailBarButtonBase : IDisposable
                 this.iconHandle = value;
             }
         }
-    
-    /// <summary>
-    /// Dispose current instance deterministicly.
-    /// </summary>  
-    public void Dispose()
-    {
-        this.Dispose(true);
-    }
- 
-    internal void Initialize(IntPtr windowHandle)
+
+        /// <summary>
+        /// Dispose current instance deterministicly.
+        /// </summary>  
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        internal void Initialize(IntPtr windowHandle)
         {
             if (this.id > 0)
             {
@@ -200,8 +202,8 @@ public abstract class ThumbnailBarButtonBase : IDisposable
 
             this.id = id;
         }
-     
-    internal TaskbarNative.THUMBBUTTON GetUnmanagedButton()
+
+        internal TaskbarNative.THUMBBUTTON GetUnmanagedButton()
         {
             TaskbarNative.THUMBBUTTON button = new TaskbarNative.THUMBBUTTON();
             button.iId = this.id;
@@ -245,8 +247,8 @@ public abstract class ThumbnailBarButtonBase : IDisposable
 
             return button;
         }
- 
-    internal void FireClickEvent()
+
+        internal void FireClickEvent()
         {
             var handler = this.Click;
 
@@ -255,12 +257,12 @@ public abstract class ThumbnailBarButtonBase : IDisposable
                 handler(this, EventArgs.Empty);
             }
         }
-   
-    internal virtual void BeforeGetUnmanagedButton(ref TaskbarNative.THUMBBUTTON button)
+
+        internal virtual void BeforeGetUnmanagedButton(ref TaskbarNative.THUMBBUTTON button)
         {
         }
- 
-    protected virtual void Dispose(bool disposing)
+
+        protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
@@ -272,7 +274,7 @@ public abstract class ThumbnailBarButtonBase : IDisposable
                 this.iconHandle.Dispose();
             }
         }
-  
-    protected abstract void Update();
-    
+
+        protected abstract void Update();
+    }
 }
