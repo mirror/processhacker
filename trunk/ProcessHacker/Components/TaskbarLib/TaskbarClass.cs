@@ -228,22 +228,12 @@ public class TaskbarClass
         }
 
         /// <summary>
-        /// HRESULT - Succeeded
-        /// </summary>
-        /// <param name="hresult">The error code.</param>
-        /// <returns>True if the error code indicates success.</returns>
-        public static bool Succeeded(TaskbarNative.HRESULT hresult)
-        {
-            return ((int)hresult >= 0);
-        }
-
-        /// <summary>
         /// HRESULT - Failed
         /// </summary>
         /// <param name="hResult">The error code.</param>
         /// <returns>True if the error code indicates failure.</returns>
         public static bool Failed(TaskbarNative.HRESULT hResult)
         {
-            return ((int)hResult < 0);
+            return (hResult != TaskbarNative.HRESULT.S_OK);
         }
 }
