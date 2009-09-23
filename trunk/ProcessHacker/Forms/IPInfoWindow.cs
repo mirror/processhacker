@@ -167,9 +167,9 @@ namespace ProcessHacker
                 }
                 WriteResult("", "", "");
                 WriteResult(string.Format("Ping statistics for {0}:", ipAddress), "", "");
-                WriteResult(string.Format("Packets: Sent = {0}, Received = {1}, Lost = {2}", sentPings, receivedPings, lostPings), "", "");
+                WriteResult(string.Format("        Packets: Sent = {0}, Received = {1}, Lost = {2}", sentPings, receivedPings, lostPings), "", "");
                 WriteResult("Approximate round trip times in milli-seconds:", "", "");
-                WriteResult(string.Format("Minimum = {0}ms, Maximum = {1}ms", minPingResponse, maxPingResponse), "", "");
+                WriteResult(string.Format("        Minimum = {0}ms, Maximum = {1}ms", minPingResponse, maxPingResponse), "", "");
             }
             WriteStatus("Ping complete.", false);
         }
