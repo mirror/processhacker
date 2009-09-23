@@ -40,6 +40,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
+    [System.Security.SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
         #region Cryptography
