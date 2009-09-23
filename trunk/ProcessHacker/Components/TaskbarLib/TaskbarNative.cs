@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System;
+using ProcessHacker.Native.Api;
 
 namespace TaskbarLib
 {
@@ -25,7 +26,7 @@ namespace TaskbarLib
             /// </summary>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT HrInit();
+            Win32Error HrInit();
 
             /// <summary>
             /// Adds an item to the taskbar. 
@@ -33,7 +34,7 @@ namespace TaskbarLib
             /// <param name="hwnd">A handle to the window to be added to the taskbar.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT AddTab(IntPtr hwnd);
+            Win32Error AddTab(IntPtr hwnd);
 
             /// <summary>
             /// Deletes an item from the taskbar.
@@ -41,7 +42,7 @@ namespace TaskbarLib
             /// <param name="hwnd">A handle to the window to be deleted from the taskbar.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT DeleteTab(IntPtr hwnd);
+            Win32Error DeleteTab(IntPtr hwnd);
 
             /// <summary>
             /// Activates an item on the taskbar. The window is not actually activated;
@@ -50,7 +51,7 @@ namespace TaskbarLib
             /// <param name="hwnd">A handle to the window on the taskbar to be displayed as active.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT ActivateTab(IntPtr hwnd);
+            Win32Error ActivateTab(IntPtr hwnd);
 
             /// <summary>
             /// Marks a taskbar item as active but does not visually activate it.
@@ -68,7 +69,7 @@ namespace TaskbarLib
             /// <param name="hwnd">A handle to the window to be marked as active.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT SetActiveAlt(IntPtr hwnd);
+            Win32Error SetActiveAlt(IntPtr hwnd);
 
             #endregion
 
@@ -89,7 +90,7 @@ namespace TaskbarLib
             /// <param name="fFullscreen">A Boolean value marking the desired full-screen status of the window.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT MarkFullscreenWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.Bool)] bool fFullscreen);
+            Win32Error MarkFullscreenWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.Bool)] bool fFullscreen);
 
             #endregion
 
@@ -103,7 +104,7 @@ namespace TaskbarLib
             /// <param name="total">An application-defined value that specifies the value ullCompleted  will have when the operation is complete</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT SetProgressValue(IntPtr hwnd, UInt64 completed, UInt64 total);
+            Win32Error SetProgressValue(IntPtr hwnd, UInt64 completed, UInt64 total);
 
             /// <summary>
             /// Sets the type and state of the progress indicator displayed on a taskbar button.
@@ -113,7 +114,7 @@ namespace TaskbarLib
             /// <param name="tbpFlags">Flags that control the current state of the progress button.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT SetProgressState(IntPtr hwnd, TBPFlag tbpFlags);
+            Win32Error SetProgressState(IntPtr hwnd, TBPFlag tbpFlags);
 
             /// <summary>
             /// Informs the taskbar that a new tab or document thumbnail has been provided for display in an application's taskbar group flyout.
@@ -122,7 +123,7 @@ namespace TaskbarLib
             /// <param name="hwndMDI">Handle of the application's main window. This value tells the taskbar which application's preview group to attach the new thumbnail to. This value is required and cannot be NULL.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT RegisterTab(IntPtr hwndTab, IntPtr hwndMDI);
+            Win32Error RegisterTab(IntPtr hwndTab, IntPtr hwndMDI);
 
             /// <summary>
             /// Removes a thumbnail from an application's preview group when that tab or document is closed in the application.
@@ -132,7 +133,7 @@ namespace TaskbarLib
             /// This value is required and cannot be NULL.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT UnregisterTab(IntPtr hwndTab);
+            Win32Error UnregisterTab(IntPtr hwndTab);
 
             /// <summary>
             /// Inserts a new thumbnail into a tabbed-document interface (TDI) or multiple-document interface (MDI) application's group flyout or moves an existing thumbnail to a new position in the application's group.
@@ -141,7 +142,7 @@ namespace TaskbarLib
             /// <param name="hwndInsertBefore">The handle of the tab window whose thumbnail that hwndTab is inserted to the left of. This handle must already be registered through ITaskbarList3::RegisterTab. If this value is NULL, the new thumbnail is added to the end of the list.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT SetTabOrder(IntPtr hwndTab, IntPtr hwndInsertBefore);
+            Win32Error SetTabOrder(IntPtr hwndTab, IntPtr hwndInsertBefore);
 
             /// <summary>
             /// Informs the taskbar that a tab or document window has been made the active window.
@@ -151,7 +152,7 @@ namespace TaskbarLib
             /// <param name="dwReserved">Reserved</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT SetTabActive(IntPtr hwndTab, IntPtr hwndInsertBefore, TBATFlag dwReserved);
+            Win32Error SetTabActive(IntPtr hwndTab, IntPtr hwndInsertBefore, TBATFlag dwReserved);
 
             /// <summary>
             /// Adds a thumbnail toolbar with a specified set of buttons to the thumbnail image of a window in a taskbar button flyout.
@@ -162,7 +163,7 @@ namespace TaskbarLib
             /// <returns>Returns S_OK if successful, or an error value otherwise, including the following:
             /// E_INVALIDARG - The hwnd parameter does not specify a handle that belongs to the process or does not specify a window that is associated with a taskbar button. This value is also returned if pButton is less than 1 or greater than 7.</returns>
             [PreserveSig]
-            HRESULT ThumbBarAddButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray)] THUMBBUTTON[] pButtons);
+            Win32Error ThumbBarAddButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray)] THUMBBUTTON[] pButtons);
 
             /// <summary>
             /// Shows, enables, disables, or hides buttons in a thumbnail toolbar as required by the window's current state. A thumbnail toolbar is a toolbar embedded in a thumbnail image of a window in a taskbar button flyout.
@@ -180,7 +181,7 @@ namespace TaskbarLib
             /// <param name="pButtons"> A pointer to an array of THUMBBUTTON  structures. Each THUMBBUTTON defines an individual button. If the button already exists (the iId value is already defined), then that existing button is updated with the information provided in the structure.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT ThumbBarUpdateButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray)] THUMBBUTTON[] pButtons);
+            Win32Error ThumbBarUpdateButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray)] THUMBBUTTON[] pButtons);
 
             /// <summary>
             /// Specifies an image list that contains button images for a toolbar embedded in a thumbnail image of a window in a taskbar button flyout.
@@ -189,7 +190,7 @@ namespace TaskbarLib
             /// <param name="himl">The handle of the image list that contains all button images to be used in the toolbar.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT ThumbBarSetImageList(IntPtr hwnd, IntPtr himl);
+            Win32Error ThumbBarSetImageList(IntPtr hwnd, IntPtr himl);
 
             /// <summary>
             /// Applies an overlay to a taskbar button to indicate application status or a notification to the user.
@@ -203,7 +204,7 @@ namespace TaskbarLib
             /// <param name="description">A pointer to a string that provides an alt text version of the information conveyed by the overlay, for accessibility purposes.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT SetOverlayIcon(IntPtr hwnd, IntPtr hIcon, [MarshalAs(UnmanagedType.LPWStr)] string description);
+            Win32Error SetOverlayIcon(IntPtr hwnd, IntPtr hIcon, [MarshalAs(UnmanagedType.LPWStr)] string description);
 
             /// <summary>
             /// Specifies or updates the text of the tooltip that is displayed when the mouse pointer rests on an individual preview thumbnail in a taskbar button flyout.
@@ -212,7 +213,7 @@ namespace TaskbarLib
             /// <param name="tip">The pointer to the text to be displayed in the tooltip. This value can be NULL, in which case the title of the window specified by hwnd  is used as the tooltip.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string tip);
+            Win32Error SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string tip);
 
             /// <summary>
             /// Selects a portion of a window's client area to display as that window's thumbnail in the taskbar.
@@ -221,7 +222,7 @@ namespace TaskbarLib
             /// <param name="prcClip">A pointer to a RECT  structure that specifies a selection within the window's client area, relative to the upper-left corner of that client area. To clear a clip that is already in place and return to the default display of the thumbnail, set this parameter to NULL.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HRESULT SetThumbnailClip(IntPtr hwnd, ref ProcessHacker.Native.Api.Rect prcClip);
+            Win32Error SetThumbnailClip(IntPtr hwnd, ref ProcessHacker.Native.Api.Rect prcClip);
 
             #endregion
 
@@ -233,7 +234,7 @@ namespace TaskbarLib
             /// <param name="hwndTab">The handle of the tab window that is to have properties set. This handle must already be registered through ITaskbarList3::RegisterTab.</param>
             /// <param name="stpFlags">One or more members of the STPFLAG enumeration that specify the displayed thumbnail and peek image source of the tab thumbnail.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
-            HRESULT SetTabProperties(IntPtr hwndTab, STPFlag stpFlags);
+            Win32Error SetTabProperties(IntPtr hwndTab, STPFlag stpFlags);
 
             #endregion
         }
@@ -298,24 +299,5 @@ namespace TaskbarLib
             internal THBFlags dwFlags;
         }
 
-        /// <summary>
-        /// Native HResult Wrapper
-        /// </summary>
-        public enum HRESULT : uint
-        {
-            S_FALSE = 0x1,
-            S_OK = 0x0,
-
-            E_INVALIDARG = 0x80070057,
-            E_OUTOFMEMORY = 0x8007000E,
-            E_NOINTERFACE = 0x80004002,
-            E_FAIL = 0x80004005,
-            E_ELEMENTNOTFOUND = 0x80070490,
-
-            TYPE_E_ELEMENTNOTFOUND = 0x8002802B,
-            NO_OBJECT = 0x800401E5,
-            ERROR_CANCELLED = 1223,
-            RESOURCE_IN_USE = 0x800700AA,
-        }
     }
 }
