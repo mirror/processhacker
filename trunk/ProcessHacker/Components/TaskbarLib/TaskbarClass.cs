@@ -47,6 +47,7 @@ namespace TaskbarLib
                 if (_taskbar == null)
                 {
                     _taskbar = (TaskbarNative.ITaskbarList)new TaskbarNative.TaskbarList();
+                    
                     TaskbarNative.HRESULT result = _taskbar.HrInit();
 
                     if (Failed(result))

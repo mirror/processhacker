@@ -1703,7 +1703,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A ProcessPriorityClass enum.</returns>
         public ProcessPriorityClass GetPriorityClass()
         {
-            int priority = Win32.GetPriorityClass(this);
+            ProcessPriority priority = Win32.GetPriorityClass(this);
 
             if (priority == 0)
                 Win32.ThrowLastError();

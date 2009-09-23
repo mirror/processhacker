@@ -55,7 +55,7 @@ namespace ProcessHacker
             listResults.SetDoubleBuffered(true);
             listResults.SetTheme("explorer");
 
-            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            Thread.CurrentThread.Priority = System.Threading.ThreadPriority.Highest;
 
             _pid = PID;
 

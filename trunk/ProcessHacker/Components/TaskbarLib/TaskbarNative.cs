@@ -303,8 +303,8 @@ namespace TaskbarLib
         /// </summary>
         public enum HRESULT : uint
         {
-            S_FALSE = 0x0001,
-            S_OK = 0x0000,
+            S_FALSE = 0x1,
+            S_OK = 0x0,
 
             E_INVALIDARG = 0x80070057,
             E_OUTOFMEMORY = 0x8007000E,
