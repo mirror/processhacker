@@ -14,5 +14,6 @@ Process Hacker, you MUST enable "Show advanced build configurations" in
 Tools > Options > Projects and Solutions > General.
 
 The build script relies on ILMerge being present in the default installation
-location or in your PATH environment variable. In order to build the installer 
-you must have Inno Setup QuickStart Pack installed.
+location ("%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe") or in your PATH
+environment variable. In order to build the installer you must have Inno Setup
+QuickStart Pack installed (v5.3.5+).

@@ -1,4 +1,4 @@
-; ISTool v5.3.0/Inno Setup v5.3.4, Script by XhmikosR
+; ISTool v5.3.0/Inno Setup v5.3.5, Script by XhmikosR
 ;
 ; Requirements:
 ; *Inno Setup QuickStart Pack:
