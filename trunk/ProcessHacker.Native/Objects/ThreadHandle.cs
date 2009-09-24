@@ -676,9 +676,9 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A ThreadPriorityLevel enum.</returns>
         public ThreadPriorityLevel GetPriorityLevel()
         {
-            ThreadPriority priority = Win32.GetThreadPriority(this);
+            int priority = Win32.GetThreadPriority(this);
 
-            if ((int)priority == 0x7fffffff)
+            if (priority == 0x7fffffff)
                 Win32.ThrowLastError();
 
             return (ThreadPriorityLevel)priority;

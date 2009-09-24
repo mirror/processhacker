@@ -32,7 +32,7 @@ namespace ProcessHacker.Native.Api
     public enum Win32Error : uint
     {
         Success = 0x0,
-        Failure = 0x1,
+        InvalidFunction = 0x1,
         FileNotFound = 0x2,
         PathNotFound = 0x3,
         TooManyOpenFiles = 0x4,
@@ -89,17 +89,7 @@ namespace ProcessHacker.Native.Api
         TooManySemRequests = 0x67,
         InvalidAtInterruptTime = 0x68,
         SemOwnerDied = 0x69,
-        SemUserLimit = 0x6a,
-
-        E_INVALIDARG = 0x80070057,
-        E_OUTOFMEMORY = 0x8007000E,
-        E_NOINTERFACE = 0x80004002,
-        E_FAIL = 0x80004005,
-        E_ELEMENTNOTFOUND = 0x80070490,
-        TYPE_E_ELEMENTNOTFOUND = 0x8002802B,
-        NO_OBJECT = 0x800401E5,
-        ERROR_CANCELLED = 1223,
-        RESOURCE_IN_USE = 0x800700AA,
+        SemUserLimit = 0x6a
     }
 
     public static class Win32ErrorExtensions

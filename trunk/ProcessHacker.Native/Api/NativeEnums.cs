@@ -1045,17 +1045,6 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
-    public enum ProcessPriority : int
-    {
-        ABOVE_NORMAL_PRIORITY_CLASS = 0x00008000,
-        BELOW_NORMAL_PRIORITY_CLASS = 0x00004000,
-        HIGH_PRIORITY_CLASS = 0x00000080,
-        IDLE_PRIORITY_CLASS = 0x00000040,
-        NORMAL_PRIORITY_CLASS = 0x00000020,
-        REALTIME_PRIORITY_CLASS = 0x00000100,
-    }
-
-    [Flags]
     public enum RegHiveFormat : int
     {
         Standard = 0x1,
@@ -1445,20 +1434,6 @@ namespace ProcessHacker.Native.Api
         ThreadTebInformation,
         ThreadCSwitchMon,
         MaxThreadInfoClass
-    }
-
-    [Flags]
-    public enum ThreadPriority
-    {
-        THREAD_MODE_BACKGROUND_BEGIN = 0x00010000,
-        THREAD_MODE_BACKGROUND_END = 0x00020000,
-        THREAD_PRIORITY_ABOVE_NORMAL = 1,
-        THREAD_PRIORITY_BELOW_NORMAL = -1,
-        THREAD_PRIORITY_HIGHEST = 2,
-        THREAD_PRIORITY_IDLE = -15,
-        THREAD_PRIORITY_LOWEST = -2,
-        THREAD_PRIORITY_NORMAL = 0,
-        THREAD_PRIORITY_TIME_CRITICAL = 15
     }
 
     public enum TimerInformationClass : int

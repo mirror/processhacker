@@ -260,7 +260,7 @@ namespace ProcessHacker
             {
                 CurrentProcessId = Win32.GetCurrentProcessId();
                 CurrentSessionId = Win32.GetProcessSessionId(Win32.GetCurrentProcessId());
-                System.Threading.Thread.CurrentThread.Priority = System.Threading.ThreadPriority.Highest;
+                System.Threading.Thread.CurrentThread.Priority = ThreadPriority.Highest;
             }
             catch (Exception ex)
             {

@@ -40,7 +40,6 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
-    [System.Security.SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
         #region Cryptography
@@ -632,12 +631,8 @@ namespace ProcessHacker.Native.Api
             [Out] out long PerformanceFrequency
             );
 
-        [Obsolete("Superseded - use GetTickCount64 instead")]
         [DllImport("kernel32.dll")]
         public static extern int GetTickCount();
-
-        [DllImport("kernel32.dll")]
-        public static extern Int64 GetTickCount64();
 
         #endregion
 
@@ -758,7 +753,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern ProcessPriority GetPriorityClass(
+        public static extern int GetPriorityClass(
             [In] IntPtr ProcessHandle
             );
 
@@ -874,7 +869,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern IntPtr GetCurrentProcess();
+        public static extern int GetCurrentProcess();
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetCurrentProcessId();
@@ -1662,7 +1657,6 @@ namespace ProcessHacker.Native.Api
             [In] bool InvadeProcess
             );
 
-        [Obsolete("Superseded by the SymLoadModuleEx function")]
         [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
         public static extern long SymLoadModule64(
             [In] IntPtr ProcessHandle,
@@ -1671,18 +1665,6 @@ namespace ProcessHacker.Native.Api
             [In] [Optional] string ModuleName,
             [In] ulong BaseOfDll,
             [In] int SizeOfDll
-            );
-
-        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
-        public static extern long SymLoadModuleEx(
-            [In] IntPtr ProcessHandle,
-            [In] [Optional] IntPtr FileHandle,
-            [In] [Optional] string ImageName,
-            [In] [Optional] string ModuleName,
-            [In] ulong BaseOfDll,
-            [In] int SizeOfDll,
-            [In] MODLOAD_DATA data,
-            [In] int flags
             );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
@@ -1748,7 +1730,6 @@ namespace ProcessHacker.Native.Api
             ref int pdwSize,
             [In] bool bOrder);
 
-        [Obsolete("Not supported on Windows Vista and later")]
         [DllImport("iphlpapi.dll", SetLastError = true)]
         public extern static int AllocateAndGetTcpExTableFromStack(
             [Out] out IntPtr pTable, 
@@ -1944,10 +1925,10 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern ThreadPriority GetThreadPriority([In] IntPtr ThreadHandle);
+        public static extern int GetThreadPriority([In] IntPtr ThreadHandle);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern IntPtr CreateThread(
+        public static extern int CreateThread(
             [In] [Optional] IntPtr ThreadAttributes,
             [In] int StackSize,
             [In] [MarshalAs(UnmanagedType.FunctionPtr)] ThreadStart StartAddress,
@@ -2114,7 +2095,6 @@ namespace ProcessHacker.Native.Api
             [In] bool bOrder
             );
 
-        [Obsolete("Not supported on Windows Vista and later")]
         [DllImport("iphlpapi.dll", SetLastError = true)]
         public extern static int AllocateAndGetUdpExTableFromStack(
             [Out] out IntPtr pTable, 
@@ -2333,7 +2313,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-        public static extern Win32Error SetWindowTheme(
+        public static extern int SetWindowTheme(
             [In] IntPtr hWnd,
             [In] string appName,
             [In] string idList

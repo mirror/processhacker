@@ -36,7 +36,6 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
-    [System.Security.SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
         // IMPORTANT: All timeouts, etc. are in 100ns units except when stated otherwise.

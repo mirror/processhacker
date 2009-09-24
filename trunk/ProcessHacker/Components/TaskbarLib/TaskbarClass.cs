@@ -47,8 +47,7 @@ namespace TaskbarLib
                 if (_taskbar == null)
                 {
                     _taskbar = (TaskbarNative.ITaskbarList)new TaskbarNative.TaskbarList();
-
-                    Win32Error result = _taskbar.HrInit();
+                    TaskbarNative.HRESULT result = _taskbar.HrInit();
 
                     if (Failed(result))
                         throw Marshal.GetExceptionForHR((int)result);
@@ -60,7 +59,7 @@ namespace TaskbarLib
 
         public static void ActivateTab(IntPtr hwnd)
         {
-            Win32Error result = Taskbar.ActivateTab(hwnd);
+            TaskbarNative.HRESULT result = Taskbar.ActivateTab(hwnd);
 
             if (Failed(result))
                 throw Marshal.GetExceptionForHR((int)result);
@@ -68,7 +67,7 @@ namespace TaskbarLib
 
         public static void AddTab(IntPtr hwnd)
         {
-            Win32Error result = Taskbar.AddTab(hwnd);
+            TaskbarNative.HRESULT result = Taskbar.AddTab(hwnd);
 
             if (Failed(result))
                 throw Marshal.GetExceptionForHR((int)result);
@@ -76,7 +75,7 @@ namespace TaskbarLib
 
         public static void DeleteTab(IntPtr hwnd)
         {
-            Win32Error result = Taskbar.DeleteTab(hwnd);
+            TaskbarNative.HRESULT result = Taskbar.DeleteTab(hwnd);
 
             if (Failed(result))
                 throw Marshal.GetExceptionForHR((int)result);
@@ -84,7 +83,7 @@ namespace TaskbarLib
 
         public static void SetActivateAlt(IntPtr hwnd)
         {
-            Win32Error result = Taskbar.SetActiveAlt(hwnd);
+            TaskbarNative.HRESULT result = Taskbar.SetActiveAlt(hwnd);
 
             if (Failed(result))
                 throw Marshal.GetExceptionForHR((int)result);
@@ -92,7 +91,7 @@ namespace TaskbarLib
 
         public static void MarkFullscreenWindow(IntPtr hwnd, bool fullscreen)
         {
-            Win32Error result = Taskbar.MarkFullscreenWindow(hwnd, fullscreen);
+            TaskbarNative.HRESULT result = Taskbar.MarkFullscreenWindow(hwnd, fullscreen);
 
             if (Failed(result))
                 throw Marshal.GetExceptionForHR((int)result);
@@ -102,7 +101,7 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.SetProgressValue(Program.HackerWindowHandle, completed, total);
+                TaskbarNative.HRESULT result = Taskbar.SetProgressValue(Program.HackerWindowHandle, completed, total);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
@@ -113,7 +112,7 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.SetProgressState(Program.HackerWindowHandle, flags);
+                TaskbarNative.HRESULT result = Taskbar.SetProgressState(Program.HackerWindowHandle, flags);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
@@ -124,7 +123,7 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.RegisterTab(hwndTab, hwndMDI);
+                TaskbarNative.HRESULT result = Taskbar.RegisterTab(hwndTab, hwndMDI);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
@@ -135,7 +134,7 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.UnregisterTab(hwndTab);
+                TaskbarNative.HRESULT result = Taskbar.UnregisterTab(hwndTab);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
@@ -146,7 +145,7 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.SetTabOrder(hwndTab, hwndInsertBefore);
+                TaskbarNative.HRESULT result = Taskbar.SetTabOrder(hwndTab, hwndInsertBefore);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
@@ -157,7 +156,7 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.SetTabActive(hwndTab, hwndInsertBefore, tbatFlags);
+                TaskbarNative.HRESULT result = Taskbar.SetTabActive(hwndTab, hwndInsertBefore, tbatFlags);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
@@ -168,7 +167,7 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.ThumbBarAddButtons(hwnd, cButtons, pButton);
+                TaskbarNative.HRESULT result = Taskbar.ThumbBarAddButtons(hwnd, cButtons, pButton);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
@@ -179,7 +178,7 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.ThumbBarUpdateButtons(hwnd, cButtons, pButton);
+                TaskbarNative.HRESULT result = Taskbar.ThumbBarUpdateButtons(hwnd, cButtons, pButton);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
@@ -190,7 +189,7 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.ThumbBarSetImageList(hwnd, himl);
+                TaskbarNative.HRESULT result = Taskbar.ThumbBarSetImageList(hwnd, himl);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
@@ -201,7 +200,7 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.SetOverlayIcon(Program.HackerWindowHandle, icon != null ? icon.Handle : IntPtr.Zero, pszDescription);
+                TaskbarNative.HRESULT result = Taskbar.SetOverlayIcon(Program.HackerWindowHandle, icon != null ? icon.Handle : IntPtr.Zero, pszDescription);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
@@ -212,7 +211,7 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.SetThumbnailTooltip(hwnd, pszTip);
+                TaskbarNative.HRESULT result = Taskbar.SetThumbnailTooltip(hwnd, pszTip);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
@@ -223,19 +222,21 @@ namespace TaskbarLib
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                Win32Error result = Taskbar.SetThumbnailClip(hwnd, ref prcClip);
+                TaskbarNative.HRESULT result = Taskbar.SetThumbnailClip(hwnd, ref prcClip);
 
                 if (Failed(result))
                     throw Marshal.GetExceptionForHR((int)result);
             }
         }
 
-        public static bool Failed(Win32Error hResult)
+        /// <summary>
+        /// HRESULT - Failed
+        /// </summary>
+        /// <param name="hResult">The error code.</param>
+        /// <returns>True if the error code indicates failure.</returns>
+        public static bool Failed(TaskbarNative.HRESULT hResult)
         {
-            if (hResult != Win32Error.Success)
-                return true;
-            else
-                return false;
+            return (hResult != TaskbarNative.HRESULT.S_OK);
         }
     }
 }

@@ -28,7 +28,6 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
-    [System.Security.SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
         /* Note: Be very careful about where these functions are 

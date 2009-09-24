@@ -1226,16 +1226,6 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct MODLOAD_DATA
-    {
-        public int ssize;
-        public int ssig;
-        public IntPtr data;
-        public int size;
-        public int flags;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct MutantBasicInformation
     {
         public int CurrentCount;
