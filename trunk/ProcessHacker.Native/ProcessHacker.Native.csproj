@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\HResult.cs" />
     <Compile Include="Api\LsaEnums.cs" />
     <Compile Include="Api\LsaStructs.cs" />
     <Compile Include="Api\ISecurityInformation.cs" />
