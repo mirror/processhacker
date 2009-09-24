@@ -869,9 +869,6 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetCurrentProcess();
-
-        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetCurrentProcessId();
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -1928,7 +1925,7 @@ namespace ProcessHacker.Native.Api
         public static extern int GetThreadPriority([In] IntPtr ThreadHandle);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int CreateThread(
+        public static extern IntPtr CreateThread(
             [In] [Optional] IntPtr ThreadAttributes,
             [In] int StackSize,
             [In] [MarshalAs(UnmanagedType.FunctionPtr)] ThreadStart StartAddress,
