@@ -56,37 +56,37 @@ namespace TaskbarLib
             }
         }
 
-        public static void ActivateTab(IntPtr hwnd)
+        public static void ActivateTab(IntPtr hWnd)
         {
-            HResult result = Taskbar.ActivateTab(hwnd);
+            HResult result = Taskbar.ActivateTab(hWnd);
 
             result.ThrowIf();
         }
 
-        public static void AddTab(IntPtr hwnd)
+        public static void AddTab(IntPtr hWnd)
         {
-            HResult result = Taskbar.AddTab(hwnd);
+            HResult result = Taskbar.AddTab(hWnd);
 
             result.ThrowIf();
         }
 
-        public static void DeleteTab(IntPtr hwnd)
+        public static void DeleteTab(IntPtr hWnd)
         {
-            HResult result = Taskbar.DeleteTab(hwnd);
+            HResult result = Taskbar.DeleteTab(hWnd);
 
             result.ThrowIf();
         }
 
-        public static void SetActivateAlt(IntPtr hwnd)
+        public static void SetActivateAlt(IntPtr hWnd)
         {
-            HResult result = Taskbar.SetActiveAlt(hwnd);
+            HResult result = Taskbar.SetActiveAlt(hWnd);
 
             result.ThrowIf();
         }
 
-        public static void MarkFullscreenWindow(IntPtr hwnd, bool fullscreen)
+        public static void MarkFullscreenWindow(IntPtr hWnd, bool fullscreen)
         {
-            HResult result = Taskbar.MarkFullscreenWindow(hwnd, fullscreen);
+            HResult result = Taskbar.MarkFullscreenWindow(hWnd, fullscreen);
 
             result.ThrowIf();
         }
@@ -101,7 +101,7 @@ namespace TaskbarLib
             }
         }
 
-        public static void SetProgressState(TaskbarNative.TBPFlag flags)
+        public static void SetProgressState(TaskbarNative.TaskbarProgressFlags flags)
         {
             if (OSVersion.HasExtendedTaskbar)
             {
@@ -111,101 +111,105 @@ namespace TaskbarLib
             }
         }
 
-        public static void RegisterTab(IntPtr hwndTab, IntPtr hwndMDI)
+        public static void RegisterTab(IntPtr hWndTab, IntPtr hWndMdi)
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                HResult result = Taskbar.RegisterTab(hwndTab, hwndMDI);
+                HResult result = Taskbar.RegisterTab(hWndTab, hWndMdi);
 
                 result.ThrowIf();
             }
         }
 
-        public static void UnregisterTab(IntPtr hwndTab)
+        public static void UnregisterTab(IntPtr hWndTab)
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                HResult result = Taskbar.UnregisterTab(hwndTab);
+                HResult result = Taskbar.UnregisterTab(hWndTab);
 
                 result.ThrowIf();
             }
         }
 
-        public static void SetTabOrder(IntPtr hwndTab, IntPtr hwndInsertBefore)
+        public static void SetTabOrder(IntPtr hWndTab, IntPtr hWndInsertBefore)
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                HResult result = Taskbar.SetTabOrder(hwndTab, hwndInsertBefore);
+                HResult result = Taskbar.SetTabOrder(hWndTab, hWndInsertBefore);
 
                 result.ThrowIf();
             }
         }
 
-        public static void SetTabActive(IntPtr hwndTab, IntPtr hwndInsertBefore, TaskbarNative.TBATFlag tbatFlags)
+        public static void SetTabActive(IntPtr hWndTab, IntPtr hWndInsertBefore, TaskbarNative.TabActiveFlags tbatFlags)
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                HResult result = Taskbar.SetTabActive(hwndTab, hwndInsertBefore, tbatFlags);
+                HResult result = Taskbar.SetTabActive(hWndTab, hWndInsertBefore, tbatFlags);
 
                 result.ThrowIf();
             }
         }
 
-        public static void ThumbBarAddButtons(IntPtr hwnd, uint cButtons, TaskbarNative.THUMBBUTTON[] pButton)
+        public static void ThumbBarAddButtons(IntPtr hWnd, int count, TaskbarNative.ThumbButton[] buttons)
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                HResult result = Taskbar.ThumbBarAddButtons(hwnd, cButtons, pButton);
+                HResult result = Taskbar.ThumbBarAddButtons(hWnd, count, buttons);
 
                 result.ThrowIf();
             }
         }
 
-        public static void ThumbBarUpdateButtons(IntPtr hwnd, uint cButtons, TaskbarNative.THUMBBUTTON[] pButton)
+        public static void ThumbBarUpdateButtons(IntPtr hWnd, int count, TaskbarNative.ThumbButton[] buttons)
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                HResult result = Taskbar.ThumbBarUpdateButtons(hwnd, cButtons, pButton);
+                HResult result = Taskbar.ThumbBarUpdateButtons(hWnd, count, buttons);
 
                 result.ThrowIf();
             }
         }
 
-        public static void ThumbBarSetImageList(IntPtr hwnd, IntPtr himl)
+        public static void ThumbBarSetImageList(IntPtr hWnd, IntPtr imageListHandle)
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                HResult result = Taskbar.ThumbBarSetImageList(hwnd, himl);
+                HResult result = Taskbar.ThumbBarSetImageList(hWnd, imageListHandle);
 
                 result.ThrowIf();
             }
         }
 
-        public static void SetOverlayIcon(Icon icon, string pszDescription)
+        public static void SetOverlayIcon(Icon icon, string description)
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                HResult result = Taskbar.SetOverlayIcon(Program.HackerWindowHandle, icon != null ? icon.Handle : IntPtr.Zero, pszDescription);
+                HResult result = Taskbar.SetOverlayIcon(
+                    Program.HackerWindowHandle,
+                    icon != null ? icon.Handle : IntPtr.Zero,
+                    description
+                    );
 
                 result.ThrowIf();
             }
         }
 
-        public static void SetThumbnailTooltip(IntPtr hwnd, string pszTip)
+        public static void SetThumbnailTooltip(IntPtr hWnd, string tooltipText)
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                HResult result = Taskbar.SetThumbnailTooltip(hwnd, pszTip);
+                HResult result = Taskbar.SetThumbnailTooltip(hWnd, tooltipText);
 
                 result.ThrowIf();
             }
         }
 
-        public static void SetThumbnailClip(IntPtr hwnd, ref Rect prcClip)
+        public static void SetThumbnailClip(IntPtr hWnd, ref Rect clipRectangle)
         {
             if (OSVersion.HasExtendedTaskbar)
             {
-                HResult result = Taskbar.SetThumbnailClip(hwnd, ref prcClip);
+                HResult result = Taskbar.SetThumbnailClip(hWnd, ref clipRectangle);
 
                 result.ThrowIf();
             }

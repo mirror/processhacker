@@ -114,7 +114,7 @@ namespace TaskbarLib
             /// <param name="tbpFlags">Flags that control the current state of the progress button.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HResult SetProgressState(IntPtr hwnd, TBPFlag tbpFlags);
+            HResult SetProgressState(IntPtr hwnd, TaskbarProgressFlags tbpFlags);
 
             /// <summary>
             /// Informs the taskbar that a new tab or document thumbnail has been provided for display in an application's taskbar group flyout.
@@ -152,7 +152,7 @@ namespace TaskbarLib
             /// <param name="dwReserved">Reserved</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HResult SetTabActive(IntPtr hwndTab, IntPtr hwndInsertBefore, TBATFlag dwReserved);
+            HResult SetTabActive(IntPtr hwndTab, IntPtr hwndInsertBefore, TabActiveFlags dwReserved);
 
             /// <summary>
             /// Adds a thumbnail toolbar with a specified set of buttons to the thumbnail image of a window in a taskbar button flyout.
@@ -163,7 +163,7 @@ namespace TaskbarLib
             /// <returns>Returns S_OK if successful, or an error value otherwise, including the following:
             /// E_INVALIDARG - The hwnd parameter does not specify a handle that belongs to the process or does not specify a window that is associated with a taskbar button. This value is also returned if pButton is less than 1 or greater than 7.</returns>
             [PreserveSig]
-            HResult ThumbBarAddButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray)] THUMBBUTTON[] pButtons);
+            HResult ThumbBarAddButtons(IntPtr hwnd, int cButtons, [MarshalAs(UnmanagedType.LPArray)] ThumbButton[] pButtons);
 
             /// <summary>
             /// Shows, enables, disables, or hides buttons in a thumbnail toolbar as required by the window's current state. A thumbnail toolbar is a toolbar embedded in a thumbnail image of a window in a taskbar button flyout.
@@ -181,7 +181,7 @@ namespace TaskbarLib
             /// <param name="pButtons"> A pointer to an array of THUMBBUTTON  structures. Each THUMBBUTTON defines an individual button. If the button already exists (the iId value is already defined), then that existing button is updated with the information provided in the structure.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
             [PreserveSig]
-            HResult ThumbBarUpdateButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray)] THUMBBUTTON[] pButtons);
+            HResult ThumbBarUpdateButtons(IntPtr hwnd, int cButtons, [MarshalAs(UnmanagedType.LPArray)] ThumbButton[] pButtons);
 
             /// <summary>
             /// Specifies an image list that contains button images for a toolbar embedded in a thumbnail image of a window in a taskbar button flyout.
@@ -234,69 +234,72 @@ namespace TaskbarLib
             /// <param name="hwndTab">The handle of the tab window that is to have properties set. This handle must already be registered through ITaskbarList3::RegisterTab.</param>
             /// <param name="stpFlags">One or more members of the STPFLAG enumeration that specify the displayed thumbnail and peek image source of the tab thumbnail.</param>
             /// <returns>Returns S_OK if successful, or an error value otherwise.</returns>
-            HResult SetTabProperties(IntPtr hwndTab, STPFlag stpFlags);
+            HResult SetTabProperties(IntPtr hwndTab, TabFlags stpFlags);
 
             #endregion
         }
 
-        [Flags()]
-        public enum TBATFlag
+        [Flags]
+        public enum TabActiveFlags
         {
-            USEMDITHUMBNAIL = 1,
-            USEMDILIVEPREVIEW = 2
-        }
-        [Flags()]
-        public enum TBPFlag
-        {
-            NOPROGRESS = 0,
-            INDETERMINATE = 1,
-            NORMAL = 2,
-            ERROR = 4,
-            PAUSED = 8
-        }
-        [Flags()]
-        public enum STPFlag
-        {
-            NONE = 0,
-            USEAPPTHUMBNAILALWAYS = 1,
-            USEAPPTHUMBNAILWHENACTIVE = 2,
-            USEAPPPEEKALWAYS = 4,
-            USEAPPPEEKWHENACTIVE = 8,
-        }
-        [Flags()]
-        public enum THBMask
-        {
-            BITMAP = 0x1,
-            ICON = 0x2,
-            TOOLTIP = 0x4,
-            FLAGS = 0x8
-        }
-        [Flags()]
-        public enum THBFlags
-        {
-            ENABLED = 0x00000000,
-            DISABLED = 0x00000001,
-            DISMISSONCLICK = 0x00000002,
-            NOBACKGROUND = 0x00000004,
-            HIDDEN = 0x00000008,
-            NONINTERACTIVE = 0x00000010
+            UseMdiThumbnail = 0x1,
+            UseMdiLivePreview = 0x2
         }
 
-        [StructLayout(LayoutKind.Sequential, Pack = 8, CharSet = CharSet.Unicode)]
-        public struct THUMBBUTTON
+        [Flags]
+        public enum TaskbarProgressFlags
+        {
+            NoProgress = 0x0,
+            Indeterminate = 0x1,
+            Normal = 0x2,
+            Error = 0x4,
+            Paused = 0x8
+        }
+
+        [Flags]
+        public enum TabFlags
+        {
+            None = 0x0,
+            UseAppThumbnailAlways = 0x1,
+            UseAppThumbnailWhenActive = 0x2,
+            UseAppPeekAlways = 0x4,
+            UseAppPeekWhenActive = 0x8,
+        }
+
+        [Flags]
+        public enum ThumbButtonMask
+        {
+            Bitmap = 0x1,
+            Icon = 0x2,
+            Tooltip = 0x4,
+            Flags = 0x8
+        }
+
+        [Flags]
+        public enum ThumbButtonFlags : int
+        {
+            Enabled = 0x00000000,
+            Disabled = 0x00000001,
+            DismissOnClick = 0x00000002,
+            NoBackground = 0x00000004,
+            Hidden = 0x00000008,
+            NonInteractive = 0x00000010
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct ThumbButton
         {
             //WPARAM value for a THUMBBUTTON being clicked.
-            internal const int THBN_CLICKED = 0x1800;
+            internal const int Clicked = 0x1800;
 
             [MarshalAs(UnmanagedType.U4)]
-            internal THBMask dwMask;
-            internal uint iId;
-            internal uint iBitmap;
-            internal IntPtr hIcon;
+            public ThumbButtonMask Mask;
+            public int Id;
+            public int BitmapIndex;
+            public IntPtr IconHandle;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 259)]
-            internal string szTip;
-            [MarshalAs(UnmanagedType.U4)]
-            internal THBFlags dwFlags;
+            public string TooltipText;
+            public ThumbButtonFlags Flags;
         }
     }
 }

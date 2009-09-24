@@ -9,9 +9,9 @@ namespace TaskbarLib
     /// </summary>
     public abstract class ThumbnailBarButtonBase : IDisposable
     {
-        private static Dictionary<IntPtr, uint> idCounters;
+        private static Dictionary<IntPtr, int> idCounters;
 
-        private uint id;
+        private int id;
         private bool isDisabled;
         private bool isDismissedOnClick;
         private bool hasBackground;
@@ -23,7 +23,7 @@ namespace TaskbarLib
 
         static ThumbnailBarButtonBase()
         {
-            idCounters = new Dictionary<IntPtr, uint>();
+            idCounters = new Dictionary<IntPtr, int>();
         }
 
         protected ThumbnailBarButtonBase(string tooltip, bool isHidden, bool isDisabled, bool isDismissedOnClick, bool hasBackground)
@@ -41,6 +41,7 @@ namespace TaskbarLib
         ~ThumbnailBarButtonBase()
         {
             this.Dispose(false);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -138,7 +139,7 @@ namespace TaskbarLib
             }
         }
 
-        internal uint Id
+        internal int Id
         {
             get
             {
@@ -189,7 +190,7 @@ namespace TaskbarLib
 
             this.windowHandle = windowHandle;
 
-            uint id;
+            int id;
             if (idCounters.TryGetValue(windowHandle, out id))
             {
                 idCounters[windowHandle]++;
@@ -203,46 +204,46 @@ namespace TaskbarLib
             this.id = id;
         }
 
-        internal TaskbarNative.THUMBBUTTON GetUnmanagedButton()
+        internal TaskbarNative.ThumbButton GetUnmanagedButton()
         {
-            TaskbarNative.THUMBBUTTON button = new TaskbarNative.THUMBBUTTON();
-            button.iId = this.id;
-            button.dwMask = TaskbarNative.THBMask.FLAGS;
-            button.dwFlags = TaskbarNative.THBFlags.ENABLED;
+            TaskbarNative.ThumbButton button = new TaskbarNative.ThumbButton();
+            button.Id = this.id;
+            button.Mask = TaskbarNative.ThumbButtonMask.Flags;
+            button.Flags = TaskbarNative.ThumbButtonFlags.Enabled;
 
             this.BeforeGetUnmanagedButton(ref button);
 
             if (this.IconHandle != null && !this.IconHandle.IsInvalid)
             {
-                button.hIcon = this.iconHandle.DangerousGetHandle();
-                button.dwMask |= TaskbarNative.THBMask.ICON;
+                button.IconHandle = this.iconHandle.DangerousGetHandle();
+                button.Mask |= TaskbarNative.ThumbButtonMask.Icon;
             }
 
             if (!string.IsNullOrEmpty(this.Tooltip))
             {
-                button.szTip = this.Tooltip;
+                button.TooltipText = this.Tooltip;
 
-                button.dwMask |= TaskbarNative.THBMask.TOOLTIP;
+                button.Mask |= TaskbarNative.ThumbButtonMask.Tooltip;
             }
 
             if (this.IsDisabled)
             {
-                button.dwFlags |= TaskbarNative.THBFlags.DISABLED;
+                button.Flags |= TaskbarNative.ThumbButtonFlags.Disabled;
             }
 
             if (this.IsDismissedOnClick)
             {
-                button.dwFlags |= TaskbarNative.THBFlags.DISMISSONCLICK;
+                button.Flags |= TaskbarNative.ThumbButtonFlags.DismissOnClick;
             }
 
             if (!this.HasBackground)
             {
-                button.dwFlags |= TaskbarNative.THBFlags.NOBACKGROUND;
+                button.Flags |= TaskbarNative.ThumbButtonFlags.NoBackground;
             }
 
             if (this.IsHidden)
             {
-                button.dwFlags |= TaskbarNative.THBFlags.HIDDEN;
+                button.Flags |= TaskbarNative.ThumbButtonFlags.Hidden;
             }
 
             return button;
@@ -258,17 +259,12 @@ namespace TaskbarLib
             }
         }
 
-        internal virtual void BeforeGetUnmanagedButton(ref TaskbarNative.THUMBBUTTON button)
+        internal virtual void BeforeGetUnmanagedButton(ref TaskbarNative.ThumbButton button)
         {
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                GC.SuppressFinalize(this);
-            }
-
             if (this.iconHandle != null && !this.iconHandle.IsInvalid)
             {
                 this.iconHandle.Dispose();

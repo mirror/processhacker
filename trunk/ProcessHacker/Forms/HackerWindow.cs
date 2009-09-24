@@ -2826,7 +2826,7 @@ namespace ProcessHacker
 
         #endregion
 
-        #region "Taskbar ThumbnailButtons"
+        #region Taskbar Thumbnail Buttons
 
         private ThumbnailBarButton CreateThumbnailBarImageButton(Bitmap Image, string imageName, string tooltip, bool isHidden, bool isDisabled, bool isDismissedOnClick, bool hasBackground)
         {
@@ -2835,14 +2835,14 @@ namespace ProcessHacker
   
         private static void AddThumbnailBarButtons(IntPtr windowHandle, IList<ThumbnailBarButton> buttons)
         {
-            var unmanagedButtons = new TaskbarNative.THUMBBUTTON[buttons.Count];
+            var unmanagedButtons = new TaskbarNative.ThumbButton[buttons.Count];
             for (int i = 0; i < buttons.Count; i++)
             {
                 buttons[i].Initialize(windowHandle);
                 unmanagedButtons[i] = buttons[i].GetUnmanagedButton();
             }
 
-            TaskbarClass.ThumbBarAddButtons(windowHandle, (uint)buttons.Count, unmanagedButtons);
+            TaskbarClass.ThumbBarAddButtons(windowHandle, buttons.Count, unmanagedButtons);
 
             if (!thumbnailButtons.ContainsKey(windowHandle))
             {
@@ -2882,17 +2882,17 @@ namespace ProcessHacker
 
         private void thumbnailBarButton1_Click(object sender, EventArgs e)
         {
-            new SysInfoWindow().Show();
+            sysInfoMenuItem_Click(sender, e);
         }
 
         private void thumbnailBarButton2_Click(object sender, EventArgs e)
         {
-            new LogWindow().Show();
+            logMenuItem_Click(sender, e);
         }
 
         private void thumbnailBarButton3_Click(object sender, EventArgs e)
         {
-            new HandleFilterWindow().Show();
+            findHandlesMenuItem_Click(sender, e);
         }
 
         #endregion
@@ -2986,7 +2986,7 @@ namespace ProcessHacker
                     break;
 
                 case (int)WindowMessage.Command:
-                    if (HiWord(m.WParam) == TaskbarNative.THUMBBUTTON.THBN_CLICKED)
+                    if (HiWord(m.WParam) == TaskbarNative.ThumbButton.Clicked)
                     {
                         var buttonId = LoWord(m.WParam);
 

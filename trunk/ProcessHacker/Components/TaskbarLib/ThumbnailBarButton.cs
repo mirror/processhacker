@@ -12,7 +12,7 @@ namespace TaskbarLib
     public class ThumbnailBarButton : ThumbnailBarButtonBase
     {
         private Bitmap icon;
-        private uint imageIndex;
+        private int imageIndex;
 
         /// <summary>
         /// Initializes a <see cref="ThumbnailBarButton"/> with a Bitmap icon.
@@ -42,7 +42,7 @@ namespace TaskbarLib
         /// <param name="isDisabled">Specifies whether button is disabled initially.</param>
         /// <param name="isDismissedOnClick">Specifies whether button is dismissed on click.</param>
         /// <param name="hasBackground">Specifies whether button has background.</param> 
-        public ThumbnailBarButton(uint imageIndex, string tooltip, bool isHidden, bool isDisabled, bool isDismissedOnClick, bool hasBackground)
+        public ThumbnailBarButton(int imageIndex, string tooltip, bool isHidden, bool isDisabled, bool isDismissedOnClick, bool hasBackground)
             : base(tooltip, isHidden, isDisabled, isDismissedOnClick, hasBackground)
         {
             this.imageIndex = imageIndex;
@@ -74,7 +74,7 @@ namespace TaskbarLib
         /// <summary>
         /// <see cref="System.Windows.Forms.ImageList"/> index of the the image that will be used as button icon.
         /// </summary> 
-        public uint ImageIndex
+        public int ImageIndex
         {
             get
             {
@@ -89,10 +89,10 @@ namespace TaskbarLib
             }
         }
 
-        internal override void BeforeGetUnmanagedButton(ref TaskbarNative.THUMBBUTTON button)
+        internal override void BeforeGetUnmanagedButton(ref TaskbarNative.ThumbButton button)
         {
-            button.iBitmap = this.imageIndex;
-            button.dwMask |= TaskbarNative.THBMask.BITMAP;
+            button.BitmapIndex = this.imageIndex;
+            button.Mask |= TaskbarNative.ThumbButtonMask.Bitmap;
         }
 
         protected override void Update()
