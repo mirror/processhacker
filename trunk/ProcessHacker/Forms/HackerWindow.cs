@@ -3123,6 +3123,27 @@ namespace ProcessHacker
             }
         }
 
+        /// <summary>
+        /// Specifies that System/Taskbar and DWM-related Windows Messages should
+        /// pass through the Windows UIPI (User Interface Privilege Isolation) mechanism.
+        /// Calling this method is not required unless the process is running elevated.
+        /// </summary>
+        private void LoadFixUipiWindowMessages()
+        {
+            // We enable the magic window message to Allow only one instance to work.
+            Win32.ChangeWindowMessageFilter((WindowMessage)0x9991, UipiFilterFlag.Add);
+
+            if (OSVersion.HasExtendedTaskbar)
+            {
+                //Win32.ChangeWindowMessageFilter(WindowMessage.WM_TaskbarButtonCreated, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.DwmSendIconicThumbnail, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.DwmSendIconicLivePreviewBitmap, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.Command, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.SysCommand, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.Activate, UipiFilterFlag.Add);
+            }
+        }
+
         private void LoadUac()
         {
             if (Program.ElevationType == TokenElevationType.Limited)
@@ -3318,29 +3339,8 @@ namespace ProcessHacker
             if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Full)
             {
                 this.Text += " (Administrator)";
-                this.AllowWindowMessagesThroughUIPI();
+                this.LoadFixUipiWindowMessages();
             } 
-        }
-
-        /// <summary>
-        /// Specifies that System/Taskbar and DWM-related Windows Messages should
-        /// pass through the Windows UIPI (User Interface Privilege Isolation) mechanism.
-        /// Calling this method is not required unless the process is running elevated.
-        /// </summary>
-        private void AllowWindowMessagesThroughUIPI()
-        {
-            // we enable the magic window message to Allow only one instance to work.
-            Win32.ChangeWindowMessageFilter((WindowMessage)0x9991, UipiFilterFlag.Add);
-
-            if (OSVersion.HasExtendedTaskbar)
-            {
-                //Win32.ChangeWindowMessageFilter(WindowMessage.WM_TaskbarButtonCreated, UipiFilterFlag.Add);
-                Win32.ChangeWindowMessageFilter(WindowMessage.DWMSendIconicThumbnail, UipiFilterFlag.Add);
-                Win32.ChangeWindowMessageFilter(WindowMessage.DWMSendIconicLivePreviewBitmap, UipiFilterFlag.Add);
-                Win32.ChangeWindowMessageFilter(WindowMessage.Command, UipiFilterFlag.Add);
-                Win32.ChangeWindowMessageFilter(WindowMessage.SysCommand, UipiFilterFlag.Add);
-                Win32.ChangeWindowMessageFilter(WindowMessage.Activate, UipiFilterFlag.Add);
-            }
         }
 
         public HackerWindow()
@@ -3483,6 +3483,5 @@ namespace ProcessHacker
                 }
             }
         }
-
     }
 }

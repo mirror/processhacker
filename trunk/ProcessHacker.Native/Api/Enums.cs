@@ -912,6 +912,9 @@ namespace ProcessHacker.Native.Api
         Print = 0x317,
         PrintClient = 0x318,
 
+        DwmSendIconicThumbnail = 0x323,
+        DwmSendIconicLivePreviewBitmap = 0x326,
+
         HandheldFirst = 0x358,
         HandheldLast = 0x35f,
         PenWinFirst = 0x380,
@@ -932,10 +935,7 @@ namespace ProcessHacker.Native.Api
 
         BcmSetShield = 0x160c,
 
-        App = 0x8000,
-      
-        DWMSendIconicThumbnail = 0x0323,
-        DWMSendIconicLivePreviewBitmap = 0x0326
+        App = 0x8000
     }
 
     [Flags]
