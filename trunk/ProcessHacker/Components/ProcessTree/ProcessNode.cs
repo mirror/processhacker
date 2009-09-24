@@ -376,10 +376,15 @@ namespace ProcessHacker
         {
             get
             {
-                if (Pid < 4)
+                try
+                {
+                    using (var phandle = new ProcessHandle(Pid, Program.MinProcessQueryRights))
+                        return PhUtils.FormatPriorityClass(phandle.GetPriorityClass());
+                }
+                catch
+                {
                     return "";
-                else
-                    return Utils.FormatPriority(_pitem.Process.BasePriority);
+                }
             }
         }
 

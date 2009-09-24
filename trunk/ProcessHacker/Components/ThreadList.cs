@@ -471,7 +471,7 @@ namespace ProcessHacker.Components
                 int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
 
                 using (var thandle = new ThreadHandle(tid, OSVersion.MinThreadSetInfoAccess))
-                    thandle.SetPriorityLevel(priority);
+                    thandle.SetBasePriorityWin32(priority);
             }
             catch (Exception ex)
             {
@@ -515,7 +515,7 @@ namespace ProcessHacker.Components
                         int.Parse(listThreads.SelectedItems[0].SubItems[0].Text), 
                         Program.MinThreadQueryRights))
                     {
-                        switch (thandle.GetPriorityLevel())
+                        switch (thandle.GetBasePriorityWin32())
                         {
                             case ThreadPriorityLevel.TimeCritical:
                                 timeCriticalThreadMenuItem.Checked = true;

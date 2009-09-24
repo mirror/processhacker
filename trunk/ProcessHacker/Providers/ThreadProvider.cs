@@ -418,8 +418,8 @@ namespace ProcessHacker
 
                         try
                         {
-                            item.PriorityI = (int)item.ThreadQueryLimitedHandle.GetPriorityLevel();
-                            item.Priority = item.ThreadQueryLimitedHandle.GetPriorityLevel().ToString();
+                            item.PriorityI = (int)item.ThreadQueryLimitedHandle.GetBasePriorityWin32();
+                            item.Priority = item.ThreadQueryLimitedHandle.GetBasePriorityWin32().ToString();
                         }
                         catch
                         { }
@@ -513,8 +513,8 @@ namespace ProcessHacker
 
                     try
                     {
-                        newitem.PriorityI = (int)newitem.ThreadQueryLimitedHandle.GetPriorityLevel();
-                        newitem.Priority = newitem.ThreadQueryLimitedHandle.GetPriorityLevel().ToString();
+                        newitem.PriorityI = (int)newitem.ThreadQueryLimitedHandle.GetBasePriorityWin32();
+                        newitem.Priority = newitem.ThreadQueryLimitedHandle.GetBasePriorityWin32().ToString();
                     }
                     catch
                     { }

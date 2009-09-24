@@ -129,6 +129,28 @@ namespace ProcessHacker.Common
                 return ex.Message;
         }
 
+        public static string FormatPriorityClass(ProcessPriorityClass priorityClass)
+        {
+            switch (priorityClass)
+            {
+                case ProcessPriorityClass.AboveNormal:
+                    return "Above Normal";
+                case ProcessPriorityClass.BelowNormal:
+                    return "Below Normal";
+                case ProcessPriorityClass.High:
+                    return "High";
+                case ProcessPriorityClass.Idle:
+                    return "Idle";
+                case ProcessPriorityClass.Normal:
+                    return "Normal";
+                case ProcessPriorityClass.RealTime:
+                    return "Realtime";
+                case ProcessPriorityClass.Unknown:
+                default:
+                    return "";
+            }
+        }
+
         /// <summary>
         /// Gets an appropriate foreground color to be displayed on top of a 
         /// specified background color.

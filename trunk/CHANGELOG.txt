@@ -30,6 +30,7 @@ Process Hacker
      of a corrupt configuration file
    * Notification icons were fixed at 16x16 size
    * Sort order for the relative start time column
+   * Incorrect process priority class display
 
 1.5
  * NEW/IMPROVED:

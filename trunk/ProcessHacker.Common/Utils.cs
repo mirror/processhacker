@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -496,27 +495,6 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Gets the string representation of a priority number.
-        /// </summary>
-        /// <param name="priority">A priority number.</param>
-        /// <returns>A string.</returns>
-        public static string FormatPriority(int priority)
-        {
-            if (priority >= 24)
-                return "Realtime";
-            else if (priority >= 13)
-                return "High";
-            else if (priority >= 10)
-                return "Above Normal";
-            else if (priority >= 8)
-                return "Normal";
-            else if (priority >= 6)
-                return "Below Normal";
-            else
-                return "Idle";
-        }
-
-        /// <summary>
         /// Gets the relative time in nice English.
         /// </summary>
         /// <param name="time">A DateTime.</param>
@@ -796,14 +774,14 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Returns a <see cref="ProcessThread"/> object of the specified thread ID.
+        /// Returns a <see cref="System.Diagnostics.ProcessThread"/> object of the specified thread ID.
         /// </summary>
         /// <param name="p">The process which the thread belongs to.</param>
         /// <param name="id">The ID of the thread.</param>
         /// <returns></returns>
-        public static ProcessThread GetThreadFromId(Process p, int id)
+        public static System.Diagnostics.ProcessThread GetThreadFromId(System.Diagnostics.Process p, int id)
         {
-            foreach (ProcessThread t in p.Threads)
+            foreach (System.Diagnostics.ProcessThread t in p.Threads)
                 if (t.Id == id)
                     return t;
 
@@ -852,22 +830,6 @@ namespace ProcessHacker.Common
                 sb.Append(MakePrintable(s[i]));
 
             return sb.ToString();
-        }
-
-        public static System.Diagnostics.ProcessPriorityClass NativeToWindowsBasePriority(int priority)
-        {
-            if (priority >= 24)
-                return ProcessPriorityClass.RealTime;
-            else if (priority >= 13)
-                return ProcessPriorityClass.High;
-            else if (priority >= 10)
-                return ProcessPriorityClass.AboveNormal;
-            else if (priority >= 8)
-                return ProcessPriorityClass.Normal;
-            else if (priority >= 6)
-                return ProcessPriorityClass.BelowNormal;
-            else
-                return ProcessPriorityClass.Idle;
         }
 
         public static Dictionary<string, string> ParseCommandLine(string[] args)
@@ -1128,7 +1090,7 @@ namespace ProcessHacker.Common
         /// <param name="fileName">The file to show.</param>
         public static void ShowFileInExplorer(string fileName)
         {
-            Process.Start("explorer.exe", "/select," + fileName);
+            System.Diagnostics.Process.Start("explorer.exe", "/select," + fileName);
         }
 
         /// <summary>
@@ -1282,27 +1244,6 @@ namespace ProcessHacker.Common
                 // We don't have a buffer, so make sure the offset and length are zero.
                 if (offset != 0 || length != 0)
                     throw new ArgumentOutOfRangeException("The offset and length must be zero for a null buffer.");
-            }
-        }
-
-        public static int WindowsToNativeBasePriority(System.Diagnostics.ProcessPriorityClass priority)
-        {
-            switch (priority)
-            {
-                case ProcessPriorityClass.RealTime:
-                    return 24;
-                case ProcessPriorityClass.High:
-                    return 13;
-                case ProcessPriorityClass.AboveNormal:
-                    return 10;
-                case ProcessPriorityClass.Normal:
-                    return 8;
-                case ProcessPriorityClass.BelowNormal:
-                    return 6;
-                case ProcessPriorityClass.Idle:
-                    return 4;
-                default:
-                    return 8;
             }
         }
     }

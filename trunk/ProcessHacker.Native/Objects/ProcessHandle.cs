@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using ProcessHacker.Native.Api;
@@ -1703,12 +1702,20 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A ProcessPriorityClass enum.</returns>
         public ProcessPriorityClass GetPriorityClass()
         {
-            int priority = Win32.GetPriorityClass(this);
+            NtStatus status;
+            ProcessPriorityClassStruct priorityClass;
+            int retLength;
 
-            if (priority == 0)
-                Win32.ThrowLastError();
+            if ((status = Win32.NtQueryInformationProcess(
+                this,
+                ProcessInformationClass.ProcessPriorityClass,
+                out priorityClass,
+                Marshal.SizeOf(typeof(ProcessPriorityClassStruct)),
+                out retLength
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
 
-            return (ProcessPriorityClass)priority;
+            return priorityClass.PriorityClass;
         }
 
         /// <summary>
@@ -2079,6 +2086,15 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Sets the process' base priority.
+        /// </summary>
+        /// <param name="basePriority">The process' base priority.</param>
+        public void SetBasePriority(int basePriority)
+        {
+            this.SetInformationInt32(ProcessInformationClass.ProcessBasePriority, basePriority);
+        }
+
+        /// <summary>
         /// Sets whether the system will crash upon the process being terminated. 
         /// This function requires SeTcbPrivilege.
         /// </summary>
@@ -2173,13 +2189,34 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Sets the process' priority boost.
+        /// </summary>
+        /// <param name="enabled">Whether priority boost will be enabled.</param>
+        public void SetPriorityBoost(bool enabled)
+        {
+            // If priority boost is being enabled, we have to not disable it (hence the value of 0).
+            this.SetInformationInt32(ProcessInformationClass.ProcessPriorityBoost, enabled ? 0 : 1);
+        }
+
+        /// <summary>
         /// Sets the process' priority class.
         /// </summary>
-        /// <param name="priority">The process' priority.</param>
-        public void SetPriorityClass(ProcessPriorityClass priority)
+        /// <param name="priorityClass">The process' priority class.</param>
+        public void SetPriorityClass(ProcessPriorityClass priorityClass)
         {
-            if (!Win32.SetPriorityClass(this, (int)priority))
-                Win32.ThrowLastError();
+            NtStatus status;
+            ProcessPriorityClassStruct processPriority;
+
+            processPriority.Foreground = false;
+            processPriority.PriorityClass = priorityClass;
+
+            if ((status = Win32.NtSetInformationProcess(
+                this,
+                ProcessInformationClass.ProcessPriorityClass,
+                ref processPriority,
+                Marshal.SizeOf(typeof(ProcessPriorityClassStruct))
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         /// <summary>

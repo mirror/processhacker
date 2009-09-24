@@ -1044,6 +1044,17 @@ namespace ProcessHacker.Native.Api
         MaxProcessInfoClass
     }
 
+    public enum ProcessPriorityClass : byte
+    {
+        Unknown = 0,
+        Idle = 1,
+        Normal = 2,
+        High = 3,
+        RealTime = 4,
+        BelowNormal = 5,
+        AboveNormal = 6
+    }
+
     [Flags]
     public enum RegHiveFormat : int
     {

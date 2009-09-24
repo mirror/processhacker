@@ -1549,6 +1549,13 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct ProcessForegroundBackground
+    {
+        [MarshalAs(UnmanagedType.I1)]
+        public bool Foreground;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct ProcessHandleTracingEnable
     {
         public int Flags; // No flags. Set to 0.
@@ -1579,6 +1586,14 @@ namespace ProcessHacker.Native.Api
         public int TotalTraces;
         public byte HandleTrace;
         // An array of ProcessHandleTracingEntry structures follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ProcessPriorityClassStruct
+    {
+        [MarshalAs(UnmanagedType.I1)]
+        public bool Foreground;
+        public ProcessPriorityClass PriorityClass;
     }
 
     [StructLayout(LayoutKind.Sequential)]

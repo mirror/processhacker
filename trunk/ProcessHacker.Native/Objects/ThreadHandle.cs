@@ -455,6 +455,20 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the thread's base priority.
+        /// </summary>
+        /// <returns>A ThreadPriorityLevel enum.</returns>
+        public ThreadPriorityLevel GetBasePriorityWin32()
+        {
+            int priority = Win32.GetThreadPriority(this);
+
+            if (priority == 0x7fffffff)
+                Win32.ThrowLastError();
+
+            return (ThreadPriorityLevel)priority;
+        }
+
+        /// <summary>
         /// Gets the thread's basic information.
         /// </summary>
         /// <returns>A THREAD_BASIC_INFORMATION structure.</returns>
@@ -671,20 +685,6 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Gets the thread's priority level.
-        /// </summary>
-        /// <returns>A ThreadPriorityLevel enum.</returns>
-        public ThreadPriorityLevel GetPriorityLevel()
-        {
-            int priority = Win32.GetThreadPriority(this);
-
-            if (priority == 0x7fffffff)
-                Win32.ThrowLastError();
-
-            return (ThreadPriorityLevel)priority;
-        }
-
-        /// <summary>
         /// Opens the thread's process.
         /// </summary>
         /// <returns>A process handle.</returns>
@@ -898,6 +898,25 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Sets the thread's base priority.
+        /// </summary>
+        /// <param name="basePriority">The thread's base priority.</param>
+        public void SetBasePriority(int basePriority)
+        {
+            this.SetInformationInt32(ThreadInformationClass.ThreadBasePriority, basePriority);
+        }
+
+        /// <summary>
+        /// Sets the thread's base priority.
+        /// </summary>
+        /// <param name="basePriority">The base priority of the thread.</param>
+        public void SetBasePriorityWin32(ThreadPriorityLevel basePriority)
+        {
+            if (!Win32.SetThreadPriority(this, (int)basePriority))
+                Win32.ThrowLastError();
+        }
+
+        /// <summary>
         /// Sets the thread's context.
         /// </summary>
         /// <param name="context">A CONTEXT struct.</param>
@@ -967,13 +986,21 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Sets the thread's priority level.
+        /// Sets the thread's priority.
         /// </summary>
-        /// <param name="priority">The priority of the thread.</param>
-        public void SetPriorityLevel(ThreadPriorityLevel priority)
+        /// <param name="priority">The thread's priority.</param>
+        public void SetPriority(int priority)
         {
-            if (!Win32.SetThreadPriority(this, (int)priority))
-                Win32.ThrowLastError();
+            this.SetInformationInt32(ThreadInformationClass.ThreadPriority, priority);
+        }
+
+        /// <summary>
+        /// Sets the thread's priority boost.
+        /// </summary>
+        /// <param name="enabled">Whether priority boost will be enabled.</param>
+        public void SetPriorityBoost(bool enabled)
+        {
+            this.SetInformationInt32(ThreadInformationClass.ThreadPriorityBoost, enabled ? 0 : 1);
         }
 
         /// <summary>

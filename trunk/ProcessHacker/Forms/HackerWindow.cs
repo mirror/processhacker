@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -1737,15 +1736,8 @@ namespace ProcessHacker
             if (treeProcesses.SelectedNodes.Count != 1)
                 return;
 
-            try
-            {
-                Process.Start(Properties.Settings.Default.SearchEngine.Replace("%s",
-                    treeProcesses.SelectedNodes[0].Name));
-            }
-            catch (Exception ex)
-            {
-                PhUtils.ShowException("Unable to search for the process", ex);
-            }
+            Program.TryStart(Properties.Settings.Default.SearchEngine.Replace("%s",
+                treeProcesses.SelectedNodes[0].Name));
         }
 
         private void reanalyzeProcessMenuItem_Click(object sender, EventArgs e)
@@ -1776,7 +1768,7 @@ namespace ProcessHacker
             processP.DictionaryRemoved += processP_DictionaryRemoved;
             processP.Updated -= processP_Updated;
 
-            try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High; }
+            try { ProcessHandle.Current.SetPriorityClass(ProcessPriorityClass.High); }
             catch { }
 
             if (processP.RunCount >= 1)
