@@ -103,10 +103,10 @@ namespace ProcessHacker
 
             try
             {
-                if (ProcessHacker.Properties.Settings.Default.ProxyUse)
+                if (Settings.UseProxy)
                 {
-                    WebProxy wp = new WebProxy(ProcessHacker.Properties.Settings.Default.ProxyAddress, ProcessHacker.Properties.Settings.Default.ProxyBypassOnLocal);
-                    wp.Credentials = new NetworkCredential(ProcessHacker.Properties.Settings.Default.ProxyUsername, ProcessHacker.Properties.Settings.Default.ProxyPassword);
+                    WebProxy wp = new WebProxy(Settings.ProxyAddress, Settings.BypassProxyOnLocal);
+                    wp.Credentials = new NetworkCredential(Settings.ProxyUsername, Settings.ProxyPassword);
                    
                     WebClient wc = new WebClient();
                     wc.Proxy = wp;
