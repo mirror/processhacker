@@ -1132,7 +1132,7 @@ namespace ProcessHacker.Native.Objects
             if (KProcessHacker.Instance != null)
             {
                 readMemoryProc = new ReadProcessMemoryProc64(
-                    delegate(IntPtr processHandle, ulong baseAddress, byte* buffer, int size, out int bytesRead)
+                    delegate(IntPtr processHandle, ulong baseAddress, IntPtr buffer, int size, out int bytesRead)
                     {
                         return KProcessHacker.Instance.KphReadVirtualMemorySafe(
                             ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead);

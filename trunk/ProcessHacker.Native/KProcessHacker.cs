@@ -600,19 +600,19 @@ namespace ProcessHacker.Native
 
         public void KphReadVirtualMemory(ProcessHandle processHandle, int baseAddress, byte[] buffer, int length, out int bytesRead)
         {
-            fixed (byte* bufferPointer = buffer)
+            fixed (byte* bufferPtr = buffer)
             {
-                this.KphReadVirtualMemory(processHandle, baseAddress, bufferPointer, length, out bytesRead);
+                this.KphReadVirtualMemory(processHandle, baseAddress, new IntPtr(bufferPtr), length, out bytesRead);
             }
         }
 
-        public void KphReadVirtualMemory(ProcessHandle processHandle, int baseAddress, void* buffer, int length, out int bytesRead)
+        public void KphReadVirtualMemory(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
         {
             if (!KphReadVirtualMemorySafe(processHandle, baseAddress, buffer, length, out bytesRead))
                 Win32.ThrowLastError();
         }
 
-        public bool KphReadVirtualMemorySafe(ProcessHandle processHandle, int baseAddress, void* buffer, int length, out int bytesRead)
+        public bool KphReadVirtualMemorySafe(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
         {
             byte* inData = stackalloc byte[0x14];
             int returnLength;
@@ -633,6 +633,11 @@ namespace ProcessHacker.Native
         }
 
         public bool KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, int baseAddress, void* buffer, int length, out int bytesRead)
+        {
+            return KphReadVirtualMemoryUnsafe(processHandle, baseAddress, new IntPtr(buffer), length, out bytesRead);
+        }
+
+        public bool KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
         {
             byte* inData = stackalloc byte[0x14];
             int returnLength;
@@ -733,10 +738,10 @@ namespace ProcessHacker.Native
         public void KphWriteVirtualMemory(ProcessHandle processHandle, int baseAddress, byte[] buffer, int length, out int bytesWritten)
         {
             fixed (byte* bufferPtr = buffer)
-                this.KphWriteVirtualMemory(processHandle, baseAddress, bufferPtr, length, out bytesWritten);
+                this.KphWriteVirtualMemory(processHandle, baseAddress, new IntPtr(bufferPtr), length, out bytesWritten);
         }
 
-        public void KphWriteVirtualMemory(ProcessHandle processHandle, int baseAddress, void* buffer, int length, out int bytesWritten)
+        public void KphWriteVirtualMemory(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesWritten)
         {
             byte* inData = stackalloc byte[0x14];
             int returnLength;

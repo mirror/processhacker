@@ -323,7 +323,7 @@ namespace Assistant
                     if (!Win32.CreateProcessAsUser(token,
                         args.ContainsKey("-f") ? args["-f"] : null,
                         args.ContainsKey("-c") ? args["-c"] : null,
-                        IntPtr.Zero, IntPtr.Zero, false, CreationFlags.CreateUnicodeEnvironment, environment,
+                        IntPtr.Zero, IntPtr.Zero, false, ProcessCreationFlags.CreateUnicodeEnvironment, environment,
                         args.ContainsKey("-d") ? args["-d"] : null,
                         ref info, out pinfo))
                     {

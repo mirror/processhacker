@@ -152,6 +152,25 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct BaseCreateProcessMsg
+    {
+        public IntPtr ProcessHandle;
+        public IntPtr ThreadHandle;
+        public ClientId ClientId;
+        public ClientId DebuggerClientId;
+        public ProcessCreationFlags CreationFlags;
+        public int IsVdm;
+        public IntPtr VdmHandle;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct BaseCreateThreadMsg
+    {
+        public IntPtr ThreadHandle;
+        public ClientId ClientId;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct ClientId
     {
         public ClientId(int processId, int threadId)
@@ -278,6 +297,35 @@ namespace ProcessHacker.Native.Api
         public long LastBranchFromRip;
         public long LastExceptionToRip;
         public long LastExceptionFromRip;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CsrApiMsg
+    {
+        public static readonly int ApiMessageDataOffset =
+            Marshal.OffsetOf(typeof(CsrApiMsg), "ApiMessageData").ToInt32();
+
+        public PortMessageStruct Header;
+        public IntPtr CaptureBuffer; // CsrCaptureHeader*
+        public int ApiNumber;
+        public int ReturnValue;
+        public int Reserved;
+        public int ApiMessageData;
+        // API message data follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CsrCaptureHeader
+    {
+        public static readonly int MessagePointerOffsetsOffset =
+            Marshal.OffsetOf(typeof(CsrCaptureHeader), "MessagePointerOffsets").ToInt32();
+
+        public int Length;
+        public IntPtr RelatedCaptureBuffer; // CsrCaptureBuffer*
+        public int CountMessagePointers;
+        public IntPtr FreeSpace;
+        public IntPtr MessagePointerOffsets;
+        // Array of ULONG_PTRs follows.
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1387,6 +1435,12 @@ namespace ProcessHacker.Native.Api
     {
         public static readonly int ImageSubsystemOffset =
             Marshal.OffsetOf(typeof(Peb), "ImageSubsystem").ToInt32();
+        public static readonly int LdrOffset =
+            Marshal.OffsetOf(typeof(Peb), "Ldr").ToInt32();
+        public static readonly int ProcessHeapOffset = 
+            Marshal.OffsetOf(typeof(Peb), "ProcessHeap").ToInt32();
+        public static readonly int ProcessParametersOffset = 
+            Marshal.OffsetOf(typeof(Peb), "ProcessParameters").ToInt32();
 
         [MarshalAs(UnmanagedType.I1)]
         public bool InheritedAddressSpace;
@@ -1399,8 +1453,8 @@ namespace ProcessHacker.Native.Api
         public IntPtr Mutant;
 
         public IntPtr ImageBaseAddress;
-        public IntPtr Ldr; // ptr to PebLdrData
-        public IntPtr ProcessParameters; // ptr to RtlUserProcessParameters
+        public IntPtr Ldr; // PebLdrData*
+        public IntPtr ProcessParameters; // RtlUserProcessParameters*
         public IntPtr SubSystemData;
         public IntPtr ProcessHeap;
         public IntPtr FastPebLock;
@@ -1582,9 +1636,12 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessHandleTracingQuery
     {
+        public static readonly int HandleTraceOffset =
+            Marshal.OffsetOf(typeof(ProcessHandleTracingQuery), "HandleTrace").ToInt32();
+
         public IntPtr Handle;
         public int TotalTraces;
-        public byte HandleTrace;
+        public ProcessHandleTracingEntry HandleTrace;
         // An array of ProcessHandleTracingEntry structures follows.
     }
 
@@ -1872,7 +1929,7 @@ namespace ProcessHacker.Native.Api
         public int CountCharsY;
         public int FillAttribute;
 
-        public int WindowFlags;
+        public StartupFlags WindowFlags;
         public int ShowWindowFlags;
         public UnicodeString WindowTitle;
         public UnicodeString DesktopInfo;

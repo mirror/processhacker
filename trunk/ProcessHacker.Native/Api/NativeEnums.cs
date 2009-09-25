@@ -91,6 +91,36 @@ namespace ProcessHacker.Native.Api
         EndAlternatives
     }
 
+    public enum BaseSrvApiNumber : int
+    {
+        BasepCreateProcess = Win32.BaseSrvFirstApiNumber,
+        BasepCreateThread,
+        BasepGetTempFile,
+        BasepExitProcess,
+        BasepDebugProcess,
+        BasepCheckVDM,
+        BasepUpdateVDMEntry,
+        BasepGetNextVDMCommand,
+        BasepExitVDM,
+        BasepIsFirstVDM,
+        BasepGetVDMExitCode,
+        BasepSetReenterCount,
+        BasepSetProcessShutdownParam,
+        BasepGetProcessShutdownParam,
+        BasepNlsSetUserInfo,
+        BasepNlsSetMultipleUserInfo,
+        BasepNlsCreateSortSection,
+        BasepNlsPreserveSection,
+        BasepSetVDMCurDirs,
+        BasepGetVDMCurDirs,
+        BasepBatNotification,
+        BasepRegisterWowExec,
+        BasepSoundSentryNotification,
+        BasepRefreshIniFileMapping,
+        BasepDefineDosDevice,
+        BasepMaxApiNumber
+    }
+
     public enum CompoundAceType : ushort
     {
         Impersonation = 1

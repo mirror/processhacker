@@ -112,18 +112,23 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        public void WaitForDebugEvent(out DbgUiWaitStateChange waitStateChange, bool alertable, long timeout, bool timeoutRelative)
+        public IntPtr WaitForDebugEvent(bool alertable, long timeout, bool timeoutRelative)
         {
-            NtStatus status;
-            long realTimeout = timeoutRelative ? -timeout : timeout;
+            // FIXME
+            throw new NotImplementedException();
 
-            if ((status = Win32.NtWaitForDebugEvent(
-                this,
-                alertable,
-                ref realTimeout,
-                out waitStateChange
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+            //NtStatus status;
+            //long realTimeout = timeoutRelative ? -timeout : timeout;
+
+            //if ((status = Win32.NtWaitForDebugEvent(
+            //    this,
+            //    alertable,
+            //    ref realTimeout,
+            //    IntPtr.Zero
+            //    )) >= NtStatus.Error)
+            //    Win32.ThrowLastError(status);
+
+            //return IntPtr.Zero;
         }
     }
 }

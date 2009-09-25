@@ -28,6 +28,14 @@ namespace ProcessHacker.Native
 {
     public static class IntPtrExtensions
     {
+        public static IntPtr And(this IntPtr ptr, IntPtr value)
+        {
+            if (IntPtr.Size == sizeof(Int32))
+                return new IntPtr(ptr.ToInt32() & value.ToInt32());
+            else
+                return new IntPtr(ptr.ToInt64() & value.ToInt64());
+        }
+
         public static int CompareTo(this IntPtr ptr, IntPtr ptr2)
         {
             if (ptr.ToUInt64() > ptr2.ToUInt64())
@@ -159,6 +167,22 @@ namespace ProcessHacker.Native
             return false;
         }
 
+        public static IntPtr Not(this IntPtr ptr)
+        {
+            if (IntPtr.Size == sizeof(Int32))
+                return new IntPtr(~ptr.ToInt32());
+            else
+                return new IntPtr(~ptr.ToInt64());
+        }
+
+        public static IntPtr Or(this IntPtr ptr, IntPtr value)
+        {
+            if (IntPtr.Size == sizeof(Int32))
+                return new IntPtr(ptr.ToInt32() | value.ToInt32());
+            else
+                return new IntPtr(ptr.ToInt64() | value.ToInt64());
+        }
+
         public static uint ToUInt32(this IntPtr ptr)
         {
             // Avoid sign-extending the pointer - we want it zero-extended.
@@ -211,6 +235,14 @@ namespace ProcessHacker.Native
             {
                 return ((long)value).ToIntPtr();
             }
+        }
+
+        public static IntPtr Xor(this IntPtr ptr, IntPtr value)
+        {
+            if (IntPtr.Size == sizeof(Int32))
+                return new IntPtr(ptr.ToInt32() ^ value.ToInt32());
+            else
+                return new IntPtr(ptr.ToInt64() ^ value.ToInt64());
         }
     }
 }

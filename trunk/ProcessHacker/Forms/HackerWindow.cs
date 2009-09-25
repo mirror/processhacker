@@ -1292,8 +1292,8 @@ namespace ProcessHacker
                                 ref startupInfo, out procInfo))
                                 Win32.ThrowLastError();
 
-                            Win32.CloseHandle(procInfo.hProcess);
-                            Win32.CloseHandle(procInfo.hThread);
+                            Win32.CloseHandle(procInfo.ProcessHandle);
+                            Win32.CloseHandle(procInfo.ThreadHandle);
                         }
                         catch (Exception ex)
                         {

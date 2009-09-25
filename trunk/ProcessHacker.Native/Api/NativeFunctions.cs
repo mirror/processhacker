@@ -2211,7 +2211,7 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr DebugObjectHandle,
             [In] bool Alertable,
             [In] [Optional] ref long Timeout,
-            [Out] out DbgUiWaitStateChange WaitStateChange
+            [In] IntPtr WaitStateChange
             );
 
         [DllImport("ntdll.dll")]
@@ -2317,6 +2317,98 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtYieldExecution();
+
+        #endregion
+
+        #region CSR
+
+        [DllImport("ntdll.dll")]
+        // return: CsrCaptureHeader*
+        public static extern IntPtr CsrAllocateCaptureBuffer(
+            [In] int CountMessagePointers,
+            [In] int CountCapturePointers,
+            [In] int Size
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int CsrAllocateMessagePointer(
+            [In] IntPtr CaptureBuffer, // CsrCaptureHeader*
+            [In] int Length,
+            [Out] out IntPtr Pointer
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void CsrCaptureMessageBuffer(
+            [In] IntPtr CaptureBuffer, // CsrCaptureHeader*
+            [In] [Optional] IntPtr Buffer,
+            [In] int Length,
+            [Out] out IntPtr CapturedBuffer
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void CsrCaptureMessageString(
+            [In] IntPtr CaptureBuffer, // CsrCaptureHeader*
+            [MarshalAs(UnmanagedType.LPStr)]
+            [In] string String,
+            [In] int Length,
+            [In] int MaximumLength,
+            [Out] out AnsiString CapturedString
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus CsrClientCallServer(
+            [In] IntPtr Message, // CsrApiMsg*
+            [In] [Optional] IntPtr CaptureBuffer, // CsrCaptureHeader*
+            [In] int ApiNumber,
+            [In] int ArgLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void CsrFreeCaptureBuffer(
+            [In] IntPtr CaptureBuffer // CsrCaptureHeader*
+            );
+
+        #endregion
+
+        #region Debugging
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus DbgUiConnectToDbg();
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus DbgUiContinue(
+            [In] ref ClientId ClientId,
+            [In] NtStatus ContinueStatus
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus DbgUiDebugActiveProcess(
+            [In] IntPtr ProcessHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr DbgUiGetThreadDebugObject();
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus DbgUiIssueRemoteBreakin(
+            [In] IntPtr ProcessHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void DbgUiSetThreadDebugObject(
+            [In] IntPtr DebugObjectHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus DbgUiStopDebugging(
+            [In] IntPtr ProcessHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus DbgUiWaitStateChange(
+            [In] IntPtr WaitStateChange, // DbgUiWaitStateChange*
+            [In] [Optional] ref long Timeout
+            );
 
         #endregion
 
@@ -3272,6 +3364,13 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlQueryEnvironmentVariable_U(
+            [In] [Optional] IntPtr Environment,
+            [In] ref UnicodeString Name,
+            ref UnicodeString Value
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern void RtlReleasePebLock();
 
         [DllImport("ntdll.dll")]
@@ -3289,6 +3388,13 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus RtlSetCurrentEnvironment(
             [In] IntPtr Environment,
             [Out] out IntPtr PreviousEnvironment
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetEnvironmentVariable(
+            ref IntPtr Environment,
+            [In] ref UnicodeString Name,
+            [In] [Optional] ref UnicodeString Value
             );
 
         #endregion

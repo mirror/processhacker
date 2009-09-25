@@ -1,6 +1,7 @@
 ﻿using System;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
+using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native
 {
@@ -22,6 +23,152 @@ namespace ProcessHacker.Native
             ThreadHandle.Current.QueueApc(address, param1, param2, param3);
             // Flush the APC queue.
             ThreadHandle.TestAlert();
+        }
+
+        public unsafe static void CopyProcessParameters(
+            ProcessHandle processHandle,
+            IntPtr peb,
+            ProcessCreationFlags creationFlags,
+            string imagePathName,
+            string dllPath,
+            string currentDirectory,
+            string commandLine,
+            EnvironmentBlock environment,
+            string windowTitle,
+            string desktopInfo,
+            string shellInfo,
+            string runtimeInfo,
+            ref StartupInfo startupInfo
+            )
+        {
+            UnicodeString imagePathNameStr;
+            UnicodeString dllPathStr;
+            UnicodeString currentDirectoryStr;
+            UnicodeString commandLineStr;
+            UnicodeString windowTitleStr;
+            UnicodeString desktopInfoStr;
+            UnicodeString shellInfoStr;
+            UnicodeString runtimeInfoStr;
+
+            // Create the unicode strings.
+
+            imagePathNameStr = new UnicodeString(imagePathName);
+            dllPathStr = new UnicodeString(dllPath);
+            currentDirectoryStr = new UnicodeString(currentDirectory);
+            commandLineStr = new UnicodeString(commandLine);
+            windowTitleStr = new UnicodeString(windowTitle);
+            desktopInfoStr = new UnicodeString(desktopInfo);
+            shellInfoStr = new UnicodeString(shellInfo);
+            runtimeInfoStr = new UnicodeString(runtimeInfo);
+
+            try
+            {
+                NtStatus status;
+                IntPtr processParameters;
+
+                // Create the process parameter block.
+
+                status = Win32.RtlCreateProcessParameters(
+                    out processParameters,
+                    ref imagePathNameStr,
+                    ref dllPathStr,
+                    ref currentDirectoryStr,
+                    ref commandLineStr,
+                    environment,
+                    ref windowTitleStr,
+                    ref desktopInfoStr,
+                    ref shellInfoStr,
+                    ref runtimeInfoStr
+                    );
+
+                if (status >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                try
+                {
+                    // Allocate a new memory region in the remote process for 
+                    // the environment block and copy it over.
+
+                    int environmentLength;
+                    IntPtr newEnvironment;
+
+                    environmentLength = environment.GetLength();
+                    newEnvironment = processHandle.AllocateMemory(
+                        environmentLength,
+                        MemoryProtection.ReadWrite
+                        );
+
+                    processHandle.WriteMemory(
+                        newEnvironment,
+                        environment,
+                        environmentLength
+                        );
+
+                    // Copy over the startup info data.
+                    MemoryRegion paramsRegion = new MemoryRegion(processParameters);
+                    RtlUserProcessParameters paramsStruct = paramsRegion.ReadStruct<RtlUserProcessParameters>();
+
+                    paramsStruct.Environment = newEnvironment;
+                    paramsStruct.StartingX = startupInfo.X;
+                    paramsStruct.StartingY = startupInfo.Y;
+                    paramsStruct.CountX = startupInfo.XSize;
+                    paramsStruct.CountY = startupInfo.YSize;
+                    paramsStruct.CountCharsX = startupInfo.XCountChars;
+                    paramsStruct.CountCharsY = startupInfo.YCountChars;
+                    paramsStruct.FillAttribute = startupInfo.FillAttribute;
+                    paramsStruct.WindowFlags = startupInfo.Flags;
+                    paramsStruct.ShowWindowFlags = startupInfo.ShowWindow;
+
+                    if ((startupInfo.Flags & StartupFlags.UseStdHandles) == StartupFlags.UseStdHandles)
+                    {
+                        paramsStruct.StandardInput = startupInfo.StdInputHandle;
+                        paramsStruct.StandardOutput = startupInfo.StdOutputHandle;
+                        paramsStruct.StandardError = startupInfo.StdErrorHandle;
+                    }
+
+                    // TODO: Add console support.
+
+                    // Allocate a new memory region in the remote process for 
+                    // the process parameters.
+
+                    IntPtr newProcessParameters;
+                    IntPtr regionSize = paramsStruct.Length.ToIntPtr();
+
+                    newProcessParameters = processHandle.AllocateMemory(
+                        IntPtr.Zero,
+                        ref regionSize,
+                        MemoryFlags.Commit,
+                        MemoryProtection.ReadWrite
+                        );
+
+                    paramsStruct.MaximumLength = regionSize.ToInt32();
+
+                    paramsRegion.WriteStruct<RtlUserProcessParameters>(paramsStruct);
+                    processHandle.WriteMemory(newProcessParameters, processParameters, paramsStruct.Length);
+
+                    // Modify the process parameters pointer in the PEB.
+                    processHandle.WriteMemory(
+                        peb.Increment(Peb.ProcessParametersOffset),
+                        newProcessParameters,
+                        IntPtr.Size
+                        );
+                }
+                finally
+                {
+                    Win32.RtlDestroyProcessParameters(processParameters);
+                }
+            }
+            finally
+            {
+                imagePathNameStr.Dispose();
+                dllPathStr.Dispose();
+                currentDirectoryStr.Dispose();
+                commandLineStr.Dispose();
+                windowTitleStr.Dispose();
+                desktopInfoStr.Dispose();
+                shellInfoStr.Dispose();
+                runtimeInfoStr.Dispose();
+            }
         }
 
         public static string FormatNativeKeyName(string nativeKeyName)

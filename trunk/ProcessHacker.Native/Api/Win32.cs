@@ -39,7 +39,7 @@ namespace ProcessHacker.Native.Api
     public delegate IntPtr WndProcDelegate(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
 
     public delegate bool SymEnumSymbolsProc(IntPtr SymInfo, int SymbolSize, int UserContext);
-    public unsafe delegate bool ReadProcessMemoryProc64(IntPtr ProcessHandle, ulong BaseAddress, byte* Buffer,
+    public unsafe delegate bool ReadProcessMemoryProc64(IntPtr ProcessHandle, ulong BaseAddress, IntPtr Buffer,
         int Size, out int BytesRead);
     public delegate IntPtr FunctionTableAccessProc64(IntPtr ProcessHandle, ulong AddrBase);
     public delegate ulong GetModuleBaseProc64(IntPtr ProcessHandle, ulong Address);

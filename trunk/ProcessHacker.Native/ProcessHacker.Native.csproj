@@ -84,6 +84,7 @@
     <Compile Include="Memory\VirtualMemoryAlloc.cs" />
     <Compile Include="NativeUtils.cs" />
     <Compile Include="NProcessHacker.cs" />
+    <Compile Include="Objects\EnvironmentBlock.cs" />
     <Compile Include="Objects\KeyHandle.cs" />
     <Compile Include="Objects\LsaAccountHandle.cs" />
     <Compile Include="Objects\MailslotHandle.cs" />

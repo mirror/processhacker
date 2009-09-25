@@ -778,7 +778,7 @@ namespace ProcessHacker.Native.Api
             [In] LogonFlags Flags,
             [In] [Optional] string ApplicationName,
             [Optional] string CommandLine,
-            [In] CreationFlags CreationFlags,
+            [In] ProcessCreationFlags CreationFlags,
             [In] [Optional] int Environment,
             [In] [Optional] string CurrentDirectory,
             [In] ref StartupInfo StartupInfo,
@@ -794,7 +794,7 @@ namespace ProcessHacker.Native.Api
             [In] [Optional] IntPtr ProcessAttributes,
             [In] [Optional] IntPtr ThreadAttributes,
             [In] bool InheritHandles,
-            [In] CreationFlags CreationFlags,
+            [In] ProcessCreationFlags CreationFlags,
             [In] [Optional] IntPtr Environment,
             [In] [Optional] string CurrentDirectory,
             [In] ref StartupInfo StartupInfo,
@@ -809,7 +809,7 @@ namespace ProcessHacker.Native.Api
             [In] [Optional] IntPtr ProcessAttributes,
             [In] [Optional] IntPtr ThreadAttributes,
             [In] bool InheritHandles,
-            [In] CreationFlags CreationFlags,
+            [In] ProcessCreationFlags CreationFlags,
             [In] [Optional] IntPtr Environment,
             [In] [Optional] string CurrentDirectory,
             [In] ref StartupInfo StartupInfo,
@@ -1989,7 +1989,7 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr StackSize,
             [In] IntPtr StartAddress,
             [In] IntPtr Parameter,
-            [In] CreationFlags CreationFlags,
+            [In] ProcessCreationFlags CreationFlags,
             [Out] out int ThreadId
             );
 

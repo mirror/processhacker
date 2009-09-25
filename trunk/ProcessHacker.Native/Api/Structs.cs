@@ -481,10 +481,10 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessInformation
     {
-        public IntPtr hProcess;
-        public IntPtr hThread;
-        public int dwProcessId;
-        public int dwThreadId;
+        public IntPtr ProcessHandle;
+        public IntPtr ThreadHandle;
+        public int ProcessId;
+        public int ThreadId;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -665,14 +665,12 @@ namespace ProcessHacker.Native.Api
     public struct StartupInfo
     {
         public int Size;
-        public int Reserved;
-
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string Reserved;
         [MarshalAs(UnmanagedType.LPWStr)]
         public string Desktop;
-
         [MarshalAs(UnmanagedType.LPWStr)]
         public string Title;
-
         public int X;
         public int Y;
         public int XSize;
@@ -681,14 +679,12 @@ namespace ProcessHacker.Native.Api
         public int YCountChars;
         public int FillAttribute;
         public StartupFlags Flags;
-
-        public ShowWindowType ShowWindow;
+        public short ShowWindow;
         public short Reserved2;
-        public int Reserved3;
-
-        public int StdInputHandle;
-        public int StdOutputHandle;
-        public int StdErrorHandle;
+        public IntPtr Reserved3;
+        public IntPtr StdInputHandle;
+        public IntPtr StdOutputHandle;
+        public IntPtr StdErrorHandle;
     }
 
     [StructLayout(LayoutKind.Sequential)]

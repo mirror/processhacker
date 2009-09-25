@@ -25,7 +25,7 @@ using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native
 {
-    public sealed class Heap
+    public struct Heap
     {
         public static Heap FromHandle(IntPtr handle)
         {

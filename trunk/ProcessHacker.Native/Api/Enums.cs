@@ -84,41 +84,6 @@ namespace ProcessHacker.Native.Api
         NonZeroLPtr = LMemFixed
     }
 
-    [Flags]
-    public enum CreationFlags : uint
-    {
-        DebugProcess = 0x1,
-        DebugOnlyThisProcess = 0x2,
-        CreateSuspended = 0x4,
-        DetachedProcess = 0x8,
-        CreateNewConsole = 0x10,
-        NormalPriorityClass = 0x20,
-        IdlePriorityClass = 0x40,
-        HighPriorityClass = 0x80,
-        RealtimePriorityClass = 0x100,
-        CreateNewProcessGroup = 0x200,
-        CreateUnicodeEnvironment = 0x400,
-        CreateSeparateWowVdm = 0x800,
-        CreateSharedWowVdm = 0x1000,
-        CreateForceDos = 0x2000,
-        BelowNormalPriorityClass = 0x4000,
-        AboveNormalPriorityClass = 0x8000,
-        StackSizeParamIsAReservation = 0x10000,
-        InheritCallerPriority = 0x20000,
-        CreateProtectedProcess = 0x40000,
-        ExtendedStartupInfoPresent = 0x80000,
-        ProcessModeBackgroundBegin = 0x100000,
-        ProcessModeBackgroundEnd = 0x200000,
-        CreateBreakawayFromJob = 0x1000000,
-        CreatePreserveCodeAuthzLevel = 0x2000000,
-        CreateDefaultErrorMode = 0x4000000,
-        CreateNoWindow = 0x8000000,
-        ProfileUser = 0x10000000,
-        ProfileKernel = 0x20000000,
-        ProfileServer = 0x40000000,
-        CreateIgnoreSystemDefault = 0x80000000
-    }
-
     public enum DepFlags : uint
     {
         Disable = 0x00000000,
@@ -395,6 +360,41 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
+    public enum ProcessCreationFlags : uint
+    {
+        DebugProcess = 0x1,
+        DebugOnlyThisProcess = 0x2,
+        CreateSuspended = 0x4,
+        DetachedProcess = 0x8,
+        CreateNewConsole = 0x10,
+        NormalPriorityClass = 0x20,
+        IdlePriorityClass = 0x40,
+        HighPriorityClass = 0x80,
+        RealtimePriorityClass = 0x100,
+        CreateNewProcessGroup = 0x200,
+        CreateUnicodeEnvironment = 0x400,
+        CreateSeparateWowVdm = 0x800,
+        CreateSharedWowVdm = 0x1000,
+        CreateForceDos = 0x2000,
+        BelowNormalPriorityClass = 0x4000,
+        AboveNormalPriorityClass = 0x8000,
+        StackSizeParamIsAReservation = 0x10000,
+        InheritCallerPriority = 0x20000,
+        CreateProtectedProcess = 0x40000,
+        ExtendedStartupInfoPresent = 0x80000,
+        ProcessModeBackgroundBegin = 0x100000,
+        ProcessModeBackgroundEnd = 0x200000,
+        CreateBreakawayFromJob = 0x1000000,
+        CreatePreserveCodeAuthzLevel = 0x2000000,
+        CreateDefaultErrorMode = 0x4000000,
+        CreateNoWindow = 0x8000000,
+        ProfileUser = 0x10000000,
+        ProfileKernel = 0x20000000,
+        ProfileServer = 0x40000000,
+        CreateIgnoreSystemDefault = 0x80000000
+    }
+
+    [Flags]
     public enum RedrawWindowFlags
     {
         Invalidate = 0x0001,
@@ -479,7 +479,7 @@ namespace ProcessHacker.Native.Api
         UsedForAccess = 0x80000000
     }
 
-    public enum ShowWindowType : uint
+    public enum ShowWindowType : int
     {
         Hide = 0,
         ShowNormal = 1,

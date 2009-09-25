@@ -468,7 +468,7 @@ namespace ProcessHacker.Components
                                 {
                                     unsafe
                                     {
-                                        phandle.ReadMemory(item.Address, alloc, (int)item.Size);
+                                        phandle.ReadMemory(item.Address, (IntPtr)alloc, (int)item.Size);
                                         fhandle.Write(alloc.Memory, (int)item.Size);
                                     }
                                 }

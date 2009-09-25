@@ -36,6 +36,14 @@ namespace ProcessHacker.Native.Api
     {
         public const int AclRevision = 2;
         public const int AclRevisionDs = 4;
+        public const int CsrSrvServerDllIndex = 0;
+        public const int CsrSrvFirstApiNumber = 0;
+        public const int BaseSrvServerDllIndex = 1;
+        public const int BaseSrvFirstApiNumber = 0;
+        public const int ConSrvServerDllIndex = 2;
+        public const int ConSrvFirstApiNumber = 512;
+        public const int UserSrvServerDllIndex = 3;
+        public const int UserSrvFirstApiNumber = 1024;
         public const int ExceptionMaximumParameters = 15;
         public const uint FileWriteToEndOfFile = 0xffffffff;
         public const uint FileUseFilePointerPosition = 0xfffffffe;
@@ -72,15 +80,15 @@ namespace ProcessHacker.Native.Api
         public const string TransactionManagerPath = @"\TransactionManager";
 
         public static readonly IntPtr KnownAceSidStartOffset = Marshal.OffsetOf(typeof(KnownAceStruct), "SidStart");
-        public static readonly IntPtr PebLdrOffset = Marshal.OffsetOf(typeof(Peb), "Ldr");
-        public static readonly IntPtr PebProcessHeapOffset = Marshal.OffsetOf(typeof(Peb), "ProcessHeap");
-        public static readonly IntPtr PebProcessParametersOffset = Marshal.OffsetOf(typeof(Peb), "ProcessParameters");
-        public static readonly int ProcessHandleTracingQueryHandleTraceOffset =
-            Marshal.OffsetOf(typeof(ProcessHandleTracingQuery), "HandleTrace").ToInt32();
         public static readonly int SecurityDescriptorMinLength = Marshal.SizeOf(typeof(SecurityDescriptorStruct));
         public static readonly int SecurityMaxSidSize =
             Marshal.SizeOf(typeof(SidStruct)) - sizeof(int) + (SidMaxSubAuthorities * sizeof(int));
         public static readonly IntPtr UserSharedData = new IntPtr(0x7ffe0000);
+
+        public static int CsrMakeApiNumber(int dllIndex, int apiIndex)
+        {
+            return (dllIndex << 16) | apiIndex;
+        }
 
         public static int CtlCode(DeviceType type, int function, DeviceControlMethod method, DeviceControlAccess access)
         {

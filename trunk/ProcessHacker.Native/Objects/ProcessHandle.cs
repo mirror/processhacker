@@ -68,44 +68,6 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Creates a process and an initial thread.
-        /// </summary>
-        /// <param name="access">The desired access to the new process.</param>
-        /// <param name="fileName">The path to an executable image file.</param>
-        /// <param name="inheritHandles">Specify true to inherit handles, otherwise false.</param>
-        /// <param name="threadHandle">A handle to the new thread.</param>
-        /// <returns>A handle to the new process.</returns>
-        public static ProcessHandle Create(ProcessAccess access, string fileName, bool inheritHandles, out ThreadHandle threadHandle)
-        {
-            using (var fhandle = new FileHandle(
-                fileName,
-                FileShareMode.Read | FileShareMode.Delete,
-                (FileAccess)StandardRights.Synchronize | FileAccess.Execute | FileAccess.ReadData
-                ))
-            {
-                using (var shandle =
-                    SectionHandle.Create(
-                    SectionAccess.All,
-                    SectionAttributes.Image,
-                    MemoryProtection.Execute,
-                    fhandle
-                    ))
-                {
-                    ProcessHandle phandle = Create(access, ProcessHandle.Current, inheritHandles, shandle);
-
-                    threadHandle = ThreadHandle.CreateUserThread(
-                        phandle,
-                        false,
-                        shandle.GetImageInformation().TransferAddress,
-                        IntPtr.Zero
-                        );
-
-                    return phandle;
-                }
-            }
-        }
-
-        /// <summary>
         /// Creates a process.
         /// </summary>
         /// <param name="access">The desired access to the new process.</param>
@@ -171,6 +133,174 @@ namespace ProcessHacker.Native.Objects
             return new ProcessHandle(handle, true);
         }
 
+        public static ProcessHandle CreateExtended(
+            string fileName,
+            ProcessHandle parentProcess,
+            ProcessCreationFlags creationFlags,
+            bool inheritHandles,
+            string currentDirectory,
+            StartupInfo startupInfo,
+            out ClientId clientId,
+            out ThreadHandle threadHandle
+            )
+        {
+            return CreateExtended(
+                fileName,
+                parentProcess,
+                creationFlags,
+                inheritHandles,
+                EnvironmentBlock.GetCurrent(),
+                currentDirectory,
+                startupInfo,
+                out clientId,
+                out threadHandle
+                );
+        }
+
+        public static ProcessHandle CreateExtended(
+            string fileName,
+            ProcessHandle parentProcess,
+            ProcessCreationFlags creationFlags,
+            bool inheritHandles,
+            EnvironmentBlock environment,
+            string currentDirectory,
+            StartupInfo startupInfo,
+            out ClientId clientId,
+            out ThreadHandle threadHandle
+            )
+        {
+            ProcessHandle phandle;
+            ThreadHandle thandle;
+            SectionImageInformation imageInfo;
+
+            // If we don't have a desktop, use the current one.
+            if (startupInfo.Desktop == null)
+                startupInfo.Desktop = ProcessHandle.Current.GetPebString(PebOffset.DesktopName);
+
+            // Open the file, create a section, and create a process.
+            using (var fhandle = new FileHandle(
+                fileName,
+                FileShareMode.Read | FileShareMode.Delete,
+                FileAccess.Execute | (FileAccess)StandardRights.Synchronize
+                ))
+            {
+                using (var shandle = SectionHandle.Create(
+                    SectionAccess.All,
+                    SectionAttributes.Image,
+                    MemoryProtection.Execute,
+                    fhandle
+                    ))
+                {
+                    imageInfo = shandle.GetImageInformation();
+
+                    phandle = Create(
+                        ProcessAccess.All,
+                        parentProcess,
+                        inheritHandles,
+                        shandle
+                        );
+                }
+            }
+
+            IntPtr peb = phandle.GetBasicInformation().PebBaseAddress;
+
+            // Copy the process parameters across.
+            NativeUtils.CopyProcessParameters(
+                phandle,
+                peb,
+                creationFlags,
+                FileUtils.GetFileName(fileName),
+                ProcessHandle.Current.GetPebString(PebOffset.DllPath),
+                currentDirectory,
+                fileName,
+                environment,
+                startupInfo.Title != null ? startupInfo.Title : fileName,
+                startupInfo.Desktop != null ? startupInfo.Desktop : "",
+                startupInfo.Reserved != null ? startupInfo.Reserved : "",
+                "",
+                ref startupInfo
+                );
+
+            // TODO: Duplicate the console handles (stdin, stdout, stderr).
+
+            // Create the initial thread.
+            thandle = ThreadHandle.CreateUserThread(
+                phandle,
+                true,
+                imageInfo.StackCommit.Increment(imageInfo.StackReserved).ToInt32(),
+                imageInfo.StackCommit.ToInt32(),
+                imageInfo.TransferAddress,
+                IntPtr.Zero,
+                out clientId
+                );
+
+            // Notify CSR.
+
+            BaseCreateProcessMsg processMsg = new BaseCreateProcessMsg();
+
+            processMsg.ProcessHandle = phandle;
+            processMsg.ThreadHandle = thandle;
+            processMsg.ClientId = clientId;
+            processMsg.CreationFlags = creationFlags;
+
+            if ((creationFlags & (ProcessCreationFlags.DebugProcess |
+                ProcessCreationFlags.DebugOnlyThisProcess)) != 0)
+            {
+                NtStatus status;
+
+                status = Win32.DbgUiConnectToDbg();
+
+                if (status >= NtStatus.Error)
+                {
+                    phandle.Terminate(status);
+                    Win32.ThrowLastError(status);
+                }
+
+                processMsg.DebuggerClientId = ThreadHandle.GetCurrentCid();
+            }
+
+            // If this is a GUI program, set the 1 and 2 bits to turn the 
+            // hourglass cursor on.
+            if (imageInfo.ImageSubsystem == 2)
+                processMsg.ProcessHandle = processMsg.ProcessHandle.Or((1 | 2).ToIntPtr());
+            // We still have to honor the startup info settings, though.
+            if ((startupInfo.Flags & StartupFlags.ForceOnFeedback) ==
+                StartupFlags.ForceOnFeedback)
+                processMsg.ProcessHandle = processMsg.ProcessHandle.Or((1).ToIntPtr());
+            if ((startupInfo.Flags & StartupFlags.ForceOffFeedback) ==
+                StartupFlags.ForceOffFeedback)
+                processMsg.ProcessHandle = processMsg.ProcessHandle.And((1).ToIntPtr().Not());
+
+            using (var data = new MemoryAlloc(
+                CsrApiMsg.ApiMessageDataOffset + Marshal.SizeOf(typeof(BaseCreateProcessMsg))
+                ))
+            {
+                data.WriteStruct<BaseCreateProcessMsg>(CsrApiMsg.ApiMessageDataOffset, 0, processMsg);
+
+                Win32.CsrClientCallServer(
+                    data,
+                    IntPtr.Zero,
+                    Win32.CsrMakeApiNumber(Win32.BaseSrvServerDllIndex, (int)BaseSrvApiNumber.BasepCreateProcess),
+                    Marshal.SizeOf(typeof(BaseCreateProcessMsg))
+                    );
+
+                NtStatus status = (NtStatus)data.ReadStruct<CsrApiMsg>().ReturnValue;
+
+                if (status >= NtStatus.Error)
+                {
+                    phandle.Terminate(status);
+                    Win32.ThrowLastError(status);
+                }
+            }
+
+            if ((creationFlags & ProcessCreationFlags.CreateSuspended) == 0)
+                thandle.Resume();
+
+            threadHandle = thandle;
+
+            return phandle;
+        }
+
         public static ProcessHandle CreateUserProcess(string fileName, out ClientId clientId, out ThreadHandle threadHandle)
         {
             NtStatus status;
@@ -213,6 +343,40 @@ namespace ProcessHacker.Native.Objects
                 processParams.CommandLine.Dispose();
                 Win32.RtlDestroyEnvironment(processParams.Environment);
             }
+        }
+
+        public static ProcessHandle CreateWin32(
+            string applicationName,
+            string commandLine,
+            bool inheritHandles,
+            ProcessCreationFlags creationFlags,
+            EnvironmentBlock environment,
+            string currentDirectory,
+            StartupInfo startupInfo,
+            out ClientId clientId,
+            out ThreadHandle threadHandle
+            )
+        {
+            ProcessInformation processInformation;
+
+            if (!Win32.CreateProcess(
+                applicationName,
+                commandLine,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                inheritHandles,
+                creationFlags,
+                environment,
+                currentDirectory,
+                ref startupInfo,
+                out processInformation
+                ))
+                Win32.ThrowLastError();
+
+            clientId = new ClientId(processInformation.ProcessId, processInformation.ThreadId);
+            threadHandle = new ThreadHandle(processInformation.ThreadHandle, true);
+
+            return new ProcessHandle(processInformation.ProcessHandle, true);
         }
 
         /// <summary>
@@ -477,14 +641,31 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The base address of the allocated pages.</returns>
         public IntPtr AllocateMemory(IntPtr baseAddress, int size, MemoryFlags type, MemoryProtection protection)
         {
+            IntPtr sizeIntPtr = new IntPtr(size);
+
+            return this.AllocateMemory(baseAddress, ref sizeIntPtr, type, protection);
+        }
+
+        /// <summary>
+        /// Allocates a memory region in the process' virtual memory.
+        /// </summary>      
+        /// <param name="baseAddress">The base address of the region.</param>
+        /// <param name="size">
+        /// The size of the region. This variable will be modified to contain 
+        /// the actual allocated size.
+        /// </param>
+        /// <param name="type">The type of allocation.</param>
+        /// <param name="protection">The protection of the region.</param>
+        /// <returns>The base address of the allocated pages.</returns>
+        public IntPtr AllocateMemory(IntPtr baseAddress, ref IntPtr size, MemoryFlags type, MemoryProtection protection)
+        {
             NtStatus status;
-            IntPtr sizeIntPtr = size.ToIntPtr();
 
             if ((status = Win32.NtAllocateVirtualMemory(
                 this,
                 ref baseAddress,
                 IntPtr.Zero,
-                ref sizeIntPtr,
+                ref size,
                 type,
                 protection
                 )) >= NtStatus.Error)
@@ -603,7 +784,7 @@ namespace ProcessHacker.Native.Objects
                 IntPtr.Zero,
                 startAddress,
                 parameter,
-                createSuspended ? CreationFlags.CreateSuspended : 0,
+                createSuspended ? ProcessCreationFlags.CreateSuspended : 0,
                 out threadId
                 )) == IntPtr.Zero)
                 Win32.ThrowLastError();
@@ -744,7 +925,7 @@ namespace ProcessHacker.Native.Objects
             byte* buffer = stackalloc byte[IntPtr.Size];
 
             // Get the loader data table address.
-            this.ReadMemory(this.GetBasicInformation().PebBaseAddress.Increment(Win32.PebLdrOffset), buffer, IntPtr.Size);
+            this.ReadMemory(this.GetBasicInformation().PebBaseAddress.Increment(Peb.LdrOffset), buffer, IntPtr.Size);
 
             IntPtr loaderData = *(IntPtr*)buffer;
 
@@ -906,9 +1087,8 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Gets the process' basic information through the undocumented Native API function 
-        /// NtQueryInformationProcess. This function requires the PROCESS_QUERY_LIMITED_INFORMATION 
-        /// permission.
+        /// Gets the process' basic information. This requires QueryLimitedInformation 
+        /// access.
         /// </summary>
         /// <returns>A PROCESS_BASIC_INFORMATION structure.</returns>
         public ProcessBasicInformation GetBasicInformation()
@@ -1039,7 +1219,7 @@ namespace ProcessHacker.Native.Objects
             byte* buffer = stackalloc byte[IntPtr.Size];
 
             // Get a pointer to the process parameters block.
-            this.ReadMemory(pebBaseAddress.Increment(Win32.PebProcessParametersOffset), buffer, IntPtr.Size);
+            this.ReadMemory(pebBaseAddress.Increment(Peb.ProcessParametersOffset), buffer, IntPtr.Size);
             IntPtr processParameters = *(IntPtr*)buffer;
 
             // Get a pointer to the environment block.
@@ -1263,7 +1443,7 @@ namespace ProcessHacker.Native.Objects
             IntPtr heap;
 
             this.ReadMemory(
-                this.GetBasicInformation().PebBaseAddress.Increment(Win32.PebProcessHeapOffset),
+                this.GetBasicInformation().PebBaseAddress.Increment(Peb.ProcessHeapOffset),
                 &heap,
                 IntPtr.Size
                 );
@@ -1594,7 +1774,7 @@ namespace ProcessHacker.Native.Objects
             IntPtr pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
 
             // Read the address of parameter information block.
-            this.ReadMemory(pebBaseAddress.Increment(Win32.PebProcessParametersOffset), buffer, IntPtr.Size);
+            this.ReadMemory(pebBaseAddress.Increment(Peb.ProcessParametersOffset), buffer, IntPtr.Size);
             IntPtr processParameters = *(IntPtr*)buffer;
 
             // The offset of the UNICODE_STRING structure is specified in the enum.
@@ -1620,7 +1800,7 @@ namespace ProcessHacker.Native.Objects
             byte* buffer = stackalloc byte[IntPtr.Size];
             IntPtr pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
 
-            this.ReadMemory(pebBaseAddress.Increment(Win32.PebProcessParametersOffset), buffer, IntPtr.Size);
+            this.ReadMemory(pebBaseAddress.Increment(Peb.ProcessParametersOffset), buffer, IntPtr.Size);
             IntPtr processParameters = *(IntPtr*)buffer;
 
             // Read the command line UNICODE_STRING structure.
@@ -1987,11 +2167,23 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The number of bytes read.</returns>
         public unsafe int ReadMemory(IntPtr baseAddress, void* buffer, int length)
         {
+            return this.ReadMemory(baseAddress, new IntPtr(buffer), length);
+        }
+
+        /// <summary>
+        /// Reads data from the process' virtual memory.
+        /// </summary>
+        /// <param name="baseAddress">The offset at which to begin reading.</param>
+        /// <param name="buffer">The buffer to write to.</param>
+        /// <param name="length">The length to read.</param>
+        /// <returns>The number of bytes read.</returns>
+        public int ReadMemory(IntPtr baseAddress, IntPtr buffer, int length)
+        {
             int retLength;
 
             if (this.Handle == Current)
             {
-                Win32.RtlMoveMemory(new IntPtr(buffer), baseAddress, length.ToIntPtr());
+                Win32.RtlMoveMemory(buffer, baseAddress, length.ToIntPtr());
                 return length;
             }
 
@@ -2007,7 +2199,7 @@ namespace ProcessHacker.Native.Objects
                 if ((status = Win32.NtReadVirtualMemory(
                     this,
                     baseAddress,
-                    new IntPtr(buffer),
+                    buffer,
                     length.ToIntPtr(),
                     out retLengthIntPtr
                     )) >= NtStatus.Error)
@@ -2144,7 +2336,7 @@ namespace ProcessHacker.Native.Objects
             byte* buffer = stackalloc byte[IntPtr.Size];
 
             this.ReadMemory(
-                this.GetBasicInformation().PebBaseAddress.Increment(Win32.PebLdrOffset),
+                this.GetBasicInformation().PebBaseAddress.Increment(Peb.LdrOffset),
                 buffer,
                 IntPtr.Size
                 );
@@ -2311,11 +2503,14 @@ namespace ProcessHacker.Native.Objects
         /// <param name="baseAddress">The offset at which to begin writing.</param>
         /// <param name="buffer">The data to write.</param>
         /// <returns>The length, in bytes, that was written.</returns>
-        public unsafe int WriteMemory(IntPtr baseAddress, byte[] buffer)
+        public int WriteMemory(IntPtr baseAddress, byte[] buffer)
         {
-            fixed (byte* dataPtr = buffer)
+            unsafe
             {
-                return WriteMemory(baseAddress, dataPtr, buffer.Length);
+                fixed (byte* dataPtr = buffer)
+                {
+                    return WriteMemory(baseAddress, dataPtr, buffer.Length);
+                }
             }
         }
 
@@ -2328,11 +2523,23 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The length, in bytes, that was written.</returns>
         public unsafe int WriteMemory(IntPtr baseAddress, void* buffer, int length)
         {
+            return this.WriteMemory(baseAddress, new IntPtr(buffer), length);
+        }
+
+        /// <summary>
+        /// Writes data to the process' virtual memory.
+        /// </summary>
+        /// <param name="baseAddress">The offset at which to begin writing.</param>
+        /// <param name="buffer">The data to write.</param>
+        /// <param name="length">The length to be written.</param>
+        /// <returns>The length, in bytes, that was written.</returns>
+        public int WriteMemory(IntPtr baseAddress, IntPtr buffer, int length)
+        {
             int retLength;
 
             if (this.Handle == Current)
             {
-                Win32.RtlMoveMemory(baseAddress, new IntPtr(buffer), length.ToIntPtr());
+                Win32.RtlMoveMemory(baseAddress, buffer, length.ToIntPtr());
                 return length;
             }
 
@@ -2348,7 +2555,7 @@ namespace ProcessHacker.Native.Objects
                 if ((status = Win32.NtWriteVirtualMemory(
                     this,
                     baseAddress,
-                    new IntPtr(buffer),
+                    buffer,
                     length.ToIntPtr(),
                     out retLengthIntPtr
                     )) >= NtStatus.Error)
@@ -2446,7 +2653,7 @@ namespace ProcessHacker.Native.Objects
             for (int i = 0; i < query.TotalTraces; i++)
             {
                 var entry = data.ReadStruct<ProcessHandleTracingEntry>(
-                    Win32.ProcessHandleTracingQueryHandleTraceOffset,
+                    ProcessHandleTracingQuery.HandleTraceOffset,
                     i
                     );
 

@@ -174,7 +174,7 @@ namespace ProcessHacker
                         {
                             try
                             {
-                                phandle.WriteMemory(info.BaseAddress.Increment(i), alloc, 0x1000);
+                                phandle.WriteMemory(info.BaseAddress.Increment(i), (IntPtr)alloc, 0x1000);
                             }
                             catch
                             { }
