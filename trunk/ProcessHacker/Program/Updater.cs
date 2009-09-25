@@ -28,6 +28,8 @@ using System.Xml;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
+using System.Net;
+using System.IO;
 
 namespace ProcessHacker
 {
@@ -101,8 +103,23 @@ namespace ProcessHacker
 
             try
             {
-                System.Net.WebRequest.DefaultWebProxy = System.Net.WebRequest.GetSystemWebProxy();
-                xDoc.Load(Properties.Settings.Default.AppUpdateUrl);
+                if (ProcessHacker.Properties.Settings.Default.UseProxy)
+                {
+                    WebProxy wp = new WebProxy("127.0.0.1");
+                    wp.Credentials = new NetworkCredential("ProxyUsername", "ProxyPassword");
+                   
+                    WebClient wc = new WebClient();
+                    wc.Proxy = wp;
+
+                    MemoryStream ms = new MemoryStream(wc.DownloadData(Properties.Settings.Default.AppUpdateUrl));
+                    XmlTextReader rdr = new XmlTextReader(ms);
+
+                    xDoc.Load(rdr);
+                }
+                else
+                {
+                    xDoc.Load(Properties.Settings.Default.AppUpdateUrl);
+                }
             }
             catch (Exception ex)
             {
