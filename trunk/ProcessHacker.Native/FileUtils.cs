@@ -36,13 +36,13 @@ namespace ProcessHacker.Native
     {
         static FileUtils()
         {
-            RefreshDriveDevicePrefixes();
+            RefreshFileNamePrefixes();
         }
 
         /// <summary>
         /// Used to resolve device prefixes (\Device\Harddisk1) into DOS drive names.
         /// </summary>
-        private static Dictionary<string, string> _driveDevicePrefixes = new Dictionary<string, string>();
+        private static Dictionary<string, string> _fileNamePrefixes = new Dictionary<string, string>();
 
         public static Icon GetFileIcon(string fileName)
         {
@@ -76,32 +76,55 @@ namespace ProcessHacker.Native
             }
         }
 
-        public static string FixPath(string path)
+        public static string GetFileName(string fileName)
         {
-            if (path.ToLower().StartsWith("\\systemroot"))
-                return (new System.IO.FileInfo(Environment.SystemDirectory + "\\.." + path.Substring(11))).FullName;
-            else if (path.StartsWith("\\??\\"))
-                return path.Substring(4);
-            else
-                return path;
+            return GetFileName(fileName, false);
         }
 
-        public static string DeviceFileNameToDos(string fileName)
+        public static string GetFileName(string fileName, bool canonicalize)
         {
-            var prefixes = _driveDevicePrefixes;
+            bool alreadyCanonicalized = false;
 
-            foreach (var pair in prefixes)
+            // If the path starts with "\SystemRoot", we can replace it with C:\ (or whatever it is).
+            if (fileName.ToLower().StartsWith("\\systemroot"))
             {
-                if (fileName.StartsWith(pair.Key + "\\"))
-                    return pair.Value + "\\" + fileName.Substring(pair.Key.Length + 1);
-                else if (fileName == pair.Key)
-                    return pair.Value;
+                fileName = System.IO.Path.GetFullPath(Environment.SystemDirectory + "\\.." + fileName.Substring(11));
+                alreadyCanonicalized = true;
             }
+            // If the path starts with "\??\", we can remove it and we will have the path.
+            else if (fileName.StartsWith("\\??\\"))
+            {
+                fileName = fileName.Substring(4);
+            }
+
+            // If the path still starts with a backslash, we probably need to 
+            // resolve any native object name to a DOS drive letter.
+            if (fileName.StartsWith("\\"))
+            {
+                var prefixes = _fileNamePrefixes;
+
+                foreach (var pair in prefixes)
+                {
+                    if (fileName.StartsWith(pair.Key + "\\"))
+                    {
+                        fileName = pair.Value + "\\" + fileName.Substring(pair.Key.Length + 1);
+                        break;
+                    }
+                    else if (fileName == pair.Key)
+                    {
+                        fileName = pair.Value;
+                        break;
+                    }
+                }
+            }
+
+            if (canonicalize && !alreadyCanonicalized)
+                fileName = System.IO.Path.GetFullPath(fileName);
 
             return fileName;
         }
 
-        public static void RefreshDriveDevicePrefixes()
+        public static void RefreshFileNamePrefixes()
         {
             // Just create a new dictionary to avoid having to lock the existing one.
             var newPrefixes = new Dictionary<string, string>();
@@ -119,7 +142,7 @@ namespace ProcessHacker.Native
                 }
             }
 
-            _driveDevicePrefixes = newPrefixes;
+            _fileNamePrefixes = newPrefixes;
         }
 
         public static void ShowProperties(string fileName)

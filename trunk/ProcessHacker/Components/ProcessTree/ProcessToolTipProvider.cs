@@ -64,7 +64,7 @@ namespace ProcessHacker
 
                     if (pNode.Pid == 4)
                     {
-                        filename = FileUtils.FixPath(Windows.KernelFileName);
+                        filename = FileUtils.GetFileName(Windows.KernelFileName);
                     }
                     else
                     {

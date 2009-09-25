@@ -165,14 +165,14 @@ namespace ProcessHacker.Components
                     {
                         if (_pid == 4)
                         {
-                            _mainModule = FileUtils.FixPath(Windows.KernelFileName);
+                            _mainModule = FileUtils.GetFileName(Windows.KernelFileName);
                         }
                         else
                         {
                             using (var phandle =
                                 new ProcessHandle(_pid,
                                     Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
-                                _mainModule = FileUtils.FixPath(phandle.GetMainModule().FileName);
+                                _mainModule = FileUtils.GetFileName(phandle.GetMainModule().FileName);
                         }
 
                         _mainModule = _mainModule.ToLower();

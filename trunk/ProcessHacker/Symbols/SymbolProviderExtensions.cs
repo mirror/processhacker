@@ -44,9 +44,7 @@ namespace ProcessHacker.Native.Symbols
                 {
                     if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
                     {
-                        FileInfo fi = new FileInfo(module.FileName);
-
-                        if (!File.Exists(fi.DirectoryName + "\\symsrv.dll"))
+                        if (!File.Exists(Path.GetDirectoryName(module.FileName) + "\\symsrv.dll"))
                         {
                             if (!force)
                                 Properties.Settings.Default.DbgHelpWarningShown = true;

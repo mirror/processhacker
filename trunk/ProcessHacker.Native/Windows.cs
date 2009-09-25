@@ -179,7 +179,7 @@ namespace ProcessHacker.Native
                     moduleInfo.Size,
                     moduleInfo.Flags,
                     moduleInfo.BaseName,
-                    FileUtils.FixPath(moduleInfo.FileName)
+                    FileUtils.GetFileName(moduleInfo.FileName)
                     )))
                     break;
             }
@@ -534,7 +534,7 @@ namespace ProcessHacker.Native
                         currentPagefile.TotalSize,
                         currentPagefile.TotalInUse,
                         currentPagefile.PeakUsage,
-                        FileUtils.FixPath(currentPagefile.PageFileName.Read())
+                        FileUtils.GetFileName(currentPagefile.PageFileName.Read())
                         ));
 
                     i += currentPagefile.NextEntryOffset;

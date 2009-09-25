@@ -84,7 +84,7 @@ namespace ProcessHacker
             string fileName = phandle.GetNativeImageFileName();
 
             if (fileName != null)
-                fileName = FileUtils.DeviceFileNameToDos(fileName);
+                fileName = FileUtils.GetFileName(fileName);
 
             if (pid == 0)
                 pid = phandle.GetBasicInformation().UniqueProcessId.ToInt32();

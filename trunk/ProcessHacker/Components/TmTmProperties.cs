@@ -29,7 +29,7 @@ namespace ProcessHacker.Components
             try
             {
                 textGuid.Text = _tmHandle.GetBasicInformation().TmIdentity.ToString("B");
-                textLogFileName.Text = FileUtils.FixPath(FileUtils.DeviceFileNameToDos(_tmHandle.GetLogFileName()));
+                textLogFileName.Text = FileUtils.GetFileName(FileUtils.GetFileName(_tmHandle.GetLogFileName()));
             }
             catch (Exception ex)
             {

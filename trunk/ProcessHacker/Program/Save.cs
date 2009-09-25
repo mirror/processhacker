@@ -249,7 +249,7 @@ namespace ProcessHacker
                     var fileName = phandle.GetNativeImageFileName();
 
                     sb.AppendLine("Native file name: " + fileName);
-                    fileName = FileUtils.DeviceFileNameToDos(fileName);
+                    fileName = FileUtils.GetFileName(fileName);
                     sb.AppendLine("DOS file name: " + fileName);
 
                     try

@@ -2513,9 +2513,8 @@ namespace ProcessHacker
                         if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
                         {
                             // Load symsrv.dll from the same directory as dbghelp.dll.
-                            var fi = new System.IO.FileInfo(module.FileName);
 
-                            Loader.LoadDll(fi.DirectoryName + "\\symsrv.dll");
+                            Loader.LoadDll(System.IO.Path.GetDirectoryName(module.FileName) + "\\symsrv.dll");
 
                             return false;
                         }

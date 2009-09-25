@@ -580,7 +580,7 @@ namespace ProcessHacker
                 {
                     if (fileName != null)
                     {
-                        string uniName = (new System.IO.FileInfo(fileName)).FullName.ToLower();
+                        string uniName = global::System.IO.Path.GetFullPath(fileName).ToLower();
 
                         // No lock needed; verify results are never removed, only added.
                         if (!forced && _fileResults.ContainsKey(uniName))
@@ -634,7 +634,7 @@ namespace ProcessHacker
                         // file name spoofing.
                         try
                         {
-                            fileName = FileUtils.DeviceFileNameToDos(phandle.GetNativeImageFileName());
+                            fileName = FileUtils.GetFileName(phandle.GetNativeImageFileName());
                         }
                         catch
                         { }
@@ -666,8 +666,8 @@ namespace ProcessHacker
                             // We can try to use the PEB.
                             try
                             {
-                                fileName = FileUtils.DeviceFileNameToDos(
-                                    FileUtils.FixPath(phandle.GetPebString(PebOffset.ImagePathName)));
+                                fileName = FileUtils.GetFileName(
+                                    FileUtils.GetFileName(phandle.GetPebString(PebOffset.ImagePathName)));
                             }
                             catch
                             { }
@@ -757,7 +757,7 @@ namespace ProcessHacker
             //this.UpdateFrozenWindows();
 
             if (this.RunCount % 3 == 0)
-                FileUtils.RefreshDriveDevicePrefixes();
+                FileUtils.RefreshFileNamePrefixes();
 
             var tsProcesses = new Dictionary<int, IntPtr>();
             var procs = Windows.GetProcesses();

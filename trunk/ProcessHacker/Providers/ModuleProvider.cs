@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
@@ -136,7 +135,7 @@ namespace ProcessHacker
                                         m.Size,
                                         IntPtr.Zero,
                                         m.Flags,
-                                        (new System.IO.FileInfo(m.FileName)).Name,
+                                        System.IO.Path.GetFileName(m.FileName),
                                         m.FileName
                                         )
                                     );
@@ -209,7 +208,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.FileName = FileUtils.FixPath(m.FileName);
+                        item.FileName = FileUtils.GetFileName(m.FileName);
                     }
                     catch
                     { }

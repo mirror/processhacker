@@ -222,7 +222,7 @@ namespace ProcessHacker.Components
                     ServiceItem item = _provider.Dictionary[listServices.SelectedItems[0].Name];
 
                     _oldConfig = item.Config;
-                    _oldConfig.BinaryPathName = FileUtils.FixPath(_oldConfig.BinaryPathName);
+                    _oldConfig.BinaryPathName = FileUtils.GetFileName(_oldConfig.BinaryPathName);
 
                     buttonStart.Enabled = true;
                     buttonStop.Enabled = true;
@@ -250,7 +250,7 @@ namespace ProcessHacker.Components
 
                     comboStartType.SelectedItem = item.Config.StartType.ToString();
                     comboErrorControl.SelectedItem = item.Config.ErrorControl.ToString();
-                    textServiceBinaryPath.Text = FileUtils.FixPath(item.Config.BinaryPathName);
+                    textServiceBinaryPath.Text = FileUtils.GetFileName(item.Config.BinaryPathName);
                     textUserAccount.Text = item.Config.ServiceStartName;
                     textLoadOrderGroup.Text = item.Config.LoadOrderGroup;
 

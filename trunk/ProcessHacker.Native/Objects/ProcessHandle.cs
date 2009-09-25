@@ -729,7 +729,7 @@ namespace ProcessHacker.Native.Objects
 
                 if (!enumModulesCallback(new ProcessModule(
                     moduleInfo.BaseOfDll, moduleInfo.SizeOfImage, moduleInfo.EntryPoint, 0,
-                    baseName.ToString(), FileUtils.FixPath(fileName.ToString())
+                    baseName.ToString(), FileUtils.GetFileName(fileName.ToString())
                     )))
                     break;
             }
@@ -788,7 +788,7 @@ namespace ProcessHacker.Native.Objects
 
                     try
                     {
-                        fullDllName = FileUtils.FixPath(currentEntry->FullDllName.Read(this).TrimEnd('\0'));
+                        fullDllName = FileUtils.GetFileName(currentEntry->FullDllName.Read(this).TrimEnd('\0'));
                     }
                     catch
                     { }
@@ -1284,7 +1284,7 @@ namespace ProcessHacker.Native.Objects
             if (!Win32.QueryFullProcessImageName(this, false, sb, ref len))
                 Win32.ThrowLastError();
 
-            return FileUtils.FixPath(sb.ToString(0, len));
+            return FileUtils.GetFileName(sb.ToString(0, len));
         }
 
         /// <summary>
@@ -1382,7 +1382,7 @@ namespace ProcessHacker.Native.Objects
             if (this.GetBasicInformation().UniqueProcessId.Equals(4))
                 return KnownProcess.System;
 
-            string fileName = FileUtils.DeviceFileNameToDos(this.GetNativeImageFileName());
+            string fileName = FileUtils.GetFileName(this.GetNativeImageFileName());
 
             if (fileName.ToLower().StartsWith(Environment.SystemDirectory.ToLower()))
             {
@@ -1444,12 +1444,7 @@ namespace ProcessHacker.Native.Objects
             {
                 string fileName = sb.ToString(0, length);
 
-                if (fileName.StartsWith("\\"))
-                    fileName = FileUtils.DeviceFileNameToDos(fileName);
-
-                System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
-
-                return fi.ToString();
+                return FileUtils.GetFileName(fileName, true);
             }
 
             return null;

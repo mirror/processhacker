@@ -331,7 +331,7 @@ namespace ProcessHacker.Native
                     case "File":
                         // Resolves \Device\Harddisk1 into C:, for example.
                         if (!string.IsNullOrEmpty(info.OrigName))
-                            info.BestName = FileUtils.DeviceFileNameToDos(info.OrigName);
+                            info.BestName = FileUtils.GetFileName(info.OrigName);
 
                         break;
 
@@ -429,7 +429,7 @@ namespace ProcessHacker.Native
                             {
                                 var tmHandle = TmHandle.FromHandle(tmHandleDup);
 
-                                info.BestName = FileUtils.FixPath(FileUtils.DeviceFileNameToDos(tmHandle.GetLogFileName()));
+                                info.BestName = FileUtils.GetFileName(FileUtils.GetFileName(tmHandle.GetLogFileName()));
 
                                 if (string.IsNullOrEmpty(info.BestName))
                                     info.BestName = tmHandle.GetBasicInformation().TmIdentity.ToString("B");

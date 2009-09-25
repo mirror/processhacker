@@ -367,7 +367,7 @@ namespace ProcessHacker
             else
             {
                 level = SymbolResolveLevel.Module;
-                return (new System.IO.FileInfo(fileName)).Name + "+0x" +
+                return System.IO.Path.GetFileName(fileName) + "+0x" +
                     (startAddress - modBase).ToString("x");
             }
         }
