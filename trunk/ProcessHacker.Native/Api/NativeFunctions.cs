@@ -2064,6 +2064,14 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetInformationThread(
+            [In] IntPtr ThreadHandle,
+            [In] ThreadInformationClass ThreadInformationClass,
+            [In] ref IntPtr ThreadInformation,
+            [In] int ThreadInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtSetInformationToken(
             [In] IntPtr TokenHandle,
             [In] TokenInformationClass TokenInformationClass,

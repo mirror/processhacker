@@ -985,6 +985,15 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(status);
         }
 
+        private void SetInformationIntPtr(ThreadInformationClass infoClass, IntPtr value)
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtSetInformationThread(
+                this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
+
         /// <summary>
         /// Sets the thread's priority.
         /// </summary>
@@ -1001,6 +1010,18 @@ namespace ProcessHacker.Native.Objects
         public void SetPriorityBoost(bool enabled)
         {
             this.SetInformationInt32(ThreadInformationClass.ThreadPriorityBoost, enabled ? 0 : 1);
+        }
+
+        /// <summary>
+        /// Sets the thread's impersonation token.
+        /// </summary>
+        /// <param name="tokenHandle">
+        /// A handle to a token. Specify null to cause the thread to stop 
+        /// impersonating.
+        /// </param>
+        public void SetToken(TokenHandle tokenHandle)
+        {
+            this.SetInformationIntPtr(ThreadInformationClass.ThreadImpersonationToken, tokenHandle ?? IntPtr.Zero);
         }
 
         /// <summary>
