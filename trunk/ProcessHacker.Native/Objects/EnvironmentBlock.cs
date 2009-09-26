@@ -92,9 +92,10 @@ namespace ProcessHacker.Native.Objects
 
                     if (status == NtStatus.BufferTooSmall)
                     {
-                        // Resize and try again.
-                        data.Resize(valueStr.Length);
-                        valueStr.MaximumLength = valueStr.Length;
+                        // Resize and try again (+2 for the null terminator).
+                        data.Resize(valueStr.Length + 2);
+                        valueStr.Buffer = data;
+                        valueStr.MaximumLength = (ushort)(valueStr.Length + 2);
 
                         status = Win32.RtlQueryEnvironmentVariable_U(
                             this,
@@ -129,7 +130,7 @@ namespace ProcessHacker.Native.Objects
             return new EnvironmentBlock(previousEnvironment);
         }
 
-        public EnvironmentBlock SetVariable(string name, string value)
+        public void SetVariable(string name, string value)
         {
             NtStatus status;
             IntPtr environment = _environment;
@@ -161,7 +162,7 @@ namespace ProcessHacker.Native.Objects
                 nameStr.Dispose();
             }
 
-            return new EnvironmentBlock(environment);
+            _environment = environment;
         }
     }
 }
