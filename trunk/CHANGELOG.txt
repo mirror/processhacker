@@ -18,6 +18,7 @@ Process Hacker
    * Decreased memory and CPU usage
    * Added a glossary to Help
    * Configurable elevation prompts
+   * Better Windows 7 user interface support
  * FIXED:
    * #2820170 - "System.ArgumentOutOfRangeException in network list"
    * #2845427 - "Indicator integer overflow"
