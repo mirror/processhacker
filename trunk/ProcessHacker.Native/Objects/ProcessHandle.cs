@@ -1987,24 +1987,11 @@ namespace ProcessHacker.Native.Objects
 
         /// <summary>
         /// Gets whether the process is currently being debugged. This requires 
-        /// the PROCESS_QUERY_INFORMATION permission.
+        /// QueryInformation access.
         /// </summary>
         public bool IsBeingDebugged()
         {
-            bool debugged = false;
-
-            if (!Win32.CheckRemoteDebuggerPresent(this, ref debugged))
-                Win32.ThrowLastError();
-
-            return debugged;
-        }
-
-        /// <summary>
-        /// Gets whether the process is being debugged.
-        /// </summary>
-        public bool IsBeingDebuggedNative()
-        {
-            return this.GetInformationInt32(ProcessInformationClass.ProcessDebugFlags) != 0;
+            return this.GetInformationIntPtr(ProcessInformationClass.ProcessDebugPort) != IntPtr.Zero;
         }
 
         /// <summary>
