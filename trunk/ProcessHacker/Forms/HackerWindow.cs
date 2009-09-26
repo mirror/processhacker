@@ -2774,8 +2774,7 @@ namespace ProcessHacker
 
         public void ExecuteOnIcons(Action<UsageIcon> action)
         {
-            foreach (var icon in notifyIcons)
-                action(icon);
+            notifyIcons.ForEach(action);
         }
 
         public UsageIcon GetFirstIcon()
@@ -2913,6 +2912,7 @@ namespace ProcessHacker
             //networkP.Dispose();
 
             this.ExecuteOnIcons((icon) => icon.Visible = false);
+            this.ExecuteOnIcons((icon) => icon.Dispose());
             SaveSettings();
             this.Visible = false;
 
