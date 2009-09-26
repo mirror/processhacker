@@ -53,6 +53,30 @@
     <Compile Include="BaseConverter.cs" />
     <Compile Include="ByteStreamReader.cs" />
     <Compile Include="CircularBuffer.cs" />
+    <Compile Include="Delegates.cs" />
+    <Compile Include="Linq\GroupedEnumerable.cs" />
+    <Compile Include="Linq\Grouping.cs" />
+    <Compile Include="Linq\IGrouping.cs" />
+    <Compile Include="Linq\ILookup.cs" />
+    <Compile Include="Linq\IOrderedEnumerable.cs" />
+    <Compile Include="Linq\Lookup.cs" />
+    <Compile Include="Linq\OrderByEnumerable.cs" />
+    <Compile Include="Linq\Query Operators\Aggregation Operators - Average.cs" />
+    <Compile Include="Linq\Query Operators\Aggregation Operators - Sum.cs" />
+    <Compile Include="Linq\Query Operators\Aggregation Operators.cs" />
+    <Compile Include="Linq\Query Operators\Conversion Operators.cs" />
+    <Compile Include="Linq\Query Operators\Element Operators.cs" />
+    <Compile Include="Linq\Query Operators\Enumerable Private.cs" />
+    <Compile Include="Linq\Query Operators\Filtering Operators.cs" />
+    <Compile Include="Linq\Query Operators\Generation Operators.cs" />
+    <Compile Include="Linq\Query Operators\Grouping Operators.cs" />
+    <Compile Include="Linq\Query Operators\Joining Operators.cs" />
+    <Compile Include="Linq\Query Operators\Misc Operators.cs" />
+    <Compile Include="Linq\Query Operators\Ordering Operators.cs" />
+    <Compile Include="Linq\Query Operators\Projection Operators.cs" />
+    <Compile Include="Linq\Query Operators\Quantifiers.cs" />
+    <Compile Include="Linq\Query Operators\Set Operators.cs" />
+    <Compile Include="Linq\ThenByEnumerable.cs" />
     <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\MessageQueueListener.cs" />
     <Compile Include="Objects\SecuredHandleTable.cs" />
@@ -86,6 +110,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Linq\License.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

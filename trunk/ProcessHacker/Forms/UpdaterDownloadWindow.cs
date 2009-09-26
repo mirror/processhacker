@@ -74,6 +74,14 @@ namespace ProcessHacker
             }
         }
 
+        private void UpdaterDownloadWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            TaskbarLib.DesktopIntegration.Windows7Taskbar.SetProgressState(
+                Program.HackerWindowHandle,
+                TaskbarLib.DesktopIntegration.Windows7Taskbar.ThumbnailProgressState.NoProgress
+                );
+        }
+
         private void webClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             // Check if the file is actually an executable file.
@@ -149,6 +157,11 @@ namespace ProcessHacker
 
             progressDownload.Value = e.ProgressPercentage;
 
+            TaskbarLib.DesktopIntegration.Windows7Taskbar.SetProgressValue(
+                Program.HackerWindowHandle,
+                (ulong)e.BytesReceived,
+                (ulong)e.TotalBytesToReceive
+                );
         }
 
         private void verifyWorker_DoWork(object sender, DoWorkEventArgs e)

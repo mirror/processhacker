@@ -924,6 +924,7 @@
     <None Include="Resources\mouse.png" />
     <None Include="Resources\application_go.png" />
     <None Include="Resources\sflogo.png" />
+    <None Include="Resources\lock.png" />
     <Content Include="SharpDevelop\LICENSE.txt" />
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />

@@ -23,6 +23,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
@@ -105,6 +106,18 @@ namespace ProcessHacker
             set
             {
                 _notifyIcon.Icon = value;
+
+                if (this == _activeUsageIcon)
+                {
+                    if (OSVersion.HasExtendedTaskbar)
+                    {
+                        TaskbarLib.DesktopIntegration.Windows7Taskbar.SetTaskbarOverlayIcon(
+                            Program.HackerWindowHandle,
+                            value,
+                            ""
+                            );
+                    }
+                }
             }
         }
 

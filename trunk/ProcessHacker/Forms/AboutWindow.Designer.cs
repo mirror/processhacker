@@ -42,13 +42,13 @@
             this.flowCredits = new System.Windows.Forms.FlowLayoutPanel();
             this.label8 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.linkGamingMasteR = new System.Windows.Forms.LinkLabel();
             this.linkKerem = new System.Windows.Forms.LinkLabel();
@@ -258,6 +258,24 @@
             this.label5.TabIndex = 18;
             this.label5.Text = "wj32 - Project Manager";
             // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 29);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(90, 13);
+            this.label12.TabIndex = 29;
+            this.label12.Text = "dmex - Developer";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 42);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(188, 13);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "XhmikosR - Installer Developer, Tester";
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -294,15 +312,6 @@
             this.label7.TabIndex = 18;
             this.label7.Text = "Uday Shanbhag - Developer";
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 42);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(188, 13);
-            this.label1.TabIndex = 13;
-            this.label1.Text = "XhmikosR - Installer Developer, Tester";
-            // 
             // label11
             // 
             this.label11.AutoSize = true;
@@ -312,15 +321,6 @@
             this.label11.Size = new System.Drawing.Size(68, 13);
             this.label11.TabIndex = 17;
             this.label11.Text = "Thanks to:";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 29);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(90, 13);
-            this.label12.TabIndex = 29;
-            this.label12.Text = "dmex - Developer";
             // 
             // label2
             // 
@@ -446,11 +446,11 @@
             // 
             this.buttonChangelog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonChangelog.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonChangelog.Location = new System.Drawing.Point(325, 291);
+            this.buttonChangelog.Location = new System.Drawing.Point(339, 291);
             this.buttonChangelog.Name = "buttonChangelog";
             this.buttonChangelog.Size = new System.Drawing.Size(75, 23);
             this.buttonChangelog.TabIndex = 5;
-            this.buttonChangelog.Text = "Changelog...";
+            this.buttonChangelog.Text = "Changelog";
             this.buttonChangelog.UseVisualStyleBackColor = true;
             this.buttonChangelog.Click += new System.EventHandler(this.buttonChangelog_Click);
             // 
@@ -458,11 +458,11 @@
             // 
             this.buttonDiagnostics.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDiagnostics.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDiagnostics.Location = new System.Drawing.Point(406, 291);
+            this.buttonDiagnostics.Location = new System.Drawing.Point(420, 291);
             this.buttonDiagnostics.Name = "buttonDiagnostics";
-            this.buttonDiagnostics.Size = new System.Drawing.Size(89, 23);
+            this.buttonDiagnostics.Size = new System.Drawing.Size(75, 23);
             this.buttonDiagnostics.TabIndex = 6;
-            this.buttonDiagnostics.Text = "Diagnostics...";
+            this.buttonDiagnostics.Text = "Diagnostics";
             this.buttonDiagnostics.UseVisualStyleBackColor = true;
             this.buttonDiagnostics.Click += new System.EventHandler(this.buttonDiagnostics_Click);
             // 

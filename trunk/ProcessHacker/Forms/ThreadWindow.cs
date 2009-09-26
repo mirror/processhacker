@@ -71,39 +71,6 @@ namespace ProcessHacker
 
             try
             {
-                using (ThreadHandle thandle = new ThreadHandle(TID, Program.MinThreadQueryRights))
-                {
-                    try
-                    {
-                        using (TokenHandle token = thandle.GetToken(TokenAccess.Query))
-                        {
-                            labelThreadUser.Text = "Username: " + token.GetUser().GetFullName(true);
-                            buttonToken.Enabled = true;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        buttonToken.Enabled = false;
-
-                        if (ex.Message.StartsWith("An attempt was made"))
-                        {
-                            labelThreadUser.Text = "Username: (Not Impersonating)";
-                        }
-                        else
-                        {
-                            labelThreadUser.Text = "Username: (" + ex.Message + ")";
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                labelThreadUser.Text = "Username: (" + ex.Message + ")";
-                buttonToken.Enabled = false;
-            }
-
-            try
-            {
                 if (processHandle != null)
                 {
                     _phandle = processHandle;
@@ -357,27 +324,6 @@ namespace ProcessHacker
             {
                 fileModule.Text = "";
                 fileModule.Enabled = false;
-            }
-        }
-
-        private void buttonToken_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                using (ThreadHandle thread = new ThreadHandle(_tid, Program.MinThreadQueryRights))
-                {
-                    TokenWindow tokForm = new TokenWindow(thread);
-
-                    tokForm.TopMost = this.TopMost;
-                    tokForm.Text = "Token - " + this.Text;
-                    tokForm.ShowDialog();
-                }
-            }
-            catch (ObjectDisposedException)
-            { }
-            catch (Exception ex)
-            {
-                PhUtils.ShowException("Could not view the thread token", ex);
             }
         }
     }

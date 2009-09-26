@@ -554,6 +554,23 @@ namespace ProcessHacker.Components
                     priorityThreadMenuItem.Text = "(" + ex.Message + ")";
                     priorityThreadMenuItem.Enabled = false;
                 }
+
+                try
+                {
+                    using (ThreadHandle thandle = new ThreadHandle(
+                        int.Parse(listThreads.SelectedItems[0].Text), Program.MinThreadQueryRights
+                        ))
+                    {
+                        using (TokenHandle tokenHandle = thandle.GetToken(TokenAccess.Query))
+                        {
+                            tokenThreadMenuItem.Enabled = true;
+                        }
+                    }
+                }
+                catch (WindowsException ex)
+                {
+                    tokenThreadMenuItem.Enabled = false;
+                }
             }
             else
             {
@@ -920,6 +937,28 @@ namespace ProcessHacker.Components
             catch (Exception ex)
             {
                 PhUtils.ShowException("Unable to inspect the TEB of the thread", ex);
+            }
+        }
+
+        private void tokenThreadMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (ThreadHandle thandle = new ThreadHandle(
+                    int.Parse(listThreads.SelectedItems[0].Text), Program.MinThreadQueryRights
+                    ))
+                {
+                    TokenWindow tokForm = new TokenWindow(thandle);
+
+                    tokForm.Text = "Thread Token";
+                    tokForm.ShowDialog();
+                }
+            }
+            catch (ObjectDisposedException)
+            { }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to view the thread token", ex);
             }
         }
 
