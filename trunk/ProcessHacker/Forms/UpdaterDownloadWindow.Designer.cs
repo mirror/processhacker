@@ -158,7 +158,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Process Hacker Update";
             this.Load += new System.EventHandler(this.UpdaterDownload_Load);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.UpdaterDownloadWindow_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);

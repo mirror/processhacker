@@ -24,7 +24,6 @@ using System.Drawing;
 using System.Windows.Forms; // DO NOT REMOVE, needed in Debug mode
 using ProcessHacker.Common;
 using ProcessHacker.Components;
-using TaskbarLib;
 
 namespace ProcessHacker
 {

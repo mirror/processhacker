@@ -30,7 +30,6 @@ using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
-using TaskbarLib;
 
 namespace ProcessHacker
 {
@@ -73,11 +72,6 @@ namespace ProcessHacker
                 PhUtils.ShowException("Unable to download Process Hacker", ex);
                 this.Close();
             }
-        }
-
-        private void UpdaterDownloadWindow_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            TaskbarClass.SetProgressState(TaskbarNative.TaskbarProgressFlags.NoProgress);
         }
 
         private void webClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
@@ -143,8 +137,6 @@ namespace ProcessHacker
                     PhUtils.ShowException("Unable to download the update", webException);
                 }
             }
-
-            TaskbarClass.SetProgressState(TaskbarNative.TaskbarProgressFlags.NoProgress);
         }
 
         private void webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -157,8 +149,6 @@ namespace ProcessHacker
 
             progressDownload.Value = e.ProgressPercentage;
 
-            TaskbarClass.SetProgressState(TaskbarNative.TaskbarProgressFlags.Normal);
-            TaskbarClass.SetProgressValue((ulong)e.BytesReceived, (ulong)e.TotalBytesToReceive);
         }
 
         private void verifyWorker_DoWork(object sender, DoWorkEventArgs e)

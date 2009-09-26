@@ -24,7 +24,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using ProcessHacker.Native.Api;
-using TaskbarLib;
 
 namespace ProcessHacker
 {
@@ -38,9 +37,6 @@ namespace ProcessHacker
             set
             {
                 _activeUsageIcon = value;
-
-                if (_activeUsageIcon == null)
-                    TaskbarClass.SetOverlayIcon(null, "");
             }
         }
 
@@ -109,9 +105,6 @@ namespace ProcessHacker
             set
             {
                 _notifyIcon.Icon = value;
-
-                if (this == _activeUsageIcon)
-                    TaskbarClass.SetOverlayIcon(_notifyIcon.Icon, "");
             }
         }
 
