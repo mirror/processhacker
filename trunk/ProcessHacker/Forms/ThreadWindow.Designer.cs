@@ -55,7 +55,7 @@
             // 
             this.fileModule.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileModule.Location = new System.Drawing.Point(63, 391);
+            this.fileModule.Location = new System.Drawing.Point(63, 347);
             this.fileModule.Name = "fileModule";
             this.fileModule.ReadOnly = false;
             this.fileModule.Size = new System.Drawing.Size(243, 24);
@@ -65,7 +65,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 397);
+            this.label1.Location = new System.Drawing.Point(12, 353);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(45, 13);
             this.label1.TabIndex = 8;
@@ -75,12 +75,13 @@
             // 
             this.buttonWalk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonWalk.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonWalk.Location = new System.Drawing.Point(312, 392);
+            this.buttonWalk.Location = new System.Drawing.Point(312, 348);
             this.buttonWalk.Name = "buttonWalk";
             this.buttonWalk.Size = new System.Drawing.Size(75, 23);
             this.buttonWalk.TabIndex = 7;
             this.buttonWalk.Text = "&Refresh";
             this.buttonWalk.UseVisualStyleBackColor = true;
+            this.buttonWalk.Click += new System.EventHandler(this.buttonWalk_Click);
             // 
             // listViewCallStack
             // 
@@ -95,10 +96,11 @@
             this.listViewCallStack.Location = new System.Drawing.Point(12, 12);
             this.listViewCallStack.Name = "listViewCallStack";
             this.listViewCallStack.ShowItemToolTips = true;
-            this.listViewCallStack.Size = new System.Drawing.Size(375, 373);
+            this.listViewCallStack.Size = new System.Drawing.Size(375, 329);
             this.listViewCallStack.TabIndex = 6;
             this.listViewCallStack.UseCompatibleStateImageBehavior = false;
             this.listViewCallStack.View = System.Windows.Forms.View.Details;
+            this.listViewCallStack.SelectedIndexChanged += new System.EventHandler(this.listViewCallStack_SelectedIndexChanged);
             // 
             // columnHeader3
             // 
@@ -114,7 +116,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(399, 427);
+            this.ClientSize = new System.Drawing.Size(399, 383);
             this.Controls.Add(this.fileModule);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonWalk);
