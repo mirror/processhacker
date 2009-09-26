@@ -416,6 +416,14 @@
     <Compile Include="Components\TargetWindowButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Components\TaskbarLib\Interop\COMTypes.cs" />
+    <Compile Include="Components\TaskbarLib\Interop\Interop.cs" />
+    <Compile Include="Components\TaskbarLib\JumpLists\JumpListImpl.cs" />
+    <Compile Include="Components\TaskbarLib\JumpLists\JumpListManager.cs" />
+    <Compile Include="Components\TaskbarLib\ThumbnailButtons\ThumbButton.cs" />
+    <Compile Include="Components\TaskbarLib\ThumbnailButtons\ThumbButtonManager.cs" />
+    <Compile Include="Components\TaskbarLib\Windows7Taskbar.cs" />
+    <Compile Include="Components\TaskbarLib\WindowsFormsExtensions.cs" />
     <Compile Include="Components\TimerProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
