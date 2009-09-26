@@ -1074,16 +1074,6 @@ namespace ProcessHacker.Native.Api
         MaxProcessInfoClass
     }
 
-    public enum ProcessPriority
-    {
-        Idle = 0x40,
-        Normal = 0x20,
-        High = 0x80,
-        RealTime = 0x100,
-        BelowNormal = 0x4000,
-        AboveNormal = 0x8000
-    }
-
     public enum ProcessPriorityClass : byte
     {
         Unknown = 0,

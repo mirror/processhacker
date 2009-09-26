@@ -749,11 +749,11 @@ namespace ProcessHacker.Native.Api
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetPriorityClass(
             [In] IntPtr ProcessHandle, 
-            [In] int Priority
+            [In] ProcessPriorityClassWin32 Priority
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern ProcessPriority GetPriorityClass(
+        public static extern ProcessPriorityClassWin32 GetPriorityClass(
             [In] IntPtr ProcessHandle
             );
 

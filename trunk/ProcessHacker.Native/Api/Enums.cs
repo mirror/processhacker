@@ -394,6 +394,16 @@ namespace ProcessHacker.Native.Api
         CreateIgnoreSystemDefault = 0x80000000
     }
 
+    public enum ProcessPriorityClassWin32 : int
+    {
+        Idle = 0x40,
+        Normal = 0x20,
+        High = 0x80,
+        RealTime = 0x100,
+        BelowNormal = 0x4000,
+        AboveNormal = 0x8000
+    }
+
     [Flags]
     public enum RedrawWindowFlags
     {

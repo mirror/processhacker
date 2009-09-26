@@ -1877,44 +1877,42 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A ProcessPriorityClass enum.</returns>
         public ProcessPriorityClass GetPriorityClass()
         {
-            //bugfix Workaround: NtStatus Returns DataTypeMisalignment on x64
-            if (!OSVersion.IsAmd64()) 
+            switch (Win32.GetPriorityClass(this))
             {
-                NtStatus status;
-                ProcessPriorityClassStruct priorityClass;
-                int retLength;
-
-                if ((status = Win32.NtQueryInformationProcess(
-                    this,
-                    ProcessInformationClass.ProcessPriorityClass,
-                    out priorityClass,
-                    Marshal.SizeOf(typeof(ProcessPriorityClassStruct)),
-                    out retLength
-                    )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
-
-                return priorityClass.PriorityClass;
+                case ProcessPriorityClassWin32.AboveNormal:
+                    return ProcessPriorityClass.AboveNormal;
+                case ProcessPriorityClassWin32.BelowNormal:
+                    return ProcessPriorityClass.BelowNormal;
+                case ProcessPriorityClassWin32.High:
+                    return ProcessPriorityClass.High;
+                case ProcessPriorityClassWin32.Idle:
+                    return ProcessPriorityClass.Idle;
+                case ProcessPriorityClassWin32.Normal:
+                    return ProcessPriorityClass.Normal;
+                case ProcessPriorityClassWin32.RealTime:
+                    return ProcessPriorityClass.RealTime;
+                default:
+                    Win32.ThrowLastError();
+                    // Stupid compiler
+                    return ProcessPriorityClass.Unknown;
             }
-            else
-            {
-                switch (Win32.GetPriorityClass(this))
-                {
-                    case ProcessPriority.AboveNormal:
-                        return ProcessPriorityClass.AboveNormal;
-                    case ProcessPriority.BelowNormal:
-                        return ProcessPriorityClass.BelowNormal;
-                    case ProcessPriority.High:
-                        return ProcessPriorityClass.High;
-                    case ProcessPriority.Idle:
-                        return ProcessPriorityClass.Idle;
-                    case ProcessPriority.Normal:
-                        return ProcessPriorityClass.Normal;
-                    case ProcessPriority.RealTime:
-                        return ProcessPriorityClass.RealTime;
-                    default:
-                        return ProcessPriorityClass.Unknown;
-                }
-            }
+
+            // Datatype misalignment on x64
+
+            //NtStatus status;
+            //ProcessPriorityClassStruct priorityClass;
+            //int retLength;
+
+            //if ((status = Win32.NtQueryInformationProcess(
+            //    this,
+            //    ProcessInformationClass.ProcessPriorityClass,
+            //    out priorityClass,
+            //    Marshal.SizeOf(typeof(ProcessPriorityClassStruct)),
+            //    out retLength
+            //    )) >= NtStatus.Error)
+            //    Win32.ThrowLastError(status);
+
+            //return priorityClass.PriorityClass;
         }
 
         /// <summary>
@@ -2402,19 +2400,49 @@ namespace ProcessHacker.Native.Objects
         /// <param name="priorityClass">The process' priority class.</param>
         public void SetPriorityClass(ProcessPriorityClass priorityClass)
         {
-            NtStatus status;
-            ProcessPriorityClassStruct processPriority;
+            ProcessPriorityClassWin32 pcWin32;
 
-            processPriority.Foreground = false;
-            processPriority.PriorityClass = priorityClass;
+            switch (priorityClass)
+            {
+                case ProcessPriorityClass.AboveNormal:
+                    pcWin32 = ProcessPriorityClassWin32.AboveNormal;
+                    break;
+                case ProcessPriorityClass.BelowNormal:
+                    pcWin32 = ProcessPriorityClassWin32.BelowNormal;
+                    break;
+                case ProcessPriorityClass.High:
+                    pcWin32 = ProcessPriorityClassWin32.High;
+                    break;
+                case ProcessPriorityClass.Idle:
+                    pcWin32 = ProcessPriorityClassWin32.Idle;
+                    break;
+                case ProcessPriorityClass.Normal:
+                    pcWin32 = ProcessPriorityClassWin32.Normal;
+                    break;
+                case ProcessPriorityClass.RealTime:
+                    pcWin32 = ProcessPriorityClassWin32.RealTime;
+                    break;
+                default:
+                    throw new ArgumentException("priorityClass");
+            }
 
-            if ((status = Win32.NtSetInformationProcess(
-                this,
-                ProcessInformationClass.ProcessPriorityClass,
-                ref processPriority,
-                Marshal.SizeOf(typeof(ProcessPriorityClassStruct))
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+            if (!Win32.SetPriorityClass(this, pcWin32))
+                Win32.ThrowLastError();
+
+            // Datatype misalignment on x64.
+            //NtStatus status;
+            //ProcessPriorityClassStruct processPriority;
+
+            //processPriority.Foreground = false;
+            //processPriority.PriorityClass = priorityClass;
+
+            //if ((status = Win32.NtSetInformationProcess(
+            //    this,
+            //    ProcessInformationClass.ProcessPriorityClass,
+            //    ref processPriority,
+            //    Marshal.SizeOf(typeof(ProcessPriorityClassStruct))
+            //    )) >= NtStatus.Error)
+            //    Win32.ThrowLastError(status);
         }
 
         /// <summary>
