@@ -518,8 +518,14 @@ VOID NTAPI KphpSsRuleSetEntryDeleteProcedure(
     
     while (currentRuleListEntry != &ruleSetEntry->RuleListHead)
     {
+        PLIST_ENTRY nextEntry;
+        
+        /* Save the next entry pointer since currentRuleListEntry may 
+         * be deallocated due to the dereference.
+         */
+        nextEntry = currentRuleListEntry->Flink;
         KphDereferenceObject(KPHSS_RULE_ENTRY(currentRuleListEntry));
-        currentRuleListEntry = currentRuleListEntry->Flink;
+        currentRuleListEntry = nextEntry;
     }
     
     ExReleasePushLock(&ruleSetEntry->RuleListPushLock);
@@ -1866,9 +1872,12 @@ VOID NTAPI KphpSsLogSystemServiceCall(
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
-            /* The caller is probably malicious. Exit. */
-            KphpSsFreeEventBlock(eventBlock);
-            return;
+            /* Silently skip this argument. Even though it is 99% likely 
+             * that we will fail to read the next argument, continue 
+             * anyway.
+             */
+            argumentBlockArray[i] = NULL;
+            continue;
         }
         
         status = KphpSsCreateArgumentBlock(
