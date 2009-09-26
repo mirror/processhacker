@@ -753,7 +753,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetPriorityClass(
+        public static extern ProcessPriority GetPriorityClass(
             [In] IntPtr ProcessHandle
             );
 

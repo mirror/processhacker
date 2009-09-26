@@ -1877,20 +1877,44 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A ProcessPriorityClass enum.</returns>
         public ProcessPriorityClass GetPriorityClass()
         {
-            NtStatus status;
-            ProcessPriorityClassStruct priorityClass;
-            int retLength;
+            //bugfix Workaround: NtStatus Returns DataTypeMisalignment on x64
+            if (!OSVersion.IsAmd64()) 
+            {
+                NtStatus status;
+                ProcessPriorityClassStruct priorityClass;
+                int retLength;
 
-            if ((status = Win32.NtQueryInformationProcess(
-                this,
-                ProcessInformationClass.ProcessPriorityClass,
-                out priorityClass,
-                Marshal.SizeOf(typeof(ProcessPriorityClassStruct)),
-                out retLength
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                if ((status = Win32.NtQueryInformationProcess(
+                    this,
+                    ProcessInformationClass.ProcessPriorityClass,
+                    out priorityClass,
+                    Marshal.SizeOf(typeof(ProcessPriorityClassStruct)),
+                    out retLength
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
 
-            return priorityClass.PriorityClass;
+                return priorityClass.PriorityClass;
+            }
+            else
+            {
+                switch (Win32.GetPriorityClass(this))
+                {
+                    case ProcessPriority.AboveNormal:
+                        return ProcessPriorityClass.AboveNormal;
+                    case ProcessPriority.BelowNormal:
+                        return ProcessPriorityClass.BelowNormal;
+                    case ProcessPriority.High:
+                        return ProcessPriorityClass.High;
+                    case ProcessPriority.Idle:
+                        return ProcessPriorityClass.Idle;
+                    case ProcessPriority.Normal:
+                        return ProcessPriorityClass.Normal;
+                    case ProcessPriority.RealTime:
+                        return ProcessPriorityClass.RealTime;
+                    default:
+                        return ProcessPriorityClass.Unknown;
+                }
+            }
         }
 
         /// <summary>
