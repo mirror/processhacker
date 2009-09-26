@@ -2326,7 +2326,6 @@ namespace ProcessHacker.Native.Api
         // return: CsrCaptureHeader*
         public static extern IntPtr CsrAllocateCaptureBuffer(
             [In] int CountMessagePointers,
-            [In] int CountCapturePointers,
             [In] int Size
             );
 
