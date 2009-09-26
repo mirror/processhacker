@@ -132,11 +132,38 @@ namespace ProcessHacker
                         (c as NumericUpDown).ValueChanged += (sender, e) => this.EnableApplyButton();
                     else if (c is ColorModifier)
                         (c as ColorModifier).ColorChanged += (sender, e) => this.EnableApplyButton();
-                    else if (c is Button || c is Label)
+                    else if (c is Button || c is Label || c is GroupBox)
                         Program.Void(); // Nothing
                     else
                         c.Click += (sender, e) => this.EnableApplyButton();
                 }
+            }
+
+            foreach (Control c in UpdaterSettingsGroupBox.Controls )
+            {
+                // If we don't have visual styles or we're on XP, fix control backgrounds.
+                if (!visualStyles || OSVersion.IsBelowOrEqual(WindowsVersion.XP))
+                {
+                    if (c is CheckBox)
+                        (c as CheckBox).FlatStyle = FlatStyle.Standard;
+                    if (c is RadioButton)
+                        (c as RadioButton).FlatStyle = FlatStyle.Standard;
+                }
+
+                c.Click += (sender, e) => this.EnableApplyButton();
+            }
+            foreach (Control c in ProxySettingsBox.Controls)
+            {
+                // If we don't have visual styles or we're on XP, fix control backgrounds.
+                if (!visualStyles || OSVersion.IsBelowOrEqual(WindowsVersion.XP))
+                {
+                    if (c is CheckBox)
+                        (c as CheckBox).FlatStyle = FlatStyle.Standard;
+                    if (c is RadioButton)
+                        (c as RadioButton).FlatStyle = FlatStyle.Standard;
+                }
+
+                c.Click += (sender, e) => this.EnableApplyButton();
             }
         }
 
@@ -398,8 +425,16 @@ namespace ProcessHacker
                     break;
             }
 
-            textUpdateUrl.Text = Properties.Settings.Default.AppUpdateUrl;
             checkUpdateAutomatically.Checked = Properties.Settings.Default.AppUpdateAutomatic;
+
+            UseProxyCheckBox.Checked = Settings.UseProxy;
+            UseCredentialsCheckBox.Checked = Settings.UseCredentials;
+            BypassProxyOnLocalCheckBox.Checked = Settings.BypassProxyOnLocal;
+            ProxyAddressTextBox.Text = Settings.ProxyAddress;
+            ProxyPortTextBox.Text = Settings.ProxyPort;
+            ProxyUsernameTextBox.Text = Settings.ProxyUsername;
+            ProxyPasswordTextBox.Text = Settings.ProxyPassword;
+
         }
 
         private void SaveSettings()
@@ -480,8 +515,15 @@ namespace ProcessHacker
                     break;
             }
 
-            Properties.Settings.Default.AppUpdateUrl = textUpdateUrl.Text;
             Properties.Settings.Default.AppUpdateAutomatic = checkUpdateAutomatically.Checked;
+
+            Settings.UseProxy = UseProxyCheckBox.Checked;
+            Settings.UseCredentials = UseCredentialsCheckBox.Checked;
+            Settings.BypassProxyOnLocal = BypassProxyOnLocalCheckBox.Checked;
+            Settings.ProxyAddress = ProxyAddressTextBox.Text;
+            Settings.ProxyPort = ProxyPortTextBox.Text;
+            Settings.ProxyUsername = ProxyUsernameTextBox.Text;
+            Settings.ProxyPassword = ProxyPasswordTextBox.Text;
 
             Properties.Settings.Default.Save();
 
@@ -659,6 +701,32 @@ namespace ProcessHacker
             this.ApplySettings();
             this.buttonApply.Enabled = false;
             this.buttonOK.Select();
+        }
+
+        private void UseProxyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (UseProxyCheckBox.Checked)
+            {
+                ProxySettingsBox.Enabled = true;
+            }
+            else
+            {
+                ProxySettingsBox.Enabled = false;
+            }
+        }
+
+        private void UseCredentialsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (UseCredentialsCheckBox.Checked)
+            {
+                ProxyUsernameTextBox.Enabled = true;
+                ProxyPasswordTextBox.Enabled = true;
+            }
+            else
+            {
+                ProxyUsernameTextBox.Enabled = false;
+                ProxyPasswordTextBox.Enabled = false;
+            }
         }
     }
 }

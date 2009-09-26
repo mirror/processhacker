@@ -13,8 +13,10 @@ namespace ProcessHacker
 
             #region "Proxy Settings"
             UseProxy = Properties.Settings.Default.ProxyUse;
+            UseCredentials = Properties.Settings.Default.ProxyUseCredentials;
             BypassProxyOnLocal = Properties.Settings.Default.ProxyBypassOnLocal;
             ProxyAddress = Properties.Settings.Default.ProxyAddress;
+            ProxyPort = Properties.Settings.Default.ProxyPort;
             ProxyUsername = Properties.Settings.Default.ProxyUsername;
             ProxyPassword = Properties.Settings.Default.ProxyPassword;
             #endregion
@@ -52,6 +54,16 @@ namespace ProcessHacker
             }
         }
 
+        private static bool _UseCredentials;
+        public static bool UseCredentials
+        {
+            get { return _UseCredentials; }
+            set
+            {
+                Properties.Settings.Default.ProxyUseCredentials = _UseCredentials = value;
+            }
+        }
+
         private static bool _BypassProxyOnLocal;
         public static bool BypassProxyOnLocal
         {
@@ -69,6 +81,16 @@ namespace ProcessHacker
             set
             {
                 Properties.Settings.Default.ProxyAddress = _ProxyAddress = value;
+            }
+        }
+
+        private static string _ProxyPort;
+        public static string ProxyPort
+        {
+            get { return _ProxyPort; }
+            set
+            {
+                Properties.Settings.Default.ProxyPort = _ProxyPort = value;
             }
         }
 

@@ -105,9 +105,13 @@ namespace ProcessHacker
             {
                 if (Settings.UseProxy)
                 {
-                    WebProxy wp = new WebProxy(Settings.ProxyAddress, Settings.BypassProxyOnLocal);
-                    wp.Credentials = new NetworkCredential(Settings.ProxyUsername, Settings.ProxyPassword);
-                   
+                    WebProxy wp = new WebProxy(Settings.ProxyAddress + ":" + Settings.ProxyPort, Settings.BypassProxyOnLocal);
+
+                    if (Settings.UseCredentials)
+                    {
+                        wp.Credentials = new NetworkCredential(Settings.ProxyUsername, Settings.ProxyPassword);
+                    }
+
                     WebClient wc = new WebClient();
                     wc.Proxy = wp;
 

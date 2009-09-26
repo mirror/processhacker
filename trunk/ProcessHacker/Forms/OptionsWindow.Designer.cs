@@ -53,6 +53,8 @@
             this.label23 = new System.Windows.Forms.Label();
             this.textIconMenuProcesses = new System.Windows.Forms.NumericUpDown();
             this.tabAdvanced = new System.Windows.Forms.TabPage();
+            this.comboElevationLevel = new System.Windows.Forms.ComboBox();
+            this.label22 = new System.Windows.Forms.Label();
             this.checkEnableExperimentalFeatures = new System.Windows.Forms.CheckBox();
             this.checkHidePhConnections = new System.Windows.Forms.CheckBox();
             this.textMaxSamples = new System.Windows.Forms.NumericUpDown();
@@ -72,8 +74,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.tabPlotting = new System.Windows.Forms.TabPage();
             this.textStep = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -84,12 +84,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
-            this.colorIORO = new ProcessHacker.Components.ColorModifier();
-            this.colorIOW = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.tabSymbols = new System.Windows.Forms.TabPage();
             this.checkUndecorate = new System.Windows.Forms.CheckBox();
             this.textSearchPath = new System.Windows.Forms.TextBox();
@@ -98,17 +92,34 @@
             this.textDbghelpPath = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.tabUpdates = new System.Windows.Forms.TabPage();
+            this.UpdaterSettingsGroupBox = new System.Windows.Forms.GroupBox();
             this.checkUpdateAutomatically = new System.Windows.Forms.CheckBox();
-            this.textUpdateUrl = new System.Windows.Forms.TextBox();
-            this.label19 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.optUpdateStable = new System.Windows.Forms.RadioButton();
+            this.UseProxyCheckBox = new System.Windows.Forms.CheckBox();
             this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
             this.optUpdateBeta = new System.Windows.Forms.RadioButton();
-            this.optUpdateStable = new System.Windows.Forms.RadioButton();
+            this.ProxySettingsBox = new System.Windows.Forms.GroupBox();
+            this.UseCredentialsCheckBox = new System.Windows.Forms.CheckBox();
+            this.label27 = new System.Windows.Forms.Label();
+            this.ProxyPortTextBox = new System.Windows.Forms.TextBox();
+            this.ProxyPasswordTextBox = new System.Windows.Forms.TextBox();
+            this.ProxyUsernameTextBox = new System.Windows.Forms.TextBox();
+            this.ProxyAddressTextBox = new System.Windows.Forms.TextBox();
+            this.label26 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.label22 = new System.Windows.Forms.Label();
-            this.comboElevationLevel = new System.Windows.Forms.ComboBox();
+            this.BypassProxyOnLocalCheckBox = new System.Windows.Forms.CheckBox();
+            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorIORO = new ProcessHacker.Components.ColorModifier();
+            this.colorIOW = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -121,6 +132,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.textStep)).BeginInit();
             this.tabSymbols.SuspendLayout();
             this.tabUpdates.SuspendLayout();
+            this.UpdaterSettingsGroupBox.SuspendLayout();
+            this.ProxySettingsBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -453,6 +466,29 @@
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
             // 
+            // comboElevationLevel
+            // 
+            this.comboElevationLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboElevationLevel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.comboElevationLevel.FormattingEnabled = true;
+            this.comboElevationLevel.Items.AddRange(new object[] {
+            "Never elevate",
+            "Prompt for elevation",
+            "Always elevate"});
+            this.comboElevationLevel.Location = new System.Drawing.Point(66, 174);
+            this.comboElevationLevel.Name = "comboElevationLevel";
+            this.comboElevationLevel.Size = new System.Drawing.Size(194, 21);
+            this.comboElevationLevel.TabIndex = 11;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(6, 177);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(54, 13);
+            this.label22.TabIndex = 10;
+            this.label22.Text = "Elevation:";
+            // 
             // checkEnableExperimentalFeatures
             // 
             this.checkEnableExperimentalFeatures.AutoSize = true;
@@ -700,22 +736,6 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "New Objects:";
             // 
-            // colorRemovedProcesses
-            // 
-            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
-            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
-            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorRemovedProcesses.TabIndex = 2;
-            // 
-            // colorNewProcesses
-            // 
-            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
-            this.colorNewProcesses.Name = "colorNewProcesses";
-            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorNewProcesses.TabIndex = 1;
-            // 
             // tabPlotting
             // 
             this.tabPlotting.Controls.Add(this.textStep);
@@ -832,54 +852,6 @@
             this.label17.TabIndex = 9;
             this.label17.Text = "CPU Kernel Time:";
             // 
-            // colorIORO
-            // 
-            this.colorIORO.Color = System.Drawing.Color.Transparent;
-            this.colorIORO.Location = new System.Drawing.Point(124, 163);
-            this.colorIORO.Name = "colorIORO";
-            this.colorIORO.Size = new System.Drawing.Size(40, 20);
-            this.colorIORO.TabIndex = 6;
-            // 
-            // colorIOW
-            // 
-            this.colorIOW.Color = System.Drawing.Color.Transparent;
-            this.colorIOW.Location = new System.Drawing.Point(124, 189);
-            this.colorIOW.Name = "colorIOW";
-            this.colorIOW.Size = new System.Drawing.Size(40, 20);
-            this.colorIOW.TabIndex = 7;
-            // 
-            // colorMemoryWS
-            // 
-            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
-            this.colorMemoryWS.Name = "colorMemoryWS";
-            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryWS.TabIndex = 5;
-            // 
-            // colorMemoryPB
-            // 
-            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
-            this.colorMemoryPB.Name = "colorMemoryPB";
-            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryPB.TabIndex = 4;
-            // 
-            // colorCPUUT
-            // 
-            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
-            this.colorCPUUT.Name = "colorCPUUT";
-            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUUT.TabIndex = 3;
-            // 
-            // colorCPUKT
-            // 
-            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
-            this.colorCPUKT.Name = "colorCPUKT";
-            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUKT.TabIndex = 2;
-            // 
             // tabSymbols
             // 
             this.tabSymbols.Controls.Add(this.checkUndecorate);
@@ -957,13 +929,8 @@
             // 
             // tabUpdates
             // 
-            this.tabUpdates.Controls.Add(this.checkUpdateAutomatically);
-            this.tabUpdates.Controls.Add(this.textUpdateUrl);
-            this.tabUpdates.Controls.Add(this.label19);
-            this.tabUpdates.Controls.Add(this.label5);
-            this.tabUpdates.Controls.Add(this.optUpdateAlpha);
-            this.tabUpdates.Controls.Add(this.optUpdateBeta);
-            this.tabUpdates.Controls.Add(this.optUpdateStable);
+            this.tabUpdates.Controls.Add(this.UpdaterSettingsGroupBox);
+            this.tabUpdates.Controls.Add(this.ProxySettingsBox);
             this.tabUpdates.Location = new System.Drawing.Point(4, 22);
             this.tabUpdates.Name = "tabUpdates";
             this.tabUpdates.Padding = new System.Windows.Forms.Padding(3);
@@ -972,49 +939,70 @@
             this.tabUpdates.Text = "Updates";
             this.tabUpdates.UseVisualStyleBackColor = true;
             // 
+            // UpdaterSettingsGroupBox
+            // 
+            this.UpdaterSettingsGroupBox.Controls.Add(this.checkUpdateAutomatically);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.label5);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateStable);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.UseProxyCheckBox);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateAlpha);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateBeta);
+            this.UpdaterSettingsGroupBox.Location = new System.Drawing.Point(11, 11);
+            this.UpdaterSettingsGroupBox.Name = "UpdaterSettingsGroupBox";
+            this.UpdaterSettingsGroupBox.Size = new System.Drawing.Size(456, 100);
+            this.UpdaterSettingsGroupBox.TabIndex = 30;
+            this.UpdaterSettingsGroupBox.TabStop = false;
+            this.UpdaterSettingsGroupBox.Text = "Updater Settings";
+            // 
             // checkUpdateAutomatically
             // 
             this.checkUpdateAutomatically.AutoSize = true;
             this.checkUpdateAutomatically.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkUpdateAutomatically.Location = new System.Drawing.Point(6, 77);
+            this.checkUpdateAutomatically.Location = new System.Drawing.Point(10, 19);
             this.checkUpdateAutomatically.Name = "checkUpdateAutomatically";
-            this.checkUpdateAutomatically.Size = new System.Drawing.Size(183, 18);
+            this.checkUpdateAutomatically.Size = new System.Drawing.Size(186, 18);
             this.checkUpdateAutomatically.TabIndex = 27;
-            this.checkUpdateAutomatically.Text = "Check for updates automatically";
+            this.checkUpdateAutomatically.Text = " Check for updates automatically";
             this.checkUpdateAutomatically.UseVisualStyleBackColor = true;
-            // 
-            // textUpdateUrl
-            // 
-            this.textUpdateUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.textUpdateUrl.Location = new System.Drawing.Point(97, 103);
-            this.textUpdateUrl.Name = "textUpdateUrl";
-            this.textUpdateUrl.Size = new System.Drawing.Size(307, 20);
-            this.textUpdateUrl.TabIndex = 26;
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(6, 106);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(85, 13);
-            this.label19.TabIndex = 25;
-            this.label19.Text = "Update location:";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 9);
+            this.label5.Location = new System.Drawing.Point(278, 21);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(56, 13);
             this.label5.TabIndex = 24;
             this.label5.Text = "Check for:";
             // 
+            // optUpdateStable
+            // 
+            this.optUpdateStable.AutoSize = true;
+            this.optUpdateStable.Checked = true;
+            this.optUpdateStable.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.optUpdateStable.Location = new System.Drawing.Point(340, 19);
+            this.optUpdateStable.Name = "optUpdateStable";
+            this.optUpdateStable.Size = new System.Drawing.Size(103, 18);
+            this.optUpdateStable.TabIndex = 21;
+            this.optUpdateStable.TabStop = true;
+            this.optUpdateStable.Text = "Stable releases";
+            this.optUpdateStable.UseVisualStyleBackColor = true;
+            // 
+            // UseProxyCheckBox
+            // 
+            this.UseProxyCheckBox.AutoSize = true;
+            this.UseProxyCheckBox.Location = new System.Drawing.Point(10, 43);
+            this.UseProxyCheckBox.Name = "UseProxyCheckBox";
+            this.UseProxyCheckBox.Size = new System.Drawing.Size(108, 17);
+            this.UseProxyCheckBox.TabIndex = 28;
+            this.UseProxyCheckBox.Text = "Use Proxy Server";
+            this.UseProxyCheckBox.UseVisualStyleBackColor = true;
+            this.UseProxyCheckBox.CheckedChanged += new System.EventHandler(this.UseProxyCheckBox_CheckedChanged);
+            // 
             // optUpdateAlpha
             // 
             this.optUpdateAlpha.AutoSize = true;
             this.optUpdateAlpha.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateAlpha.Location = new System.Drawing.Point(97, 53);
+            this.optUpdateAlpha.Location = new System.Drawing.Point(340, 67);
             this.optUpdateAlpha.Name = "optUpdateAlpha";
             this.optUpdateAlpha.Size = new System.Drawing.Size(100, 18);
             this.optUpdateAlpha.TabIndex = 23;
@@ -1025,25 +1013,109 @@
             // 
             this.optUpdateBeta.AutoSize = true;
             this.optUpdateBeta.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateBeta.Location = new System.Drawing.Point(97, 30);
+            this.optUpdateBeta.Location = new System.Drawing.Point(340, 43);
             this.optUpdateBeta.Name = "optUpdateBeta";
             this.optUpdateBeta.Size = new System.Drawing.Size(95, 18);
             this.optUpdateBeta.TabIndex = 22;
             this.optUpdateBeta.Text = "Beta releases";
             this.optUpdateBeta.UseVisualStyleBackColor = true;
             // 
-            // optUpdateStable
+            // ProxySettingsBox
             // 
-            this.optUpdateStable.AutoSize = true;
-            this.optUpdateStable.Checked = true;
-            this.optUpdateStable.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateStable.Location = new System.Drawing.Point(97, 7);
-            this.optUpdateStable.Name = "optUpdateStable";
-            this.optUpdateStable.Size = new System.Drawing.Size(103, 18);
-            this.optUpdateStable.TabIndex = 21;
-            this.optUpdateStable.TabStop = true;
-            this.optUpdateStable.Text = "Stable releases";
-            this.optUpdateStable.UseVisualStyleBackColor = true;
+            this.ProxySettingsBox.Controls.Add(this.BypassProxyOnLocalCheckBox);
+            this.ProxySettingsBox.Controls.Add(this.UseCredentialsCheckBox);
+            this.ProxySettingsBox.Controls.Add(this.label27);
+            this.ProxySettingsBox.Controls.Add(this.ProxyPortTextBox);
+            this.ProxySettingsBox.Controls.Add(this.ProxyPasswordTextBox);
+            this.ProxySettingsBox.Controls.Add(this.ProxyUsernameTextBox);
+            this.ProxySettingsBox.Controls.Add(this.ProxyAddressTextBox);
+            this.ProxySettingsBox.Controls.Add(this.label26);
+            this.ProxySettingsBox.Controls.Add(this.label25);
+            this.ProxySettingsBox.Controls.Add(this.label24);
+            this.ProxySettingsBox.Enabled = false;
+            this.ProxySettingsBox.Location = new System.Drawing.Point(11, 117);
+            this.ProxySettingsBox.Name = "ProxySettingsBox";
+            this.ProxySettingsBox.Size = new System.Drawing.Size(323, 136);
+            this.ProxySettingsBox.TabIndex = 29;
+            this.ProxySettingsBox.TabStop = false;
+            this.ProxySettingsBox.Text = "Proxy Configuration";
+            // 
+            // UseCredentialsCheckBox
+            // 
+            this.UseCredentialsCheckBox.AutoSize = true;
+            this.UseCredentialsCheckBox.Location = new System.Drawing.Point(121, 53);
+            this.UseCredentialsCheckBox.Name = "UseCredentialsCheckBox";
+            this.UseCredentialsCheckBox.Size = new System.Drawing.Size(100, 17);
+            this.UseCredentialsCheckBox.TabIndex = 30;
+            this.UseCredentialsCheckBox.Text = "Use Credentials";
+            this.UseCredentialsCheckBox.UseVisualStyleBackColor = true;
+            this.UseCredentialsCheckBox.CheckedChanged += new System.EventHandler(this.UseCredentialsCheckBox_CheckedChanged);
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(236, 27);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(29, 13);
+            this.label27.TabIndex = 31;
+            this.label27.Text = "Port:";
+            // 
+            // ProxyPortTextBox
+            // 
+            this.ProxyPortTextBox.Location = new System.Drawing.Point(271, 24);
+            this.ProxyPortTextBox.Name = "ProxyPortTextBox";
+            this.ProxyPortTextBox.Size = new System.Drawing.Size(41, 20);
+            this.ProxyPortTextBox.TabIndex = 30;
+            // 
+            // ProxyPasswordTextBox
+            // 
+            this.ProxyPasswordTextBox.Enabled = false;
+            this.ProxyPasswordTextBox.Location = new System.Drawing.Point(72, 102);
+            this.ProxyPasswordTextBox.Name = "ProxyPasswordTextBox";
+            this.ProxyPasswordTextBox.Size = new System.Drawing.Size(240, 20);
+            this.ProxyPasswordTextBox.TabIndex = 29;
+            // 
+            // ProxyUsernameTextBox
+            // 
+            this.ProxyUsernameTextBox.Enabled = false;
+            this.ProxyUsernameTextBox.Location = new System.Drawing.Point(72, 76);
+            this.ProxyUsernameTextBox.Name = "ProxyUsernameTextBox";
+            this.ProxyUsernameTextBox.Size = new System.Drawing.Size(240, 20);
+            this.ProxyUsernameTextBox.TabIndex = 28;
+            // 
+            // ProxyAddressTextBox
+            // 
+            this.ProxyAddressTextBox.Location = new System.Drawing.Point(72, 24);
+            this.ProxyAddressTextBox.Name = "ProxyAddressTextBox";
+            this.ProxyAddressTextBox.Size = new System.Drawing.Size(158, 20);
+            this.ProxyAddressTextBox.TabIndex = 27;
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(8, 104);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(56, 13);
+            this.label26.TabIndex = 2;
+            this.label26.Text = "Password:";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(8, 79);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(58, 13);
+            this.label25.TabIndex = 1;
+            this.label25.Text = "Username:";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(18, 27);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(48, 13);
+            this.label24.TabIndex = 0;
+            this.label24.Text = "Address:";
             // 
             // buttonCancel
             // 
@@ -1070,28 +1142,79 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
-            // label22
+            // BypassProxyOnLocalCheckBox
             // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(6, 177);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(54, 13);
-            this.label22.TabIndex = 10;
-            this.label22.Text = "Elevation:";
+            this.BypassProxyOnLocalCheckBox.AutoSize = true;
+            this.BypassProxyOnLocalCheckBox.Location = new System.Drawing.Point(11, 53);
+            this.BypassProxyOnLocalCheckBox.Name = "BypassProxyOnLocalCheckBox";
+            this.BypassProxyOnLocalCheckBox.Size = new System.Drawing.Size(104, 17);
+            this.BypassProxyOnLocalCheckBox.TabIndex = 29;
+            this.BypassProxyOnLocalCheckBox.Text = "Bypass on Local";
+            this.BypassProxyOnLocalCheckBox.UseVisualStyleBackColor = true;
             // 
-            // comboElevationLevel
+            // colorRemovedProcesses
             // 
-            this.comboElevationLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboElevationLevel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.comboElevationLevel.FormattingEnabled = true;
-            this.comboElevationLevel.Items.AddRange(new object[] {
-            "Never elevate",
-            "Prompt for elevation",
-            "Always elevate"});
-            this.comboElevationLevel.Location = new System.Drawing.Point(66, 174);
-            this.comboElevationLevel.Name = "comboElevationLevel";
-            this.comboElevationLevel.Size = new System.Drawing.Size(194, 21);
-            this.comboElevationLevel.TabIndex = 11;
+            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
+            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
+            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorRemovedProcesses.TabIndex = 2;
+            // 
+            // colorNewProcesses
+            // 
+            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
+            this.colorNewProcesses.Name = "colorNewProcesses";
+            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorNewProcesses.TabIndex = 1;
+            // 
+            // colorIORO
+            // 
+            this.colorIORO.Color = System.Drawing.Color.Transparent;
+            this.colorIORO.Location = new System.Drawing.Point(124, 163);
+            this.colorIORO.Name = "colorIORO";
+            this.colorIORO.Size = new System.Drawing.Size(40, 20);
+            this.colorIORO.TabIndex = 6;
+            // 
+            // colorIOW
+            // 
+            this.colorIOW.Color = System.Drawing.Color.Transparent;
+            this.colorIOW.Location = new System.Drawing.Point(124, 189);
+            this.colorIOW.Name = "colorIOW";
+            this.colorIOW.Size = new System.Drawing.Size(40, 20);
+            this.colorIOW.TabIndex = 7;
+            // 
+            // colorMemoryWS
+            // 
+            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
+            this.colorMemoryWS.Name = "colorMemoryWS";
+            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryWS.TabIndex = 5;
+            // 
+            // colorMemoryPB
+            // 
+            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
+            this.colorMemoryPB.Name = "colorMemoryPB";
+            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryPB.TabIndex = 4;
+            // 
+            // colorCPUUT
+            // 
+            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
+            this.colorCPUUT.Name = "colorCPUUT";
+            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUUT.TabIndex = 3;
+            // 
+            // colorCPUKT
+            // 
+            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
+            this.colorCPUKT.Name = "colorCPUKT";
+            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUKT.TabIndex = 2;
             // 
             // OptionsWindow
             // 
@@ -1130,7 +1253,10 @@
             this.tabSymbols.ResumeLayout(false);
             this.tabSymbols.PerformLayout();
             this.tabUpdates.ResumeLayout(false);
-            this.tabUpdates.PerformLayout();
+            this.UpdaterSettingsGroupBox.ResumeLayout(false);
+            this.UpdaterSettingsGroupBox.PerformLayout();
+            this.ProxySettingsBox.ResumeLayout(false);
+            this.ProxySettingsBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1211,12 +1337,23 @@
         private System.Windows.Forms.RadioButton optUpdateAlpha;
         private System.Windows.Forms.RadioButton optUpdateBeta;
         private System.Windows.Forms.RadioButton optUpdateStable;
-        private System.Windows.Forms.TextBox textUpdateUrl;
-        private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.ComboBox comboToolbarStyle;
         private System.Windows.Forms.CheckBox checkUpdateAutomatically;
         private System.Windows.Forms.ComboBox comboElevationLevel;
         private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.CheckBox UseProxyCheckBox;
+        private System.Windows.Forms.GroupBox ProxySettingsBox;
+        private System.Windows.Forms.TextBox ProxyAddressTextBox;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.TextBox ProxyUsernameTextBox;
+        private System.Windows.Forms.TextBox ProxyPasswordTextBox;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.TextBox ProxyPortTextBox;
+        private System.Windows.Forms.CheckBox UseCredentialsCheckBox;
+        private System.Windows.Forms.GroupBox UpdaterSettingsGroupBox;
+        private System.Windows.Forms.CheckBox BypassProxyOnLocalCheckBox;
     }
 }
