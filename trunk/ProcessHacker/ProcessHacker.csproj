@@ -416,10 +416,6 @@
     <Compile Include="Components\TargetWindowButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Components\TaskbarLib\IconHandle.cs" />
-    <Compile Include="Components\TaskbarLib\TaskbarNative.cs" />
-    <Compile Include="Components\TaskbarLib\ThumbnailBarButton.cs" />
-    <Compile Include="Components\TaskbarLib\ThumbnailBarButtonBase.cs" />
     <Compile Include="Components\TimerProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -493,7 +489,6 @@
       <DependentUpon>SessionInformationWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Program\Settings.cs" />
-    <Compile Include="Components\TaskbarLib\TaskbarClass.cs" />
     <Compile Include="Program\Updater.cs" />
     <Compile Include="Forms\UpdaterDownloadWindow.cs">
       <SubType>Form</SubType>
