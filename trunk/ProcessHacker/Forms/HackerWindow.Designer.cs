@@ -1309,7 +1309,7 @@
             // 
             this.VirusTotalMenuItem.Index = 5;
             this.VirusTotalMenuItem.Text = "Upload to VirusTotal";
-            this.VirusTotalMenuItem.Click += new System.EventHandler(this.VirusTotalMenuItem_Click);
+            this.VirusTotalMenuItem.Click += new System.EventHandler(this.virusTotalMenuItem_Click);
             // 
             // HackerWindow
             // 

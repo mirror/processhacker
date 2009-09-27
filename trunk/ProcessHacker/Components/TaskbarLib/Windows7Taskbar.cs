@@ -2,6 +2,9 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using TaskbarLib.Interop;
+using ProcessHacker.Native;
+using ProcessHacker;
+using ProcessHacker.Native.Api;
 
 namespace TaskbarLib.DesktopIntegration
 {
@@ -303,12 +306,16 @@ namespace TaskbarLib.DesktopIntegration
         /// </summary>
         public static void AllowTaskbarWindowMessagesThroughUipi()
         {
-            UnsafeNativeMethods.ChangeWindowMessageFilter(UnsafeNativeMethods.WM_TaskbarButtonCreated, SafeNativeMethods.MSGFLT_ADD);
-            UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_DWMSENDICONICTHUMBNAIL, SafeNativeMethods.MSGFLT_ADD);
-            UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_DWMSENDICONICLIVEPREVIEWBITMAP, SafeNativeMethods.MSGFLT_ADD);
-            UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_COMMAND, SafeNativeMethods.MSGFLT_ADD);
-            UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_SYSCOMMAND, SafeNativeMethods.MSGFLT_ADD);
-            UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_ACTIVATE, SafeNativeMethods.MSGFLT_ADD);
+             // If it's Windows 7 or above and we're elevated.
+            if (OSVersion.HasTaskDialogs && Program.ElevationType == TokenElevationType.Full)
+            {
+                UnsafeNativeMethods.ChangeWindowMessageFilter(UnsafeNativeMethods.WM_TaskbarButtonCreated, SafeNativeMethods.MSGFLT_ADD);
+                UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_DWMSENDICONICTHUMBNAIL, SafeNativeMethods.MSGFLT_ADD);
+                UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_DWMSENDICONICLIVEPREVIEWBITMAP, SafeNativeMethods.MSGFLT_ADD);
+                UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_COMMAND, SafeNativeMethods.MSGFLT_ADD);
+                UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_SYSCOMMAND, SafeNativeMethods.MSGFLT_ADD);
+                UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_ACTIVATE, SafeNativeMethods.MSGFLT_ADD);
+            }
         }
 
         #endregion
