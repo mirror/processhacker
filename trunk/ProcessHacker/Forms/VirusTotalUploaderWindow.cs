@@ -146,6 +146,9 @@ namespace ProcessHacker
 
                     // Write out the trailing boundary
                     requestStream.Write(boundaryBytes, 0, boundaryBytes.Length);
+
+                    // Write all data before we close the stream.
+                    requestStream.Flush();
                 }
             }
 
