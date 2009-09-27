@@ -35,7 +35,7 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.speedLabel = new System.Windows.Forms.Label();
             this.totalSizeLabel = new System.Windows.Forms.Label();
-            this.progressBar = new ProcessHacker.Components.ProgressBar();
+            this.progressUpload = new Nomad.Controls.VistaProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.LogoImg)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,25 +105,22 @@
             this.totalSizeLabel.TabIndex = 7;
             this.totalSizeLabel.Text = "Total Size: 20.00MB";
             // 
-            // progressBar
+            // progressUpload
             // 
-            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar.Location = new System.Drawing.Point(12, 64);
-            this.progressBar.Name = "progressBar";
-            this.progressBar.ProgressBarColor = System.Drawing.Color.Blue;
-            this.progressBar.Size = new System.Drawing.Size(325, 23);
-            this.progressBar.TabIndex = 4;
+            this.progressUpload.Location = new System.Drawing.Point(12, 64);
+            this.progressUpload.Name = "progressUpload";
+            this.progressUpload.Size = new System.Drawing.Size(329, 23);
+            this.progressUpload.TabIndex = 8;
             // 
             // VirusTotalUploaderWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(430, 99);
+            this.Controls.Add(this.progressUpload);
             this.Controls.Add(this.totalSizeLabel);
             this.Controls.Add(this.speedLabel);
             this.Controls.Add(this.buttonCancel);
-            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.uploadedLabel);
             this.Controls.Add(this.labelFile);
             this.Controls.Add(this.LogoImg);
@@ -147,9 +144,9 @@
         private System.Windows.Forms.Label labelFile;
         private System.Windows.Forms.Label uploadedLabel;
         private System.ComponentModel.BackgroundWorker UploadWorker;
-        private ProcessHacker.Components.ProgressBar progressBar;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Label speedLabel;
         private System.Windows.Forms.Label totalSizeLabel;
+        private Nomad.Controls.VistaProgressBar progressUpload;
     }
 }

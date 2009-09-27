@@ -1776,7 +1776,7 @@ namespace ProcessHacker
             int X = this.Left + (this.Width - vt.Width) / 2;
 
             vt.Location = new Point(X, Y);
-            vt.Show(this);
+            vt.Show();
         }
 
 

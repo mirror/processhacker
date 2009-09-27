@@ -30,7 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdaterDownloadWindow));
             this.labelProgress = new System.Windows.Forms.Label();
-            this.progressDownload = new System.Windows.Forms.ProgressBar();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.labelTitle = new System.Windows.Forms.Label();
@@ -38,6 +37,7 @@
             this.buttonStop = new System.Windows.Forms.Button();
             this.verifyWorker = new System.ComponentModel.BackgroundWorker();
             this.buttonInstall = new System.Windows.Forms.Button();
+            this.progressDownload = new Nomad.Controls.VistaProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -52,15 +52,6 @@
             this.labelProgress.Size = new System.Drawing.Size(101, 13);
             this.labelProgress.TabIndex = 17;
             this.labelProgress.Text = "Starting download...";
-            // 
-            // progressDownload
-            // 
-            this.progressDownload.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressDownload.Location = new System.Drawing.Point(12, 112);
-            this.progressDownload.Name = "progressDownload";
-            this.progressDownload.Size = new System.Drawing.Size(367, 23);
-            this.progressDownload.TabIndex = 13;
             // 
             // pictureBox1
             // 
@@ -135,12 +126,20 @@
             this.buttonInstall.UseVisualStyleBackColor = true;
             this.buttonInstall.Click += new System.EventHandler(this.buttonInstall_Click);
             // 
+            // progressDownload
+            // 
+            this.progressDownload.Location = new System.Drawing.Point(12, 112);
+            this.progressDownload.Name = "progressDownload";
+            this.progressDownload.Size = new System.Drawing.Size(367, 23);
+            this.progressDownload.TabIndex = 24;
+            // 
             // UpdaterDownloadWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(391, 147);
+            this.Controls.Add(this.progressDownload);
             this.Controls.Add(this.buttonInstall);
             this.Controls.Add(this.buttonStop);
             this.Controls.Add(this.labelReleased);
@@ -148,7 +147,6 @@
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.labelProgress);
-            this.Controls.Add(this.progressDownload);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -169,7 +167,6 @@
         #endregion
 
         private System.Windows.Forms.Label labelProgress;
-        private System.Windows.Forms.ProgressBar progressDownload;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Label labelTitle;
@@ -177,5 +174,6 @@
         private System.Windows.Forms.Button buttonStop;
         private System.ComponentModel.BackgroundWorker verifyWorker;
         private System.Windows.Forms.Button buttonInstall;
+        private Nomad.Controls.VistaProgressBar progressDownload;
     }
 }

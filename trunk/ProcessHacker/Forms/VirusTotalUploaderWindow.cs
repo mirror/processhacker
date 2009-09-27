@@ -152,7 +152,7 @@ namespace ProcessHacker
                         // Write out our post header
                         requestStream.Write(postHeaderBytes, 0, postHeaderBytes.Length);
                         // Write out the file contents
-                        byte[] buffer = new Byte[checked((uint)Math.Min(256, (int)fileStream.Length))];
+                        byte[] buffer = new Byte[checked((uint)Math.Min(32, (int)fileStream.Length))];
 
                         int bytesRead = 0;
                         Stopwatch stopwatch = new Stopwatch();
@@ -230,7 +230,7 @@ namespace ProcessHacker
             uploadedLabel.Text = "Uploaded: " + Utils.FormatSize(bytesTransferred);
             totalSizeLabel.Text = "Total Size: " + Utils.FormatSize(totalfilesize);
             speedLabel.Text = "Speed: " + Utils.FormatSize(bytesPerSecond) + "/s";
-            progressBar.Value = e.ProgressPercentage;
+            progressUpload.Value = e.ProgressPercentage;
         }
 
         private void UploadWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
