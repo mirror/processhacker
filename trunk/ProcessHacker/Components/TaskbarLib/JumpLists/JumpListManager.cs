@@ -210,7 +210,7 @@ namespace TaskbarLib.DesktopIntegration
             Guid iidObjectArray = typeof(IObjectArray).GUID;
             object obj;
 
-            destinations.GetList((APPDOCLISTTYPE)type, 100, ref iidObjectArray, out obj);
+            destinations.GetList((AppDocListType)type, 100, ref iidObjectArray, out obj);
 
             List<IJumpListDestination> returnValue = new List<IJumpListDestination>();
 
@@ -342,10 +342,10 @@ namespace TaskbarLib.DesktopIntegration
             switch (EnabledAutoDestinationType)
             {
                 case ApplicationDestinationType.Frequent:
-                    _customDestinationList.AppendKnownCategory(KNOWNDESTCATEGORY.KDC_FREQUENT);
+                    _customDestinationList.AppendKnownCategory(KnownDestCategory.FREQUENT);
                     break;
                 case ApplicationDestinationType.Recent:
-                    _customDestinationList.AppendKnownCategory(KNOWNDESTCATEGORY.KDC_RECENT);
+                    _customDestinationList.AppendKnownCategory(KnownDestCategory.RECENT);
                     break;
             }
 

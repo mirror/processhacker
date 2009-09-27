@@ -41,7 +41,7 @@ namespace TaskbarLib.DesktopIntegration
         /// </summary>
         public string Tooltip { get; set; }
 
-        internal THBFLAGS Flags { get; set; }
+        internal ThumbnailButtonFlags Flags { get; set; }
 
         internal THUMBBUTTON Win32ThumbButton
         {
@@ -53,11 +53,11 @@ namespace TaskbarLib.DesktopIntegration
                 win32ThumbButton.hIcon = Icon.Handle;
                 win32ThumbButton.dwFlags = Flags;
 
-                win32ThumbButton.dwMask = THBMASK.THB_FLAGS;
+                win32ThumbButton.dwMask = ThumbnailButtonMask.Flags;
                 if (Tooltip != null)
-                    win32ThumbButton.dwMask |= THBMASK.THB_TOOLTIP;
+                    win32ThumbButton.dwMask |= ThumbnailButtonMask.Tooltip;
                 if (Icon != null)
-                    win32ThumbButton.dwMask |= THBMASK.THB_ICON;
+                    win32ThumbButton.dwMask |= ThumbnailButtonMask.Icon;
 
                 return win32ThumbButton;
             }
@@ -70,17 +70,17 @@ namespace TaskbarLib.DesktopIntegration
         {
             get
             {
-                return (this.Flags & THBFLAGS.THBF_HIDDEN) == 0;
+                return (this.Flags & ThumbnailButtonFlags.HIDDEN) == 0;
             }
             set
             {
                 if (value)
                 {
-                    this.Flags &= ~(THBFLAGS.THBF_HIDDEN);
+                    this.Flags &= ~(ThumbnailButtonFlags.HIDDEN);
                 }
                 else
                 {
-                    this.Flags |= THBFLAGS.THBF_HIDDEN;
+                    this.Flags |= ThumbnailButtonFlags.HIDDEN;
                 }
                 _manager.RefreshThumbButtons();
             }
@@ -93,17 +93,17 @@ namespace TaskbarLib.DesktopIntegration
         {
             get
             {
-                return (this.Flags & THBFLAGS.THBF_DISABLED) == 0;
+                return (this.Flags & ThumbnailButtonFlags.DISABLED) == 0;
             }
             set
             {
                 if (value)
                 {
-                    this.Flags &= ~(THBFLAGS.THBF_DISABLED);
+                    this.Flags &= ~(ThumbnailButtonFlags.DISABLED);
                 }
                 else
                 {
-                    this.Flags |= THBFLAGS.THBF_DISABLED;
+                    this.Flags |= ThumbnailButtonFlags.DISABLED;
                 }
                 _manager.RefreshThumbButtons();
             }

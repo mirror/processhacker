@@ -39,6 +39,8 @@ namespace TaskbarLib.Interop
 
     #endregion
 
+    #region "Interfaces"
+ 
     [ComImportAttribute()]
     [GuidAttribute("92CA9DCD-5622-4BBA-A805-5E9F541BD8C9")]
     [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
@@ -86,7 +88,7 @@ namespace TaskbarLib.Interop
         void SetAppID([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
         void BeginList(out uint cMaxSlots, ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
         void AppendCategory([MarshalAs(UnmanagedType.LPWStr)] string pszCategory, [MarshalAs(UnmanagedType.Interface)] IObjectArray poa);
-        void AppendKnownCategory([MarshalAs(UnmanagedType.I4)] KNOWNDESTCATEGORY category);
+        void AppendKnownCategory([MarshalAs(UnmanagedType.I4)] KnownDestCategory category);
         void AddUserTasks([MarshalAs(UnmanagedType.Interface)] IObjectArray poa);
         void CommitList();
         void GetRemovedDestinations(ref Guid riid,            [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
@@ -110,7 +112,7 @@ namespace TaskbarLib.Interop
     internal interface IApplicationDocumentLists
     {
         void SetAppID([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
-        void GetList([MarshalAs(UnmanagedType.I4)] APPDOCLISTTYPE listtype, uint cItemsDesired, ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
+        void GetList([MarshalAs(UnmanagedType.I4)] AppDocListType listtype, uint cItemsDesired, ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
     }
 
     [ComImportAttribute()]
@@ -136,7 +138,7 @@ namespace TaskbarLib.Interop
 
         // ITaskbarList3
         void SetProgressValue(IntPtr hwnd, UInt64 ullCompleted, UInt64 ullTotal);
-        void SetProgressState(IntPtr hwnd, TBPFLAG tbpFlags);
+        void SetProgressState(IntPtr hwnd, TaskBarProgressFlag tbpFlags);
         void RegisterTab(IntPtr hwndTab, IntPtr hwndMDI);
         void UnregisterTab(IntPtr hwndTab);
         void SetTabOrder(IntPtr hwndTab, IntPtr hwndInsertBefore);
@@ -146,7 +148,7 @@ namespace TaskbarLib.Interop
         void ThumbBarSetImageList(IntPtr hwnd, IntPtr himl);
         void SetOverlayIcon(IntPtr hwnd, IntPtr hIcon, [MarshalAs(UnmanagedType.LPWStr)] string pszDescription);
         void SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
-        void SetThumbnailClip(IntPtr hwnd, /*[MarshalAs(UnmanagedType.LPStruct)]*/ ref RECT prcClip);
+        void SetThumbnailClip(IntPtr hwnd, ref RECT prcClip);
     }
 
     [ComImportAttribute()]
@@ -194,4 +196,6 @@ namespace TaskbarLib.Interop
         void Resolve(IntPtr hwnd, uint fFlags);
         void SetPath([MarshalAs(UnmanagedType.LPWStr)] string pszFile);
     }
+
+    #endregion
 }

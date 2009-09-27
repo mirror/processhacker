@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaskbarLib.Interop;
+using System.Runtime.InteropServices;
 
 namespace TaskbarLib.DesktopIntegration
 {
@@ -163,6 +164,7 @@ namespace TaskbarLib.DesktopIntegration
         /// </summary>
         string Category { get; }
     }
+
     /// <summary>
     /// Represents a jump list task.
     /// </summary>
@@ -382,7 +384,7 @@ namespace TaskbarLib.DesktopIntegration
         /// <returns>An <b>IShellItem</b> up-cast to <b>object</b>.</returns>
         public object GetShellRepresentation()
         {
-            return null;// GetShellItemFromPath(Path);
+            return GetShellItemFromPath(Path);
 
             //Note: this will only work if there is a file association
             //for the extension we're trying to register to our program.
@@ -395,14 +397,14 @@ namespace TaskbarLib.DesktopIntegration
                 "path", "Shell item cannot be generated from null or empty path.");
 
             IShellItem resultItem = default(IShellItem);
-            //Guid shellItemGuid = new Guid(IIDGuid.IShellItem);
-            //uint result = SHCreateItemFromParsingName(
-            //    path,
-            //    IntPtr.Zero,
-            //    ref shellItemGuid,
-            //    out resultItem);
+            Guid shellItemGuid = new Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE");
+            uint result = UnsafeNativeMethods.SHCreateItemFromParsingName(
+                path,
+                IntPtr.Zero,
+                ref shellItemGuid,
+                out resultItem);
             //// Throw if an error occurred.
-            //System.Runtime.InteropServices.Marshal.ThrowExceptionForHR((int)result);
+            Marshal.ThrowExceptionForHR((int)result);
             return resultItem;
         }
 

@@ -3235,7 +3235,7 @@ namespace ProcessHacker
             if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Full)
             {
                 this.Text += " (Administrator)";
-                // We enable the magic window message to Allow only one instance to work.
+                // We enable the magic window message to Allow only one Application instance to work.
                 Win32.ChangeWindowMessageFilter((WindowMessage)0x9991, UipiFilterFlag.Add);
             } 
         }

@@ -48,7 +48,7 @@ namespace TaskbarLib.DesktopIntegration
             UInt64 wparam = (UInt64)message.WParam.ToInt64();
             UInt32 wparam32 = (UInt32) (wparam & 0xffffffff);   //Clear top 32 bits
 
-            if (message.Msg == SafeNativeMethods.WM_COMMAND && (wparam32 >> 16 == SafeNativeMethods.THBN_CLICKED))
+            if (message.Msg == (int)ProcessHacker.Native.Api.WindowMessage.Command && (wparam32 >> 16 == SafeNativeMethods.THBN_CLICKED))
             {
                 uint id = wparam32 & 0xffff;    //Bottom 16 bits
                 _thumbButtons[id].FireClick();

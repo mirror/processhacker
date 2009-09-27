@@ -6,17 +6,19 @@ using System.Text;
 namespace TaskbarLib.Interop
 {
     [Flags]
-    internal enum KNOWNDESTCATEGORY
+    internal enum KnownDestCategory
     {
-        KDC_FREQUENT = 1,
-        KDC_RECENT
+        FREQUENT = 1,
+        RECENT
     }
+   
     [Flags]
-    internal enum APPDOCLISTTYPE
+    internal enum AppDocListType
     {
         ADLT_RECENT = 0,
         ADLT_FREQUENT
     }
+   
     [StructLayout(LayoutKind.Sequential)]
     internal struct RECT
     {
@@ -33,37 +35,41 @@ namespace TaskbarLib.Interop
             this.bottom = bottom;
         }
     }
+   
     [Flags]
-    internal enum TBPFLAG
+    internal enum TaskBarProgressFlag
     {
-        TBPF_NOPROGRESS = 0,
-        TBPF_INDETERMINATE = 0x1,
-        TBPF_NORMAL = 0x2,
-        TBPF_ERROR = 0x4,
-        TBPF_PAUSED = 0x8
+        NoProgress = 0,
+        Indeterminate = 0x1,
+        Normal = 0x2,
+        Error = 0x4,
+        Paused = 0x8
     }
+   
     [Flags]
     internal enum TBATFLAG
     {
         TBATF_USEMDITHUMBNAIL = 0x1,
         TBATF_USEMDILIVEPREVIEW = 0x2
     }
+  
     [Flags]
-    internal enum THBMASK
+    internal enum ThumbnailButtonMask
     {
-        THB_BITMAP = 0x1,
-        THB_ICON = 0x2,
-        THB_TOOLTIP = 0x4,
-        THB_FLAGS = 0x8
+        Bitmap = 0x1,
+        Icon = 0x2,
+        Tooltip = 0x4,
+        Flags = 0x8
     }
+   
     [Flags]
-    internal enum THBFLAGS
+    internal enum ThumbnailButtonFlags
     {
-        THBF_ENABLED = 0,
-        THBF_DISABLED = 0x1,
-        THBF_DISMISSONCLICK = 0x2,
-        THBF_NOBACKGROUND = 0x4,
-        THBF_HIDDEN = 0x8
+        ENABLED = 0,
+        DISABLED = 0x1,
+        DISMISSONCLICK = 0x2,
+        NOBACKGROUND = 0x4,
+        HIDDEN = 0x8
     }
     [Flags]
     internal enum SIGDN : uint
@@ -91,18 +97,19 @@ namespace TaskbarLib.Interop
             this.Y = y;
         }
     }
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     internal struct THUMBBUTTON
     {
         [MarshalAs(UnmanagedType.U4)]
-        public THBMASK dwMask;
+        public ThumbnailButtonMask dwMask;
         public uint iId;
         public uint iBitmap;
         public IntPtr hIcon;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
         public string szTip;
         [MarshalAs(UnmanagedType.U4)]
-        public THBFLAGS dwFlags;
+        public ThumbnailButtonFlags dwFlags;
     }
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     internal struct PropertyKey
@@ -123,6 +130,7 @@ namespace TaskbarLib.Interop
         public static PropertyKey PKEY_AppUserModel_RelaunchDisplayNameResource = new PropertyKey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 4);
         public static PropertyKey PKEY_AppUserModel_RelaunchIconResource = new PropertyKey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 3);
     }
+
     [StructLayout(LayoutKind.Explicit)]
     internal struct CALPWSTR
     {
@@ -131,6 +139,7 @@ namespace TaskbarLib.Interop
         [FieldOffset(4)]
         internal IntPtr pElems;
     }
+
     [StructLayout(LayoutKind.Explicit)]
     internal struct PropVariant
     {
@@ -192,24 +201,13 @@ namespace TaskbarLib.Interop
         public static Guid IID_IUnknown = new Guid("00000000-0000-0000-C000-000000000046");
 
         public const int DWM_SIT_DISPLAYFRAME = 0x00000001;
-
         public const int DWMWA_FORCE_ICONIC_REPRESENTATION = 7;
         public const int DWMWA_HAS_ICONIC_BITMAP = 10;
-
-        public const int WM_COMMAND = 0x111;
-        public const int WM_SYSCOMMAND = 0x112;
-        public const int WM_DWMSENDICONICTHUMBNAIL = 0x0323;
-        public const int WM_DWMSENDICONICLIVEPREVIEWBITMAP = 0x0326;
-        public const int WM_CLOSE = 0x0010;
-        public const int WM_ACTIVATE = 0x0006;
 
         public const int WA_ACTIVE = 1;
         public const int WA_CLICKACTIVE = 2;
 
         public const int SC_CLOSE = 0xF060;
-
-        public const int MSGFLT_ADD = 1;
-        public const int MSGFLT_REMOVE = 2;
 
         // Thumbbutton WM_COMMAND notification
         public const uint THBN_CLICKED = 0x1800;
@@ -217,33 +215,40 @@ namespace TaskbarLib.Interop
     [SuppressUnmanagedCodeSecurity]
     internal static class UnsafeNativeMethods
     {
-        [DllImport("shell32.dll")]
-        public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid /*IID_IPropertyStore*/, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
-        [DllImport("dwmapi.dll")]
-        public static extern int DwmSetIconicThumbnail(IntPtr hwnd, IntPtr hbitmap, uint flags);
-        [DllImport("dwmapi.dll")]
-        public static extern int DwmSetIconicLivePreviewBitmap(IntPtr hwnd, IntPtr hbitmap, ref POINT ptClient, uint flags);
-        [DllImport("dwmapi.dll")]
-        public static extern int DwmSetIconicLivePreviewBitmap(IntPtr hwnd, IntPtr hbitmap, IntPtr ptClient, uint flags);
-        [DllImport("dwmApi.dll")]
-        internal static extern int DwmSetWindowAttribute(IntPtr hwnd, uint dwAttributeToSet, IntPtr pvAttributeValue, uint cbAttribute);
-        [DllImport("dwmApi.dll")]
-        internal static extern int DwmSetWindowAttribute(IntPtr hwnd, uint dwAttributeToSet, ref int pvAttributeValue, uint cbAttribute);
-        [DllImport("dwmapi.dll")]
-        public static extern int DwmInvalidateIconicBitmaps(IntPtr hwnd);
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool ChangeWindowMessageFilter(uint message, uint flags);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        internal static extern uint RegisterWindowMessage(string lpString);
-
         public static readonly uint WM_TaskbarButtonCreated = RegisterWindowMessage("TaskbarButtonCreated");
 
         [DllImport("shell32.dll")]
+        public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid /*IID_IPropertyStore*/, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
+       
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmSetIconicThumbnail(IntPtr hwnd, IntPtr hbitmap, uint flags);
+       
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmSetIconicLivePreviewBitmap(IntPtr hwnd, IntPtr hbitmap, ref POINT ptClient, uint flags);
+       
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmSetIconicLivePreviewBitmap(IntPtr hwnd, IntPtr hbitmap, IntPtr ptClient, uint flags);
+       
+        [DllImport("dwmApi.dll")]
+        internal static extern int DwmSetWindowAttribute(IntPtr hwnd, uint dwAttributeToSet, IntPtr pvAttributeValue, uint cbAttribute);
+       
+        [DllImport("dwmApi.dll")]
+        internal static extern int DwmSetWindowAttribute(IntPtr hwnd, uint dwAttributeToSet, ref int pvAttributeValue, uint cbAttribute);
+      
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmInvalidateIconicBitmaps(IntPtr hwnd);
+       
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        internal static extern uint RegisterWindowMessage(string lpString);
+
+        
+
+        [DllImport("shell32.dll")]
         public static extern void SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
+       
         [DllImport("shell32.dll")]
         public static extern void GetCurrentProcessExplicitAppUserModelID([Out(), MarshalAs(UnmanagedType.LPWStr)] out string AppID);
+       
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowRect(IntPtr hwnd, ref RECT rect);
@@ -266,24 +271,32 @@ namespace TaskbarLib.Interop
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ShowWindow(IntPtr hwnd, int cmd);
+      
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetWindowPos(IntPtr hwnd, IntPtr hwndInsertAfter, int X, int Y, int cx, int cy, uint flags);
+      
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ClientToScreen(IntPtr hwnd, ref POINT point);
+       
         [DllImport("user32.dll")]
         public static extern int GetWindowText(IntPtr hwnd, StringBuilder str, int maxCount);
+       
         [DllImport("gdi32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool BitBlt (IntPtr hDestDC, int destX, int destY, int width, int height, IntPtr hSrcDC, int srcX, int srcY, uint operation);
+        
         [DllImport("gdi32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool StretchBlt(IntPtr hDestDC, int destX, int destY, int destWidth, int destHeight, IntPtr hSrcDC, int srcX, int srcY, int srcWidth, int srcHeight, uint operation);
+        
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindowDC(IntPtr hwnd);
+       
         [DllImport("user32.dll")]
         public static extern int ReleaseDC(IntPtr hwnd, IntPtr hdc);
+       
         [DllImport("Shell32", CharSet = CharSet.Auto, SetLastError = true)]
         internal static extern uint SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string path, /* The following parameter is not used - binding context. */ IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);
     }

@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using System.Net;
 using System.IO;
 using ProcessHacker.Common;
+using ProcessHacker;
 
 /* ProcessHacker VirusTotal Implementation Authorized by:
  * Julio Canto | VirusTotal.com | Hispasec Sistemas Lab | Tlf: +34.902.161.025
@@ -52,6 +53,8 @@ public partial class VirusTotalUploaderWindow : Form
  
         processName = procName;
         filepath = procPath;
+
+        this.Icon = Program.HackerWindow.Icon;
     }
       
     private void VirusTotalUploaderWindow_Load(object sender, EventArgs e)
@@ -70,9 +73,6 @@ public partial class VirusTotalUploaderWindow : Form
  
     private void UploadWorker_DoWork(object sender, DoWorkEventArgs e)
     {  
-        //todo: add operation cancelation 
-        //todo: make sure Stream objects get disposed under all conditions or will result in a memory leak
-
         Uri uri = new Uri(url);
 
         string boundary = "----------" + DateTime.Now.Ticks.ToString("x");
@@ -83,7 +83,7 @@ public partial class VirusTotalUploaderWindow : Form
         webrequest.ContentType = "multipart/form-data; boundary=" + boundary;
         webrequest.Timeout = System.Threading.Timeout.Infinite;
         webrequest.KeepAlive = true; 
-        webrequest.Method = "POST";
+        webrequest.Method = WebRequestMethods.Http.Post;
 
         // Build up the 'post' message header
         StringBuilder sb = new StringBuilder();  
@@ -154,7 +154,7 @@ public partial class VirusTotalUploaderWindow : Form
     {
         //Utils.FormatSize();
         speedLabel.Text = kbPerSec.ToString(); 
-        progressBar1.Value = e.ProgressPercentage;  
+        progressBar2.Value = e.ProgressPercentage;  
     }
  
     private void UploadWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)  

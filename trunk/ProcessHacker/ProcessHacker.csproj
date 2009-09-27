@@ -404,6 +404,12 @@
     <Compile Include="Components\ProcessStatistics.Designer.cs">
       <DependentUpon>ProcessStatistics.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\ProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\ProgressBar.Designer.cs">
+      <DependentUpon>ProgressBar.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\SectionProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>

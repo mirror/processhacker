@@ -254,7 +254,7 @@ namespace TaskbarLib.DesktopIntegration
         /// <param name="state">The progress state.</param>
         public static void SetProgressState(IntPtr hwnd, ThumbnailProgressState state)
         {
-            TaskbarList.SetProgressState(hwnd, (TBPFLAG)state);
+            TaskbarList.SetProgressState(hwnd, (TaskBarProgressFlag)state);
         }
         /// <summary>
         /// Sets the progress value of the specified window's
@@ -306,15 +306,15 @@ namespace TaskbarLib.DesktopIntegration
         /// </summary>
         public static void AllowTaskbarWindowMessagesThroughUipi()
         {
-             // If it's Windows 7 or above and we're elevated.
+            // If it's Windows 7 or above and we're elevated.
             if (OSVersion.HasTaskDialogs && Program.ElevationType == TokenElevationType.Full)
             {
-                UnsafeNativeMethods.ChangeWindowMessageFilter(UnsafeNativeMethods.WM_TaskbarButtonCreated, SafeNativeMethods.MSGFLT_ADD);
-                UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_DWMSENDICONICTHUMBNAIL, SafeNativeMethods.MSGFLT_ADD);
-                UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_DWMSENDICONICLIVEPREVIEWBITMAP, SafeNativeMethods.MSGFLT_ADD);
-                UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_COMMAND, SafeNativeMethods.MSGFLT_ADD);
-                UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_SYSCOMMAND, SafeNativeMethods.MSGFLT_ADD);
-                UnsafeNativeMethods.ChangeWindowMessageFilter(SafeNativeMethods.WM_ACTIVATE, SafeNativeMethods.MSGFLT_ADD);
+                Win32.ChangeWindowMessageFilter((WindowMessage)UnsafeNativeMethods.WM_TaskbarButtonCreated, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.DwmSendIconicThumbnail, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.DwmSendIconicLivePreviewBitmap, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.Command, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.SysCommand, UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(WindowMessage.Activate, UipiFilterFlag.Add);
             }
         }
 
