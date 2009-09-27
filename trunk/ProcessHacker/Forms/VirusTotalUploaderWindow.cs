@@ -42,7 +42,8 @@ namespace ProcessHacker
         string url;
         string filepath;
         string processName;
-
+        
+        long totalfilesize;
         long bytesPerSecond;
         long bytesTransferred;
 
@@ -58,7 +59,10 @@ namespace ProcessHacker
 
         private void VirusTotalUploaderWindow_Load(object sender, EventArgs e)
         {
-            labelFile.Text = string.Format("Uploading {0} to VirusTotal", processName);
+            labelFile.Text = string.Format("Uploading: {0}", processName);
+
+            FileInfo fi = new FileInfo(filepath);
+            totalfilesize = fi.Length;
 
             WebClient vtId = new WebClient();
             vtId.Headers.Add("User-Agent", "Process Hacker " + Application.ProductVersion);
@@ -107,49 +111,84 @@ namespace ProcessHacker
             byte[] boundaryBytes = Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
 
             if (UploadWorker.CancellationPending)
-                return;
-
-            using (FileStream fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
             {
-                webrequest.ContentLength = postHeaderBytes.Length + fileStream.Length + boundaryBytes.Length;
+                webrequest.Abort();
+                UploadWorker.CancelAsync();
+                return;
+            }
 
-                using (Stream requestStream = webrequest.GetRequestStream())
+            try
+            {
+                using (FileStream fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
                 {
-                    // Write out our post header
-                    requestStream.Write(postHeaderBytes, 0, postHeaderBytes.Length);
-                    // Write out the file contents
-                    byte[] buffer = new Byte[checked((uint)Math.Min(256, (int)fileStream.Length))];
+                    webrequest.ContentLength = postHeaderBytes.Length + fileStream.Length + boundaryBytes.Length;
 
-                    int bytesRead = 0;
-                    Stopwatch stopwatch = new Stopwatch();
-
-                    while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+                    using (Stream requestStream = webrequest.GetRequestStream())
                     {
+                        // Write out our post header
+                        requestStream.Write(postHeaderBytes, 0, postHeaderBytes.Length);
+                        // Write out the file contents
+                        byte[] buffer = new Byte[checked((uint)Math.Min(256, (int)fileStream.Length))];
+
+                        int bytesRead = 0;
+                        Stopwatch stopwatch = new Stopwatch();
+
+                        while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+                        {
+                            if (UploadWorker.CancellationPending)
+                            {
+                                webrequest.Abort();
+                                UploadWorker.CancelAsync();
+                                break;
+                            }
+
+                            stopwatch.Start();
+                            requestStream.Write(buffer, 0, bytesRead);
+                            stopwatch.Stop();
+
+                            int progress = (int)(((float)fileStream.Position / (float)fileStream.Length) * 100);
+
+                            if (stopwatch.ElapsedMilliseconds > 0)
+                                bytesPerSecond = fileStream.Position * 1000 / stopwatch.ElapsedMilliseconds;
+
+                            bytesTransferred = fileStream.Position;
+
+                            stopwatch.Reset();
+
+                            UploadWorker.ReportProgress(progress);
+                        }
+
                         if (UploadWorker.CancellationPending)
-                            break;
+                        {
+                            webrequest.Abort();
+                            UploadWorker.CancelAsync();
+                            return;
+                        }
 
-                        stopwatch.Start();
-                        requestStream.Write(buffer, 0, bytesRead);
-                        stopwatch.Stop();
+                        // Write out the trailing boundary
+                        requestStream.Write(boundaryBytes, 0, boundaryBytes.Length);
 
-                        int progress = (int)(((float)fileStream.Position / (float)fileStream.Length) * 100);
-
-                        if (stopwatch.ElapsedMilliseconds > 0)
-                            bytesPerSecond = fileStream.Position * 1000 / stopwatch.ElapsedMilliseconds;
-
-                        bytesTransferred = fileStream.Position;
-
-                        stopwatch.Reset();
-
-                        UploadWorker.ReportProgress(progress);
+                        // Write all data before we close the stream.
+                        requestStream.Flush();
+                        requestStream.Close();
                     }
-
-                    // Write out the trailing boundary
-                    requestStream.Write(boundaryBytes, 0, boundaryBytes.Length);
-
-                    // Write all data before we close the stream.
-                    requestStream.Flush();
                 }
+            }
+            catch (WebException ex)
+            {   //RequestCanceled will occour when we cancel the WebRequest
+                //filter that exception but log all others
+                if (ex.Status != WebExceptionStatus.RequestCanceled)
+                {
+                    Logging.Log(ex);
+                    return;
+                }
+            }
+
+            if (UploadWorker.CancellationPending)
+            {
+                webrequest.Abort();
+                UploadWorker.CancelAsync();
+                return;
             }
 
             WebResponse response = webrequest.GetResponse();
@@ -164,7 +203,9 @@ namespace ProcessHacker
 
         private void UploadWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            speedLabel.Text = "Uploaded " + Utils.FormatSize(bytesTransferred) + " (" + Utils.FormatSize(bytesPerSecond) + "/s)";
+            uploadedLabel.Text = "Uploaded: " + Utils.FormatSize(bytesTransferred);
+            totalSizeLabel.Text = "Total Size: " + Utils.FormatSize(totalfilesize);
+            speedLabel.Text = "Speed: " + Utils.FormatSize(bytesPerSecond) + "/s";
             progressBar.Value = e.ProgressPercentage;
         }
 
@@ -174,7 +215,14 @@ namespace ProcessHacker
             //display the appropriate infomation but for now just mirror  
             //the functionality of the VirusTotal desktop client and
             //launch the URL in the default browser
-            Program.TryStart(e.Result.ToString());
+
+            if (e.Result != null) //Result will be null if theres an error
+            {
+                if (!e.Cancelled) //sanity check
+                {
+                    Program.TryStart(e.Result.ToString());
+                }
+            }
 
             this.Close();
         }
