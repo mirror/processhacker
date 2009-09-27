@@ -161,6 +161,9 @@ namespace ProcessHacker
 
             Program.ProcessProvider.Updated +=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
         }
 
         private void SysInfoWindow_FormClosing(object sender, FormClosingEventArgs e)

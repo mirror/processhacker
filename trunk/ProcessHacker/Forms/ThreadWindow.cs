@@ -53,6 +53,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             listViewCallStack_SelectedIndexChanged(null, null);
 
             _pid = PID;

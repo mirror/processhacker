@@ -68,6 +68,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             listColumns.SetDoubleBuffered(true);
             listColumns.SetTheme("explorer");
             columnColumn.Width = listColumns.Width - 21;

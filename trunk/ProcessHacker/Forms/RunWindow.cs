@@ -40,7 +40,10 @@ namespace ProcessHacker
         {
             InitializeComponent();
             this.AddEscapeToClose();
-            
+
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             textSessionID.Text = Program.CurrentSessionId.ToString();
             comboType.SelectedItem = "Interactive";
 

@@ -13,6 +13,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             comboIcon.SelectedItem = "None";
         }
 

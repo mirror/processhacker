@@ -48,6 +48,9 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             DwmExtendFrameIntoClientArea(this.Handle, ref margins);
 
             plotterCPU.BackColor = Color.FromArgb(255, 0, 0, 0);

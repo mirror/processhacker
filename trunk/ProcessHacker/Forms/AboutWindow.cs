@@ -33,6 +33,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             labelVersion.Text = Application.ProductVersion;
 
             buttonChangelog.Visible = System.IO.File.Exists(Application.StartupPath + "\\CHANGELOG.txt");

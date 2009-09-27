@@ -19,6 +19,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             Utils.Fill(comboErrorControl, typeof(ServiceErrorControl));
             Utils.Fill(comboStartType, typeof(ServiceStartType));
             Utils.Fill(comboType, typeof(ServiceType));

@@ -40,6 +40,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             foreach (string s in Program.Structs.Keys)
                 listStructName.Items.Add(s);
 

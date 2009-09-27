@@ -20,6 +20,9 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             _pid = pid;
 
             bool allowKernelMode;

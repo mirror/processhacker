@@ -33,6 +33,9 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             textException.Text = ex.ToString();
 
             try

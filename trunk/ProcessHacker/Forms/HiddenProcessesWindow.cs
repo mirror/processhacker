@@ -43,6 +43,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             listProcesses.ListViewItemSorter = new SortedListViewComparer(listProcesses);
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();
             listProcesses.AddShortcuts();

@@ -32,6 +32,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             if (!Program.BadConfig)
                 this.Size = Properties.Settings.Default.InformationBoxSize;
 

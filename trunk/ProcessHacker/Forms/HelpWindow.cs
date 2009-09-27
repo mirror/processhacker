@@ -46,6 +46,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             Assembly assembly = Assembly.GetExecutingAssembly();
             Stream resource = assembly.GetManifestResourceStream(assembly.GetName().Name + ".Help.htm");
 

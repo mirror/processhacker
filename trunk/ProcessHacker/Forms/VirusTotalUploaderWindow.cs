@@ -53,6 +53,7 @@ namespace ProcessHacker
         public VirusTotalUploaderWindow(string procName, string procPath)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             ProgressBarEx.XPProgressBarRenderer CustomRenderer = new ProgressBarEx.XPProgressBarRenderer(System.Drawing.Color.Blue);
             CustomRenderer.MarqueeStyle = ProgressBarEx.MarqueeStyle.LeftRight;
@@ -61,6 +62,9 @@ namespace ProcessHacker
             processName = procName;
             filepath = procPath;
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+            
             this.Icon = Program.HackerWindow.Icon;
         }
 
@@ -134,7 +138,7 @@ namespace ProcessHacker
             }   
         }
 
-        void vtId_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        private void vtId_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             var webException = e.Error as WebException;
 

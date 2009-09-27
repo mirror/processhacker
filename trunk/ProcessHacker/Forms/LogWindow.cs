@@ -37,6 +37,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             listLog.SetDoubleBuffered(true);
             listLog.SetTheme("explorer");
             listLog.ContextMenu = listLog.GetCopyMenu(listLog_RetrieveVirtualItem);

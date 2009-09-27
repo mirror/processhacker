@@ -35,6 +35,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             foreach (KeyValuePair<string, string> kvp in list)
             {
                 ListViewItem item = new ListViewItem();

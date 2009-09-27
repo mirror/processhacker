@@ -50,6 +50,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             if (value == "")
             {
                 textValue.Text = LastValue;

@@ -39,6 +39,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             _serviceProps = new ServiceProperties(services);
             _serviceProps.Dock = DockStyle.Fill;
             _serviceProps.NeedsClose += new EventHandler(_serviceProps_NeedsClose);

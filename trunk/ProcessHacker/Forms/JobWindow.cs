@@ -19,6 +19,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             _jobProps = new JobProperties(jobHandle);
             _jobProps.Dock = DockStyle.Fill;
 

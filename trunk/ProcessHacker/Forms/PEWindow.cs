@@ -40,6 +40,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             _path = path;
             this.Text = "PE File - " + path;
             Program.PEWindows.Add(Id, this);

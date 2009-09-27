@@ -46,6 +46,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             listHandles.SetDoubleBuffered(true);
             listHandles.SetTheme("explorer");
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHandles, null);

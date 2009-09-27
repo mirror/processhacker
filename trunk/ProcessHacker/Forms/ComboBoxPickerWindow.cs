@@ -37,6 +37,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            if (Program.HackerWindow.TopMost)
+                this.TopMost = true;
+
             comboBox.Items.AddRange(items);
 
             if (comboBox.Items.Count > 0)
