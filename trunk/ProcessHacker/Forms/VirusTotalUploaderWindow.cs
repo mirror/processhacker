@@ -64,7 +64,7 @@ namespace ProcessHacker
             labelFile.Text = string.Format("Uploading: {0}", processName);
 
             totalfilesize = new FileInfo(filepath).Length;
-            if (totalfilesize <= 20971520 /* 20MB */)
+            if (totalfilesize >= 20971520 /* 20MB */)
             {
                 if (OSVersion.HasTaskDialogs)
                 {
