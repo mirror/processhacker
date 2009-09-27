@@ -411,7 +411,7 @@ namespace ProcessHacker.Common
         /// <param name="message">The message to show.</param>
         public static void ShowError(string message)
         {
-            MessageBox.Show(message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(IWin32ForegroundWindow.Instance, message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         /// <summary>
@@ -423,7 +423,7 @@ namespace ProcessHacker.Common
         /// <param name="ex">The exception to notify the user of.</param>
         public static void ShowException(string operation, Exception ex)
         {
-            MessageBox.Show(FormatException(operation, ex), "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(IWin32ForegroundWindow.Instance, FormatException(operation, ex), "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         /// <summary>
@@ -432,7 +432,7 @@ namespace ProcessHacker.Common
         /// <param name="message">The message to show.</param>
         public static void ShowInformation(string message)
         {
-            MessageBox.Show(message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(IWin32ForegroundWindow.Instance, message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         /// <summary>
@@ -441,7 +441,29 @@ namespace ProcessHacker.Common
         /// <param name="message">The message to show.</param>
         public static void ShowWarning(string message)
         {
-            MessageBox.Show(message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(IWin32ForegroundWindow.Instance, message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        public class IWin32ForegroundWindow : IWin32Window
+        {
+            private static IWin32ForegroundWindow _window = new IWin32ForegroundWindow();
+            private IWin32ForegroundWindow() { }
+
+            public static IWin32Window Instance
+            {
+                get { return _window; }
+            }
+
+            [System.Runtime.InteropServices.DllImport("user32.dll")]
+            private static extern IntPtr GetForegroundWindow();
+
+            IntPtr IWin32Window.Handle
+            {
+                get
+                {
+                    return GetForegroundWindow();
+                }
+            }
         }
     }
 }
