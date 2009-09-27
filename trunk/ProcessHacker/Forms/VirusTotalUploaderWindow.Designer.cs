@@ -131,7 +131,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "VirusTotalUploaderWindow";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "VirusTotal Uploader";
             this.Load += new System.EventHandler(this.VirusTotalUploaderWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.VirusTotalUploaderWindow_FormClosing);

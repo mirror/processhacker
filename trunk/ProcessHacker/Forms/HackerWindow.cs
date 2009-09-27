@@ -1772,6 +1772,10 @@ namespace ProcessHacker
                  treeProcesses.SelectedNodes[0].FileName
                  );
 
+            int Y = this.Top + (this.Height - vt.Height) / 2;
+            int X = this.Left + (this.Width - vt.Width) / 2;
+
+            vt.Location = new Point(X, Y);
             vt.Show(this);
         }
 
