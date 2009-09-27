@@ -269,11 +269,12 @@ namespace ProcessHacker
 
             if (ProcessCommandLine(pArgs))
                 return;
+#if !DEBUG
 
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-
+#endif
             Win32.FileIconInit(true);
             LoadProviders();
             Windows.GetProcessName = (pid) => 
