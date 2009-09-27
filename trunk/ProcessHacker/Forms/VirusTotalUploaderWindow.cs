@@ -91,7 +91,7 @@ namespace ProcessHacker
 
                 this.Close();
             }
-            else if (totalfilesize >= 20971520 /* 20MB */)
+            else if (finfo.Length >= 20971520 /* 20MB */)
             {
                 if (OSVersion.HasTaskDialogs)
                 {
