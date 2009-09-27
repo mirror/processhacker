@@ -54,6 +54,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
             this.AddEscapeToClose();
+            this.SetTopMost();
 
             ProgressBarEx.XPProgressBarRenderer CustomRenderer = new ProgressBarEx.XPProgressBarRenderer(System.Drawing.Color.Blue);
             CustomRenderer.MarqueeStyle = ProgressBarEx.MarqueeStyle.LeftRight;
@@ -61,9 +62,6 @@ namespace ProcessHacker
 
             processName = procName;
             filepath = procPath;
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
             
             this.Icon = Program.HackerWindow.Icon;
         }

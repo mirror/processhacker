@@ -47,9 +47,8 @@ namespace ProcessHacker
         public MiniSysInfo()
         {
             InitializeComponent();
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
+            this.AddEscapeToClose();
+            this.SetTopMost();
 
             DwmExtendFrameIntoClientArea(this.Handle, ref margins);
 

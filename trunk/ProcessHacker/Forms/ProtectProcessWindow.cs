@@ -19,9 +19,8 @@ namespace ProcessHacker
         public ProtectProcessWindow(int pid)
         {
             InitializeComponent();
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
+            this.AddEscapeToClose();
+            this.SetTopMost();
 
             _pid = pid;
 

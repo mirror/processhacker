@@ -49,9 +49,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
             this.AddEscapeToClose();
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
+            this.SetTopMost();
 
             _ipAddress = ipAddress;
             _ipAction = action;

@@ -10,9 +10,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
             this.AddEscapeToClose();
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
+            this.SetTopMost();
 
             labelUsername.Text = session.DomainName + "\\" + session.UserName;
             labelSessionId.Text = session.SessionId.ToString();

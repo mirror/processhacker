@@ -161,9 +161,10 @@ namespace ProcessHacker
 
             Program.ProcessProvider.Updated +=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
+            
+            //We need todo this here or TopMost property gets over-rided
+            //by AlwaysOnTopCheckbox
+            this.SetTopMost();
         }
 
         private void SysInfoWindow_FormClosing(object sender, FormClosingEventArgs e)

@@ -42,9 +42,7 @@ namespace ProcessHacker
             this.SetPhParent();
             InitializeComponent();
             this.AddEscapeToClose();
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
+            this.SetTopMost();
 
             listProcesses.ListViewItemSorter = new SortedListViewComparer(listProcesses);
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();

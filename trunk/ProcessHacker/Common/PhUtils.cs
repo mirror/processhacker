@@ -444,7 +444,7 @@ namespace ProcessHacker.Common
             MessageBox.Show(IWin32ForegroundWindow.Instance, message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
-        public class IWin32ForegroundWindow : IWin32Window
+        private class IWin32ForegroundWindow : IWin32Window
         {
             private static IWin32ForegroundWindow _window = new IWin32ForegroundWindow();
             private IWin32ForegroundWindow() { }

@@ -43,9 +43,8 @@ namespace ProcessHacker
         public UpdaterDownloadWindow(Updater.UpdateItem updateItem)
         {
             InitializeComponent();
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
+            this.AddEscapeToClose();
+            this.SetTopMost();
 
             _updateItem = updateItem;
         }

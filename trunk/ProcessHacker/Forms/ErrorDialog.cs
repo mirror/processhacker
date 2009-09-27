@@ -32,9 +32,7 @@ namespace ProcessHacker
         public ErrorDialog(Exception ex)
         {
             InitializeComponent();
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
+            this.SetTopMost();
 
             textException.Text = ex.ToString();
 

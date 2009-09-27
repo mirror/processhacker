@@ -22,9 +22,8 @@ namespace ProcessHacker
         public ScratchpadWindow()
         {
             InitializeComponent();
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
+            this.AddEscapeToClose();
+            this.SetTopMost();
         }
 
         public ScratchpadWindow(string text)

@@ -1223,6 +1223,12 @@ namespace ProcessHacker
             };
         }
 
+        public static void SetTopMost(this Form f)
+        {
+            if (HackerWindow.TopMost)
+                f.TopMost = true;
+        }
+
         /// <summary>
         /// Floats the window on top of the main Process Hacker window.
         /// </summary>

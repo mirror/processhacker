@@ -45,9 +45,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
             this.AddEscapeToClose();
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
+            this.SetTopMost();
 
             listHandles.SetDoubleBuffered(true);
             listHandles.SetTheme("explorer");

@@ -64,9 +64,7 @@ namespace ProcessHacker
             this.SetPhParent();
             InitializeComponent();
             this.AddEscapeToClose();
-
-            if (Program.HackerWindow.TopMost)
-                this.TopMost = true;
+            this.SetTopMost();
 
             _processItem = process;
             _pid = process.Pid;
