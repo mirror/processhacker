@@ -32,6 +32,7 @@ Process Hacker
    * Notification icons were fixed at 16x16 size
    * Sort order for the relative start time column
    * Incorrect process priority class display
+   * Commit and Physical Memory History icon colors
 
 1.5
  * NEW/IMPROVED:
