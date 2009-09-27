@@ -28,6 +28,8 @@ using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Components;
+using ProcessHacker.Native;
 
 /* ProcessHacker VirusTotal Implementation Authorized by:
  * Julio Canto | VirusTotal.com | Hispasec Sistemas Lab | Tlf: +34.902.161.025
@@ -61,8 +63,30 @@ namespace ProcessHacker
         {
             labelFile.Text = string.Format("Uploading: {0}", processName);
 
-            FileInfo fi = new FileInfo(filepath);
-            totalfilesize = fi.Length;
+            totalfilesize = new FileInfo(filepath).Length;
+            if (totalfilesize <= 20971520 /* 20MB */)
+            {
+                if (OSVersion.HasTaskDialogs)
+                {
+                    TaskDialog td = new TaskDialog();
+                    td.PositionRelativeToWindow = true;
+                    td.Content = "This file is larger than 20MB, above the VirusTotal limit!";
+                    td.MainInstruction = "File is too large";
+                    td.WindowTitle = "VirusTotal Error";
+                    td.MainIcon = TaskDialogIcon.CircleX;
+                    td.CommonButtons = TaskDialogCommonButtons.Ok;
+                    td.Show(Program.HackerWindow.Handle);
+                }
+                else
+                {
+                     MessageBox.Show(
+                        this, "This file is larger than 20MB and is above the VirusTotal size limit!",
+                        "VirusTotal Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation
+                        );
+                }
+
+                this.Close();
+            }
 
             WebClient vtId = new WebClient();
             vtId.Headers.Add("User-Agent", "Process Hacker " + Application.ProductVersion);
