@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
-namespace Nomad.Controls
+namespace ProgressBarEx
 {
   [ToolboxBitmap(typeof(ProgressBar))]
   public class VistaProgressBar : ProgressBar

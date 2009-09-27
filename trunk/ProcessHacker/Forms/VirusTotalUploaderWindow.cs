@@ -53,6 +53,10 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            ProgressBarEx.XPProgressBarRenderer CustomRenderer = new ProgressBarEx.XPProgressBarRenderer(System.Drawing.Color.Blue);
+            CustomRenderer.MarqueeStyle = ProgressBarEx.MarqueeStyle.LeftRight;
+            progressUpload.Renderer = CustomRenderer;
+
             processName = procName;
             filepath = procPath;
 
@@ -63,8 +67,31 @@ namespace ProcessHacker
         {
             labelFile.Text = string.Format("Uploading: {0}", processName);
 
-            totalfilesize = new FileInfo(filepath).Length;
-            if (totalfilesize >= 20971520 /* 20MB */)
+            FileInfo finfo = new FileInfo(filepath);
+            if (!finfo.Exists)
+            {
+                if (OSVersion.HasTaskDialogs)
+                {
+                    TaskDialog td = new TaskDialog();
+                    td.PositionRelativeToWindow = true;
+                    td.Content = "The selected file doesn't exist or couldnt be found!";
+                    td.MainInstruction = "File Location not Available!";
+                    td.WindowTitle = "System Error";
+                    td.MainIcon = TaskDialogIcon.CircleX;
+                    td.CommonButtons = TaskDialogCommonButtons.Ok;
+                    td.Show(Program.HackerWindow.Handle);
+                }
+                else
+                {
+                    MessageBox.Show(
+                       this, "The selected file doesn't exist or couldnt be found!",
+                       "System Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation
+                       );
+                }
+
+                this.Close();
+            }
+            else if (totalfilesize >= 20971520 /* 20MB */)
             {
                 if (OSVersion.HasTaskDialogs)
                 {
@@ -86,6 +113,10 @@ namespace ProcessHacker
                 }
 
                 this.Close();
+            }
+            else
+            {
+                totalfilesize = finfo.Length;
             }
 
             WebClient vtId = new WebClient();

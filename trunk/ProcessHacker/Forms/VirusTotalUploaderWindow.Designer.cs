@@ -35,7 +35,7 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.speedLabel = new System.Windows.Forms.Label();
             this.totalSizeLabel = new System.Windows.Forms.Label();
-            this.progressUpload = new Nomad.Controls.VistaProgressBar();
+            this.progressUpload = new ProgressBarEx.VistaProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.LogoImg)).BeginInit();
             this.SuspendLayout();
             // 
@@ -109,8 +109,9 @@
             // 
             this.progressUpload.Location = new System.Drawing.Point(12, 64);
             this.progressUpload.Name = "progressUpload";
+            this.progressUpload.RenderMode = ProgressBarEx.ProgressRenderMode.Vista;
             this.progressUpload.Size = new System.Drawing.Size(329, 23);
-            this.progressUpload.TabIndex = 8;
+            this.progressUpload.TabIndex = 0;
             // 
             // VirusTotalUploaderWindow
             // 
@@ -147,6 +148,6 @@
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Label speedLabel;
         private System.Windows.Forms.Label totalSizeLabel;
-        private Nomad.Controls.VistaProgressBar progressUpload;
+        private ProgressBarEx.VistaProgressBar progressUpload;
     }
 }

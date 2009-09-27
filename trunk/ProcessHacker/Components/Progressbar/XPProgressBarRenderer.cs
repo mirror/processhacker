@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace Nomad.Controls
+namespace ProgressBarEx
 {
   public enum MarqueeStyle { Continuous, LeftRight }
 

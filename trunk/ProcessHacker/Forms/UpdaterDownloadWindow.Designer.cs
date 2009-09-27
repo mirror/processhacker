@@ -37,7 +37,7 @@
             this.buttonStop = new System.Windows.Forms.Button();
             this.verifyWorker = new System.ComponentModel.BackgroundWorker();
             this.buttonInstall = new System.Windows.Forms.Button();
-            this.progressDownload = new Nomad.Controls.VistaProgressBar();
+            this.progressDownload = new ProgressBarEx.VistaProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -130,6 +130,7 @@
             // 
             this.progressDownload.Location = new System.Drawing.Point(12, 112);
             this.progressDownload.Name = "progressDownload";
+            this.progressDownload.RenderMode = ProgressBarEx.ProgressRenderMode.Vista;
             this.progressDownload.Size = new System.Drawing.Size(367, 23);
             this.progressDownload.TabIndex = 24;
             // 
@@ -174,6 +175,6 @@
         private System.Windows.Forms.Button buttonStop;
         private System.ComponentModel.BackgroundWorker verifyWorker;
         private System.Windows.Forms.Button buttonInstall;
-        private Nomad.Controls.VistaProgressBar progressDownload;
+        private ProgressBarEx.VistaProgressBar progressDownload;
     }
 }

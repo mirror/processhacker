@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Nomad.Controls
+namespace ProgressBarEx
 {
   public class ProgressBarRenderEventArgs : EventArgs
   {

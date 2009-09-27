@@ -411,7 +411,7 @@
       <DependentUpon>ProgressBar.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\Progressbar\ProgressBarRenderers.cs" />
-    <Compile Include="Components\Progressbar\VistaProgressBar.cs">
+    <Compile Include="Components\Progressbar\ProgressBarEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Components\Progressbar\VistaProgressBarRenderer.cs" />
