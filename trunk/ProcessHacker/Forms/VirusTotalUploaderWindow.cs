@@ -4,6 +4,11 @@
  * 
  * Copyright (C) 2009 dmex
  * 
+ * ProcessHacker permission to implement VirusTotal service authorized by:
+ * Julio Canto | VirusTotal.com | Hispasec Sistemas Lab | Tlf: +34.902.161.025
+ * Fax: +34.952.028.694 | PGP Key ID: EF618D2B | jcanto@hispasec.com 
+ * 26/09/2009 - 2:39PM
+ * 
  * This file is part of Process Hacker.
  * 
  * Process Hacker is free software; you can redistribute it and/or modify
@@ -18,7 +23,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
+
 
 using System;
 using System.ComponentModel;
@@ -30,12 +37,6 @@ using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
-
-/* ProcessHacker VirusTotal Implementation Authorized by:
- * Julio Canto | VirusTotal.com | Hispasec Sistemas Lab | Tlf: +34.902.161.025
- * Fax: +34.952.028.694 | PGP Key ID: EF618D2B | jcanto@hispasec.com 
- * 26/09/2009 - 2:39PM
- */
 
 namespace ProcessHacker
 {
@@ -315,7 +316,7 @@ namespace ProcessHacker
                     this.Close();
                 }
             }
-            else if (!e.Cancelled) //sanity check
+            else if (e.Result != null && !e.Cancelled) //sanity check
             {
                 Program.TryStart(e.Result.ToString());
             }
