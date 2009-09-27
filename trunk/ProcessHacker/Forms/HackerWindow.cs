@@ -1755,6 +1755,23 @@ namespace ProcessHacker
             treeProcesses.Tree.Invalidate();
         }
 
+        private void VirusTotalMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeProcesses.SelectedNodes.Count != 1)
+                return;
+            else if (treeProcesses.SelectedNodes[0].FileName.Length <= 1) 
+            {
+                PhUtils.ShowWarning("Process location not available, Are you trying to query an Elevated Process?");
+                return;
+            }
+                
+            new VirusTotalUploaderWindow(
+                treeProcesses.SelectedNodes[0].Name, 
+                treeProcesses.SelectedNodes[0].FileName)
+                .ShowDialog();
+        }
+
+
         #endregion
 
         #region Providers
@@ -3374,5 +3391,6 @@ namespace ProcessHacker
 
             }
         }
+
     }
 }
