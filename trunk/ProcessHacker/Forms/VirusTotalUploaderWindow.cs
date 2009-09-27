@@ -119,12 +119,42 @@ namespace ProcessHacker
                 totalfilesize = finfo.Length;
             }
 
-            WebClient vtId = new WebClient();
-            vtId.Headers.Add("User-Agent", "Process Hacker " + Application.ProductVersion);
+            try
+            {
+                WebClient vtId = new WebClient();
+                vtId.Headers.Add("User-Agent", "Process Hacker " + Application.ProductVersion);
+                vtId.DownloadStringCompleted += new DownloadStringCompletedEventHandler(vtId_DownloadStringCompleted);
+                vtId.DownloadStringAsync(new Uri("http://www.virustotal.com/vt/en/identificador"));     
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to download VirusTotal SessionToken", ex);
+                this.Close();
+            }   
+        }
 
-            url = "http://www.virustotal.com/vt/en/recepcionf?" + vtId.DownloadString("http://www.virustotal.com/vt/en/identificador");
+        void vtId_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            var webException = e.Error as WebException;
 
-            UploadWorker.RunWorkerAsync();
+            if (webException != null && webException.Status != WebExceptionStatus.Success)
+            {
+                if (webException.Status != WebExceptionStatus.RequestCanceled)
+                {
+                    PhUtils.ShowException("Unable to download the VirusTotal SessionToken", webException);
+                    this.Close();
+                }
+            }
+            else if (!e.Cancelled)
+            {
+                url = "http://www.virustotal.com/vt/en/recepcionf?" + e.Result;
+
+                UploadWorker.RunWorkerAsync();
+            }
+            else
+            {
+                this.Close();
+            }
         }
 
         private void VirusTotalUploaderWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -232,11 +262,16 @@ namespace ProcessHacker
             catch (WebException ex)
             {   //RequestCanceled will occour when we cancel the WebRequest
                 //filter that exception but log all others
-                if (ex.Status != WebExceptionStatus.RequestCanceled)
+                if (ex != null)
                 {
-                    Logging.Log(ex);
-                    return;
+                    if (ex.Status != WebExceptionStatus.RequestCanceled)
+                    {
+                        PhUtils.ShowException("Unable to download the VirusTotal SessionToken", ex);
+                        Logging.Log(ex);
+                        this.Close();
+                    }
                 }
+
             }
 
             if (UploadWorker.CancellationPending)
@@ -271,12 +306,18 @@ namespace ProcessHacker
             //the functionality of the VirusTotal desktop client and
             //launch the URL in the default browser
 
-            if (e.Result != null) //Result will be null if theres an error
+            var webException = e.Error as WebException;
+            if (webException != null && webException.Status != WebExceptionStatus.Success)
             {
-                if (!e.Cancelled) //sanity check
+                if (webException.Status != WebExceptionStatus.RequestCanceled)
                 {
-                    Program.TryStart(e.Result.ToString());
+                    PhUtils.ShowException("Unable to Upload the file", webException);
+                    this.Close();
                 }
+            }
+            else if (!e.Cancelled) //sanity check
+            {
+                Program.TryStart(e.Result.ToString());
             }
 
             this.Close();

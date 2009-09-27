@@ -54,18 +54,18 @@
             this.labelFile.AutoSize = true;
             this.labelFile.Location = new System.Drawing.Point(9, 7);
             this.labelFile.Name = "labelFile";
-            this.labelFile.Size = new System.Drawing.Size(154, 13);
+            this.labelFile.Size = new System.Drawing.Size(58, 13);
             this.labelFile.TabIndex = 2;
-            this.labelFile.Text = "Uploading: ProcessHacker.exe";
+            this.labelFile.Text = "Uploading:";
             // 
             // uploadedLabel
             // 
             this.uploadedLabel.AutoSize = true;
             this.uploadedLabel.Location = new System.Drawing.Point(9, 45);
             this.uploadedLabel.Name = "uploadedLabel";
-            this.uploadedLabel.Size = new System.Drawing.Size(86, 13);
+            this.uploadedLabel.Size = new System.Drawing.Size(56, 13);
             this.uploadedLabel.TabIndex = 3;
-            this.uploadedLabel.Text = "Uploaded: 00.00";
+            this.uploadedLabel.Text = "Uploaded:";
             // 
             // UploadWorker
             // 
@@ -92,18 +92,18 @@
             this.speedLabel.AutoSize = true;
             this.speedLabel.Location = new System.Drawing.Point(142, 45);
             this.speedLabel.Name = "speedLabel";
-            this.speedLabel.Size = new System.Drawing.Size(71, 13);
+            this.speedLabel.Size = new System.Drawing.Size(41, 13);
             this.speedLabel.TabIndex = 6;
-            this.speedLabel.Text = "Speed: 00.00";
+            this.speedLabel.Text = "Speed:";
             // 
             // totalSizeLabel
             // 
             this.totalSizeLabel.AutoSize = true;
             this.totalSizeLabel.Location = new System.Drawing.Point(9, 26);
             this.totalSizeLabel.Name = "totalSizeLabel";
-            this.totalSizeLabel.Size = new System.Drawing.Size(103, 13);
+            this.totalSizeLabel.Size = new System.Drawing.Size(57, 13);
             this.totalSizeLabel.TabIndex = 7;
-            this.totalSizeLabel.Text = "Total Size: 20.00MB";
+            this.totalSizeLabel.Text = "Total Size:";
             // 
             // progressUpload
             // 
