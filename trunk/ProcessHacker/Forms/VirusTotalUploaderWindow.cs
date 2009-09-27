@@ -59,7 +59,7 @@ public partial class VirusTotalUploaderWindow : Form
         fileLabel.Text = string.Format("Uploading {0} to VirusTotal", processName);
   
         WebClient vtId = new WebClient();
-        vtId.Headers.Add("User-Agent", "Process Hacker 1.6");
+        vtId.Headers.Add("User-Agent", "Process Hacker " + Application.ProductVersion);
  
         url = "http://www.virustotal.com/vt/en/recepcionf?" + vtId.DownloadString("http://www.virustotal.com/vt/en/identificador");
  
@@ -78,14 +78,11 @@ public partial class VirusTotalUploaderWindow : Form
         string boundary = "----------" + DateTime.Now.Ticks.ToString("x");
 
         HttpWebRequest webrequest = (HttpWebRequest)WebRequest.Create(uri);
-        webrequest.KeepAlive = true;
-        webrequest.Timeout = System.Threading.Timeout.Infinite;
 
-        //We need to add this but its causing an exception here... 
-        //todo: fix ASAP later
-        //webrequest.Headers.Set("User-Agent", "ProcessHacker 1.6");
-
+        webrequest.UserAgent = "ProcessHacker 1.6 " + Application.ProductVersion;
         webrequest.ContentType = "multipart/form-data; boundary=" + boundary;
+        webrequest.Timeout = System.Threading.Timeout.Infinite;
+        webrequest.KeepAlive = true; 
         webrequest.Method = "POST";
 
         // Build up the 'post' message header
@@ -106,46 +103,50 @@ public partial class VirusTotalUploaderWindow : Form
         // ensuring the boundary appears on a line by itself
         byte[] boundaryBytes = Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
 
-        FileStream fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read);
- 
-        webrequest.ContentLength = postHeaderBytes.Length + fileStream.Length + boundaryBytes.Length;
-  
-        Stream requestStream = webrequest.GetRequestStream();
-           
-        // Write out our post header
-        requestStream.Write(postHeaderBytes, 0, postHeaderBytes.Length);
-        // Write out the file contents
-        byte[] buffer = new Byte[checked((uint)Math.Min(128, (int)fileStream.Length))];
- 
-        int bytesRead = 0;
-        while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+        if (UploadWorker.CancellationPending)
+            return;
+
+        using (FileStream fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
         {
-            requestStream.Write(buffer, 0, bytesRead);
+            webrequest.ContentLength = postHeaderBytes.Length + fileStream.Length + boundaryBytes.Length;
 
-            int progress = (int)(((float)fileStream.Position / (float)fileStream.Length) * 100);
- 
-            TimeSpan totalTime = DateTime.Now - StartTime;
-            kbPerSec = (fileStream.Position * 1024) / (totalTime.TotalMilliseconds * 1024);
+            using (Stream requestStream = webrequest.GetRequestStream())
+            {
+                // Write out our post header
+                requestStream.Write(postHeaderBytes, 0, postHeaderBytes.Length);
+                // Write out the file contents
+                byte[] buffer = new Byte[checked((uint)Math.Min(256, (int)fileStream.Length))];
 
-            //todo: add transfered data/filesize
+                int bytesRead = 0;
+                while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+                {
+                    if (UploadWorker.CancellationPending)
+                        break;
 
-            UploadWorker.ReportProgress(progress);  
+                    requestStream.Write(buffer, 0, bytesRead);
+
+                    int progress = (int)(((float)fileStream.Position / (float)fileStream.Length) * 100);
+
+                    TimeSpan totalTime = DateTime.Now - StartTime;
+                    kbPerSec = (fileStream.Position * 1024) / (totalTime.TotalMilliseconds * 1024);
+
+                    //todo: add transfered data/filesize
+
+                    UploadWorker.ReportProgress(progress);
+                }
+
+                // Write out the trailing boundary
+                requestStream.Write(boundaryBytes, 0, boundaryBytes.Length);
+            }
         }
-  
-        // Write out the trailing boundary
-        requestStream.Write(boundaryBytes, 0, boundaryBytes.Length);
 
-        fileStream.Close();
-        requestStream.Close();
-  
         WebResponse responce = webrequest.GetResponse();
-  
+
         //Stream s = responce.GetResponseStream(); 
         //StreamReader sr = new StreamReader(s);
         //sr.ReadToEnd();
 
-        //Return the response URL
-            
+        //Return the response URL 
         e.Result = responce.ResponseUri.AbsoluteUri; 
     }
 
@@ -162,7 +163,6 @@ public partial class VirusTotalUploaderWindow : Form
         //display the appropriate infomation but for now just mirror  
         //the functionality of the VirusTotal desktop client and
         //launch the URL in the default browser
-            
         System.Diagnostics.Process.Start(e.Result.ToString());
 
         this.Close();
