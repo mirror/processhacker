@@ -21,16 +21,13 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.IO;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
-using System.Net;
-using System.IO;
-using ProcessHacker.Common;
 using ProcessHacker;
+using ProcessHacker.Common;
 
 /* ProcessHacker VirusTotal Implementation Authorized by:
  * Julio Canto | VirusTotal.com | Hispasec Sistemas Lab | Tlf: +34.902.161.025
@@ -45,7 +42,7 @@ public partial class VirusTotalUploaderWindow : Form
     string processName;
      
     DateTime StartTime;
-    double kbPerSec;
+    long bytesPerSecond;
  
     public VirusTotalUploaderWindow(string procName, string procPath)  
     {
@@ -79,7 +76,7 @@ public partial class VirusTotalUploaderWindow : Form
 
         HttpWebRequest webrequest = (HttpWebRequest)WebRequest.Create(uri);
 
-        webrequest.UserAgent = "ProcessHacker 1.6 " + Application.ProductVersion;
+        webrequest.UserAgent = "ProcessHacker " + Application.ProductVersion;
         webrequest.ContentType = "multipart/form-data; boundary=" + boundary;
         webrequest.Timeout = System.Threading.Timeout.Infinite;
         webrequest.KeepAlive = true; 
@@ -128,7 +125,9 @@ public partial class VirusTotalUploaderWindow : Form
                     int progress = (int)(((float)fileStream.Position / (float)fileStream.Length) * 100);
 
                     TimeSpan totalTime = DateTime.Now - StartTime;
-                    kbPerSec = (fileStream.Position * 1024) / (totalTime.TotalMilliseconds * 1024);
+
+                    if (totalTime.TotalMilliseconds > 0)
+                        bytesPerSecond = fileStream.Position * 1000 / (long)totalTime.TotalMilliseconds;
 
                     //todo: add transfered data/filesize
 
@@ -140,23 +139,22 @@ public partial class VirusTotalUploaderWindow : Form
             }
         }
 
-        WebResponse responce = webrequest.GetResponse();
+        WebResponse response = webrequest.GetResponse();
 
         //Stream s = responce.GetResponseStream(); 
         //StreamReader sr = new StreamReader(s);
         //sr.ReadToEnd();
 
         //Return the response URL 
-        e.Result = responce.ResponseUri.AbsoluteUri; 
+        e.Result = response.ResponseUri.AbsoluteUri; 
     }
 
     private void UploadWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)  
     {
-        //Utils.FormatSize();
-        speedLabel.Text = kbPerSec.ToString(); 
+        speedLabel.Text = Utils.FormatSize(bytesPerSecond) + "/s"; 
         progressBar2.Value = e.ProgressPercentage;  
     }
- 
+
     private void UploadWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)  
     {
         //TODO: future additions will parse the page and  

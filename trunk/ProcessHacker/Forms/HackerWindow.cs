@@ -1760,18 +1760,19 @@ namespace ProcessHacker
         {
             if (treeProcesses.SelectedNodes.Count != 1)
                 return;
-            else if (treeProcesses.SelectedNodes[0].FileName.Length <= 1) 
+
+            if (string.IsNullOrEmpty(treeProcesses.SelectedNodes[0].FileName)) 
             {
-                PhUtils.ShowWarning("Process location not available, PH might require Elevation!");
+                PhUtils.ShowWarning("Unable to upload because the process' file location could not be determined.");
                 return;
             }
 
             VirusTotalUploaderWindow vt = new VirusTotalUploaderWindow(
                  treeProcesses.SelectedNodes[0].Name,
-                 treeProcesses.SelectedNodes[0].FileName);
+                 treeProcesses.SelectedNodes[0].FileName
+                 );
 
             vt.Show(this);
-
         }
 
 
@@ -3378,6 +3379,5 @@ namespace ProcessHacker
 
             }
         }
-
     }
 }

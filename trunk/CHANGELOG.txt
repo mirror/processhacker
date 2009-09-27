@@ -8,6 +8,7 @@ Process Hacker
    * Update system
    * Network tools: ping, traceroute and whois
    * Displays IPv6 network connections
+   * VirusTotal uploader
    * Two new terminator tests: W1 (send WM_DESTROY messages) and 
      W2 (send WM_QUIT messages)
    * Mutant owner information

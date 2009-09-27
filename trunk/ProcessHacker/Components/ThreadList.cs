@@ -567,7 +567,7 @@ namespace ProcessHacker.Components
                         }
                     }
                 }
-                catch (WindowsException ex)
+                catch (WindowsException)
                 {
                     tokenThreadMenuItem.Enabled = false;
                 }
