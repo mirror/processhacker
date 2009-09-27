@@ -749,6 +749,69 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct ImageDataDirectory
+    {
+        public int VirtualAddress;
+        public int Size;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageFileHeader
+    {
+        public short Machine;
+        public short NumberOfSections;
+        public int TimeDateStamp;
+        public int PointerToSymbolTable;
+        public int NumberOfSymbols;
+        public short SizeOfOptionalHeader;
+        public short Characteristics;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageNtHeaders
+    {
+        public int Signature;
+        public ImageFileHeader FileHeader;
+        public ImageOptionalHeader OptionalHeader;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageOptionalHeader
+    {
+        public short Magic;
+        public byte MajorLinkerVersion;
+        public byte MinorLinkerVersion;
+        public int SizeOfCode;
+        public int SizeOfInitializedData;
+        public int SizeOfUninitializedData;
+        public int AddressOfEntryPoint;
+        public int BaseOfCode;
+        public int BaseOfData;
+        public int ImageBase;
+        public int SectionAlignment;
+        public int FileAlignment;
+        public short MajorOperatingSystemVersion;
+        public short MinorOperatingSystemVersion;
+        public short MajorImageVersion;
+        public short MinorImageVersion;
+        public short MajorSubsystemVersion;
+        public short MinorSubsystemVersion;
+        public int Win32VersionValue;
+        public int SizeOfImage;
+        public int SizeOfHeaders;
+        public int CheckSum;
+        public short Subsystem;
+        public short DllCharacteristics;
+        public int SizeOfStackReserve;
+        public int SizeOfStackCommit;
+        public int SizeOfHeapReserve;
+        public int SizeOfHeapCommit;
+        public int LoaderFlags;
+        public int NumberOfRvaAndSizes;
+        public ImageDataDirectory DataDirectory;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct InitialTeb
     {
         public struct OldInitialTebStruct
