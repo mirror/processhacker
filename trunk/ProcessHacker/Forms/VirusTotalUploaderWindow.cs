@@ -38,6 +38,7 @@ using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
 using System.Drawing;
+using TaskbarLib.DesktopIntegration;
 
 namespace ProcessHacker
 {
@@ -65,6 +66,8 @@ namespace ProcessHacker
 
         private void VirusTotalUploaderWindow_Load(object sender, EventArgs e)
         {
+            TaskbarLib.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarProgress(this.progressUpload);
+
             labelFile.Text = string.Format("Uploading: {0}", processName);
 
             FileInfo finfo = new FileInfo(filepath);
@@ -161,6 +164,8 @@ namespace ProcessHacker
         {
             if (UploadWorker.IsBusy)
                 UploadWorker.CancelAsync();
+
+            Windows7Taskbar.SetProgressState(Program.HackerWindowHandle, Windows7Taskbar.ThumbnailProgressState.NoProgress);
         }
 
         private void UploadWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -297,6 +302,9 @@ namespace ProcessHacker
             totalSizeLabel.Text = "Total Size: " + Utils.FormatSize(totalfilesize);
             speedLabel.Text = "Speed: " + Utils.FormatSize(bytesPerSecond) + "/s";
             label1.Text = string.Format("{0}%", e.ProgressPercentage);
+
+            TaskbarLib.DesktopIntegration.WindowsForms.WindowsFormsExtensions.SetTaskbarProgress(this.progressUpload);
+
             progressUpload.Value = e.ProgressPercentage;
         }
 

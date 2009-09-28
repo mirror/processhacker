@@ -37,7 +37,7 @@
             this.buttonStop = new System.Windows.Forms.Button();
             this.verifyWorker = new System.ComponentModel.BackgroundWorker();
             this.buttonInstall = new System.Windows.Forms.Button();
-            this.progressDownload = new ProgressBarEx.ProgressBarEx();
+            this.progressDownload = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -131,7 +131,7 @@
             this.progressDownload.Location = new System.Drawing.Point(12, 112);
             this.progressDownload.Name = "progressDownload";
             this.progressDownload.Size = new System.Drawing.Size(367, 23);
-            this.progressDownload.TabIndex = 24;
+            this.progressDownload.TabIndex = 25;
             // 
             // UpdaterDownloadWindow
             // 
@@ -174,6 +174,6 @@
         private System.Windows.Forms.Button buttonStop;
         private System.ComponentModel.BackgroundWorker verifyWorker;
         private System.Windows.Forms.Button buttonInstall;
-        private ProgressBarEx.ProgressBarEx progressDownload;
+        private System.Windows.Forms.ProgressBar progressDownload;
     }
 }

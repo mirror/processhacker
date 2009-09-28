@@ -1,6 +1,8 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using ProcessHacker;
+using System;
 
 namespace TaskbarLib.DesktopIntegration.WindowsForms
 {
@@ -92,14 +94,11 @@ namespace TaskbarLib.DesktopIntegration.WindowsForms
         /// <param name="progressBar">The progress bar.</param>
         public static void SetTaskbarProgress(ProgressBar progressBar)
         {
-            Form form = (Form)progressBar.TopLevelControl;
+            ulong maximum = Convert.ToUInt64(progressBar.Maximum);
+            ulong progress = Convert.ToUInt64(progressBar.Value);
 
-            //Approximation:
-            ulong maximum = (ulong)(progressBar.Maximum - progressBar.Minimum);
-            ulong progress = (ulong)(progressBar.Value - progressBar.Minimum);
-
-            Windows7Taskbar.SetProgressState(form.Handle, Windows7Taskbar.ThumbnailProgressState.Normal);
-            Windows7Taskbar.SetProgressValue(form.Handle, progress, maximum);
+            Windows7Taskbar.SetProgressState(Program.HackerWindowHandle, Windows7Taskbar.ThumbnailProgressState.Normal);
+            Windows7Taskbar.SetProgressValue(Program.HackerWindowHandle, progress, maximum);
         }
 
         /// <summary>
