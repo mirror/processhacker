@@ -111,7 +111,7 @@ namespace ProcessHacker
                 {
                     if (OSVersion.HasExtendedTaskbar)
                     {
-                        TaskbarLib.DesktopIntegration.Windows7Taskbar.SetTaskbarOverlayIcon(
+                        TaskbarLib.Windows7Taskbar.SetTaskbarOverlayIcon(
                             value,
                             ""
                             );

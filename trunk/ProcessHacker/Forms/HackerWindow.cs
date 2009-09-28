@@ -37,13 +37,16 @@ using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
-using TaskbarLib.DesktopIntegration;
+using TaskbarLib;
 
 namespace ProcessHacker
 {
     public partial class HackerWindow : Form
     {
         public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
+
+        ThumbButtonManager thumbButtonManager;
+        JumpListManager jumpListManager;
 
         private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
 
@@ -2894,9 +2897,93 @@ namespace ProcessHacker
                         treeProcesses.Tree.RefreshVisualStyles();
                     }
                     break;
+
+                default:
+                    if (m.Msg == Windows7Taskbar.TaskbarButtonCreatedMessage)
+                    {
+                        jumpListManager = Windows7Taskbar.CreateJumpListManager();
+                        jumpListManager.UserRemovedItems += (o, e) =>
+                        {
+                            QueueMessage("User removed " + e.RemovedItems.Length + " items (cancelling refresh)");
+                            e.CancelCurrentOperation = true;
+                        };
+
+                        jumpListManager.ClearAllDestinations();
+                        jumpListManager.EnabledAutoDestinationType = ApplicationDestinationType.Recent;
+
+                        string shell32DllPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shell32.dll");
+
+                        jumpListManager.AddCustomDestination(new ShellLink
+                        {
+                            Path = @"X:\Files\System Utils\procexp.exe",
+                            Arguments = "-e",
+                            Title = "Process Explorer",
+                            Category = "Tools",
+                            IconLocation = shell32DllPath,
+                            IconIndex = 5
+                        });
+
+                        jumpListManager.AddUserTask(new ShellLink
+                        {
+                            Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "eventvwr.msc"),
+                            Arguments = "/s",
+                            Title = "Event Viewer",
+                            IconLocation = shell32DllPath,
+                            IconIndex = 14
+                        });
+
+                        //jumpListManager.AddUserTask(new Separator());
+
+                        jumpListManager.AddUserTask(new ShellLink
+                        {
+                            Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "msinfo32.exe"),
+                            Title = "System Infomation",
+                            IconLocation = shell32DllPath,
+                            IconIndex = 15
+                        });
+
+                        if (jumpListManager.Refresh())
+                        {
+                            QueueMessage("Maximum slots in list: " + jumpListManager.MaximumSlotsInList);
+                        }
+
+                        thumbButtonManager = Windows7Taskbar.CreateThumbButtonManager();
+
+                        ThumbButton button = thumbButtonManager.CreateThumbButton(100, SystemIcons.Information, "Click me");
+                        button.Clicked += new EventHandler(button_Clicked);
+
+                        ThumbButton button2 = thumbButtonManager.CreateThumbButton(101, SystemIcons.Exclamation, "Beware of me!");
+                        button2.Clicked += new EventHandler(button2_Clicked);
+                  
+
+                        ThumbButton button3 = thumbButtonManager.CreateThumbButton(102, SystemIcons.Shield, "Click!!!!!!!");
+                        button3.Clicked += new EventHandler(button3_Clicked);
+ 
+                        thumbButtonManager.AddThumbButtons(button, button2, button3);
+                    }
+
+                    if (thumbButtonManager != null)
+                        thumbButtonManager.DispatchMessage(ref m);
+
+                    break;
             }
 
             base.WndProc(ref m);
+        }
+
+        void button_Clicked(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        void button3_Clicked(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        void button2_Clicked(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         public void Exit()
@@ -3223,6 +3310,7 @@ namespace ProcessHacker
 
             //We need to call this here or we dont recieve the TaskbarButtonCreated WindowMessage
             Windows7Taskbar.AllowTaskbarWindowMessagesThroughUipi();
+            Windows7Taskbar.SetCurrentProcessAppId("ProcessHacker");
 
             this.AddEscapeToClose();
 

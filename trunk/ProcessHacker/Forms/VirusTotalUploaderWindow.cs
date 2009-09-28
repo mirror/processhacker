@@ -38,7 +38,7 @@ using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
 using System.Drawing;
-using TaskbarLib.DesktopIntegration;
+using TaskbarLib;
 
 namespace ProcessHacker
 {

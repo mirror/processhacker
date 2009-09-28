@@ -8,9 +8,8 @@ using System.Threading;
 using Microsoft.Win32;
 using TaskbarLib.Interop;
 using System.Runtime.CompilerServices;
-using TaskbarLib.DesktopIntegration;
 
-namespace TaskbarLib.DesktopIntegration
+namespace TaskbarLib
 {
     /// <summary>
     /// Provides services to manage taskbar jump lists, including

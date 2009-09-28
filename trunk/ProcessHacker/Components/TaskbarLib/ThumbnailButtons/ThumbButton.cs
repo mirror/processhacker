@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using TaskbarLib.Interop;
 
-namespace TaskbarLib.DesktopIntegration
+namespace TaskbarLib
 {
     /// <summary>
     /// Represents a taskbar thumbnail button in the thumbnail toolbar.
@@ -51,7 +51,7 @@ namespace TaskbarLib.DesktopIntegration
                 win32ThumbButton.iId = Id;
                 win32ThumbButton.szTip = Tooltip;
                 win32ThumbButton.hIcon = Icon.Handle;
-                win32ThumbButton.dwFlags = Flags;
+                win32ThumbButton.dwFlags = Flags & ThumbnailButtonFlags.DISMISSONCLICK;
 
                 win32ThumbButton.dwMask = ThumbnailButtonMask.Flags;
                 if (Tooltip != null)
@@ -81,6 +81,26 @@ namespace TaskbarLib.DesktopIntegration
                 else
                 {
                     this.Flags |= ThumbnailButtonFlags.HIDDEN;
+                }
+                _manager.RefreshThumbButtons();
+            }
+        }
+
+        public bool NoIconBackground
+        {
+            get
+            {
+                return (this.Flags & ThumbnailButtonFlags.NOBACKGROUND) == 0;
+            }
+            set
+            {
+                if (value)
+                {
+                    this.Flags &= ~(ThumbnailButtonFlags.NOBACKGROUND);
+                }
+                else
+                {
+                    this.Flags |= ThumbnailButtonFlags.NOBACKGROUND;
                 }
                 _manager.RefreshThumbButtons();
             }

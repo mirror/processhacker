@@ -7,7 +7,7 @@ using ProcessHacker;
 using ProcessHacker.Native.Api;
 using System.Windows.Forms;
 
-namespace TaskbarLib.DesktopIntegration
+namespace TaskbarLib
 {
     /// <summary>
     /// The primary coordinator of the Windows 7 taskbar-related activities.
@@ -218,6 +218,45 @@ namespace TaskbarLib.DesktopIntegration
         #region Taskbar Progress Bar
 
         /// <summary>
+        /// Sets the progress bar in the containing form's taskbar button
+        /// to this progress bar's progress.
+        /// </summary>
+        /// <param name="progressBar">The progress bar.</param>
+        public static void SetTaskbarProgress(ProgressBar progressBar)
+        {
+            ulong maximum = Convert.ToUInt64(progressBar.Maximum);
+            ulong progress = Convert.ToUInt64(progressBar.Value);
+
+            TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)ThumbnailProgressState.Normal);
+            TaskbarList.SetProgressValue(Program.HackerWindowHandle, progress, maximum);
+        }
+
+        /// <summary>
+        /// Sets the progress bar in the containing form's taskbar button
+        /// to this toolstrip progress bar's progress.
+        /// </summary>
+        /// <param name="progressBar">The progress bar.</param>
+        public static void SetTaskbarProgress(ToolStripProgressBar progressBar)
+        {
+            ulong maximum = Convert.ToUInt64(progressBar.Maximum);
+            ulong progress = Convert.ToUInt64(progressBar.Value);
+
+            TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)ThumbnailProgressState.Normal);
+            TaskbarList.SetProgressValue(Program.HackerWindowHandle, progress, maximum);
+        }
+
+        /// <summary>
+        /// Sets the progress state of the specified window's
+        /// taskbar button.
+        /// </summary>
+        /// <param name="hwnd">The window handle.</param>
+        /// <param name="state">The progress state.</param>
+        public static void SetTaskbarProgressState(ThumbnailProgressState state)
+        {
+            TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)state);
+        }
+
+        /// <summary>
         /// Represents the thumbnail progress bar state.
         /// </summary>
         public enum ThumbnailProgressState
@@ -242,28 +281,6 @@ namespace TaskbarLib.DesktopIntegration
             /// The operation is paused (yellow).
             /// </summary>
             Paused = 0x8
-        }
-
-        /// <summary>
-        /// Sets the progress state of the specified window's
-        /// taskbar button.
-        /// </summary>
-        /// <param name="hwnd">The window handle.</param>
-        /// <param name="state">The progress state.</param>
-        public static void SetProgressState(ThumbnailProgressState state)
-        {
-            TaskbarList.SetProgressState(Program.HackerWindowHandle, (TaskBarProgressFlag)state);
-        }
-        /// <summary>
-        /// Sets the progress value of the specified window's
-        /// taskbar button.
-        /// </summary>
-        /// <param name="hwnd">The window handle.</param>
-        /// <param name="current">The current value.</param>
-        /// <param name="maximum">The maximum value.</param>
-        public static void SetProgressValue(ulong current, ulong maximum)
-        {
-            TaskbarList.SetProgressValue(Program.HackerWindowHandle, current, maximum);
         }
 
         #endregion
@@ -317,45 +334,6 @@ namespace TaskbarLib.DesktopIntegration
         }
 
         #endregion
-
-        /// <summary>
-        /// Sets the progress bar in the containing form's taskbar button
-        /// to this progress bar's progress.
-        /// </summary>
-        /// <param name="progressBar">The progress bar.</param>
-        public static void SetTaskbarProgress(ProgressBar progressBar)
-        {
-            ulong maximum = Convert.ToUInt64(progressBar.Maximum);
-            ulong progress = Convert.ToUInt64(progressBar.Value);
-
-            Windows7Taskbar.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Normal);
-            Windows7Taskbar.SetProgressValue(progress, maximum);
-        }
-
-        /// <summary>
-        /// Sets the progress bar in the containing form's taskbar button
-        /// to this toolstrip progress bar's progress.
-        /// </summary>
-        /// <param name="progressBar">The progress bar.</param>
-        public static void SetTaskbarProgress(ToolStripProgressBar progressBar)
-        {
-            ulong maximum = Convert.ToUInt64(progressBar.Maximum);
-            ulong progress = Convert.ToUInt64(progressBar.Value);
-
-            Windows7Taskbar.SetProgressState(Windows7Taskbar.ThumbnailProgressState.Normal);
-            Windows7Taskbar.SetProgressValue(progress, maximum);
-        }
-
-        /// <summary>
-        /// Sets the progress bar of this form's taskbar button to the
-        /// specified state.
-        /// </summary>
-        /// <param name="form">The form.</param>
-        /// <param name="state">The taskbar progress state.</param>
-        public static void SetTaskbarProgressState(ThumbnailProgressState state)
-        {
-            Windows7Taskbar.SetProgressState(state);
-        }
 
         /// <summary>
         /// Creates a taskbar thumbnail button manager for this form.

@@ -35,17 +35,7 @@ namespace TaskbarLib.Interop
             this.bottom = bottom;
         }
     }
-   
-    [Flags]
-    internal enum TaskBarProgressFlag
-    {
-        NoProgress = 0,
-        Indeterminate = 0x1,
-        Normal = 0x2,
-        Error = 0x4,
-        Paused = 0x8
-    }
-   
+      
     [Flags]
     internal enum TBATFLAG
     {
@@ -71,6 +61,7 @@ namespace TaskbarLib.Interop
         NOBACKGROUND = 0x4,
         HIDDEN = 0x8
     }
+
     [Flags]
     internal enum SIGDN : uint
     {
@@ -111,6 +102,7 @@ namespace TaskbarLib.Interop
         [MarshalAs(UnmanagedType.U4)]
         public ThumbnailButtonFlags dwFlags;
     }
+
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     internal struct PropertyKey
     {
@@ -212,6 +204,7 @@ namespace TaskbarLib.Interop
         // Thumbbutton WM_COMMAND notification
         public const uint THBN_CLICKED = 0x1800;
     }
+
     [SuppressUnmanagedCodeSecurity]
     internal static class UnsafeNativeMethods
     {

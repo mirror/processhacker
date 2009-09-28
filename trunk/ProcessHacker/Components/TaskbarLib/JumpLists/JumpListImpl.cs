@@ -4,7 +4,7 @@ using System.Linq;
 using TaskbarLib.Interop;
 using System.Runtime.InteropServices;
 
-namespace TaskbarLib.DesktopIntegration
+namespace TaskbarLib
 {
     /// <summary>
     /// A collection of categorized jump list destinations.

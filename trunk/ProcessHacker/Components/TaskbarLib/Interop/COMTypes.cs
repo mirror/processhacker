@@ -138,7 +138,7 @@ namespace TaskbarLib.Interop
 
         // ITaskbarList3
         void SetProgressValue(IntPtr hwnd, UInt64 ullCompleted, UInt64 ullTotal);
-        void SetProgressState(IntPtr hwnd, TaskBarProgressFlag tbpFlags);
+        void SetProgressState(IntPtr hwnd, uint tbpFlags);
         void RegisterTab(IntPtr hwndTab, IntPtr hwndMDI);
         void UnregisterTab(IntPtr hwndTab);
         void SetTabOrder(IntPtr hwndTab, IntPtr hwndInsertBefore);

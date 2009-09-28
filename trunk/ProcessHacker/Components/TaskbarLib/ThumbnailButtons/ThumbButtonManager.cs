@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using TaskbarLib.Interop;
 using System.Collections;
 
-namespace TaskbarLib.DesktopIntegration
+namespace TaskbarLib
 {
     /// <summary>
     /// Manages a set of taskbar thumbnail buttons in an application.
