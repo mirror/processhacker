@@ -287,8 +287,6 @@ namespace ProcessHacker
         private void runAsServiceMenuItem_Click(object sender, EventArgs e)
         {
             RunWindow run = new RunWindow();
-
-            run.TopMost = this.TopMost;
             run.ShowDialog();
         }
 
@@ -384,8 +382,6 @@ namespace ProcessHacker
         private void aboutMenuItem_Click(object sender, EventArgs e)
         {
             AboutWindow about = new AboutWindow();
-
-            about.TopMost = this.TopMost;
             about.ShowDialog();
         }
 
@@ -393,7 +389,6 @@ namespace ProcessHacker
         {
             OptionsWindow options = new OptionsWindow();
 
-            options.TopMost = this.TopMost;
             DialogResult result = options.ShowDialog();
 
            if (result == DialogResult.OK)
@@ -524,8 +519,6 @@ namespace ProcessHacker
         private void createServiceMenuItem_Click(object sender, EventArgs e)
         {
             CreateServiceWindow createServiceWindow = new CreateServiceWindow();
-
-            createServiceWindow.TopMost = this.TopMost;
             createServiceWindow.ShowDialog();
         }
 
@@ -1365,7 +1358,6 @@ namespace ProcessHacker
 
             try
             {
-                affForm.TopMost = this.TopMost;
                 affForm.ShowDialog();
             }
             catch (Exception ex)
@@ -1494,8 +1486,6 @@ namespace ProcessHacker
 
             w.Text = "Terminator - " + processP.Dictionary[processSelectedPid].Name +
                 " (PID " + processSelectedPid.ToString() + ")";
-
-            w.TopMost = this.TopMost;
             w.ShowDialog();
         }
 
@@ -1508,8 +1498,6 @@ namespace ProcessHacker
                 Properties.Settings.Default.RunAsCommand = processP.Dictionary[processSelectedPid].FileName;
 
                 RunWindow run = new RunWindow();
-
-                run.TopMost = this.TopMost;
                 run.ShowDialog();
             }
             catch (Exception ex)
@@ -1523,8 +1511,6 @@ namespace ProcessHacker
             try
             {
                 RunWindow run = new RunWindow();
-
-                run.TopMost = this.TopMost;
                 run.UsePID(processSelectedPid);
                 run.ShowDialog();
             }
@@ -1582,8 +1568,6 @@ namespace ProcessHacker
 
                     heapsWindow = new HeapsWindow(processSelectedPid, buffer.GetHeaps());
                 }
-
-                heapsWindow.TopMost = this.TopMost;
                 heapsWindow.ShowDialog();
             }
             catch (WindowsException ex)
@@ -1618,8 +1602,6 @@ namespace ProcessHacker
         private void protectionProcessMenuItem_Click(object sender, EventArgs e)
         {
             var protectProcessWindow = new ProtectProcessWindow(processSelectedPid);
-
-            protectProcessWindow.TopMost = this.TopMost;
             protectProcessWindow.ShowDialog();
         }
 
@@ -1628,7 +1610,6 @@ namespace ProcessHacker
             ProcessPickerWindow picker = new ProcessPickerWindow();
 
             picker.Label = "Select the source of the token:";
-            picker.TopMost = this.TopMost;
 
             if (picker.ShowDialog() == DialogResult.OK)
             {
@@ -2186,8 +2167,6 @@ namespace ProcessHacker
             {
                 sw = new ServiceWindow(selected.ToArray());
             }
-
-            sw.TopMost = this.TopMost;
             sw.ShowDialog();
         }
 
@@ -2720,7 +2699,6 @@ namespace ProcessHacker
                                     return false;
                                 }
                             };
-                        mbw.TopMost = this.TopMost;
                         mbw.ShowDialog();
                     }
                     catch (Exception ex)
@@ -2739,7 +2717,6 @@ namespace ProcessHacker
                         var sessionInformationWindow =
                             new SessionInformationWindow(TerminalServerHandle.GetCurrent().GetSession(sessionId));
 
-                        sessionInformationWindow.TopMost = this.TopMost;
                         sessionInformationWindow.ShowDialog();
                     }
                     catch (Exception ex)
@@ -3158,9 +3135,7 @@ namespace ProcessHacker
                         menu.MenuItems.Add(new MenuItem("Choose Columns...", (sender_, e_) =>
                             {
                                 (new ChooseColumnsWindow(treeProcesses.Tree)
-                                {
-                                    TopMost = this.TopMost
-                                }).ShowDialog();
+                                { }).ShowDialog();
 
                                 copyProcessMenuItem.MenuItems.DisposeAndClear();
                                 GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
