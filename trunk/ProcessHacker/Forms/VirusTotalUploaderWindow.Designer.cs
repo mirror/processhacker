@@ -31,12 +31,12 @@
             this.LogoImg = new System.Windows.Forms.PictureBox();
             this.labelFile = new System.Windows.Forms.Label();
             this.uploadedLabel = new System.Windows.Forms.Label();
-            this.UploadWorker = new System.ComponentModel.BackgroundWorker();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.speedLabel = new System.Windows.Forms.Label();
             this.totalSizeLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.progressUpload = new System.Windows.Forms.ProgressBar();
+            this.UploadWorker = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.LogoImg)).BeginInit();
             this.SuspendLayout();
             // 
@@ -67,14 +67,6 @@
             this.uploadedLabel.Size = new System.Drawing.Size(56, 13);
             this.uploadedLabel.TabIndex = 3;
             this.uploadedLabel.Text = "Uploaded:";
-            // 
-            // UploadWorker
-            // 
-            this.UploadWorker.WorkerReportsProgress = true;
-            this.UploadWorker.WorkerSupportsCancellation = true;
-            this.UploadWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.UploadWorker_DoWork);
-            this.UploadWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.UploadWorker_RunWorkerCompleted);
-            this.UploadWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.UploadWorker_ProgressChanged);
             // 
             // buttonCancel
             // 
@@ -122,6 +114,14 @@
             this.progressUpload.Size = new System.Drawing.Size(329, 23);
             this.progressUpload.TabIndex = 0;
             // 
+            // UploadWorker
+            // 
+            this.UploadWorker.WorkerReportsProgress = true;
+            this.UploadWorker.WorkerSupportsCancellation = true;
+            this.UploadWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.UploadWorker_DoWork);
+            this.UploadWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.UploadWorker_RunWorkerCompleted);
+            this.UploadWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.UploadWorker_ProgressChanged);
+            // 
             // VirusTotalUploaderWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -154,11 +154,11 @@
         private System.Windows.Forms.PictureBox LogoImg;
         private System.Windows.Forms.Label labelFile;
         private System.Windows.Forms.Label uploadedLabel;
-        private System.ComponentModel.BackgroundWorker UploadWorker;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Label speedLabel;
         private System.Windows.Forms.Label totalSizeLabel;
         private System.Windows.Forms.ProgressBar progressUpload;
         private System.Windows.Forms.Label label1;
+        private System.ComponentModel.BackgroundWorker UploadWorker;
     }
 }

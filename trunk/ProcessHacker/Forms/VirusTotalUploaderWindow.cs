@@ -44,7 +44,6 @@ namespace ProcessHacker
 {
     public partial class VirusTotalUploaderWindow : Form
     {
-        string url;
         string filepath;
         string processName;
         
@@ -120,42 +119,13 @@ namespace ProcessHacker
                 totalfilesize = finfo.Length;
             }
 
-            try
-            {
-                WebClient vtId = new WebClient();
-                vtId.Headers.Add("User-Agent", "Process Hacker " + Application.ProductVersion);
-                vtId.DownloadStringCompleted += new DownloadStringCompletedEventHandler(vtId_DownloadStringCompleted);
-                vtId.DownloadStringAsync(new Uri("http://www.virustotal.com/vt/en/identificador"));     
-            }
-            catch (Exception ex)
-            {
-                PhUtils.ShowException("Unable to download VirusTotal SessionToken", ex);
-                this.Close();
-            }   
-        }
+            uploadedLabel.Text = "Uploaded: Initializing";
+            speedLabel.Text = "Speed: Initializing";
 
-        private void vtId_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
-        {
-            var webException = e.Error as WebException;
-
-            if (webException != null && webException.Status != WebExceptionStatus.Success)
-            {
-                if (webException.Status != WebExceptionStatus.RequestCanceled)
-                {
-                    PhUtils.ShowException("Unable to download the VirusTotal SessionToken", webException);
-                    this.Close();
-                }
-            }
-            else if (!e.Cancelled)
-            {
-                url = "http://www.virustotal.com/vt/en/recepcionf?" + e.Result;
-
-                UploadWorker.RunWorkerAsync();
-            }
-            else
-            {
-                this.Close();
-            }
+            BackgroundWorker getSessionToken = new BackgroundWorker();
+            getSessionToken.RunWorkerCompleted += new RunWorkerCompletedEventHandler(getSessionToken_RunWorkerCompleted);
+            getSessionToken.DoWork += new DoWorkEventHandler(getSessionToken_DoWork);
+            getSessionToken.RunWorkerAsync();
         }
 
         private void VirusTotalUploaderWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -163,16 +133,32 @@ namespace ProcessHacker
             if (UploadWorker.IsBusy)
                 UploadWorker.CancelAsync();
 
-            Windows7Taskbar.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
+            Windows7Taskbar.SetTaskbarProgressState(this, Windows7Taskbar.ThumbnailProgressState.NoProgress);
+        }
+
+        private void getSessionToken_DoWork(object sender, DoWorkEventArgs e)
+        {
+            HttpWebRequest WebRequestObject = (HttpWebRequest)HttpWebRequest.Create("http://www.virustotal.com/vt/en/identificador");
+            WebRequestObject.UserAgent = "Process Hacker " + Application.ProductVersion;
+
+            using (WebResponse Response = WebRequestObject.GetResponse())
+            using (Stream WebStream = Response.GetResponseStream())
+            using (StreamReader Reader = new StreamReader(WebStream))
+            {
+                e.Result = Reader.ReadToEnd();
+            }
+        }
+
+        private void getSessionToken_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            UploadWorker.RunWorkerAsync(e.Result); 
         }
 
         private void UploadWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            Uri uri = new Uri(url);
-
             string boundary = "----------" + DateTime.Now.Ticks.ToString("x");
 
-            HttpWebRequest webrequest = (HttpWebRequest)WebRequest.Create(uri);
+            HttpWebRequest webrequest = (HttpWebRequest)WebRequest.Create("http://www.virustotal.com/vt/en/recepcionf?" + e.Argument);
 
             webrequest.UserAgent = "ProcessHacker " + Application.ProductVersion;
             webrequest.ContentType = "multipart/form-data; boundary=" + boundary;
@@ -274,7 +260,6 @@ namespace ProcessHacker
                         this.Close();
                     }
                 }
-
             }
 
             if (UploadWorker.CancellationPending)
@@ -302,7 +287,7 @@ namespace ProcessHacker
             label1.Text = string.Format("{0}%", e.ProgressPercentage);
             progressUpload.Value = e.ProgressPercentage;
 
-            Windows7Taskbar.SetTaskbarProgress(this.progressUpload);
+            Windows7Taskbar.SetTaskbarProgress(this, this.progressUpload);
         }
 
         private void UploadWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

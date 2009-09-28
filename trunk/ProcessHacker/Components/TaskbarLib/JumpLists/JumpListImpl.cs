@@ -442,7 +442,5 @@ namespace TaskbarLib
             Marshal.ThrowExceptionForHR((int)result);
             return resultItem;
         }
-
-
     }
 }

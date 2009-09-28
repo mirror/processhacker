@@ -246,6 +246,14 @@ namespace TaskbarLib
             result.ThrowIf();
         }
 
+        public static void SetTaskbarOverlayIcon(this Form form, Icon icon, string description)
+        {
+            HResult result = TaskbarList.SetOverlayIcon(
+                form.Handle, icon == null ? IntPtr.Zero : icon.Handle, description);
+
+            result.ThrowIf();
+        }
+
         #endregion
 
         #region Taskbar Progress Bar
@@ -255,16 +263,21 @@ namespace TaskbarLib
         /// to this progress bar's progress.
         /// </summary>
         /// <param name="progressBar">The progress bar.</param>
-        public static void SetTaskbarProgress(ProgressBar progressBar)
+        public static void SetTaskbarProgress(this Form form, ProgressBar progressBar)
         {
-            ulong maximum = Convert.ToUInt64(progressBar.Maximum);
-            ulong progress = Convert.ToUInt64(progressBar.Value);
+            try
+            {
+                ulong maximum = Convert.ToUInt64(progressBar.Maximum);
+                ulong progress = Convert.ToUInt64(progressBar.Value);
 
-            HResult stateResult = TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)ThumbnailProgressState.Normal);
-            stateResult.ThrowIf();
+                HResult stateResult = TaskbarList.SetProgressState(form.Handle, (uint)ThumbnailProgressState.Normal);
+                stateResult.ThrowIf();
 
-            HResult valueResult = TaskbarList.SetProgressValue(Program.HackerWindowHandle, progress, maximum);
-            valueResult.ThrowIf();
+                HResult valueResult = TaskbarList.SetProgressValue(form.Handle, progress, maximum);
+                valueResult.ThrowIf();
+            }
+            catch (System.ObjectDisposedException)
+            { /* This expcetion will occour when trying to access the form Handle upon FormClosing event */ }
         }
 
         /// <summary>
@@ -272,15 +285,15 @@ namespace TaskbarLib
         /// to this toolstrip progress bar's progress.
         /// </summary>
         /// <param name="progressBar">The progress bar.</param>
-        public static void SetTaskbarProgress(ToolStripProgressBar progressBar)
+        public static void SetTaskbarProgress(this Form form, ToolStripProgressBar progressBar)
         {
             ulong maximum = Convert.ToUInt64(progressBar.Maximum);
             ulong progress = Convert.ToUInt64(progressBar.Value);
 
-            HResult stateResult = TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)ThumbnailProgressState.Normal);
+            HResult stateResult = TaskbarList.SetProgressState(form.Handle, (uint)ThumbnailProgressState.Normal);
             stateResult.ThrowIf();
 
-            HResult valueResult = TaskbarList.SetProgressValue(Program.HackerWindowHandle, progress, maximum);
+            HResult valueResult = TaskbarList.SetProgressValue(form.Handle, progress, maximum);
             valueResult.ThrowIf();
         }
 
@@ -290,9 +303,9 @@ namespace TaskbarLib
         /// </summary>
         /// <param name="hwnd">The window handle.</param>
         /// <param name="state">The progress state.</param>
-        public static void SetTaskbarProgressState(ThumbnailProgressState state)
+        public static void SetTaskbarProgressState(this Form form, ThumbnailProgressState state)
         {
-            HResult result = TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)state);
+            HResult result = TaskbarList.SetProgressState(form.Handle, (uint)state);
             result.ThrowIf();
         }
 
