@@ -78,10 +78,8 @@ namespace ProcessHacker
 
         private void UpdaterDownloadWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            TaskbarLib.DesktopIntegration.Windows7Taskbar.SetProgressState(
-                Program.HackerWindowHandle,
-                TaskbarLib.DesktopIntegration.Windows7Taskbar.ThumbnailProgressState.NoProgress
-                );
+            TaskbarLib.DesktopIntegration.Windows7Taskbar.SetTaskbarProgressState(
+                TaskbarLib.DesktopIntegration.Windows7Taskbar.ThumbnailProgressState.NoProgress);
         }
 
         private void webClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
@@ -159,11 +157,7 @@ namespace ProcessHacker
 
             progressDownload.Value = e.ProgressPercentage;
 
-            TaskbarLib.DesktopIntegration.Windows7Taskbar.SetProgressValue(
-                Program.HackerWindowHandle,
-                (ulong)e.BytesReceived,
-                (ulong)e.TotalBytesToReceive
-                );
+            TaskbarLib.DesktopIntegration.Windows7Taskbar.SetTaskbarProgress(this.progressDownload);
         }
 
         private void verifyWorker_DoWork(object sender, DoWorkEventArgs e)

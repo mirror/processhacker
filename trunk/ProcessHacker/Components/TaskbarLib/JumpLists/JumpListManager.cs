@@ -77,8 +77,8 @@ namespace TaskbarLib.DesktopIntegration
         /// with the specified window handle.
         /// </summary>
         /// <param name="hwnd">The window handle.</param>
-        public JumpListManager(IntPtr hwnd)
-            : this(Windows7Taskbar.GetWindowAppId(hwnd))
+        public JumpListManager()
+            : this(Windows7Taskbar.GetAppId())
         {
         }
 
