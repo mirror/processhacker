@@ -2200,6 +2200,31 @@ namespace ProcessHacker
 
         #endregion
 
+        #region "ThumbButtons"
+
+        private void appHandleButton_Clicked(object sender, EventArgs e)
+        {
+            HandleFilterWindow hw = new HandleFilterWindow();
+            hw.Show();
+            hw.Activate();
+        }
+
+        private void appLogButton_Clicked(object sender, EventArgs e)
+        {
+            LogWindow lw = new LogWindow();
+            lw.Show();
+            lw.Activate();
+        }
+
+        private void sysInfoButton_Clicked(object sender, EventArgs e)
+        {
+            SysInfoWindow sw = new SysInfoWindow();
+            sw.Show();
+            sw.Activate();
+        }
+
+        #endregion
+
         #region Timers
 
         private void timerMessages_Tick(object sender, EventArgs e)
@@ -2915,9 +2940,9 @@ namespace ProcessHacker
 
                         jumpListManager.AddCustomDestination(new ShellLink
                         {
-                            Path = @"X:\Files\System Utils\procexp.exe",
-                            Arguments = "-e",
-                            Title = "Process Explorer",
+                            Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "compmgmt.msc"),
+                            Arguments = "/s",
+                            Title = "Computer Management",
                             Category = "Tools",
                             IconLocation = shell32DllPath,
                             IconIndex = 5
@@ -2948,18 +2973,22 @@ namespace ProcessHacker
                         }
 
                         thumbButtonManager = Windows7Taskbar.CreateThumbButtonManager();
+                        ThumbButton sysInfoButton = thumbButtonManager.CreateThumbButton(100, 
+                            Icon.FromHandle(ProcessHacker.Properties.Resources.ProcessHacker.GetHicon()),
+                            "System Infomation");
+                        sysInfoButton.Clicked += new EventHandler(sysInfoButton_Clicked);
 
-                        ThumbButton button = thumbButtonManager.CreateThumbButton(100, SystemIcons.Information, "Click me");
-                        button.Clicked += new EventHandler(button_Clicked);
+                        ThumbButton appLogButton = thumbButtonManager.CreateThumbButton(101, 
+                            Icon.FromHandle(ProcessHacker.Properties.Resources.report.GetHicon()), 
+                            "Application Log");
+                        appLogButton.Clicked += new EventHandler(appLogButton_Clicked);
 
-                        ThumbButton button2 = thumbButtonManager.CreateThumbButton(101, SystemIcons.Exclamation, "Beware of me!");
-                        button2.Clicked += new EventHandler(button2_Clicked);
-                  
+                        ThumbButton appHandleButton = thumbButtonManager.CreateThumbButton(102,
+                            Icon.FromHandle(ProcessHacker.Properties.Resources.find.GetHicon()),
+                            "Find Handles or DLLs");
+                        appHandleButton.Clicked += new EventHandler(appHandleButton_Clicked);
 
-                        ThumbButton button3 = thumbButtonManager.CreateThumbButton(102, SystemIcons.Shield, "Click!!!!!!!");
-                        button3.Clicked += new EventHandler(button3_Clicked);
- 
-                        thumbButtonManager.AddThumbButtons(button, button2, button3);
+                        thumbButtonManager.AddThumbButtons(sysInfoButton, appLogButton, appHandleButton);
                     }
 
                     if (thumbButtonManager != null)
@@ -2969,21 +2998,6 @@ namespace ProcessHacker
             }
 
             base.WndProc(ref m);
-        }
-
-        void button_Clicked(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        void button3_Clicked(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        void button2_Clicked(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         public void Exit()
