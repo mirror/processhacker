@@ -1271,6 +1271,11 @@ namespace ProcessHacker
                         HackerWindowTopMost = f.TopMost;
                 }));
 
+            foreach (Form form in Application.OpenForms)
+            {
+                form.TopMost = f.TopMost;
+            }
+
             UpdateWindowMenu(((MenuItem)sender).Parent, f);
         }
 
