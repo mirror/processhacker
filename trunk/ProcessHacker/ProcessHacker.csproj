@@ -404,18 +404,9 @@
     <Compile Include="Components\ProcessStatistics.Designer.cs">
       <DependentUpon>ProcessStatistics.cs</DependentUpon>
     </Compile>
-    <Compile Include="Components\ProgressBar.cs">
+    <Compile Include="Components\ProgressBarEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Components\ProgressBar.Designer.cs">
-      <DependentUpon>ProgressBar.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Components\Progressbar\ProgressBarRenderers.cs" />
-    <Compile Include="Components\Progressbar\ProgressBarEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\Progressbar\VistaProgressBarRenderer.cs" />
-    <Compile Include="Components\Progressbar\XPProgressBarRenderer.cs" />
     <Compile Include="Components\SectionProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>

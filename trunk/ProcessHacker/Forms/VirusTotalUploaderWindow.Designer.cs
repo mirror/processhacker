@@ -35,7 +35,8 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.speedLabel = new System.Windows.Forms.Label();
             this.totalSizeLabel = new System.Windows.Forms.Label();
-            this.progressUpload = new ProgressBarEx.VistaProgressBar();
+            this.label1 = new System.Windows.Forms.Label();
+            this.progressUpload = new ProgressBarEx.ProgressBarEx();
             ((System.ComponentModel.ISupportInitialize)(this.LogoImg)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,11 +106,19 @@
             this.totalSizeLabel.TabIndex = 7;
             this.totalSizeLabel.Text = "Total Size:";
             // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(307, 48);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(37, 13);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "%";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // progressUpload
             // 
             this.progressUpload.Location = new System.Drawing.Point(12, 64);
             this.progressUpload.Name = "progressUpload";
-            this.progressUpload.RenderMode = ProgressBarEx.ProgressRenderMode.Vista;
             this.progressUpload.Size = new System.Drawing.Size(329, 23);
             this.progressUpload.TabIndex = 0;
             // 
@@ -118,6 +127,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(430, 99);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.progressUpload);
             this.Controls.Add(this.totalSizeLabel);
             this.Controls.Add(this.speedLabel);
@@ -148,6 +158,7 @@
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Label speedLabel;
         private System.Windows.Forms.Label totalSizeLabel;
-        private ProgressBarEx.VistaProgressBar progressUpload;
+        private ProgressBarEx.ProgressBarEx progressUpload;
+        private System.Windows.Forms.Label label1;
     }
 }

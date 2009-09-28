@@ -37,6 +37,7 @@ using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
+using System.Drawing;
 
 namespace ProcessHacker
 {
@@ -55,10 +56,6 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
             this.SetTopMost();
-
-            ProgressBarEx.XPProgressBarRenderer CustomRenderer = new ProgressBarEx.XPProgressBarRenderer(System.Drawing.Color.Blue);
-            CustomRenderer.MarqueeStyle = ProgressBarEx.MarqueeStyle.LeftRight;
-            progressUpload.Renderer = CustomRenderer;
 
             processName = procName;
             filepath = procPath;
@@ -299,6 +296,7 @@ namespace ProcessHacker
             uploadedLabel.Text = "Uploaded: " + Utils.FormatSize(bytesTransferred);
             totalSizeLabel.Text = "Total Size: " + Utils.FormatSize(totalfilesize);
             speedLabel.Text = "Speed: " + Utils.FormatSize(bytesPerSecond) + "/s";
+            label1.Text = string.Format("{0}%", e.ProgressPercentage);
             progressUpload.Value = e.ProgressPercentage;
         }
 
