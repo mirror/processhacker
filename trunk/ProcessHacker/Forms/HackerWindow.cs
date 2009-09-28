@@ -2417,7 +2417,8 @@ namespace ProcessHacker
 
         private void LoadWindowSettings()
         {
-            this.TopMost = Properties.Settings.Default.AlwaysOnTop;
+            this.TopMost = Program.HackerWindowTopMost = Properties.Settings.Default.AlwaysOnTop;
+
             this.Size = Properties.Settings.Default.WindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(
                 Properties.Settings.Default.WindowLocation, this.Size), this).Location;
@@ -2759,15 +2760,6 @@ namespace ProcessHacker
             {
                 PhUtils.ShowException("Unable to set process priority", ex);
             }
-        }
-
-        public static uint HiWord(IntPtr i)
-        {
-            return ((uint)i.ToInt32()) >> 16;
-        }
-        public static uint LoWord(IntPtr i)
-        {
-            return (uint)(i.ToInt32() & 0xffff);
         }
 
         #endregion

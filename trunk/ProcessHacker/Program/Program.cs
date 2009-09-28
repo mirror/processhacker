@@ -45,6 +45,7 @@ namespace ProcessHacker
         /// </summary>
         public static HackerWindow HackerWindow;
         public static IntPtr HackerWindowHandle;
+        public static bool HackerWindowTopMost;
 
         public static ProcessAccess MinProcessQueryRights = ProcessAccess.QueryInformation;
         public static ProcessAccess MinProcessReadMemoryRights = ProcessAccess.VmRead;
@@ -1225,7 +1226,7 @@ namespace ProcessHacker
 
         public static void SetTopMost(this Form f)
         {
-            if (HackerWindow.TopMost)
+            if (HackerWindowTopMost)
                 f.TopMost = true;
         }
 
@@ -1262,7 +1263,13 @@ namespace ProcessHacker
             if (f == null)
                 return;
 
-            f.Invoke(new MethodInvoker(delegate { f.TopMost = !f.TopMost; }));
+            f.Invoke(new MethodInvoker(delegate
+                {
+                    f.TopMost = !f.TopMost;
+
+                    if (f == HackerWindow)
+                        HackerWindowTopMost = f.TopMost;
+                }));
 
             UpdateWindowMenu(((MenuItem)sender).Parent, f);
         }
