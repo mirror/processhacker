@@ -1,3 +1,26 @@
+/*
+ * Process Hacker - 
+ *   ProcessHacker Taskbar Extensions
+ * 
+ * Copyright (C) 2009 dmex
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -18,14 +41,6 @@ namespace TaskbarLib
     {
         #region Infrastructure
 
-        /// <summary>
-        /// The WM_TaskbarButtonCreated message number.
-        /// </summary>
-        public static uint TaskbarButtonCreatedMessage
-        {
-            get { return UnsafeNativeMethods.WM_TaskbarButtonCreated; }
-        }
-
         // Use thread static to work around COM threading issues.
         [ThreadStatic]
         private static ITaskbarList3 _taskbarList;
@@ -36,10 +51,32 @@ namespace TaskbarLib
                 if (_taskbarList == null)
                 {
                     _taskbarList = (ITaskbarList3)new CTaskbarList();
-                    _taskbarList.HrInit();
+                    HResult result = _taskbarList.HrInit();
+
+                    result.ThrowIf();
                 }
                 return _taskbarList;
             }
+        }
+
+        /// <summary>
+        /// Creates a jump list manager for this form.
+        /// </summary>
+        /// <returns>An object of type <see cref="JumpListManager"/>
+        /// that can be used to manage the application's jump list.</returns>
+        public static JumpListManager CreateJumpListManager()
+        {
+            return new JumpListManager();
+        }
+
+        /// <summary>
+        /// Creates a taskbar thumbnail button manager for this form.
+        /// </summary>
+        /// <returns>An object of type <see cref="ThumbButtonManager"/>
+        /// that can be used to add and manage thumbnail toolbar buttons.</returns>
+        public static ThumbButtonManager CreateThumbButtonManager()
+        {
+            return new ThumbButtonManager(Program.HackerWindowHandle);
         }
 
         private static IPropertyStore InternalGetWindowPropertyStore(IntPtr hwnd)
@@ -73,7 +110,6 @@ namespace TaskbarLib
         /// <summary>
         /// Gets Taskbar application id.
         /// </summary>
-        /// <param name="hwnd">The window handle.</param>
         /// <returns>The application id of that window.</returns>
         public static string GetAppId()
         {
@@ -88,9 +124,8 @@ namespace TaskbarLib
         }
 
         /// <summary>
-        /// Sets the window's application id by its window handle.
+        /// Sets the window's application id.
         /// </summary>
-        /// <param name="hwnd">The window handle.</param>
         /// <param name="appId">The application id.</param>
         public static void SetAppId(string appId)
         {
@@ -132,7 +167,6 @@ namespace TaskbarLib
         /// to demand live preview (thumbnail and peek) mode when necessary
         /// instead of relying on default preview.
         /// </summary>
-        /// <param name="hwnd">The window handle.</param>
         public static void EnableCustomWindowPreview()
         {
             InternalEnableCustomWindowPreview(Program.HackerWindowHandle, true);
@@ -143,7 +177,6 @@ namespace TaskbarLib
         /// to demand live preview (thumbnail and peek) mode when necessary,
         /// i.e. this window relies on default preview.
         /// </summary>
-        /// <param name="hwnd">The window handle.</param>
         public static void DisableCustomWindowPreview()
         {
             InternalEnableCustomWindowPreview(Program.HackerWindowHandle, false);
@@ -207,10 +240,10 @@ namespace TaskbarLib
         /// <param name="description">The overlay icon description.</param>
         public static void SetTaskbarOverlayIcon(Icon icon, string description)
         {
-            TaskbarList.SetOverlayIcon(
-                Program.HackerWindowHandle,
-                icon == null ? IntPtr.Zero : icon.Handle,
-                description);
+            HResult result = TaskbarList.SetOverlayIcon(
+                Program.HackerWindowHandle, icon == null ? IntPtr.Zero : icon.Handle, description);
+           
+            result.ThrowIf();
         }
 
         #endregion
@@ -227,8 +260,11 @@ namespace TaskbarLib
             ulong maximum = Convert.ToUInt64(progressBar.Maximum);
             ulong progress = Convert.ToUInt64(progressBar.Value);
 
-            TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)ThumbnailProgressState.Normal);
-            TaskbarList.SetProgressValue(Program.HackerWindowHandle, progress, maximum);
+            HResult stateResult = TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)ThumbnailProgressState.Normal);
+            stateResult.ThrowIf();
+
+            HResult valueResult = TaskbarList.SetProgressValue(Program.HackerWindowHandle, progress, maximum);
+            valueResult.ThrowIf();
         }
 
         /// <summary>
@@ -241,8 +277,11 @@ namespace TaskbarLib
             ulong maximum = Convert.ToUInt64(progressBar.Maximum);
             ulong progress = Convert.ToUInt64(progressBar.Value);
 
-            TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)ThumbnailProgressState.Normal);
-            TaskbarList.SetProgressValue(Program.HackerWindowHandle, progress, maximum);
+            HResult stateResult = TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)ThumbnailProgressState.Normal);
+            stateResult.ThrowIf();
+
+            HResult valueResult = TaskbarList.SetProgressValue(Program.HackerWindowHandle, progress, maximum);
+            valueResult.ThrowIf();
         }
 
         /// <summary>
@@ -253,7 +292,8 @@ namespace TaskbarLib
         /// <param name="state">The progress state.</param>
         public static void SetTaskbarProgressState(ThumbnailProgressState state)
         {
-            TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)state);
+            HResult result = TaskbarList.SetProgressState(Program.HackerWindowHandle, (uint)state);
+            result.ThrowIf();
         }
 
         /// <summary>
@@ -293,10 +333,10 @@ namespace TaskbarLib
         /// </summary>
         /// <param name="hwnd">The window.</param>
         /// <param name="clipRect">The rectangle that specifies the clipped region.</param>
-        private static void SetThumbnailClip(IntPtr hwnd, Rectangle clipRect)
+        private static void SetThumbnailClip(this Form form, Rectangle clipRect)
         {
             RECT rect = new RECT(clipRect.Left, clipRect.Top, clipRect.Right, clipRect.Bottom);
-            TaskbarList.SetThumbnailClip(hwnd, ref rect);
+            HResult result = TaskbarList.SetThumbnailClip(form.Handle, ref rect);
         }
 
         /// <summary>
@@ -304,9 +344,9 @@ namespace TaskbarLib
         /// </summary>
         /// <param name="hwnd">The window.</param>
         /// <param name="tooltip">The tooltip text.</param>
-        private static void SetThumbnailTooltip(IntPtr hwnd, string tooltip)
+        private static void SetThumbnailTooltip(this Form form, string tooltip)
         {
-            TaskbarList.SetThumbnailTooltip(hwnd, tooltip);
+            HResult result = TaskbarList.SetThumbnailTooltip(form.Handle, tooltip);
         }
 
         #endregion
@@ -314,12 +354,11 @@ namespace TaskbarLib
         #region Miscellaneous
 
         /// <summary>
-        /// Specifies that the taskbar- and DWM-related windows messages should
-        /// pass through the Windows UIPI mechanism even if the process is
-        /// running elevated.  Calling this method is not required unless the
-        /// process is running elevated.
+        /// Allow the taskbar and DWM-related windows messages
+        /// through the Windows UIPI mechanism.  
+        /// Calling this method is not required unless the process is elevated.
         /// </summary>
-        public static void AllowTaskbarWindowMessagesThroughUipi()
+        public static void AllowWindowMessagesThroughUipi()
         {
             // If it's Windows 7 or above and we're elevated.
             if (OSVersion.HasTaskDialogs && Program.ElevationType == TokenElevationType.Full)
@@ -333,51 +372,15 @@ namespace TaskbarLib
             }
         }
 
+        /// <summary>
+        /// The WM_TaskbarButtonCreated message number.
+        /// </summary>
+        public static uint TaskbarButtonCreatedMessage
+        {
+            get { return UnsafeNativeMethods.WM_TaskbarButtonCreated; }
+        }
+
         #endregion
-
-        /// <summary>
-        /// Creates a taskbar thumbnail button manager for this form.
-        /// </summary>
-        /// <param name="form">The form.</param>
-        /// <returns>An object of type <see cref="ThumbButtonManager"/>
-        /// that can be used to add and manage thumbnail toolbar buttons.</returns>
-        public static ThumbButtonManager CreateThumbButtonManager()
-        {
-            return new ThumbButtonManager(Program.HackerWindowHandle);
-        }
-
-        /// <summary>
-        /// Creates a jump list manager for this form.
-        /// </summary>
-        /// <param name="form">The form.</param>
-        /// <returns>An object of type <see cref="JumpListManager"/>
-        /// that can be used to manage the application's jump list.</returns>
-        public static JumpListManager CreateJumpListManager()
-        {
-            return new JumpListManager();
-        }
-
-        /// <summary>
-        /// Specifies that only a portion of the form's client area
-        /// should be used in the form's thumbnail.
-        /// </summary>
-        /// <param name="form">The form.</param>
-        /// <param name="clipRect">The rectangle that specifies the clipped region.</param>
-        public static void SetThumbnailClip(this Form form, Rectangle clipRect)
-        {
-            Windows7Taskbar.SetThumbnailClip(form.Handle, clipRect);
-        }
-
-        /// <summary>
-        /// Sets the specified form's thumbnail tooltip.
-        /// </summary>
-        /// <param name="form">The form.</param>
-        /// <param name="tooltip">The tooltip text.</param>
-        public static void SetThumbnailTooltip(this Form form, string tooltip)
-        {
-            Windows7Taskbar.SetThumbnailTooltip(form.Handle, tooltip);
-        }
-
 
     }
 }

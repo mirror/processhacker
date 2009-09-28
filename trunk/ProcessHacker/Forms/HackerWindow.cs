@@ -3309,7 +3309,7 @@ namespace ProcessHacker
             InitializeComponent();
 
             //We need to call this here or we dont recieve the TaskbarButtonCreated WindowMessage
-            Windows7Taskbar.AllowTaskbarWindowMessagesThroughUipi();
+            Windows7Taskbar.AllowWindowMessagesThroughUipi();
             Windows7Taskbar.SetCurrentProcessAppId("ProcessHacker");
 
             this.AddEscapeToClose();

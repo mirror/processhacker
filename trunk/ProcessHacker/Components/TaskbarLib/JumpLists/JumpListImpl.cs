@@ -1,8 +1,32 @@
+/*
+ * Process Hacker - 
+ *   ProcessHacker Taskbar Extensions
+ * 
+ * Copyright (C) 2009 dmex
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaskbarLib.Interop;
 using System.Runtime.InteropServices;
+using ProcessHacker.Native.Api;
 
 namespace TaskbarLib
 {
@@ -99,6 +123,7 @@ namespace TaskbarLib
         {
             _tasks.Add(task);
         }
+
         public void DeleteTask(IJumpListTask task)
         {
             IJumpListTask toDelete = _tasks.Find(t => t.Path == task.Path && t.Arguments == task.Arguments);
@@ -111,8 +136,7 @@ namespace TaskbarLib
             if (_tasks.Count == 0)
                 return;
 
-            IObjectCollection taskCollection =
-                (IObjectCollection)new CEnumerableObjectCollection();
+            IObjectCollection taskCollection = (IObjectCollection)new CEnumerableObjectCollection();
             foreach (IJumpListTask task in _tasks)
             {
                 taskCollection.AddObject(task.GetShellRepresentation());
@@ -334,19 +358,30 @@ namespace TaskbarLib
             if (IsSeparator)
             {
                 propVariant.SetValue(true);
-                propertyStore.SetValue(ref PropertyKey.PKEY_AppUserModel_IsDestListSeparator, ref propVariant);
+               
+                HResult setValueResult = propertyStore.SetValue(ref PropertyKey.PKEY_AppUserModel_IsDestListSeparator, ref propVariant);
+                setValueResult.ThrowIf();
+              
                 propVariant.Clear();
             }
             else
             {
-                shellLink.SetPath(Path);
+                HResult setPathResult = shellLink.SetPath(Path);
+                setPathResult.ThrowIf();
 
                 if (!String.IsNullOrEmpty(IconLocation))
+                {
                     shellLink.SetIconLocation(IconLocation, IconIndex);
+                }
                 if (!String.IsNullOrEmpty(Arguments))
+                {
                     shellLink.SetArguments(Arguments);
+                }
                 if (!String.IsNullOrEmpty(WorkingDirectory))
+                {
                     shellLink.SetWorkingDirectory(WorkingDirectory);
+                }
+
                 shellLink.SetShowCmd((uint)ShowCommand);
 
                 propVariant.SetValue(Title);

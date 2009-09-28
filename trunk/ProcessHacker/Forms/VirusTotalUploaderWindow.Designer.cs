@@ -120,15 +120,15 @@
             this.progressUpload.Location = new System.Drawing.Point(12, 64);
             this.progressUpload.Name = "progressUpload";
             this.progressUpload.Size = new System.Drawing.Size(329, 23);
-            this.progressUpload.TabIndex = 9;
+            this.progressUpload.TabIndex = 0;
             // 
             // VirusTotalUploaderWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(430, 99);
-            this.Controls.Add(this.progressUpload);
             this.Controls.Add(this.label1);
+            this.Controls.Add(this.progressUpload);
             this.Controls.Add(this.totalSizeLabel);
             this.Controls.Add(this.speedLabel);
             this.Controls.Add(this.buttonCancel);
@@ -158,7 +158,7 @@
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Label speedLabel;
         private System.Windows.Forms.Label totalSizeLabel;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ProgressBar progressUpload;
+        private System.Windows.Forms.Label label1;
     }
 }

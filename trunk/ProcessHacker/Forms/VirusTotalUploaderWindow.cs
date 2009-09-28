@@ -66,8 +66,6 @@ namespace ProcessHacker
 
         private void VirusTotalUploaderWindow_Load(object sender, EventArgs e)
         {
-           Windows7Taskbar.SetTaskbarProgress(this.progressUpload);
-
             labelFile.Text = string.Format("Uploading: {0}", processName);
 
             FileInfo finfo = new FileInfo(filepath);
@@ -302,7 +300,6 @@ namespace ProcessHacker
             totalSizeLabel.Text = "Total Size: " + Utils.FormatSize(totalfilesize);
             speedLabel.Text = "Speed: " + Utils.FormatSize(bytesPerSecond) + "/s";
             label1.Text = string.Format("{0}%", e.ProgressPercentage);
-
             progressUpload.Value = e.ProgressPercentage;
 
             Windows7Taskbar.SetTaskbarProgress(this.progressUpload);

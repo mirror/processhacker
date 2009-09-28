@@ -1,3 +1,26 @@
+/*
+ * Process Hacker - 
+ *   ProcessHacker Taskbar Extensions
+ * 
+ * Copyright (C) 2009 dmex
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,6 +31,7 @@ using System.Threading;
 using Microsoft.Win32;
 using TaskbarLib.Interop;
 using System.Runtime.CompilerServices;
+using ProcessHacker.Native.Api;
 
 namespace TaskbarLib
 {
@@ -18,11 +42,11 @@ namespace TaskbarLib
     /// <remarks>
     /// This class mostly borrows the Windows Shell's concepts where
     /// jump lists are concerned including:
-    /// <b>Application destinations</b> - Destinations added to the application's
+    /// Application destinations - Destinations added to the application's
     /// recent and frequent categories by the shell or by the application.
-    /// <b>Custom destinations</b> - Destinations added to the application's
+    /// Custom destinations - Destinations added to the application's
     /// jump list in other categories by the application.
-    /// <b>Tasks</b> - Tasks added to the application's jump list.
+    /// Tasks - Tasks added to the application's jump list.
     /// <b>The methods of this class are not thread-safe.</b>
     /// </remarks>
     public sealed class JumpListManager : IDisposable
@@ -30,15 +54,13 @@ namespace TaskbarLib
         #region Members
 
         string _appId;
-        JumpListDestinations _destinations;
-        JumpListTasks _tasks;
-
-        ICustomDestinationList _customDestinationList;
         uint _maxSlotsInList;
 
-        ApplicationDestinationType _enabledAutoDestinationType = ApplicationDestinationType.Recent;
-
+        JumpListTasks _tasks;
+        JumpListDestinations _destinations;
         EventHandler _displaySettingsChangeHandler;
+        ICustomDestinationList _customDestinationList;
+        ApplicationDestinationType _enabledAutoDestinationType; // = ApplicationDestinationType.Recent;
 
         #endregion
 
@@ -54,6 +76,7 @@ namespace TaskbarLib
             _tasks = new JumpListTasks();
 
             _customDestinationList = (ICustomDestinationList)new CDestinationList();
+           
             if (String.IsNullOrEmpty(_appId))
             {
                 _appId = Windows7Taskbar.GetCurrentProcessAppId();
@@ -67,15 +90,14 @@ namespace TaskbarLib
             {
                 RefreshMaxSlots();
             };
-            SystemEvents.DisplaySettingsChanged +=
-                _displaySettingsChangeHandler;
+
+            SystemEvents.DisplaySettingsChanged += _displaySettingsChangeHandler;
         }
 
         /// <summary>
         /// Initializes a new instance of the jump list manager
         /// with the specified window handle.
         /// </summary>
-        /// <param name="hwnd">The window handle.</param>
         public JumpListManager()
             : this(Windows7Taskbar.GetAppId())
         {
@@ -176,20 +198,20 @@ namespace TaskbarLib
         /// </summary>
         public void ClearApplicationDestinations()
         {
-            IApplicationDestinations destinations = (IApplicationDestinations)
-                new CApplicationDestinations();
+            IApplicationDestinations destinations = (IApplicationDestinations)new CApplicationDestinations();
             if (!String.IsNullOrEmpty(_appId))
             {
-                destinations.SetAppID(_appId);
+                HResult setAppIDResult = destinations.SetAppID(_appId);
+                setAppIDResult.ThrowIf();
             }
             try
             {
                 //This does not remove pinned items.
-                destinations.RemoveAllDestinations();
+                HResult removeAllDestinationsResult = destinations.RemoveAllDestinations();
+                removeAllDestinationsResult.ThrowIf();
             }
-            catch (System.IO.FileNotFoundException)
-            {//There are no destinations.  That's cool.
-            }
+            catch (FileNotFoundException)
+            { /* There are no destinations. That's cool. */ }
         }
 
         /// <summary>
@@ -203,56 +225,64 @@ namespace TaskbarLib
         public IEnumerable<IJumpListDestination> GetApplicationDestinations(ApplicationDestinationType type)
         {
             if (type == ApplicationDestinationType.NONE)
-                throw new ArgumentException("type can't be NONE");
+                throw new ArgumentException("ApplicationDestinationType can't be NONE");
 
             IApplicationDocumentLists destinations = (IApplicationDocumentLists)new CApplicationDocumentLists();
             Guid iidObjectArray = typeof(IObjectArray).GUID;
+           
             object obj;
-
-            destinations.GetList((AppDocListType)type, 100, ref iidObjectArray, out obj);
+            HResult getListResult = destinations.GetList((AppDocListType)type, 100, ref iidObjectArray, out obj);
+            getListResult.ThrowIf();
 
             List<IJumpListDestination> returnValue = new List<IJumpListDestination>();
 
             Guid iidShellItem = typeof(IShellItem).GUID;
             Guid iidShellLink = typeof(IShellLinkW).GUID;
             IObjectArray array = (IObjectArray)obj;
+           
             uint count;
-            array.GetCount(out count);
+            HResult getCountResult = array.GetCount(out count);
+            getCountResult.ThrowIf();
+
             for (uint i = 0; i < count; ++i)
             {
                 try
                 {
                     array.GetAt(i, ref iidShellItem, out obj);
                 }
-                catch (Exception)//Wrong type
-                {
-                }
+                catch (Exception) //Wrong type
+                { }
+
                 if (obj == null)
                 {
-                    array.GetAt(i, ref iidShellLink, out obj);
+                    HResult getAtResult = array.GetAt(i, ref iidShellLink, out obj);
+                    getAtResult.ThrowIf();
                     //This shouldn't fail since if it's not IShellItem
                     //then it must be IShellLink.
 
                     IShellLinkW link = (IShellLinkW)obj;
                     ShellLink wrapper = new ShellLink();
 
-                    StringBuilder sb = new StringBuilder(256);
-                    link.GetPath(sb, sb.Capacity, IntPtr.Zero, 2);
+                    StringBuilder sb = new StringBuilder(256);  
+                    HResult getPathResult = link.GetPath(sb, sb.Capacity, IntPtr.Zero, 2);
+                    getPathResult.ThrowIf();
                     wrapper.Path = sb.ToString();
 
-                    link.GetArguments(sb, sb.Capacity);
+                    HResult getArgumentsResult = link.GetArguments(sb, sb.Capacity);
+                    getArgumentsResult.ThrowIf();
                     wrapper.Arguments = sb.ToString();
 
                     int iconId;
-                    link.GetIconLocation(sb, sb.Capacity, out iconId);
+                    HResult getIconLocationResult = link.GetIconLocation(sb, sb.Capacity, out iconId);
+                    getIconLocationResult.ThrowIf();
                     wrapper.IconIndex = iconId;
                     wrapper.IconLocation = sb.ToString();
 
                     uint showCmd;
-                    link.GetShowCmd(out showCmd);
+                    HResult getShowCmdResult = link.GetShowCmd(out showCmd);
                     wrapper.ShowCommand = (WindowShowCommand)showCmd;
 
-                    link.GetWorkingDirectory(sb, sb.Capacity);
+                    HResult getWorkingDirectoryResult = link.GetWorkingDirectory(sb, sb.Capacity);
                     wrapper.WorkingDirectory = sb.ToString();
 
                     returnValue.Add(wrapper);
@@ -263,7 +293,8 @@ namespace TaskbarLib
                     ShellItem wrapper = new ShellItem();
 
                     string path;
-                    item.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out path);
+                    HResult getDisplayNameResult = item.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out path);
+                    getDisplayNameResult.ThrowIf();
                     wrapper.Path = path;
 
                     //Title and Category are irrelevant here, because it's
@@ -273,7 +304,6 @@ namespace TaskbarLib
                     returnValue.Add(wrapper);
                 }
             }
-            
             return returnValue;
         }
 
@@ -284,14 +314,15 @@ namespace TaskbarLib
         /// <param name="destination">The application destination.</param>
         public void DeleteApplicationDestination(IJumpListDestination destination)
         {
-            IApplicationDestinations destinations = (IApplicationDestinations)
-                new CApplicationDestinations();
+            IApplicationDestinations destinations = (IApplicationDestinations)new CApplicationDestinations();
             if (!String.IsNullOrEmpty(_appId))
             {
-                destinations.SetAppID(_appId);
+               HResult setAppIDResult = destinations.SetAppID(_appId);
+               setAppIDResult.ThrowIf();
             }
 
-            destinations.RemoveDestination(destination.GetShellRepresentation());
+            HResult removeDestinationResult = destinations.RemoveDestination(destination.GetShellRepresentation());
+            removeDestinationResult.ThrowIf();
         }
 
         /// <summary>
@@ -301,11 +332,11 @@ namespace TaskbarLib
         {
             try
             {
-                _customDestinationList.DeleteList(_appId);
+                HResult deleteListResult = _customDestinationList.DeleteList(_appId);
+                deleteListResult.ThrowIf();
             }
             catch (FileNotFoundException)
-            {//Means the list is empty, that's cool.
-            }
+            { /*Means the list is empty, that's cool. */ }
             
             _destinations.Clear();
         }
@@ -341,10 +372,12 @@ namespace TaskbarLib
             switch (EnabledAutoDestinationType)
             {
                 case ApplicationDestinationType.Frequent:
-                    _customDestinationList.AppendKnownCategory(KnownDestCategory.FREQUENT);
+                    HResult appendKnownCategoryFrequentResult = _customDestinationList.AppendKnownCategory(KnownDestCategory.FREQUENT);
+                    appendKnownCategoryFrequentResult.ThrowIf();
                     break;
                 case ApplicationDestinationType.Recent:
-                    _customDestinationList.AppendKnownCategory(KnownDestCategory.RECENT);
+                    HResult appendKnownCategoryRecentResult = _customDestinationList.AppendKnownCategory(KnownDestCategory.RECENT);
+                    appendKnownCategoryRecentResult.ThrowIf();
                     break;
             }
 
@@ -375,8 +408,7 @@ namespace TaskbarLib
         /// </summary>
         public void Dispose()
         {
-            SystemEvents.DisplaySettingsChanged -=
-                _displaySettingsChangeHandler;
+            SystemEvents.DisplaySettingsChanged -= _displaySettingsChangeHandler;
             if (_customDestinationList != null)
                 Marshal.ReleaseComObject(_customDestinationList);
         }
