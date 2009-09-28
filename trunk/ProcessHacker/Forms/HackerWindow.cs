@@ -2200,7 +2200,7 @@ namespace ProcessHacker
 
         #endregion
 
-        #region "ThumbButtons"
+        #region ThumbButtons
 
         private void appHandleButton_Clicked(object sender, EventArgs e)
         {
@@ -3451,6 +3451,12 @@ namespace ProcessHacker
                     this.UpdateProgram(false);
 
             }
+        }
+
+        private void networkInfomationMenuItem_Click(object sender, EventArgs e)
+        {
+            NetInfoWindow nw = new NetInfoWindow();
+            nw.Show();
         }
     }
 }

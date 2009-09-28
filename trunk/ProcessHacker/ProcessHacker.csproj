@@ -366,6 +366,9 @@
     <EmbeddedResource Include="Forms\UpdaterDownloadWindow.resx">
       <DependentUpon>UpdaterDownloadWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NetInfoWindow.resx">
+      <DependentUpon>NetInfoWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Resources\information.png" />
     <None Include="Resources\page_save.png" />
     <None Include="Resources\arrow_up.png" />
@@ -503,6 +506,12 @@
     </Compile>
     <Compile Include="Forms\VirusTotalUploaderWindow.Designer.cs">
       <DependentUpon>VirusTotalUploaderWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NetInfoWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NetInfoWindow.Designer.cs">
+      <DependentUpon>NetInfoWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Program\Settings.cs" />
     <Compile Include="Program\Updater.cs" />

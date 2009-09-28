@@ -180,6 +180,7 @@
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.networkInfomationMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -1139,6 +1140,7 @@
             this.menuIcon.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.showHideMenuItem,
             this.sysInformationIconMenuItem,
+            this.networkInfomationMenuItem,
             this.notificationsMenuItem,
             this.processesMenuItem,
             this.shutdownTrayMenuItem,
@@ -1159,7 +1161,7 @@
             // 
             // notificationsMenuItem
             // 
-            this.notificationsMenuItem.Index = 2;
+            this.notificationsMenuItem.Index = 3;
             this.notificationsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.enableAllNotificationsMenuItem,
             this.disableAllNotificationsMenuItem,
@@ -1221,18 +1223,18 @@
             // 
             // processesMenuItem
             // 
-            this.processesMenuItem.Index = 3;
+            this.processesMenuItem.Index = 4;
             this.processesMenuItem.Text = "&Processes";
             // 
             // shutdownTrayMenuItem
             // 
-            this.shutdownTrayMenuItem.Index = 4;
+            this.shutdownTrayMenuItem.Index = 5;
             this.shutdownTrayMenuItem.Text = "Shutdown";
             // 
             // exitTrayMenuItem
             // 
             this.vistaMenu.SetImage(this.exitTrayMenuItem, global::ProcessHacker.Properties.Resources.door_out);
-            this.exitTrayMenuItem.Index = 5;
+            this.exitTrayMenuItem.Index = 6;
             this.exitTrayMenuItem.Text = "E&xit";
             this.exitTrayMenuItem.Click += new System.EventHandler(this.exitTrayMenuItem_Click);
             // 
@@ -1310,6 +1312,12 @@
             // 
             this.vistaMenu.ContainerControl = this;
             this.vistaMenu.DelaySetImageCalls = false;
+            // 
+            // networkInfomationMenuItem
+            // 
+            this.networkInfomationMenuItem.Index = 2;
+            this.networkInfomationMenuItem.Text = "Network Infomation";
+            this.networkInfomationMenuItem.Click += new System.EventHandler(this.networkInfomationMenuItem_Click);
             // 
             // HackerWindow
             // 
@@ -1498,6 +1506,7 @@
         private System.Windows.Forms.MenuItem tracertNetworkMenuItem;
         private System.Windows.Forms.MenuItem pingNetworkMenuItem;
         private System.Windows.Forms.MenuItem VirusTotalMenuItem;
+        private System.Windows.Forms.MenuItem networkInfomationMenuItem;
     }
 }
 
