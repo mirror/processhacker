@@ -143,6 +143,7 @@ namespace TaskbarLib
             if (this.TaskbarButtonCreated != null)
                 this.TaskbarButtonCreated(this, new EventArgs());
 
+            _buttonsLoaded = false;
             this.RefreshThumbButtons();
         }
 
