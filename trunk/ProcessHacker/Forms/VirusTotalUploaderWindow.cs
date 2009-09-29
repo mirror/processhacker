@@ -37,7 +37,6 @@ using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
-using System.Drawing;
 using TaskbarLib;
 
 namespace ProcessHacker
@@ -133,7 +132,8 @@ namespace ProcessHacker
             if (UploadWorker.IsBusy)
                 UploadWorker.CancelAsync();
 
-            Windows7Taskbar.SetTaskbarProgressState(this, Windows7Taskbar.ThumbnailProgressState.NoProgress);
+            if (OSVersion.HasExtendedTaskbar)
+                Windows7Taskbar.SetTaskbarProgressState(this, Windows7Taskbar.ThumbnailProgressState.NoProgress);
         }
 
         private void getSessionToken_DoWork(object sender, DoWorkEventArgs e)
@@ -287,7 +287,8 @@ namespace ProcessHacker
             label1.Text = string.Format("{0}%", e.ProgressPercentage);
             progressUpload.Value = e.ProgressPercentage;
 
-            Windows7Taskbar.SetTaskbarProgress(this, this.progressUpload);
+            if (OSVersion.HasExtendedTaskbar)
+                Windows7Taskbar.SetTaskbarProgress(this, this.progressUpload);
         }
 
         private void UploadWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
