@@ -153,11 +153,11 @@ namespace TaskbarLib
 
             if (_buttonsLoaded)
             {
-                Windows7Taskbar.TaskbarList.ThumbBarUpdateButtons(_hwnd, (uint)win32Buttons.Length, win32Buttons);
+                Windows7Taskbar.TaskbarList.ThumbBarUpdateButtons(_hwnd, win32Buttons.Length, win32Buttons);
             }
             else //First time
             {
-                Windows7Taskbar.TaskbarList.ThumbBarAddButtons(_hwnd, (uint)win32Buttons.Length, win32Buttons);
+                Windows7Taskbar.TaskbarList.ThumbBarAddButtons(_hwnd, win32Buttons.Length, win32Buttons);
                 _buttonsLoaded = true;
             }
         }

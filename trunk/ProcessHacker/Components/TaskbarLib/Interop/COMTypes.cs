@@ -70,7 +70,9 @@ namespace TaskbarLib.Interop
     [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IObjectArray
     {
+        [PreserveSig]
         HResult GetCount(out uint cObjects);
+        [PreserveSig]
         HResult GetAt(uint iIndex, ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
     }
 
@@ -79,14 +81,20 @@ namespace TaskbarLib.Interop
     [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IObjectCollection
     {
-        // IObjectArray
+        // IObjectArray  
+        [PreserveSig]
         HResult GetCount(out uint cObjects);
+        [PreserveSig]
         HResult GetAt(uint iIndex, ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
 
         // IObjectCollection
+        [PreserveSig]
         HResult AddObject([MarshalAs(UnmanagedType.Interface)] object pvObject);
+        [PreserveSig]
         HResult AddFromArray([MarshalAs(UnmanagedType.Interface)] IObjectArray poaSource);
+        [PreserveSig]
         HResult RemoveObject(uint uiIndex);
+        [PreserveSig]
         HResult Clear();
     }
 
@@ -95,10 +103,15 @@ namespace TaskbarLib.Interop
     [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IPropertyStore
     {
+        [PreserveSig]
         HResult GetCount(out UInt32 cProps);
+        [PreserveSig]
         HResult GetAt(UInt32 iProp, [MarshalAs(UnmanagedType.Struct)] out PropertyKey pkey);
+        [PreserveSig]
         HResult GetValue([In, MarshalAs(UnmanagedType.Struct)] ref PropertyKey pkey, [Out(), MarshalAs(UnmanagedType.Struct)] out PropVariant pv);
+        [PreserveSig]
         HResult SetValue([In, MarshalAs(UnmanagedType.Struct)] ref PropertyKey pkey, [In, MarshalAs(UnmanagedType.Struct)] ref PropVariant pv);
+        [PreserveSig]
         HResult Commit();
     }
 
@@ -107,14 +120,22 @@ namespace TaskbarLib.Interop
     [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface ICustomDestinationList
     {
+        [PreserveSig]
         HResult SetAppID([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
+        [PreserveSig]
         HResult BeginList(out uint cMaxSlots, ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
+        [PreserveSig]
         HResult AppendCategory([MarshalAs(UnmanagedType.LPWStr)] string pszCategory, [MarshalAs(UnmanagedType.Interface)] IObjectArray poa);
         HResult AppendKnownCategory([MarshalAs(UnmanagedType.I4)] KnownDestCategory category);
+        [PreserveSig]
         HResult AddUserTasks([MarshalAs(UnmanagedType.Interface)] IObjectArray poa);
+        [PreserveSig]
         HResult CommitList();
+        [PreserveSig]
         HResult GetRemovedDestinations(ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
+        [PreserveSig]
         HResult DeleteList([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
+        [PreserveSig]
         HResult AbortList();
     }
 
@@ -123,8 +144,11 @@ namespace TaskbarLib.Interop
     [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IApplicationDestinations
     {
+        [PreserveSig]
         HResult SetAppID([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
+        [PreserveSig]
         HResult RemoveDestination([MarshalAs(UnmanagedType.Interface)] object pvObject);
+        [PreserveSig]
         HResult RemoveAllDestinations();
     }
 
@@ -133,7 +157,9 @@ namespace TaskbarLib.Interop
     [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IApplicationDocumentLists
     {
+        [PreserveSig]
         HResult SetAppID([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
+        [PreserveSig]
         HResult GetList([MarshalAs(UnmanagedType.I4)] AppDocListType listtype, uint cItemsDesired, ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
     }
 
@@ -143,27 +169,45 @@ namespace TaskbarLib.Interop
     internal interface ITaskbarList3
     {
         // ITaskbarList
+        [PreserveSig]
         HResult HrInit();
+        [PreserveSig]
         HResult AddTab(IntPtr hwnd);
+        [PreserveSig]
         HResult DeleteTab(IntPtr hwnd);
+        [PreserveSig]
         HResult ActivateTab(IntPtr hwnd);
+        [PreserveSig]
         HResult SetActiveAlt(IntPtr hwnd);
 
         // ITaskbarList2
+        [PreserveSig]
         HResult MarkFullscreenWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.Bool)] bool fFullscreen);
 
         // ITaskbarList3
+        [PreserveSig]
         HResult SetProgressValue(IntPtr hwnd, UInt64 ullCompleted, UInt64 ullTotal);
+        [PreserveSig]
         HResult SetProgressState(IntPtr hwnd, uint tbpFlags);
+        [PreserveSig]
         HResult RegisterTab(IntPtr hwndTab, IntPtr hwndMDI);
+        [PreserveSig]
         HResult UnregisterTab(IntPtr hwndTab);
+        [PreserveSig]
         HResult SetTabOrder(IntPtr hwndTab, IntPtr hwndInsertBefore);
+        [PreserveSig]
         HResult SetTabActive(IntPtr hwndTab, IntPtr hwndMDI, TBATFLAG tbatFlags);
-        HResult ThumbBarAddButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray)] THUMBBUTTON[] pButtons);
-        HResult ThumbBarUpdateButtons(IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray)] THUMBBUTTON[] pButtons);
+        [PreserveSig]
+        HResult ThumbBarAddButtons(IntPtr hwnd, int cButtons, [MarshalAs(UnmanagedType.LPArray)] THUMBBUTTON[] pButtons);
+        [PreserveSig]
+        HResult ThumbBarUpdateButtons(IntPtr hwnd, int cButtons, [MarshalAs(UnmanagedType.LPArray)] THUMBBUTTON[] pButtons);
+        [PreserveSig]
         HResult ThumbBarSetImageList(IntPtr hwnd, IntPtr himl);
+        [PreserveSig]
         HResult SetOverlayIcon(IntPtr hwnd, IntPtr hIcon, [MarshalAs(UnmanagedType.LPWStr)] string pszDescription);
+        [PreserveSig]
         HResult SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
+        [PreserveSig]
         HResult SetThumbnailClip(IntPtr hwnd, ref RECT prcClip);
     }
 
@@ -173,18 +217,23 @@ namespace TaskbarLib.Interop
     internal interface IShellItem
     {
         //[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [PreserveSig]
         HResult BindToHandler([In, MarshalAs(UnmanagedType.Interface)] IntPtr pbc, [In] ref Guid bhid, [In] ref Guid riid, out IntPtr ppv);
 
         //[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [PreserveSig]
         HResult GetParent([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
-        //[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        //[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)] 
+        [PreserveSig]
         HResult GetDisplayName([In] SIGDN sigdnName, [MarshalAs(UnmanagedType.LPWStr)] out string ppszName);
 
         //[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [PreserveSig]
         HResult GetAttributes([In] uint sfgaoMask, out uint psfgaoAttribs);
 
         //[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [PreserveSig]
         HResult Compare([In, MarshalAs(UnmanagedType.Interface)] IShellItem psi, [In] uint hint, out int piOrder);
     }
 
@@ -193,23 +242,41 @@ namespace TaskbarLib.Interop
     [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IShellLinkW
     {
+        [PreserveSig]
         HResult GetPath([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile, int cchMaxPath, IntPtr pfd, uint fFlags);
+        [PreserveSig]
         HResult GetIDList(out IntPtr ppidl);
+        [PreserveSig]
         HResult SetIDList(IntPtr pidl);
+        [PreserveSig]
         HResult GetDescription([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile, int cchMaxName);
+        [PreserveSig]
         HResult SetDescription([MarshalAs(UnmanagedType.LPWStr)] string pszName);
+        [PreserveSig]
         HResult GetWorkingDirectory([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszDir, int cchMaxPath);
+        [PreserveSig]
         HResult SetWorkingDirectory([MarshalAs(UnmanagedType.LPWStr)] string pszDir);
+        [PreserveSig]
         HResult GetArguments([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszArgs, int cchMaxPath);
+        [PreserveSig]
         HResult SetArguments([MarshalAs(UnmanagedType.LPWStr)] string pszArgs);
+        [PreserveSig]
         HResult GetHotKey(out short wHotKey);
+        [PreserveSig]
         HResult SetHotKey(short wHotKey);
+        [PreserveSig]
         HResult GetShowCmd(out uint iShowCmd);
+        [PreserveSig]
         HResult SetShowCmd(uint iShowCmd);
+        [PreserveSig]
         HResult GetIconLocation([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszIconPath, int cchIconPath, out int iIcon);
+        [PreserveSig]
         HResult SetIconLocation([MarshalAs(UnmanagedType.LPWStr)] string pszIconPath, int iIcon);
+        [PreserveSig]
         HResult SetRelativePath([MarshalAs(UnmanagedType.LPWStr)] string pszPathRel, uint dwReserved);
+        [PreserveSig]
         HResult Resolve(IntPtr hwnd, uint fFlags);
+        [PreserveSig]
         HResult SetPath([MarshalAs(UnmanagedType.LPWStr)] string pszFile);
     }
 
