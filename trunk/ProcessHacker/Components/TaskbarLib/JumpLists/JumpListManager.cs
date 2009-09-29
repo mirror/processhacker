@@ -149,7 +149,13 @@ namespace TaskbarLib
         /// or <see cref="ShellItem"/>.</param>
         public void AddCustomDestination(IJumpListDestination destination)
         {
-            _destinations.AddDestination(destination);
+            // Do not use CustomDestinations as they will cause an
+            // System.UnauthorizedAccessException: Access is denied. (Exception from HRESULT: 0x80070005 (E_ACCESSDENIED))
+            // error when the user has recent document tracking disabled Via the Group Policy setting:
+            //“Do not keep history of recently opened documents”. or via the Users setting: 
+            //“Store and display recently opened items in the Start menu and the taskbar” in the Start menu property dialog.
+           
+            //_destinations.AddDestination(destination);
         }
 
         /// <summary>

@@ -79,11 +79,13 @@ namespace TaskbarLib
                 var destinations = _categorizedDestinations[key];
                 foreach (IJumpListDestination destination in destinations)
                 {
-                    categoryContents.AddObject(destination.GetShellRepresentation());
+                   HResult addObjectResult = categoryContents.AddObject(destination.GetShellRepresentation());
+                   addObjectResult.ThrowIf();
                 }
-                destinationList.AppendCategory(
-                    destinations.First().Category,
-                    (IObjectArray)categoryContents);
+               
+                HResult appendCategoryResult = destinationList.AppendCategory(
+                    destinations.First().Category, (IObjectArray)categoryContents);
+                appendCategoryResult.ThrowIf();
             }
         }
 
@@ -139,9 +141,11 @@ namespace TaskbarLib
             IObjectCollection taskCollection = (IObjectCollection)new CEnumerableObjectCollection();
             foreach (IJumpListTask task in _tasks)
             {
-                taskCollection.AddObject(task.GetShellRepresentation());
+                HResult addObjectResult = taskCollection.AddObject(task.GetShellRepresentation());
+                addObjectResult.ThrowIf();
             }
-            destinationList.AddUserTasks((IObjectArray)taskCollection);
+            HResult addUserTasksResult = destinationList.AddUserTasks((IObjectArray)taskCollection);
+            addUserTasksResult.ThrowIf();
         }
 
         public IEnumerable<IJumpListTask> Tasks
@@ -371,25 +375,33 @@ namespace TaskbarLib
 
                 if (!String.IsNullOrEmpty(IconLocation))
                 {
-                    shellLink.SetIconLocation(IconLocation, IconIndex);
+                    HResult setIconLocationResult = shellLink.SetIconLocation(IconLocation, IconIndex);
+                    setIconLocationResult.ThrowIf();
                 }
                 if (!String.IsNullOrEmpty(Arguments))
                 {
-                    shellLink.SetArguments(Arguments);
+                    HResult setArgumentsResult = shellLink.SetArguments(Arguments);
+                    setArgumentsResult.ThrowIf();
                 }
                 if (!String.IsNullOrEmpty(WorkingDirectory))
                 {
-                    shellLink.SetWorkingDirectory(WorkingDirectory);
+                    HResult setWorkingDirectoryResult = shellLink.SetWorkingDirectory(WorkingDirectory);
+                    setWorkingDirectoryResult.ThrowIf();
                 }
 
-                shellLink.SetShowCmd((uint)ShowCommand);
+                HResult setShowCmdResult = shellLink.SetShowCmd((uint)ShowCommand);
+                setShowCmdResult.ThrowIf();
 
                 propVariant.SetValue(Title);
-                propertyStore.SetValue(ref PropertyKey.PKEY_Title, ref propVariant);
+
+                HResult setValueResult = propertyStore.SetValue(ref PropertyKey.PKEY_Title, ref propVariant);
+                setValueResult.ThrowIf();
+
                 propVariant.Clear();
             }
 
-            propertyStore.Commit();
+            HResult commitResult = propertyStore.Commit();
+            commitResult.ThrowIf();
 
             return shellLink;
         }

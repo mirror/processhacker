@@ -116,7 +116,8 @@ namespace TaskbarLib
             IPropertyStore propStore = InternalGetWindowPropertyStore(Program.HackerWindowHandle);
 
             PropVariant pv;
-            propStore.GetValue(ref PropertyKey.PKEY_AppUserModel_ID, out pv);
+            HResult getValueResult = propStore.GetValue(ref PropertyKey.PKEY_AppUserModel_ID, out pv);
+            getValueResult.ThrowIf();
 
             Marshal.ReleaseComObject(propStore);
 
@@ -133,7 +134,9 @@ namespace TaskbarLib
 
             PropVariant pv = new PropVariant();
             pv.SetValue(appId);
-            propStore.SetValue(ref PropertyKey.PKEY_AppUserModel_ID, ref pv);
+
+            HResult setValueResult = propStore.SetValue(ref PropertyKey.PKEY_AppUserModel_ID, ref pv);
+            setValueResult.ThrowIf();
 
             Marshal.ReleaseComObject(propStore);
         }
@@ -144,7 +147,8 @@ namespace TaskbarLib
         /// <param name="appId">The application id.</param>
         public static void SetCurrentProcessAppId(string appId)
         {
-            UnsafeNativeMethods.SetCurrentProcessExplicitAppUserModelID(appId);
+           HResult setProcessAppUserModeIDResult = UnsafeNativeMethods.SetCurrentProcessExplicitAppUserModelID(appId);
+           setProcessAppUserModeIDResult.ThrowIf();
         }
 
         /// <summary>
@@ -154,7 +158,8 @@ namespace TaskbarLib
         public static string GetCurrentProcessAppId()
         {
             string appId;
-            UnsafeNativeMethods.GetCurrentProcessExplicitAppUserModelID(out appId);
+            HResult getProcessAppUserModeIDResult = UnsafeNativeMethods.GetCurrentProcessExplicitAppUserModelID(out appId);
+            getProcessAppUserModeIDResult.ThrowIf();
             return appId;
         }
 

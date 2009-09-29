@@ -25,6 +25,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using ProcessHacker.Native.Api;
 
 namespace TaskbarLib.Interop
 {
@@ -260,10 +261,10 @@ namespace TaskbarLib.Interop
         
 
         [DllImport("shell32.dll")]
-        public static extern void SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
+        public static extern HResult SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
        
         [DllImport("shell32.dll")]
-        public static extern void GetCurrentProcessExplicitAppUserModelID([Out(), MarshalAs(UnmanagedType.LPWStr)] out string AppID);
+        public static extern HResult GetCurrentProcessExplicitAppUserModelID([Out(), MarshalAs(UnmanagedType.LPWStr)] out string AppID);
        
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]

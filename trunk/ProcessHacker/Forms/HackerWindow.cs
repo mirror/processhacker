@@ -2937,17 +2937,7 @@ namespace ProcessHacker
                         jumpListManager.EnabledAutoDestinationType = ApplicationDestinationType.Recent;
 
                         string shell32DllPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shell32.dll");
-
-                        jumpListManager.AddCustomDestination(new ShellLink
-                        {
-                            Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "compmgmt.msc"),
-                            Arguments = "/s",
-                            Title = "Computer Management",
-                            Category = "Tools",
-                            IconLocation = shell32DllPath,
-                            IconIndex = 5
-                        });
-
+              
                         jumpListManager.AddUserTask(new ShellLink
                         {
                             Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "eventvwr.msc"),
