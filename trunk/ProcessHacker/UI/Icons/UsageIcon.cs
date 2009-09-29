@@ -38,6 +38,17 @@ namespace ProcessHacker
             set
             {
                 _activeUsageIcon = value;
+
+                if (value == null)
+                {
+                    if (OSVersion.HasExtendedTaskbar)
+                    {
+                        TaskbarLib.Windows7Taskbar.SetTaskbarOverlayIcon(
+                            null,
+                            ""
+                            );
+                    }
+                }
             }
         }
 
