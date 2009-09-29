@@ -153,17 +153,16 @@ namespace TaskbarLib
 
             if (_buttonsLoaded)
             {
-                Windows7Taskbar.TaskbarList.ThumbBarUpdateButtons(_hwnd, win32Buttons.Length, win32Buttons);
+                Windows7Taskbar.TaskbarList.ThumbBarUpdateButtons(_form.Handle, win32Buttons.Length, win32Buttons);
             }
             else //First time
             {
-                Windows7Taskbar.TaskbarList.ThumbBarAddButtons(_hwnd, win32Buttons.Length, win32Buttons);
+                Windows7Taskbar.TaskbarList.ThumbBarAddButtons(_form.Handle, win32Buttons.Length, win32Buttons);
                 _buttonsLoaded = true;
             }
         }
 
         private Dictionary<int, ThumbButton> _thumbButtons = new Dictionary<int, ThumbButton>();
-        private IntPtr _hwnd;
 
         #endregion
     }
