@@ -2235,6 +2235,8 @@ namespace ProcessHacker
 
         private void thumbButtonManager_TaskbarButtonCreated(object sender, EventArgs e)
         {
+            thumbButtonManager.TaskbarButtonCreated -= thumbButtonManager_TaskbarButtonCreated;
+
             jumpListManager = Windows7Taskbar.CreateJumpListManager();
             jumpListManager.UserRemovedItems += (o, e_) =>
             {

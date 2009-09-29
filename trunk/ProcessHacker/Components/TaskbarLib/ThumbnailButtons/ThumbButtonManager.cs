@@ -142,6 +142,8 @@ namespace TaskbarLib
         {
             if (this.TaskbarButtonCreated != null)
                 this.TaskbarButtonCreated(this, new EventArgs());
+
+            this.RefreshThumbButtons();
         }
 
         #region Implementation
