@@ -156,6 +156,7 @@
             this.menuIcon = new System.Windows.Forms.ContextMenu();
             this.showHideMenuItem = new System.Windows.Forms.MenuItem();
             this.sysInformationIconMenuItem = new System.Windows.Forms.MenuItem();
+            this.networkInfomationMenuItem = new System.Windows.Forms.MenuItem();
             this.notificationsMenuItem = new System.Windows.Forms.MenuItem();
             this.enableAllNotificationsMenuItem = new System.Windows.Forms.MenuItem();
             this.disableAllNotificationsMenuItem = new System.Windows.Forms.MenuItem();
@@ -180,7 +181,6 @@
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.networkInfomationMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -1159,6 +1159,12 @@
             this.sysInformationIconMenuItem.Text = "System &Information";
             this.sysInformationIconMenuItem.Click += new System.EventHandler(this.sysInformationIconMenuItem_Click);
             // 
+            // networkInfomationMenuItem
+            // 
+            this.networkInfomationMenuItem.Index = 2;
+            this.networkInfomationMenuItem.Text = "Network Infomation";
+            this.networkInfomationMenuItem.Click += new System.EventHandler(this.networkInfomationMenuItem_Click);
+            // 
             // notificationsMenuItem
             // 
             this.notificationsMenuItem.Index = 3;
@@ -1312,12 +1318,6 @@
             // 
             this.vistaMenu.ContainerControl = this;
             this.vistaMenu.DelaySetImageCalls = false;
-            // 
-            // networkInfomationMenuItem
-            // 
-            this.networkInfomationMenuItem.Index = 2;
-            this.networkInfomationMenuItem.Text = "Network Infomation";
-            this.networkInfomationMenuItem.Click += new System.EventHandler(this.networkInfomationMenuItem_Click);
             // 
             // HackerWindow
             // 

@@ -913,6 +913,12 @@ namespace ProcessHacker
             sysInfoMenuItem_Click(sender, e);
         }
 
+        private void networkInfomationMenuItem_Click(object sender, EventArgs e)
+        {
+            NetInfoWindow nw = new NetInfoWindow();
+            nw.Show();
+        }
+
         private void enableAllNotificationsMenuItem_Click(object sender, EventArgs e)
         {
             NPMenuItem.Checked = true;
@@ -3312,9 +3318,12 @@ namespace ProcessHacker
 
             InitializeComponent();
 
-            //We need to call this here or we dont recieve the TaskbarButtonCreated WindowMessage
-            Windows7Taskbar.AllowWindowMessagesThroughUipi();
-            Windows7Taskbar.SetCurrentProcessAppId("ProcessHacker");
+            if (OSVersion.HasExtendedTaskbar)
+            {
+                // We need to call this here or we dont recieve the TaskbarButtonCreated WindowMessage
+                Windows7Taskbar.AllowWindowMessagesThroughUipi();
+                Windows7Taskbar.SetCurrentProcessAppId("ProcessHacker");
+            }
 
             this.AddEscapeToClose();
 
@@ -3441,12 +3450,6 @@ namespace ProcessHacker
                     this.UpdateProgram(false);
 
             }
-        }
-
-        private void networkInfomationMenuItem_Click(object sender, EventArgs e)
-        {
-            NetInfoWindow nw = new NetInfoWindow();
-            nw.Show();
         }
     }
 }
