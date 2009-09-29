@@ -34,7 +34,7 @@ namespace TaskbarLib
     {
         private ThumbButtonManager _manager;
 
-        internal ThumbButton(ThumbButtonManager manager, uint id, Icon icon, string tooltip)
+        internal ThumbButton(ThumbButtonManager manager, int id, Icon icon, string tooltip)
         {
             _manager = manager;
 
@@ -47,12 +47,12 @@ namespace TaskbarLib
         /// The event that occurs when the taskbar thumbnail button
         /// is clicked.
         /// </summary>
-        public event EventHandler Clicked;
+        public event EventHandler Click;
 
         /// <summary>
         /// Gets or sets thumbnail button's id.
         /// </summary>
-        public uint Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the thumbnail button's icon.
@@ -152,10 +152,10 @@ namespace TaskbarLib
             }
         }
 
-        internal void FireClick()
+        internal void OnClick()
         {
-            if (Clicked != null)
-                Clicked(this, EventArgs.Empty);
+            if (Click != null)
+                Click(this, EventArgs.Empty);
         }
     }
 

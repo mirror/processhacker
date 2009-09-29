@@ -495,11 +495,11 @@ namespace TaskbarLib
 
             UserRemovedItemsEventArgs args = new UserRemovedItemsEventArgs(removedItemsArr);
             UserRemovedItems(this, args);
-            if (args.CancelCurrentOperation)
+            if (args.Cancel)
             {
                 _customDestinationList.AbortList();
             }
-            return !args.CancelCurrentOperation;
+            return !args.Cancel;
         }
 
         private void CommitList()
@@ -560,6 +560,6 @@ namespace TaskbarLib
         /// if because of the items the user has removed
         /// there is no real work to do with the jump list.
         /// </summary>
-        public bool CancelCurrentOperation { get; set; }
+        public bool Cancel { get; set; }
     }
 }

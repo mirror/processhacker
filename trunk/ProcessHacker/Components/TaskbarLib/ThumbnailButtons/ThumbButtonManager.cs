@@ -27,22 +27,63 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using TaskbarLib.Interop;
-using System.Collections;
 
 namespace TaskbarLib
 {
     /// <summary>
     /// Manages a set of taskbar thumbnail buttons in an application.
     /// </summary>
-    public sealed class ThumbButtonManager
+    public sealed class ThumbButtonManager : IDisposable
     {
-        /// <summary>
-        /// Initializes a new manager with the specified window handle.
-        /// </summary>
-        /// <param name="hwnd">The window handle.</param>
-        public ThumbButtonManager(IntPtr hwnd)
+        private sealed class MessageFilter : IMessageFilter
         {
-            _hwnd = hwnd;
+            private ThumbButtonManager _manager;
+
+            public MessageFilter(ThumbButtonManager manager)
+            {
+                _manager = manager;
+            }
+
+            public bool PreFilterMessage(ref Message m)
+            {
+                if (m.Msg == (int)Windows7Taskbar.TaskbarButtonCreatedMessage)
+                {
+                    _manager.OnTaskbarButtonCreated();
+                    return true;
+                }
+                else if (m.Msg == (int)ProcessHacker.Native.Api.WindowMessage.Command)
+                {
+                    _manager.OnCommand(m.WParam);
+                }
+
+                return false;
+            }
+        }
+
+        public event EventHandler TaskbarButtonCreated;
+
+        private Form _form;
+        private MessageFilter _filter;
+        private bool _disposed = false;
+
+        /// <summary>
+        /// Initializes a new manager on the specified form.
+        /// </summary>
+        /// <param name="form">The form.</param>
+        public ThumbButtonManager(Form form)
+        {
+            _form = form;
+
+            Application.AddMessageFilter(_filter = new MessageFilter(this));
+        }
+
+        public void Dispose()
+        {
+            if (!_disposed)
+            {
+                Application.RemoveMessageFilter(_filter);
+                _disposed = true;
+            }
         }
 
         /// <summary>
@@ -53,29 +94,9 @@ namespace TaskbarLib
         /// <param name="tooltip">The button's tooltip.</param>
         /// <returns>An object of type <see cref="ThumbButton"/>
         /// representing the newly created thumbnail button.</returns>
-        public ThumbButton CreateThumbButton(uint id, Icon icon, string tooltip)
+        public ThumbButton CreateThumbButton(int id, Icon icon, string tooltip)
         {
             return new ThumbButton(this, id, icon, tooltip);
-        }
-
-        /// <summary>
-        /// Dispatches a Windows message to the thumbnail button event
-        /// handlers if appropriate.
-        /// </summary>
-        /// <remarks>
-        /// This method is intended for infrastructure use only.
-        /// </remarks>
-        /// <param name="message">The message.</param>
-        public void DispatchMessage(ref Message message)
-        {
-            UInt64 wparam = (UInt64)message.WParam.ToInt64();
-            UInt32 wparam32 = (UInt32) (wparam & 0xffffffff);   //Clear top 32 bits
-
-            if (message.Msg == (int)ProcessHacker.Native.Api.WindowMessage.Command && (wparam32 >> 16 == SafeNativeMethods.THBN_CLICKED))
-            {
-                uint id = wparam32 & 0xffff;    //Bottom 16 bits
-                _thumbButtons[id].FireClick();
-            }
         }
 
         /// <summary>
@@ -101,12 +122,26 @@ namespace TaskbarLib
         /// <param name="id">The thumbnail button's id.</param>
         /// <returns>An object of type <see cref="ThumbButton"/>
         /// with the specified id.</returns>
-        public ThumbButton this[uint id]
+        public ThumbButton this[int id]
         {
             get
             {
                 return _thumbButtons[id];
             }
+        }
+
+        internal void OnCommand(IntPtr wParam)
+        {
+            if (((wParam.ToInt32() >> 16) & 0xffff) == SafeNativeMethods.THBN_CLICKED)
+            {
+                _thumbButtons[wParam.ToInt32() & 0xffff].OnClick();
+            }
+        }
+
+        internal void OnTaskbarButtonCreated()
+        {
+            if (this.TaskbarButtonCreated != null)
+                this.TaskbarButtonCreated(this, new EventArgs());
         }
 
         #region Implementation
@@ -127,7 +162,7 @@ namespace TaskbarLib
             }
         }
 
-        private Dictionary<uint, ThumbButton> _thumbButtons = new Dictionary<uint, ThumbButton>();
+        private Dictionary<int, ThumbButton> _thumbButtons = new Dictionary<int, ThumbButton>();
         private IntPtr _hwnd;
 
         #endregion

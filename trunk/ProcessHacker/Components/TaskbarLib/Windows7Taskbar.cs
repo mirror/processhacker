@@ -24,11 +24,11 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using TaskbarLib.Interop;
-using ProcessHacker.Native;
-using ProcessHacker;
-using ProcessHacker.Native.Api;
 using System.Windows.Forms;
+using ProcessHacker;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using TaskbarLib.Interop;
 
 namespace TaskbarLib
 {
@@ -67,16 +67,6 @@ namespace TaskbarLib
         public static JumpListManager CreateJumpListManager()
         {
             return new JumpListManager();
-        }
-
-        /// <summary>
-        /// Creates a taskbar thumbnail button manager for this form.
-        /// </summary>
-        /// <returns>An object of type <see cref="ThumbButtonManager"/>
-        /// that can be used to add and manage thumbnail toolbar buttons.</returns>
-        public static ThumbButtonManager CreateThumbButtonManager()
-        {
-            return new ThumbButtonManager(Program.HackerWindowHandle);
         }
 
         private static IPropertyStore InternalGetWindowPropertyStore(IntPtr hwnd)

@@ -118,8 +118,8 @@ namespace TaskbarLib.Interop
     {
         [MarshalAs(UnmanagedType.U4)]
         public ThumbnailButtonMask dwMask;
-        public uint iId;
-        public uint iBitmap;
+        public int iId;
+        public int iBitmap;
         public IntPtr hIcon;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
         public string szTip;
