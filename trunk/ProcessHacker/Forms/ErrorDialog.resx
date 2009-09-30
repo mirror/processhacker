@@ -118,6 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="labelIntro.Text" xml:space="preserve">
-    <value>An unhandled exception has occured in Process Hacker. You can report this error to the ProcessHacker SourceForge Bug Tracker by clicking Send Report, You will recieve a tracker item for keeing track of its resolution status. Exception Details:</value>
+    <value>Please report this error to the ProcessHacker Team via our Bug Tracker hosted at SourceForge by clicking Send Report, You will recieve a tracker item for keeing track of its resolution status. Exception Details:</value>
   </data>
 </root>

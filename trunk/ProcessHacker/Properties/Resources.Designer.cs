@@ -249,6 +249,13 @@ namespace ProcessHacker.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap exIcon {
+            get {
+                object obj = ResourceManager.GetObject("exIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap find {
             get {
                 object obj = ResourceManager.GetObject("find", resourceCulture);

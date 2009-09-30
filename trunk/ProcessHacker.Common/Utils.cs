@@ -757,6 +757,56 @@ namespace ProcessHacker.Common
             return (new DateTime(1970, 1, 1, 0, 0, 0)).Add(new TimeSpan(0, 0, 0, (int)time));
         }
 
+        // <summary>
+        // returns DateTime this Assembly was last built. Will attempt to calculate from build number, if possible. 
+        // If not, the actual LastWriteTime on the assembly file will be returned.
+        // </summary>
+        // <param name="a">Assembly to get build date for</param>
+        // <param name="ForceFileDate">Don't attempt to use the build number to calculate the date</param>
+        // <returns>DateTime this assembly was last built</returns>
+        public static DateTime AssemblyBuildDate(Assembly a, bool ForceFileDate)
+        {
+            Version AssemblyVersion = a.GetName().Version;
+            DateTime dt;
+
+            if (ForceFileDate)
+            {
+                dt = AssemblyLastWriteTime(a);
+            }
+            else
+            {
+                dt = DateTime.Parse("01/01/2000").AddDays(AssemblyVersion.Build).AddSeconds(AssemblyVersion.Revision * 2);
+                if (TimeZone.IsDaylightSavingTime(dt, TimeZone.CurrentTimeZone.GetDaylightChanges(dt.Year)))
+                {
+                    dt = dt.AddHours(1);
+                }
+                if (dt > DateTime.Now || AssemblyVersion.Build < 730 || AssemblyVersion.Revision == 0)
+                {
+                    dt = AssemblyLastWriteTime(a);
+                }
+            }
+
+            return dt;
+        }
+
+        // <summary>
+        // exception-safe retrieval of LastWriteTime for this assembly.
+        // </summary>
+        // <returns>File.GetLastWriteTime, or DateTime.MaxValue if exception was encountered.</returns>
+        public static DateTime AssemblyLastWriteTime(Assembly a)
+        {
+            if (a.Location == null || a.Location == "")
+                return DateTime.MaxValue;
+            try
+            {
+                return File.GetLastWriteTime(a.Location);
+            }
+            catch (Exception)
+            {
+                return DateTime.MaxValue;
+            }
+        }
+
         /// <summary>
         /// Parses a string and produces a rectangle.
         /// </summary>

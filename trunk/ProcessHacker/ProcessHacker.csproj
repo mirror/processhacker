@@ -943,6 +943,7 @@
     <None Include="Resources\sflogo.png" />
     <None Include="Resources\lock.png" />
     <None Include="Resources\VirusTotal-logo.png" />
+    <None Include="Resources\exIcon.png" />
     <Content Include="SharpDevelop\LICENSE.txt" />
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />

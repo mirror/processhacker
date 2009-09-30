@@ -41,11 +41,12 @@ namespace ProcessHacker
         public ErrorDialog(Exception ex)
         {
             InitializeComponent();
-            this.SetTopMost();
 
             eX = ex;
 
-            textException.AppendText(ex.ToString());
+            //eX.GetType().ToString() + ": " + eX.Message;
+
+            textException.AppendText(eX.ToString());
 
             try
             {
@@ -59,66 +60,15 @@ namespace ProcessHacker
         {
             PhUtils.ShowInformation("Bookmark the url for later reference!");
             
-            if (trackerItem != null)
-                Program.TryStart("http://" + trackerItem);
+            if (trackerItem != null && trackerItem.Length >= 1)
+                Program.TryStart(trackerItem);
             else
                 Program.TryStart("http://sourceforge.net/tracker/?atid=1119665&group_id=242527&func=browse");
         }
 
         private void buttonContinue_Click(object sender, EventArgs e)
         {
-            DialogResult dResult = DialogResult.No; //default result
-
-            if (OSVersion.HasTaskDialogs)
-            {
-                TaskDialog td = new TaskDialog();
-
-                td.WindowTitle = "Process Hacker";
-                td.MainIcon = TaskDialogIcon.SecurityWarning;
-                td.MainInstruction = "Are you sure you want to continue?";
-                td.Content = "ProcessHacker will be in an unknown state if you continue, suggest restarting the application!";
-
-                td.Buttons = new TaskDialogButton[]
-                {
-                    new TaskDialogButton((int)DialogResult.Yes, "Continue"),
-                    new TaskDialogButton((int)DialogResult.No, "Restart")
-                };
-                td.DefaultButton = (int)DialogResult.No;
-
-                dResult = (DialogResult)td.Show(Form.ActiveForm);
-            }
-            else
-            {
-                dResult = MessageBox.Show("Are you sure you want to continue? ProcessHacker will be in an unknown state!",
-                    "Process Hacker",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning
-                    );
-            }
-
-            if (dResult == DialogResult.Yes)
-                this.Close();
-            else
-            {
-                try
-                {
-                    //Remove the icons or they remain in the systray
-                    Program.HackerWindow.ExecuteOnIcons((icon) => icon.Visible = false);
-                    Program.HackerWindow.ExecuteOnIcons((icon) => icon.Dispose());
-
-                    //Make sure KPH connection is closed
-                    if (ProcessHacker.Native.KProcessHacker.Instance != null)
-                        ProcessHacker.Native.KProcessHacker.Instance.Close();
-
-                    Program.TryStart(Application.ExecutablePath);
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
-                }
-
-                Win32.ExitProcess(1);
-            }
+            this.Close();
         }
 
         private void buttonQuit_Click(object sender, EventArgs e)
@@ -155,8 +105,8 @@ namespace ProcessHacker
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
 
             NameValueCollection qc = new NameValueCollection();
-            qc.Add("group_id", "242527"); //PH BugTracker ID: Required Do Not Change!
-            qc.Add("atid", "1119665"); //PH BugTracker ID: Required Do Not Change!
+            qc.Add("group_id", "276861"); //PH BugTracker ID: Required Do Not Change!
+            qc.Add("atid", "1175841"); //PH BugTracker ID: Required Do Not Change!
             qc.Add("func", "postadd"); //PH BugTracker Function: Required Do Not Change!
             qc.Add("category_id", "100"); //100 = null
             qc.Add("artifact_group_id", "100"); //100 = null
@@ -166,7 +116,7 @@ namespace ProcessHacker
             qc.Add("details", Uri.EscapeDataString(textException.Text));
             //qc.Add("input_file", FileName);
             //qc.Add("file_description", "Error-Report");
-            qc.Add("submit", "Add Artifact");
+            qc.Add("submit", "Add Artifact"); //PH BugTracker Function: Required Do Not Change!
 
             wc.QueryString = qc;
             wc.DownloadStringAsync(new Uri("https://sourceforge.net/tracker/index.php"));
@@ -179,12 +129,12 @@ namespace ProcessHacker
 
         private void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            this.buttonContinue.Enabled = true;
-            this.buttonQuit.Enabled = true;
+            buttonContinue.Enabled = true;
+            buttonQuit.Enabled = true;
 
             if (this.GetTitle(e.Result).Contains("ERROR"))
             {
-                this.submitReportButton.Enabled = true;
+                submitReportButton.Enabled = true;
 
                 PhUtils.ShowError(this.GetTitle(e.Result)); //temporary
                 PhUtils.ShowError(this.GetResult(e.Result)); //temporary
@@ -194,12 +144,13 @@ namespace ProcessHacker
                 statusLinkLabel.Enabled = true;
                 statusLinkLabel.Text = "Click here to view SourceForge Error Report";
                
-                trackerItem = GetUrl(Regex.Replace(this.GetResult(e.Result), @"<(.|\n)*?>", string.Empty).Replace("&amp;", "&")); 
+                trackerItem = GetUrl(Regex.Replace(this.GetResult(e.Result), @"<(.|\n)*?>", string.Empty).Replace("&amp;", "&"));
             }
         }
 
         private string GetTitle(string data)
         {
+            //http://regexlib.com/
             Match m = Regex.Match(data, @"<title>\s*(.+?)\s*</title>", RegexOptions.IgnoreCase);
             if (m.Success)
             {
@@ -213,6 +164,7 @@ namespace ProcessHacker
 
         private string GetResult(string data)
         {
+            //http://regexlib.com/
             Match m = Regex.Match(data, @"<small>\s*(.+?)\s*</small>", RegexOptions.IgnoreCase);
             if (m.Success)
             {
@@ -226,13 +178,11 @@ namespace ProcessHacker
 
         private string GetUrl(string data)
         {
-            //This regex for GetUrl needs work...Reference:
-            //http://regexlib.com/DisplayPatterns.aspx?cattabindex=1&categoryId=2
-
-            Match m = Regex.Match(data, @"([\d\w-.]+?\.(a[cdefgilmnoqrstuwz]|b[abdefghijmnorstvwyz]|c[acdfghiklmnoruvxyz]|d[ejkmnoz]|e[ceghrst]|f[ijkmnor]|g[abdefghilmnpqrstuwy]|h[kmnrtu]|i[delmnoqrst]|j[emop]|k[eghimnprwyz]|l[abcikrstuvy]|m[acdghklmnopqrstuvwxyz]|n[acefgilopruz]|om|p[aefghklmnrstwy]|qa|r[eouw]|s[abcdeghijklmnortuvyz]|t[cdfghjkmnoprtvwz]|u[augkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw]|aero|arpa|biz|com|coop|edu|info|int|gov|mil|museum|name|net|org|pro)(\b|\W(?<!&|=)(?!\.\s|\.{3}).*?))(\s|$)", RegexOptions.IgnoreCase);
+            //http://regexlib.com/
+            Match m = Regex.Match(data, @"\b([\d\w\.\/\+\-\?\:]*)((ht|f)tp(s|)\:\/\/|[\d\d\d|\d\d]\.[\d\d\d|\d\d]\.|www\.|\.com|\.net|\.org)([\d\w\.\/\%\+\-\=\&amp;\?\:\\\&quot;\'\,\|\~\;]*)\b", RegexOptions.IgnoreCase);
             if (m.Success)
             {
-                return m.Groups[1].Value;
+                return m.Value;
             }
             else
             {
@@ -258,5 +208,6 @@ namespace ProcessHacker
                 return resp;
             }
         }
+
     }
 }

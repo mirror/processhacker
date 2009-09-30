@@ -824,8 +824,11 @@ namespace ProcessHacker
         public static string GetDiagnosticInformation()
         {
             StringBuilder info = new StringBuilder();
-
             info.AppendLine("Process Hacker " + Application.ProductVersion);
+            info.AppendLine("Process Hacker Built: " + Utils.AssemblyBuildDate(System.Reflection.Assembly.GetExecutingAssembly(), false));
+            AppDomain app = System.AppDomain.CurrentDomain;
+            info.AppendLine("Application Base: " + app.SetupInformation.ApplicationBase);
+            info.AppendLine("Configuration File: " + app.SetupInformation.ConfigurationFile);
             info.AppendLine("CLR Version: " + Environment.Version.ToString());
             info.AppendLine("OS Version: " + Environment.OSVersion.VersionString + " (" + OSVersion.BitsString + ")");
             info.AppendLine("Elevation: " + ElevationType.ToString());
@@ -918,6 +921,16 @@ namespace ProcessHacker
             info.AppendLine("PEWindows: " + PEWindows.Count.ToString() + ", " + PEThreads.Count.ToString());
             info.AppendLine("PWindows: " + PWindows.Count.ToString() + ", " + PThreads.Count.ToString());
             info.AppendLine("ResultsWindows: " + ResultsWindows.Count.ToString() + ", " + ResultsThreads.Count.ToString());
+            info.AppendLine();
+
+            info.AppendLine("ASSEMBLIES LOADED");
+            foreach (System.Reflection.Assembly myAss in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                info.AppendLine("Assembly: " + myAss.ToString());
+                info.AppendLine("Location: " + myAss.Location.ToString()); 
+                info.AppendLine("Builddate: " + Utils.AssemblyBuildDate(myAss, false));
+                info.AppendLine();
+            }
 
             return info.ToString();
         }
@@ -938,6 +951,10 @@ namespace ProcessHacker
 
             ErrorDialog ed = new ErrorDialog(ex);
 
+            int Y = Program.HackerWindow.Top + (Program.HackerWindow.Height - ed.Height) / 2;
+            int X = Program.HackerWindow.Left + (Program.HackerWindow.Width - ed.Width) / 2;
+
+            ed.Location = new Point(X, Y);
             ed.ShowDialog();
         }
 
