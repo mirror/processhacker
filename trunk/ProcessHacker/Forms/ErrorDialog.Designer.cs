@@ -165,6 +165,7 @@
             this.Controls.Add(this.buttonContinue);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(524, 200);
             this.Name = "ErrorDialog";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
