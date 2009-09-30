@@ -78,7 +78,7 @@
             this.textException.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textException.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.textException.BackColor = System.Drawing.SystemColors.Control;
             this.textException.Location = new System.Drawing.Point(12, 61);
             this.textException.Multiline = true;
             this.textException.Name = "textException";
