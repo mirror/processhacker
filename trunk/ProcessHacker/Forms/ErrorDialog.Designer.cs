@@ -28,40 +28,28 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ErrorDialog));
             this.labelIntro = new System.Windows.Forms.Label();
-            this.labelLink = new System.Windows.Forms.Label();
             this.buttonContinue = new System.Windows.Forms.Button();
             this.buttonQuit = new System.Windows.Forms.Button();
             this.textException = new System.Windows.Forms.TextBox();
+            this.submitReportButton = new System.Windows.Forms.Button();
+            this.statusLinkLabel = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // labelIntro
             // 
-            this.labelIntro.AutoSize = true;
             this.labelIntro.Location = new System.Drawing.Point(12, 9);
             this.labelIntro.Name = "labelIntro";
-            this.labelIntro.Size = new System.Drawing.Size(315, 13);
+            this.labelIntro.Size = new System.Drawing.Size(461, 45);
             this.labelIntro.TabIndex = 0;
-            this.labelIntro.Text = "An unhandled exception has occured in Process Hacker. Details:";
-            // 
-            // labelLink
-            // 
-            this.labelLink.AutoSize = true;
-            this.labelLink.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.labelLink.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelLink.ForeColor = System.Drawing.Color.Blue;
-            this.labelLink.Location = new System.Drawing.Point(9, 217);
-            this.labelLink.Name = "labelLink";
-            this.labelLink.Size = new System.Drawing.Size(349, 13);
-            this.labelLink.TabIndex = 2;
-            this.labelLink.Text = "Please report this bug to http://sourceforge.net/projects/processhacker.";
-            this.labelLink.Click += new System.EventHandler(this.labelLink_Click);
+            this.labelIntro.Text = resources.GetString("labelIntro.Text");
             // 
             // buttonContinue
             // 
             this.buttonContinue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonContinue.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonContinue.Location = new System.Drawing.Point(352, 244);
+            this.buttonContinue.Location = new System.Drawing.Point(398, 275);
             this.buttonContinue.Name = "buttonContinue";
             this.buttonContinue.Size = new System.Drawing.Size(75, 23);
             this.buttonContinue.TabIndex = 4;
@@ -73,10 +61,10 @@
             // 
             this.buttonQuit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonQuit.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonQuit.Location = new System.Drawing.Point(271, 244);
+            this.buttonQuit.Location = new System.Drawing.Point(236, 275);
             this.buttonQuit.Name = "buttonQuit";
             this.buttonQuit.Size = new System.Drawing.Size(75, 23);
-            this.buttonQuit.TabIndex = 3;
+            this.buttonQuit.TabIndex = 0;
             this.buttonQuit.Text = "&Quit";
             this.buttonQuit.UseVisualStyleBackColor = true;
             this.buttonQuit.Click += new System.EventHandler(this.buttonQuit_Click);
@@ -86,25 +74,50 @@
             this.textException.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textException.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textException.Location = new System.Drawing.Point(12, 25);
+            this.textException.Location = new System.Drawing.Point(12, 57);
             this.textException.Multiline = true;
             this.textException.Name = "textException";
             this.textException.ReadOnly = true;
             this.textException.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textException.Size = new System.Drawing.Size(415, 189);
-            this.textException.TabIndex = 1;
+            this.textException.Size = new System.Drawing.Size(461, 212);
+            this.textException.TabIndex = 10;
+            // 
+            // submitReportButton
+            // 
+            this.submitReportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.submitReportButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.submitReportButton.Location = new System.Drawing.Point(317, 275);
+            this.submitReportButton.Name = "submitReportButton";
+            this.submitReportButton.Size = new System.Drawing.Size(75, 23);
+            this.submitReportButton.TabIndex = 5;
+            this.submitReportButton.Text = "&Send Report";
+            this.submitReportButton.UseVisualStyleBackColor = true;
+            this.submitReportButton.Click += new System.EventHandler(this.submitReportButton_Click);
+            // 
+            // statusLinkLabel
+            // 
+            this.statusLinkLabel.AutoSize = true;
+            this.statusLinkLabel.Enabled = false;
+            this.statusLinkLabel.Location = new System.Drawing.Point(9, 280);
+            this.statusLinkLabel.Name = "statusLinkLabel";
+            this.statusLinkLabel.Size = new System.Drawing.Size(199, 13);
+            this.statusLinkLabel.TabIndex = 6;
+            this.statusLinkLabel.TabStop = true;
+            this.statusLinkLabel.Text = "Please Wait, Reporting to Bug Tracker...";
+            this.statusLinkLabel.Visible = false;
+            this.statusLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.statusLinkLabel_LinkClicked);
             // 
             // ErrorDialog
             // 
             this.AcceptButton = this.buttonQuit;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(439, 279);
+            this.ClientSize = new System.Drawing.Size(485, 310);
+            this.Controls.Add(this.statusLinkLabel);
+            this.Controls.Add(this.submitReportButton);
             this.Controls.Add(this.textException);
             this.Controls.Add(this.buttonQuit);
             this.Controls.Add(this.buttonContinue);
-            this.Controls.Add(this.labelLink);
             this.Controls.Add(this.labelIntro);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -123,9 +136,10 @@
         #endregion
 
         private System.Windows.Forms.Label labelIntro;
-        private System.Windows.Forms.Label labelLink;
         private System.Windows.Forms.Button buttonContinue;
         private System.Windows.Forms.Button buttonQuit;
         private System.Windows.Forms.TextBox textException;
+        private System.Windows.Forms.Button submitReportButton;
+        private System.Windows.Forms.LinkLabel statusLinkLabel;
     }
 }

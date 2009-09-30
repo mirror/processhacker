@@ -132,6 +132,17 @@ namespace ProcessHacker.Native.Api
             [In] [Optional] IntPtr Arguments
             );
 
+        [DllImport("faultrep.dll", CharSet = CharSet.Unicode)] //XP
+        public static extern bool AddERExcludedApplication(
+            string name
+            );
+
+        [DllImport("wer.dll")] //Vista
+        public static extern HResult WerAddExcludedApplication(
+            string ExeName,
+            bool AllUsers //Administrator access Required
+            );
+
         #endregion
 
         #region Files
