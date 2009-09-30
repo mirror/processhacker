@@ -659,6 +659,58 @@ namespace ProcessHacker.Common
                 time.Milliseconds);
         }
 
+        // <summary>
+        // Gets a System.DateTime indicating the time the specified assembly was last built. 
+        // This will attempt to calculate the time from the build number, if possible. 
+        // Otherwise, the last write time of the assembly will be used.
+        // </summary>
+        // <param name="assembly">The assembly to get the build date for.</param>
+        // <param name="forceFileDate">True to always use the last write time of the assembly, otherwise false.</param>
+        // <returns>The time this assembly was built.</returns>
+        public static DateTime GetAssemblyBuildDate(Assembly assembly, bool forceFileDate)
+        {
+            Version AssemblyVersion = assembly.GetName().Version;
+            DateTime dt;
+
+            if (forceFileDate)
+            {
+                dt = GetAssemblyLastWriteTime(assembly);
+            }
+            else
+            {
+                dt = DateTime.Parse("01/01/2000").AddDays(AssemblyVersion.Build).AddSeconds(AssemblyVersion.Revision * 2);
+                if (TimeZone.IsDaylightSavingTime(dt, TimeZone.CurrentTimeZone.GetDaylightChanges(dt.Year)))
+                {
+                    dt = dt.AddHours(1);
+                }
+                if (dt > DateTime.Now || AssemblyVersion.Build < 730 || AssemblyVersion.Revision == 0)
+                {
+                    dt = GetAssemblyLastWriteTime(assembly);
+                }
+            }
+
+            return dt;
+        }
+
+        // <summary>
+        // Returns the last write time of the specified assembly.
+        // </summary>
+        // <returns>The last write time of the assembly, or DateTime.MaxValue if an exception occurred.</returns>
+        public static DateTime GetAssemblyLastWriteTime(Assembly assembly)
+        {
+            if (assembly.Location == null || assembly.Location == "")
+                return DateTime.MaxValue;
+
+            try
+            {
+                return File.GetLastWriteTime(assembly.Location);
+            }
+            catch
+            {
+                return DateTime.MaxValue;
+            }
+        }
+
         public static byte[] GetBytes(this int n)
         {
             return n.GetBytes(Endianness.Little);
@@ -755,56 +807,6 @@ namespace ProcessHacker.Common
         public static DateTime GetDateTimeFromUnixTime(uint time)
         {
             return (new DateTime(1970, 1, 1, 0, 0, 0)).Add(new TimeSpan(0, 0, 0, (int)time));
-        }
-
-        // <summary>
-        // returns DateTime this Assembly was last built. Will attempt to calculate from build number, if possible. 
-        // If not, the actual LastWriteTime on the assembly file will be returned.
-        // </summary>
-        // <param name="a">Assembly to get build date for</param>
-        // <param name="ForceFileDate">Don't attempt to use the build number to calculate the date</param>
-        // <returns>DateTime this assembly was last built</returns>
-        public static DateTime AssemblyBuildDate(Assembly a, bool ForceFileDate)
-        {
-            Version AssemblyVersion = a.GetName().Version;
-            DateTime dt;
-
-            if (ForceFileDate)
-            {
-                dt = AssemblyLastWriteTime(a);
-            }
-            else
-            {
-                dt = DateTime.Parse("01/01/2000").AddDays(AssemblyVersion.Build).AddSeconds(AssemblyVersion.Revision * 2);
-                if (TimeZone.IsDaylightSavingTime(dt, TimeZone.CurrentTimeZone.GetDaylightChanges(dt.Year)))
-                {
-                    dt = dt.AddHours(1);
-                }
-                if (dt > DateTime.Now || AssemblyVersion.Build < 730 || AssemblyVersion.Revision == 0)
-                {
-                    dt = AssemblyLastWriteTime(a);
-                }
-            }
-
-            return dt;
-        }
-
-        // <summary>
-        // exception-safe retrieval of LastWriteTime for this assembly.
-        // </summary>
-        // <returns>File.GetLastWriteTime, or DateTime.MaxValue if exception was encountered.</returns>
-        public static DateTime AssemblyLastWriteTime(Assembly a)
-        {
-            if (a.Location == null || a.Location == "")
-                return DateTime.MaxValue;
-            try
-            {
-                return File.GetLastWriteTime(a.Location);
-            }
-            catch (Exception)
-            {
-                return DateTime.MaxValue;
-            }
         }
 
         /// <summary>

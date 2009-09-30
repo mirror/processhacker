@@ -22,31 +22,27 @@
  */
 
 using System;
+using System.Collections.Specialized;
+using System.Net;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
-using System.Text.RegularExpressions;
-using System.Collections.Specialized;
-using System.Net;
-using ProcessHacker.Native;
-using ProcessHacker.Components;
 
 namespace ProcessHacker
 {
     public partial class ErrorDialog : Form
     {
-        Exception eX;
-        string trackerItem;
+        private Exception _exception;
+        private string _trackerItem;
 
         public ErrorDialog(Exception ex)
         {
             InitializeComponent();
 
-            eX = ex;
+            _exception = ex;
 
-            //eX.GetType().ToString() + ": " + eX.Message;
-
-            textException.AppendText(eX.ToString());
+            textException.AppendText(_exception.ToString());
 
             try
             {
@@ -58,10 +54,8 @@ namespace ProcessHacker
 
         private void statusLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            PhUtils.ShowInformation("Bookmark the url for later reference!");
-            
-            if (trackerItem != null && trackerItem.Length >= 1)
-                Program.TryStart(trackerItem);
+            if (!string.IsNullOrEmpty(_trackerItem))
+                Program.TryStart(_trackerItem);
             else
                 Program.TryStart("http://sourceforge.net/tracker/?atid=1119665&group_id=242527&func=browse");
         }
@@ -77,11 +71,11 @@ namespace ProcessHacker
             {
                 Properties.Settings.Default.Save();
 
-                //Remove the icons or they remain in the systray
+                // Remove the icons or they remain in the system try.
                 Program.HackerWindow.ExecuteOnIcons((icon) => icon.Visible = false);
                 Program.HackerWindow.ExecuteOnIcons((icon) => icon.Dispose());
 
-                //Make sure KPH connection is closed
+                // Make sure KPH connection is closed.
                 if (ProcessHacker.Native.KProcessHacker.Instance != null)
                     ProcessHacker.Native.KProcessHacker.Instance.Close();
             }
@@ -97,7 +91,7 @@ namespace ProcessHacker
         {
             this.buttonContinue.Enabled = false;
             this.buttonQuit.Enabled = false;
-            this.submitReportButton.Enabled = false;
+            this.buttonSubmitReport.Enabled = false;
             this.statusLinkLabel.Visible = true;
 
             SFBugReporter wc = new SFBugReporter();
@@ -112,7 +106,7 @@ namespace ProcessHacker
             qc.Add("artifact_group_id", "100"); //100 = null
             qc.Add("assigned_to", "100"); //User this report is to be assigned, 100 = null
             qc.Add("priority", "1"); //Bug Report Priority, 1 = Low (Blue) 5 = default (Green)
-            qc.Add("summary", Uri.EscapeDataString(eX.Message) + " - " + System.Guid.NewGuid().ToString()); //Must be unique
+            qc.Add("summary", Uri.EscapeDataString(_exception.Message) + " - " + System.Guid.NewGuid().ToString()); //Must be unique
             qc.Add("details", Uri.EscapeDataString(textException.Text));
             //qc.Add("input_file", FileName);
             //qc.Add("file_description", "Error-Report");
@@ -134,7 +128,7 @@ namespace ProcessHacker
 
             if (this.GetTitle(e.Result).Contains("ERROR"))
             {
-                submitReportButton.Enabled = true;
+                buttonSubmitReport.Enabled = true;
 
                 PhUtils.ShowError(this.GetTitle(e.Result)); //temporary
                 PhUtils.ShowError(this.GetResult(e.Result)); //temporary
@@ -142,9 +136,9 @@ namespace ProcessHacker
             else
             {
                 statusLinkLabel.Enabled = true;
-                statusLinkLabel.Text = "Click here to view SourceForge Error Report";
+                statusLinkLabel.Text = "SourceForge error report";
                
-                trackerItem = GetUrl(Regex.Replace(this.GetResult(e.Result), @"<(.|\n)*?>", string.Empty).Replace("&amp;", "&"));
+                _trackerItem = GetUrl(Regex.Replace(this.GetResult(e.Result), @"<(.|\n)*?>", string.Empty).Replace("&amp;", "&"));
             }
         }
 
@@ -208,6 +202,5 @@ namespace ProcessHacker
                 return resp;
             }
         }
-
     }
 }
