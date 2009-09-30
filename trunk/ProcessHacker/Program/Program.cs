@@ -951,10 +951,6 @@ namespace ProcessHacker
 
             ErrorDialog ed = new ErrorDialog(ex);
 
-            int Y = Program.HackerWindow.Top + (Program.HackerWindow.Height - ed.Height) / 2;
-            int X = Program.HackerWindow.Left + (Program.HackerWindow.Width - ed.Width) / 2;
-
-            ed.Location = new Point(X, Y);
             ed.ShowDialog();
         }
 
