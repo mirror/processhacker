@@ -105,8 +105,8 @@ namespace ProcessHacker
             wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
 
             NameValueCollection qc = new NameValueCollection();
-            qc.Add("group_id", "276861"); //PH BugTracker ID: Required Do Not Change!
-            qc.Add("atid", "1175841"); //PH BugTracker ID: Required Do Not Change!
+            qc.Add("group_id", "24252"); //PH BugTracker ID: Required Do Not Change!
+            qc.Add("atid", "1119665"); //PH BugTracker ID: Required Do Not Change!
             qc.Add("func", "postadd"); //PH BugTracker Function: Required Do Not Change!
             qc.Add("category_id", "100"); //100 = null
             qc.Add("artifact_group_id", "100"); //100 = null
