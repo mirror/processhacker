@@ -2210,23 +2210,17 @@ namespace ProcessHacker
 
         private void appHandleButton_Clicked(object sender, EventArgs e)
         {
-            HandleFilterWindow hw = new HandleFilterWindow();
-            hw.Show();
-            hw.Activate();
+            findHandlesMenuItem_Click(sender, e);
         }
 
         private void appLogButton_Clicked(object sender, EventArgs e)
         {
-            LogWindow lw = new LogWindow();
-            lw.Show();
-            lw.Activate();
+            logMenuItem_Click(sender, e);
         }
 
         private void sysInfoButton_Clicked(object sender, EventArgs e)
         {
-            SysInfoWindow sw = new SysInfoWindow();
-            sw.Show();
-            sw.Activate();
+            sysInfoMenuItem_Click(sender, e);
         }
 
         #endregion
