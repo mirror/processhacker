@@ -149,7 +149,7 @@ namespace ProcessHacker.Native
                     // Modify the process parameters pointer in the PEB.
                     processHandle.WriteMemory(
                         peb.Increment(Peb.ProcessParametersOffset),
-                        newProcessParameters,
+                        &newProcessParameters,
                         IntPtr.Size
                         );
                 }

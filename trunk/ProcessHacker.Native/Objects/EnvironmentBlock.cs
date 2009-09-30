@@ -57,7 +57,7 @@ namespace ProcessHacker.Native.Objects
 
         public unsafe int GetLength()
         {
-            byte* ptr = (byte*)_environment;
+            short* ptr = (short*)_environment;
 
             while (*ptr != 0)
                 while (*ptr++ != 0)

@@ -148,6 +148,7 @@ namespace ProcessHacker.Native.Objects
                 fileName,
                 parentProcess,
                 creationFlags,
+                true,
                 inheritHandles,
                 EnvironmentBlock.GetCurrent(),
                 currentDirectory,
@@ -161,6 +162,7 @@ namespace ProcessHacker.Native.Objects
             string fileName,
             ProcessHandle parentProcess,
             ProcessCreationFlags creationFlags,
+            bool notifyCsr,
             bool inheritHandles,
             EnvironmentBlock environment,
             string currentDirectory,
@@ -236,60 +238,63 @@ namespace ProcessHacker.Native.Objects
 
             // Notify CSR.
 
-            BaseCreateProcessMsg processMsg = new BaseCreateProcessMsg();
-
-            processMsg.ProcessHandle = phandle;
-            processMsg.ThreadHandle = thandle;
-            processMsg.ClientId = clientId;
-            processMsg.CreationFlags = creationFlags;
-
-            if ((creationFlags & (ProcessCreationFlags.DebugProcess |
-                ProcessCreationFlags.DebugOnlyThisProcess)) != 0)
+            if (notifyCsr)
             {
-                NtStatus status;
+                BaseCreateProcessMsg processMsg = new BaseCreateProcessMsg();
 
-                status = Win32.DbgUiConnectToDbg();
+                processMsg.ProcessHandle = phandle;
+                processMsg.ThreadHandle = thandle;
+                processMsg.ClientId = clientId;
+                processMsg.CreationFlags = creationFlags;
 
-                if (status >= NtStatus.Error)
+                if ((creationFlags & (ProcessCreationFlags.DebugProcess |
+                    ProcessCreationFlags.DebugOnlyThisProcess)) != 0)
                 {
-                    phandle.Terminate(status);
-                    Win32.ThrowLastError(status);
+                    NtStatus status;
+
+                    status = Win32.DbgUiConnectToDbg();
+
+                    if (status >= NtStatus.Error)
+                    {
+                        phandle.Terminate(status);
+                        Win32.ThrowLastError(status);
+                    }
+
+                    processMsg.DebuggerClientId = ThreadHandle.GetCurrentCid();
                 }
 
-                processMsg.DebuggerClientId = ThreadHandle.GetCurrentCid();
-            }
+                // If this is a GUI program, set the 1 and 2 bits to turn the 
+                // hourglass cursor on.
+                if (imageInfo.ImageSubsystem == 2)
+                    processMsg.ProcessHandle = processMsg.ProcessHandle.Or((1 | 2).ToIntPtr());
+                // We still have to honor the startup info settings, though.
+                if ((startupInfo.Flags & StartupFlags.ForceOnFeedback) ==
+                    StartupFlags.ForceOnFeedback)
+                    processMsg.ProcessHandle = processMsg.ProcessHandle.Or((1).ToIntPtr());
+                if ((startupInfo.Flags & StartupFlags.ForceOffFeedback) ==
+                    StartupFlags.ForceOffFeedback)
+                    processMsg.ProcessHandle = processMsg.ProcessHandle.And((1).ToIntPtr().Not());
 
-            // If this is a GUI program, set the 1 and 2 bits to turn the 
-            // hourglass cursor on.
-            if (imageInfo.ImageSubsystem == 2)
-                processMsg.ProcessHandle = processMsg.ProcessHandle.Or((1 | 2).ToIntPtr());
-            // We still have to honor the startup info settings, though.
-            if ((startupInfo.Flags & StartupFlags.ForceOnFeedback) ==
-                StartupFlags.ForceOnFeedback)
-                processMsg.ProcessHandle = processMsg.ProcessHandle.Or((1).ToIntPtr());
-            if ((startupInfo.Flags & StartupFlags.ForceOffFeedback) ==
-                StartupFlags.ForceOffFeedback)
-                processMsg.ProcessHandle = processMsg.ProcessHandle.And((1).ToIntPtr().Not());
-
-            using (var data = new MemoryAlloc(
-                CsrApiMsg.ApiMessageDataOffset + Marshal.SizeOf(typeof(BaseCreateProcessMsg))
-                ))
-            {
-                data.WriteStruct<BaseCreateProcessMsg>(CsrApiMsg.ApiMessageDataOffset, 0, processMsg);
-
-                Win32.CsrClientCallServer(
-                    data,
-                    IntPtr.Zero,
-                    Win32.CsrMakeApiNumber(Win32.BaseSrvServerDllIndex, (int)BaseSrvApiNumber.BasepCreateProcess),
-                    Marshal.SizeOf(typeof(BaseCreateProcessMsg))
-                    );
-
-                NtStatus status = (NtStatus)data.ReadStruct<CsrApiMsg>().ReturnValue;
-
-                if (status >= NtStatus.Error)
+                using (var data = new MemoryAlloc(
+                    CsrApiMsg.ApiMessageDataOffset + Marshal.SizeOf(typeof(BaseCreateProcessMsg))
+                    ))
                 {
-                    phandle.Terminate(status);
-                    Win32.ThrowLastError(status);
+                    data.WriteStruct<BaseCreateProcessMsg>(CsrApiMsg.ApiMessageDataOffset, 0, processMsg);
+
+                    Win32.CsrClientCallServer(
+                        data,
+                        IntPtr.Zero,
+                        Win32.CsrMakeApiNumber(Win32.BaseSrvServerDllIndex, (int)BaseSrvApiNumber.BasepCreateProcess),
+                        Marshal.SizeOf(typeof(BaseCreateProcessMsg))
+                        );
+
+                    NtStatus status = (NtStatus)data.ReadStruct<CsrApiMsg>().ReturnValue;
+
+                    if (status >= NtStatus.Error)
+                    {
+                        phandle.Terminate(status);
+                        Win32.ThrowLastError(status);
+                    }
                 }
             }
 
