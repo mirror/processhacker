@@ -306,7 +306,7 @@ namespace ProcessHacker
             if (HandleFilterWindow == null)
                 HandleFilterWindow = new HandleFilterWindow();
 
-            HandleFilterWindow.Show(this);
+            HandleFilterWindow.Show();
             HandleFilterWindow.Activate();
         }
 
@@ -320,7 +320,7 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        f.Show(this);
+                        f.Show();
                     }
                     catch (Exception ex)
                     {
@@ -361,7 +361,7 @@ namespace ProcessHacker
             {
                 SysInfoWindow.BeginInvoke(new MethodInvoker(delegate
                 {
-                    SysInfoWindow.Show(this);
+                    SysInfoWindow.Show();
                     SysInfoWindow.Activate();
                 }));
             }
@@ -374,7 +374,7 @@ namespace ProcessHacker
                 LogWindow = new LogWindow();
             }
 
-            LogWindow.Show(this);
+            LogWindow.Show();
 
             if (LogWindow.WindowState == FormWindowState.Minimized)
                 LogWindow.WindowState = FormWindowState.Normal;
@@ -410,7 +410,7 @@ namespace ProcessHacker
             if (HelpWindow == null)
                 HelpWindow = new HelpWindow();
 
-            HelpWindow.Show(this);
+            HelpWindow.Show();
             HelpWindow.Activate();
         }
 
@@ -454,7 +454,7 @@ namespace ProcessHacker
             if (HiddenProcessesWindow == null || HiddenProcessesWindow.IsDisposed)
                 HiddenProcessesWindow = new HiddenProcessesWindow();
 
-            HiddenProcessesWindow.Show(this);
+            HiddenProcessesWindow.Show();
 
             if (HiddenProcessesWindow.WindowState == FormWindowState.Minimized)
                 HiddenProcessesWindow.WindowState = FormWindowState.Normal;
@@ -862,7 +862,7 @@ namespace ProcessHacker
                             ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[item.Pid],
                                 new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                             {
-                                f.Show(this);
+                                f.Show();
                                 f.Activate();
                             }));
                         }
@@ -1766,7 +1766,7 @@ namespace ProcessHacker
             int X = this.Left + (this.Width - vt.Width) / 2;
 
             vt.Location = new Point(X, Y);
-            vt.Show(this);
+            vt.Show();
         }
 
 

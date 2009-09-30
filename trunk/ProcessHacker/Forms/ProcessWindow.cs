@@ -844,13 +844,13 @@ namespace ProcessHacker
             {
                 if (text == "&New Results Window...")
                 {
-                    f.Show(this);
+                    f.Show();
                 }
                 else if (text == "&Literal...")
                 {
                     if (f.EditSearch(SearchType.Literal, location, size) == DialogResult.OK)
                     {
-                        f.Show(this);
+                        f.Show();
                         f.StartSearch();
                     }
                     else
@@ -862,7 +862,7 @@ namespace ProcessHacker
                 {
                     if (f.EditSearch(SearchType.Regex, location, size) == DialogResult.OK)
                     {
-                        f.Show(this);
+                        f.Show();
                         f.StartSearch();
                     }
                     else
@@ -873,20 +873,20 @@ namespace ProcessHacker
                 else if (text == "&String Scan...")
                 {
                     f.SearchOptions.Type = SearchType.String;
-                    f.Show(this);
+                    f.Show();
                     f.StartSearch();
                 }
                 else if (text == "&Heap Scan...")
                 {
                     f.SearchOptions.Type = SearchType.Heap;
-                    f.Show(this);
+                    f.Show();
                     f.StartSearch();
                 }
                 else if (text == "S&truct...")
                 {
                     if (f.EditSearch(SearchType.Struct, location, size) == DialogResult.OK)
                     {
-                        f.Show(this);
+                        f.Show();
                         f.StartSearch();
                     }
                     else
@@ -1060,7 +1060,7 @@ namespace ProcessHacker
 
                         try
                         {
-                            sw.Show(this);
+                            sw.Show();
                             sw.Activate();
                         }
                         catch
@@ -1157,7 +1157,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            f.Show(this);
+                            f.Show();
                             f.Activate();
                         }
                         catch
