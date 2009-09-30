@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Timers;
 using System.Collections;
 using System.Net.NetworkInformation;
+using ProcessHacker.Common;
 
 namespace ProcessHacker
 {
@@ -20,13 +21,27 @@ namespace ProcessHacker
             InitializeComponent();
         }
 
+        public HistoryManager<string, float> FloatHistory { get { return _floatHistory; } }
+        
+        private HistoryManager<string, float> _floatHistory = new HistoryManager<string, float>();
+
         private void NetInfoWindow_Load(object sender, EventArgs e)
         {
-            //http://www.dotnet247.com/247reference/System/Net/NetworkInformation/System.Net.NetworkInformation.aspx
-            //MibTcpStats plus others are locatated in NetworkInfomation class
+            _floatHistory.Add("up");
+            _floatHistory.Add("down");
+            plotter1.Data1 = FloatHistory["up"];
+            plotter1.Data2 = FloatHistory["down"];
+ 
+            this._monitor = new NetworkMonitor();
+            this._monitor.StopMonitoring();
+            this._monitor.StartMonitoring();
+        }
 
+        private ProcessHacker.NetworkMonitor _monitor;
+
+        private void getStats()
+        {
             MibTcpStats mtcp = Win32.GetTcpStats();
-           
             label1.Text = String.Format("ActiveOpens: {0}", mtcp.ActiveOpens);
             label2.Text = String.Format("AttemptFails: {0}", mtcp.AttemptFails);
             label3.Text = String.Format("CurrEstab: {0}", mtcp.CurrEstab);
@@ -49,39 +64,41 @@ namespace ProcessHacker
             label18.Text = String.Format("NoPorts: {0}", mudp.NoPorts);
             label19.Text = String.Format("NumAddrs: {0}", mudp.NumAddrs);
             label20.Text = String.Format("OutDatagrams: {0}", mudp.OutDatagrams);
-
-            this._monitor = new NetworkMonitor();
-            this._adapters = this._monitor.Adapters;
-
-            this._monitor.StopMonitoring();
-            this._monitor.StartMonitoring(this._adapters[2]);// [adapter number to monitor]
         }
-
-        private NetworkAdapter[] _adapters;
-        private ProcessHacker.NetworkMonitor _monitor;
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            try
+            getStats();
+
+            foreach (NetworkAdapter i in _monitor.Adapters)
             {
-                NetworkAdapter adapter = this._adapters[2]; // [adapter number to monitor]
-                int down = unchecked((int)Convert.ToInt32(Math.Round(adapter.DownloadSpeedKbps, 0)));
-                int up = unchecked((int)Convert.ToInt32(Math.Round(adapter.DownloadSpeedKbps, 0)));
+                try
+                {
+                    int down = unchecked((int)Convert.ToInt32(Math.Round(i.DownloadSpeedKbps, 0)));
+                    int up = unchecked((int)Convert.ToInt32(Math.Round(i.DownloadSpeedKbps, 0)));
 
-                this.label25.Text = up.ToString();
-                this.label26.Text = down.ToString();
+                    this.label25.Text = up.ToString();
+                    this.label26.Text = down.ToString();
 
-                this.label21.Text = String.Format("U: {0:n}kbps", adapter.UploadSpeedKbps);
-                this.label22.Text = String.Format("D: {0:n}kbps", adapter.DownloadSpeedKbps);
+                    plotter1.Data1 = FloatHistory["up"];
+                    plotter1.Data2 = FloatHistory["down"];
+                    _floatHistory.Update("up", (float)i.UploadSpeedKbps);
+                    _floatHistory.Update("down", (float)i.DownloadSpeedKbps);
+                    plotter1.MoveGrid();
+                    plotter1.Draw();
 
-                NetworkInformation nic = new NetworkInformation();
+                    this.label21.Text = String.Format("U: {0:n}kbps", i.UploadSpeedKbps);
+                    this.label22.Text = String.Format("D: {0:n}kbps", i.DownloadSpeedKbps);
 
-                this.label23.Text = "TSen: " + nic.BytesSent(0).ToString();
-                this.label24.Text = "TRec: " + nic.BytesReceived(0).ToString();
+                    NetworkInformation nic = new NetworkInformation();
 
-            }
-            catch (Exception)
-            {
+                    this.label23.Text = "TSen: " + nic.BytesSent(0).ToString();
+                    this.label24.Text = "TRec: " + nic.BytesReceived(0).ToString();
+
+                }
+                catch (Exception)
+                {
+                }
             }
         }
     }
@@ -92,6 +109,10 @@ namespace ProcessHacker
 /// </summary>
 public class NetworkAdapter
 {
+
+    //http://www.dotnet247.com/247reference/System/Net/NetworkInformation/System.Net.NetworkInformation.aspx
+    //MibTcpStats plus others are locatated in NetworkInfomation class
+
 	/// <summary>
 	/// Instances of this class are supposed to be created only in an NetworkMonitor.
 	/// </summary>
@@ -240,7 +261,6 @@ public class NetworkInformation
 
        
 }
-
 
 /// <summary>
 /// The NetworkMonitor class monitors network speed for each network adapter on the computer, using classes for Performance counter in .NET library.

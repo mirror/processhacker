@@ -57,9 +57,9 @@
             this.label22 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
-            this.plotter1 = new ProcessHacker.Components.Plotter();
             this.label25 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
+            this.plotter1 = new ProcessHacker.Components.Plotter();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -335,33 +335,6 @@
             this.label24.TabIndex = 17;
             this.label24.Text = "label24";
             // 
-            // plotter1
-            // 
-            this.plotter1.BackColor = System.Drawing.Color.Black;
-            this.plotter1.Data1 = null;
-            this.plotter1.Data2 = null;
-            this.plotter1.GridColor = System.Drawing.Color.Green;
-            this.plotter1.GridSize = new System.Drawing.Size(12, 12);
-            this.plotter1.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotter1.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotter1.Location = new System.Drawing.Point(6, 19);
-            this.plotter1.LongData1 = null;
-            this.plotter1.LongData2 = null;
-            this.plotter1.MinMaxValue = ((long)(0));
-            this.plotter1.MoveStep = -1;
-            this.plotter1.Name = "plotter1";
-            this.plotter1.OverlaySecondLine = false;
-            this.plotter1.ShowGrid = true;
-            this.plotter1.Size = new System.Drawing.Size(538, 71);
-            this.plotter1.TabIndex = 0;
-            this.plotter1.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotter1.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotter1.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotter1.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotter1.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotter1.UseLongData = false;
-            this.plotter1.UseSecondLine = false;
-            // 
             // label25
             // 
             this.label25.AutoSize = true;
@@ -379,6 +352,33 @@
             this.label26.Size = new System.Drawing.Size(41, 13);
             this.label26.TabIndex = 19;
             this.label26.Text = "label26";
+            // 
+            // plotter1
+            // 
+            this.plotter1.BackColor = System.Drawing.Color.Black;
+            this.plotter1.Data1 = null;
+            this.plotter1.Data2 = null;
+            this.plotter1.GridColor = System.Drawing.Color.Green;
+            this.plotter1.GridSize = new System.Drawing.Size(12, 12);
+            this.plotter1.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotter1.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotter1.Location = new System.Drawing.Point(6, 19);
+            this.plotter1.LongData1 = null;
+            this.plotter1.LongData2 = null;
+            this.plotter1.MinMaxValue = ((long)(0));
+            this.plotter1.MoveStep = -1;
+            this.plotter1.Name = "plotter1";
+            this.plotter1.OverlaySecondLine = true;
+            this.plotter1.ShowGrid = true;
+            this.plotter1.Size = new System.Drawing.Size(538, 71);
+            this.plotter1.TabIndex = 0;
+            this.plotter1.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotter1.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotter1.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotter1.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotter1.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotter1.UseLongData = false;
+            this.plotter1.UseSecondLine = true;
             // 
             // NetInfoWindow
             // 
