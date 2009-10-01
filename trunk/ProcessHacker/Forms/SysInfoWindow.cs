@@ -308,54 +308,56 @@ namespace ProcessHacker
             labelCacheMaximum.Text = Utils.FormatSize((ulong)cacheInfo.SystemCacheWsMaximum * _pageSize);
 
             // Paged/Non-paged pools
-            labelKPPPU.Text = Utils.FormatSize((ulong)perfInfo.PagedPoolPages * _pageSize);
-            labelKPPVU.Text = Utils.FormatSize((ulong)perfInfo.PagedPoolUsage * _pageSize);
+            labelKPPPU.Text = Utils.FormatSize((ulong)perfInfo.ResidentPagedPoolPage * _pageSize);
+            labelKPPVU.Text = Utils.FormatSize((ulong)perfInfo.PagedPoolPages * _pageSize);
             labelKPPA.Text = ((ulong)perfInfo.PagedPoolAllocs).ToString("N0");
             labelKPPF.Text = ((ulong)perfInfo.PagedPoolFrees).ToString("N0");
-            labelKPNPU.Text = Utils.FormatSize((ulong)perfInfo.NonPagedPoolUsage * _pageSize);
+            labelKPNPU.Text = Utils.FormatSize((ulong)perfInfo.NonPagedPoolPages * _pageSize);
             labelKPNPA.Text = ((ulong)perfInfo.NonPagedPoolAllocs).ToString("N0");
             labelKPNPF.Text = ((ulong)perfInfo.NonPagedPoolFrees).ToString("N0");
 
             // Get the pool limits
-            int pagedLimit = 0;
-            int nonPagedLimit = 0;
+            long pagedLimit = 0;
+            long nonPagedLimit = 0;
 
             if (
-                _mmSizeOfPagedPoolInBytes != IntPtr.Zero && 
-                _mmMaximumNonPagedPoolInBytes != IntPtr.Zero && 
+                _mmSizeOfPagedPoolInBytes != IntPtr.Zero &&
+                _mmMaximumNonPagedPoolInBytes != IntPtr.Zero &&
                 KProcessHacker.Instance != null
                 )
             {
                 try
                 {
-                    this.GetPoolLimits(out pagedLimit, out nonPagedLimit);
+                    int pl, npl;
+
+                    this.GetPoolLimits(out pl, out npl);
+                    pagedLimit = pl;
+                    nonPagedLimit = npl;
                 }
                 catch
                 { }
             }
 
-            if (pagedLimit != 0 && nonPagedLimit != 0)
-            {
+            if (pagedLimit != 0)
                 labelKPPL.Text = Utils.FormatSize(pagedLimit);
-                labelKPNPL.Text = Utils.FormatSize(nonPagedLimit);
-            }
             else if (KProcessHacker.Instance == null)
-            {
                 labelKPPL.Text = "no driver";
-                labelKPNPL.Text = "no driver";
-            }
             else
-            {
                 labelKPPL.Text = "no symbols";
+
+            if (nonPagedLimit != 0)
+                labelKPNPL.Text = Utils.FormatSize(nonPagedLimit);
+            else if (KProcessHacker.Instance == null)
+                labelKPNPL.Text = "no driver";
+            else
                 labelKPNPL.Text = "no symbols";
-            }
 
             // Page faults
-            labelPFTotal.Text = ((ulong)perfInfo.PageFaults).ToString("N0");
-            labelPFCOW.Text = ((ulong)perfInfo.CopyOnWriteFaults).ToString("N0");
-            labelPFTrans.Text = ((ulong)perfInfo.TransitionFaults).ToString("N0");
-            labelPFCacheTrans.Text = ((ulong)perfInfo.CacheTransitionFaults).ToString("N0");
-            labelPFDZ.Text = ((ulong)perfInfo.CacheTransitionFaults).ToString("N0");
+            labelPFTotal.Text = ((ulong)perfInfo.PageFaultCount).ToString("N0");
+            labelPFCOW.Text = ((ulong)perfInfo.CopyOnWriteCount).ToString("N0");
+            labelPFTrans.Text = ((ulong)perfInfo.TransitionCount).ToString("N0");
+            labelPFCacheTrans.Text = ((ulong)perfInfo.CacheTransitionCount).ToString("N0");
+            labelPFDZ.Text = ((ulong)perfInfo.CacheTransitionCount).ToString("N0");
             labelPFCache.Text = ((ulong)cacheInfo.SystemCacheWsFaults).ToString("N0");
 
             // I/O
