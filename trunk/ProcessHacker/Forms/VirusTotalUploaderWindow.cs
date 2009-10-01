@@ -138,10 +138,13 @@ namespace ProcessHacker
 
         private void getSessionToken_DoWork(object sender, DoWorkEventArgs e)
         {
-            HttpWebRequest WebRequestObject = (HttpWebRequest)HttpWebRequest.Create("http://www.virustotal.com/vt/en/identificador");
-            WebRequestObject.UserAgent = "Process Hacker " + Application.ProductVersion;
+            HttpWebRequest sessionRequest = (HttpWebRequest)HttpWebRequest.Create("http://www.virustotal.com/vt/en/identificador");
+            sessionRequest.ServicePoint.ConnectionLimit = 20;
+            sessionRequest.UserAgent = "Process Hacker " + Application.ProductVersion;
+            sessionRequest.Timeout = System.Threading.Timeout.Infinite;
+            sessionRequest.KeepAlive = true;
 
-            using (WebResponse Response = WebRequestObject.GetResponse())
+            using (WebResponse Response = sessionRequest.GetResponse())
             using (Stream WebStream = Response.GetResponseStream())
             using (StreamReader Reader = new StreamReader(WebStream))
             {
@@ -158,13 +161,13 @@ namespace ProcessHacker
         {
             string boundary = "----------" + DateTime.Now.Ticks.ToString("x");
 
-            HttpWebRequest webrequest = (HttpWebRequest)WebRequest.Create("http://www.virustotal.com/vt/en/recepcionf?" + e.Argument);
-
-            webrequest.UserAgent = "ProcessHacker " + Application.ProductVersion;
-            webrequest.ContentType = "multipart/form-data; boundary=" + boundary;
-            webrequest.Timeout = System.Threading.Timeout.Infinite;
-            webrequest.KeepAlive = true;
-            webrequest.Method = WebRequestMethods.Http.Post;
+            HttpWebRequest uploadRequest = (HttpWebRequest)WebRequest.Create("http://www.virustotal.com/vt/en/recepcionf?" + e.Argument);
+            uploadRequest.ServicePoint.ConnectionLimit = 20;
+            uploadRequest.UserAgent = "ProcessHacker " + Application.ProductVersion;
+            uploadRequest.ContentType = "multipart/form-data; boundary=" + boundary;
+            uploadRequest.Timeout = System.Threading.Timeout.Infinite;
+            uploadRequest.KeepAlive = true;
+            uploadRequest.Method = WebRequestMethods.Http.Post;
 
             // Build up the 'post' message header
             StringBuilder sb = new StringBuilder();
@@ -186,7 +189,7 @@ namespace ProcessHacker
 
             if (UploadWorker.CancellationPending)
             {
-                webrequest.Abort();
+                uploadRequest.Abort();
                 UploadWorker.CancelAsync();
                 return;
             }
@@ -195,9 +198,9 @@ namespace ProcessHacker
             {
                 using (FileStream fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
                 {
-                    webrequest.ContentLength = postHeaderBytes.Length + fileStream.Length + boundaryBytes.Length;
+                    uploadRequest.ContentLength = postHeaderBytes.Length + fileStream.Length + boundaryBytes.Length;
 
-                    using (Stream requestStream = webrequest.GetRequestStream())
+                    using (Stream requestStream = uploadRequest.GetRequestStream())
                     {
                         // Write out our post header
                         requestStream.Write(postHeaderBytes, 0, postHeaderBytes.Length);
@@ -211,7 +214,7 @@ namespace ProcessHacker
                         {
                             if (UploadWorker.CancellationPending)
                             {
-                                webrequest.Abort();
+                                uploadRequest.Abort();
                                 UploadWorker.CancelAsync();
                                 break;
                             }
@@ -234,7 +237,7 @@ namespace ProcessHacker
 
                         if (UploadWorker.CancellationPending)
                         {
-                            webrequest.Abort();
+                            uploadRequest.Abort();
                             UploadWorker.CancelAsync();
                             return;
                         }
@@ -264,12 +267,12 @@ namespace ProcessHacker
 
             if (UploadWorker.CancellationPending)
             {
-                webrequest.Abort();
+                uploadRequest.Abort();
                 UploadWorker.CancelAsync();
                 return;
             }
 
-            WebResponse response = webrequest.GetResponse();
+            WebResponse response = uploadRequest.GetResponse();
 
             //Stream s = responce.GetResponseStream(); 
             //StreamReader sr = new StreamReader(s);
