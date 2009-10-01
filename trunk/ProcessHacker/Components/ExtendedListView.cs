@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System;
 using System.Reflection;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native;
 
 namespace ProcessHacker
 {
@@ -24,12 +26,6 @@ namespace ProcessHacker
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, LVGROUP lParam);
-
-        [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-        public extern static int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
 
         //Listview messages
         public const int LVM_SETEXTENDEDLISTVIEWSTYLE = LVM_FIRST + 54;
@@ -60,7 +56,7 @@ namespace ProcessHacker
 
         private static void setGrpState(ListViewGroup lstvwgrp, ListViewGroupState state)
         {
-            if (Environment.OSVersion.Version.Major < 6)
+            if (OSVersion.IsBelow(WindowsVersion.Vista))
                 return;
             if (lstvwgrp == null || lstvwgrp.ListView == null)
                 return;
@@ -92,7 +88,7 @@ namespace ProcessHacker
 
         private static void setGrpFooter(ListViewGroup lstvwgrp, string footer)
         {
-            if (Environment.OSVersion.Version.Major < 6)
+            if (OSVersion.IsBelow(WindowsVersion.Vista))
                 return;
             if (lstvwgrp == null || lstvwgrp.ListView == null)
                 return;
@@ -139,8 +135,8 @@ namespace ProcessHacker
                     case 15: /*Paint Event*/
                         if (!isThemeSet) //run once
                         {
-                            SetWindowTheme(this.Handle, "explorer", null); //Vista Explorer style
-                            SendMessage(this.Handle, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_DOUBLEBUFFER, LVS_EX_DOUBLEBUFFER);
+                            Win32.SetWindowTheme(this.Handle, "explorer", null); //Vista Explorer style
+                            Win32.SendMessage(this.Handle, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_DOUBLEBUFFER, LVS_EX_DOUBLEBUFFER);
                             isThemeSet = true;
                         }
                         break;
@@ -169,7 +165,7 @@ namespace ProcessHacker
     }
 
     /// <summary>
-    /// LVGROUP StructureUsed to set and retrieve groups.
+    /// LVGROUP Structure used to set and retrieve groups.
     /// </summary>
     /// <example>
     /// LVGROUP myLVGROUP = new LVGROUP();
