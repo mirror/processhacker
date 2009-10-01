@@ -185,8 +185,7 @@ namespace ProcessHacker.Native
                     }
                     finally
                     {
-                        // The SCM will delete the service when we close our 
-                        // connection to KPH.
+                        // The SCM will delete the service when it is stopped.
                         shandle.Delete();
                     }
                 }
