@@ -915,8 +915,7 @@ namespace ProcessHacker
 
         private void networkInfomationMenuItem_Click(object sender, EventArgs e)
         {
-            NetInfoWindow nw = new NetInfoWindow();
-            nw.Show();
+            new NetInfoWindow().Show();
         }
 
         private void enableAllNotificationsMenuItem_Click(object sender, EventArgs e)
@@ -2208,6 +2207,16 @@ namespace ProcessHacker
 
         #region Thumbbuttons
 
+        private void sysInfoButton_Clicked(object sender, EventArgs e)
+        {
+            sysInfoMenuItem_Click(sender, e);
+        }
+
+        private void netInfoButton_Click(object sender, EventArgs e)
+        {
+            networkInfomationMenuItem_Click(sender, e);
+        }
+
         private void appHandleButton_Clicked(object sender, EventArgs e)
         {
             findHandlesMenuItem_Click(sender, e);
@@ -2216,11 +2225,6 @@ namespace ProcessHacker
         private void appLogButton_Clicked(object sender, EventArgs e)
         {
             logMenuItem_Click(sender, e);
-        }
-
-        private void sysInfoButton_Clicked(object sender, EventArgs e)
-        {
-            sysInfoMenuItem_Click(sender, e);
         }
 
         #endregion
@@ -2262,27 +2266,30 @@ namespace ProcessHacker
                 IconIndex = 15
             });
 
-            if (jumpListManager.Refresh())
-            {
-                QueueMessage("Maximum slots in list: " + jumpListManager.MaximumSlotsInList);
-            }
+            jumpListManager.Refresh();
+            //QueueMessage("Maximum slots in JumpList: " + jumpListManager.MaximumSlotsInList);
 
             ThumbButton sysInfoButton = thumbButtonManager.CreateThumbButton(100,
-                Icon.FromHandle(ProcessHacker.Properties.Resources.ProcessHacker.GetHicon()),
+                Icon.FromHandle(ProcessHacker.Properties.Resources.chart_line.GetHicon()),
                 "System Infomation");
             sysInfoButton.Click += new EventHandler(sysInfoButton_Clicked);
 
-            ThumbButton appLogButton = thumbButtonManager.CreateThumbButton(101,
-                Icon.FromHandle(ProcessHacker.Properties.Resources.report.GetHicon()),
-                "Application Log");
-            appLogButton.Click += new EventHandler(appLogButton_Clicked);
+            ThumbButton netInfoButton = thumbButtonManager.CreateThumbButton(101,
+                Icon.FromHandle(ProcessHacker.Properties.Resources.ProcessHacker.GetHicon()),
+                "Network Infomation");
+            netInfoButton.Click += new EventHandler(netInfoButton_Click);
 
-            ThumbButton appHandleButton = thumbButtonManager.CreateThumbButton(102,
+            ThumbButton appHandleButton = thumbButtonManager.CreateThumbButton(103,
                 Icon.FromHandle(ProcessHacker.Properties.Resources.find.GetHicon()),
                 "Find Handles or DLLs");
             appHandleButton.Click += new EventHandler(appHandleButton_Clicked);
 
-            thumbButtonManager.AddThumbButtons(sysInfoButton, appLogButton, appHandleButton);
+            ThumbButton appLogButton = thumbButtonManager.CreateThumbButton(102,
+                Icon.FromHandle(ProcessHacker.Properties.Resources.report.GetHicon()),
+                "Application Log");
+            appLogButton.Click += new EventHandler(appLogButton_Clicked);
+
+            thumbButtonManager.AddThumbButtons(sysInfoButton, netInfoButton, appHandleButton, appLogButton);
         }
 
         #endregion
