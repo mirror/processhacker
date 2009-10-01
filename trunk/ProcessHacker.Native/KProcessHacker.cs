@@ -145,60 +145,54 @@ namespace ProcessHacker.Native
             if (IntPtr.Size != 4)
                 throw new NotSupportedException("KProcessHacker does not support 64-bit Windows.");
 
-            bool started = false;
-
-            // Delete the service if it exists.
             try
             {
-                using (var shandle = new ServiceHandle(deviceName))
+                _fileHandle = new FileHandle(
+                    @"\Device\" + deviceName,
+                    0,
+                    FileAccess.GenericRead | FileAccess.GenericWrite
+                    );
+            }
+            catch (WindowsException ex)
+            {
+                if (
+                    ex.Status == NtStatus.NoSuchDevice ||
+                    ex.Status == NtStatus.NoSuchFile || 
+                    ex.Status == NtStatus.ObjectNameNotFound
+                    )
                 {
-                    started = shandle.GetStatus().CurrentState == ServiceState.Running;
+                    // Attempt to load the driver, then try again.
+                    ServiceHandle shandle;
 
-                    if (!started)
+                    using (var scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
+                    {
+                        shandle = scm.CreateService(
+                            deviceName,
+                            deviceName,
+                            ServiceType.KernelDriver,
+                            fileName
+                            );
+                        shandle.Start();
+                    }
+
+                    try
+                    {
+                        _fileHandle = new FileHandle(
+                            @"\Device\" + deviceName,
+                            0,
+                            FileAccess.GenericRead | FileAccess.GenericWrite
+                            );
+                    }
+                    finally
+                    {
+                        // The SCM will delete the service when we close our 
+                        // connection to KPH.
                         shandle.Delete();
+                    }
                 }
             }
-            catch
-            { }
 
-            ServiceHandle service = null;
-
-            try
-            {
-                using (var scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
-                {
-                    service = scm.CreateService(
-                        deviceName,
-                        deviceName,
-                        ServiceType.KernelDriver,
-                        fileName
-                        );
-                    service.Start();
-                }
-            }
-            catch
-            { }
-
-            _fileHandle = new FileHandle(
-                @"\Device\" + deviceName,
-                0,
-                FileAccess.GenericRead | FileAccess.GenericWrite
-                );
             _fileHandle.SetHandleFlags(Win32HandleFlags.ProtectFromClose, Win32HandleFlags.ProtectFromClose);
-
-            try
-            {
-                if (service != null)
-                {
-                    if (!started)
-                        service.Delete(); // the service will automatically get deleted once it stops
-                }
-            }
-            catch
-            { }
-
-            if (service != null)
-                service.Dispose();
 
             byte[] bytes = _fileHandle.Read(4);
 
