@@ -136,7 +136,7 @@ namespace ProcessHacker
                         if (!isThemeSet) //run once
                         {
                             Win32.SetWindowTheme(this.Handle, "explorer", null); //Vista Explorer style
-                            Win32.SendMessage(this.Handle, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_DOUBLEBUFFER, LVS_EX_DOUBLEBUFFER);
+                            Win32.SendMessage(this.Handle, (WindowMessage)LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_DOUBLEBUFFER, LVS_EX_DOUBLEBUFFER);
                             isThemeSet = true;
                         }
                         break;
