@@ -128,9 +128,8 @@ namespace ProcessHacker
             //Exclude PH from WER after setting up exception handling otherwise PH will be permanatly queued in Vista/Win7 Problem Reports and Solutions
             //the data and infomation will be sent to Microsoft and is completely useles to us without a DigitalCertificate       
             //Native.Api.Win32.AddERExcludedApplication(AppDomain.CurrentDomain.FriendlyName);
-           // Native.Api.Win32.WerAddExcludedApplication(AppDomain.CurrentDomain.FriendlyName, false);
+            //Native.Api.Win32.WerAddExcludedApplication(AppDomain.CurrentDomain.FriendlyName, false);
 //#endif
-
 
             try
             {
@@ -881,10 +880,12 @@ namespace ProcessHacker
 
             info.AppendLine();
             info.AppendLine("PRIMARY SHARED THREAD PROVIDER");
-            info.AppendLine("Count: " + SharedThreadProvider.Count.ToString());
+            
 
             if (SharedThreadProvider != null)
             {
+                info.AppendLine("Count: " + SharedThreadProvider.Count.ToString());
+
                 foreach (var provider in SharedThreadProvider.Providers)
                     info.AppendLine(provider.GetType().FullName +
                         " (Enabled: " + provider.Enabled +
