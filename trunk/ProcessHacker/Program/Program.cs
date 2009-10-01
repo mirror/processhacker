@@ -124,7 +124,7 @@ namespace ProcessHacker
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-       
+
             //Exclude PH from WER after setting up exception handling otherwise PH will be permanatly queued in Vista/Win7 Problem Reports and Solutions
             //the data and infomation will be sent to Microsoft and is completely useles to us without a DigitalCertificate       
             //Native.Api.Win32.AddERExcludedApplication(AppDomain.CurrentDomain.FriendlyName);
@@ -881,7 +881,6 @@ namespace ProcessHacker
             info.AppendLine();
             info.AppendLine("PRIMARY SHARED THREAD PROVIDER");
             
-
             if (SharedThreadProvider != null)
             {
                 info.AppendLine("Count: " + SharedThreadProvider.Count.ToString());
@@ -941,19 +940,19 @@ namespace ProcessHacker
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            UnhandledException(e.ExceptionObject as Exception);
+            UnhandledException(e.ExceptionObject as Exception, e.IsTerminating);
         }
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            UnhandledException(e.Exception);
+            UnhandledException(e.Exception, false);
         }
 
-        private static void UnhandledException(Exception ex)
+        private static void UnhandledException(Exception ex, bool terminating)
         {
             Logging.Log(Logging.Importance.Critical, ex.ToString());
 
-            ErrorDialog ed = new ErrorDialog(ex);
+            ErrorDialog ed = new ErrorDialog(ex, terminating);
 
             ed.ShowDialog();
         }

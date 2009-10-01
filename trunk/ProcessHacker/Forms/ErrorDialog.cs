@@ -36,7 +36,7 @@ namespace ProcessHacker
         private Exception _exception;
         private string _trackerItem;
 
-        public ErrorDialog(Exception ex)
+        public ErrorDialog(Exception ex, bool terminating)
         {
             InitializeComponent();
 
@@ -44,12 +44,10 @@ namespace ProcessHacker
 
             textException.AppendText(_exception.ToString());
 
-            try
-            {
-                textException.AppendText("\r\n\r\nDIAGNOSTIC INFORMATION\r\n" + Program.GetDiagnosticInformation());
-            }
-            catch
-            { }
+            if (terminating)
+                buttonContinue.Enabled = false;
+
+            textException.AppendText("\r\n\r\nDIAGNOSTIC INFORMATION\r\n" + Program.GetDiagnosticInformation());
         }
 
         private void statusLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
