@@ -61,7 +61,7 @@
             this.columnExportRVA = new System.Windows.Forms.ColumnHeader();
             this.columnExportFileAddress = new System.Windows.Forms.ColumnHeader();
             this.tabImports = new System.Windows.Forms.TabPage();
-            this.listImports = new System.Windows.Forms.ListView();
+            this.listImports = new ProcessHacker.ExtendedListView();
             this.columnImportName = new System.Windows.Forms.ColumnHeader();
             this.columnImportHint = new System.Windows.Forms.ColumnHeader();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
@@ -339,7 +339,7 @@
             this.listImports.ShowItemToolTips = true;
             this.listImports.Size = new System.Drawing.Size(409, 370);
             this.listImports.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.listImports.TabIndex = 1;
+            this.listImports.TabIndex = 2;
             this.listImports.UseCompatibleStateImageBehavior = false;
             this.listImports.View = System.Windows.Forms.View.Details;
             // 
@@ -412,7 +412,7 @@
         private System.Windows.Forms.ColumnHeader columnIDName;
         private System.Windows.Forms.ColumnHeader columnIDRVA;
         private System.Windows.Forms.ColumnHeader columnIDSize;
-        private System.Windows.Forms.ListView listImports;
+        private ExtendedListView listImports;
         private System.Windows.Forms.ColumnHeader columnImportName;
         private System.Windows.Forms.ColumnHeader columnImportHint;
     }

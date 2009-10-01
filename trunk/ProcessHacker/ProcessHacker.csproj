@@ -389,6 +389,9 @@
     <Compile Include="Components\EventProperties.Designer.cs">
       <DependentUpon>EventProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\ExtendedListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\Indicator.cs">
       <SubType>UserControl</SubType>
     </Compile>

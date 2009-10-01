@@ -111,8 +111,6 @@ namespace ProcessHacker
             listExports.AddShortcuts(this.listExports_RetrieveVirtualItem);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEExportsColumns, listExports);
 
-            listImports.SetDoubleBuffered(true);
-            listImports.SetTheme("explorer");
             listImports.ContextMenu = listImports.GetCopyMenu();
             listImports.AddShortcuts();
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEImportsColumns, listImports);
@@ -323,6 +321,12 @@ namespace ProcessHacker
                         listImports.Items.Add(item);
                     }
                 }
+
+                //we set Groupstate here else there are no groups to set state
+                listImports.SetGroupState(ListViewGroupState.Normal | ListViewGroupState.Collapsible);
+
+                //foreach (ListViewGroup lvg in listImports.Groups)
+                //    listImports.SetGroupFooter(lvg, "Group contains " + lvg.Items.Count + " items...");
             }
 
             #endregion
