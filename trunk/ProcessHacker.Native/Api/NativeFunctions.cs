@@ -1269,6 +1269,12 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryDebugFilterState(
+            [In] int ComponentId,
+            [In] int Level
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtQueryDirectoryFile(
             [In] IntPtr FileHandle,
             [In] [Optional] IntPtr Event,
@@ -1961,6 +1967,13 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetDebugFilterState(
+            [In] int ComponentId,
+            [In] int Level,
+            [In] bool State
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtSetEvent(
             [In] IntPtr EventHandle,
             [Out] [Optional] out int PreviousState
@@ -2380,12 +2393,47 @@ namespace ProcessHacker.Native.Api
         #region Debugging
 
         [DllImport("ntdll.dll")]
+        public static extern void DbgBreakPoint();
+
+        [DllImport("ntdll.dll")]
+        public static extern void DbgBreakPointWithStatus(
+            [In] int Status
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int DbgPrompt(
+            [MarshalAs(UnmanagedType.LPStr)]
+            [In] string Prompt,
+            [In] IntPtr Response,
+            [In] int MaximumResponseLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus DbgQueryDebugFilterState(
+            [In] int ComponentId,
+            [In] int Level
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus DbgSetDebugFilterState(
+            [In] int ComponentId,
+            [In] int Level,
+            [In] bool State
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus DbgUiConnectToDbg();
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus DbgUiContinue(
             [In] ref ClientId ClientId,
             [In] NtStatus ContinueStatus
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus DbgUiConvertStateChangeStructure(
+            [In] IntPtr WaitStateChange, // DbgUiWaitStateChange*
+            [In] IntPtr Win32DebugEvent // DebugEvent*
             );
 
         [DllImport("ntdll.dll")]
@@ -2399,6 +2447,11 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus DbgUiIssueRemoteBreakin(
             [In] IntPtr ProcessHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void DbgUiRemoteBreakin(
+            [In] IntPtr Parameter
             );
 
         [DllImport("ntdll.dll")]
@@ -3400,6 +3453,13 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus RtlSetEnvironmentVariable(
             ref IntPtr Environment,
+            [In] ref UnicodeString Name,
+            [In] [Optional] ref UnicodeString Value
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetEnvironmentVariable(
+            [In] [Optional] IntPtr Environment,
             [In] ref UnicodeString Name,
             [In] [Optional] ref UnicodeString Value
             );

@@ -22,6 +22,43 @@ namespace ProcessHacker.Native.Objects
             return new EnvironmentBlock(environment);
         }
 
+        public string GetCurrentVariable(string name)
+        {
+            return GetCurrent().GetVariable(name);
+        }
+
+        public static void SetCurrentVariable(string name, string value)
+        {
+            NtStatus status;
+            UnicodeString nameStr;
+            UnicodeString valueStr;
+
+            nameStr = new UnicodeString(name);
+
+            try
+            {
+                valueStr = new UnicodeString(value);
+
+                try
+                {
+                    if ((status = Win32.RtlSetEnvironmentVariable(
+                        IntPtr.Zero,
+                        ref nameStr,
+                        ref valueStr
+                        )) >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+                }
+                finally
+                {
+                    valueStr.Dispose();
+                }
+            }
+            finally
+            {
+                nameStr.Dispose();
+            }
+        }
+
         public static implicit operator IntPtr(EnvironmentBlock environmentBlock)
         {
             return environmentBlock.Memory;
