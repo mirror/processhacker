@@ -1,4 +1,28 @@
-﻿using System.Windows.Forms;
+﻿/*
+ * Process Hacker - 
+ *   ProcessHacker Extended ListView 
+ * 
+ * Copyright (C) 2009 dmex
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
+
+using System.Windows.Forms;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System;
@@ -160,39 +184,7 @@ namespace ProcessHacker
         }
     }
 
-    /// <summary>
-    /// LVGROUP Structure used to set and retrieve groups.
-    /// </summary>
-    /// <example>
-    /// LVGROUP myLVGROUP = new LVGROUP();
-    /// myLVGROUP.CbSize	// is of managed type uint
-    /// myLVGROUP.Mask	// is of managed type uint
-    /// myLVGROUP.PszHeader	// is of managed type string
-    /// myLVGROUP.CchHeader	// is of managed type int
-    /// myLVGROUP.PszFooter	// is of managed type string
-    /// myLVGROUP.CchFooter	// is of managed type int
-    /// myLVGROUP.IGroupId	// is of managed type int
-    /// myLVGROUP.StateMask	// is of managed type uint
-    /// myLVGROUP.State	// is of managed type uint
-    /// myLVGROUP.UAlign	// is of managed type uint
-    /// myLVGROUP.PszSubtitle	// is of managed type IntPtr
-    /// myLVGROUP.CchSubtitle	// is of managed type uint
-    /// myLVGROUP.PszTask	// is of managed type string
-    /// myLVGROUP.CchTask	// is of managed type uint
-    /// myLVGROUP.PszDescriptionTop	// is of managed type string
-    /// myLVGROUP.CchDescriptionTop	// is of managed type uint
-    /// myLVGROUP.PszDescriptionBottom	// is of managed type string
-    /// myLVGROUP.CchDescriptionBottom	// is of managed type uint
-    /// myLVGROUP.ITitleImage	// is of managed type int
-    /// myLVGROUP.IExtendedImage	// is of managed type int
-    /// myLVGROUP.IFirstItem	// is of managed type int
-    /// myLVGROUP.CItems	// is of managed type IntPtr
-    /// myLVGROUP.PszSubsetTitle	// is of managed type IntPtr
-    /// myLVGROUP.CchSubsetTitle	// is of managed type IntPtr
-    /// </example>
-    /// <remarks>
-    /// Reference: http://msdn.microsoft.com/en-us/library/bb774769(VS.85).aspx
-    /// </remarks>
+    //http://msdn.microsoft.com/en-us/library/bb774769(VS.85).aspx
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct LVGROUP
     {
