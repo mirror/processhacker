@@ -43,7 +43,7 @@ namespace ProcessHacker
         private delegate void CallbackSetGroupString(ListViewGroup lvGroup, string value);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, LVGroup lParam);
+        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref LVGroup lParam);
 
         public ExtendedListView()
         {
@@ -104,14 +104,14 @@ namespace ProcessHacker
                 if (GrpId != null)
                 {
                     group.GroupId = GrpId.Value;
-                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, GrpId.Value, group);
-                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, GrpId.Value, group);
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
                 }
                 else
                 {
                     group.GroupId = gIndex;
-                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, gIndex, group);
-                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, gIndex, group);
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, gIndex, ref group);
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, gIndex, ref group);
                 }
                 lvGroup.ListView.Refresh();
             }
@@ -138,12 +138,12 @@ namespace ProcessHacker
                 if (grpId != null)
                 {
                     group.GroupId = grpId.Value;
-                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, grpId.Value, group);
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, grpId.Value, ref group);
                 }
                 else
                 {
                     group.GroupId = gIndex;
-                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, gIndex, group);
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, gIndex, ref group);
                 }
             }
         }
@@ -175,15 +175,14 @@ namespace ProcessHacker
                 default:
                     { 
                         break;
-                    }
-               
+                    }  
             }
             
             base.WndProc(ref m);
         }
 
         //http://msdn.microsoft.com/en-us/library/bb774769(VS.85).aspx
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        [StructLayout(LayoutKind.Sequential)]
         private struct LVGroup
         {
             /// <summary>
@@ -236,17 +235,18 @@ namespace ProcessHacker
             /// <summary>
             /// Indicates the alignment of the header or footer text for the group. It can have one or more of the following values. Use one of the header flags. Footer flags are optional. Windows XP: Footer flags are reserved.LVGA_FOOTER_CENTERReserved.
             /// </summary>
-            public uint Alignment;
+            public int Alignment;
 
             /// <summary>
             /// Windows Vista. Pointer to a null-terminated string that contains the subtitle text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the subtitle text. This element is drawn under the header text.
             /// </summary>
-            public IntPtr PszSubtitle;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string PszSubtitle;
 
             /// <summary>
             /// Windows Vista. Size, in TCHARs, of the buffer pointed to by the pszSubtitle member. If the structure is not receiving information about a group, this member is ignored.
             /// </summary>
-            public uint CchSubtitle;
+            public int CchSubtitle;
 
             /// <summary>
             /// Windows Vista. Pointer to a null-terminated string that contains the text for a task link when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the task text. This item is drawn right-aligned opposite the header text. When clicked by the user, the task link generates an LVN_LINKCLICK notification.
@@ -257,7 +257,7 @@ namespace ProcessHacker
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszTask member. If the structure is not receiving information about a group, this member is ignored.
             /// </summary>
-            public uint CchTask;
+            public int CchTask;
 
             /// <summary>
             /// Windows Vista. Pointer to a null-terminated string that contains the top description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the top description text. This item is drawn opposite the title image when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
@@ -268,7 +268,7 @@ namespace ProcessHacker
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionTop member. If the structure is not receiving information about a group, this member is ignored.
             /// </summary>
-            public uint CchDescriptionTop;
+            public int CchDescriptionTop;
 
             /// <summary>
             /// Windows Vista. Pointer to a null-terminated string that contains the bottom description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the bottom description text. This item is drawn under the top description text when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
@@ -279,7 +279,7 @@ namespace ProcessHacker
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionBottom member. If the structure is not receiving information about a group, this member is ignored.
             /// </summary>
-            public uint CchDescriptionBottom;
+            public int CchDescriptionBottom;
 
             /// <summary>
             /// Windows Vista. Index of the title image in the control imagelist.
@@ -299,21 +299,23 @@ namespace ProcessHacker
             /// <summary>
             /// Windows Vista. Read-only in non-owner data mode.
             /// </summary>
-            public IntPtr CItems;
+            public int CItems;
 
             /// <summary>
             /// Windows Vista. NULL if group is not a subset. Pointer to a null-terminated string that contains the subset title text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the subset title text.
             /// </summary>
-            public IntPtr PszSubsetTitle;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string PszSubsetTitle;
 
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszSubsetTitle member. If the structure is not receiving information about a group, this member is ignored.
             /// </summary>
-            public IntPtr CchSubsetTitle;
+            public int CchSubsetTitle;
         }
     }
 
-    public enum ListViewGroupMask
+    [Flags]
+    public enum ListViewGroupMask : int
     {
         None = 0x00000,
         Header = 0x00001,
@@ -332,7 +334,8 @@ namespace ProcessHacker
         SubsetItems = 0x10000
     }
 
-    public enum ListViewGroupState
+    [Flags]
+    public enum ListViewGroupState : int
     {
         /// <summary>
         /// Groups are expanded, the group name is displayed, and all items in the group are displayed.
