@@ -26,15 +26,14 @@
  * 
  */
 
-
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Threading;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
 using TaskbarLib;
@@ -43,21 +42,24 @@ namespace ProcessHacker
 {
     public partial class VirusTotalUploaderWindow : Form
     {
-        string filepath;
+        string fileName;
         string processName;
-        
-        long totalfilesize;
+
+        long totalFileSize;
         long bytesPerSecond;
         long bytesTransferred;
 
+        ThreadTask uploadTask;
+
         public VirusTotalUploaderWindow(string procName, string procPath)
         {
+            this.SetPhParent();
             InitializeComponent();
             this.AddEscapeToClose();
             this.SetTopMost();
 
             processName = procName;
-            filepath = procPath;
+            fileName = procPath;
             
             this.Icon = Program.HackerWindow.Icon;
         }
@@ -66,7 +68,7 @@ namespace ProcessHacker
         {
             labelFile.Text = string.Format("Uploading: {0}", processName);
 
-            FileInfo finfo = new FileInfo(filepath);
+            FileInfo finfo = new FileInfo(fileName);
             if (!finfo.Exists)
             {
                 if (OSVersion.HasTaskDialogs)
@@ -115,53 +117,68 @@ namespace ProcessHacker
             }
             else
             {
-                totalfilesize = finfo.Length;
+                totalFileSize = finfo.Length;
             }
 
             uploadedLabel.Text = "Uploaded: Initializing";
             speedLabel.Text = "Speed: Initializing";
 
-            BackgroundWorker getSessionToken = new BackgroundWorker();
-            getSessionToken.RunWorkerCompleted += new RunWorkerCompletedEventHandler(getSessionToken_RunWorkerCompleted);
-            getSessionToken.DoWork += new DoWorkEventHandler(getSessionToken_DoWork);
-            getSessionToken.RunWorkerAsync();
+            ThreadTask getSessionTokenTask = new ThreadTask();
+
+            getSessionTokenTask.RunTask += new ThreadTaskRunTaskDelegate(getSessionTokenTask_RunTask);
+            getSessionTokenTask.Completed += new ThreadTaskCompletedDelegate(getSessionTokenTask_Completed);
+            getSessionTokenTask.Start();
         }
 
         private void VirusTotalUploaderWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (UploadWorker.IsBusy)
-                UploadWorker.CancelAsync();
+            if (uploadTask != null)
+                uploadTask.Cancel();
 
             if (OSVersion.HasExtendedTaskbar)
                 Windows7Taskbar.SetTaskbarProgressState(this, Windows7Taskbar.ThumbnailProgressState.NoProgress);
         }
 
-        private void getSessionToken_DoWork(object sender, DoWorkEventArgs e)
+        private void getSessionTokenTask_RunTask(object param, ref object result)
         {
-            HttpWebRequest sessionRequest = (HttpWebRequest)HttpWebRequest.Create("http://www.virustotal.com/vt/en/identificador");
-            sessionRequest.ServicePoint.ConnectionLimit = 20;
-            sessionRequest.UserAgent = "Process Hacker " + Application.ProductVersion;
-            sessionRequest.Timeout = System.Threading.Timeout.Infinite;
-            sessionRequest.KeepAlive = true;
-
-            using (WebResponse Response = sessionRequest.GetResponse())
-            using (Stream WebStream = Response.GetResponseStream())
-            using (StreamReader Reader = new StreamReader(WebStream))
+            try
             {
-                e.Result = Reader.ReadToEnd();
+                HttpWebRequest sessionRequest = (HttpWebRequest)HttpWebRequest.Create("http://www.virustotal.com/vt/en/identificador");
+                sessionRequest.ServicePoint.ConnectionLimit = 20;
+                sessionRequest.UserAgent = "Process Hacker " + Application.ProductVersion;
+                sessionRequest.Timeout = System.Threading.Timeout.Infinite;
+                sessionRequest.KeepAlive = true;
+
+                using (WebResponse Response = sessionRequest.GetResponse())
+                using (Stream WebStream = Response.GetResponseStream())
+                using (StreamReader Reader = new StreamReader(WebStream))
+                {
+                    result = Reader.ReadToEnd();
+                }
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to contact VirusTotal", ex);
+
+                if (this.IsHandleCreated)
+                    this.BeginInvoke(new MethodInvoker(this.Close));
             }
         }
 
-        private void getSessionToken_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void getSessionTokenTask_Completed(object result)
         {
-            UploadWorker.RunWorkerAsync(e.Result); 
+            uploadTask = new ThreadTask();
+            uploadTask.RunTask += uploadTask_RunTask;
+            uploadTask.Completed += uploadTask_Completed;
+            uploadTask.Start(result);
         }
 
-        private void UploadWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void uploadTask_RunTask(object param, ref object result)
         {
             string boundary = "----------" + DateTime.Now.Ticks.ToString("x");
 
-            HttpWebRequest uploadRequest = (HttpWebRequest)WebRequest.Create("http://www.virustotal.com/vt/en/recepcionf?" + e.Argument);
+            HttpWebRequest uploadRequest = (HttpWebRequest)WebRequest.Create(
+                "http://www.virustotal.com/vt/en/recepcionf?" + (string)param);
             uploadRequest.ServicePoint.ConnectionLimit = 20;
             uploadRequest.UserAgent = "ProcessHacker " + Application.ProductVersion;
             uploadRequest.ContentType = "multipart/form-data; boundary=" + boundary;
@@ -187,16 +204,15 @@ namespace ProcessHacker
             // ensuring the boundary appears on a line by itself
             byte[] boundaryBytes = Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
 
-            if (UploadWorker.CancellationPending)
+            if (uploadTask.Cancelled)
             {
                 uploadRequest.Abort();
-                UploadWorker.CancelAsync();
                 return;
             }
 
             try
             {
-                using (FileStream fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
+                using (FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
                 {
                     uploadRequest.ContentLength = postHeaderBytes.Length + fileStream.Length + boundaryBytes.Length;
 
@@ -210,65 +226,74 @@ namespace ProcessHacker
                         int bytesRead = 0;
                         Stopwatch stopwatch = new Stopwatch();
 
-                        while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+                        while (true)
                         {
-                            if (UploadWorker.CancellationPending)
+                            if (uploadTask.Cancelled)
                             {
                                 uploadRequest.Abort();
-                                UploadWorker.CancelAsync();
-                                break;
+                                return;
                             }
 
                             stopwatch.Start();
+
+                            bytesRead = fileStream.Read(buffer, 0, buffer.Length);
+
+                            if (bytesRead == 0)
+                            {
+                                stopwatch.Stop();
+                                break;
+                            }
+
                             requestStream.Write(buffer, 0, bytesRead);
+
                             stopwatch.Stop();
 
-                            int progress = (int)(((float)fileStream.Position / (float)fileStream.Length) * 100);
+                            int progress = (int)(((double)fileStream.Position * 100 / fileStream.Length));
 
                             if (stopwatch.ElapsedMilliseconds > 0)
-                                bytesPerSecond = fileStream.Position * 1000 / stopwatch.ElapsedMilliseconds;
+                                bytesPerSecond = bytesRead * 1000 / stopwatch.ElapsedMilliseconds;
 
                             bytesTransferred = fileStream.Position;
 
                             stopwatch.Reset();
 
-                            UploadWorker.ReportProgress(progress);
+                            if (this.IsHandleCreated)
+                                this.BeginInvoke(new Action<int>(this.ChangeProgress), progress);
                         }
 
-                        if (UploadWorker.CancellationPending)
+                        if (uploadTask.Cancelled)
                         {
                             uploadRequest.Abort();
-                            UploadWorker.CancelAsync();
                             return;
                         }
 
                         // Write out the trailing boundary
                         requestStream.Write(boundaryBytes, 0, boundaryBytes.Length);
 
-                        // Write all data before we close the stream.
-                        requestStream.Flush();
                         requestStream.Close();
                     }
                 }
             }
             catch (WebException ex)
-            {   //RequestCanceled will occour when we cancel the WebRequest
-                //filter that exception but log all others
+            {
+                // RequestCanceled will occour when we cancel the WebRequest.
+                // Filter out that exception but log all others.
                 if (ex != null)
                 {
                     if (ex.Status != WebExceptionStatus.RequestCanceled)
                     {
-                        PhUtils.ShowException("Unable to download the VirusTotal SessionToken", ex);
+                        PhUtils.ShowException("Unable to upload the file", ex);
                         Logging.Log(ex);
-                        this.Close();
+
+                        if (this.IsHandleCreated)
+                            this.BeginInvoke(new MethodInvoker(this.Close));
                     }
                 }
             }
 
-            if (UploadWorker.CancellationPending)
+            if (uploadTask.Cancelled)
             {
                 uploadRequest.Abort();
-                UploadWorker.CancelAsync();
                 return;
             }
 
@@ -279,40 +304,47 @@ namespace ProcessHacker
             //sr.ReadToEnd();
 
             //Return the response URL 
-            e.Result = response.ResponseUri.AbsoluteUri;
+            result = response.ResponseUri.AbsoluteUri;
         }
 
-        private void UploadWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void ChangeProgress(int progress)
         {
-            uploadedLabel.Text = "Uploaded: " + Utils.FormatSize(bytesTransferred);
-            totalSizeLabel.Text = "Total Size: " + Utils.FormatSize(totalfilesize);
+            uploadedLabel.Text = "Uploaded: " + Utils.FormatSize(bytesTransferred) +
+                          " (" + ((double)bytesTransferred * 100 / totalFileSize).ToString("F2") + "%)";
+            totalSizeLabel.Text = "Total Size: " + Utils.FormatSize(totalFileSize);
             speedLabel.Text = "Speed: " + Utils.FormatSize(bytesPerSecond) + "/s";
-            label1.Text = string.Format("{0}%", e.ProgressPercentage);
-            progressUpload.Value = e.ProgressPercentage;
+            progressUpload.Value = progress;
 
             if (OSVersion.HasExtendedTaskbar)
                 Windows7Taskbar.SetTaskbarProgress(this, this.progressUpload);
         }
 
-        private void UploadWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void uploadTask_Completed(object result)
         {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new ThreadTaskCompletedDelegate(uploadTask_Completed), result);
+                return;
+            }
+
             //TODO: future additions will parse the page and  
             //display the appropriate infomation but for now just mirror  
             //the functionality of the VirusTotal desktop client and
             //launch the URL in the default browser
 
-            var webException = e.Error as WebException;
+            var webException = uploadTask.Exception as WebException;
+
             if (webException != null && webException.Status != WebExceptionStatus.Success)
             {
                 if (webException.Status != WebExceptionStatus.RequestCanceled)
                 {
-                    PhUtils.ShowException("Unable to Upload the file", webException);
+                    PhUtils.ShowException("Unable to upload the file", webException);
                     this.Close();
                 }
             }
-            else if (e.Result != null && !e.Cancelled) //sanity check
+            else if (result != null && !uploadTask.Cancelled) //sanity check
             {
-                Program.TryStart(e.Result.ToString());
+                Program.TryStart(result.ToString());
             }
 
             this.Close();

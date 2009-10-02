@@ -28,6 +28,7 @@ using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Threading;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
@@ -38,6 +39,7 @@ namespace ProcessHacker
         private Updater.UpdateItem _updateItem;
         private WebClient _webClient;
         private string _fileName;
+        private ThreadTask _verifyTask;
         private bool _redirected = false;
 
         public UpdaterDownloadWindow(Updater.UpdateItem updateItem)
@@ -78,6 +80,9 @@ namespace ProcessHacker
 
         private void UpdaterDownloadWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (_verifyTask != null)
+                _verifyTask.Cancel();
+
             if (OSVersion.HasExtendedTaskbar)
             {
                 TaskbarLib.Windows7Taskbar.SetTaskbarProgressState(this,
@@ -137,7 +142,9 @@ namespace ProcessHacker
 
             if (!e.Cancelled)
             {
-                verifyWorker.RunWorkerAsync(_fileName);
+                _verifyTask.RunTask += verifyTask_RunTask;
+                _verifyTask.Completed += verifyTask_Completed;
+                _verifyTask.Start();
             }
             else
             {
@@ -164,7 +171,7 @@ namespace ProcessHacker
                 TaskbarLib.Windows7Taskbar.SetTaskbarProgress(this, this.progressDownload);
         }
 
-        private void verifyWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void verifyTask_RunTask(object param, ref object result)
         {
             byte[] buffer;
             byte[] oldBuffer;
@@ -173,7 +180,7 @@ namespace ProcessHacker
             long size;
             long totalBytesRead = 0;
 
-            using (Stream stream = File.OpenRead((string)e.Argument)) //Change to MD5.Create for MD5 verification
+            using (Stream stream = File.OpenRead(_fileName)) //Change to MD5.Create for MD5 verification
             using (System.Security.Cryptography.HashAlgorithm hashAlgorithm = System.Security.Cryptography.SHA1.Create())
             {
                 size = stream.Length;
@@ -185,6 +192,9 @@ namespace ProcessHacker
 
                 do
                 {
+                    if (_verifyTask.Cancelled)
+                        return;
+
                     oldBytesRead = bytesRead;
                     oldBuffer = buffer;
 
@@ -202,23 +212,30 @@ namespace ProcessHacker
                         hashAlgorithm.TransformBlock(oldBuffer, 0, oldBytesRead, oldBuffer, 0);
                     }
 
-                    this.verifyWorker.ReportProgress((int)((double)totalBytesRead * 100 / size));
+                    if (this.IsHandleCreated)
+                    {
+                        this.BeginInvoke(new MethodInvoker(() =>
+                            {
+                                this.progressDownload.Value = (int)((double)totalBytesRead * 100 / size);
+                            }));
+                    }
                 } while (bytesRead != 0);
 
-                e.Result = hashAlgorithm.Hash;
+                result = hashAlgorithm.Hash;
             }
         }
 
-        private void verifyWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void verifyTask_Completed(object result)
         {
-            this.progressDownload.Value = e.ProgressPercentage;
-        }
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new ThreadTaskCompletedDelegate(verifyTask_Completed), result);
+                return;
+            }
 
-        private void verifyWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
             StringBuilder sb = new StringBuilder();
 
-            foreach (byte b in (byte[])e.Result)
+            foreach (byte b in (byte[])result)
             {
                 sb.AppendFormat("{0:x2}", b);
             }

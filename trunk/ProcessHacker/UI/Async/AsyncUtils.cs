@@ -117,7 +117,7 @@ namespace ProcessHacker.FormHelper
         public event EventHandler Completed;              
         public event EventHandler Cancelled;       
         public event System.Threading.ThreadExceptionEventHandler Failed;   
-                             
+
         private ISynchronizeInvoke isiTarget;
         protected ISynchronizeInvoke Target
         {

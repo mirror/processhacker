@@ -35,7 +35,6 @@
             this.labelTitle = new System.Windows.Forms.Label();
             this.labelReleased = new System.Windows.Forms.Label();
             this.buttonStop = new System.Windows.Forms.Button();
-            this.verifyWorker = new System.ComponentModel.BackgroundWorker();
             this.buttonInstall = new System.Windows.Forms.Button();
             this.progressDownload = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -105,14 +104,6 @@
             this.buttonStop.UseVisualStyleBackColor = true;
             this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
             // 
-            // verifyWorker
-            // 
-            this.verifyWorker.WorkerReportsProgress = true;
-            this.verifyWorker.WorkerSupportsCancellation = true;
-            this.verifyWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.verifyWorker_DoWork);
-            this.verifyWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.verifyWorker_RunWorkerCompleted);
-            this.verifyWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.verifyWorker_ProgressChanged);
-            // 
             // buttonInstall
             // 
             this.buttonInstall.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -172,7 +163,6 @@
         private System.Windows.Forms.Label labelTitle;
         private System.Windows.Forms.Label labelReleased;
         private System.Windows.Forms.Button buttonStop;
-        private System.ComponentModel.BackgroundWorker verifyWorker;
         private System.Windows.Forms.Button buttonInstall;
         private System.Windows.Forms.ProgressBar progressDownload;
     }
