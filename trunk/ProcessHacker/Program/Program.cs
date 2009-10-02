@@ -119,17 +119,26 @@ namespace ProcessHacker
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-//#if !DEBUG 
             /* Setup Exception Handling at first opportunity to catch exceptions generatable anywhere */
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-            //Exclude PH from WER after setting up exception handling otherwise PH will be permanatly queued in Vista/Win7 Problem Reports and Solutions
-            //the data and infomation will be sent to Microsoft and is completely useles to us without a DigitalCertificate       
-            //Native.Api.Win32.AddERExcludedApplication(AppDomain.CurrentDomain.FriendlyName);
-            //Native.Api.Win32.WerAddExcludedApplication(AppDomain.CurrentDomain.FriendlyName, false);
-//#endif
+            //Exclude PH from WER after setting up exception handling otherwise PH will be permanatly 
+            //queued in Vista/Win7 Problem Reports and Solutions plus the data and infomation will be is 
+            //completely useles to us without a DigitalCertificate                
+            if (Environment.OSVersion.Version.Major < 6)
+            {
+                if (!Native.Api.Win32.AddERExcludedApplication(AppDomain.CurrentDomain.FriendlyName))
+                {
+                    PhUtils.ShowWarning("Process Hacker was not excluded from Windows Error Reporting");
+                }
+            }
+            else
+            {
+               HResult excludeApp = Native.Api.Win32.WerAddExcludedApplication(AppDomain.CurrentDomain.FriendlyName, false);
+               excludeApp.ThrowIf();
+            }
 
             try
             {

@@ -121,6 +121,16 @@ namespace ProcessHacker.Native.Api
 
         #region Error Handling
 
+        /// <summary>
+        /// Removes an Application from Error Reporting on Windows XP
+        /// </summary>
+        /// <param name="name">The process.exe or the path\process.exe to be excluded</param>
+        /// <returns>True if successfully excluded</returns>
+        [DllImport("faultrep.dll", CharSet = CharSet.Unicode)] //XP
+        public static extern bool AddERExcludedApplication(
+            string ExeName
+            );
+
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int FormatMessage(
             [In] int Flags,
@@ -132,15 +142,17 @@ namespace ProcessHacker.Native.Api
             [In] [Optional] IntPtr Arguments
             );
 
-        [DllImport("faultrep.dll", CharSet = CharSet.Unicode)] //XP
-        public static extern bool AddERExcludedApplication(
-            string name
-            );
-
-        [DllImport("wer.dll")] //Vista
+        /// <summary>
+        /// Removes an Application from Error Reporting on Windows Vista
+        /// </summary>
+        /// <param name="ExeName">The process.exe or the path\process.exe to be excluded</param>
+        /// <param name="AllUsers">true to exclude process from all users. Note: Administrator access is Required if set true</param>
+        /// <returns>A HResult indicating the result</returns>
+        [DllImport("wer.dll")]
         public static extern HResult WerAddExcludedApplication(
+            [MarshalAs(UnmanagedType.LPWStr)]
             string ExeName,
-            bool AllUsers //Administrator access Required
+            bool AllUsers
             );
 
         #endregion
