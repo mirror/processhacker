@@ -148,6 +148,15 @@ namespace ProcessHacker
             }
         }
 
+        protected override void OnNotifyMessage(Message m)
+        {
+            //Filter out the WM_ERASEBKGND message and prevent any type of flickering
+            if (m.Msg != 0x14)
+            {
+                base.OnNotifyMessage(m);
+            }
+        }
+
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
@@ -173,144 +182,135 @@ namespace ProcessHacker
             base.WndProc(ref m);
         }
 
-        protected override void OnNotifyMessage(Message m)
+        //http://msdn.microsoft.com/en-us/library/bb774769(VS.85).aspx
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct LVGroup
         {
-            //Filter out the WM_ERASEBKGND message and prevent any type of flickering
-            if (m.Msg != 0x14)
-            {   
-                base.OnNotifyMessage(m);
-            }
+            /// <summary>
+            /// Size of this structure, in bytes.
+            /// </summary>
+            public int CbSize;
+
+            /// <summary>
+            /// Mask that specifies which members of the structure are valid input. One or more of the following values:LVGF_NONENo other items are valid.
+            /// </summary>
+            public ListViewGroupMask Mask;
+
+            /// <summary>
+            /// Pointer to a null-terminated string that contains the header text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the header text.
+            /// </summary>
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string Header;
+
+            /// <summary>
+            /// Size in TCHARs of the buffer pointed to by the pszHeader member. If the structure is not receiving information about a group, this member is ignored.
+            /// </summary>
+            public int CchHeader;
+
+            /// <summary>
+            /// Pointer to a null-terminated string that contains the footer text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the footer text.
+            /// </summary>
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string Footer;
+
+            /// <summary>
+            /// Size in TCHARs of the buffer pointed to by the pszFooter member. If the structure is not receiving information about a group, this member is ignored.
+            /// </summary>
+            public int CchFooter;
+
+            /// <summary>
+            /// ID of the group.
+            /// </summary>
+            public int GroupId;
+
+            /// <summary>
+            /// Mask used with LVM_GETGROUPINFO (Microsoft Windows XP and Windows Vista) and LVM_SETGROUPINFO (Windows Vista only) to specify which flags in the state value are being retrieved or set.
+            /// </summary>
+            public int StateMask;
+
+            /// <summary>
+            /// Flag that can have one of the following values:LVGS_NORMALGroups are expanded, the group name is displayed, and all items in the group are displayed.
+            /// </summary>
+            public ListViewGroupState GroupState;
+
+            /// <summary>
+            /// Indicates the alignment of the header or footer text for the group. It can have one or more of the following values. Use one of the header flags. Footer flags are optional. Windows XP: Footer flags are reserved.LVGA_FOOTER_CENTERReserved.
+            /// </summary>
+            public uint Alignment;
+
+            /// <summary>
+            /// Windows Vista. Pointer to a null-terminated string that contains the subtitle text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the subtitle text. This element is drawn under the header text.
+            /// </summary>
+            public IntPtr PszSubtitle;
+
+            /// <summary>
+            /// Windows Vista. Size, in TCHARs, of the buffer pointed to by the pszSubtitle member. If the structure is not receiving information about a group, this member is ignored.
+            /// </summary>
+            public uint CchSubtitle;
+
+            /// <summary>
+            /// Windows Vista. Pointer to a null-terminated string that contains the text for a task link when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the task text. This item is drawn right-aligned opposite the header text. When clicked by the user, the task link generates an LVN_LINKCLICK notification.
+            /// </summary>
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string Task;
+
+            /// <summary>
+            /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszTask member. If the structure is not receiving information about a group, this member is ignored.
+            /// </summary>
+            public uint CchTask;
+
+            /// <summary>
+            /// Windows Vista. Pointer to a null-terminated string that contains the top description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the top description text. This item is drawn opposite the title image when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
+            /// </summary>
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string DescriptionTop;
+
+            /// <summary>
+            /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionTop member. If the structure is not receiving information about a group, this member is ignored.
+            /// </summary>
+            public uint CchDescriptionTop;
+
+            /// <summary>
+            /// Windows Vista. Pointer to a null-terminated string that contains the bottom description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the bottom description text. This item is drawn under the top description text when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
+            /// </summary>
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string DescriptionBottom;
+
+            /// <summary>
+            /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionBottom member. If the structure is not receiving information about a group, this member is ignored.
+            /// </summary>
+            public uint CchDescriptionBottom;
+
+            /// <summary>
+            /// Windows Vista. Index of the title image in the control imagelist.
+            /// </summary>
+            public int ITitleImage;
+
+            /// <summary>
+            /// Windows Vista. Index of the extended image in the control imagelist.
+            /// </summary>
+            public int IExtendedImage;
+
+            /// <summary>
+            /// Windows Vista. Read-only.
+            /// </summary>
+            public int IFirstItem;
+
+            /// <summary>
+            /// Windows Vista. Read-only in non-owner data mode.
+            /// </summary>
+            public IntPtr CItems;
+
+            /// <summary>
+            /// Windows Vista. NULL if group is not a subset. Pointer to a null-terminated string that contains the subset title text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the subset title text.
+            /// </summary>
+            public IntPtr PszSubsetTitle;
+
+            /// <summary>
+            /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszSubsetTitle member. If the structure is not receiving information about a group, this member is ignored.
+            /// </summary>
+            public IntPtr CchSubsetTitle;
         }
-    }
-
-    //http://msdn.microsoft.com/en-us/library/bb774769(VS.85).aspx
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    public struct LVGroup
-    {
-        /// <summary>
-        /// Size of this structure, in bytes.
-        /// </summary>
-        public int CbSize;
-
-        /// <summary>
-        /// Mask that specifies which members of the structure are valid input. One or more of the following values:LVGF_NONENo other items are valid.
-        /// </summary>
-        public ListViewGroupMask Mask;
-
-        /// <summary>
-        /// Pointer to a null-terminated string that contains the header text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the header text.
-        /// </summary>
-        [MarshalAs(UnmanagedType.LPWStr)]
-        public string Header;
-
-        /// <summary>
-        /// Size in TCHARs of the buffer pointed to by the pszHeader member. If the structure is not receiving information about a group, this member is ignored.
-        /// </summary>
-        public int CchHeader;
-
-        /// <summary>
-        /// Pointer to a null-terminated string that contains the footer text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the footer text.
-        /// </summary>
-        [MarshalAs(UnmanagedType.LPWStr)]
-        public string Footer;
-
-        /// <summary>
-        /// Size in TCHARs of the buffer pointed to by the pszFooter member. If the structure is not receiving information about a group, this member is ignored.
-        /// </summary>
-        public int CchFooter;
-
-        /// <summary>
-        /// ID of the group.
-        /// </summary>
-        public int GroupId;
-
-        /// <summary>
-        /// Mask used with LVM_GETGROUPINFO (Microsoft Windows XP and Windows Vista) and LVM_SETGROUPINFO (Windows Vista only) to specify which flags in the state value are being retrieved or set.
-        /// </summary>
-        public int StateMask;
-
-        /// <summary>
-        /// Flag that can have one of the following values:LVGS_NORMALGroups are expanded, the group name is displayed, and all items in the group are displayed.
-        /// </summary>
-        public ListViewGroupState GroupState;
-
-        /// <summary>
-        /// Indicates the alignment of the header or footer text for the group. It can have one or more of the following values. Use one of the header flags. Footer flags are optional. Windows XP: Footer flags are reserved.LVGA_FOOTER_CENTERReserved.
-        /// </summary>
-        public uint Alignment;
-
-        /// <summary>
-        /// Windows Vista. Pointer to a null-terminated string that contains the subtitle text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the subtitle text. This element is drawn under the header text.
-        /// </summary>
-        public IntPtr PszSubtitle;
-
-        /// <summary>
-        /// Windows Vista. Size, in TCHARs, of the buffer pointed to by the pszSubtitle member. If the structure is not receiving information about a group, this member is ignored.
-        /// </summary>
-        public uint CchSubtitle;
-
-        /// <summary>
-        /// Windows Vista. Pointer to a null-terminated string that contains the text for a task link when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the task text. This item is drawn right-aligned opposite the header text. When clicked by the user, the task link generates an LVN_LINKCLICK notification.
-        /// </summary>
-        [MarshalAs(UnmanagedType.LPWStr)]
-        public string Task;
-
-        /// <summary>
-        /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszTask member. If the structure is not receiving information about a group, this member is ignored.
-        /// </summary>
-        public uint CchTask;
-
-        /// <summary>
-        /// Windows Vista. Pointer to a null-terminated string that contains the top description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the top description text. This item is drawn opposite the title image when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
-        /// </summary>
-        [MarshalAs(UnmanagedType.LPWStr)]
-        public string DescriptionTop;
-
-        /// <summary>
-        /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionTop member. If the structure is not receiving information about a group, this member is ignored.
-        /// </summary>
-        public uint CchDescriptionTop;
-
-        /// <summary>
-        /// Windows Vista. Pointer to a null-terminated string that contains the bottom description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the bottom description text. This item is drawn under the top description text when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
-        /// </summary>
-        [MarshalAs(UnmanagedType.LPWStr)]
-        public string DescriptionBottom;
-
-        /// <summary>
-        /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionBottom member. If the structure is not receiving information about a group, this member is ignored.
-        /// </summary>
-        public uint CchDescriptionBottom;
-
-        /// <summary>
-        /// Windows Vista. Index of the title image in the control imagelist.
-        /// </summary>
-        public int ITitleImage;
-
-        /// <summary>
-        /// Windows Vista. Index of the extended image in the control imagelist.
-        /// </summary>
-        public int IExtendedImage;
-
-        /// <summary>
-        /// Windows Vista. Read-only.
-        /// </summary>
-        public int IFirstItem;
-
-        /// <summary>
-        /// Windows Vista. Read-only in non-owner data mode.
-        /// </summary>
-        public IntPtr CItems;
-
-        /// <summary>
-        /// Windows Vista. NULL if group is not a subset. Pointer to a null-terminated string that contains the subset title text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the subset title text.
-        /// </summary>
-        public IntPtr PszSubsetTitle;
-
-        /// <summary>
-        /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszSubsetTitle member. If the structure is not receiving information about a group, this member is ignored.
-        /// </summary>
-        public IntPtr CchSubsetTitle;
     }
 
     public enum ListViewGroupMask
