@@ -131,7 +131,9 @@ namespace ProcessHacker
             {
                 if (!Native.Api.Win32.AddERExcludedApplication(AppDomain.CurrentDomain.FriendlyName))
                 {
-                    PhUtils.ShowWarning("Process Hacker was not excluded from Windows Error Reporting");
+                    PhUtils.ShowWarning(
+                        "Process Hacker was not excluded from Windows Error Reporting: " + 
+                        Win32.GetLastErrorMessage());
                 }
             }
             else

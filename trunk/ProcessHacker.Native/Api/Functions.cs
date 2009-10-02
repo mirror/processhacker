@@ -126,7 +126,7 @@ namespace ProcessHacker.Native.Api
         /// </summary>
         /// <param name="name">The process.exe or the path\process.exe to be excluded</param>
         /// <returns>True if successfully excluded</returns>
-        [DllImport("faultrep.dll", CharSet = CharSet.Unicode)]
+        [DllImport("faultrep.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool AddERExcludedApplication(
             [In] string ExeName
             );
