@@ -85,8 +85,10 @@ namespace ProcessHacker
 
             if (OSVersion.HasExtendedTaskbar)
             {
-                TaskbarLib.Windows7Taskbar.SetTaskbarProgressState(this,
-                    TaskbarLib.Windows7Taskbar.ThumbnailProgressState.NoProgress);
+                TaskbarLib.Windows7Taskbar.SetTaskbarProgressState(
+                    Program.HackerWindowHandle,
+                    TaskbarLib.Windows7Taskbar.ThumbnailProgressState.NoProgress
+                    );
             }
         }
 
@@ -142,6 +144,7 @@ namespace ProcessHacker
 
             if (!e.Cancelled)
             {
+                _verifyTask = new ThreadTask();
                 _verifyTask.RunTask += verifyTask_RunTask;
                 _verifyTask.Completed += verifyTask_Completed;
                 _verifyTask.Start();
@@ -168,7 +171,7 @@ namespace ProcessHacker
             progressDownload.Value = e.ProgressPercentage;
 
             if (OSVersion.HasExtendedTaskbar)
-                TaskbarLib.Windows7Taskbar.SetTaskbarProgress(this, this.progressDownload);
+                TaskbarLib.Windows7Taskbar.SetTaskbarProgress(Program.HackerWindow, this.progressDownload);
         }
 
         private void verifyTask_RunTask(object param, ref object result)

@@ -48,6 +48,7 @@ namespace ProcessHacker
         long totalFileSize;
         long bytesPerSecond;
         long bytesTransferred;
+        Stopwatch uploadStopwatch;
 
         ThreadTask uploadTask;
 
@@ -136,7 +137,12 @@ namespace ProcessHacker
                 uploadTask.Cancel();
 
             if (OSVersion.HasExtendedTaskbar)
-                Windows7Taskbar.SetTaskbarProgressState(this, Windows7Taskbar.ThumbnailProgressState.NoProgress);
+            {
+                Windows7Taskbar.SetTaskbarProgressState(
+                    Program.HackerWindowHandle,
+                    Windows7Taskbar.ThumbnailProgressState.NoProgress
+                    );
+            }
         }
 
         private void getSessionTokenTask_RunTask(object param, ref object result)
@@ -212,6 +218,9 @@ namespace ProcessHacker
 
             try
             {
+                uploadStopwatch = new Stopwatch();
+                uploadStopwatch.Start();
+
                 using (FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
                 {
                     uploadRequest.ContentLength = postHeaderBytes.Length + fileStream.Length + boundaryBytes.Length;
@@ -224,9 +233,8 @@ namespace ProcessHacker
                         byte[] buffer = new Byte[checked((uint)Math.Min(32, (int)fileStream.Length))];
 
                         int bytesRead = 0;
-                        Stopwatch stopwatch = new Stopwatch();
 
-                        while (true)
+                        while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
                         {
                             if (uploadTask.Cancelled)
                             {
@@ -234,28 +242,14 @@ namespace ProcessHacker
                                 return;
                             }
 
-                            stopwatch.Start();
-
-                            bytesRead = fileStream.Read(buffer, 0, buffer.Length);
-
-                            if (bytesRead == 0)
-                            {
-                                stopwatch.Stop();
-                                break;
-                            }
-
                             requestStream.Write(buffer, 0, bytesRead);
-
-                            stopwatch.Stop();
 
                             int progress = (int)(((double)fileStream.Position * 100 / fileStream.Length));
 
-                            if (stopwatch.ElapsedMilliseconds > 0)
-                                bytesPerSecond = bytesRead * 1000 / stopwatch.ElapsedMilliseconds;
+                            if (uploadStopwatch.ElapsedMilliseconds > 0)
+                                bytesPerSecond = fileStream.Position * 1000 / uploadStopwatch.ElapsedMilliseconds;
 
                             bytesTransferred = fileStream.Position;
-
-                            stopwatch.Reset();
 
                             if (this.IsHandleCreated)
                                 this.BeginInvoke(new Action<int>(this.ChangeProgress), progress);
@@ -316,7 +310,7 @@ namespace ProcessHacker
             progressUpload.Value = progress;
 
             if (OSVersion.HasExtendedTaskbar)
-                Windows7Taskbar.SetTaskbarProgress(this, this.progressUpload);
+                Windows7Taskbar.SetTaskbarProgress(Program.HackerWindow, this.progressUpload);
         }
 
         private void uploadTask_Completed(object result)

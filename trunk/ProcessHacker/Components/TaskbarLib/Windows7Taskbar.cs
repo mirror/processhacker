@@ -260,19 +260,13 @@ namespace TaskbarLib
         /// <param name="progressBar">The progress bar.</param>
         public static void SetTaskbarProgress(this Form form, ProgressBar progressBar)
         {
-            try
+            if (!form.IsDisposed && form.IsHandleCreated)
             {
                 ulong maximum = Convert.ToUInt64(progressBar.Maximum);
                 ulong progress = Convert.ToUInt64(progressBar.Value);
 
-                HResult stateResult = TaskbarList.SetProgressState(form.Handle, (uint)ThumbnailProgressState.Normal);
-                stateResult.ThrowIf();
-
-                HResult valueResult = TaskbarList.SetProgressValue(form.Handle, progress, maximum);
-                valueResult.ThrowIf();
+                SetTaskbarProgress(form.Handle, progress, maximum);
             }
-            catch (System.ObjectDisposedException)
-            { /* This expcetion will occour when trying to access the form Handle upon FormClosing event */ }
         }
 
         /// <summary>
@@ -282,13 +276,18 @@ namespace TaskbarLib
         /// <param name="progressBar">The progress bar.</param>
         public static void SetTaskbarProgress(this Form form, ToolStripProgressBar progressBar)
         {
-            ulong maximum = Convert.ToUInt64(progressBar.Maximum);
-            ulong progress = Convert.ToUInt64(progressBar.Value);
+            if (!form.IsDisposed && form.IsHandleCreated)
+            {
+                ulong maximum = Convert.ToUInt64(progressBar.Maximum);
+                ulong progress = Convert.ToUInt64(progressBar.Value);
 
-            HResult stateResult = TaskbarList.SetProgressState(form.Handle, (uint)ThumbnailProgressState.Normal);
-            stateResult.ThrowIf();
+                SetTaskbarProgress(form.Handle, progress, maximum);
+            }
+        }
 
-            HResult valueResult = TaskbarList.SetProgressValue(form.Handle, progress, maximum);
+        public static void SetTaskbarProgress(IntPtr hwnd, ulong progress, ulong maximum)
+        {
+            HResult valueResult = TaskbarList.SetProgressValue(hwnd, progress, maximum);
             valueResult.ThrowIf();
         }
 
@@ -300,7 +299,12 @@ namespace TaskbarLib
         /// <param name="state">The progress state.</param>
         public static void SetTaskbarProgressState(this Form form, ThumbnailProgressState state)
         {
-            HResult result = TaskbarList.SetProgressState(form.Handle, (uint)state);
+            SetTaskbarProgressState(form.Handle, state);
+        }
+
+        public static void SetTaskbarProgressState(IntPtr hwnd, ThumbnailProgressState state)
+        {
+            HResult result = TaskbarList.SetProgressState(hwnd, (uint)state);
             result.ThrowIf();
         }
 

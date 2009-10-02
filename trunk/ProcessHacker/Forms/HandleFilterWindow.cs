@@ -71,6 +71,14 @@ namespace ProcessHacker
 
         private void HandleFilterWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (OSVersion.HasExtendedTaskbar)
+            {
+                TaskbarLib.Windows7Taskbar.SetTaskbarProgressState(
+                    Program.HackerWindowHandle,
+                    TaskbarLib.Windows7Taskbar.ThumbnailProgressState.NoProgress
+                    );
+            }
+
             Properties.Settings.Default.HandleFilterWindowListViewColumns = ColumnSettings.SaveSettings(listHandles);
 
             if (this.WindowState == FormWindowState.Normal)
@@ -211,6 +219,15 @@ namespace ProcessHacker
         {
             progress.Value = currentValue;
             progress.Maximum = count;
+
+            if (OSVersion.HasExtendedTaskbar)
+            {
+                TaskbarLib.Windows7Taskbar.SetTaskbarProgress(
+                    Program.HackerWindowHandle,
+                    (ulong)currentValue,
+                    (ulong)count
+                    );
+            }
         }
 
         private void processPropertiesMenuItem_Click(object sender, EventArgs e)
