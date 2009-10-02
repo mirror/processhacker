@@ -173,10 +173,13 @@ namespace ProcessHacker
 
         private void getSessionTokenTask_Completed(object result)
         {
-            uploadTask = new ThreadTask();
-            uploadTask.RunTask += uploadTask_RunTask;
-            uploadTask.Completed += uploadTask_Completed;
-            uploadTask.Start(result);
+            if (result != null) //incase theres an expcetion getting sessiontoken
+            {
+                uploadTask = new ThreadTask();
+                uploadTask.RunTask += uploadTask_RunTask;
+                uploadTask.Completed += uploadTask_Completed;
+                uploadTask.Start(result);
+            }
         }
 
         private void uploadTask_RunTask(object param, ref object result)
