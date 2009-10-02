@@ -34,18 +34,16 @@ namespace ProcessHacker
 {
     public class ExtendedListView : ListView
     {
-        private const int LVM_FIRST = 0x1000;                              // ListView messages
-        private const int LVM_SETGROUPINFO = (LVM_FIRST + 147);            // ListView messages Setinfo on Group
-        private const int LVM_SETEXTENDEDLISTVIEWSTYLE = (LVM_FIRST + 54); // Sets extended styles in list-view controls. 
-        private const int LVS_EX_DOUBLEBUFFER = 0x00010000;                // Listview extended styles
+        private const int LVM_First = 0x1000;                              // ListView messages
+        private const int LVM_SetGroupInfo = (LVM_First + 147);            // ListView messages Setinfo on Group
+        private const int LVM_SetExtendedListViewStyle = (LVM_First + 54); // Sets extended styles in list-view controls. 
+        private const int LVS_Ex_DoubleBuffer = 0x00010000;                // Paints via double-buffering, which reduces flicker. also enables alpha-blended marquee selection.
 
-        private delegate void CallBackSetGroupState(ListViewGroup lstvwgrp, ListViewGroupState state);
-        private delegate void CallbackSetGroupString(ListViewGroup lstvwgrp, string value);
-
-        private Boolean isThemeSet = false;
+        private delegate void CallBackSetGroupState(ListViewGroup lvGroup, ListViewGroupState lvState);
+        private delegate void CallbackSetGroupString(ListViewGroup lvGroup, string value);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, LVGROUP lParam);
+        private static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, LVGroup lParam);
 
         public ExtendedListView()
         {
@@ -99,21 +97,21 @@ namespace ProcessHacker
             {
                 int? GrpId = GetGroupID(lvGroup);
                 int gIndex = lvGroup.ListView.Groups.IndexOf(lvGroup);
-                LVGROUP group = new LVGROUP();
+                LVGroup group = new LVGroup();
                 group.CbSize = Marshal.SizeOf(group);
-                group.State = grpState;
+                group.GroupState = grpState;
                 group.Mask = ListViewGroupMask.State;
                 if (GrpId != null)
                 {
-                    group.IGroupId = GrpId.Value;
-                    SendMessage(lvGroup.ListView.Handle, LVM_SETGROUPINFO, GrpId.Value, group);
-                    SendMessage(lvGroup.ListView.Handle, LVM_SETGROUPINFO, GrpId.Value, group);
+                    group.GroupId = GrpId.Value;
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, GrpId.Value, group);
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, GrpId.Value, group);
                 }
                 else
                 {
-                    group.IGroupId = gIndex;
-                    SendMessage(lvGroup.ListView.Handle, LVM_SETGROUPINFO, gIndex, group);
-                    SendMessage(lvGroup.ListView.Handle, LVM_SETGROUPINFO, gIndex, group);
+                    group.GroupId = gIndex;
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, gIndex, group);
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, gIndex, group);
                 }
                 lvGroup.ListView.Refresh();
             }
@@ -131,19 +129,21 @@ namespace ProcessHacker
             {
                 int? grpId = GetGroupID(lvGroup);
                 int gIndex = lvGroup.ListView.Groups.IndexOf(lvGroup);
-                LVGROUP group = new LVGROUP();
+              
+                LVGroup group = new LVGroup();
                 group.CbSize = Marshal.SizeOf(group);
-                group.PszFooter = footer;
+                group.Footer = footer;
                 group.Mask = ListViewGroupMask.Footer;
+               
                 if (grpId != null)
                 {
-                    group.IGroupId = grpId.Value;
-                    SendMessage(lvGroup.ListView.Handle, LVM_SETGROUPINFO, grpId.Value, group);
+                    group.GroupId = grpId.Value;
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, grpId.Value, group);
                 }
                 else
                 {
-                    group.IGroupId = gIndex;
-                    SendMessage(lvGroup.ListView.Handle, LVM_SETGROUPINFO, gIndex, group);
+                    group.GroupId = gIndex;
+                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, gIndex, group);
                 }
             }
         }
@@ -152,24 +152,23 @@ namespace ProcessHacker
         {
             switch (m.Msg)
             {
-                    case 15: /*Paint Event*/
-                        if (!isThemeSet) //run once
-                        {
-                            Win32.SetWindowTheme(this.Handle, "explorer", null); //Vista Explorer style
-                            Win32.SendMessage(this.Handle, (WindowMessage)LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_DOUBLEBUFFER, LVS_EX_DOUBLEBUFFER);
-                            isThemeSet = true;
-                        }
+                case 0x1: /*WM_CREATE*/
+                    {
+                        Win32.SetWindowTheme(this.Handle, "explorer", null);
+                        Win32.SendMessage(this.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
                         break;
-                    case 0x0202: /*WM_LBUTTONUP - left button event*/
-                        {
-                            base.DefWndProc(ref m);
-                            break;
-                        }
-                    default:
-                        {
-                            break;
-                        }
-                }
+                    }                  
+                case 0x0202: /*WM_LBUTTONUP*/
+                    {
+                        base.DefWndProc(ref m);
+                        break;
+                    }  
+                default:
+                    { 
+                        break;
+                    }
+               
+            }
             
             base.WndProc(ref m);
         }
@@ -186,7 +185,7 @@ namespace ProcessHacker
 
     //http://msdn.microsoft.com/en-us/library/bb774769(VS.85).aspx
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    public struct LVGROUP
+    public struct LVGroup
     {
         /// <summary>
         /// Size of this structure, in bytes.
@@ -202,7 +201,7 @@ namespace ProcessHacker
         /// Pointer to a null-terminated string that contains the header text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the header text.
         /// </summary>
         [MarshalAs(UnmanagedType.LPWStr)]
-        public string PszHeader;
+        public string Header;
 
         /// <summary>
         /// Size in TCHARs of the buffer pointed to by the pszHeader member. If the structure is not receiving information about a group, this member is ignored.
@@ -213,7 +212,7 @@ namespace ProcessHacker
         /// Pointer to a null-terminated string that contains the footer text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the footer text.
         /// </summary>
         [MarshalAs(UnmanagedType.LPWStr)]
-        public string PszFooter;
+        public string Footer;
 
         /// <summary>
         /// Size in TCHARs of the buffer pointed to by the pszFooter member. If the structure is not receiving information about a group, this member is ignored.
@@ -223,7 +222,7 @@ namespace ProcessHacker
         /// <summary>
         /// ID of the group.
         /// </summary>
-        public int IGroupId;
+        public int GroupId;
 
         /// <summary>
         /// Mask used with LVM_GETGROUPINFO (Microsoft Windows XP and Windows Vista) and LVM_SETGROUPINFO (Windows Vista only) to specify which flags in the state value are being retrieved or set.
@@ -233,12 +232,12 @@ namespace ProcessHacker
         /// <summary>
         /// Flag that can have one of the following values:LVGS_NORMALGroups are expanded, the group name is displayed, and all items in the group are displayed.
         /// </summary>
-        public ListViewGroupState State;
+        public ListViewGroupState GroupState;
 
         /// <summary>
         /// Indicates the alignment of the header or footer text for the group. It can have one or more of the following values. Use one of the header flags. Footer flags are optional. Windows XP: Footer flags are reserved.LVGA_FOOTER_CENTERReserved.
         /// </summary>
-        public uint UAlign;
+        public uint Alignment;
 
         /// <summary>
         /// Windows Vista. Pointer to a null-terminated string that contains the subtitle text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the subtitle text. This element is drawn under the header text.
@@ -254,7 +253,7 @@ namespace ProcessHacker
         /// Windows Vista. Pointer to a null-terminated string that contains the text for a task link when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the task text. This item is drawn right-aligned opposite the header text. When clicked by the user, the task link generates an LVN_LINKCLICK notification.
         /// </summary>
         [MarshalAs(UnmanagedType.LPWStr)]
-        public string PszTask;
+        public string Task;
 
         /// <summary>
         /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszTask member. If the structure is not receiving information about a group, this member is ignored.
@@ -265,7 +264,7 @@ namespace ProcessHacker
         /// Windows Vista. Pointer to a null-terminated string that contains the top description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the top description text. This item is drawn opposite the title image when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
         /// </summary>
         [MarshalAs(UnmanagedType.LPWStr)]
-        public string PszDescriptionTop;
+        public string DescriptionTop;
 
         /// <summary>
         /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionTop member. If the structure is not receiving information about a group, this member is ignored.
@@ -276,7 +275,7 @@ namespace ProcessHacker
         /// Windows Vista. Pointer to a null-terminated string that contains the bottom description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the bottom description text. This item is drawn under the top description text when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
         /// </summary>
         [MarshalAs(UnmanagedType.LPWStr)]
-        public string PszDescriptionBottom;
+        public string DescriptionBottom;
 
         /// <summary>
         /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionBottom member. If the structure is not receiving information about a group, this member is ignored.
