@@ -911,12 +911,12 @@ namespace ProcessHacker
             info.AppendLine("ResultsWindows: " + ResultsWindows.Count.ToString() + ", " + ResultsThreads.Count.ToString());
 
             info.AppendLine();
-            info.AppendLine("ASSEMBLIES LOADED");
+            info.AppendLine("LOADED MODULES");
             info.AppendLine();
 
             foreach (ProcessModule module in ProcessHandle.Current.GetModules())
             {
-                info.AppendLine("Assembly: " + module.BaseName);
+                info.AppendLine("Module: " + module.BaseName);
                 info.AppendLine("Location: " + module.FileName);
 
                 DateTime fileCreatedInfo = System.IO.File.GetCreationTime(module.FileName);
