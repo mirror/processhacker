@@ -125,7 +125,7 @@ namespace ProcessHacker
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
             //Exclude PH from WER after setting up exception handling otherwise PH will be permanatly 
-            //queued in Vista/Win7 Problem Reports and Solutions plus the data and infomation will be is 
+            //queued in Vista/Win7 Problem Reports and Solutions, plus the data and infomation will be 
             //completely useles to us without a DigitalCertificate                
             if (Environment.OSVersion.Version.Major < 6)
             {
@@ -141,7 +141,7 @@ namespace ProcessHacker
                HResult excludeApp = Native.Api.Win32.WerAddExcludedApplication(AppDomain.CurrentDomain.FriendlyName, false);
                excludeApp.ThrowIf();
             }
-
+   
             try
             {
                 pArgs = ParseArgs(args);
