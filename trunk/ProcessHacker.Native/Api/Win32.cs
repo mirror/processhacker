@@ -259,7 +259,7 @@ namespace ProcessHacker.Native.Api
             sids = new IntPtr[count];
 
             WtsMemoryAlloc data = new WtsMemoryAlloc(processes);
-            WtsProcessInfo* dataP = (WtsProcessInfo*)data.Memory.ToPointer();
+            WtsProcessInfo* dataP = (WtsProcessInfo*)data.Memory;
 
             for (int i = 0; i < count; i++)
             {
@@ -318,7 +318,7 @@ namespace ProcessHacker.Native.Api
         public unsafe static string[] GetMultiString(IntPtr ptr)
         {
             List<string> list = new List<string>();
-            char* chptr = (char*)ptr.ToPointer();
+            char* chptr = (char*)ptr;
             StringBuilder currentString = new StringBuilder();
 
             while (true)

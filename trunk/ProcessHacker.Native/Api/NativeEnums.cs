@@ -640,6 +640,348 @@ namespace ProcessHacker.Native.Api
         ClassMask = 0x0000f000
     }
 
+    public enum ImageBaseRelocationType : short
+    {
+        /// <summary>
+        /// The base relocation is skipped. This type can be used to pad a block.
+        /// </summary>
+        Absolute = 0,
+
+        /// <summary>
+        /// The base relocation adds the high 16 bits of the difference to the 16-bit 
+        /// field at offset. The 16-bit field represents the high value of a 32-bit word.
+        /// </summary>
+        High = 1,
+
+        /// <summary>
+        /// The base relocation adds the low 16 bits of the difference to the 16-bit 
+        /// field at offset. The 16-bit field represents the low half of a 32-bit word. 
+        /// </summary>
+        Low = 2,
+
+        /// <summary>
+        /// The base relocation applies all 32 bits of the difference to the 32-bit 
+        /// field at offset.
+        /// </summary>
+        HighLow = 3,
+
+        /// <summary>
+        /// The base relocation adds the high 16 bits of the difference to the 16-bit 
+        /// field at offset. The 16-bit field represents the high value of a 32-bit word. 
+        /// The low 16 bits of the 32-bit value are stored in the 16-bit word that follows 
+        /// this base relocation. This means that this base relocation occupies two slots.
+        /// </summary>
+        HighAdj = 4,
+
+        /// <summary>
+        /// The base relocation applies to a MIPS jump instruction.
+        /// </summary>
+        MipsJmpAddr = 5,
+
+        /// <summary>
+        /// The base relocation applies to a MIPS16 jump instruction.
+        /// </summary>
+        MipsJmpAddr16 = 9,
+        Ia64Imm64 = 9,
+
+        /// <summary>
+        /// The base relocation applies the difference to the 64-bit field at offset.
+        /// </summary>
+        Dir16 = 10
+    }
+
+    [Flags]
+    public enum ImageCharacteristics : ushort
+    {
+        /// <summary>
+        /// Image only, Windows CE, and Windows NT® and later. This indicates that the file does 
+        /// not contain base relocations and must therefore be loaded at its preferred base address. 
+        /// If the base address is not available, the loader reports an error. The default behavior 
+        /// of the linker is to strip base relocations from executable (EXE) files.
+        /// </summary>
+        RelocsStripped = 0x0001,
+
+        /// <summary>
+        /// Image only. This indicates that the image file is valid and can be run. If this flag 
+        /// is not set, it indicates a linker error.
+        /// </summary>
+        ExecutableImage = 0x0002,
+
+        /// <summary>
+        /// COFF line numbers have been removed. This flag is deprecated and should be zero.
+        /// </summary>
+        LineNumsStripped = 0x0004,
+
+        /// <summary>
+        /// COFF symbol table entries for local symbols have been removed. This flag is deprecated 
+        /// and should be zero.
+        /// </summary>
+        LocalSymsStripped = 0x0008,
+
+        /// <summary>
+        /// Obsolete. Aggressively trim working set. This flag is deprecated for Windows 2000 and later 
+        /// and must be zero.
+        /// </summary>
+        AggressiveWsTrim = 0x0010,
+
+        /// <summary>
+        /// Application can handle > 2 GB addresses.
+        /// </summary>
+        LargeAddressAware = 0x0020,
+
+        /// <summary>
+        /// This flag is reserved for future use.
+        /// </summary>
+        Reserved = 0x0040,
+
+        /// <summary>
+        /// Little endian: the least significant bit (LSB) precedes the most significant bit (MSB) in 
+        /// memory. This flag is deprecated and should be zero.
+        /// </summary>
+        BytesReversedLo = 0x0080,
+
+        /// <summary>
+        /// Machine is based on a 32-bit-word architecture.
+        /// </summary>
+        ThirtyTwoBitMachine = 0x0100,
+
+        /// <summary>
+        /// Debugging information is removed from the image file.
+        /// </summary>
+        DebugStripped = 0x0200,
+
+        /// <summary>
+        /// If the image is on removable media, fully load it and copy it to the swap file.
+        /// </summary>
+        RemovableRunFromSwap = 0x0400,
+
+        /// <summary>
+        /// If the image is on network media, fully load it and copy it to the swap file.
+        /// </summary>
+        NetRunFromSwap = 0x0800,
+
+        /// <summary>
+        /// The image file is a system file, not a user program.
+        /// </summary>
+        System = 0x1000,
+
+        /// <summary>
+        /// The image file is a dynamic-link library (DLL). Such files are considered 
+        /// executable files for almost all purposes, although they cannot be directly run.
+        /// </summary>
+        DLL = 0x2000,
+
+        /// <summary>
+        /// The file should be run only on a uniprocessor machine.
+        /// </summary>
+        UPSystemOnly = 0x4000,
+
+        /// <summary>
+        /// Big endian: the MSB precedes the LSB in memory. This flag is deprecated and should be zero.
+        /// </summary>
+        BytesReversedHi = 0x8000
+    }
+
+    [Flags]
+    public enum ImageDllCharacteristics : ushort
+    {
+        DynamicBase = 0x0040,
+        ForceIntegrity = 0x0080,
+        NxCompat = 0x0100,
+        NoIsolation = 0x0200,
+        NoSeh = 0x0400,
+        NoBind = 0x0800,
+        WdmDriver = 0x2000,
+        TerminalServerAware = 0x8000
+    }
+
+    public enum ImageI386RelocationType : short
+    {
+        Absolute = 0x0,
+        Dir16 = 0x1,
+        Rel16 = 0x2,
+        Dir32 = 0x6,
+        Dir32Nb = 0x7,
+        Seg12 = 0x9,
+        Section = 0xa,
+        SecRel = 0xb,
+        Token = 0xc,
+        SecRel7 = 0xd,
+        Rel32 = 0x14
+    }
+
+    [Flags]
+    public enum ImageSectionFlags : uint
+    {
+        /// <summary>
+        /// Reserved for future use.
+        /// </summary>
+        Reserved1 = 0x00000000,
+
+        /// <summary>
+        /// Reserved for future use.
+        /// </summary>
+        Reserved2 = 0x00000001,
+
+        /// <summary>
+        /// Reserved for future use.
+        /// </summary>
+        Reserved3 = 0x00000002,
+
+        /// <summary>
+        /// Reserved, must be zero.
+        /// </summary>
+        Reserved4 = 0x00000004,
+
+        /// <summary>
+        /// The section should not be padded to the next boundary. 
+        /// This flag is obsolete and is replaced by IMAGE_SCN_ALIGN_1BYTES. 
+        /// This is valid only for object files.
+        /// </summary>
+        NoPad = 0x00000008,
+
+        /// <summary>
+        /// The section contains executable code.
+        /// </summary>
+        Code = 0x00000020,
+
+        /// <summary>
+        /// The section contains initialized data.
+        /// </summary>
+        InitializedData = 0x00000040,
+
+        /// <summary>
+        /// The section contains uninitialized data.
+        /// </summary>
+        UninitializedData = 0x00000080,
+
+        /// <summary>
+        /// Reserved for future use.
+        /// </summary>
+        Other = 0x00000100,
+
+        /// <summary>
+        /// The section contains comments or other information. The 
+        /// .drectve section has this type. This is valid for object 
+        /// files only.
+        /// </summary>
+        Info = 0x00000200,
+
+        /// <summary>
+        /// Reserved for future use.
+        /// </summary>
+        Reserved5 = 0x00000400,
+
+        /// <summary>
+        /// The section will not become part of the image. This is valid 
+        /// only for object files.
+        /// </summary>
+        Remove = 0x00000800,
+
+        /// <summary>
+        /// The section contains COMDAT data. 
+        /// </summary>
+        COMDAT = 0x00001000,
+
+        /// <summary>
+        /// The section contains data referenced through the global pointer (GP).
+        /// </summary>
+        GPRel = 0x00008000,
+
+        /// <summary>
+        /// Reserved for future use.
+        /// </summary>
+        MemoryPurgeable = 0x00010000,
+
+        /// <summary>
+        /// Reserved for future use.
+        /// </summary>
+        Memory16Bit = 0x00020000,
+
+        /// <summary>
+        /// Reserved for future use.
+        /// </summary>
+        MemoryLocked = 0x00040000,
+
+        /// <summary>
+        /// Reserved for future use.
+        /// </summary>
+        MemoryPeload = 0x00080000,
+
+        Align1Bytes = 0x00100000,
+        Align2Bytes = 0x00200000,
+        Align4Bytes = 0x00300000,
+        Align8Bytes = 0x00400000,
+        Align16Bytes = 0x00500000,
+        Align32Bytes = 0x00600000,
+        Align64Bytes = 0x00700000,
+        Align128Bytes = 0x00800000,
+        Align256Bytes = 0x00900000,
+        Align512Bytes = 0x00a00000,
+        Align1024Bytes = 0x00b00000,
+        Align2048Bytes = 0x00c00000,
+        Align4096Bytes = 0x00d00000,
+        Align8192Bytes = 0x00e00000,
+
+        /// <summary>
+        /// The section contains extended relocations.
+        /// </summary>
+        NRelocOvfl = 0x01000000,
+
+        /// <summary>
+        /// The section can be discarded as needed.
+        /// </summary>
+        MemoryDiscardable = 0x02000000,
+
+        /// <summary>
+        /// The section cannot be cached.
+        /// </summary>
+        MemoryNotCached = 0x04000000,
+
+        /// <summary>
+        /// The section is not pageable.
+        /// </summary>
+        MemoryNotPaged = 0x08000000,
+
+        /// <summary>
+        /// The section can be shared in memory.
+        /// </summary>
+        MemoryShared = 0x10000000,
+
+        /// <summary>
+        /// The section can be executed as code.
+        /// </summary>
+        MemoryExecute = 0x20000000,
+
+        /// <summary>
+        /// The section can be read.
+        /// </summary>
+        MemoryRead = 0x40000000,
+
+        /// <summary>
+        /// The section can be written to.
+        /// </summary>
+        MemoryWrite = 0x80000000
+    }
+
+    public enum ImageSubsystem : short
+    {
+        Unknown = 0,
+        Native = 1,
+        WindowsGui = 2,
+        WindowsCui = 3,
+        OS2Cui = 5,
+        PosixCui = 7,
+        NativeWindows = 8,
+        WindowsCeGui = 9,
+        EfiApplication = 10,
+        EfiBootServiceDriver = 11,
+        EfiRuntimeDriver = 12,
+        EfiRom = 13,
+        Xbox = 14,
+        WindowsBootApplication = 16
+    }
+
     public enum IoCompletionInformationClass : int
     {
         IoCompletionBasicInformation
@@ -829,6 +1171,112 @@ namespace ProcessHacker.Native.Api
         NonPagedDebugInfo = 0x20000000,
         MmLoaded = 0x40000000,
         CompatDatabaseProcessed = 0x80000000
+    }
+
+    /// <summary>
+    /// Specifies an executable's target CPU type.
+    /// </summary>
+    public enum MachineType : ushort
+    {
+        /// <summary>
+        /// Assumed to be applicable to any machine type.
+        /// </summary>
+        Unknown = 0x0,
+
+        /// <summary>
+        /// Matsushita AM33.
+        /// </summary>
+        Am33 = 0x1d3,
+
+        /// <summary>
+        /// x64.
+        /// </summary>
+        Amd64 = 0x8664,
+
+        /// <summary>
+        /// ARM little-endian.
+        /// </summary>
+        Arm = 0x1c0,
+
+        /// <summary>
+        /// EFI byte code.
+        /// </summary>
+        Ebc = 0xebc,
+
+        /// <summary>
+        /// Intel 386 or later processors and compatible processors.
+        /// </summary>
+        I386 = 0x14c,
+
+        /// <summary>
+        /// Intel Itanium processor family.
+        /// </summary>
+        Ia64 = 0x200,
+
+        /// <summary>
+        /// Mitsubishi M32R little endian.
+        /// </summary>
+        M32R = 0x9041,
+
+        /// <summary>
+        /// MIPS16.
+        /// </summary>
+        Mips16 = 0x266,
+
+        /// <summary>
+        /// MIPS with FPU.
+        /// </summary>
+        MipsFpu = 0x366,
+
+        /// <summary>
+        /// MIPS16 with FPU.
+        /// </summary>
+        MipsFpu16 = 0x466,
+
+        /// <summary>
+        /// PowerPC little-endian.
+        /// </summary>
+        PowerPc = 0x1f0,
+
+        /// <summary>
+        /// PowerPC with floating point support.
+        /// </summary>
+        PowerPcFp = 0x1f1,
+
+        /// <summary>
+        /// MIPS little-endian.
+        /// </summary>
+        R4000 = 0x166,
+
+        /// <summary>
+        /// Hitachi SH3.
+        /// </summary>
+        Sh3 = 0x1a2,
+
+        /// <summary>
+        /// Hitachi SH3 DSP.
+        /// </summary>
+        Sh3Dsp = 0x1a3,
+
+        /// <summary>
+        /// Hitachi SH4.
+        /// </summary>
+        Sh4 = 0x1a6,
+
+        /// <summary>
+        /// Hitachi SH5.
+        /// </summary>
+        Sh5 = 0x1a8,
+
+        /// <summary>
+        /// Thumb.
+        /// </summary>
+        Thumb = 0x1c2,
+
+        /// <summary>
+        /// MIPS little-endian WCE v2.
+        /// </summary>
+        WceMipsv2 = 0x169
     }
 
     [Flags]

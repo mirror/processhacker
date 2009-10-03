@@ -589,51 +589,45 @@ namespace ProcessHacker
 
         public static void Unhook()
         {
-            PE.PEFile file = new ProcessHacker.PE.PEFile(Environment.SystemDirectory + "\\ntdll.dll");
-            System.IO.BinaryReader br = new System.IO.BinaryReader(
-                new System.IO.FileStream(Environment.SystemDirectory + "\\ntdll.dll", 
-                    System.IO.FileMode.Open, System.IO.FileAccess.Read));
+            ProcessHacker.Native.Image.MappedImage file =
+                new ProcessHacker.Native.Image.MappedImage(Environment.SystemDirectory + "\\ntdll.dll");
             IntPtr ntdll = Win32.GetModuleHandle("ntdll.dll");
             MemoryProtection oldProtection;
 
             oldProtection = ProcessHandle.GetCurrent().ProtectMemory(
                 ntdll,
-                (int)file.COFFOptionalHeader.SizeOfCode,
+                (int)file.Size,
                 MemoryProtection.ExecuteReadWrite
                 );
 
-            for (int i = 0; i < file.ExportData.ExportOrdinalTable.Count; i++)
+            for (int i = 0; i < file.Exports.Count; i++)
             {
-                ushort ordinal = file.ExportData.ExportOrdinalTable[i];
+                var entry = file.Exports.GetEntry(i);
 
-                if (ordinal >= file.ExportData.ExportAddressTable.Count)
-                    continue;
-
-                uint address = file.ExportData.ExportAddressTable[ordinal].ExportRVA;
-                int fileAddress = (int)file.RvaToVa(address);
-
-                string name = file.ExportData.ExportNameTable[i];
-
-                if (!name.StartsWith("Nt") || name.StartsWith("Ntdll"))
+                if (!entry.Name.StartsWith("Nt") || entry.Name.StartsWith("Ntdll"))
                     continue;
 
                 byte[] fileData = new byte[5];
 
-                br.BaseStream.Seek(fileAddress, System.IO.SeekOrigin.Begin);
-
-                for (int j = 0; j < 5; j++)
+                unsafe
                 {
-                    System.Runtime.InteropServices.Marshal.WriteByte(ntdll.Increment((int)address + j), br.ReadByte());
+                    IntPtr function = file.Exports.GetFunction(entry.Ordinal).Function;
+
+                    Win32.RtlMoveMemory(
+                        function.Decrement(new IntPtr(file.Memory)).Increment(ntdll),
+                        function,
+                        (5).ToIntPtr()
+                        );
                 }
             }
 
-            br.Close();
-
             ProcessHandle.GetCurrent().ProtectMemory(
                 ntdll,
-                (int)file.COFFOptionalHeader.SizeOfCode,
+                (int)file.Size,
                 oldProtection
                 );
+
+            file.Dispose();
         }
 
         private static void CheckForPreviousInstance()
@@ -844,7 +838,7 @@ namespace ProcessHacker
             info.AppendLine("OS Version: " + Environment.OSVersion.VersionString + " (" + OSVersion.BitsString + ")");
             info.AppendLine("Elevation: " + ElevationType.ToString());
             info.AppendLine("Working set: " + Utils.FormatSize(Environment.WorkingSet));
-            info.AppendLine("Private heap: 0x" + MemoryAlloc.PrivateHeap.ToString("x"));
+            info.AppendLine("Private heap: 0x" + MemoryAlloc.PrivateHeap.Address.ToString("x"));
 
             if (KProcessHacker.Instance == null)
                 info.AppendLine("KProcessHacker: not running");
@@ -1322,11 +1316,6 @@ namespace ProcessHacker
                     if (f == HackerWindow)
                         HackerWindowTopMost = f.TopMost;
                 }));
-
-            foreach (Form form in Application.OpenForms)
-            {
-                form.TopMost = f.TopMost;
-            }
 
             UpdateWindowMenu(((MenuItem)sender).Parent, f);
         }

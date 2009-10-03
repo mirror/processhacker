@@ -237,13 +237,6 @@ namespace ProcessHacker.Native.Api
         WinNT50 = 3
     }
 
-    public enum MachineType : uint
-    {
-        I386 = 0x014c,
-        Ia64 = 0x0200,
-        Amd64 = 0x8664
-    }
-
     [Flags]
     public enum MemoryState : uint
     {

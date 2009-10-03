@@ -24,16 +24,17 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ProcessHacker.Common;
-using ProcessHacker.PE;
 using ProcessHacker.UI;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Image;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
     public partial class PEWindow : Form
     {
         private string _path;
-        private PEFile _peFile;
-        private List<long> _exportVAs;
+        private MappedImage _mappedImage;
 
         public PEWindow(string path)
         {
@@ -49,7 +50,8 @@ namespace ProcessHacker
 
             try
             {
-                this.Read(_path);
+                _mappedImage = new MappedImage(path);
+                this.Read();
             }
             catch (Exception ex)
             {
@@ -77,6 +79,9 @@ namespace ProcessHacker
             Properties.Settings.Default.PEExportsColumns = ColumnSettings.SaveSettings(listExports);
             Properties.Settings.Default.PEImportsColumns = ColumnSettings.SaveSettings(listImports);
             Properties.Settings.Default.PEWindowSize = this.Size;
+
+            if (_mappedImage != null)
+                _mappedImage.Dispose();
         }
 
         private void InitializeLists()
@@ -121,34 +126,28 @@ namespace ProcessHacker
             get { return _path; } 
         }
 
-        private void Read(string path)
+        private unsafe void Read()
         {
-            PEFile peFile;
-     
-            peFile = new PEFile(path);
-
-            _peFile = peFile;
-
-            // preprare lists
+            // Preprare lists
 
             #region COFF Header
 
             // COFF header
             listCOFFHeader.Items.Clear();
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Target Machine", 
-                _peFile.COFFHeader.Machine.ToString() }));
+                _mappedImage.NtHeaders->FileHeader.Machine.ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Number of Sections", 
-                _peFile.COFFHeader.NumberOfSections.ToString() }));
+                _mappedImage.NtHeaders->FileHeader.NumberOfSections.ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Time/Date Stamp", 
-                Utils.GetDateTimeFromUnixTime(_peFile.COFFHeader.TimeDateStamp).ToString() }));
+                Utils.GetDateTimeFromUnixTime((uint)_mappedImage.NtHeaders->FileHeader.TimeDateStamp).ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Pointer to Symbol Table", 
-                Utils.FormatAddress(_peFile.COFFHeader.PointerToSymbolTable) }));
+                Utils.FormatAddress(_mappedImage.NtHeaders->FileHeader.PointerToSymbolTable) }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Number of Symbols", 
-                _peFile.COFFHeader.NumberOfSymbols.ToString() }));
+                _mappedImage.NtHeaders->FileHeader.NumberOfSymbols.ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Size of Optional Header", 
-                _peFile.COFFHeader.SizeOfOptionalHeader.ToString() }));
+                _mappedImage.NtHeaders->FileHeader.SizeOfOptionalHeader.ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Characteristics", 
-                Utils.FormatFlags(typeof(ImageCharacteristics), (long)_peFile.COFFHeader.Characteristics) }));
+                _mappedImage.NtHeaders->FileHeader.Characteristics.ToString() }));
 
             #endregion
 
@@ -157,60 +156,57 @@ namespace ProcessHacker
             // COFF optional header
             listCOFFOptionalHeader.Items.Clear();
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Magic", 
-                _peFile.COFFOptionalHeader.Magic == COFFOptionalHeader.PE32Magic ? "PE32 (0x10b)" : 
-                (_peFile.COFFOptionalHeader.Magic == COFFOptionalHeader.PE32PlusMagic ? "PE32+ (0x20b)" : 
-                "Unknown (0x" + _peFile.COFFOptionalHeader.Magic.ToString("x") + ")") }));
+                _mappedImage.NtHeaders->OptionalHeader.Magic == Win32.Pe32Magic ? "PE32 (0x10b)" : 
+                (_mappedImage.NtHeaders->OptionalHeader.Magic == Win32.Pe32PlusMagic ? "PE32+ (0x20b)" : 
+                "Unknown (0x" + _mappedImage.NtHeaders->OptionalHeader.Magic.ToString("x") + ")") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Linker Version",
-                _peFile.COFFOptionalHeader.MajorLinkerVersion.ToString() + "." +
-                _peFile.COFFOptionalHeader.MinorLinkerVersion.ToString() }));
+                _mappedImage.NtHeaders->OptionalHeader.MajorLinkerVersion.ToString() + "." +
+                _mappedImage.NtHeaders->OptionalHeader.MinorLinkerVersion.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Code",
-                "0x" + _peFile.COFFOptionalHeader.SizeOfCode.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.SizeOfCode.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Initialized Data",
-                "0x" + _peFile.COFFOptionalHeader.SizeOfInitializedData.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.SizeOfInitializedData.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Uninitialized Data",
-                "0x" + _peFile.COFFOptionalHeader.SizeOfUninitializedData.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.SizeOfUninitializedData.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Entry Point RVA",
-                "0x" + _peFile.COFFOptionalHeader.AddressOfEntryPoint.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.AddressOfEntryPoint.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Base of Code",
-                "0x" + _peFile.COFFOptionalHeader.BaseOfCode.ToString("x") }));
-            if (_peFile.COFFOptionalHeader.Magic == COFFOptionalHeader.PE32PlusMagic)
-                listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Base of Data",
-                    "0x" + _peFile.COFFOptionalHeader.BaseOfData.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.BaseOfCode.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Preferred Image Base",
-                "0x" + _peFile.COFFOptionalHeader.ImageBase.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.ImageBase.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Section Alignment",
-                _peFile.COFFOptionalHeader.SectionAlignment.ToString() }));
+                _mappedImage.NtHeaders->OptionalHeader.SectionAlignment.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "File Alignment",
-                _peFile.COFFOptionalHeader.FileAlignment.ToString() }));
+                _mappedImage.NtHeaders->OptionalHeader.FileAlignment.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Operating System Version",
-                _peFile.COFFOptionalHeader.MajorOperatingSystemVersion.ToString() + "." +
-                _peFile.COFFOptionalHeader.MinorOperatingSystemVersion.ToString() }));
+                _mappedImage.NtHeaders->OptionalHeader.MajorOperatingSystemVersion.ToString() + "." +
+                _mappedImage.NtHeaders->OptionalHeader.MinorOperatingSystemVersion.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Image Version",
-                _peFile.COFFOptionalHeader.MajorImageVersion.ToString() + "." +
-                _peFile.COFFOptionalHeader.MinorImageVersion.ToString() }));
+                _mappedImage.NtHeaders->OptionalHeader.MajorImageVersion.ToString() + "." +
+                _mappedImage.NtHeaders->OptionalHeader.MinorImageVersion.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Subsystem Version",
-                _peFile.COFFOptionalHeader.MajorSubsystemVersion.ToString() + "." +
-                _peFile.COFFOptionalHeader.MinorSubsystemVersion.ToString() }));
+                _mappedImage.NtHeaders->OptionalHeader.MajorSubsystemVersion.ToString() + "." +
+                _mappedImage.NtHeaders->OptionalHeader.MinorSubsystemVersion.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Image",
-                "0x" + _peFile.COFFOptionalHeader.SizeOfImage.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.SizeOfImage.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Headers",
-                "0x" + _peFile.COFFOptionalHeader.SizeOfHeaders.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.SizeOfHeaders.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Checksum",
-                "0x" + _peFile.COFFOptionalHeader.CheckSum.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.CheckSum.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Subsystem",
-                _peFile.COFFOptionalHeader.Subsystem.ToString() }));
+                _mappedImage.NtHeaders->OptionalHeader.Subsystem.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "DLL Characteristics",
-                Utils.FormatFlags(typeof(DllCharacteristics), (long)_peFile.COFFOptionalHeader.DllCharacteristics) }));
+                _mappedImage.NtHeaders->OptionalHeader.DllCharacteristics.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Stack Reserve",
-                "0x" + _peFile.COFFOptionalHeader.SizeOfStackReserve.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.SizeOfStackReserve.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Stack Commit",
-                "0x" + _peFile.COFFOptionalHeader.SizeOfStackCommit.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.SizeOfStackCommit.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Heap Reserve",
-                "0x" + _peFile.COFFOptionalHeader.SizeOfHeapReserve.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.SizeOfHeapReserve.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Heap Commit",
-                "0x" + _peFile.COFFOptionalHeader.SizeOfHeapCommit.ToString("x") }));
+                "0x" + _mappedImage.NtHeaders->OptionalHeader.SizeOfHeapCommit.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Number of Data Directory Entries",
-                _peFile.COFFOptionalHeader.NumberOfRvaAndSizes.ToString() }));
+                _mappedImage.NtHeaders->OptionalHeader.NumberOfRvaAndSizes.ToString() }));
 
             #endregion
 
@@ -218,18 +214,19 @@ namespace ProcessHacker
 
             listImageData.Items.Clear();
 
-            for (int i = 0; i < _peFile.ImageData.Count; i++)
+            for (int i = 0; i < _mappedImage.NumberOfDataEntries; i++)
             {
-                ImageDataType type = (ImageDataType)i;
-                ImageData data = _peFile.ImageData[type];
+                ImageDataDirectory* dataEntry;
 
-                if (data.VirtualAddress != 0)
+                dataEntry = _mappedImage.GetDataEntry((ImageDataEntry)i);
+
+                if (dataEntry != null && dataEntry->VirtualAddress != 0)
                 {
                     ListViewItem item = new ListViewItem();
 
-                    item.Text = type.ToString();
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + data.VirtualAddress.ToString("x")));
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + data.Size.ToString("x")));
+                    item.Text = ((ImageDataEntry)i).ToString();
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + dataEntry->VirtualAddress.ToString("x")));
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + dataEntry->Size.ToString("x")));
 
                     listImageData.Items.Add(item);
                 }
@@ -241,16 +238,16 @@ namespace ProcessHacker
 
             listSections.Items.Clear();
 
-            foreach (SectionHeader sh in _peFile.Sections)
+            for (int i = 0; i < _mappedImage.NumberOfSections; i++)
             {
+                ImageSectionHeader* section = &_mappedImage.Sections[i];
                 ListViewItem item = new ListViewItem();
 
-                item.Text = sh.Name;
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.VirtualAddress.ToString("x")));
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.VirtualSize.ToString("x")));
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.PointerToRawData.ToString("x")));
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, 
-                    Utils.FormatFlags(typeof(SectionFlags), (long)sh.Characteristics)));
+                item.Text = _mappedImage.GetSectionName(section);
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + section->VirtualAddress.ToString("x")));
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + section->SizeOfRawData.ToString("x")));
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + section->PointerToRawData.ToString("x")));
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, section->Characteristics.ToString()));
 
                 listSections.Items.Add(item);
             }
@@ -259,26 +256,7 @@ namespace ProcessHacker
 
             #region Exports
 
-            if (_peFile.ExportData != null)
-            {
-                listExports.VirtualListSize = _peFile.ExportData.ExportOrdinalTable.Count;
-
-                _exportVAs = new List<long>();
-
-                for (int i = 0; i < _peFile.ExportData.ExportAddressTable.Count; i++)
-                {
-                    ExportEntry entry = _peFile.ExportData.ExportAddressTable[i];
-
-                    if (entry.ExportRVA != 0)
-                        _exportVAs.Add(_peFile.RvaToVa(entry.ExportRVA));
-                    else
-                        _exportVAs.Add(0);
-                }
-            }
-            else  
-            {
-                listExports.VirtualListSize = 0;
-            }
+            listExports.VirtualListSize = _mappedImage.Exports.Count;
 
             #endregion
 
@@ -287,86 +265,64 @@ namespace ProcessHacker
             listImports.Items.Clear();
             listImports.Groups.Clear();
 
-            if (_peFile.ImportData != null)
-            {      
-                var list = new List<KeyValuePair<string,int>>();
+            var list = new List<KeyValuePair<string,int>>();
 
-                for (int i = 0; i < _peFile.ImportData.ImportDirectoryTable.Count; i++)
-                    list.Add(new KeyValuePair<string,int>(_peFile.ImportData.ImportDirectoryTable[i].Name, i));
+            for (int i = 0; i < _mappedImage.Imports.Count; i++)
+                list.Add(new KeyValuePair<string, int>(_mappedImage.Imports[i].Name, i));
 
-                list.Sort((kvp1, kvp2) => StringComparer.CurrentCultureIgnoreCase.Compare(kvp1.Key, kvp2.Key));
+            list.Sort((kvp1, kvp2) => StringComparer.CurrentCultureIgnoreCase.Compare(kvp1.Key, kvp2.Key));
 
-                for (int i = 0; i < list.Count; i++)
+            for (int i = 0; i < list.Count; i++)
+            {
+                var dll = _mappedImage.Imports[list[i].Value];
+                int index = list[i].Value;
+
+                listImports.Groups.Add(new ListViewGroup(list[i].Key));
+
+                for (int j = 0; j < dll.Count; j++)
                 {
-                    int index = list[i].Value;
+                    var entry = dll[j];
+                    ListViewItem item = new ListViewItem(listImports.Groups[listImports.Groups.Count - 1]);
 
-                    listImports.Groups.Add(new ListViewGroup(list[i].Key));
-
-                    for (int j = 0; j < _peFile.ImportData.ImportLookupTable[index].Count; j++)
+                    if (entry.Name == null)
                     {
-                        ImportLookupEntry entry = _peFile.ImportData.ImportLookupTable[index][j];
-                        ListViewItem item = new ListViewItem(listImports.Groups[listImports.Groups.Count - 1]);
-
-                        if (entry.UseOrdinal)
-                        {
-                            item.Text = "(Ordinal " + entry.Ordinal.ToString() + ")";
-                            item.SubItems.Add(new ListViewItem.ListViewSubItem());
-                        }
-                        else
-                        {
-                            item.Text = entry.NameEntry.Name;
-                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, entry.NameEntry.Hint.ToString()));
-                        }
-
-                        listImports.Items.Add(item);
+                        item.Text = "(Ordinal " + entry.Ordinal.ToString() + ")";
+                        item.SubItems.Add(new ListViewItem.ListViewSubItem());
                     }
+                    else
+                    {
+                        item.Text = entry.Name;
+                        item.SubItems.Add(new ListViewItem.ListViewSubItem(item, entry.NameHint.ToString()));
+                    }
+
+                    listImports.Items.Add(item);
                 }
-
-                //we set Groupstate here else there are no groups to set state
-                listImports.SetGroupState(ListViewGroupState.Normal | ListViewGroupState.Collapsible);
-
-                //foreach (ListViewGroup lvg in listImports.Groups) //Works - just commented out
-                    //listImports.SetGroupFooter(lvg, "Imports " + lvg.Items.Count + " " + lvg.Header.ToLower() + " item(s)...");
             }
+
+            //we set Groupstate here else there are no groups to set state
+            listImports.SetGroupState(ListViewGroupState.Normal | ListViewGroupState.Collapsible);
+
+            //foreach (ListViewGroup lvg in listImports.Groups) //Works - just commented out
+                //listImports.SetGroupFooter(lvg, "Imports " + lvg.Items.Count + " " + lvg.Header.ToLower() + " item(s)...");
 
             #endregion
         }
 
         private void listExports_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            if (_peFile != null)
+            unsafe
             {
-                ushort ordinal = _peFile.ExportData.ExportOrdinalTable[e.ItemIndex];
+                var entry = _mappedImage.Exports.GetEntry(e.ItemIndex);
+                var function = _mappedImage.Exports.GetFunction(entry.Ordinal);
 
-                if (ordinal >= _peFile.ExportData.ExportAddressTable.Count)
-                {
-                    e.Item = new ListViewItem(new string[] { ordinal.ToString(), ordinal.ToString(), "", "" });
-                    return;
-                } 
-
-                ExportEntry entry = _peFile.ExportData.ExportAddressTable[ordinal];
-                
-                e.Item = new ListViewItem();
-
-                if (e.ItemIndex < _peFile.ExportData.ExportNameTable.Count)
-                    e.Item.Text = _peFile.ExportData.ExportNameTable[e.ItemIndex];
-
-                e.Item.SubItems.Add(new ListViewItem.ListViewSubItem(e.Item, (e.ItemIndex + _peFile.ExportData.OrdinalBase).ToString()));
-                e.Item.SubItems.Add(new ListViewItem.ListViewSubItem());
-                e.Item.SubItems.Add(new ListViewItem.ListViewSubItem());  
-
-                if (entry.Type == ExportEntry.ExportType.Export)
-                {
-                    e.Item.SubItems[2].Text = "0x" + entry.ExportRVA.ToString("x");
-
-                    if (entry.ExportRVA != 0)
-                        e.Item.SubItems[3].Text = "0x" + _exportVAs[ordinal].ToString("x");
-                }
-                else if (entry.Type == ExportEntry.ExportType.Forwarder)
-                {
-                    e.Item.ImageIndex = 0;
-                    e.Item.Text += " > " + entry.ForwardedString;
-                }
+                e.Item = new ListViewItem(new string[]
+                    {
+                        entry.Ordinal.ToString(),
+                        function.ForwardedName != null ? entry.Name + " > " + function.ForwardedName : entry.Name,
+                        function.ForwardedName == null ? 
+                        "0x" + function.Function.Decrement(new IntPtr(_mappedImage.Memory)).ToString("x") :
+                        ""
+                    });
             }
         }
 

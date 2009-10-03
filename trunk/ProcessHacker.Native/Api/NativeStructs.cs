@@ -749,6 +749,30 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct ImageBaseRelocation
+    {
+        public int VirtualAddress;
+        public int SizeOfBlock;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageBoundForwarderRef
+    {
+        public int TimeDateStamp;
+        public short OffsetModuleName;
+        public short Reserved;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageBoundImportDescriptor
+    {
+        public int TimeDateStamp;
+        public short OffsetModuleName;
+        public short NumberOfModuleForwarderRefs;
+        public ImageBoundForwarderRef ForwarderRefs;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct ImageDataDirectory
     {
         public int VirtualAddress;
@@ -756,15 +780,98 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct ImageExportDirectory
+    {
+        public int Characteristics;
+        public int TimeDateStamp;
+        public short MajorVersion;
+        public short MinorVersion;
+        public int Name;
+        public int Base;
+        public int NumberOfFunctions;
+        public int NumberOfNames;
+        public int AddressOfFunctions;
+        public int AddressOfNames;
+        public int AddressOfNameOrdinals;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct ImageFileHeader
     {
-        public short Machine;
+        public MachineType Machine;
         public short NumberOfSections;
         public int TimeDateStamp;
         public int PointerToSymbolTable;
         public int NumberOfSymbols;
         public short SizeOfOptionalHeader;
-        public short Characteristics;
+        public ImageCharacteristics Characteristics;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageImportByName
+    {
+        public short Hint;
+        public byte Name;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageImportDescriptor
+    {
+        public int OriginalFirstThunk; // also Characteristics
+        public int TimeDateStamp;
+        public int ForwarderChain;
+        public int Name;
+        public int FirstThunk;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageLoadConfigDirectory
+    {
+        public int Size;
+        public int TimeDateStamp;
+        public short MajorVersion;
+        public short MinorVersion;
+        public int GlobalFlagsClear;
+        public int GlobalFlagsSet;
+        public int CriticalSectionDefaultTimeout;
+        public int DeCommitFreeBlockThreshold;
+        public int DeCommitTotalFreeThreshold;
+        public int LockPrefixTable;
+        public int MaximumAllocationSize;
+        public int VirtualMemoryThreshold;
+        public int ProcessHeapFlags;
+        public int ProcessAffinityMask;
+        public short CsdVersion;
+        public short Reserved1;
+        public int EditList;
+        public int SecurityCookie;
+        public int SEHandlerTable;
+        public int SEHandlerCount;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageLoadConfigDirectory64
+    {
+        public int Size;
+        public int TimeDateStamp;
+        public short MajorVersion;
+        public short MinorVersion;
+        public int GlobalFlagsClear;
+        public int GlobalFlagsSet;
+        public int CriticalSectionDefaultTimeout;
+        public long DeCommitFreeBlockThreshold;
+        public long DeCommitTotalFreeThreshold;
+        public long LockPrefixTable;
+        public long MaximumAllocationSize;
+        public long VirtualMemoryThreshold;
+        public long ProcessAffinityMask;
+        public int ProcessHeapFlags;
+        public short CsdVersion;
+        public short Reserved1;
+        public long EditList;
+        public long SecurityCookie;
+        public long SEHandlerTable;
+        public long SEHandlerCount;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -800,8 +907,8 @@ namespace ProcessHacker.Native.Api
         public int SizeOfImage;
         public int SizeOfHeaders;
         public int CheckSum;
-        public short Subsystem;
-        public short DllCharacteristics;
+        public ImageSubsystem Subsystem;
+        public ImageDllCharacteristics DllCharacteristics;
         public int SizeOfStackReserve;
         public int SizeOfStackCommit;
         public int SizeOfHeapReserve;
@@ -809,6 +916,82 @@ namespace ProcessHacker.Native.Api
         public int LoaderFlags;
         public int NumberOfRvaAndSizes;
         public ImageDataDirectory DataDirectory;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageOptionalHeader64
+    {
+        public short Magic;
+        public byte MajorLinkerVersion;
+        public byte MinorLinkerVersion;
+        public int SizeOfCode;
+        public int SizeOfInitializedData;
+        public int SizeOfUninitializedData;
+        public int AddressOfEntryPoint;
+        public int BaseOfCode;
+        public long ImageBase;
+        public int SectionAlignment;
+        public int FileAlignment;
+        public short MajorOperatingSystemVersion;
+        public short MinorOperatingSystemVersion;
+        public short MajorImageVersion;
+        public short MinorImageVersion;
+        public short MajorSubsystemVersion;
+        public short MinorSubsystemVersion;
+        public int Win32VersionValue;
+        public int SizeOfImage;
+        public int SizeOfHeaders;
+        public int CheckSum;
+        public ImageSubsystem Subsystem;
+        public ImageDllCharacteristics DllCharacteristics;
+        public long SizeOfStackReserve;
+        public long SizeOfStackCommit;
+        public long SizeOfHeapReserve;
+        public long SizeOfHeapCommit;
+        public int LoaderFlags;
+        public int NumberOfRvaAndSizes;
+        public ImageDataDirectory DataDirectory;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageRelocation
+    {
+        public int VirtualAddress;
+        public int SymbolTableIndex;
+        public short Type;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct ImageSectionHeader
+    {
+        public fixed byte Name[8];
+        public int Misc; // PhysicalAddress, VirtualSize
+        public int VirtualAddress;
+        public int SizeOfRawData;
+        public int PointerToRawData;
+        public int PointerToRelocations;
+        public int PointerToLinenumbers;
+        public short NumberOfRelocations;
+        public short NumberOfLinenumbers;
+        public ImageSectionFlags Characteristics;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageThunkData
+    {
+        public int ForwarderString; // byte*
+        public int Function; // int*
+        public int Ordinal;
+        public int AddressOfData; // ImageImportByName*
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ImageThunkData64
+    {
+        public long ForwarderString; // byte*
+        public long Function; // int*
+        public long Ordinal;
+        public long AddressOfData; // ImageImportByName*
     }
 
     [StructLayout(LayoutKind.Sequential)]

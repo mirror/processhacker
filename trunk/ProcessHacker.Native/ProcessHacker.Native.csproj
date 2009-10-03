@@ -62,6 +62,10 @@
     </Compile>
     <Compile Include="Api\NtStatus.cs" />
     <Compile Include="Api\Win32Error.cs" />
+    <Compile Include="Image\ImageImports.cs" />
+    <Compile Include="Image\ImageDirectoryEntry.cs" />
+    <Compile Include="Image\ImageExports.cs" />
+    <Compile Include="Image\MappedImage.cs" />
     <Compile Include="NativeBitmap.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Debugging\DebugBuffer.cs" />

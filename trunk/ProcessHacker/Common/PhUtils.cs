@@ -423,7 +423,17 @@ namespace ProcessHacker.Common
         /// <param name="ex">The exception to notify the user of.</param>
         public static void ShowException(string operation, Exception ex)
         {
+#if !DEBUG
             MessageBox.Show(Form.ActiveForm, FormatException(operation, ex), "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+#else
+            MessageBox.Show(
+                Form.ActiveForm,
+                operation + "\n\n" + ex.ToString(),
+                "Process Hacker",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+                );
+#endif
         }
 
         /// <summary>

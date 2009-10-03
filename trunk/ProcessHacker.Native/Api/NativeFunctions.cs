@@ -2920,7 +2920,7 @@ namespace ProcessHacker.Native.Api
         {
             unsafe
             {
-                int* buffer = (int*)BitMapHeader.Buffer.ToPointer();
+                int* buffer = (int*)BitMapHeader.Buffer;
 
                 return (buffer[BitPosition / 32] >> (BitPosition % 32)) & 0x1;
             }

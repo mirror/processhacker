@@ -58,7 +58,6 @@
             this.listExports = new System.Windows.Forms.ListView();
             this.columnExportName = new System.Windows.Forms.ColumnHeader();
             this.columnExportOrdinal = new System.Windows.Forms.ColumnHeader();
-            this.columnExportRVA = new System.Windows.Forms.ColumnHeader();
             this.columnExportFileAddress = new System.Windows.Forms.ColumnHeader();
             this.tabImports = new System.Windows.Forms.TabPage();
             this.listImports = new ProcessHacker.ExtendedListView();
@@ -277,9 +276,8 @@
             // listExports
             // 
             this.listExports.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnExportName,
             this.columnExportOrdinal,
-            this.columnExportRVA,
+            this.columnExportName,
             this.columnExportFileAddress});
             this.listExports.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listExports.FullRowSelect = true;
@@ -299,16 +297,11 @@
             // columnExportName
             // 
             this.columnExportName.Text = "Name";
-            this.columnExportName.Width = 120;
+            this.columnExportName.Width = 220;
             // 
             // columnExportOrdinal
             // 
             this.columnExportOrdinal.Text = "Ordinal";
-            // 
-            // columnExportRVA
-            // 
-            this.columnExportRVA.Text = "RVA";
-            this.columnExportRVA.Width = 80;
             // 
             // columnExportFileAddress
             // 
@@ -393,7 +386,6 @@
         private System.Windows.Forms.ListView listExports;
         private System.Windows.Forms.ColumnHeader columnExportName;
         private System.Windows.Forms.ColumnHeader columnExportOrdinal;
-        private System.Windows.Forms.ColumnHeader columnExportRVA;
         private System.Windows.Forms.ColumnHeader columnExportFileAddress;
         private System.Windows.Forms.ListView listCOFFHeader;
         private System.Windows.Forms.ColumnHeader columnCHName;

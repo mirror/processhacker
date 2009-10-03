@@ -59,6 +59,9 @@ namespace ProcessHacker.Native.Api
         public const int MaxKeyValueNameLength = 32767;
         public const int MaxStackDepth = 32;
         public const int MaxWow64SharedEntries = 16;
+        public const short Pe32Magic = 0x10b;
+        public const short Pe32PlusMagic = 0x20b;
+        public const short RomMagic = 0x107;
         public const int PortMessageMaxDataLength = 0x130;
         public const int PortMessageMaxLength = 0x148;
         public const int ProcessHandleTracingMaxStacks = 16;

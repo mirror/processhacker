@@ -149,22 +149,12 @@ namespace ProcessHacker.Native
 
         public static bool IsGreaterThanOrEqualTo(this IntPtr ptr, IntPtr ptr2)
         {
-            int result = ptr.CompareTo(ptr2);
-
-            if (result == 0 || result == 1)
-                return true;
-
-            return false;
+            return ptr.CompareTo(ptr2) >= 0;
         }
 
         public static bool IsLessThanOrEqualTo(this IntPtr ptr, IntPtr ptr2)
         {
-            int result = ptr.CompareTo(ptr2);
-
-            if (result == -1 || result == 0)
-                return true;
-
-            return false;
+            return ptr.CompareTo(ptr2) <= 0;
         }
 
         public static IntPtr Not(this IntPtr ptr)
@@ -188,7 +178,7 @@ namespace ProcessHacker.Native
             // Avoid sign-extending the pointer - we want it zero-extended.
             unsafe
             {
-                void* voidPtr = ptr.ToPointer();
+                void* voidPtr = (void*)ptr;
 
                 return (uint)voidPtr;
             }
@@ -199,7 +189,7 @@ namespace ProcessHacker.Native
             // Avoid sign-extending the pointer - we want it zero-extended.
             unsafe
             {
-                void* voidPtr = ptr.ToPointer();
+                void* voidPtr = (void*)ptr;
 
                 return (ulong)voidPtr;
             }

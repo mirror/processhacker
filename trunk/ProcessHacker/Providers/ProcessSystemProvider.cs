@@ -31,6 +31,7 @@ using ProcessHacker.Common;
 using ProcessHacker.Common.Messaging;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Image;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
@@ -533,22 +534,17 @@ namespace ProcessHacker
             // 1. The function-to-library ratio is lower than 4
             //   (on average less than 4 functions are imported from each library)
             // 2. It references more than 3 libraries but less than 14 libraries.
-            //
-            // Note that the PE reader is horribly broken and doesn't work for 
-            // PE32+ files. That means we'll disable this check for 64-bit.
-            if (fileName != null && (Properties.Settings.Default.VerifySignatures || forced) && IntPtr.Size == 4)
+            if (fileName != null && (Properties.Settings.Default.VerifySignatures || forced))
             {
                 try
                 {
-                    var peFile = new PE.PEFile(fileName, false);
-
-                    if (peFile.ImportData != null)
+                    using (var mappedImage = new MappedImage(fileName))
                     {
-                        int libraryTotal = peFile.ImportData.ImportLookupTable.Count;
+                        int libraryTotal = mappedImage.Imports.Count;
                         int funcTotal = 0;
 
-                        foreach (var i in peFile.ImportData.ImportLookupTable)
-                            funcTotal += i.Count;
+                        for (int i = 0; i < mappedImage.Imports.Count; i++)
+                            funcTotal += mappedImage.Imports[i].Count;
 
                         fpResult.ImportModules = libraryTotal;
                         fpResult.ImportFunctions = funcTotal;
@@ -560,12 +556,7 @@ namespace ProcessHacker
                             fpResult.IsPacked = true;
                     }
                 }
-                catch (System.IO.EndOfStreamException)
-                {
-                    if (pid > 4)
-                        fpResult.IsPacked = true;
-                }
-                catch (PE.PEException)
+                catch (AccessViolationException)
                 {
                     if (pid > 4)
                         fpResult.IsPacked = true;

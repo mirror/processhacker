@@ -251,7 +251,7 @@ namespace ProcessHacker.Native.Objects
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
-            return new SectionView(baseAddress, commitSize);
+            return new SectionView(baseAddress, viewSize);
         }
     }
 }

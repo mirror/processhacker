@@ -38,9 +38,9 @@ namespace ProcessHacker.Native
         private static Heap _privateHeap = new Heap(HeapFlags.Class1 | HeapFlags.Growable);
         private static Heap _processHeap = Heap.GetDefault();
 
-        public static IntPtr PrivateHeap
+        public static Heap PrivateHeap
         {
-            get { return _privateHeap.Address; }
+            get { return _privateHeap; }
         }
 
         /// <summary>

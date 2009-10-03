@@ -111,7 +111,7 @@ namespace ProcessHacker.Native.Ipc
             }
 
             _sectionView = _section.MapView(header.BlockSize * header.NumberOfBlocks);
-            _header = (BufferHeader*)_sectionView.Memory.ToPointer();
+            _header = (BufferHeader*)_sectionView.Memory;
             _data = &_header->Data;
         }
 
@@ -133,7 +133,7 @@ namespace ProcessHacker.Native.Ipc
 
         public void Read(MemoryRegion data)
         {
-            this.Read(data.Memory.ToPointer());
+            this.Read((void*)data.Memory);
         }
 
         public void Read(void* buffer)
@@ -185,7 +185,7 @@ namespace ProcessHacker.Native.Ipc
 
         public void Write(MemoryRegion data, int offset)
         {
-            this.Write(data.Memory.Increment(offset).ToPointer());
+            this.Write((void*)data.Memory.Increment(offset));
         }
 
         public void Write(void* buffer)

@@ -818,7 +818,7 @@ namespace ProcessHacker.Native
         {
             unsafe
             {
-                return QueryKSystemTime((KSystemTime*)time.ToPointer());
+                return QueryKSystemTime((KSystemTime*)time);
             }
         }
 
