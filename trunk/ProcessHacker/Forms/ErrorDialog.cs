@@ -35,16 +35,18 @@ namespace ProcessHacker
     {
         private Exception _exception;
         private string _trackerItem;
+        private bool _isTerminating;
 
         public ErrorDialog(Exception ex, bool terminating)
         {
             InitializeComponent();
 
             _exception = ex;
+            _isTerminating = terminating;
 
             textException.AppendText(_exception.ToString());
 
-            if (terminating)
+            if (_isTerminating)
                 buttonContinue.Enabled = false;
 
             textException.AppendText("\r\n\r\nDIAGNOSTIC INFORMATION\r\n" + Program.GetDiagnosticInformation());
@@ -104,7 +106,9 @@ namespace ProcessHacker
             qc.Add("artifact_group_id", "100"); //100 = null
             qc.Add("assigned_to", "100"); //User this report is to be assigned, 100 = null
             qc.Add("priority", "1"); //Bug Report Priority, 1 = Low (Blue) 5 = default (Green)
-            qc.Add("summary", Uri.EscapeDataString(_exception.Message) + " - " + System.Guid.NewGuid().ToString()); //Must be unique
+            qc.Add("summary", Uri.EscapeDataString(_exception.Message) 
+                + " - " + DateTime.Now.ToString("F") 
+                + " - " + System.Guid.NewGuid().ToString()); //Must be unique
             qc.Add("details", Uri.EscapeDataString(textException.Text));
             //qc.Add("input_file", FileName);
             //qc.Add("file_description", "Error-Report");
@@ -121,7 +125,8 @@ namespace ProcessHacker
 
         private void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            buttonContinue.Enabled = true;
+            if (!_isTerminating)
+                buttonContinue.Enabled = true;
             buttonQuit.Enabled = true;
 
             if (this.GetTitle(e.Result).Contains("ERROR"))
@@ -134,7 +139,7 @@ namespace ProcessHacker
             else
             {
                 statusLinkLabel.Enabled = true;
-                statusLinkLabel.Text = "SourceForge error report";
+                statusLinkLabel.Text = "View SourceForge Error Report";
                
                 _trackerItem = GetUrl(Regex.Replace(this.GetResult(e.Result), @"<(.|\n)*?>", string.Empty).Replace("&amp;", "&"));
             }
