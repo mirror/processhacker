@@ -127,7 +127,7 @@ namespace ProcessHacker
             //Exclude PH from WER after setting up exception handling otherwise PH will be permanatly 
             //queued in Vista/Win7 Problem Reports and Solutions, plus the data and infomation will be 
             //completely useles to us without a DigitalCertificate                
-            if (Environment.OSVersion.Version.Major < 6)
+            if (Environment.OSVersion.Version.Major == 5 && Environment.OSVersion.Version.Minor >= 0)
             {
                 if (!Native.Api.Win32.AddERExcludedApplication(AppDomain.CurrentDomain.FriendlyName))
                 {
@@ -136,12 +136,12 @@ namespace ProcessHacker
                         Win32.GetLastErrorMessage());
                 }
             }
-            else
+            else if (Environment.OSVersion.Version.Major >= 5)
             {
                HResult excludeApp = Native.Api.Win32.WerAddExcludedApplication(AppDomain.CurrentDomain.FriendlyName, false);
                excludeApp.ThrowIf();
             }
-   
+
             try
             {
                 pArgs = ParseArgs(args);
@@ -938,11 +938,28 @@ namespace ProcessHacker
             info.AppendLine("ASSEMBLIES LOADED");
             info.AppendLine();
 
-            foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            ProcessHandle PhMods = new ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id, ProcessAccess.All);
+            foreach (ProcessModule procmods in PhMods.GetModules())
             {
-                info.AppendLine("Assembly: " + assembly.ToString());
-                info.AppendLine("Location: " + assembly.Location.ToString()); 
-                info.AppendLine("Build Time: " + Utils.GetAssemblyBuildDate(assembly, false));
+                info.AppendLine("Assembly: " + procmods.BaseName);
+                info.AppendLine("Location: " + procmods.FileName);
+
+                DateTime fileCreatedInfo = System.IO.File.GetCreationTime(
+                    procmods.FileName);
+                info.AppendLine("Created: " + fileCreatedInfo.ToLongDateString() 
+                    + " " + 
+                    fileCreatedInfo.ToLongTimeString());
+
+                DateTime fileModifiedInfo = System.IO.File.GetLastWriteTime(
+                   procmods.FileName);
+                info.AppendLine("Modified: " + fileModifiedInfo.ToLongDateString()
+                    + " " +
+                    fileModifiedInfo.ToLongTimeString());
+
+                System.Diagnostics.FileVersionInfo fileVersInfo =
+                    System.Diagnostics.FileVersionInfo.GetVersionInfo(procmods.FileName);
+                info.AppendLine("Version: " + fileVersInfo.FileVersion);
+
                 info.AppendLine();
             }
 
