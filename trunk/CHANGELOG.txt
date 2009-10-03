@@ -34,6 +34,7 @@ Process Hacker
    * Sort order for the relative start time column
    * Incorrect process priority class display
    * Commit and Physical Memory History icon colors
+   * Packed file detection, PE reader
 
 1.5
  * NEW/IMPROVED:
