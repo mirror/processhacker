@@ -119,28 +119,10 @@ namespace ProcessHacker
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            /* Setup Exception Handling at first opportunity to catch exceptions generatable anywhere */
+            // Setup exception handling at first opportunity to catch exceptions generatable anywhere.
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-
-            //Exclude PH from WER after setting up exception handling otherwise PH will be permanatly 
-            //queued in Vista/Win7 Problem Reports and Solutions, plus the data and infomation will be 
-            //completely useles to us without a DigitalCertificate                
-            if (Environment.OSVersion.Version.Major == 5 && Environment.OSVersion.Version.Minor >= 0)
-            {
-                if (!Native.Api.Win32.AddERExcludedApplication(AppDomain.CurrentDomain.FriendlyName))
-                {
-                    PhUtils.ShowWarning(
-                        "Process Hacker was not excluded from Windows Error Reporting: " + 
-                        Win32.GetLastErrorMessage());
-                }
-            }
-            else if (Environment.OSVersion.Version.Major >= 5)
-            {
-               HResult excludeApp = Native.Api.Win32.WerAddExcludedApplication(AppDomain.CurrentDomain.FriendlyName, false);
-               excludeApp.ThrowIf();
-            }
 
             try
             {
@@ -932,28 +914,24 @@ namespace ProcessHacker
             info.AppendLine("ASSEMBLIES LOADED");
             info.AppendLine();
 
-            ProcessHandle PhMods = new ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id, ProcessAccess.All);
-            foreach (ProcessModule procmods in PhMods.GetModules())
+            foreach (ProcessModule module in ProcessHandle.Current.GetModules())
             {
-                info.AppendLine("Assembly: " + procmods.BaseName);
-                info.AppendLine("Location: " + procmods.FileName);
+                info.AppendLine("Assembly: " + module.BaseName);
+                info.AppendLine("Location: " + module.FileName);
 
-                DateTime fileCreatedInfo = System.IO.File.GetCreationTime(
-                    procmods.FileName);
-                info.AppendLine("Created: " + fileCreatedInfo.ToLongDateString() 
-                    + " " + 
-                    fileCreatedInfo.ToLongTimeString());
+                DateTime fileCreatedInfo = System.IO.File.GetCreationTime(module.FileName);
+                info.AppendLine(
+                    "Created: " + fileCreatedInfo.ToLongDateString() + " " + 
+                    fileCreatedInfo.ToLongTimeString()
+                    );
 
-                DateTime fileModifiedInfo = System.IO.File.GetLastWriteTime(
-                   procmods.FileName);
-                info.AppendLine("Modified: " + fileModifiedInfo.ToLongDateString()
-                    + " " +
-                    fileModifiedInfo.ToLongTimeString());
+                DateTime fileModifiedInfo = System.IO.File.GetLastWriteTime(module.FileName);
+                info.AppendLine(
+                    "Modified: " + fileModifiedInfo.ToLongDateString() + " " +
+                    fileModifiedInfo.ToLongTimeString()
+                    );
 
-                System.Diagnostics.FileVersionInfo fileVersInfo =
-                    System.Diagnostics.FileVersionInfo.GetVersionInfo(procmods.FileName);
-                info.AppendLine("Version: " + fileVersInfo.FileVersion);
-
+                info.AppendLine("Version: " + System.Diagnostics.FileVersionInfo.GetVersionInfo(module.FileName).FileVersion);
                 info.AppendLine();
             }
 
