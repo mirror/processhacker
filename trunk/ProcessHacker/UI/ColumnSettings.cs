@@ -92,11 +92,15 @@ namespace ProcessHacker.UI
             if (settings == "")
                 return;
 
+            // Has the number of columns changed? If so, don't do anything.
+            if (list.Length != lv.Columns.Count)
+                return;
+
             for (int i = 0; i < list.Length; i++)
             {
                 string[] s = list[i].Split(',');
 
-                if (s.Length == 1)
+                if (s.Length != 2)
                     break;
 
                 lv.Columns[i].DisplayIndex = Int32.Parse(s[0]);
