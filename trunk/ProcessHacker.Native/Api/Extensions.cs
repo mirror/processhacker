@@ -279,8 +279,9 @@ namespace ProcessHacker.Native
 
                     // On Windows 7 and above the hanging bug appears to have 
                     // been fixed. Query the object normally.
-                    if (OSVersion.IsAboveOrEqual(WindowsVersion.Seven))
-                        hackLevel = 0;
+                    // UPDATE: Not so. It still happens.
+                    //if (OSVersion.IsAboveOrEqual(WindowsVersion.Seven))
+                    //    hackLevel = 0;
 
                     if (hackLevel == 1)
                     {
