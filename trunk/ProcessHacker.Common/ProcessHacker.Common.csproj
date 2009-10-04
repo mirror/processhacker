@@ -80,8 +80,8 @@
     <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\MessageQueueListener.cs" />
     <Compile Include="Objects\SecuredHandleTable.cs" />
+    <Compile Include="Settings\SettingDefaultAttribute.cs" />
     <Compile Include="Settings\SettingsBase.cs" />
-    <Compile Include="Settings\SettingsManager.cs" />
     <Compile Include="Settings\SettingsStore.cs" />
     <Compile Include="Threading\FastMutex.cs" />
     <Compile Include="Objects\DelayedReleasePool.cs" />

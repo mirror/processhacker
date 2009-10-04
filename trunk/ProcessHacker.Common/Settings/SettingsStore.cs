@@ -6,6 +6,7 @@ namespace ProcessHacker.Common.Settings
 {
     public abstract class SettingsStore
     {
-
+        public abstract string GetValue(string name);
+        public abstract void SetValue(string name, string value);
     }
 }

@@ -6,12 +6,28 @@ namespace ProcessHacker.Common.Settings
 {
     public abstract class SettingsBase
     {
-        private SettingsManager _manager;
+        private SettingsStore _store;
+        private Dictionary<string, object> _settings = new Dictionary<string, object>();
+
+        public SettingsBase(SettingsStore store)
+        {
+            _store = store;
+        }
 
         public object this[string name]
         {
-            get { return _manager.GetProperty(name); }
-            set { _manager.SetProperty(name, value); }
+            get { return this.GetValue(name); }
+            set { this.SetValue(name, value); }
+        }
+
+        private object GetValue(string name)
+        {
+            return null;
+        }
+
+        private void SetValue(string name, object value)
+        {
+            
         }
     }
 }
