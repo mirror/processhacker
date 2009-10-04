@@ -35,6 +35,7 @@ Process Hacker
    * Incorrect process priority class display
    * Commit and Physical Memory History icon colors
    * Packed file detection, PE reader
+   * Performance history buffer problems
 
 1.5
  * NEW/IMPROVED:

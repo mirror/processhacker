@@ -60,7 +60,7 @@ namespace ProcessHacker.Common
              */
             _size = size;
             _count = 0;
-            _index = _size - 1;
+            _index = 0;
             _data = new T[size];
         }
 
@@ -149,7 +149,7 @@ namespace ProcessHacker.Common
              * the index (possibly negative) and t is the size of the 
              * array.
              */
-            _data[_index = ((--_index % _size) + _size) % _size] = value;
+            _data[_index = (((_index - 1) % _size) + _size) % _size] = value;
 
             if (_count < _size)
                 _count++;
@@ -166,7 +166,7 @@ namespace ProcessHacker.Common
                 return;
 
             T[] newArray = new T[newSize];
-            int tailSize = _size - _index;
+            int tailSize = (_size - _index) % _size;
             int headSize = _count - tailSize;
 
             /* 

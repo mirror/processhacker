@@ -29,7 +29,7 @@ namespace ProcessHacker.Common
 {
     public static class HistoryManager
     {
-        private static int _globalMaxCount = 750;
+        private static int _globalMaxCount = 600;
 
         public static int GlobalMaxCount
         {
