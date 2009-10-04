@@ -105,10 +105,8 @@ namespace ProcessHacker
             qc.Add("category_id", "100"); //100 = null
             qc.Add("artifact_group_id", "100"); //100 = null
             qc.Add("assigned_to", "100"); //User this report is to be assigned, 100 = null
-            qc.Add("priority", "1"); //Bug Report Priority, 1 = Low (Blue) 5 = default (Green)
-            qc.Add("summary", Uri.EscapeDataString(_exception.Message) 
-                + " - " + DateTime.Now.ToString("F") 
-                + " - " + System.Guid.NewGuid().ToString()); //Must be unique
+            qc.Add("priority", "5"); //Bug Report Priority, 1 = Low (Blue) 5 = default (Green)
+            qc.Add("summary", Uri.EscapeDataString(_exception.Message));
             qc.Add("details", Uri.EscapeDataString(textException.Text));
             //qc.Add("input_file", FileName);
             //qc.Add("file_description", "Error-Report");
@@ -129,18 +127,27 @@ namespace ProcessHacker
                 buttonContinue.Enabled = true;
             buttonQuit.Enabled = true;
 
-            if (this.GetTitle(e.Result).Contains("ERROR"))
+            if (e.Error != null || this.GetTitle(e.Result).Contains("ERROR"))
             {
                 buttonSubmitReport.Enabled = true;
 
-                PhUtils.ShowError(this.GetTitle(e.Result)); //temporary
-                PhUtils.ShowError(this.GetResult(e.Result)); //temporary
+                if (e.Error != null)
+                {
+                    if (e.Error.InnerException != null)
+                        PhUtils.ShowError("Unable to submit the error report: " + e.Error.InnerException.Message);
+                    else
+                        PhUtils.ShowError("Unable to submit the error report: " + e.Error.Message);
+                }
+                else
+                {
+                    PhUtils.ShowError("Unable to submit the error report: " + this.GetTitle(e.Result));
+                }
             }
             else
             {
                 statusLinkLabel.Enabled = true;
-                statusLinkLabel.Text = "View SourceForge Error Report";
-               
+                statusLinkLabel.Text = "View SourceForge error report";
+
                 _trackerItem = GetUrl(Regex.Replace(this.GetResult(e.Result), @"<(.|\n)*?>", string.Empty).Replace("&amp;", "&"));
             }
         }
