@@ -27,6 +27,7 @@ Process Hacker
    * #2849052 - "not defined by current visual style"
    * #2863305 - "Unhandled exception in comparer"
    * Critical KProcessHacker denial-of-service security issues
+   * Crashes within the process tree model
    * Incorrect menu items for System threads
    * Crash when viewing error details in the event 
      of a corrupt configuration file
