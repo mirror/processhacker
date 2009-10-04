@@ -884,6 +884,87 @@ namespace ProcessHacker.Common
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Determines whether a string matches according to a wildcard expression.
+        /// </summary>
+        /// <param name="pattern">The wildcard expression.</param>
+        /// <param name="text">The string to match.</param>
+        /// <returns>Whether the string matches.</returns>
+        public static bool MatchWildcards(string pattern, string text)
+        {
+            return MatchWildcards(pattern, 0, text, 0);
+        }
+
+        private static bool MatchWildcards(string pattern, int patternStart, string text, int textStart)
+        {
+            // Note: this algorithm is currently recursive for easy understanding. 
+            // It should be re-implemented without recursion...
+
+            int patternIndex = patternStart;
+            int textIndex = textStart;
+
+            // If we have a zero-length pattern, the string matches.
+            if (pattern.Length == 0 || patternIndex >= pattern.Length)
+                return true;
+            // If we have a zero-length string, the string doesn't match.
+            if (text.Length == 0 || textIndex >= text.Length)
+                return false;
+
+            // Match up to the first asterisk (or maybe a number of them).
+
+            while (true)
+            {
+                // Did we reach the end of the pattern? If so, check if we 
+                // have also reached the end of the text.
+                if (patternIndex >= pattern.Length)
+                    return textIndex >= text.Length;
+
+                if (pattern[patternIndex] == '*')
+                {
+                    patternIndex++;
+
+                    // Skip duplicate asterisks.
+                    while (patternIndex < pattern.Length)
+                    {
+                        if (pattern[patternIndex] != '*')
+                            break;
+
+                        patternIndex++;
+                    }
+
+                    break;
+                }
+
+                // Did we reach the end of the text? If so, the match fails.
+                if (textIndex >= text.Length)
+                    return false;
+
+                if (pattern[patternIndex] != text[textIndex] && pattern[patternIndex] != '?')
+                    return false;
+
+                patternIndex++;
+                textIndex++;
+            }
+
+            // We reached an asterisk (otherwise we would have returned by now). 
+            // Keep incrementing the text index until we get a match.
+
+            // Shortcut: if we are at the end of the pattern, it means the pattern 
+            // has trailing asterisk(s). The string matches.
+            if (patternIndex >= pattern.Length)
+                return true;
+
+            while (textIndex < text.Length)
+            {
+                if (MatchWildcards(pattern, patternIndex, text, textIndex))
+                    return true;
+
+                textIndex++;
+            }
+
+            return false;
+        }
+
         public static Dictionary<string, string> ParseCommandLine(string[] args)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
