@@ -94,212 +94,29 @@ namespace ProcessHacker
             this.buttonSubmitReport.Enabled = false;
             this.statusLinkLabel.Visible = true;
 
-            //SFBugReporter wc = new SFBugReporter();
-            //wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-            //wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
+            SFBugReporter wc = new SFBugReporter();
+            wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(wc_DownloadStringCompleted);
 
-            //NameValueCollection qc = new NameValueCollection();
-            //qc.Add("group_id", "242527"); //PH BugTracker ID: Required Do Not Change!
-            //qc.Add("atid", "1119665"); //PH BugTracker ID: Required Do Not Change!
-            //qc.Add("func", "postadd"); //PH BugTracker Function: Required Do Not Change!
-            //qc.Add("category_id", "100"); //100 = null
-            //qc.Add("artifact_group_id", "100"); //100 = null
-            //qc.Add("assigned_to", "100"); //User this report is to be assigned, 100 = null
-            //qc.Add("priority", "5"); //Bug Report Priority, 1 = Low (Blue) 5 = default (Green)
+            NameValueCollection qc = new NameValueCollection();
+            qc.Add("group_id", "242527"); //PH BugTracker ID: Required Do Not Change!
+            qc.Add("atid", "1119665"); //PH BugTracker group ID (bugs group): Required Do Not Change!
+            qc.Add("func", "postadd"); //PH BugTracker Function: Required Do Not Change!
+            qc.Add("category_id", "100"); //100 = null
+            qc.Add("artifact_group_id", "100"); //100 = null
+            qc.Add("assigned_to", "100"); //User this report is to be assigned, 100 = null
+            qc.Add("priority", "5"); //Bug Report Priority, 1 = Low (Blue) 5 = default (Green)
             //summary must be completly unique to prevent duplicate submission errors.
-            //qc.Add("summary", Uri.EscapeDataString(_exception.Message));
-                //+ " - " + DateTime.Now.ToString("F")
-                //+ " - " + System.Guid.NewGuid().ToString()); 
-            //qc.Add("details", Uri.EscapeDataString(textException.Text));
+            qc.Add("summary", Uri.EscapeDataString(_exception.Message)
+                + " - " + DateTime.Now.ToString("F")
+                + " - " + DateTime.Now.Ticks.ToString("x")); 
+            qc.Add("details", Uri.EscapeDataString(textException.Text));
             //qc.Add("input_file", FileName);
             //qc.Add("file_description", "Error-Report");
-            //qc.Add("submit", "Add Artifact"); //PH BugTracker Function: Required Do Not Change!
+            qc.Add("submit", "Add Artifact"); //PH BugTracker Function: Required Do Not Change!
 
-            //wc.QueryString = qc;
-            //wc.DownloadStringAsync(new Uri("https://sourceforge.net/tracker/index.php"));
-
-            System.Windows.Forms.OpenFileDialog fd = new OpenFileDialog();
-
-            fd.ShowDialog();
-
-
-            HttpWebRequest sessionRequest = (HttpWebRequest)HttpWebRequest.Create(
-                "https://sourceforge.net/tracker/index.php?" +  // https://sourceforge.net/tracker/index.php?
-                "group_id=276861" + 
-                "&atid=1175841" + 
-                "&func=add" + 
-                "&category_id=100" + 
-                "&artifact_group_id=100" +
-                "&assigned_to=100" + 
-                "&priority=5" + 
-                "&summary=" + Uri.EscapeDataString(_exception.Message) + DateTime.Now.ToString("F") +
-                "&details=" + Uri.EscapeDataString(textException.Text) + 
-                "&submit=Add Artifact");
-
-            string boundary = "-----------------------------" + DateTime.Now.Ticks.ToString("x");
-
-            sessionRequest.ServicePoint.Expect100Continue = true;
-            sessionRequest.UserAgent = "ProcessHacker " + Application.ProductVersion;
-            sessionRequest.ContentType = "multipart/form-data; boundary=" + boundary;
-            sessionRequest.Timeout = System.Threading.Timeout.Infinite;
-            sessionRequest.KeepAlive = true;
-            sessionRequest.Method = WebRequestMethods.Http.Post;
-
-            // Build up the 'post' message header
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.Append(boundary);
-            sb.Append("\r\n");
-            sb.Append(@"Content-Disposition: form-data; name=""group_id""");
-            sb.Append("\r\n");
-            sb.Append("\r\n");
-            sb.Append("276861");
-            sb.Append("\r\n");
-            sb.Append(boundary);
-
-            sb.Append(@"Content-Disposition: form-data; name=""atid""");
-            sb.Append("\r\n");
-            sb.Append("\r\n");
-            sb.Append("1175841");
-            sb.Append("\r\n");
-            sb.Append(boundary);
-
-            sb.Append(@"Content-Disposition: form-data; name=""func""");
-            sb.Append("\r\n");
-            sb.Append("\r\n");
-            sb.Append("postadd");
-            sb.Append("\r\n");
-            sb.Append(boundary);
-
-            sb.Append(@"Content-Disposition: form-data; name=""category_id""");
-            sb.Append("\r\n");
-            sb.Append("\r\n");
-            sb.Append("100");
-            sb.Append("\r\n");
-            sb.Append(boundary);
-
-            sb.Append(@"Content-Disposition: form-data; name=""artifact_group_id""");
-            sb.Append("\r\n");
-            sb.Append("\r\n");
-            sb.Append("100");
-            sb.Append("\r\n");
-            sb.Append(boundary);
-
-            sb.Append(@"Content-Disposition: form-data; name=""assigned_to""");
-            sb.Append("\r\n");
-            sb.Append("\r\n");
-            sb.Append("100");
-            sb.Append("\r\n");
-            sb.Append(boundary);
-
-            sb.Append(@"Content-Disposition: form-data; name=""priority""");
-            sb.Append("\r\n");
-            sb.Append("\r\n");
-            sb.Append("5");
-            sb.Append("\r\n");
-            sb.Append(boundary);
-
-            sb.Append(@"Content-Disposition: form-data; name=""summary""");
-            sb.Append("\r\n");
-            sb.Append("\r\n");
-            sb.Append(Uri.EscapeDataString(_exception.Message));
-            sb.Append("\r\n");
-            sb.Append(boundary);
-
-            sb.Append(@"Content-Disposition: form-data; name=""details""");
-            sb.Append("\r\n");
-            sb.Append("\r\n");
-            sb.Append(Uri.EscapeDataString(textException.Text));
-            sb.Append("\r\n");
-            sb.Append(boundary);
-
-            sb.Append(@"Content-Disposition: form-data; name=""input_file""; filename=" + fd.SafeFileName + "");
-            sb.Append("\r\n");
-            sb.Append(boundary);
-
-
-            string postHeader = sb.ToString();
-            byte[] postHeaderBytes = System.Text.Encoding.UTF8.GetBytes(postHeader);
-
-            // Build the trailing boundary string as a byte array
-            // ensuring the boundary appears on a line by itself
-
-            System.Text.StringBuilder sc = new System.Text.StringBuilder();
-            sc.Append("\r\n");
-            sc.Append("\r\n");
-            sc.Append("\r\n");
-            sc.Append(boundary);
-            sc.Append("\r\n");
-
-            sc.Append(@"Content-Disposition: form-data; name=""file_description""");
-            sc.Append("\r\n");
-            sc.Append("\r\n");
-            sc.Append("");
-            sc.Append("\r\n");
-            sb.Append(boundary);
-
-            sc.Append(@"Content-Disposition: form-data; name=""submit""");
-            sc.Append("\r\n");
-            sc.Append("\r\n");
-            sc.Append("Add Artifact");
-            sc.Append("\r\n");
-            sc.Append(boundary);
-            sc.Append("--");
-            sc.Append("\r\n");
-
-            string postFooter = sc.ToString();
-            byte[] boundaryBytes = System.Text.Encoding.ASCII.GetBytes(postFooter);
-
-            try
-            {
-                using (System.IO.FileStream fileStream = new System.IO.FileStream(fd.FileName, System.IO.FileMode.Open, System.IO.FileAccess.Read))
-                {
-                    sessionRequest.ContentLength = postHeaderBytes.Length + fileStream.Length + boundaryBytes.Length;
-
-                    using (System.IO.Stream requestStream = sessionRequest.GetRequestStream())
-                    {
-                        // Write out our post header
-                        requestStream.Write(postHeaderBytes, 0, postHeaderBytes.Length);
-                        // Write out the file contents
-                        byte[] buffer = new Byte[checked((uint)Math.Min(32, (int)fileStream.Length))];
-
-                        int bytesRead = 0;
-
-                        while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
-                        {
-                            requestStream.Write(buffer, 0, bytesRead);
-                        }
-
-          
-                        // Write out the trailing boundary
-                        requestStream.Write(boundaryBytes, 0, boundaryBytes.Length);
-
-                        requestStream.Close();
-                    }
-                }
-            }
-            catch (WebException ex)
-            {
-                // RequestCanceled will occour when we cancel the WebRequest.
-                // Filter out that exception but log all others.
-                if (ex != null)
-                {
-                    if (ex.Status != WebExceptionStatus.RequestCanceled)
-                    {
-                        PhUtils.ShowException("Unable to upload the Report", ex);
-                        Logging.Log(ex);
-                    }
-                }
-            }
-
-
-            WebResponse response = sessionRequest.GetResponse();
-
-            System.IO.Stream s = response.GetResponseStream(); 
-            System.IO.StreamReader sr = new System.IO.StreamReader(s);
-          
-            string htmlreply = sr.ReadToEnd();
-
-            MessageBox.Show(GetTitle(htmlreply));
+            wc.QueryString = qc;
+            wc.DownloadStringAsync(new Uri("https://sourceforge.net/tracker/index.php"));
         }
 
         private void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
