@@ -106,7 +106,10 @@ namespace ProcessHacker
             qc.Add("artifact_group_id", "100"); //100 = null
             qc.Add("assigned_to", "100"); //User this report is to be assigned, 100 = null
             qc.Add("priority", "5"); //Bug Report Priority, 1 = Low (Blue) 5 = default (Green)
-            qc.Add("summary", Uri.EscapeDataString(_exception.Message));
+            //summary must be completly unique to prevent duplicate submission errors.
+            qc.Add("summary", Uri.EscapeDataString(_exception.Message)
+                + " - " + DateTime.Now.ToString("F")
+                + " - " + System.Guid.NewGuid().ToString()); 
             qc.Add("details", Uri.EscapeDataString(textException.Text));
             //qc.Add("input_file", FileName);
             //qc.Add("file_description", "Error-Report");
