@@ -12,7 +12,8 @@ namespace ProcessHacker
 	public partial class VistaSearchBox : Control
 	{
         private const string DefaultInactiveText = "Search";
-
+        private string _inactiveText;
+        
 		private bool _active;
 
 		private Color _hoverButtonColor;
@@ -23,8 +24,58 @@ namespace ProcessHacker
 
 		private Font _inactiveFont;
 
-		private string _inactiveText;
+        protected override CreateParams CreateParams
+        {
+            [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
+            get
+            {
+                int WS_BORDER = 0x00800000;
+                int WS_EX_CLIENTEDGE = 0x00000200;
+                int WS_EX_CONTROLPARENT = 0x00010000;
 
+                CreateParams createParams = base.CreateParams;
+                createParams.ExStyle |= WS_EX_CONTROLPARENT;
+                createParams.ExStyle &= ~WS_EX_CLIENTEDGE;
+
+                // make sure WS_BORDER is present in the style
+                createParams.Style |= WS_BORDER;
+
+                return createParams;
+            }
+        }
+
+        public VistaSearchBox()
+        {
+            _hoverButtonColor = SystemColors.GradientInactiveCaption;
+            _activeBackColor = SystemColors.Window;
+            _activeForeColor = SystemColors.WindowText;
+            _inactiveBackColor = SystemColors.InactiveBorder;
+            _inactiveForeColor = SystemColors.GrayText;
+
+            _inactiveFont = new Font(this.Font, FontStyle.Italic);
+
+            _inactiveText = DefaultInactiveText;
+
+            InitializeComponent();
+
+            BackColor = InactiveBackColor;
+            ForeColor = InactiveForeColor;
+
+            searchOverlayLabel.Font = InactiveFont;
+            searchOverlayLabel.ForeColor = InactiveForeColor;
+            searchOverlayLabel.BackColor = InactiveBackColor;
+            searchOverlayLabel.Text = InactiveText;
+
+            searchText.Font = Font;
+            searchText.ForeColor = ActiveForeColor;
+            searchText.BackColor = InactiveBackColor;
+
+            _active = false;
+
+            SetTextActive(false);
+            SetActive(false);
+        }
+		
 		#region Events
 
 		public new event EventHandler TextChanged
@@ -106,7 +157,7 @@ namespace ProcessHacker
 		}
 
 		[Category("Appearance")]
-        [DefaultValue(DefaultInactiveText)]
+        [DefaultValue(typeof(string), DefaultInactiveText)]
 		public string InactiveText
 		{
 			get 
@@ -157,58 +208,6 @@ namespace ProcessHacker
 		}
 
 		#endregion
-
-        public int WS_BORDER = 0x00800000;
-        public int WS_EX_CLIENTEDGE = 0x00000200;
-        public int WS_EX_CONTROLPARENT = 0x00010000;
-
-		protected override CreateParams CreateParams
-		{
-			[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
-			get
-			{
-				CreateParams createParams = base.CreateParams;
-				createParams.ExStyle |= WS_EX_CONTROLPARENT;
-				createParams.ExStyle &= ~WS_EX_CLIENTEDGE;
-
-				// make sure WS_BORDER is present in the style
-				createParams.Style |= WS_BORDER;
-
-				return createParams;
-			}
-		}
-
-		public VistaSearchBox()
-		{
-			_hoverButtonColor = SystemColors.GradientInactiveCaption;
-			_activeBackColor = SystemColors.Window;
-			_activeForeColor = SystemColors.WindowText;
-			_inactiveBackColor = SystemColors.InactiveBorder;
-			_inactiveForeColor = SystemColors.GrayText;
-
-			_inactiveFont = new Font(this.Font, FontStyle.Italic);
-
-            _inactiveText = DefaultInactiveText;
-
-			InitializeComponent();
-
-			BackColor = InactiveBackColor;
-			ForeColor = InactiveForeColor;
-
-			searchOverlayLabel.Font = InactiveFont;
-			searchOverlayLabel.ForeColor = InactiveForeColor;
-			searchOverlayLabel.BackColor = InactiveBackColor;
-			searchOverlayLabel.Text = InactiveText;
-
-			searchText.Font = Font;
-			searchText.ForeColor = ActiveForeColor;
-			searchText.BackColor = InactiveBackColor;
-
-			_active = false;
-
-			SetTextActive(false);
-			SetActive(false);
-		}
 
 		#region Methods
 
