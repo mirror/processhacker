@@ -1,40 +1,48 @@
-﻿// Supports two blog entries by Daniel Moth:
-// http://www.danielmoth.com/Blog/2007/01/treeviewvista.html
-//  AND
-// http://www.danielmoth.com/Blog/2006/12/tvsexautohscroll.html
+﻿/*
+ * Process Hacker - 
+ *   ProcessHacker Extended TreeView 
+ * 
+ * Copyright (C) 2009 dmex
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
 
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native;
 using System;
 
 public class VistaTreeView : System.Windows.Forms.TreeView
 {
-    public const int TV_FIRST = 0x1100;
-    public const int TVM_SETEXTENDEDSTYLE = TV_FIRST + 44;
-    public const int TVM_GETEXTENDEDSTYLE = TV_FIRST + 45;
-    public const int TVM_SETAUTOSCROLLINFO = TV_FIRST + 59;
-    public const int TVS_EX_AUTOHSCROLL = 0x0020;
-    public const int TVS_EX_FADEINOUTEXPANDOS = 0x0040;
-    public const int GWL_STYLE = -16;
+    //http://www.danielmoth.com/Blog/2007/01/treeviewvista.html
+    //http://www.danielmoth.com/Blog/2006/12/tvsexautohscroll.html
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    internal static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+    private const int TV_FIRST = 0x1100;
+    private const int TVM_SETEXTENDEDSTYLE = TV_FIRST + 44;
+    private const int TVS_EX_AUTOHSCROLL = 0x0020; //autoscroll horizontaly
+    private const int TVS_EX_FADEINOUTEXPANDOS = 0x0040; //auto hide the +/- signs
 
     protected override void OnHandleCreated(System.EventArgs e)
     {
+        if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+        {
+            Win32.SendMessage(this.Handle, (WindowMessage)TVM_SETEXTENDEDSTYLE, 0, TVS_EX_AUTOHSCROLL | TVS_EX_FADEINOUTEXPANDOS);
+            Win32.SetWindowTheme(this.Handle, "explorer", null);
+        }
         base.OnHandleCreated(e);
-
-        // get style
-        int dw = SendMessage(this.Handle, TVM_GETEXTENDEDSTYLE, 0, 0);
-
-        // Update style
-        dw |= TVS_EX_AUTOHSCROLL;       // autoscroll horizontaly
-        dw |= TVS_EX_FADEINOUTEXPANDOS; // auto hide the +/- signs
-
-        // set style
-        Win32.SendMessage(this.Handle, (WindowMessage)TVM_SETEXTENDEDSTYLE, 0, dw);
-
-        // little black/empty arrows and blue highlight on treenodes
-        Win32.SetWindowTheme(this.Handle, "explorer", null);
     }
 }

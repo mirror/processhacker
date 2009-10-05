@@ -21,8 +21,9 @@ namespace ProcessHacker
 
         public WaitChainWindow(string procName, int procPid)
         {
-            InitializeComponent();
             this.SetPhParent();
+            InitializeComponent();
+            this.AddEscapeToClose();
             this.SetTopMost();
 
             processPid = procPid;
@@ -160,6 +161,23 @@ namespace ProcessHacker
             this.Close();
         }
 
+        private void buttonProperties_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ProcessWindow pForm = Program.GetProcessWindow(Program.HackerWindow.processP.Dictionary[processPid],
+                    new Program.PWindowInvokeAction(delegate(ProcessWindow f)
+                    {
+                        Properties.Settings.Default.ProcessWindowSelectedTab = "tabThreads";
+                        f.Show();
+                        f.Activate();
+                    }));
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to inspect the process", ex);
+            }
+        }
     }
 
     /// <summary>

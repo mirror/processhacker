@@ -78,7 +78,7 @@ namespace ProcessHacker
         /// <summary>
         /// The processes/system provider.
         /// </summary>
-        ProcessSystemProvider processP;
+        public ProcessSystemProvider processP;
         /// <summary>
         /// The services provider.
         /// </summary>

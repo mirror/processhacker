@@ -33,7 +33,6 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonEndThread = new System.Windows.Forms.Button();
             this.moreInfoLink = new System.Windows.Forms.LinkLabel();
-            this.buttonExplore = new System.Windows.Forms.Button();
             this.buttonProperties = new System.Windows.Forms.Button();
             this.threadTree = new VistaTreeView();
             this.SuspendLayout();
@@ -45,7 +44,7 @@
             this.textDescription.BackColor = System.Drawing.SystemColors.Control;
             this.textDescription.Location = new System.Drawing.Point(12, 12);
             this.textDescription.Name = "textDescription";
-            this.textDescription.Size = new System.Drawing.Size(335, 20);
+            this.textDescription.Size = new System.Drawing.Size(361, 20);
             this.textDescription.TabIndex = 1;
             // 
             // labelIntro
@@ -96,27 +95,17 @@
             this.moreInfoLink.Text = "More about Wait Chains";
             this.moreInfoLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.moreInfoLink_LinkClicked);
             // 
-            // buttonExplore
-            // 
-            this.buttonExplore.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonExplore.Image = global::ProcessHacker.Properties.Resources.folder_explore;
-            this.buttonExplore.Location = new System.Drawing.Point(379, 9);
-            this.buttonExplore.Name = "buttonExplore";
-            this.buttonExplore.Size = new System.Drawing.Size(24, 24);
-            this.buttonExplore.TabIndex = 8;
-            this.buttonExplore.UseVisualStyleBackColor = true;
-            // 
             // buttonProperties
             // 
             this.buttonProperties.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonProperties.Image = global::ProcessHacker.Properties.Resources.application_form_magnify;
-            this.buttonProperties.Location = new System.Drawing.Point(353, 9);
+            this.buttonProperties.Location = new System.Drawing.Point(379, 9);
             this.buttonProperties.Name = "buttonProperties";
             this.buttonProperties.Size = new System.Drawing.Size(24, 24);
             this.buttonProperties.TabIndex = 7;
             this.buttonProperties.UseVisualStyleBackColor = true;
+            this.buttonProperties.Click += new System.EventHandler(this.buttonProperties_Click);
             // 
             // threadTree
             // 
@@ -132,7 +121,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(415, 329);
             this.Controls.Add(this.threadTree);
-            this.Controls.Add(this.buttonExplore);
             this.Controls.Add(this.buttonProperties);
             this.Controls.Add(this.moreInfoLink);
             this.Controls.Add(this.buttonEndThread);
@@ -159,7 +147,6 @@
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonEndThread;
         private System.Windows.Forms.LinkLabel moreInfoLink;
-        private System.Windows.Forms.Button buttonExplore;
         private System.Windows.Forms.Button buttonProperties;
         private VistaTreeView threadTree;
     }
