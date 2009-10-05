@@ -43,7 +43,7 @@ namespace ProcessHacker.Native.Image
             {
                 int i = 0;
 
-                while (_descriptorTable[i].OriginalFirstThunk != 0)
+                while (_descriptorTable[i].OriginalFirstThunk != 0 || _descriptorTable[i].FirstThunk != 0)
                     i++;
 
                 _count = i;
@@ -93,7 +93,10 @@ namespace ProcessHacker.Native.Image
             _mappedImage = mappedImage;
             _descriptor = descriptor;
 
-            _lookupTable = _mappedImage.RvaToVa(_descriptor->OriginalFirstThunk);
+            if (_descriptor->OriginalFirstThunk != 0)
+                _lookupTable = _mappedImage.RvaToVa(_descriptor->OriginalFirstThunk);
+            else
+                _lookupTable = _mappedImage.RvaToVa(_descriptor->FirstThunk);
 
             // Do a quick scan.
             if (_lookupTable != null)
