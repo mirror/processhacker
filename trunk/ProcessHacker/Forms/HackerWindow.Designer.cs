@@ -33,6 +33,7 @@
             this.menuProcess = new System.Windows.Forms.ContextMenu();
             this.terminateMenuItem = new System.Windows.Forms.MenuItem();
             this.terminateProcessTreeMenuItem = new System.Windows.Forms.MenuItem();
+            this.analyzeWaitChainMenuItem = new System.Windows.Forms.MenuItem();
             this.suspendMenuItem = new System.Windows.Forms.MenuItem();
             this.resumeMenuItem = new System.Windows.Forms.MenuItem();
             this.restartProcessMenuItem = new System.Windows.Forms.MenuItem();
@@ -130,11 +131,8 @@
             this.timerMessages = new System.Windows.Forms.Timer(this.components);
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcesses = new System.Windows.Forms.TabPage();
-            this.treeProcesses = new ProcessHacker.ProcessTree();
             this.tabServices = new System.Windows.Forms.TabPage();
-            this.listServices = new ProcessHacker.Components.ServiceList();
             this.tabNetwork = new System.Windows.Forms.TabPage();
-            this.listNetwork = new ProcessHacker.Components.NetworkList();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.optionsToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -180,6 +178,9 @@
             this.pingNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
+            this.treeProcesses = new ProcessHacker.ProcessTree();
+            this.listServices = new ProcessHacker.Components.ServiceList();
+            this.listNetwork = new ProcessHacker.Components.NetworkList();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
@@ -203,6 +204,7 @@
             this.resumeMenuItem,
             this.restartProcessMenuItem,
             this.reduceWorkingSetProcessMenuItem,
+            this.analyzeWaitChainMenuItem,
             this.virtualizationProcessMenuItem,
             this.menuItem5,
             this.affinityProcessMenuItem,
@@ -234,6 +236,12 @@
             this.terminateProcessTreeMenuItem.Text = "Terminate Process Tree";
             this.terminateProcessTreeMenuItem.Click += new System.EventHandler(this.terminateProcessTreeMenuItem_Click);
             // 
+            // analyzeWaitChainMenuItem
+            // 
+            this.analyzeWaitChainMenuItem.Index = 6;
+            this.analyzeWaitChainMenuItem.Text = "Analyze Wait Chain";
+            this.analyzeWaitChainMenuItem.Click += new System.EventHandler(this.analyzeWaitChainMenuItem_Click);
+            // 
             // suspendMenuItem
             // 
             this.vistaMenu.SetImage(this.suspendMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
@@ -262,36 +270,36 @@
             // 
             // virtualizationProcessMenuItem
             // 
-            this.virtualizationProcessMenuItem.Index = 6;
+            this.virtualizationProcessMenuItem.Index = 7;
             this.virtualizationProcessMenuItem.Text = "Virtualization";
             this.virtualizationProcessMenuItem.Click += new System.EventHandler(this.virtualizationProcessMenuItem_Click);
             // 
             // menuItem5
             // 
-            this.menuItem5.Index = 7;
+            this.menuItem5.Index = 8;
             this.menuItem5.Text = "-";
             // 
             // affinityProcessMenuItem
             // 
-            this.affinityProcessMenuItem.Index = 8;
+            this.affinityProcessMenuItem.Index = 9;
             this.affinityProcessMenuItem.Text = "Affinity...";
             this.affinityProcessMenuItem.Click += new System.EventHandler(this.affinityProcessMenuItem_Click);
             // 
             // createDumpFileProcessMenuItem
             // 
-            this.createDumpFileProcessMenuItem.Index = 9;
+            this.createDumpFileProcessMenuItem.Index = 10;
             this.createDumpFileProcessMenuItem.Text = "Create Dump File...";
             this.createDumpFileProcessMenuItem.Click += new System.EventHandler(this.createDumpFileProcessMenuItem_Click);
             // 
             // terminatorProcessMenuItem
             // 
-            this.terminatorProcessMenuItem.Index = 10;
+            this.terminatorProcessMenuItem.Index = 11;
             this.terminatorProcessMenuItem.Text = "Terminator";
             this.terminatorProcessMenuItem.Click += new System.EventHandler(this.terminatorProcessMenuItem_Click);
             // 
             // miscellaneousProcessMenuItem
             // 
-            this.miscellaneousProcessMenuItem.Index = 11;
+            this.miscellaneousProcessMenuItem.Index = 12;
             this.miscellaneousProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.detachFromDebuggerProcessMenuItem,
             this.heapsProcessMenuItem,
@@ -340,7 +348,7 @@
             // priorityMenuItem
             // 
             this.vistaMenu.SetImage(this.priorityMenuItem, global::ProcessHacker.Properties.Resources.control_equalizer_blue);
-            this.priorityMenuItem.Index = 12;
+            this.priorityMenuItem.Index = 13;
             this.priorityMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.realTimeMenuItem,
             this.highMenuItem,
@@ -394,7 +402,7 @@
             // 
             // runAsProcessMenuItem
             // 
-            this.runAsProcessMenuItem.Index = 13;
+            this.runAsProcessMenuItem.Index = 14;
             this.runAsProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.launchAsUserProcessMenuItem,
             this.launchAsThisUserProcessMenuItem});
@@ -414,7 +422,7 @@
             // 
             // windowProcessMenuItem
             // 
-            this.windowProcessMenuItem.Index = 14;
+            this.windowProcessMenuItem.Index = 15;
             this.windowProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.bringToFrontProcessMenuItem,
             this.restoreProcessMenuItem,
@@ -463,37 +471,37 @@
             // 
             this.propertiesProcessMenuItem.DefaultItem = true;
             this.vistaMenu.SetImage(this.propertiesProcessMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
-            this.propertiesProcessMenuItem.Index = 15;
+            this.propertiesProcessMenuItem.Index = 16;
             this.propertiesProcessMenuItem.Text = "&Properties";
             this.propertiesProcessMenuItem.Click += new System.EventHandler(this.propertiesProcessMenuItem_Click);
             // 
             // menuItem7
             // 
-            this.menuItem7.Index = 16;
+            this.menuItem7.Index = 17;
             this.menuItem7.Text = "-";
             // 
             // searchProcessMenuItem
             // 
-            this.searchProcessMenuItem.Index = 17;
+            this.searchProcessMenuItem.Index = 18;
             this.searchProcessMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlM;
             this.searchProcessMenuItem.Text = "&Search Online";
             this.searchProcessMenuItem.Click += new System.EventHandler(this.searchProcessMenuItem_Click);
             // 
             // reanalyzeProcessMenuItem
             // 
-            this.reanalyzeProcessMenuItem.Index = 18;
+            this.reanalyzeProcessMenuItem.Index = 19;
             this.reanalyzeProcessMenuItem.Text = "Re-analyze";
             this.reanalyzeProcessMenuItem.Click += new System.EventHandler(this.reanalyzeProcessMenuItem_Click);
             // 
             // copyProcessMenuItem
             // 
             this.vistaMenu.SetImage(this.copyProcessMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyProcessMenuItem.Index = 19;
+            this.copyProcessMenuItem.Index = 20;
             this.copyProcessMenuItem.Text = "&Copy";
             // 
             // selectAllProcessMenuItem
             // 
-            this.selectAllProcessMenuItem.Index = 20;
+            this.selectAllProcessMenuItem.Index = 21;
             this.selectAllProcessMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
             this.selectAllProcessMenuItem.Text = "Select &All";
             this.selectAllProcessMenuItem.Click += new System.EventHandler(this.selectAllProcessMenuItem_Click);
@@ -845,7 +853,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 371);
+            this.statusBar.Location = new System.Drawing.Point(0, 350);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -904,7 +912,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 25);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(804, 346);
+            this.tabControl.Size = new System.Drawing.Size(804, 325);
             this.tabControl.TabIndex = 6;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControlBig_SelectedIndexChanged);
             // 
@@ -914,23 +922,10 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 320);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 299);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
-            // 
-            // treeProcesses
-            // 
-            this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeProcesses.Draw = true;
-            this.treeProcesses.Location = new System.Drawing.Point(3, 3);
-            this.treeProcesses.Name = "treeProcesses";
-            this.treeProcesses.Provider = null;
-            this.treeProcesses.Size = new System.Drawing.Size(790, 314);
-            this.treeProcesses.TabIndex = 4;
-            this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
-            this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
-            this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeProcesses_KeyDown);
             // 
             // tabServices
             // 
@@ -943,18 +938,6 @@
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
             // 
-            // listServices
-            // 
-            this.listServices.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listServices.DoubleBuffered = true;
-            this.listServices.Location = new System.Drawing.Point(3, 3);
-            this.listServices.Name = "listServices";
-            this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 314);
-            this.listServices.TabIndex = 0;
-            this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
-            this.listServices.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listServices_KeyDown);
-            // 
             // tabNetwork
             // 
             this.tabNetwork.Controls.Add(this.listNetwork);
@@ -965,18 +948,6 @@
             this.tabNetwork.TabIndex = 2;
             this.tabNetwork.Text = "Network";
             this.tabNetwork.UseVisualStyleBackColor = true;
-            // 
-            // listNetwork
-            // 
-            this.listNetwork.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listNetwork.DoubleBuffered = true;
-            this.listNetwork.Location = new System.Drawing.Point(3, 3);
-            this.listNetwork.Name = "listNetwork";
-            this.listNetwork.Provider = null;
-            this.listNetwork.Size = new System.Drawing.Size(790, 314);
-            this.listNetwork.TabIndex = 0;
-            this.listNetwork.DoubleClick += new System.EventHandler(this.listNetwork_DoubleClick);
-            this.listNetwork.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listNetwork_KeyDown);
             // 
             // toolStrip
             // 
@@ -1314,6 +1285,43 @@
             this.selectAllNetworkMenuItem.Text = "Select &All";
             this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
             // 
+            // treeProcesses
+            // 
+            this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeProcesses.Draw = true;
+            this.treeProcesses.Location = new System.Drawing.Point(3, 3);
+            this.treeProcesses.Name = "treeProcesses";
+            this.treeProcesses.Provider = null;
+            this.treeProcesses.Size = new System.Drawing.Size(790, 293);
+            this.treeProcesses.TabIndex = 4;
+            this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
+            this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
+            this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeProcesses_KeyDown);
+            // 
+            // listServices
+            // 
+            this.listServices.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listServices.DoubleBuffered = true;
+            this.listServices.Location = new System.Drawing.Point(3, 3);
+            this.listServices.Name = "listServices";
+            this.listServices.Provider = null;
+            this.listServices.Size = new System.Drawing.Size(790, 314);
+            this.listServices.TabIndex = 0;
+            this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
+            this.listServices.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listServices_KeyDown);
+            // 
+            // listNetwork
+            // 
+            this.listNetwork.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listNetwork.DoubleBuffered = true;
+            this.listNetwork.Location = new System.Drawing.Point(3, 3);
+            this.listNetwork.Name = "listNetwork";
+            this.listNetwork.Provider = null;
+            this.listNetwork.Size = new System.Drawing.Size(790, 314);
+            this.listNetwork.TabIndex = 0;
+            this.listNetwork.DoubleClick += new System.EventHandler(this.listNetwork_DoubleClick);
+            this.listNetwork.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listNetwork_KeyDown);
+            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
@@ -1323,7 +1331,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 393);
+            this.ClientSize = new System.Drawing.Size(804, 372);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.statusBar);
@@ -1507,6 +1515,7 @@
         private System.Windows.Forms.MenuItem pingNetworkMenuItem;
         private System.Windows.Forms.MenuItem VirusTotalMenuItem;
         private System.Windows.Forms.MenuItem networkInfomationMenuItem;
+        private System.Windows.Forms.MenuItem analyzeWaitChainMenuItem;
     }
 }
 

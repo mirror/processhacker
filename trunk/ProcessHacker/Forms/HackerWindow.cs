@@ -1768,6 +1768,18 @@ namespace ProcessHacker
             vt.Show();
         }
 
+        private void analyzeWaitChainMenuItem_Click(object sender, EventArgs e)
+        {
+            WaitChainWindow wcw = new WaitChainWindow(
+                treeProcesses.SelectedNodes[0].Name, 
+                treeProcesses.SelectedNodes[0].Pid);
+
+            int Y = this.Top + (this.Height - wcw.Height) / 2;
+            int X = this.Left + (this.Width - wcw.Width) / 2;
+
+            wcw.Location = new Point(X, Y);
+            wcw.Show();
+        }
 
         #endregion
 
@@ -3454,5 +3466,6 @@ namespace ProcessHacker
 
             }
         }
+
     }
 }
