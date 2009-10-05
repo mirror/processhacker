@@ -46,7 +46,7 @@ namespace ProcessHacker
         public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
 
         ThumbButtonManager thumbButtonManager;
-        JumpListManager jumpListManager;
+        //JumpListManager jumpListManager; //Reserved for future use
 
         private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
 
@@ -2247,38 +2247,40 @@ namespace ProcessHacker
         {
             thumbButtonManager.TaskbarButtonCreated -= thumbButtonManager_TaskbarButtonCreated;
 
-            jumpListManager = Windows7Taskbar.CreateJumpListManager();
-            jumpListManager.UserRemovedItems += (o, e_) =>
-            {
-                QueueMessage("User removed " + e_.RemovedItems.Length + " items (cancelling refresh)");
-                e_.Cancel = true;
-            };
+            //JumpListManager code works but has been commented out and reserved for future use
 
-            jumpListManager.ClearAllDestinations();
-            jumpListManager.EnabledAutoDestinationType = ApplicationDestinationType.Recent;
+            //jumpListManager = Windows7Taskbar.CreateJumpListManager();
+            //jumpListManager.UserRemovedItems += (o, e_) =>
+            //{
+            //QueueMessage("User removed " + e_.RemovedItems.Length + " items (cancelling refresh)");
+            //e_.Cancel = true;
+            //};
 
-            string shell32DllPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shell32.dll");
-
-            jumpListManager.AddUserTask(new ShellLink
-            {
-                Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "eventvwr.msc"),
-                Arguments = "/s",
-                Title = "Event Viewer",
-                IconLocation = shell32DllPath,
-                IconIndex = 14
-            });
+            //jumpListManager.ClearAllDestinations();
+            //jumpListManager.EnabledAutoDestinationType = ApplicationDestinationType.Recent;
+            
+            //string shell32DllPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shell32.dll");
+           
+            //jumpListManager.AddUserTask(new ShellLink
+            //{
+            //    Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "eventvwr.msc"),
+            //    Arguments = "/s",
+            //    Title = "Event Viewer",
+            //    IconLocation = shell32DllPath,
+            //    IconIndex = 14
+            //});
 
             //jumpListManager.AddUserTask(new Separator());
 
-            jumpListManager.AddUserTask(new ShellLink
-            {
-                Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "msinfo32.exe"),
-                Title = "System Infomation",
-                IconLocation = shell32DllPath,
-                IconIndex = 15
-            });
+            //jumpListManager.AddUserTask(new ShellLink
+            //{
+            //    Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "msinfo32.exe"),
+            //    Title = "System Infomation",
+            //    IconLocation = shell32DllPath,
+            //    IconIndex = 15
+            //});
 
-            jumpListManager.Refresh();
+            //jumpListManager.Refresh();
             //QueueMessage("Maximum slots in JumpList: " + jumpListManager.MaximumSlotsInList);
 
             ThumbButton sysInfoButton = thumbButtonManager.CreateThumbButton(100,
