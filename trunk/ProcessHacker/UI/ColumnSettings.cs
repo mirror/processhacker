@@ -24,6 +24,7 @@ using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Collections;
+using System.Text;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 
@@ -40,20 +41,23 @@ namespace ProcessHacker.UI
         /// <param name="lv"></param>
         /// <returns></returns>
         public static string SaveSettings(ListView lv)
-        {     
-            string result = "";
+        {
+            StringBuilder result = new StringBuilder();
 
             try
             {
                 foreach (ColumnHeader ch in lv.Columns)
                 {
-                    result += ch.DisplayIndex.ToString() + "," + ch.Width.ToString() + "|";
+                    result.Append(ch.DisplayIndex.ToString() + "," + ch.Width.ToString() + "|");
                 }
             }
             catch
             { }
 
-            return result;
+            if (result.Length > 0)
+                result.Remove(result.Length - 1, 1);
+
+            return result.ToString();
         }
 
         /// <summary>
@@ -63,21 +67,24 @@ namespace ProcessHacker.UI
         /// <returns></returns>
         public static string SaveSettings(TreeViewAdv tv)
         {
-            string result = "";
+            StringBuilder result = new StringBuilder();
 
             try
             {
                 for (int i = 0; i < tv.Columns.Count; i++)
                 {
                     TreeColumn c = tv.Columns[i];
-                    result += c.Header + "," + c.Width.ToString() + "," + c.SortOrder.ToString() + 
-                        "," + c.IsVisible.ToString() + "|";
+                    result.Append(c.Header + "," + c.Width.ToString() + "," + c.SortOrder.ToString() + 
+                        "," + c.IsVisible.ToString() + "|");
                 }
             }
             catch
             { }
 
-            return result;
+            if (result.Length > 0)
+                result.Remove(result.Length - 1, 1);
+
+            return result.ToString();
         }
 
         /// <summary>
@@ -87,6 +94,9 @@ namespace ProcessHacker.UI
         /// <param name="lv"></param>
         public static void LoadSettings(string settings, ListView lv)
         {
+            if (settings.EndsWith("|"))
+                settings = settings.Remove(settings.Length - 1, 1);
+
             string[] list = settings.Split('|');
 
             if (settings == "")
@@ -115,6 +125,9 @@ namespace ProcessHacker.UI
         /// <param name="tv"></param>
         public static void LoadSettings(string settings, TreeViewAdv tv)
         {
+            if (settings.EndsWith("|"))
+                settings = settings.Remove(settings.Length - 1, 1);
+
             string[] list = settings.Split('|');
 
             try
