@@ -19,6 +19,8 @@ namespace ProcessHacker
         int processPid;
         string processName;
 
+        TreeNode threadNode; //static reference to Nodes
+
         public WaitChainWindow(string procName, int procPid)
         {
             this.SetPhParent();
@@ -42,16 +44,21 @@ namespace ProcessHacker
                 ShowProcessWaitChains(wct, false);    
             }
         }
-        
+
         private void ShowProcessWaitChains(WaitChainTraversal wct, bool showAllData)
         {
             var threads = Windows.GetProcessThreads(processPid);
 
             if (threads == null)
-                throw new ArgumentException(string.Format("The process ID {0} does not exist", processPid));
+            {
+                PhUtils.ShowWarning(string.Format("The process ID {0} does not exist", processPid));
+                this.Close();
+            }
 
             textDescription.AppendText(string.Format("Process: {0}, PID: {1}", processName, processPid));
 
+            threadNode = threadTree.Nodes.Add(string.Format("Process: {0}, PID: {1}", processName, processPid));
+           
             foreach (var thread in threads)
             {
                 //Get the wait chains for this thread.
@@ -65,7 +72,8 @@ namespace ProcessHacker
                 }
                 else //This happens when running without admin rights.
                 {
-                    threadTree.Nodes.Add(string.Format("TID:{0} Unable to retrieve wait chains for this thread without Admin rights", currThreadId));
+                    threadNode.Nodes.Add(string.Format("TID:{0} Unable to retrieve wait chains for this thread without Admin rights", currThreadId));
+                    threadNode.ExpandAll();
                 }
             }
         }
@@ -147,12 +155,13 @@ namespace ProcessHacker
                             break;
                         default:
                             {
-                                sb.Append(string.Format("**UNKNOWN** Object Type Enum: {0}", node.ObjectType.ToString()));
+                                sb.Append(string.Format(" UNKNOWN Object Type Enum: {0}", node.ObjectType.ToString()));
                                 break;
                             }
                     }
                 }
-                threadTree.Nodes.Add(sb.ToString());
+                threadNode.Nodes.Add(sb.ToString());
+                threadNode.ExpandAll();
             }
         }
 

@@ -40,7 +40,7 @@ public class VistaTreeView : System.Windows.Forms.TreeView
     {
         if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
         {
-            Win32.SendMessage(this.Handle, (WindowMessage)TVM_SETEXTENDEDSTYLE, 0, TVS_EX_AUTOHSCROLL | TVS_EX_FADEINOUTEXPANDOS);
+            Win32.SendMessage(this.Handle, (WindowMessage)TVM_SETEXTENDEDSTYLE, 0, TVS_EX_FADEINOUTEXPANDOS);
             Win32.SetWindowTheme(this.Handle, "explorer", null);
         }
         base.OnHandleCreated(e);

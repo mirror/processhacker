@@ -75,6 +75,7 @@
             // buttonEndThread
             // 
             this.buttonEndThread.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonEndThread.Enabled = false;
             this.buttonEndThread.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonEndThread.Location = new System.Drawing.Point(247, 294);
             this.buttonEndThread.Name = "buttonEndThread";
