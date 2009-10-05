@@ -462,6 +462,9 @@
     <Compile Include="Components\VistaSearchBox.designer.cs">
       <DependentUpon>VistaSearchBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\ExtendedTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\CreateServiceWindow.cs">
       <SubType>Form</SubType>
     </Compile>

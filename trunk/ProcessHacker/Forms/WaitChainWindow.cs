@@ -10,6 +10,7 @@ using Microsoft.Win32.SafeHandles;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
@@ -41,7 +42,7 @@ namespace ProcessHacker
             }
         }
         
-        private bool ShowProcessWaitChains(WaitChainTraversal wct, bool showAllData)
+        private void ShowProcessWaitChains(WaitChainTraversal wct, bool showAllData)
         {
             var threads = Windows.GetProcessThreads(processPid);
 
@@ -61,42 +62,29 @@ namespace ProcessHacker
                 {
                     DisplayThreadData(data, showAllData);
                 }
-                else
+                else //This happens when running without admin rights.
                 {
-                    // This happens when running without admin rights.
-                    listWaitChain.Items.Add(string.Format("TID: {0,4} Unable to retrieve wait chains", currThreadId));
+                    threadTree.Nodes.Add(string.Format("TID:{0} Unable to retrieve wait chains for this thread without Admin rights", currThreadId));
                 }
             }
-
-            return true;
         }
 
         private void DisplayThreadData(WaitData data, bool allData)
         {
             // Save the process id value for the first item as this is the 
-            // process that owns the thread. I'll use this to check the 
-            // later items for threads from other processes.
+            // process that owns the thread. we'll use this to check for 
+            // items used by other threads, from other processes later.
             int startingPID = data.Nodes[0].ProcessId;
             StringBuilder sb = new StringBuilder();
 
-            // Report the key deadlocked warning if approriate.
             if (data.IsDeadlock)
             {
-                sb.AppendLine(string.Format("**Following thread is DEADLOCKED!**"));
+                sb.Append("DEADLOCKED: ");
             }
 
             for (int i = 0; i < data.NodeCount; i++)
             {
                 WaitChainNativeMethods.WAITCHAIN_NODE_INFO node = data.Nodes[i];
-                // Do indenting to make the output easier to read.
-                string indent = string.Empty;
-                if (i > 0)
-                {
-                    indent = new String(' ', i * 3);
-                }
-
-                sb.Length = 0;
-                sb.AppendLine(indent);
 
                 if (WaitChainNativeMethods.WCT_OBJECT_TYPE.Thread == node.ObjectType)
                 {
@@ -107,27 +95,26 @@ namespace ProcessHacker
                     {
                         case WaitChainNativeMethods.WCT_OBJECT_STATUS.PidOnly:
                         case WaitChainNativeMethods.WCT_OBJECT_STATUS.PidOnlyRpcss:
-                            sb.AppendLine(string.Format("PID: {0} {1}", node.ProcessId, procName));
+                            sb.Append(string.Format(" PID: {0} {1}", node.ProcessId, procName));
                             break;
                         default:
                             {
-                                sb.AppendLine(string.Format("TID: {0,4}", node.ThreadId));
+                                sb.Append(string.Format(" TID: {0}", node.ThreadId));
 
                                 //Is this a block on a thread from another process?
                                 if ((i > 0) && (startingPID != node.ProcessId))
                                 {
                                     // Yes, so show the PID and name.
-                                    sb.AppendLine(" ");
-                                    sb.AppendLine(string.Format("[PID:{0} {1}]", node.ProcessId, procName));
+                                    sb.Append(string.Format(" PID:{0} {1}", node.ProcessId, procName));
                                 }
 
                                 if (allData)
                                 {
-                                    sb.AppendLine(string.Format("Status: {0} Wait: {1} CS: {2:N0}", node.ObjectStatus, TimeSpan.FromMilliseconds(node.WaitTime), node.ContextSwitches));
+                                    sb.Append(string.Format(" Status: {0} Wait: {1} CS: {2:N0}", node.ObjectStatus, node.WaitTime, node.ContextSwitches));
                                 }
                                 else if (node.ObjectStatus != WaitChainNativeMethods.WCT_OBJECT_STATUS.Blocked)
                                 {
-                                    sb.AppendLine(string.Format(" Status: {0}", node.ObjectStatus));
+                                    sb.Append(string.Format(" Status: {0}", node.ObjectStatus));
                                 }
                                 break;
                             }
@@ -147,24 +134,30 @@ namespace ProcessHacker
                         case WaitChainNativeMethods.WCT_OBJECT_TYPE.COMActivation:
                         case WaitChainNativeMethods.WCT_OBJECT_TYPE.Unknown:
                             {
-                                sb.AppendLine(string.Format("{0} Status: {1}", node.ObjectType, node.ObjectStatus));
+                                sb.Append(string.Format(" {0} Status: {1}", node.ObjectType, node.ObjectStatus));
 
                                 String name = node.ObjectName();
 
-                                if (false == String.IsNullOrEmpty(name))
+                                if (!String.IsNullOrEmpty(name))
                                 {
-                                    sb.AppendLine(string.Format("Name: {0}", name));
+                                    sb.Append(string.Format(" Name: {0}", name));
                                 }
                             }
                             break;
                         default:
-                            Debug.Assert(false, "Unknown Object Type!");
-                            sb.Append("**UNKNOWN** Object Type Enum!");
-                            break;
+                            {
+                                sb.Append(string.Format("**UNKNOWN** Object Type Enum: {0}", node.ObjectType.ToString()));
+                                break;
+                            }
                     }
                 }
-                listWaitChain.Items.Add(sb.ToString());
+                threadTree.Nodes.Add(sb.ToString());
             }
+        }
+
+        private void buttonCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
     }
