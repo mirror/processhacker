@@ -9,6 +9,7 @@ using ProcessHacker.Common;
 using Microsoft.Win32.SafeHandles;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using ProcessHacker.Native;
 
 namespace ProcessHacker
 {
@@ -42,40 +43,32 @@ namespace ProcessHacker
         
         private bool ShowProcessWaitChains(WaitChainTraversal wct, bool showAllData)
         {
-            // Look at all the threads for this process.
-            Process proc = null;
-            try
-            {
-                proc = Process.GetProcessById(processPid);
-            }
-            catch (ArgumentException)
-            {
+            var threads = Windows.GetProcessThreads(processPid);
+
+            if (threads == null)
                 throw new ArgumentException(string.Format("The process ID {0} does not exist", processPid));
+
+            textDescription.AppendText(string.Format("Process: {0}, PID: {1}", processName, processPid));
+
+            foreach (var thread in threads)
+            {
+                //Get the wait chains for this thread.
+                int currThreadId = thread.Key;
+                
+                WaitData data = wct.GetThreadWaitChain(currThreadId);
+
+                if (data != null)
+                {
+                    DisplayThreadData(data, showAllData);
+                }
+                else
+                {
+                    // This happens when running without admin rights.
+                    listWaitChain.Items.Add(string.Format("TID: {0,4} Unable to retrieve wait chains", currThreadId));
+                }
             }
 
-            if (null != proc)
-            {
-                textBox1.AppendText(string.Format("Process: {0}, PID: {1}", processName, processPid));
-                
-                for (int j = 0; j < proc.Threads.Count; j++)
-                {
-                    //Get the wait chains for this thread.
-                    int currThreadId = proc.Threads[j].Id;
-                    
-                    WaitData data = wct.GetThreadWaitChain(currThreadId);
-                  
-                    if (data != null)
-                    {
-                        DisplayThreadData(data, showAllData);
-                    }
-                    else
-                    {
-                        // This happens when running without admin rights.
-                        waitChainListView.Items.Add(string.Format("TID: {0,4} Unable to retrieve wait chains", currThreadId));
-                    }
-                }  
-            }
-            return (proc == null);
+            return true;
         }
 
         private void DisplayThreadData(WaitData data, bool allData)
@@ -107,8 +100,8 @@ namespace ProcessHacker
 
                 if (WaitChainNativeMethods.WCT_OBJECT_TYPE.Thread == node.ObjectType)
                 {
-                    Process proc = Process.GetProcessById(node.ProcessId);
-                    String procName = proc.ProcessName;
+                    var processes = Windows.GetProcesses();
+                    String procName = processes.ContainsKey(node.ProcessId) ? processes[node.ProcessId].Name : "???";
 
                     switch (node.ObjectStatus)
                     {
@@ -170,7 +163,7 @@ namespace ProcessHacker
                             break;
                     }
                 }
-                waitChainListView.Items.Add(sb.ToString());
+                listWaitChain.Items.Add(sb.ToString());
             }
         }
 

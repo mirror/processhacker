@@ -74,6 +74,7 @@ namespace ProcessHacker.Native.Api
         public const int TimeMsTo100Ns = 10000;
 
         // Known object paths
+        public const string BeepDeviceName = @"\Device\Beep";
         public const string EnlistmentPath = @"\Enlistment";
         public const string MailslotPath = @"\Device\Mailslot";
         public const string MountMgrDeviceName = @"\Device\MountPointManager";

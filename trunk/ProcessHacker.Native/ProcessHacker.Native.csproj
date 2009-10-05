@@ -66,6 +66,7 @@
     <Compile Include="Image\ImageDirectoryEntry.cs" />
     <Compile Include="Image\ImageExports.cs" />
     <Compile Include="Image\MappedImage.cs" />
+    <Compile Include="Io\BeepDevice.cs" />
     <Compile Include="NativeBitmap.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Debugging\DebugBuffer.cs" />

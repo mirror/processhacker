@@ -1768,7 +1768,7 @@ namespace ProcessHacker
             vt.Show();
         }
 
-        private void analyzeWaitChainMenuItem_Click(object sender, EventArgs e)
+        private void analyzeWaitChainProcessMenuItem_Click(object sender, EventArgs e)
         {
             WaitChainWindow wcw = new WaitChainWindow(
                 treeProcesses.SelectedNodes[0].Name, 

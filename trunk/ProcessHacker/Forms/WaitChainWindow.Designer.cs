@@ -28,57 +28,64 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.textDescription = new System.Windows.Forms.TextBox();
+            this.labelIntro = new System.Windows.Forms.Label();
+            this.buttonCancel = new System.Windows.Forms.Button();
+            this.buttonEndThread = new System.Windows.Forms.Button();
             this.moreInfoLink = new System.Windows.Forms.LinkLabel();
-            this.waitChainListView = new ProcessHacker.ExtendedListView();
+            this.listWaitChain = new ProcessHacker.ExtendedListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
-            // textBox1
+            // textDescription
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.textDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.BackColor = System.Drawing.SystemColors.Control;
-            this.textBox1.Location = new System.Drawing.Point(12, 12);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(390, 20);
-            this.textBox1.TabIndex = 1;
+            this.textDescription.BackColor = System.Drawing.SystemColors.Control;
+            this.textDescription.Location = new System.Drawing.Point(12, 12);
+            this.textDescription.Name = "textDescription";
+            this.textDescription.Size = new System.Drawing.Size(390, 20);
+            this.textDescription.TabIndex = 1;
             // 
-            // label1
+            // labelIntro
             // 
-            this.label1.Location = new System.Drawing.Point(9, 195);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(393, 43);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "The Analyze Wait Chain tree shows which Processes are using, or waiting to use, a" +
-                " resource that is being used by another process and is required by the current p" +
-                "rocess to continue.";
+            this.labelIntro.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelIntro.Location = new System.Drawing.Point(9, 233);
+            this.labelIntro.Name = "labelIntro";
+            this.labelIntro.Size = new System.Drawing.Size(393, 43);
+            this.labelIntro.TabIndex = 2;
+            this.labelIntro.Text = "The Analyze Wait Chain tree shows which processes are using or waiting to use a r" +
+                "esource that is being used by another process and is required by the current pro" +
+                "cess to continue.";
             // 
-            // button1
+            // buttonCancel
             // 
-            this.button1.Location = new System.Drawing.Point(327, 241);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "&Cancel";
-            this.button1.UseVisualStyleBackColor = true;
+            this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonCancel.Location = new System.Drawing.Point(327, 276);
+            this.buttonCancel.Name = "buttonCancel";
+            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancel.TabIndex = 3;
+            this.buttonCancel.Text = "Cancel";
+            this.buttonCancel.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // buttonEndThread
             // 
-            this.button2.Location = new System.Drawing.Point(246, 241);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "End Thread";
-            this.button2.UseVisualStyleBackColor = true;
+            this.buttonEndThread.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonEndThread.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonEndThread.Location = new System.Drawing.Point(246, 276);
+            this.buttonEndThread.Name = "buttonEndThread";
+            this.buttonEndThread.Size = new System.Drawing.Size(75, 23);
+            this.buttonEndThread.TabIndex = 4;
+            this.buttonEndThread.Text = "End Thread";
+            this.buttonEndThread.UseVisualStyleBackColor = true;
             // 
             // moreInfoLink
             // 
+            this.moreInfoLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.moreInfoLink.AutoSize = true;
-            this.moreInfoLink.Location = new System.Drawing.Point(9, 246);
+            this.moreInfoLink.Location = new System.Drawing.Point(12, 281);
             this.moreInfoLink.Name = "moreInfoLink";
             this.moreInfoLink.Size = new System.Drawing.Size(121, 13);
             this.moreInfoLink.TabIndex = 5;
@@ -86,21 +93,21 @@
             this.moreInfoLink.Text = "More about Wait Chains";
             this.moreInfoLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.moreInfoLink_LinkClicked);
             // 
-            // waitChainListView
+            // listWaitChain
             // 
-            this.waitChainListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.listWaitChain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.waitChainListView.CheckBoxes = true;
-            this.waitChainListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.listWaitChain.CheckBoxes = true;
+            this.listWaitChain.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
-            this.waitChainListView.FullRowSelect = true;
-            this.waitChainListView.Location = new System.Drawing.Point(12, 38);
-            this.waitChainListView.Name = "waitChainListView";
-            this.waitChainListView.Size = new System.Drawing.Size(390, 145);
-            this.waitChainListView.TabIndex = 0;
-            this.waitChainListView.UseCompatibleStateImageBehavior = false;
-            this.waitChainListView.View = System.Windows.Forms.View.Details;
+            this.listWaitChain.FullRowSelect = true;
+            this.listWaitChain.Location = new System.Drawing.Point(12, 38);
+            this.listWaitChain.Name = "listWaitChain";
+            this.listWaitChain.Size = new System.Drawing.Size(390, 183);
+            this.listWaitChain.TabIndex = 0;
+            this.listWaitChain.UseCompatibleStateImageBehavior = false;
+            this.listWaitChain.View = System.Windows.Forms.View.Details;
             // 
             // columnHeader1
             // 
@@ -111,13 +118,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(414, 273);
+            this.ClientSize = new System.Drawing.Size(414, 311);
             this.Controls.Add(this.moreInfoLink);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.waitChainListView);
+            this.Controls.Add(this.buttonEndThread);
+            this.Controls.Add(this.buttonCancel);
+            this.Controls.Add(this.labelIntro);
+            this.Controls.Add(this.textDescription);
+            this.Controls.Add(this.listWaitChain);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -133,11 +140,11 @@
 
         #endregion
 
-        private ExtendedListView waitChainListView;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private ExtendedListView listWaitChain;
+        private System.Windows.Forms.TextBox textDescription;
+        private System.Windows.Forms.Label labelIntro;
+        private System.Windows.Forms.Button buttonCancel;
+        private System.Windows.Forms.Button buttonEndThread;
         private System.Windows.Forms.LinkLabel moreInfoLink;
         private System.Windows.Forms.ColumnHeader columnHeader1;
     }
