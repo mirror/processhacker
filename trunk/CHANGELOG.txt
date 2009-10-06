@@ -11,6 +11,7 @@ Process Hacker
    * VirusTotal uploader
    * Two new terminator tests: W1 (send WM_DESTROY messages) and 
      W2 (send WM_QUIT messages)
+   * Wait chain analysis
    * Mutant owner information
    * Elevation prompt when attempting to view process properties
    * All list views now have sort arrows
