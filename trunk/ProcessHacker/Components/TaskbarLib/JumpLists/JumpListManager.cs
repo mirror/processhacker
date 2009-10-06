@@ -79,7 +79,7 @@ namespace TaskbarLib
            
             if (String.IsNullOrEmpty(_appId))
             {
-                _appId = Windows7Taskbar.GetCurrentProcessAppId();
+                _appId = Windows7Taskbar.ProcessAppId;
             }
             if (!String.IsNullOrEmpty(_appId))
             {
@@ -99,7 +99,7 @@ namespace TaskbarLib
         /// with the specified window handle.
         /// </summary>
         public JumpListManager()
-            : this(Windows7Taskbar.GetAppId())
+            : this(Windows7Taskbar.AppId)
         {
         }
 
