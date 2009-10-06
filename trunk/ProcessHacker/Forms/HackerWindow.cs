@@ -1154,9 +1154,6 @@ namespace ProcessHacker
             {
                 selectAllProcessMenuItem.Enabled = true;
             }
-
-            if (OSVersion.IsBelow(WindowsVersion.Vista))
-                analyzeWaitChainProcessMenuItem.Visible = false;
         }
 
         private void terminateMenuItem_Click(object sender, EventArgs e)
@@ -3084,6 +3081,9 @@ namespace ProcessHacker
 
             if (!OSVersion.HasUac)
                 virtualizationProcessMenuItem.Visible = false;
+
+            if (OSVersion.IsBelow(WindowsVersion.Vista))
+                analyzeWaitChainProcessMenuItem.Visible = false;
         }
 
         private void LoadFixNProcessHacker()
