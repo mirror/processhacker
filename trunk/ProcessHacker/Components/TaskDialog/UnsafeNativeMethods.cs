@@ -276,6 +276,7 @@ namespace ProcessHacker.Components
             [In] ref TASKDIALOGCONFIG pTaskConfig,
             [Out] out int pnButton,
             [Out] out int pnRadioButton,
+            [MarshalAs(UnmanagedType.Bool)]
             [Out] out bool pfVerificationFlagChecked);
 
         /// <summary>
