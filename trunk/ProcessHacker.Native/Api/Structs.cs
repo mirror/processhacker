@@ -535,6 +535,14 @@ namespace ProcessHacker.Native.Api
         {
             return Rectangle.FromLTRB(this.Left, this.Top, this.Right, this.Bottom);
         }
+
+        public Rect(int left, int top, int right, int bottom)
+        {
+            this.Left = left;
+            this.Top = top;
+            this.Right = right;
+            this.Bottom = bottom;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

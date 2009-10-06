@@ -196,7 +196,7 @@ namespace TaskbarLib.Interop
         [PreserveSig]
         HResult SetTabOrder(IntPtr hwndTab, IntPtr hwndInsertBefore);
         [PreserveSig]
-        HResult SetTabActive(IntPtr hwndTab, IntPtr hwndMDI, TBATFLAG tbatFlags);
+        HResult SetTabActive(IntPtr hwndTab, IntPtr hwndMDI, Tbatflag tbatFlags);
         [PreserveSig]
         HResult ThumbBarAddButtons(IntPtr hwnd, int cButtons, [MarshalAs(UnmanagedType.LPArray)] THUMBBUTTON[] pButtons);
         [PreserveSig]
@@ -208,7 +208,7 @@ namespace TaskbarLib.Interop
         [PreserveSig]
         HResult SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
         [PreserveSig]
-        HResult SetThumbnailClip(IntPtr hwnd, ref RECT prcClip);
+        HResult SetThumbnailClip(IntPtr hwnd, ref Rect prcClip);
     }
 
     [ComImportAttribute()]

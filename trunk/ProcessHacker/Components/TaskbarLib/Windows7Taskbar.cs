@@ -72,9 +72,8 @@ namespace TaskbarLib
         private static IPropertyStore InternalGetWindowPropertyStore(IntPtr hwnd)
         {
             IPropertyStore propStore;
-            int rc = UnsafeNativeMethods.SHGetPropertyStoreForWindow(hwnd, ref SafeNativeMethods.IID_IPropertyStore, out propStore);
-            if (rc != 0)
-                throw Marshal.GetExceptionForHR(rc);
+            HResult result = UnsafeNativeMethods.SHGetPropertyStoreForWindow(hwnd, ref SafeNativeMethods.IID_IPropertyStore, out propStore);
+            result.ThrowIf();
 
             return propStore;
         }
@@ -347,7 +346,7 @@ namespace TaskbarLib
         private static void SetThumbnailClip(this Form form, Rectangle clipRect)
         {
             //Example: SetThumbnailClip(this, new Rectangle(button.Location, button.Size));
-            RECT rect = new RECT(clipRect.Left, clipRect.Top, clipRect.Right, clipRect.Bottom);
+            Rect rect = new Rect(clipRect.Left, clipRect.Top, clipRect.Right, clipRect.Bottom);
             HResult setThumbnailClipResult = TaskbarList.SetThumbnailClip(form.Handle, ref rect);
             setThumbnailClipResult.ThrowIf();
 

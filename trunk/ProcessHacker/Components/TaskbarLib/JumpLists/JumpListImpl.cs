@@ -455,13 +455,10 @@ namespace TaskbarLib
 
             IShellItem resultItem = default(IShellItem);
             Guid shellItemGuid = new Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE");
-            uint result = UnsafeNativeMethods.SHCreateItemFromParsingName(
-                path,
-                IntPtr.Zero,
-                ref shellItemGuid,
-                out resultItem);
-            //// Throw if an error occurred.
-            Marshal.ThrowExceptionForHR((int)result);
+            HResult result = UnsafeNativeMethods.SHCreateItemFromParsingName(
+                path, IntPtr.Zero, ref shellItemGuid, out resultItem);
+            result.ThrowIf();
+
             return resultItem;
         }
     }

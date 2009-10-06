@@ -42,26 +42,9 @@ namespace TaskbarLib.Interop
         ADLT_RECENT = 0,
         ADLT_FREQUENT
     }
-   
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct RECT
-    {
-        public int left;
-        public int top;
-        public int right;
-        public int bottom;
-
-        public RECT(int left, int top, int right, int bottom)
-        {
-            this.left = left;
-            this.top = top;
-            this.right = right;
-            this.bottom = bottom;
-        }
-    }
-      
+        
     [Flags]
-    internal enum TBATFLAG
+    internal enum Tbatflag
     {
         TBATF_USEMDITHUMBNAIL = 0x1,
         TBATF_USEMDILIVEPREVIEW = 0x2
@@ -266,9 +249,9 @@ namespace TaskbarLib.Interop
         public static extern HResult GetCurrentProcessExplicitAppUserModelID([Out(), MarshalAs(UnmanagedType.LPWStr)] out string AppID);
 
         [DllImport("shell32.dll")]
-        public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid /*IID_IPropertyStore*/, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
+        public static extern HResult SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid /*IID_IPropertyStore*/, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
        
         [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern uint SHCreateItemFromParsingName(string path, /* The following parameter is not used - binding context. */ IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);
+        public static extern HResult SHCreateItemFromParsingName(string path, /* The following parameter is not used - binding context. */ IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);
     }
 }
