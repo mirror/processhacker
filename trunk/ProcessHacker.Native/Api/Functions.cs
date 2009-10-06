@@ -2332,7 +2332,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-        public static extern int SetWindowTheme(
+        public static extern HResult SetWindowTheme(
             [In] IntPtr hWnd,
             [In] string appName,
             [In] string idList

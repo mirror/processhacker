@@ -174,7 +174,7 @@ namespace TaskbarLib.Interop
         private CALPWSTR calpwstr;
 
         [DllImport("ole32.dll")]
-        private static extern int PropVariantClear(ref PropVariant pvar);
+        private static extern HResult PropVariantClear(ref PropVariant pvar);
 
         public VarEnum VarType
         {
@@ -202,7 +202,8 @@ namespace TaskbarLib.Interop
 
         public void Clear()
         {
-            PropVariantClear(ref this);
+           HResult clearResult = PropVariantClear(ref this);
+           clearResult.ThrowIf();
         }
 
         public void Dispose()

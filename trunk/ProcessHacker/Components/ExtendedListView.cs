@@ -163,7 +163,9 @@ namespace ProcessHacker
             {
                 case 0x1: /*WM_CREATE*/
                     {
-                        Win32.SetWindowTheme(this.Handle, "explorer", null);
+                        HResult setThemeResult = Win32.SetWindowTheme(this.Handle, "explorer", null);
+                        setThemeResult.ThrowIf();
+                        
                         Win32.SendMessage(this.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
                         break;
                     }                  
