@@ -157,7 +157,7 @@ namespace TaskbarLib.Interop
     }
 
     [StructLayout(LayoutKind.Explicit)]
-    internal struct PropVariant
+    internal struct PropVariant : IDisposable
     {
         [FieldOffset(0)]
         private ushort vt;
@@ -187,6 +187,7 @@ namespace TaskbarLib.Interop
             this.vt = (ushort)VarEnum.VT_LPWSTR;
             this.pointerValue = Marshal.StringToCoTaskMemUni(val);
         }
+
         public void SetValue(bool val)
         {
             this.Clear();
@@ -202,6 +203,11 @@ namespace TaskbarLib.Interop
         public void Clear()
         {
             PropVariantClear(ref this);
+        }
+
+        public void Dispose()
+        {
+            Marshal.FreeCoTaskMem(this.pointerValue);
         }
     }
 
@@ -255,10 +261,8 @@ namespace TaskbarLib.Interop
         [DllImport("dwmapi.dll")]
         public static extern int DwmInvalidateIconicBitmaps(IntPtr hwnd);
        
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern uint RegisterWindowMessage(string lpString);
-
-        
 
         [DllImport("shell32.dll")]
         public static extern HResult SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
@@ -297,9 +301,6 @@ namespace TaskbarLib.Interop
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ClientToScreen(IntPtr hwnd, ref POINT point);
        
-        [DllImport("user32.dll")]
-        public static extern int GetWindowText(IntPtr hwnd, StringBuilder str, int maxCount);
-       
         [DllImport("gdi32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool BitBlt (IntPtr hDestDC, int destX, int destY, int width, int height, IntPtr hSrcDC, int srcX, int srcY, uint operation);
@@ -314,7 +315,7 @@ namespace TaskbarLib.Interop
         [DllImport("user32.dll")]
         public static extern int ReleaseDC(IntPtr hwnd, IntPtr hdc);
        
-        [DllImport("Shell32", CharSet = CharSet.Auto, SetLastError = true)]
-        internal static extern uint SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string path, /* The following parameter is not used - binding context. */ IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);
+        [DllImport("Shell32", CharSet = CharSet.Unicode, SetLastError = true)]
+        internal static extern uint SHCreateItemFromParsingName(string path, /* The following parameter is not used - binding context. */ IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);
     }
 }

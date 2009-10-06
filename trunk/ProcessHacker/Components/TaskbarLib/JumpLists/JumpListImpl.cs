@@ -404,6 +404,9 @@ namespace TaskbarLib
             HResult commitResult = propertyStore.Commit();
             commitResult.ThrowIf();
 
+            Marshal.ReleaseComObject(propertyStore);
+            propVariant.Dispose();
+
             return shellLink;
         }
     }
@@ -433,9 +436,6 @@ namespace TaskbarLib
         public object GetShellRepresentation()
         {
             return GetShellItemFromPath(Path);
-
-            //Note: this will only work if there is a file association
-            //for the extension we're trying to register to our program.
         }
 
         internal static IShellItem GetShellItemFromPath(string path)

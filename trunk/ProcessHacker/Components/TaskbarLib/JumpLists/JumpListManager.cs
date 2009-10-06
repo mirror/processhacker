@@ -230,7 +230,7 @@ namespace TaskbarLib
         /// on the application's destination list.</returns>
         public IEnumerable<IJumpListDestination> GetApplicationDestinations(ApplicationDestinationType type)
         {
-            if (type == ApplicationDestinationType.NONE)
+            if (type == ApplicationDestinationType.None)
                 throw new ArgumentException("ApplicationDestinationType can't be NONE");
 
             IApplicationDocumentLists destinations = (IApplicationDocumentLists)new CApplicationDocumentLists();
@@ -520,7 +520,7 @@ namespace TaskbarLib
         /// <summary>
         /// No application destination type is selected.
         /// </summary>
-        NONE = -1,
+        None = -1,
         /// <summary>
         /// Destinations used recently.
         /// </summary>

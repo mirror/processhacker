@@ -109,9 +109,12 @@ namespace TaskbarLib
             HResult getValueResult = propStore.GetValue(ref PropertyKey.PKEY_AppUserModel_ID, out pv);
             getValueResult.ThrowIf();
 
-            Marshal.ReleaseComObject(propStore);
+            string appId = pv.GetValue();
 
-            return pv.GetValue(); 
+            Marshal.ReleaseComObject(propStore);
+            pv.Dispose();
+
+            return appId; 
         }
 
         /// <summary>
@@ -129,6 +132,7 @@ namespace TaskbarLib
             setValueResult.ThrowIf();
 
             Marshal.ReleaseComObject(propStore);
+            pv.Dispose();
         }
 
         /// <summary>
@@ -349,7 +353,9 @@ namespace TaskbarLib
         private static void SetThumbnailClip(this Form form, Rectangle clipRect)
         {
             RECT rect = new RECT(clipRect.Left, clipRect.Top, clipRect.Right, clipRect.Bottom);
-            HResult result = TaskbarList.SetThumbnailClip(form.Handle, ref rect);
+            HResult setThumbnailClipResult = TaskbarList.SetThumbnailClip(form.Handle, ref rect);
+            setThumbnailClipResult.ThrowIf();
+
         }
 
         /// <summary>
