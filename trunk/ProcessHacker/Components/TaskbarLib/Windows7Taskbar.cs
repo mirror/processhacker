@@ -352,6 +352,7 @@ namespace TaskbarLib
         /// <param name="clipRect">The rectangle that specifies the clipped region.</param>
         private static void SetThumbnailClip(this Form form, Rectangle clipRect)
         {
+            //Example: SetThumbnailClip(this, new Rectangle(button.Location, button.Size));
             RECT rect = new RECT(clipRect.Left, clipRect.Top, clipRect.Right, clipRect.Bottom);
             HResult setThumbnailClipResult = TaskbarList.SetThumbnailClip(form.Handle, ref rect);
             setThumbnailClipResult.ThrowIf();
@@ -365,7 +366,9 @@ namespace TaskbarLib
         /// <param name="tooltip">The tooltip text.</param>
         private static void SetThumbnailTooltip(this Form form, string tooltip)
         {
-            HResult result = TaskbarList.SetThumbnailTooltip(form.Handle, tooltip);
+            HResult setThumbnailTooltipResult = TaskbarList.SetThumbnailTooltip(form.Handle, tooltip);
+            setThumbnailTooltipResult.ThrowIf();
+
         }
 
         #endregion

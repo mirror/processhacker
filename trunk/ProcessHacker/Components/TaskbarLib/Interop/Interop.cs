@@ -173,9 +173,6 @@ namespace TaskbarLib.Interop
         [FieldOffset(8)]
         private CALPWSTR calpwstr;
 
-        [DllImport("ole32.dll")]
-        private static extern HResult PropVariantClear(ref PropVariant pvar);
-
         public VarEnum VarType
         {
             get { return (VarEnum)vt; }
@@ -202,7 +199,7 @@ namespace TaskbarLib.Interop
 
         public void Clear()
         {
-           HResult clearResult = PropVariantClear(ref this);
+           HResult clearResult = UnsafeNativeMethods.PropVariantClear(ref this);
            clearResult.ThrowIf();
         }
 
@@ -241,9 +238,9 @@ namespace TaskbarLib.Interop
     {
         public static readonly uint WM_TaskbarButtonCreated = RegisterWindowMessage("TaskbarButtonCreated");
 
-        [DllImport("shell32.dll")]
-        public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid /*IID_IPropertyStore*/, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
-       
+        [DllImport("ole32.dll")]
+        public static extern HResult PropVariantClear(ref PropVariant pvar);
+
         [DllImport("dwmapi.dll")]
         public static extern int DwmSetIconicThumbnail(IntPtr hwnd, IntPtr hbitmap, uint flags);
        
@@ -253,10 +250,7 @@ namespace TaskbarLib.Interop
         [DllImport("dwmapi.dll")]
         public static extern int DwmSetIconicLivePreviewBitmap(IntPtr hwnd, IntPtr hbitmap, IntPtr ptClient, uint flags);
        
-        [DllImport("dwmApi.dll")]
-        internal static extern int DwmSetWindowAttribute(IntPtr hwnd, uint dwAttributeToSet, IntPtr pvAttributeValue, uint cbAttribute);
-       
-        [DllImport("dwmApi.dll")]
+        [DllImport("dwmapi.dll")]
         internal static extern int DwmSetWindowAttribute(IntPtr hwnd, uint dwAttributeToSet, ref int pvAttributeValue, uint cbAttribute);
       
         [DllImport("dwmapi.dll")]
@@ -270,53 +264,11 @@ namespace TaskbarLib.Interop
        
         [DllImport("shell32.dll")]
         public static extern HResult GetCurrentProcessExplicitAppUserModelID([Out(), MarshalAs(UnmanagedType.LPWStr)] out string AppID);
-       
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetWindowRect(IntPtr hwnd, ref RECT rect);
-       
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetClientRect(IntPtr hwnd, ref RECT rect);
-        public static bool GetClientSize(IntPtr hwnd, out System.Drawing.Size size)
-        {
-            RECT rect = new RECT();
-            if (!GetClientRect(hwnd, ref rect))
-            {
-                size = new System.Drawing.Size(-1, -1);
-                return false;
-            }
-            size = new System.Drawing.Size(rect.right, rect.bottom);
-            return true;
-        }
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool ShowWindow(IntPtr hwnd, int cmd);
-      
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SetWindowPos(IntPtr hwnd, IntPtr hwndInsertAfter, int X, int Y, int cx, int cy, uint flags);
-      
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool ClientToScreen(IntPtr hwnd, ref POINT point);
+        [DllImport("shell32.dll")]
+        public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid /*IID_IPropertyStore*/, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
        
-        [DllImport("gdi32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool BitBlt (IntPtr hDestDC, int destX, int destY, int width, int height, IntPtr hSrcDC, int srcX, int srcY, uint operation);
-        
-        [DllImport("gdi32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool StretchBlt(IntPtr hDestDC, int destX, int destY, int destWidth, int destHeight, IntPtr hSrcDC, int srcX, int srcY, int srcWidth, int srcHeight, uint operation);
-        
-        [DllImport("user32.dll")]
-        public static extern IntPtr GetWindowDC(IntPtr hwnd);
-       
-        [DllImport("user32.dll")]
-        public static extern int ReleaseDC(IntPtr hwnd, IntPtr hdc);
-       
-        [DllImport("Shell32", CharSet = CharSet.Unicode, SetLastError = true)]
-        internal static extern uint SHCreateItemFromParsingName(string path, /* The following parameter is not used - binding context. */ IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern uint SHCreateItemFromParsingName(string path, /* The following parameter is not used - binding context. */ IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);
     }
 }
