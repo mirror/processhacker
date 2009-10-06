@@ -286,9 +286,11 @@ namespace TaskbarLib
 
                     uint showCmd;
                     HResult getShowCmdResult = link.GetShowCmd(out showCmd);
+                    getShowCmdResult.ThrowIf();
                     wrapper.ShowCommand = (WindowShowCommand)showCmd;
 
                     HResult getWorkingDirectoryResult = link.GetWorkingDirectory(sb, sb.Capacity);
+                    getWorkingDirectoryResult.ThrowIf();
                     wrapper.WorkingDirectory = sb.ToString();
 
                     returnValue.Add(wrapper);

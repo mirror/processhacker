@@ -207,6 +207,7 @@ namespace TaskbarLib
     /// <summary>
     /// Flags controlling the appearance of a window.
     /// </summary>
+    [Flags]
     public enum WindowShowCommand : uint
     {
         /// <summary>

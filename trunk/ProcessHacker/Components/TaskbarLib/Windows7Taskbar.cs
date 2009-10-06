@@ -311,6 +311,7 @@ namespace TaskbarLib
         /// <summary>
         /// Represents the thumbnail progress bar state.
         /// </summary>
+        [Flags]
         public enum ThumbnailProgressState
         {
             /// <summary>

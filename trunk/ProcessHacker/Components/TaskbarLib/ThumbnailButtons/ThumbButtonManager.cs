@@ -64,7 +64,7 @@ namespace TaskbarLib
 
         private Form _form;
         private MessageFilter _filter;
-        private bool _disposed = false;
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new manager on the specified form.
