@@ -368,6 +368,7 @@ namespace TaskbarLib
                 setValueResult.ThrowIf();
               
                 propVariant.Clear();
+                propVariant.Dispose();
             }
             else
             {
@@ -399,14 +400,14 @@ namespace TaskbarLib
                 setValueResult.ThrowIf();
 
                 propVariant.Clear();
+                propVariant.Dispose();
             }
 
             HResult commitResult = propertyStore.Commit();
             commitResult.ThrowIf();
 
-            Marshal.ReleaseComObject(propertyStore);
-            propVariant.Dispose();
-
+           // Marshal.ReleaseComObject(propertyStore);
+            
             return shellLink;
         }
     }
