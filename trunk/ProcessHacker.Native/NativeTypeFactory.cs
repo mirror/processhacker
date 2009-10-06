@@ -24,6 +24,7 @@ using System;
 using System.Text;
 using ProcessHacker.Common;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker.Native
 {
@@ -76,6 +77,21 @@ namespace ProcessHacker.Native
         }
 
         #region Base Functions
+
+        public static AccessEntry[] GetAccessEntries(ObjectType type)
+        {
+            switch (type)
+            {
+                case ObjectType.AlpcPort:
+                    return new AccessEntry[]
+                    {
+                        new AccessEntry("Full control", PortAccess.All, true, true),
+                        new AccessEntry("Connect", PortAccess.Connect, true, true)
+                    };
+                default:
+                    throw new NotSupportedException();
+            }
+        }
 
         public static Type GetAccessType(ObjectType type)
         {
@@ -156,7 +172,7 @@ namespace ProcessHacker.Native
             throw new NotSupportedException();
         }
 
-        #endregion   
+        #endregion
 
         public static string GetAccessString(Type accessType, object access)
         {

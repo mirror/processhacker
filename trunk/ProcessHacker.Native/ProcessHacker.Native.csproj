@@ -159,7 +159,7 @@
     <Compile Include="Objects\UserHandle.cs" />
     <Compile Include="Security\DirectoryAccess.cs" />
     <Compile Include="Security\ISecurable.cs" />
-    <Compile Include="Security\ObjectSecurityInformation.cs" />
+    <Compile Include="Security\AccessControl\SecurityEditor.cs" />
     <Compile Include="Security\ObjectTypeAccess.cs" />
     <Compile Include="Security\PortAccess.cs" />
     <Compile Include="Objects\SectionHandle.cs" />

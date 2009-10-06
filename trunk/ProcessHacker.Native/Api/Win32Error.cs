@@ -94,14 +94,14 @@ namespace ProcessHacker.Native.Api
 
     public static class Win32ErrorExtensions
     {
-        public static int GetHResult(this Win32Error errorCode)
+        public static HResult GetHResult(this Win32Error errorCode)
         {
             int error = (int)errorCode;
 
             if ((error & 0x80000000) == 0x80000000)
-                return error;
+                return (HResult)error;
 
-            return (int)(0x80070000 | (uint)(error & 0xffff));
+            return (HResult)(0x80070000 | (uint)(error & 0xffff));
         }
 
         public static string GetMessage(this Win32Error errorCode)

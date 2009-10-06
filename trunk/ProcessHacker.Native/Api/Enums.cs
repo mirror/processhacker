@@ -519,7 +519,8 @@ namespace ProcessHacker.Native.Api
 
     [Flags]
     public enum SiObjectInfoFlags : int
-    {
+    {        
+        EditAll = EditPerms | EditOwner | EditAudits,
         EditPerms = 0x00000000,
         EditOwner = 0x00000001,
         EditAudits = 0x00000002,
@@ -546,8 +547,7 @@ namespace ProcessHacker.Native.Api
         PermsElevationRequired = 0x01000000,
         AuditsElevationRequired = 0x02000000,
         OwnerElevationRequested = 0x04000000,
-        MayWrite = 0x10000000,
-        All = EditPerms | EditOwner | EditAudits
+        MayWrite = 0x10000000
     }
 
     public enum SiPageType : int
