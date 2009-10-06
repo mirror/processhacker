@@ -820,7 +820,6 @@ namespace ProcessHacker
             info.AppendLine("OS Version: " + Environment.OSVersion.VersionString + " (" + OSVersion.BitsString + ")");
             info.AppendLine("Elevation: " + ElevationType.ToString());
             info.AppendLine("Working set: " + Utils.FormatSize(Environment.WorkingSet));
-            info.AppendLine("Private heap: 0x" + MemoryAlloc.PrivateHeap.Address.ToString("x"));
 
             if (KProcessHacker.Instance == null)
                 info.AppendLine("KProcessHacker: not running");
@@ -828,17 +827,35 @@ namespace ProcessHacker
                 info.AppendLine("KProcessHacker: " + KProcessHacker.Instance.Features.ToString());
 
             info.AppendLine();
-            info.AppendLine("PERFORMANCE COUNTERS");
-            info.AppendLine("LSA lookup policy handle misses: " + LsaPolicyHandle.LookupPolicyHandleMisses.ToString());
-
-            info.AppendLine();
             info.AppendLine("OBJECTS");
-            info.AppendLine("Created: " + BaseObject.CreatedCount.ToString());
-            info.AppendLine("Freed: " + BaseObject.FreedCount.ToString());
+
+            int objectsCreatedCount = BaseObject.CreatedCount;
+            int objectsFreedCount = BaseObject.FreedCount;
+
+            info.AppendLine("Live: " + (objectsCreatedCount - objectsFreedCount).ToString());
+            info.AppendLine("Created: " + objectsCreatedCount.ToString());
+            info.AppendLine("Freed: " + objectsFreedCount.ToString());
             info.AppendLine("Disposed: " + BaseObject.DisposedCount.ToString());
             info.AppendLine("Finalized: " + BaseObject.FinalizedCount.ToString());
             info.AppendLine("Referenced: " + BaseObject.ReferencedCount.ToString());
             info.AppendLine("Dereferenced: " + BaseObject.DereferencedCount.ToString());
+
+            info.AppendLine();
+            info.AppendLine("PRIVATE HEAP");
+
+            int heapAllocatedCount = MemoryAlloc.AllocatedCount;
+            int heapFreedCount = MemoryAlloc.FreedCount;
+            int heapReallocatedCount = MemoryAlloc.ReallocatedCount;
+
+            info.AppendLine("Address: 0x" + MemoryAlloc.PrivateHeap.Address.ToString("x"));
+            info.AppendLine("Live: " + (heapAllocatedCount - heapFreedCount).ToString());
+            info.AppendLine("Allocated: " + heapAllocatedCount.ToString());
+            info.AppendLine("Freed: " + heapFreedCount.ToString());
+            info.AppendLine("Reallocated: " + heapReallocatedCount.ToString());
+
+            info.AppendLine();
+            info.AppendLine("MISCELLANEOUS COUNTERS");
+            info.AppendLine("LSA lookup policy handle misses: " + LsaPolicyHandle.LookupPolicyHandleMisses.ToString());
 
             info.AppendLine();
             info.AppendLine("PROCESS HACKER THREAD POOL");

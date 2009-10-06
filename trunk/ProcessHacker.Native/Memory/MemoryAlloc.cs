@@ -20,6 +20,8 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define ENABLE_STATISTICS
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -34,13 +36,32 @@ namespace ProcessHacker.Native
     /// </summary>
     public class MemoryAlloc : MemoryRegion
     {
+        private static int _allocatedCount = 0;
+        private static int _freedCount = 0;
+        private static int _reallocatedCount = 0;
+
         // A private heap just for the client.
         private static Heap _privateHeap = new Heap(HeapFlags.Class1 | HeapFlags.Growable);
         private static Heap _processHeap = Heap.GetDefault();
 
+        public static int AllocatedCount
+        {
+            get { return _allocatedCount; }
+        }
+
+        public static new int FreedCount
+        {
+            get { return _freedCount; }
+        }
+
         public static Heap PrivateHeap
         {
             get { return _privateHeap; }
+        }
+
+        public static int ReallocatedCount
+        {
+            get { return _reallocatedCount; }
         }
 
         /// <summary>
@@ -68,10 +89,8 @@ namespace ProcessHacker.Native
         /// </summary>
         /// <param name="size">The amount of memory, in bytes, to allocate.</param>
         public MemoryAlloc(int size)
-        {
-            this.Memory = _privateHeap.Allocate(0, size);
-            this.Size = size;
-        }
+            : this(size, 0)
+        { }
 
         /// <summary>
         /// Creates a new memory allocation with the specified size.
@@ -82,11 +101,19 @@ namespace ProcessHacker.Native
         {
             this.Memory = _privateHeap.Allocate(flags, size);
             this.Size = size;
+
+#if ENABLE_STATISTICS
+            System.Threading.Interlocked.Increment(ref _allocatedCount);
+#endif
         }
 
         protected override void Free()
         {
             _privateHeap.Free(0, this);
+
+#if ENABLE_STATISTICS
+            System.Threading.Interlocked.Increment(ref _freedCount);
+#endif
         }
 
         /// <summary>
@@ -97,6 +124,10 @@ namespace ProcessHacker.Native
         {
             this.Memory = _privateHeap.Reallocate(0, this.Memory, newSize);
             this.Size = newSize;
+
+#if ENABLE_STATISTICS
+            System.Threading.Interlocked.Increment(ref _reallocatedCount);
+#endif
         }
     }
 }
