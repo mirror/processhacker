@@ -112,7 +112,7 @@ namespace ProcessHacker
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
             Dictionary<string, string> pArgs = null;
 
@@ -137,7 +137,7 @@ namespace ProcessHacker
             if (pArgs.ContainsKey("-h") || pArgs.ContainsKey("-help") || pArgs.ContainsKey("-?"))
             {
                 ShowCommandLineUsage();
-                return;
+                return 0;
             }
 
             // In case the settings file is corrupt PH won't crash here - it will be dealt with later.
@@ -181,7 +181,7 @@ namespace ProcessHacker
             {
                 PhUtils.ShowError("You must have .NET Framework 2.0 or higher to use Process Hacker.");
 
-                Application.Exit();
+                Environment.Exit(1);
             }
 
             ThreadPool.SetMinThreads(1, 1);
@@ -278,7 +278,7 @@ namespace ProcessHacker
             }
 
             if (ProcessCommandLine(pArgs))
-                return;
+                return 0;
 
             Win32.FileIconInit(true);
             LoadProviders();
@@ -292,6 +292,8 @@ namespace ProcessHacker
 
             new HackerWindow();
             Application.Run();
+
+            return 0;
         }
 
         private static void ShowCommandLineUsage()
