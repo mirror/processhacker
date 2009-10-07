@@ -16,12 +16,12 @@ namespace ProcessHacker.Native.Security
         Enumerate = 0x0040,
         WriteObjects = 0x0080,
         SwitchDesktop = 0x0100,
+        All = CreateMenu | CreateWindow | Enumerate | HookControl |
+            JournalPlayback | JournalRecord | ReadObjects | SwitchDesktop |
+            WriteObjects | StandardRights.Required,
         GenericRead = Enumerate | ReadObjects | StandardRights.Read,
         GenericWrite = CreateMenu | CreateWindow | HookControl | JournalPlayback |
             JournalRecord | WriteObjects | StandardRights.Write,
-        GenericExecute = SwitchDesktop | StandardRights.Execute,
-        GenericAll = CreateMenu | CreateWindow | Enumerate | HookControl |
-            JournalPlayback | JournalRecord | ReadObjects | SwitchDesktop |
-            WriteObjects | StandardRights.Required
+        GenericExecute = SwitchDesktop | StandardRights.Execute
     }
 }

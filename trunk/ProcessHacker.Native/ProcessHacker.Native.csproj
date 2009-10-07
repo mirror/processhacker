@@ -106,6 +106,7 @@
     <Compile Include="Security\AccessControl\Ace.cs" />
     <Compile Include="Security\AccessControl\Acl.cs" />
     <Compile Include="Security\AccessControl\KnownAce.cs" />
+    <Compile Include="Security\FltPortAccess.cs" />
     <Compile Include="Security\LsaSecretAccess.cs" />
     <Compile Include="Security\LsaTrustedAccess.cs" />
     <Compile Include="Security\LsaAccountAccess.cs" />

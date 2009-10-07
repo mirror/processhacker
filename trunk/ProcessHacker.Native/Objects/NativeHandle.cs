@@ -471,6 +471,9 @@ namespace ProcessHacker.Native.Objects
         /// <param name="newHandle">The new handle value.</param>
         protected void SwapHandle(IntPtr newHandle)
         {
+            if (!this.Owned || this.Disposed)
+                throw new InvalidOperationException();
+
             this.Close();
             _handle = newHandle;
         }

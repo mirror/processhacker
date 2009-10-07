@@ -14,15 +14,14 @@ namespace ProcessHacker.Native.Security
         ExitWindows = 0x0040,
         Enumerate = 0x0100,
         ReadScreen = 0x0200,
-        All = 0x37f,
+        All = StandardRights.Required | AccessClipboard | 
+            AccessGlobalAtoms | CreateDesktop | EnumDesktops | Enumerate | 
+            ExitWindows | ReadAttributes | ReadScreen | WriteAttributes,
         GenericRead = StandardRights.Read | EnumDesktops | Enumerate | 
             ReadAttributes | ReadScreen,
         GenericWrite = StandardRights.Write | AccessClipboard | 
             CreateDesktop | WriteAttributes,
         GenericExecute = StandardRights.Execute | AccessGlobalAtoms | 
-            ExitWindows,
-        GenericAll = StandardRights.Required | AccessClipboard | 
-            AccessGlobalAtoms | CreateDesktop | EnumDesktops | Enumerate | 
-            ExitWindows | ReadAttributes | ReadScreen | WriteAttributes
+            ExitWindows
     }
 }

@@ -19,7 +19,7 @@ namespace ProcessHacker.Native.Security
         SetPort = 0x0800,
         SuspendResume = 0x0800,
         QueryLimitedInformation = 0x1000,
-        // should be 0xffff on Vista, but is 0xfff for backwards compatibility
+        // should be 0x1fff on Vista, but is 0xfff for backwards compatibility
         All = StandardRights.Required | StandardRights.Synchronize | 0xfff
     }
 }

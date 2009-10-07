@@ -23,6 +23,8 @@
 using System;
 using System.Windows.Forms;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker.Native.Ui
 {
@@ -33,6 +35,7 @@ namespace ProcessHacker.Native.Ui
         public event HandlePropertiesDelegate HandlePropertiesCallback;
 
         private string _name, _typeName;
+        private NativeHandle _objectHandle;
 
         public HandlePropertiesWindow(SystemHandleEntry handle)
         {
@@ -109,11 +112,40 @@ namespace ProcessHacker.Native.Ui
                     }
                 }
             }
+
+            if (this.ObjectHandle == null)
+                buttonPermissions.Visible = false;
+        }
+
+        public NativeHandle ObjectHandle
+        {
+            get { return _objectHandle; }
+            set { _objectHandle = value; }
         }
 
         private void buttonClose_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void buttonPermissions_Click(object sender, EventArgs e)
+        {
+            if (_objectHandle != null)
+            {
+                try
+                {
+                    SecurityEditor.EditSecurity(
+                        this,
+                        SecurityEditor.GetSecurableForHandle(_objectHandle, NativeTypeFactory.GetObjectType(_typeName)),
+                        _name,
+                        NativeTypeFactory.GetAccessEntries(NativeTypeFactory.GetObjectType(_typeName))
+                        );
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Unable to edit security: " + ex.Message, "Security Editor", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }

@@ -314,8 +314,7 @@ namespace ProcessHacker.Common
         /// <param name="theme">A name of a theme.</param>
         public static void SetTheme(this Control control, string theme)
         {
-           HResult setWindowThemeResult = Win32.SetWindowTheme(control.Handle, theme, null);
-           setWindowThemeResult.ThrowIf();
+            Win32.SetWindowTheme(control.Handle, theme, null);
         }
 
         /// <summary>

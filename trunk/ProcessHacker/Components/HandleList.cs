@@ -62,7 +62,7 @@ namespace ProcessHacker.Components
                 HandlePropertiesWindow window = new HandlePropertiesWindow(handleInfo);
                 IntPtr handle = new IntPtr(handleInfo.Handle);
                 ProcessHandle phandle = new ProcessHandle(handleInfo.ProcessId, ProcessAccess.DupHandle);
-                GenericHandle dupHandle; 
+                GenericHandle dupHandle = null; 
 
                 window.HandlePropertiesCallback += (control, name, typeName) =>
                     {
@@ -208,7 +208,19 @@ namespace ProcessHacker.Components
                         }
                     };
 
+                if (dupHandle == null)
+                {
+                    // Try to get a handle, since we need one for security editing.
+                    try { dupHandle = new GenericHandle(phandle, handle, 0); }
+                    catch { }
+                }
+
+                window.ObjectHandle = dupHandle;
+
                 window.ShowDialog();
+
+                if (dupHandle != null)
+                    dupHandle.Dispose();
             }
             catch (Exception ex)
             {

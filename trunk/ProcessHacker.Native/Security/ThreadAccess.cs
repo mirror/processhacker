@@ -17,7 +17,7 @@ namespace ProcessHacker.Native.Security
         DirectImpersonation = 0x0200,
         SetLimitedInformation = 0x0400,
         QueryLimitedInformation = 0x0800,
-        // should be 0xffff on Vista, but is 0xfff for backwards compatibility
-        All = StandardRights.Required | StandardRights.Synchronize | 0xfff
+        // should be 0xfff on Vista, but is 0x3ff for backwards compatibility
+        All = StandardRights.Required | StandardRights.Synchronize | 0x3ff
     }
 }

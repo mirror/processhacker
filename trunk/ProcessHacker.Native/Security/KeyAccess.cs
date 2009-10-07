@@ -14,10 +14,10 @@ namespace ProcessHacker.Native.Security
         Wow64_32Key = 0x0200,
         Wow64_64Key = 0x0100,
         Wow64_Res = 0x0300,
-        Read = (StandardRights.Read | QueryValue | EnumerateSubKeys | Notify) & ~StandardRights.Synchronize,
-        Write = (StandardRights.Write | SetValue | CreateSubKey) & ~StandardRights.Synchronize,
-        Execute = Read & ~StandardRights.Synchronize,
         All = (StandardRights.All | QueryValue | SetValue | CreateSubKey | 
-            EnumerateSubKeys | Notify | CreateLink) & ~StandardRights.Synchronize
+            EnumerateSubKeys | Notify | CreateLink) & ~StandardRights.Synchronize,
+        GenericRead = (StandardRights.Read | QueryValue | EnumerateSubKeys | Notify) & ~StandardRights.Synchronize,
+        GenericWrite = (StandardRights.Write | SetValue | CreateSubKey) & ~StandardRights.Synchronize,
+        GenericExecute = GenericRead & ~StandardRights.Synchronize
     }
 }

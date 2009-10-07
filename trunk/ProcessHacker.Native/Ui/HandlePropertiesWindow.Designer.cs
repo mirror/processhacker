@@ -48,6 +48,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonClose = new System.Windows.Forms.Button();
+            this.buttonPermissions = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabDetails.SuspendLayout();
             this.groupQuotaCharges.SuspendLayout();
@@ -86,9 +87,9 @@
             this.groupObjectInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupObjectInfo.Location = new System.Drawing.Point(6, 190);
+            this.groupObjectInfo.Location = new System.Drawing.Point(6, 215);
             this.groupObjectInfo.Name = "groupObjectInfo";
-            this.groupObjectInfo.Size = new System.Drawing.Size(350, 160);
+            this.groupObjectInfo.Size = new System.Drawing.Size(350, 135);
             this.groupObjectInfo.TabIndex = 3;
             this.groupObjectInfo.TabStop = false;
             this.groupObjectInfo.Text = "Object Information";
@@ -99,7 +100,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupQuotaCharges.Controls.Add(this.labelNonPaged);
             this.groupQuotaCharges.Controls.Add(this.labelPaged);
-            this.groupQuotaCharges.Location = new System.Drawing.Point(179, 113);
+            this.groupQuotaCharges.Location = new System.Drawing.Point(179, 138);
             this.groupQuotaCharges.Name = "groupQuotaCharges";
             this.groupQuotaCharges.Size = new System.Drawing.Size(177, 71);
             this.groupQuotaCharges.TabIndex = 2;
@@ -128,7 +129,7 @@
             // 
             this.groupReferences.Controls.Add(this.labelHandles);
             this.groupReferences.Controls.Add(this.labelReferences);
-            this.groupReferences.Location = new System.Drawing.Point(6, 113);
+            this.groupReferences.Location = new System.Drawing.Point(6, 138);
             this.groupReferences.Name = "groupReferences";
             this.groupReferences.Size = new System.Drawing.Size(167, 71);
             this.groupReferences.TabIndex = 1;
@@ -157,6 +158,7 @@
             // 
             this.groupBasicInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBasicInfo.Controls.Add(this.buttonPermissions);
             this.groupBasicInfo.Controls.Add(this.textGrantedAccess);
             this.groupBasicInfo.Controls.Add(this.textAddress);
             this.groupBasicInfo.Controls.Add(this.textType);
@@ -167,7 +169,7 @@
             this.groupBasicInfo.Controls.Add(this.label1);
             this.groupBasicInfo.Location = new System.Drawing.Point(6, 6);
             this.groupBasicInfo.Name = "groupBasicInfo";
-            this.groupBasicInfo.Size = new System.Drawing.Size(350, 101);
+            this.groupBasicInfo.Size = new System.Drawing.Size(350, 126);
             this.groupBasicInfo.TabIndex = 0;
             this.groupBasicInfo.TabStop = false;
             this.groupBasicInfo.Text = "Basic Information";
@@ -260,6 +262,18 @@
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
             // 
+            // buttonPermissions
+            // 
+            this.buttonPermissions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonPermissions.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonPermissions.Location = new System.Drawing.Point(269, 97);
+            this.buttonPermissions.Name = "buttonPermissions";
+            this.buttonPermissions.Size = new System.Drawing.Size(75, 23);
+            this.buttonPermissions.TabIndex = 2;
+            this.buttonPermissions.Text = "Permissions";
+            this.buttonPermissions.UseVisualStyleBackColor = true;
+            this.buttonPermissions.Click += new System.EventHandler(this.buttonPermissions_Click);
+            // 
             // HandlePropertiesWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -308,5 +322,6 @@
         private System.Windows.Forms.Label labelNonPaged;
         private System.Windows.Forms.Label labelPaged;
         private System.Windows.Forms.GroupBox groupObjectInfo;
+        private System.Windows.Forms.Button buttonPermissions;
     }
 }

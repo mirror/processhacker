@@ -7,6 +7,7 @@ Process Hacker
    * #2853452 - "Find handles window: Minor usability improvements"
    * Update system
    * Network tools: ping, traceroute and whois
+   * Object security editor
    * Displays IPv6 network connections
    * VirusTotal uploader
    * Two new terminator tests: W1 (send WM_DESTROY messages) and 

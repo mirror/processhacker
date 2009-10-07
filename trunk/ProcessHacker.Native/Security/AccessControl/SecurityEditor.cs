@@ -32,10 +32,62 @@ namespace ProcessHacker.Native.Security.AccessControl
 {
     public class SecurityEditor : IDisposable, ISecurityInformation
     {
+        private class GenericSecurableObject : NativeHandle
+        {
+            private SeObjectType _objectType;
+
+            public GenericSecurableObject(IntPtr handle, SeObjectType objectType)
+                : base(handle, false)
+            {
+                _objectType = objectType;
+            }
+
+            public override SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
+            {
+                try
+                {
+                    return base.GetSecurity(_objectType, securityInformation);
+                }
+                catch
+                {
+                    using (var dupHandle = new NativeHandle<StandardRights>(this, StandardRights.ReadControl))
+                        return (new GenericSecurableObject(dupHandle, _objectType)).GetSecurity(_objectType, securityInformation); 
+                }
+            }
+
+            public override void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
+            {
+                try
+                {
+                    base.SetSecurity(_objectType, securityInformation, securityDescriptor);
+                }
+                catch
+                {
+                    using (var dupHandle = new NativeHandle<StandardRights>(
+                        this,
+                        ((securityInformation & SecurityInformation.Dacl) != 0 ? StandardRights.WriteDac : 0) |
+                        ((securityInformation & SecurityInformation.Owner) != 0 ? StandardRights.WriteOwner : 0)
+                        ))
+                    {
+                        (new GenericSecurableObject(dupHandle, _objectType)).SetSecurity(
+                            _objectType,
+                            securityInformation,
+                            securityDescriptor
+                            );
+                    }
+                }
+            }
+        }
+
         public static void EditSecurity(IWin32Window owner, ISecurable securable, string name, IEnumerable<AccessEntry> accessEntries)
         {
             using (var osi = new SecurityEditor(securable, name, accessEntries))
                 Win32.EditSecurity(owner != null ? owner.Handle : IntPtr.Zero, osi);
+        }
+
+        public static ISecurable GetSecurableForHandle(IntPtr handle, NativeTypeFactory.ObjectType objectType)
+        {
+            return new GenericSecurableObject(handle, NativeTypeFactory.GetSeObjectType(objectType));
         }
 
         private bool _disposed = false;
@@ -56,13 +108,16 @@ namespace ProcessHacker.Native.Security.AccessControl
 
             foreach (var entry in accessEntries)
             {
-                accesses.Add(new SiAccess()
+                if (entry.Mask != 0)
                 {
-                    Guid = IntPtr.Zero,
-                    Mask = entry.Mask,
-                    Flags = (entry.General ? SiAccessFlags.General : 0) | (entry.Specific ? SiAccessFlags.Specific : 0),
-                    Name = this.AllocateStringFromPool(entry.Name)
-                });
+                    accesses.Add(new SiAccess()
+                    {
+                        Guid = IntPtr.Zero,
+                        Mask = entry.Mask,
+                        Flags = (entry.General ? SiAccessFlags.General : 0) | (entry.Specific ? SiAccessFlags.Specific : 0),
+                        Name = this.AllocateStringFromPool(entry.Name)
+                    });
+                }
             }
 
             _accessRights = this.AllocateStructArray<SiAccess>(accesses.ToArray());
