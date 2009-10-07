@@ -206,6 +206,34 @@ namespace ProcessHacker.Common
             return endPoint.Address.GetAddressBytes().IsEmpty() && endPoint.Port == 0;
         }
 
+        public static void IsNetworkError(string url)
+        {
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+            {
+                IntPtr ndfhandle = IntPtr.Zero;
+
+                HResult ndfCreate = Win32.NdfCreateWebIncident(url, ref ndfhandle);
+                ndfCreate.ThrowIf();
+
+                Win32.NdfExecuteDiagnosis(ndfhandle, IntPtr.Zero); //Will throw error if user cancels
+                Win32.NdfCloseIncident(ndfhandle);
+            }
+        }
+
+        public static void IsNetworkError(string url, IntPtr hwnd)
+        {
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+            {
+                IntPtr ndfhandle = IntPtr.Zero;
+
+                HResult ndfCreate = Win32.NdfCreateWebIncident(url, ref ndfhandle);
+                ndfCreate.ThrowIf();
+
+                Win32.NdfExecuteDiagnosis(ndfhandle, hwnd); //Will throw error if user cancels
+                Win32.NdfCloseIncident(ndfhandle);
+            }
+        }
+
         /// <summary>
         /// Opens a registry key in the Registry Editor.
         /// </summary>

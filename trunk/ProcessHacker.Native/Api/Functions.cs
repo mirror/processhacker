@@ -713,6 +713,146 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Network Diagnostics
+
+        /// <summary>
+        /// The NdfCancelIncident function is used to cancel unneeded functions which have been previously called on an existing incident.
+        /// <seealso cref="http://msdn.microsoft.com/en-us/library/ee309551%28VS.85%29.aspx"/>
+        /// </summary>
+        /// <remarks>Before using this API, an application must call an incident creation function such as NdfCreateWebIncident.
+        /// NdfCloseIncident should be used to close an incident once it has been resolved, as NdfCancelIncident does not actually close the incident itself.
+        /// </remarks>
+        /// <param name="Ndfhandle">A handle to the Network Diagnostics Framework incident. 
+        /// This handle should match the handle of an existing incident.</param>
+        /// <returns>A HResult value indicating the result</returns>
+        [DllImport("ndfapi.dll")]
+        public static extern HResult NdfCancelIncident(
+            [In] IntPtr NdfHandle
+            );
+
+        /// <summary>
+        /// The NdfCloseIncident function is used to close an Network Diagnostics Framework (NDF) incident following its resolution.
+        /// </summary>
+        /// <param name="Ndfhandle">The handle to the NDF incident that is being closed.</param>
+        /// <returns>A HResult value indicating the result</returns>
+        [DllImport("ndfapi.dll")]
+        public static extern HResult NdfCloseIncident(
+            [In] IntPtr NdfHandle
+            );
+
+        /// <summary>
+        /// The NdfCreateConnectivityIncident function diagnoses generic internet connectivity problems.
+        /// </summary>
+        /// <param name="Ndfhandle">The handle to the Network Diagnostics Framework incident.</param>
+        /// <returns>A HResult value indicating the result</returns>
+        [DllImport("ndfapi.dll")]
+        public static extern HResult NdfCreateConnectivityIncident(
+            [In, Out] ref IntPtr NdfHandle
+            );
+
+        /// <summary>
+        /// The NdfCreateInboundIncident function creates a session to diagnose inbound connectivity for a specific application or service.
+        /// </summary>
+        /// <param name="applicationID">The fully qualified path to the application receiving the inbound traffic.</param>
+        /// <param name="serviceID">The Windows service receiving the inbound traffic.</param>
+        /// <param name="userID">The SID for the application receiving the traffic. If NULL, the caller's SID is automatically used.</param>
+        /// <param name="localTarget">A SOCKADDR_STORAGE structure which limits the diagnosis to traffic to a specific IP address. If NULL, all traffic will be included in the diagnosis</param>
+        /// <param name="protocol">The protocol which should be diagnosed. For example, IPPROTO_TCP would be used to indicate the TCP/IP protocol.</param>
+        /// <param name="dwFlags">The Inbound flags for specifying the type of options to preform during diagnostics.</param>
+        /// <param name="NdfHandle">Pointer to a handle to the Network Diagnostics Framework incident.</param>
+        /// <returns>A HResult value indicating the result</returns>
+        [DllImport("ndfapi.dll", CharSet = CharSet.Unicode)]
+        public static extern HResult NdfCreateInboundIncident(
+            [In, Optional] string applicationID,
+            [In, Optional] string serviceID,
+            [In, Optional] int userID, //Incorrect
+            [In, Optional] int localTarget, //Incorrect
+                           int protocol, //Incorrect
+                           int dwFlags, ///IsUnum: NDF_INBOUND_FLAG
+            [In, Out] ref IntPtr NdfHandle
+            );
+
+        /// <summary>
+        /// The NdfCreateDNSIncident function diagnoses name resolution issues in resolving a specific host name.
+        /// </summary>
+        /// <param name="hostname">The host name with which there is a name resolution issue.</param>
+        /// <param name="querytype">The numeric representation of the type of record that was queried when the issue occurred.</param>
+        /// <param name="NdfHandle">A handle to the Network Diagnostics Framework incident.</param>
+        /// <returns>A HResult value indicating the result</returns>
+        [DllImport("ndfapi.dll", CharSet = CharSet.Unicode)]
+        public static extern HResult NdfCreateDNSIncident(
+            [In] string hostname,
+                 ushort querytype, //enum value: see the windns.h header file
+            [In, Out] ref IntPtr NdfHandle
+            );
+
+        /// <summary>
+        /// The NdfCreateSharingIncident function diagnoses network problems in accessing a specific network share.
+        /// </summary>
+        /// <param name="shareName">The full UNC string (for example, "\\server\folder\file.ext")for the shared asset with which there is a connectivity issue.</param>
+        /// <param name="NdfHandle">A handle to the Network Diagnostics Framework incident.</param>
+        /// <returns>A HResult value indicating the result</returns>
+        [DllImport("ndfapi.dll", CharSet = CharSet.Unicode)]
+        public static extern HResult NdfCreateSharingIncident(
+             [In] string shareName,
+             [In, Out] ref IntPtr NdfHandle
+             );
+
+        /// <summary>
+        /// The NdfCreateWebIncident function diagnoses web connectivity problems concerning a specific URL.
+        /// </summary>
+        /// <param name="url">The URL with which there is a connectivity issue.</param>
+        /// <param name="NdfHandle">A handle to the Network Diagnostics Framework incident.</param>
+        /// <returns>A HResult value indicating the result</returns>
+        [DllImport("ndfapi.dll", CharSet = CharSet.Unicode)]
+        public static extern HResult NdfCreateWebIncident(
+             [In] string url,
+             [In, Out] ref IntPtr NdfHandle
+             );
+
+        /// <summary>
+        /// The NdfCreateWebIncidentEx function diagnoses web connectivity problems concerning a specific URL. This function allows for more control over the underlying diagnosis than the NdfCreateWebIncident function.
+        /// </summary>
+        /// <param name="url">The URL with which there is a connectivity issue.</param>
+        /// <param name="useWinHTTP">If TRUE, diagnosis is performed using the WinHTTP APIs. Otherwise, the WinInet APIs are used. </param>
+        /// <param name="moduleName">The module name to use when checking against application-specific filtering rules (for example, "C:\Program Files\Internet Explorer\iexplorer.exe"). If NULL, the value is autodetected during the diagnosis.</param>
+        /// <param name="NdfHandle">A handle to the Network Diagnostics Framework incident.</param>
+        /// <returns>A HResult value indicating the result</returns>
+        [DllImport("ndfapi.dll", CharSet = CharSet.Unicode)]
+        public static extern HResult NdfCreateWebIncidentEx(
+             [In] string url,
+             [MarshalAs(UnmanagedType.Bool)]
+             [In] bool useWinHTTP,
+             [In] string moduleName,
+             [In, Out] ref IntPtr NdfHandle
+             );
+
+        /// <summary>
+        /// The NdfExecuteDiagnosis function is used to diagnose the root cause of the incident that has occurred.
+        /// </summary>
+        /// <param name="NdfHandle">A handle to the Network Diagnostics Framework incident.</param>
+        /// <param name="hwnd">The handle to the window that is intended to display the diagnostic information. If specified, the NDF UI is modal to the window. If NULL, the UI is non-modal.</param>
+        /// <returns>A HResult value indicating the result</returns>
+        [DllImport("ndfapi.dll")]
+        public static extern HResult NdfExecuteDiagnosis(
+             [In] IntPtr NdfHandle,
+             [In] IntPtr hwnd
+                 );
+
+        /// <summary>
+        /// The NdfGetTraceFile function is used to retrieve the path containing an Event Trace Log (ETL) file that contains Event Tracing for Windows (ETW) events from a diagnostic session.
+        /// </summary>
+        /// <param name="NdfHandle">A handle to a Network Diagnostics Framework incident. This handle should match the handle of an existing incident.</param>
+        /// <param name="TraceFileLocation">Pointer to a string that contains the location of the trace file.</param>
+        /// <returns>A HResult value indicating the result</returns>
+        [DllImport("ndfapi.dll", CharSet = CharSet.Unicode)]
+        public static extern HResult NdfGetTraceFile(
+             [In] IntPtr NdfHandle,
+             [Out] string TraceFileLocation
+                 );
+
+        #endregion
+
         #region Private Namespaces
 
         [DllImport("kernel32.dll", SetLastError = true)]
