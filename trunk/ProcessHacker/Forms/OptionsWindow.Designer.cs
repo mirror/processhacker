@@ -57,8 +57,6 @@
             this.label22 = new System.Windows.Forms.Label();
             this.checkEnableExperimentalFeatures = new System.Windows.Forms.CheckBox();
             this.checkHidePhConnections = new System.Windows.Forms.CheckBox();
-            this.textMaxSamples = new System.Windows.Forms.NumericUpDown();
-            this.label6 = new System.Windows.Forms.Label();
             this.buttonChangeReplaceTaskManager = new System.Windows.Forms.Button();
             this.checkReplaceTaskManager = new System.Windows.Forms.CheckBox();
             this.checkEnableKPH = new System.Windows.Forms.CheckBox();
@@ -74,6 +72,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.tabPlotting = new System.Windows.Forms.TabPage();
             this.textStep = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -84,6 +84,12 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
+            this.colorIORO = new ProcessHacker.Components.ColorModifier();
+            this.colorIOW = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.tabSymbols = new System.Windows.Forms.TabPage();
             this.checkUndecorate = new System.Windows.Forms.CheckBox();
             this.textSearchPath = new System.Windows.Forms.TextBox();
@@ -100,6 +106,7 @@
             this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
             this.optUpdateBeta = new System.Windows.Forms.RadioButton();
             this.ProxySettingsBox = new System.Windows.Forms.GroupBox();
+            this.BypassProxyOnLocalCheckBox = new System.Windows.Forms.CheckBox();
             this.UseCredentialsCheckBox = new System.Windows.Forms.CheckBox();
             this.label27 = new System.Windows.Forms.Label();
             this.ProxyPortTextBox = new System.Windows.Forms.TextBox();
@@ -111,21 +118,13 @@
             this.label24 = new System.Windows.Forms.Label();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.BypassProxyOnLocalCheckBox = new System.Windows.Forms.CheckBox();
-            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorIORO = new ProcessHacker.Components.ColorModifier();
-            this.colorIOW = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
+            this.textMaxSamples = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).BeginInit();
             this.tabAdvanced.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).BeginInit();
             this.tabHighlighting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).BeginInit();
             this.tabPlotting.SuspendLayout();
@@ -134,6 +133,7 @@
             this.tabUpdates.SuspendLayout();
             this.UpdaterSettingsGroupBox.SuspendLayout();
             this.ProxySettingsBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -244,6 +244,8 @@
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.textMaxSamples);
+            this.tabGeneral.Controls.Add(this.label6);
             this.tabGeneral.Controls.Add(this.label20);
             this.tabGeneral.Controls.Add(this.comboToolbarStyle);
             this.tabGeneral.Controls.Add(this.checkFloatChildWindows);
@@ -450,8 +452,6 @@
             this.tabAdvanced.Controls.Add(this.label22);
             this.tabAdvanced.Controls.Add(this.checkEnableExperimentalFeatures);
             this.tabAdvanced.Controls.Add(this.checkHidePhConnections);
-            this.tabAdvanced.Controls.Add(this.textMaxSamples);
-            this.tabAdvanced.Controls.Add(this.label6);
             this.tabAdvanced.Controls.Add(this.buttonChangeReplaceTaskManager);
             this.tabAdvanced.Controls.Add(this.checkReplaceTaskManager);
             this.tabAdvanced.Controls.Add(this.checkWarnDangerous);
@@ -510,42 +510,6 @@
             this.checkHidePhConnections.TabIndex = 7;
             this.checkHidePhConnections.Text = "Hide Process Hacker network connections";
             this.checkHidePhConnections.UseVisualStyleBackColor = true;
-            // 
-            // textMaxSamples
-            // 
-            this.textMaxSamples.Increment = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Location = new System.Drawing.Point(118, 201);
-            this.textMaxSamples.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Name = "textMaxSamples";
-            this.textMaxSamples.Size = new System.Drawing.Size(72, 20);
-            this.textMaxSamples.TabIndex = 8;
-            this.textMaxSamples.Value = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 203);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(106, 13);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "Max. Sample History:";
             // 
             // buttonChangeReplaceTaskManager
             // 
@@ -736,6 +700,22 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "New Objects:";
             // 
+            // colorRemovedProcesses
+            // 
+            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
+            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
+            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorRemovedProcesses.TabIndex = 2;
+            // 
+            // colorNewProcesses
+            // 
+            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
+            this.colorNewProcesses.Name = "colorNewProcesses";
+            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorNewProcesses.TabIndex = 1;
+            // 
             // tabPlotting
             // 
             this.tabPlotting.Controls.Add(this.textStep);
@@ -851,6 +831,54 @@
             this.label17.Size = new System.Drawing.Size(91, 13);
             this.label17.TabIndex = 9;
             this.label17.Text = "CPU Kernel Time:";
+            // 
+            // colorIORO
+            // 
+            this.colorIORO.Color = System.Drawing.Color.Transparent;
+            this.colorIORO.Location = new System.Drawing.Point(124, 163);
+            this.colorIORO.Name = "colorIORO";
+            this.colorIORO.Size = new System.Drawing.Size(40, 20);
+            this.colorIORO.TabIndex = 6;
+            // 
+            // colorIOW
+            // 
+            this.colorIOW.Color = System.Drawing.Color.Transparent;
+            this.colorIOW.Location = new System.Drawing.Point(124, 189);
+            this.colorIOW.Name = "colorIOW";
+            this.colorIOW.Size = new System.Drawing.Size(40, 20);
+            this.colorIOW.TabIndex = 7;
+            // 
+            // colorMemoryWS
+            // 
+            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
+            this.colorMemoryWS.Name = "colorMemoryWS";
+            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryWS.TabIndex = 5;
+            // 
+            // colorMemoryPB
+            // 
+            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
+            this.colorMemoryPB.Name = "colorMemoryPB";
+            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryPB.TabIndex = 4;
+            // 
+            // colorCPUUT
+            // 
+            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
+            this.colorCPUUT.Name = "colorCPUUT";
+            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUUT.TabIndex = 3;
+            // 
+            // colorCPUKT
+            // 
+            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
+            this.colorCPUKT.Name = "colorCPUKT";
+            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUKT.TabIndex = 2;
             // 
             // tabSymbols
             // 
@@ -1040,6 +1068,16 @@
             this.ProxySettingsBox.TabStop = false;
             this.ProxySettingsBox.Text = "Proxy Configuration";
             // 
+            // BypassProxyOnLocalCheckBox
+            // 
+            this.BypassProxyOnLocalCheckBox.AutoSize = true;
+            this.BypassProxyOnLocalCheckBox.Location = new System.Drawing.Point(11, 53);
+            this.BypassProxyOnLocalCheckBox.Name = "BypassProxyOnLocalCheckBox";
+            this.BypassProxyOnLocalCheckBox.Size = new System.Drawing.Size(104, 17);
+            this.BypassProxyOnLocalCheckBox.TabIndex = 29;
+            this.BypassProxyOnLocalCheckBox.Text = "Bypass on Local";
+            this.BypassProxyOnLocalCheckBox.UseVisualStyleBackColor = true;
+            // 
             // UseCredentialsCheckBox
             // 
             this.UseCredentialsCheckBox.AutoSize = true;
@@ -1142,79 +1180,41 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
-            // BypassProxyOnLocalCheckBox
+            // textMaxSamples
             // 
-            this.BypassProxyOnLocalCheckBox.AutoSize = true;
-            this.BypassProxyOnLocalCheckBox.Location = new System.Drawing.Point(11, 53);
-            this.BypassProxyOnLocalCheckBox.Name = "BypassProxyOnLocalCheckBox";
-            this.BypassProxyOnLocalCheckBox.Size = new System.Drawing.Size(104, 17);
-            this.BypassProxyOnLocalCheckBox.TabIndex = 29;
-            this.BypassProxyOnLocalCheckBox.Text = "Bypass on Local";
-            this.BypassProxyOnLocalCheckBox.UseVisualStyleBackColor = true;
+            this.textMaxSamples.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Location = new System.Drawing.Point(320, 6);
+            this.textMaxSamples.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Name = "textMaxSamples";
+            this.textMaxSamples.Size = new System.Drawing.Size(72, 20);
+            this.textMaxSamples.TabIndex = 20;
+            this.textMaxSamples.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
             // 
-            // colorRemovedProcesses
+            // label6
             // 
-            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
-            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
-            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorRemovedProcesses.TabIndex = 2;
-            // 
-            // colorNewProcesses
-            // 
-            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
-            this.colorNewProcesses.Name = "colorNewProcesses";
-            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorNewProcesses.TabIndex = 1;
-            // 
-            // colorIORO
-            // 
-            this.colorIORO.Color = System.Drawing.Color.Transparent;
-            this.colorIORO.Location = new System.Drawing.Point(124, 163);
-            this.colorIORO.Name = "colorIORO";
-            this.colorIORO.Size = new System.Drawing.Size(40, 20);
-            this.colorIORO.TabIndex = 6;
-            // 
-            // colorIOW
-            // 
-            this.colorIOW.Color = System.Drawing.Color.Transparent;
-            this.colorIOW.Location = new System.Drawing.Point(124, 189);
-            this.colorIOW.Name = "colorIOW";
-            this.colorIOW.Size = new System.Drawing.Size(40, 20);
-            this.colorIOW.TabIndex = 7;
-            // 
-            // colorMemoryWS
-            // 
-            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
-            this.colorMemoryWS.Name = "colorMemoryWS";
-            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryWS.TabIndex = 5;
-            // 
-            // colorMemoryPB
-            // 
-            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
-            this.colorMemoryPB.Name = "colorMemoryPB";
-            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryPB.TabIndex = 4;
-            // 
-            // colorCPUUT
-            // 
-            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
-            this.colorCPUUT.Name = "colorCPUUT";
-            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUUT.TabIndex = 3;
-            // 
-            // colorCPUKT
-            // 
-            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
-            this.colorCPUKT.Name = "colorCPUKT";
-            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUKT.TabIndex = 2;
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(208, 8);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(106, 13);
+            this.label6.TabIndex = 21;
+            this.label6.Text = "Max. Sample History:";
             // 
             // OptionsWindow
             // 
@@ -1243,7 +1243,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).EndInit();
             this.tabAdvanced.ResumeLayout(false);
             this.tabAdvanced.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).EndInit();
             this.tabHighlighting.ResumeLayout(false);
             this.tabHighlighting.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).EndInit();
@@ -1257,6 +1256,7 @@
             this.UpdaterSettingsGroupBox.PerformLayout();
             this.ProxySettingsBox.ResumeLayout(false);
             this.ProxySettingsBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1312,8 +1312,6 @@
         private System.Windows.Forms.ColumnHeader columnDescription;
         private System.Windows.Forms.Button buttonChangeReplaceTaskManager;
         private System.Windows.Forms.CheckBox checkAllowOnlyOneInstance;
-        private System.Windows.Forms.NumericUpDown textMaxSamples;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown textStep;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button buttonCancel;
@@ -1355,5 +1353,7 @@
         private System.Windows.Forms.CheckBox UseCredentialsCheckBox;
         private System.Windows.Forms.GroupBox UpdaterSettingsGroupBox;
         private System.Windows.Forms.CheckBox BypassProxyOnLocalCheckBox;
+        private System.Windows.Forms.NumericUpDown textMaxSamples;
+        private System.Windows.Forms.Label label6;
     }
 }

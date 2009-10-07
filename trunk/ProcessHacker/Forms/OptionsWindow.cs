@@ -123,7 +123,7 @@ namespace ProcessHacker
                     }
 
                     // Add event handlers to enable the apply button.
-                    if (c is CheckBox || c is ListView)
+                    if (c is CheckBox || c is ListView || c is NumericUpDown)
                         c.Click += (sender, e) => this.EnableApplyButton();
                     else if (c is TextBox)
                         (c as TextBox).TextChanged += (sender, e) => this.EnableApplyButton();
