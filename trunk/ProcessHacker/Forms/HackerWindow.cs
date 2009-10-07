@@ -45,7 +45,7 @@ namespace ProcessHacker
     {
         public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
 
-        ThumbButtonManager thumbButtonManager;
+        public ThumbButtonManager thumbButtonManager;
         JumpListManager jumpListManager; //Reserved for future use
 
         private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
@@ -2307,7 +2307,6 @@ namespace ProcessHacker
             appLogButton.Click += new EventHandler(appLogButton_Clicked);
 
             thumbButtonManager.AddThumbButtons(sysInfoButton, netInfoButton, appHandleButton, appLogButton);
-            thumbButtonManager.Dispose();
         }
 
         #endregion
@@ -3019,6 +3018,8 @@ namespace ProcessHacker
             //processP.Dispose();
             //serviceP.Dispose();
             //networkP.Dispose();
+
+            this.thumbButtonManager.Dispose();
 
             this.ExecuteOnIcons((icon) => icon.Visible = false);
             this.ExecuteOnIcons((icon) => icon.Dispose());

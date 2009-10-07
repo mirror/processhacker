@@ -71,6 +71,8 @@ namespace ProcessHacker
             {
                 Properties.Settings.Default.Save();
 
+                Program.HackerWindow.thumbButtonManager.Dispose();
+
                 // Remove the icons or they remain in the system try.
                 Program.HackerWindow.ExecuteOnIcons((icon) => icon.Visible = false);
                 Program.HackerWindow.ExecuteOnIcons((icon) => icon.Dispose());
