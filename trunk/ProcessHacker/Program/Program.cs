@@ -119,6 +119,13 @@ namespace ProcessHacker
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            if (Environment.Version.Major < 2)  
+            {
+                //We do this here to prevent Application.SetUnhandledExceptionMode throwing an exception
+                PhUtils.ShowError("You must have .NET Framework 2.0 or higher to use Process Hacker.");
+                return Program.Exit(ExitCode.Error);
+            }
+
             // Setup exception handling at first opportunity to catch exceptions generatable anywhere.
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
@@ -137,7 +144,7 @@ namespace ProcessHacker
             if (pArgs.ContainsKey("-h") || pArgs.ContainsKey("-help") || pArgs.ContainsKey("-?"))
             {
                 ShowCommandLineUsage();
-                return 0;
+                return Program.Exit(ExitCode.Success);
             }
 
             // In case the settings file is corrupt PH won't crash here - it will be dealt with later.
@@ -176,13 +183,6 @@ namespace ProcessHacker
             { }
 
             VerifySettings();
-
-            if (Environment.Version.Major < 2)
-            {
-                PhUtils.ShowError("You must have .NET Framework 2.0 or higher to use Process Hacker.");
-
-                Environment.Exit(1);
-            }
 
             ThreadPool.SetMinThreads(1, 1);
             ThreadPool.SetMaxThreads(2, 2);
@@ -278,7 +278,7 @@ namespace ProcessHacker
             }
 
             if (ProcessCommandLine(pArgs))
-                return 0;
+                return Program.Exit(ExitCode.Success);
 
             Win32.FileIconInit(true);
             LoadProviders();
@@ -293,7 +293,43 @@ namespace ProcessHacker
             new HackerWindow();
             Application.Run();
 
-            return 0;
+            return Program.Exit(ExitCode.Success);
+        }
+
+        /// <summary>
+        /// Process Hacker Exit Codes
+        /// </summary>
+        public enum ExitCode : int
+        {
+            Success = 0, //OS defined Success Code
+            Error = 1, //OS defined Error Code
+            //ExitCode > 1 is application defined
+            InvalidArgument = 2,
+            UnknownError = 10
+        }
+
+        /// <summary>
+        /// Entry Point wrapper for returning Process Hacker's execution status  
+        /// </summary>
+        /// <param name="code">The Exit code for returning to the Operating System</param>
+        /// <returns>A exit code for the Operating System</returns>
+        public static int Exit(ExitCode code)
+        {
+            switch (code)
+            {
+                case ExitCode.Success:
+                    {
+                        return (int)ExitCode.Success;
+                    }
+                case ExitCode.Error:
+                    {
+                        return (int)ExitCode.Error;
+                    }
+                default:
+                    {
+                        return (int)ExitCode.UnknownError;
+                    }
+            }
         }
 
         private static void ShowCommandLineUsage()
