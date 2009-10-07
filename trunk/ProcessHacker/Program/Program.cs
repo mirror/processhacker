@@ -302,17 +302,20 @@ namespace ProcessHacker
         private static void ShowCommandLineUsage()
         {
             PhUtils.ShowInformation(
-                "Usage:\n" +
-                "\t-a\tAggressive mode.\n" +
-                "\t-h\tDisplays command line usage information.\n" +
-                "\t-ip pid\tDisplays the main window, then properties for the specified process.\n" +
-                "\t-m\tStarts Process Hacker hidden.\n" +
-                "\t-nokph\tDisables KProcessHacker. Use this if you are encountering BSODs.\n" +
-                "\t-o\tShows Options.\n" +
-                "\t-pw pid\tDisplays properties for the specified process.\n" +
-                "\t-pt pid\tDisplays properties for the specified process' token.\n" +
-                "\t-t n\tShows the specified tab. 0 is Processes, 1 is Services and 2 is Network.\n" +
-                "\t-v\tStarts Process Hacker visible.\n" +
+                "Option: \tUsage:\n" +
+                "-a\tAggressive mode.\n" +
+                "-h\tDisplays command line usage information.\n" +
+                "-ip pid\tDisplays the main window, then properties for the specified \t\tprocess.\n" +
+                "-m\tStarts Process Hacker hidden.\n" +
+                "-nokph\tDisables KProcessHacker. Use this if you encounter BSODs.\n" +
+                "-o\tShows Options.\n" +
+                "-pw pid\tDisplays properties for the specified process.\n" +
+                "-pt pid\tDisplays properties for the specified process' token.\n" +
+                "-t n\tShows the specified tab. 0 is Processes, 1 is Services and 2 \t\tis Network.\n" +
+                "-v\tStarts Process Hacker visible.\n" +
+                "-elevate\tStarts Process Hacker elevated.\n" +
+                "-installkph\tInstalls KProcessHacker Service.\n" +
+                "-uninstallkph\tUninstalls KProcessHacker Service.\n" +
                 ""
                 );
         }
