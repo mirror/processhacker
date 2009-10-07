@@ -304,8 +304,6 @@ namespace TaskbarLib
     /// </summary>
     public sealed class ShellLink : IJumpListTask, IJumpListDestination
     {
-        List<IPropertyStore> createdList;
-
         /// <summary>
         /// Gets or sets the object's title.
         /// </summary>
@@ -357,15 +355,8 @@ namespace TaskbarLib
         /// <returns>An <b>IShellLink</b> up-cast to <b>object</b>.</returns>
         public object GetShellRepresentation()
         {
-            if (createdList == null)
-                createdList = new List<IPropertyStore>();
-
             IShellLinkW shellLink = (IShellLinkW)new CShellLink();
-
             IPropertyStore propertyStore = (IPropertyStore)shellLink;
-           
-            createdList.Add(propertyStore);
-
             PropVariant propVariant = new PropVariant();
 
             if (IsSeparator)
