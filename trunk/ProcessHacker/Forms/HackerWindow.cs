@@ -45,8 +45,8 @@ namespace ProcessHacker
     {
         public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
 
-        ThumbButtonManager thumbButtonManager;
-        JumpListManager jumpListManager; //Reserved for future use
+        private ThumbButtonManager thumbButtonManager;
+        //private JumpListManager jumpListManager; //Reserved for future use
 
         private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
 
@@ -2249,52 +2249,52 @@ namespace ProcessHacker
             
             //JumpListManager code works but has been commented out and reserved for future use
 
-            jumpListManager = Windows7Taskbar.CreateJumpListManager();
-            jumpListManager.UserRemovedItems += (o, e_) =>
-            {
+            //jumpListManager = Windows7Taskbar.CreateJumpListManager();
+            //jumpListManager.UserRemovedItems += (o, e_) =>
+            //{
             //QueueMessage("User removed " + e_.RemovedItems.Length + " items (cancelling refresh)");
             //e_.Cancel = true;
-            };
+            //};
 
-            jumpListManager.ClearAllDestinations();
-            jumpListManager.EnabledAutoDestinationType = ApplicationDestinationType.Recent;
+            //jumpListManager.ClearAllDestinations();
+            //jumpListManager.EnabledAutoDestinationType = ApplicationDestinationType.Recent;
             
-            string shell32DllPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shell32.dll");
+            //string shell32DllPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shell32.dll");
            
-            jumpListManager.AddUserTask(new ShellLink
-            {
-                Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "eventvwr.msc"),
-                Arguments = "/s",
-                Title = "Event Viewer",
-                IconLocation = shell32DllPath,
-                IconIndex = 14
-            });
+            //jumpListManager.AddUserTask(new ShellLink
+            //{
+                //Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "eventvwr.msc"),
+                //Arguments = "/s",
+                //Title = "Event Viewer",
+                //IconLocation = shell32DllPath,
+                //IconIndex = 14
+            //});
 
-            jumpListManager.AddUserTask(new Separator());
+            //jumpListManager.AddUserTask(new Separator());
 
-            jumpListManager.AddUserTask(new ShellLink
-            {
-                Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "msinfo32.exe"),
-                Title = "System Infomation",
-                IconLocation = shell32DllPath,
-                IconIndex = 15
-            });
+            //jumpListManager.AddUserTask(new ShellLink
+            //{
+                //Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "msinfo32.exe"),
+                //Title = "System Infomation",
+                //IconLocation = shell32DllPath,
+                //IconIndex = 15
+            //});
 
-            if (jumpListManager.Refresh())
-            {
-                //QueueMessage("Maximum slots in JumpList: " + jumpListManager.MaximumSlotsInList);
-            } 
-            jumpListManager.Dispose();
+            //if (jumpListManager.Refresh())
+            //{
+            //QueueMessage("Maximum slots in JumpList: " + jumpListManager.MaximumSlotsInList);
+            //} 
+            //jumpListManager.Dispose();
 
             ThumbButton sysInfoButton = thumbButtonManager.CreateThumbButton(100,
                 Icon.FromHandle(ProcessHacker.Properties.Resources.chart_line.GetHicon()),
                 "System Infomation");
             sysInfoButton.Click += new EventHandler(sysInfoButton_Clicked);
 
-            ThumbButton netInfoButton = thumbButtonManager.CreateThumbButton(101,
-                Icon.FromHandle(ProcessHacker.Properties.Resources.ProcessHacker.GetHicon()),
-                "Network Infomation");
-            netInfoButton.Click += new EventHandler(netInfoButton_Click);
+            //ThumbButton netInfoButton = thumbButtonManager.CreateThumbButton(101,
+                //Icon.FromHandle(ProcessHacker.Properties.Resources.ProcessHacker.GetHicon()),
+                //"Network Infomation");
+            //netInfoButton.Click += new EventHandler(netInfoButton_Click);
 
             ThumbButton appHandleButton = thumbButtonManager.CreateThumbButton(103,
                 Icon.FromHandle(ProcessHacker.Properties.Resources.find.GetHicon()),
@@ -2306,7 +2306,7 @@ namespace ProcessHacker
                 "Application Log");
             appLogButton.Click += new EventHandler(appLogButton_Clicked);
 
-            thumbButtonManager.AddThumbButtons(sysInfoButton, netInfoButton, appHandleButton, appLogButton);
+            thumbButtonManager.AddThumbButtons(sysInfoButton, appHandleButton, appLogButton);
         }
 
         #endregion
@@ -3386,7 +3386,10 @@ namespace ProcessHacker
         {
             Program.UpdateWindowMenu(windowMenuItem, this);
             this.ApplyFont(Properties.Settings.Default.Font);
-            this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs)); 
+            this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
+
+            //TODO: NetworkInfo unfinished, hidden for 1.6 release
+            networkInfomationMenuItem.Visible = false;
         }
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)
