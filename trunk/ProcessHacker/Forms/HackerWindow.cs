@@ -45,7 +45,7 @@ namespace ProcessHacker
     {
         public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
 
-        public ThumbButtonManager thumbButtonManager;
+        ThumbButtonManager thumbButtonManager;
         JumpListManager jumpListManager; //Reserved for future use
 
         private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
