@@ -63,6 +63,9 @@
             this.textTokenId = new System.Windows.Forms.TextBox();
             this.textImpersonationLevel = new System.Windows.Forms.TextBox();
             this.textTokenType = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -80,9 +83,7 @@
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
+            this.buttonPermissions = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupSource.SuspendLayout();
@@ -126,7 +127,7 @@
             this.groupSource.Controls.Add(this.label6);
             this.groupSource.Controls.Add(this.textSourceName);
             this.groupSource.Controls.Add(this.textSourceLUID);
-            this.groupSource.Location = new System.Drawing.Point(6, 221);
+            this.groupSource.Location = new System.Drawing.Point(6, 247);
             this.groupSource.Name = "groupSource";
             this.groupSource.Size = new System.Drawing.Size(555, 75);
             this.groupSource.TabIndex = 15;
@@ -173,6 +174,7 @@
             // 
             this.groupToken.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupToken.Controls.Add(this.buttonPermissions);
             this.groupToken.Controls.Add(this.label9);
             this.groupToken.Controls.Add(this.label1);
             this.groupToken.Controls.Add(this.buttonLinkedToken);
@@ -190,7 +192,7 @@
             this.groupToken.Controls.Add(this.textUserSID);
             this.groupToken.Location = new System.Drawing.Point(6, 8);
             this.groupToken.Name = "groupToken";
-            this.groupToken.Size = new System.Drawing.Size(555, 207);
+            this.groupToken.Size = new System.Drawing.Size(555, 233);
             this.groupToken.TabIndex = 14;
             this.groupToken.TabStop = false;
             this.groupToken.Text = "Token";
@@ -405,6 +407,33 @@
             this.textTokenType.Size = new System.Drawing.Size(191, 20);
             this.textTokenType.TabIndex = 1;
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 139);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(93, 13);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "Memory Available:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 113);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(75, 13);
+            this.label12.TabIndex = 0;
+            this.label12.Text = "Memory Used:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 87);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(106, 13);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "Authentication LUID:";
+            // 
             // label10
             // 
             this.label10.AutoSize = true;
@@ -540,32 +569,17 @@
             this.vistaMenu.ContainerControl = this;
             this.vistaMenu.DelaySetImageCalls = false;
             // 
-            // label11
+            // buttonPermissions
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 87);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(106, 13);
-            this.label11.TabIndex = 0;
-            this.label11.Text = "Authentication LUID:";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 113);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(75, 13);
-            this.label12.TabIndex = 0;
-            this.label12.Text = "Memory Used:";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 139);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(93, 13);
-            this.label13.TabIndex = 0;
-            this.label13.Text = "Memory Available:";
+            this.buttonPermissions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonPermissions.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonPermissions.Location = new System.Drawing.Point(474, 201);
+            this.buttonPermissions.Name = "buttonPermissions";
+            this.buttonPermissions.Size = new System.Drawing.Size(75, 23);
+            this.buttonPermissions.TabIndex = 18;
+            this.buttonPermissions.Text = "Permissions";
+            this.buttonPermissions.UseVisualStyleBackColor = true;
+            this.buttonPermissions.Click += new System.EventHandler(this.buttonPermissions_Click);
             // 
             // TokenProperties
             // 
@@ -640,5 +654,6 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button buttonPermissions;
     }
 }

@@ -124,7 +124,7 @@ namespace ProcessHacker.Native.Api
         /// <summary>
         /// Removes an Application from Windows Error Reporting on Windows XP
         /// </summary>
-        /// <param name="name">The process.exe or the path\process.exe to be excluded</param>
+        /// <param name="ExeName">The process.exe or the path\process.exe to be excluded</param>
         /// <returns>True if successfully excluded</returns>
         [DllImport("faultrep.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool AddERExcludedApplication(

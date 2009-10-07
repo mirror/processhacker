@@ -35,46 +35,36 @@ namespace ProcessHacker.Native.Security.AccessControl
         private class GenericSecurableObject : NativeHandle
         {
             private SeObjectType _objectType;
+            private Func<StandardRights, NativeHandle> _openMethod;
 
-            public GenericSecurableObject(IntPtr handle, SeObjectType objectType)
-                : base(handle, false)
+            private GenericSecurableObject(IntPtr handle, bool owned)
+                : base(handle, owned)
+            { }
+
+            public GenericSecurableObject(SeObjectType objectType, Func<StandardRights, NativeHandle> openMethod)
             {
                 _objectType = objectType;
+                _openMethod = openMethod;
             }
 
             public override SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
             {
-                try
-                {
-                    return base.GetSecurity(_objectType, securityInformation);
-                }
-                catch
-                {
-                    using (var dupHandle = new NativeHandle<StandardRights>(this, StandardRights.ReadControl))
-                        return (new GenericSecurableObject(dupHandle, _objectType)).GetSecurity(_objectType, securityInformation); 
-                }
+                using (var dupHandle = _openMethod(StandardRights.ReadControl))
+                    return (new GenericSecurableObject(dupHandle, false)).GetSecurity(_objectType, securityInformation); 
             }
 
             public override void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
             {
-                try
+                using (var dupHandle = _openMethod(
+                    ((securityInformation & SecurityInformation.Dacl) != 0 ? StandardRights.WriteDac : 0) |
+                    ((securityInformation & SecurityInformation.Owner) != 0 ? StandardRights.WriteOwner : 0)
+                    ))
                 {
-                    base.SetSecurity(_objectType, securityInformation, securityDescriptor);
-                }
-                catch
-                {
-                    using (var dupHandle = new NativeHandle<StandardRights>(
-                        this,
-                        ((securityInformation & SecurityInformation.Dacl) != 0 ? StandardRights.WriteDac : 0) |
-                        ((securityInformation & SecurityInformation.Owner) != 0 ? StandardRights.WriteOwner : 0)
-                        ))
-                    {
-                        (new GenericSecurableObject(dupHandle, _objectType)).SetSecurity(
-                            _objectType,
-                            securityInformation,
-                            securityDescriptor
-                            );
-                    }
+                    (new GenericSecurableObject(dupHandle, false)).SetSecurity(
+                        _objectType,
+                        securityInformation,
+                        securityDescriptor
+                        );
                 }
             }
         }
@@ -85,9 +75,14 @@ namespace ProcessHacker.Native.Security.AccessControl
                 Win32.EditSecurity(owner != null ? owner.Handle : IntPtr.Zero, osi);
         }
 
-        public static ISecurable GetSecurableForHandle(IntPtr handle, NativeTypeFactory.ObjectType objectType)
+        public static ISecurable GetSecurable(NativeTypeFactory.ObjectType objectType, IntPtr handle)
         {
-            return new GenericSecurableObject(handle, NativeTypeFactory.GetSeObjectType(objectType));
+            return GetSecurable(objectType, (access) => new NativeHandle<StandardRights>(handle, access));
+        }
+
+        public static ISecurable GetSecurable(NativeTypeFactory.ObjectType objectType, Func<StandardRights, NativeHandle> openMethod)
+        {
+            return new GenericSecurableObject(NativeTypeFactory.GetSeObjectType(objectType), openMethod);
         }
 
         private bool _disposed = false;

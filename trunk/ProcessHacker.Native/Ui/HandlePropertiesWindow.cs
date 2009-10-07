@@ -136,7 +136,7 @@ namespace ProcessHacker.Native.Ui
                 {
                     SecurityEditor.EditSecurity(
                         this,
-                        SecurityEditor.GetSecurableForHandle(_objectHandle, NativeTypeFactory.GetObjectType(_typeName)),
+                        SecurityEditor.GetSecurable(NativeTypeFactory.GetObjectType(_typeName), _objectHandle),
                         _name,
                         NativeTypeFactory.GetAccessEntries(NativeTypeFactory.GetObjectType(_typeName))
                         );

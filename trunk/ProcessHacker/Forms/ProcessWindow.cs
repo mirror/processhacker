@@ -36,6 +36,7 @@ using ProcessHacker.Native.Security;
 using ProcessHacker.Native.Symbols;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker
 {
@@ -1097,6 +1098,25 @@ namespace ProcessHacker
         private void buttonSearch_Click(object sender, EventArgs e)
         {
             PerformSearch(buttonSearch.Text);
+        }
+
+        private void buttonPermissions_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SecurityEditor.EditSecurity(
+                    this,
+                    SecurityEditor.GetSecurable(
+                        NativeTypeFactory.ObjectType.Process,
+                        (access) => new ProcessHandle(_pid, (ProcessAccess)access)),
+                    _processItem.Name,
+                    NativeTypeFactory.GetAccessEntries(NativeTypeFactory.ObjectType.Process)
+                    );
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to edit permissions", ex);
+            }
         }
 
         #endregion

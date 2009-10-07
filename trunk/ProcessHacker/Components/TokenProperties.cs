@@ -29,6 +29,7 @@ using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Security.AccessControl;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
@@ -386,6 +387,25 @@ namespace ProcessHacker.Components
                 TokenWindow window = new TokenWindow(token);
 
                 window.ShowDialog();
+            }
+        }
+
+        private void buttonPermissions_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SecurityEditor.EditSecurity(
+                    this,
+                    SecurityEditor.GetSecurable(
+                        NativeTypeFactory.ObjectType.Token,
+                        (access) => _object.GetToken((TokenAccess)access)),
+                    "Token",
+                    NativeTypeFactory.GetAccessEntries(NativeTypeFactory.ObjectType.Token)
+                    );
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to edit security", ex);
             }
         }
     }

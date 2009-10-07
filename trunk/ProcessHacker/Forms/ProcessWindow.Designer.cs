@@ -81,6 +81,7 @@ namespace ProcessHacker
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
             this.groupProcess = new System.Windows.Forms.GroupBox();
+            this.buttonPermissions = new System.Windows.Forms.Button();
             this.labelProcessTypeValue = new System.Windows.Forms.Label();
             this.labelProcessType = new System.Windows.Forms.Label();
             this.fileCurrentDirectory = new ProcessHacker.Components.FileNameBox();
@@ -217,7 +218,7 @@ namespace ProcessHacker
             this.tabControl.Multiline = true;
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(489, 434);
+            this.tabControl.Size = new System.Drawing.Size(488, 431);
             this.tabControl.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl.TabIndex = 0;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
@@ -231,7 +232,7 @@ namespace ProcessHacker
             this.tabGeneral.Location = new System.Drawing.Point(4, 40);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(481, 390);
+            this.tabGeneral.Size = new System.Drawing.Size(480, 387);
             this.tabGeneral.TabIndex = 2;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -241,6 +242,7 @@ namespace ProcessHacker
             this.groupProcess.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupProcess.Controls.Add(this.buttonPermissions);
             this.groupProcess.Controls.Add(this.labelProcessTypeValue);
             this.groupProcess.Controls.Add(this.labelProcessType);
             this.groupProcess.Controls.Add(this.fileCurrentDirectory);
@@ -264,15 +266,27 @@ namespace ProcessHacker
             this.groupProcess.Controls.Add(this.textCmdLine);
             this.groupProcess.Location = new System.Drawing.Point(8, 126);
             this.groupProcess.Name = "groupProcess";
-            this.groupProcess.Size = new System.Drawing.Size(467, 258);
+            this.groupProcess.Size = new System.Drawing.Size(466, 255);
             this.groupProcess.TabIndex = 1;
             this.groupProcess.TabStop = false;
             this.groupProcess.Text = "Process";
             // 
+            // buttonPermissions
+            // 
+            this.buttonPermissions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonPermissions.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonPermissions.Location = new System.Drawing.Point(304, 206);
+            this.buttonPermissions.Name = "buttonPermissions";
+            this.buttonPermissions.Size = new System.Drawing.Size(75, 23);
+            this.buttonPermissions.TabIndex = 21;
+            this.buttonPermissions.Text = "Permissions";
+            this.buttonPermissions.UseVisualStyleBackColor = true;
+            this.buttonPermissions.Click += new System.EventHandler(this.buttonPermissions_Click);
+            // 
             // labelProcessTypeValue
             // 
             this.labelProcessTypeValue.AutoSize = true;
-            this.labelProcessTypeValue.Location = new System.Drawing.Point(98, 210);
+            this.labelProcessTypeValue.Location = new System.Drawing.Point(98, 208);
             this.labelProcessTypeValue.Name = "labelProcessTypeValue";
             this.labelProcessTypeValue.Size = new System.Drawing.Size(16, 13);
             this.labelProcessTypeValue.TabIndex = 20;
@@ -282,7 +296,7 @@ namespace ProcessHacker
             // labelProcessType
             // 
             this.labelProcessType.AutoSize = true;
-            this.labelProcessType.Location = new System.Drawing.Point(6, 210);
+            this.labelProcessType.Location = new System.Drawing.Point(6, 208);
             this.labelProcessType.Name = "labelProcessType";
             this.labelProcessType.Size = new System.Drawing.Size(75, 13);
             this.labelProcessType.TabIndex = 19;
@@ -293,16 +307,16 @@ namespace ProcessHacker
             // 
             this.fileCurrentDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileCurrentDirectory.Location = new System.Drawing.Point(101, 73);
+            this.fileCurrentDirectory.Location = new System.Drawing.Point(101, 71);
             this.fileCurrentDirectory.Name = "fileCurrentDirectory";
             this.fileCurrentDirectory.ReadOnly = true;
-            this.fileCurrentDirectory.Size = new System.Drawing.Size(360, 24);
+            this.fileCurrentDirectory.Size = new System.Drawing.Size(359, 24);
             this.fileCurrentDirectory.TabIndex = 3;
             // 
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(6, 24);
+            this.label26.Location = new System.Drawing.Point(6, 22);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(44, 13);
             this.label26.TabIndex = 12;
@@ -312,7 +326,7 @@ namespace ProcessHacker
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 106);
+            this.label7.Location = new System.Drawing.Point(6, 104);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(72, 13);
             this.label7.TabIndex = 15;
@@ -324,16 +338,16 @@ namespace ProcessHacker
             this.textProtected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textProtected.BackColor = System.Drawing.SystemColors.Control;
-            this.textProtected.Location = new System.Drawing.Point(101, 181);
+            this.textProtected.Location = new System.Drawing.Point(101, 179);
             this.textProtected.Name = "textProtected";
             this.textProtected.ReadOnly = true;
-            this.textProtected.Size = new System.Drawing.Size(330, 20);
+            this.textProtected.Size = new System.Drawing.Size(329, 20);
             this.textProtected.TabIndex = 10;
             // 
             // labelProtected
             // 
             this.labelProtected.AutoSize = true;
-            this.labelProtected.Location = new System.Drawing.Point(6, 184);
+            this.labelProtected.Location = new System.Drawing.Point(6, 182);
             this.labelProtected.Name = "labelProtected";
             this.labelProtected.Size = new System.Drawing.Size(56, 13);
             this.labelProtected.TabIndex = 18;
@@ -345,16 +359,16 @@ namespace ProcessHacker
             this.textDEP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textDEP.BackColor = System.Drawing.SystemColors.Control;
-            this.textDEP.Location = new System.Drawing.Point(101, 155);
+            this.textDEP.Location = new System.Drawing.Point(101, 153);
             this.textDEP.Name = "textDEP";
             this.textDEP.ReadOnly = true;
-            this.textDEP.Size = new System.Drawing.Size(330, 20);
+            this.textDEP.Size = new System.Drawing.Size(329, 20);
             this.textDEP.TabIndex = 8;
             // 
             // labelDEP
             // 
             this.labelDEP.AutoSize = true;
-            this.labelDEP.Location = new System.Drawing.Point(6, 158);
+            this.labelDEP.Location = new System.Drawing.Point(6, 156);
             this.labelDEP.Name = "labelDEP";
             this.labelDEP.Size = new System.Drawing.Size(32, 13);
             this.labelDEP.TabIndex = 17;
@@ -365,7 +379,7 @@ namespace ProcessHacker
             // 
             this.buttonTerminate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonTerminate.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonTerminate.Location = new System.Drawing.Point(386, 20);
+            this.buttonTerminate.Location = new System.Drawing.Point(385, 206);
             this.buttonTerminate.Name = "buttonTerminate";
             this.buttonTerminate.Size = new System.Drawing.Size(75, 23);
             this.buttonTerminate.TabIndex = 1;
@@ -377,7 +391,7 @@ namespace ProcessHacker
             // 
             this.buttonInspectPEB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonInspectPEB.Image = global::ProcessHacker.Properties.Resources.application_form_magnify;
-            this.buttonInspectPEB.Location = new System.Drawing.Point(437, 100);
+            this.buttonInspectPEB.Location = new System.Drawing.Point(436, 98);
             this.buttonInspectPEB.Name = "buttonInspectPEB";
             this.buttonInspectPEB.Size = new System.Drawing.Size(24, 24);
             this.buttonInspectPEB.TabIndex = 5;
@@ -389,7 +403,7 @@ namespace ProcessHacker
             // 
             this.buttonEditProtected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonEditProtected.Image = global::ProcessHacker.Properties.Resources.cog_edit;
-            this.buttonEditProtected.Location = new System.Drawing.Point(437, 178);
+            this.buttonEditProtected.Location = new System.Drawing.Point(436, 176);
             this.buttonEditProtected.Name = "buttonEditProtected";
             this.buttonEditProtected.Size = new System.Drawing.Size(24, 24);
             this.buttonEditProtected.TabIndex = 11;
@@ -401,7 +415,7 @@ namespace ProcessHacker
             // 
             this.buttonInspectParent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonInspectParent.Image = global::ProcessHacker.Properties.Resources.application_form_magnify;
-            this.buttonInspectParent.Location = new System.Drawing.Point(437, 126);
+            this.buttonInspectParent.Location = new System.Drawing.Point(436, 124);
             this.buttonInspectParent.Name = "buttonInspectParent";
             this.buttonInspectParent.Size = new System.Drawing.Size(24, 24);
             this.buttonInspectParent.TabIndex = 7;
@@ -413,7 +427,7 @@ namespace ProcessHacker
             // 
             this.buttonEditDEP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonEditDEP.Image = global::ProcessHacker.Properties.Resources.cog_edit;
-            this.buttonEditDEP.Location = new System.Drawing.Point(437, 152);
+            this.buttonEditDEP.Location = new System.Drawing.Point(436, 150);
             this.buttonEditDEP.Name = "buttonEditDEP";
             this.buttonEditDEP.Size = new System.Drawing.Size(24, 24);
             this.buttonEditDEP.TabIndex = 9;
@@ -424,7 +438,7 @@ namespace ProcessHacker
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 132);
+            this.label5.Location = new System.Drawing.Point(6, 130);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(41, 13);
             this.label5.TabIndex = 16;
@@ -436,16 +450,16 @@ namespace ProcessHacker
             this.textParent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textParent.BackColor = System.Drawing.SystemColors.Control;
-            this.textParent.Location = new System.Drawing.Point(101, 129);
+            this.textParent.Location = new System.Drawing.Point(101, 127);
             this.textParent.Name = "textParent";
             this.textParent.ReadOnly = true;
-            this.textParent.Size = new System.Drawing.Size(330, 20);
+            this.textParent.Size = new System.Drawing.Size(329, 20);
             this.textParent.TabIndex = 6;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 78);
+            this.label4.Location = new System.Drawing.Point(6, 76);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(89, 13);
             this.label4.TabIndex = 14;
@@ -456,16 +470,16 @@ namespace ProcessHacker
             // 
             this.textPEBAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textPEBAddress.Location = new System.Drawing.Point(101, 103);
+            this.textPEBAddress.Location = new System.Drawing.Point(101, 101);
             this.textPEBAddress.Name = "textPEBAddress";
             this.textPEBAddress.ReadOnly = true;
-            this.textPEBAddress.Size = new System.Drawing.Size(330, 20);
+            this.textPEBAddress.Size = new System.Drawing.Size(329, 20);
             this.textPEBAddress.TabIndex = 4;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 50);
+            this.label2.Location = new System.Drawing.Point(6, 48);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(80, 13);
             this.label2.TabIndex = 13;
@@ -476,20 +490,20 @@ namespace ProcessHacker
             // 
             this.textStartTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textStartTime.Location = new System.Drawing.Point(101, 21);
+            this.textStartTime.Location = new System.Drawing.Point(101, 19);
             this.textStartTime.Name = "textStartTime";
             this.textStartTime.ReadOnly = true;
-            this.textStartTime.Size = new System.Drawing.Size(279, 20);
+            this.textStartTime.Size = new System.Drawing.Size(359, 20);
             this.textStartTime.TabIndex = 0;
             // 
             // textCmdLine
             // 
             this.textCmdLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textCmdLine.Location = new System.Drawing.Point(101, 47);
+            this.textCmdLine.Location = new System.Drawing.Point(101, 45);
             this.textCmdLine.Name = "textCmdLine";
             this.textCmdLine.ReadOnly = true;
-            this.textCmdLine.Size = new System.Drawing.Size(360, 20);
+            this.textCmdLine.Size = new System.Drawing.Size(359, 20);
             this.textCmdLine.TabIndex = 2;
             // 
             // groupFile
@@ -505,7 +519,7 @@ namespace ProcessHacker
             this.groupFile.Controls.Add(this.textFileVersion);
             this.groupFile.Location = new System.Drawing.Point(6, 7);
             this.groupFile.Name = "groupFile";
-            this.groupFile.Size = new System.Drawing.Size(469, 114);
+            this.groupFile.Size = new System.Drawing.Size(468, 114);
             this.groupFile.TabIndex = 0;
             this.groupFile.TabStop = false;
             this.groupFile.Text = "File";
@@ -517,7 +531,7 @@ namespace ProcessHacker
             this.fileImage.Location = new System.Drawing.Point(103, 83);
             this.fileImage.Name = "fileImage";
             this.fileImage.ReadOnly = true;
-            this.fileImage.Size = new System.Drawing.Size(360, 24);
+            this.fileImage.Size = new System.Drawing.Size(359, 24);
             this.fileImage.TabIndex = 1;
             // 
             // pictureIcon
@@ -538,7 +552,7 @@ namespace ProcessHacker
             this.textFileDescription.Location = new System.Drawing.Point(44, 20);
             this.textFileDescription.Name = "textFileDescription";
             this.textFileDescription.ReadOnly = true;
-            this.textFileDescription.Size = new System.Drawing.Size(419, 13);
+            this.textFileDescription.Size = new System.Drawing.Size(418, 13);
             this.textFileDescription.TabIndex = 2;
             this.textFileDescription.Text = "File Description";
             // 
@@ -551,7 +565,7 @@ namespace ProcessHacker
             this.textFileCompany.Location = new System.Drawing.Point(44, 38);
             this.textFileCompany.Name = "textFileCompany";
             this.textFileCompany.ReadOnly = true;
-            this.textFileCompany.Size = new System.Drawing.Size(419, 13);
+            this.textFileCompany.Size = new System.Drawing.Size(418, 13);
             this.textFileCompany.TabIndex = 3;
             this.textFileCompany.Text = "File Company";
             // 
@@ -582,7 +596,7 @@ namespace ProcessHacker
             this.textFileVersion.Location = new System.Drawing.Point(103, 57);
             this.textFileVersion.Name = "textFileVersion";
             this.textFileVersion.ReadOnly = true;
-            this.textFileVersion.Size = new System.Drawing.Size(360, 20);
+            this.textFileVersion.Size = new System.Drawing.Size(359, 20);
             this.textFileVersion.TabIndex = 0;
             // 
             // tabStatistics
@@ -591,7 +605,7 @@ namespace ProcessHacker
             this.tabStatistics.Location = new System.Drawing.Point(4, 40);
             this.tabStatistics.Name = "tabStatistics";
             this.tabStatistics.Padding = new System.Windows.Forms.Padding(3);
-            this.tabStatistics.Size = new System.Drawing.Size(481, 390);
+            this.tabStatistics.Size = new System.Drawing.Size(480, 387);
             this.tabStatistics.TabIndex = 9;
             this.tabStatistics.Text = "Statistics";
             this.tabStatistics.UseVisualStyleBackColor = true;
@@ -603,7 +617,7 @@ namespace ProcessHacker
             this.tabPerformance.Location = new System.Drawing.Point(4, 40);
             this.tabPerformance.Name = "tabPerformance";
             this.tabPerformance.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPerformance.Size = new System.Drawing.Size(481, 390);
+            this.tabPerformance.Size = new System.Drawing.Size(480, 387);
             this.tabPerformance.TabIndex = 8;
             this.tabPerformance.Text = "Performance";
             this.tabPerformance.UseVisualStyleBackColor = true;
@@ -626,16 +640,16 @@ namespace ProcessHacker
             this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tablePerformance.Size = new System.Drawing.Size(475, 384);
+            this.tablePerformance.Size = new System.Drawing.Size(474, 381);
             this.tablePerformance.TabIndex = 1;
             // 
             // groupBoxIO
             // 
             this.groupBoxIO.Controls.Add(this.indicatorIO);
             this.groupBoxIO.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxIO.Location = new System.Drawing.Point(3, 259);
+            this.groupBoxIO.Location = new System.Drawing.Point(3, 257);
             this.groupBoxIO.Name = "groupBoxIO";
-            this.groupBoxIO.Size = new System.Drawing.Size(80, 122);
+            this.groupBoxIO.Size = new System.Drawing.Size(80, 121);
             this.groupBoxIO.TabIndex = 3;
             this.groupBoxIO.TabStop = false;
             this.groupBoxIO.Text = "I/O (R+O)";
@@ -654,7 +668,7 @@ namespace ProcessHacker
             this.indicatorIO.Maximum = ((long)(2147483647));
             this.indicatorIO.Minimum = ((long)(0));
             this.indicatorIO.Name = "indicatorIO";
-            this.indicatorIO.Size = new System.Drawing.Size(74, 103);
+            this.indicatorIO.Size = new System.Drawing.Size(74, 102);
             this.indicatorIO.TabIndex = 1;
             this.indicatorIO.TextValue = "";
             // 
@@ -662,9 +676,9 @@ namespace ProcessHacker
             // 
             this.groupBoxPvt.Controls.Add(this.indicatorPvt);
             this.groupBoxPvt.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxPvt.Location = new System.Drawing.Point(3, 131);
+            this.groupBoxPvt.Location = new System.Drawing.Point(3, 130);
             this.groupBoxPvt.Name = "groupBoxPvt";
-            this.groupBoxPvt.Size = new System.Drawing.Size(80, 122);
+            this.groupBoxPvt.Size = new System.Drawing.Size(80, 121);
             this.groupBoxPvt.TabIndex = 2;
             this.groupBoxPvt.TabStop = false;
             this.groupBoxPvt.Text = "Pvt. Pages";
@@ -683,7 +697,7 @@ namespace ProcessHacker
             this.indicatorPvt.Maximum = ((long)(2147483647));
             this.indicatorPvt.Minimum = ((long)(0));
             this.indicatorPvt.Name = "indicatorPvt";
-            this.indicatorPvt.Size = new System.Drawing.Size(74, 103);
+            this.indicatorPvt.Size = new System.Drawing.Size(74, 102);
             this.indicatorPvt.TabIndex = 1;
             this.indicatorPvt.TextValue = "";
             // 
@@ -693,7 +707,7 @@ namespace ProcessHacker
             this.groupCPUUsage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupCPUUsage.Location = new System.Drawing.Point(89, 3);
             this.groupCPUUsage.Name = "groupCPUUsage";
-            this.groupCPUUsage.Size = new System.Drawing.Size(383, 122);
+            this.groupCPUUsage.Size = new System.Drawing.Size(382, 121);
             this.groupCPUUsage.TabIndex = 0;
             this.groupCPUUsage.TabStop = false;
             this.groupCPUUsage.Text = "CPU Usage (Kernel, User)";
@@ -716,7 +730,7 @@ namespace ProcessHacker
             this.plotterCPUUsage.Name = "plotterCPUUsage";
             this.plotterCPUUsage.OverlaySecondLine = false;
             this.plotterCPUUsage.ShowGrid = true;
-            this.plotterCPUUsage.Size = new System.Drawing.Size(377, 103);
+            this.plotterCPUUsage.Size = new System.Drawing.Size(376, 102);
             this.plotterCPUUsage.TabIndex = 0;
             this.plotterCPUUsage.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterCPUUsage.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -730,9 +744,9 @@ namespace ProcessHacker
             // 
             this.groupBox2.Controls.Add(this.plotterMemory);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(89, 131);
+            this.groupBox2.Location = new System.Drawing.Point(89, 130);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(383, 122);
+            this.groupBox2.Size = new System.Drawing.Size(382, 121);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Memory (Private Pages, Working Set)";
@@ -755,7 +769,7 @@ namespace ProcessHacker
             this.plotterMemory.Name = "plotterMemory";
             this.plotterMemory.OverlaySecondLine = true;
             this.plotterMemory.ShowGrid = true;
-            this.plotterMemory.Size = new System.Drawing.Size(377, 103);
+            this.plotterMemory.Size = new System.Drawing.Size(376, 102);
             this.plotterMemory.TabIndex = 0;
             this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -769,9 +783,9 @@ namespace ProcessHacker
             // 
             this.groupBox3.Controls.Add(this.plotterIO);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox3.Location = new System.Drawing.Point(89, 259);
+            this.groupBox3.Location = new System.Drawing.Point(89, 257);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(383, 122);
+            this.groupBox3.Size = new System.Drawing.Size(382, 121);
             this.groupBox3.TabIndex = 0;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "I/O (R+O, W)";
@@ -794,7 +808,7 @@ namespace ProcessHacker
             this.plotterIO.Name = "plotterIO";
             this.plotterIO.OverlaySecondLine = true;
             this.plotterIO.ShowGrid = true;
-            this.plotterIO.Size = new System.Drawing.Size(377, 103);
+            this.plotterIO.Size = new System.Drawing.Size(376, 102);
             this.plotterIO.TabIndex = 0;
             this.plotterIO.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterIO.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -810,7 +824,7 @@ namespace ProcessHacker
             this.groupBoxCpu.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxCpu.Location = new System.Drawing.Point(3, 3);
             this.groupBoxCpu.Name = "groupBoxCpu";
-            this.groupBoxCpu.Size = new System.Drawing.Size(80, 122);
+            this.groupBoxCpu.Size = new System.Drawing.Size(80, 121);
             this.groupBoxCpu.TabIndex = 1;
             this.groupBoxCpu.TabStop = false;
             this.groupBoxCpu.Text = "CPU Usage";
@@ -829,7 +843,7 @@ namespace ProcessHacker
             this.indicatorCpu.Maximum = ((long)(2147483647));
             this.indicatorCpu.Minimum = ((long)(0));
             this.indicatorCpu.Name = "indicatorCpu";
-            this.indicatorCpu.Size = new System.Drawing.Size(74, 103);
+            this.indicatorCpu.Size = new System.Drawing.Size(74, 102);
             this.indicatorCpu.TabIndex = 0;
             this.indicatorCpu.TextValue = "";
             // 
@@ -839,7 +853,7 @@ namespace ProcessHacker
             this.tabThreads.ImageKey = "(none)";
             this.tabThreads.Location = new System.Drawing.Point(4, 40);
             this.tabThreads.Name = "tabThreads";
-            this.tabThreads.Size = new System.Drawing.Size(481, 390);
+            this.tabThreads.Size = new System.Drawing.Size(480, 387);
             this.tabThreads.TabIndex = 3;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
@@ -852,7 +866,7 @@ namespace ProcessHacker
             this.listThreads.Location = new System.Drawing.Point(0, 0);
             this.listThreads.Name = "listThreads";
             this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(481, 390);
+            this.listThreads.Size = new System.Drawing.Size(480, 387);
             this.listThreads.TabIndex = 0;
             // 
             // tabToken
@@ -861,7 +875,7 @@ namespace ProcessHacker
             this.tabToken.Location = new System.Drawing.Point(4, 40);
             this.tabToken.Name = "tabToken";
             this.tabToken.Padding = new System.Windows.Forms.Padding(3);
-            this.tabToken.Size = new System.Drawing.Size(481, 390);
+            this.tabToken.Size = new System.Drawing.Size(480, 387);
             this.tabToken.TabIndex = 1;
             this.tabToken.Text = "Token";
             this.tabToken.UseVisualStyleBackColor = true;
@@ -872,7 +886,7 @@ namespace ProcessHacker
             this.tabModules.ImageKey = "(none)";
             this.tabModules.Location = new System.Drawing.Point(4, 40);
             this.tabModules.Name = "tabModules";
-            this.tabModules.Size = new System.Drawing.Size(481, 390);
+            this.tabModules.Size = new System.Drawing.Size(480, 387);
             this.tabModules.TabIndex = 6;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -884,7 +898,7 @@ namespace ProcessHacker
             this.listModules.Location = new System.Drawing.Point(0, 0);
             this.listModules.Name = "listModules";
             this.listModules.Provider = null;
-            this.listModules.Size = new System.Drawing.Size(481, 390);
+            this.listModules.Size = new System.Drawing.Size(480, 387);
             this.listModules.TabIndex = 0;
             // 
             // tabMemory
@@ -897,7 +911,7 @@ namespace ProcessHacker
             this.tabMemory.Location = new System.Drawing.Point(4, 40);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(481, 390);
+            this.tabMemory.Size = new System.Drawing.Size(480, 387);
             this.tabMemory.TabIndex = 4;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -992,7 +1006,7 @@ namespace ProcessHacker
             this.listMemory.Location = new System.Drawing.Point(6, 59);
             this.listMemory.Name = "listMemory";
             this.listMemory.Provider = null;
-            this.listMemory.Size = new System.Drawing.Size(469, 325);
+            this.listMemory.Size = new System.Drawing.Size(469, 322);
             this.listMemory.TabIndex = 2;
             // 
             // tabEnvironment
@@ -1002,7 +1016,7 @@ namespace ProcessHacker
             this.tabEnvironment.Location = new System.Drawing.Point(4, 40);
             this.tabEnvironment.Name = "tabEnvironment";
             this.tabEnvironment.Padding = new System.Windows.Forms.Padding(3);
-            this.tabEnvironment.Size = new System.Drawing.Size(481, 390);
+            this.tabEnvironment.Size = new System.Drawing.Size(480, 387);
             this.tabEnvironment.TabIndex = 10;
             this.tabEnvironment.Text = "Environment";
             this.tabEnvironment.UseVisualStyleBackColor = true;
@@ -1018,7 +1032,7 @@ namespace ProcessHacker
             this.listEnvironment.Location = new System.Drawing.Point(3, 3);
             this.listEnvironment.Name = "listEnvironment";
             this.listEnvironment.ShowItemToolTips = true;
-            this.listEnvironment.Size = new System.Drawing.Size(475, 384);
+            this.listEnvironment.Size = new System.Drawing.Size(474, 381);
             this.listEnvironment.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listEnvironment.TabIndex = 0;
             this.listEnvironment.UseCompatibleStateImageBehavior = false;
@@ -1042,7 +1056,7 @@ namespace ProcessHacker
             this.tabHandles.Location = new System.Drawing.Point(4, 40);
             this.tabHandles.Name = "tabHandles";
             this.tabHandles.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHandles.Size = new System.Drawing.Size(481, 390);
+            this.tabHandles.Size = new System.Drawing.Size(480, 387);
             this.tabHandles.TabIndex = 5;
             this.tabHandles.Text = "Handles";
             this.tabHandles.UseVisualStyleBackColor = true;
@@ -1068,7 +1082,7 @@ namespace ProcessHacker
             this.listHandles.Location = new System.Drawing.Point(6, 30);
             this.listHandles.Name = "listHandles";
             this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(469, 354);
+            this.listHandles.Size = new System.Drawing.Size(469, 351);
             this.listHandles.TabIndex = 1;
             // 
             // tabJob
@@ -1076,7 +1090,7 @@ namespace ProcessHacker
             this.tabJob.ImageKey = "(none)";
             this.tabJob.Location = new System.Drawing.Point(4, 40);
             this.tabJob.Name = "tabJob";
-            this.tabJob.Size = new System.Drawing.Size(481, 390);
+            this.tabJob.Size = new System.Drawing.Size(480, 387);
             this.tabJob.TabIndex = 11;
             this.tabJob.Text = "Job";
             this.tabJob.UseVisualStyleBackColor = true;
@@ -1086,7 +1100,7 @@ namespace ProcessHacker
             this.tabServices.ImageKey = "(none)";
             this.tabServices.Location = new System.Drawing.Point(4, 40);
             this.tabServices.Name = "tabServices";
-            this.tabServices.Size = new System.Drawing.Size(481, 390);
+            this.tabServices.Size = new System.Drawing.Size(480, 387);
             this.tabServices.TabIndex = 7;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -1100,7 +1114,7 @@ namespace ProcessHacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(489, 434);
+            this.ClientSize = new System.Drawing.Size(488, 431);
             this.Controls.Add(this.tabControl);
             this.KeyPreview = true;
             this.Menu = this.mainMenu;
@@ -1219,5 +1233,6 @@ namespace ProcessHacker
         private ProcessHacker.Components.Indicator indicatorCpu;
         private System.Windows.Forms.Label labelProcessType;
         private System.Windows.Forms.Label labelProcessTypeValue;
+        private System.Windows.Forms.Button buttonPermissions;
     }
 }

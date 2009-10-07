@@ -179,6 +179,39 @@ namespace ProcessHacker.Native.Objects
             return new ThreadHandle(GetCurrentId(), access);
         }
 
+        public static ThreadHandle OpenWithAnyAccess(int tid)
+        {
+            try
+            {
+                return new ThreadHandle(tid, OSVersion.MinThreadQueryInfoAccess);
+            }
+            catch
+            {
+                try
+                {
+                    return new ThreadHandle(tid, (ThreadAccess)StandardRights.Synchronize);
+                }
+                catch
+                {
+                    try
+                    {
+                        return new ThreadHandle(tid, (ThreadAccess)StandardRights.ReadControl);
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            return new ThreadHandle(tid, (ThreadAccess)StandardRights.WriteDac);
+                        }
+                        catch
+                        {
+                            return new ThreadHandle(tid, (ThreadAccess)StandardRights.WriteOwner);
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Registers a port which will be notified when the current thread terminates.
         /// </summary>

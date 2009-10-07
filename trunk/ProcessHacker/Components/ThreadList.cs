@@ -32,6 +32,7 @@ using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Security.AccessControl;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
 
@@ -937,6 +938,26 @@ namespace ProcessHacker.Components
             catch (Exception ex)
             {
                 PhUtils.ShowException("Unable to inspect the TEB of the thread", ex);
+            }
+        }
+
+        private void permissionsThreadMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SecurityEditor.EditSecurity(
+                    this,
+                    SecurityEditor.GetSecurable(
+                        NativeTypeFactory.ObjectType.Thread,
+                        (access) => new ThreadHandle(int.Parse(listThreads.SelectedItems[0].Text), (ThreadAccess)access)
+                        ),
+                    "Thread " + listThreads.SelectedItems[0].Text,
+                    NativeTypeFactory.GetAccessEntries(NativeTypeFactory.ObjectType.Thread)
+                    );
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to edit security", ex);
             }
         }
 

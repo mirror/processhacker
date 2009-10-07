@@ -475,6 +475,39 @@ namespace ProcessHacker.Native.Objects
             return new ProcessHandle(GetCurrentId(), access);
         }
 
+        public static ProcessHandle OpenWithAnyAccess(int pid)
+        {
+            try
+            {
+                return new ProcessHandle(pid, OSVersion.MinProcessQueryInfoAccess);
+            }
+            catch
+            {
+                try
+                {
+                    return new ProcessHandle(pid, (ProcessAccess)StandardRights.Synchronize);
+                }
+                catch
+                {
+                    try
+                    {
+                        return new ProcessHandle(pid, (ProcessAccess)StandardRights.ReadControl);
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            return new ProcessHandle(pid, (ProcessAccess)StandardRights.WriteDac);
+                        }
+                        catch
+                        {
+                            return new ProcessHandle(pid, (ProcessAccess)StandardRights.WriteOwner);
+                        }
+                    }
+                }
+            }
+        }
+
         private ProcessHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }

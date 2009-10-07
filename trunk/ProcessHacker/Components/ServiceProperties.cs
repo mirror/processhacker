@@ -30,6 +30,7 @@ using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Security.AccessControl;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
 
@@ -467,6 +468,26 @@ namespace ProcessHacker.Components
         private void textPassword_TextChanged(object sender, EventArgs e)
         {
             checkChangePassword.Checked = true;
+        }
+
+        private void buttonPermissions_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SecurityEditor.EditSecurity(
+                    this,
+                    SecurityEditor.GetSecurable(
+                        NativeTypeFactory.ObjectType.Service,
+                        (access) => new ServiceHandle(listServices.SelectedItems[0].Name, (ServiceAccess)access)
+                        ),
+                    listServices.SelectedItems[0].Name,
+                    NativeTypeFactory.GetAccessEntries(NativeTypeFactory.ObjectType.Service)
+                    );
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to edit security", ex);
+            }
         }
     }
 }

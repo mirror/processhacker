@@ -38,6 +38,7 @@
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.columnStatus = new System.Windows.Forms.ColumnHeader();
             this.panelService = new System.Windows.Forms.Panel();
+            this.buttonPermissions = new System.Windows.Forms.Button();
             this.textServiceDll = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.checkChangePassword = new System.Windows.Forms.CheckBox();
@@ -108,6 +109,7 @@
             // 
             this.panelService.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelService.Controls.Add(this.buttonPermissions);
             this.panelService.Controls.Add(this.textServiceDll);
             this.panelService.Controls.Add(this.label8);
             this.panelService.Controls.Add(this.checkChangePassword);
@@ -139,11 +141,23 @@
             this.panelService.Size = new System.Drawing.Size(387, 312);
             this.panelService.TabIndex = 2;
             // 
+            // buttonPermissions
+            // 
+            this.buttonPermissions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonPermissions.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonPermissions.Location = new System.Drawing.Point(6, 253);
+            this.buttonPermissions.Name = "buttonPermissions";
+            this.buttonPermissions.Size = new System.Drawing.Size(75, 23);
+            this.buttonPermissions.TabIndex = 24;
+            this.buttonPermissions.Text = "Permissions";
+            this.buttonPermissions.UseVisualStyleBackColor = true;
+            this.buttonPermissions.Click += new System.EventHandler(this.buttonPermissions_Click);
+            // 
             // textServiceDll
             // 
             this.textServiceDll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textServiceDll.Location = new System.Drawing.Point(107, 249);
+            this.textServiceDll.Location = new System.Drawing.Point(107, 222);
             this.textServiceDll.Name = "textServiceDll";
             this.textServiceDll.ReadOnly = true;
             this.textServiceDll.Size = new System.Drawing.Size(274, 20);
@@ -152,7 +166,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 252);
+            this.label8.Location = new System.Drawing.Point(6, 225);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(69, 13);
             this.label8.TabIndex = 22;
@@ -163,7 +177,7 @@
             this.checkChangePassword.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkChangePassword.AutoSize = true;
             this.checkChangePassword.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkChangePassword.Location = new System.Drawing.Point(364, 224);
+            this.checkChangePassword.Location = new System.Drawing.Point(364, 197);
             this.checkChangePassword.Name = "checkChangePassword";
             this.checkChangePassword.Size = new System.Drawing.Size(35, 18);
             this.checkChangePassword.TabIndex = 21;
@@ -175,7 +189,7 @@
             // 
             this.textPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textPassword.Location = new System.Drawing.Point(107, 223);
+            this.textPassword.Location = new System.Drawing.Point(107, 196);
             this.textPassword.Name = "textPassword";
             this.textPassword.Size = new System.Drawing.Size(251, 20);
             this.textPassword.TabIndex = 20;
@@ -186,7 +200,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 226);
+            this.label7.Location = new System.Drawing.Point(6, 199);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(56, 13);
             this.label7.TabIndex = 19;
@@ -196,11 +210,11 @@
             // 
             this.buttonDependents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDependents.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDependents.Location = new System.Drawing.Point(107, 283);
+            this.buttonDependents.Location = new System.Drawing.Point(126, 283);
             this.buttonDependents.Name = "buttonDependents";
-            this.buttonDependents.Size = new System.Drawing.Size(85, 23);
+            this.buttonDependents.Size = new System.Drawing.Size(83, 23);
             this.buttonDependents.TabIndex = 18;
-            this.buttonDependents.Text = "Dependents...";
+            this.buttonDependents.Text = "Dependents";
             this.buttonDependents.UseVisualStyleBackColor = true;
             this.buttonDependents.Click += new System.EventHandler(this.buttonDependents_Click);
             // 
@@ -208,11 +222,11 @@
             // 
             this.buttonDependencies.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDependencies.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDependencies.Location = new System.Drawing.Point(198, 283);
+            this.buttonDependencies.Location = new System.Drawing.Point(215, 283);
             this.buttonDependencies.Name = "buttonDependencies";
-            this.buttonDependencies.Size = new System.Drawing.Size(102, 23);
+            this.buttonDependencies.Size = new System.Drawing.Size(85, 23);
             this.buttonDependencies.TabIndex = 18;
-            this.buttonDependencies.Text = "Dependencies...";
+            this.buttonDependencies.Text = "Dependencies";
             this.buttonDependencies.UseVisualStyleBackColor = true;
             this.buttonDependencies.Click += new System.EventHandler(this.buttonDependencies_Click);
             // 
@@ -258,9 +272,9 @@
             // 
             this.textLoadOrderGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textLoadOrderGroup.Location = new System.Drawing.Point(107, 145);
+            this.textLoadOrderGroup.Location = new System.Drawing.Point(240, 118);
             this.textLoadOrderGroup.Name = "textLoadOrderGroup";
-            this.textLoadOrderGroup.Size = new System.Drawing.Size(274, 20);
+            this.textLoadOrderGroup.Size = new System.Drawing.Size(141, 20);
             this.textLoadOrderGroup.TabIndex = 15;
             // 
             // comboErrorControl
@@ -320,11 +334,11 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 148);
+            this.label3.Location = new System.Drawing.Point(195, 121);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(95, 13);
+            this.label3.Size = new System.Drawing.Size(39, 13);
             this.label3.TabIndex = 8;
-            this.label3.Text = "Load Order Group:";
+            this.label3.Text = "Group:";
             // 
             // buttonApply
             // 
@@ -341,7 +355,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 174);
+            this.label2.Location = new System.Drawing.Point(6, 147);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(64, 13);
             this.label2.TabIndex = 5;
@@ -351,7 +365,7 @@
             // 
             this.textUserAccount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textUserAccount.Location = new System.Drawing.Point(107, 197);
+            this.textUserAccount.Location = new System.Drawing.Point(107, 170);
             this.textUserAccount.Name = "textUserAccount";
             this.textUserAccount.Size = new System.Drawing.Size(274, 20);
             this.textUserAccount.TabIndex = 4;
@@ -359,7 +373,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 200);
+            this.label1.Location = new System.Drawing.Point(6, 173);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(75, 13);
             this.label1.TabIndex = 3;
@@ -369,7 +383,7 @@
             // 
             this.textServiceBinaryPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textServiceBinaryPath.Location = new System.Drawing.Point(107, 171);
+            this.textServiceBinaryPath.Location = new System.Drawing.Point(107, 144);
             this.textServiceBinaryPath.Name = "textServiceBinaryPath";
             this.textServiceBinaryPath.Size = new System.Drawing.Size(274, 20);
             this.textServiceBinaryPath.TabIndex = 2;
@@ -440,5 +454,6 @@
         private System.Windows.Forms.CheckBox checkChangePassword;
         private System.Windows.Forms.TextBox textServiceDll;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button buttonPermissions;
     }
 }

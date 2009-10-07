@@ -44,6 +44,39 @@ namespace ProcessHacker.Native.Objects
             return new ServiceHandle(handle, false);
         }
 
+        public static ServiceHandle OpenWithAnyAccess(string serviceName)
+        {
+            try
+            {
+                return new ServiceHandle(serviceName, ServiceAccess.QueryStatus);
+            }
+            catch
+            {
+                try
+                {
+                    return new ServiceHandle(serviceName, (ServiceAccess)StandardRights.Synchronize);
+                }
+                catch
+                {
+                    try
+                    {
+                        return new ServiceHandle(serviceName, (ServiceAccess)StandardRights.ReadControl);
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            return new ServiceHandle(serviceName, (ServiceAccess)StandardRights.WriteDac);
+                        }
+                        catch
+                        {
+                            return new ServiceHandle(serviceName, (ServiceAccess)StandardRights.WriteOwner);
+                        }
+                    }
+                }
+            }
+        }
+
         internal ServiceHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
