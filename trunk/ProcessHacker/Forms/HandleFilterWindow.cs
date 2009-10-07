@@ -96,7 +96,7 @@ namespace ProcessHacker
             if (this.Visible)
             {
                 this.SetPhParent();
-                //textFilter.SelectAll();
+                textFilter.SelectAll();
             }
         }
 
@@ -163,7 +163,6 @@ namespace ProcessHacker
         {
             if (currWorker == null)
             {
-                textFilter.Visible = false;
                 progress.Visible = true;
                 progress.Minimum = 0;
                 listHandles.Items.Clear();
@@ -179,7 +178,6 @@ namespace ProcessHacker
             }
             else
             {
-                textFilter.Visible = true;
                 progress.Visible = false;
                 Cursor = Cursors.WaitCursor;
                 currWorker.CancelAndWait();
@@ -190,7 +188,6 @@ namespace ProcessHacker
         private void Filter_Finished(object sender, EventArgs e)
         {
             progress.Visible = false;
-            textFilter.Visible = true;
             ResetCtls();            
         }
 
@@ -307,7 +304,7 @@ namespace ProcessHacker
             // Select all *after* this event, since the selection due to 
             // the user's mouse click will be made after this code 
             // executes.
-            //this.BeginInvoke(new MethodInvoker(textFilter.SelectAll));
+            this.BeginInvoke(new MethodInvoker(textFilter.SelectAll));
         }
 
         private void textFilter_KeyPress(object sender, KeyPressEventArgs e)
