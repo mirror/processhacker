@@ -177,7 +177,15 @@ namespace ProcessHacker
                 currWorker.Start();
             }
             else
-            {
+            {    
+                if (OSVersion.HasExtendedTaskbar)
+                {
+                    TaskbarLib.Windows7Taskbar.SetTaskbarProgressState(
+                        Program.HackerWindowHandle,
+                        TaskbarLib.Windows7Taskbar.ThumbnailProgressState.NoProgress
+                        );
+                }
+
                 progress.Visible = false;
                 Cursor = Cursors.WaitCursor;
                 currWorker.CancelAndWait();
@@ -205,6 +213,14 @@ namespace ProcessHacker
 
         private void ResetCtls()
         {
+            if (OSVersion.HasExtendedTaskbar)
+            {
+                TaskbarLib.Windows7Taskbar.SetTaskbarProgressState(
+                    Program.HackerWindowHandle,
+                    TaskbarLib.Windows7Taskbar.ThumbnailProgressState.NoProgress
+                    );
+            }
+
             buttonFind.Text = "&Find";
             currWorker = null;
             Cursor = Cursors.Default;
