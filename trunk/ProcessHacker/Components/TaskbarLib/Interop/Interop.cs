@@ -225,19 +225,19 @@ namespace TaskbarLib.Interop
         public static extern HResult PropVariantClear(ref PropVariant pvar);
 
         [DllImport("dwmapi.dll")]
-        public static extern int DwmSetIconicThumbnail(IntPtr hwnd, IntPtr hbitmap, uint flags);
+        public static extern HResult DwmSetIconicThumbnail(IntPtr hwnd, IntPtr hbitmap, uint flags);
        
         [DllImport("dwmapi.dll")]
-        public static extern int DwmSetIconicLivePreviewBitmap(IntPtr hwnd, IntPtr hbitmap, ref POINT ptClient, uint flags);
+        public static extern HResult DwmSetIconicLivePreviewBitmap(IntPtr hwnd, IntPtr hbitmap, ref POINT ptClient, uint flags);
        
         [DllImport("dwmapi.dll")]
-        public static extern int DwmSetIconicLivePreviewBitmap(IntPtr hwnd, IntPtr hbitmap, IntPtr ptClient, uint flags);
+        public static extern HResult DwmSetIconicLivePreviewBitmap(IntPtr hwnd, IntPtr hbitmap, IntPtr ptClient, uint flags);
        
         [DllImport("dwmapi.dll")]
-        internal static extern int DwmSetWindowAttribute(IntPtr hwnd, uint dwAttributeToSet, ref int pvAttributeValue, uint cbAttribute);
+        internal static extern HResult DwmSetWindowAttribute(IntPtr hwnd, uint dwAttributeToSet, ref int pvAttributeValue, uint cbAttribute);
       
         [DllImport("dwmapi.dll")]
-        public static extern int DwmInvalidateIconicBitmaps(IntPtr hwnd);
+        public static extern HResult DwmInvalidateIconicBitmaps(IntPtr hwnd);
        
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern uint RegisterWindowMessage(string lpString);

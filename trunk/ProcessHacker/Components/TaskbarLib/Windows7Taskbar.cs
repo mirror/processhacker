@@ -72,8 +72,9 @@ namespace TaskbarLib
         private static IPropertyStore InternalGetWindowPropertyStore(IntPtr hwnd)
         {
             IPropertyStore propStore;
-            HResult result = UnsafeNativeMethods.SHGetPropertyStoreForWindow(hwnd, ref SafeNativeMethods.IID_IPropertyStore, out propStore);
-            result.ThrowIf();
+            HResult shGetPropertyStoreResult = UnsafeNativeMethods.SHGetPropertyStoreForWindow(
+                hwnd, ref SafeNativeMethods.IID_IPropertyStore, out propStore);
+            shGetPropertyStoreResult.ThrowIf();
 
             return propStore;
         }
@@ -82,14 +83,13 @@ namespace TaskbarLib
         {
             int t = enable ? 1 : 0;
 
-            int rc;
-            rc = UnsafeNativeMethods.DwmSetWindowAttribute(hwnd, SafeNativeMethods.DWMWA_HAS_ICONIC_BITMAP, ref t, 4);
-            if (rc != 0)
-                throw Marshal.GetExceptionForHR(rc);
+            HResult setFirstAttributeResult = UnsafeNativeMethods.DwmSetWindowAttribute(
+                hwnd, SafeNativeMethods.DWMWA_HAS_ICONIC_BITMAP, ref t, 4);
+            setFirstAttributeResult.ThrowIf();
 
-            rc = UnsafeNativeMethods.DwmSetWindowAttribute(hwnd, SafeNativeMethods.DWMWA_FORCE_ICONIC_REPRESENTATION, ref t, 4);
-            if (rc != 0)
-                throw Marshal.GetExceptionForHR(rc);
+            HResult setSecondAttributeResult = UnsafeNativeMethods.DwmSetWindowAttribute(
+                hwnd, SafeNativeMethods.DWMWA_FORCE_ICONIC_REPRESENTATION, ref t, 4);
+            setSecondAttributeResult.ThrowIf();
         }
 
         #endregion
@@ -159,9 +159,9 @@ namespace TaskbarLib
         /// to demand live preview (thumbnail and peek) mode when necessary
         /// instead of relying on default preview.
         /// </summary>
-        public static void EnableCustomWindowPreview()
+        public static void EnableCustomWindowPreview(this Form form)
         {
-            InternalEnableCustomWindowPreview(Program.HackerWindowHandle, true);
+            InternalEnableCustomWindowPreview(form.Handle, true);
         }
 
         /// <summary>
@@ -169,9 +169,9 @@ namespace TaskbarLib
         /// to demand live preview (thumbnail and peek) mode when necessary,
         /// i.e. this window relies on default preview.
         /// </summary>
-        public static void DisableCustomWindowPreview()
+        public static void DisableCustomWindowPreview(this Form form)
         {
-            InternalEnableCustomWindowPreview(Program.HackerWindowHandle, false);
+            InternalEnableCustomWindowPreview(form.Handle, false);
         }
 
         /// <summary>
@@ -179,11 +179,11 @@ namespace TaskbarLib
         /// This is typically done in response to a DWM message.
         /// </summary>
         /// <param name="bitmap">The thumbnail bitmap.</param>
-        public static void SetIconicThumbnail(Bitmap bitmap)
+        public static void SetIconicThumbnail(this Form form, Bitmap bitmap)
         {
-            int rc = UnsafeNativeMethods.DwmSetIconicThumbnail(Program.HackerWindowHandle, bitmap.GetHbitmap(), SafeNativeMethods.DWM_SIT_DISPLAYFRAME);
-            if (rc != 0)
-                throw Marshal.GetExceptionForHR(rc);
+            HResult dwmSetIconicThumbnailResult = UnsafeNativeMethods.DwmSetIconicThumbnail(
+                form.Handle, bitmap.GetHbitmap(), SafeNativeMethods.DWM_SIT_DISPLAYFRAME);
+            dwmSetIconicThumbnailResult.ThrowIf();
         }
 
         /// <summary>
@@ -193,12 +193,11 @@ namespace TaskbarLib
         /// <param name="bitmap">The thumbnail bitmap.</param>
         /// <param name="displayFrame">Whether to display a standard window
         /// frame around the bitmap.</param>
-        public static void SetPeekBitmap(Bitmap bitmap, bool displayFrame)
+        public static void SetPeekBitmap(this Form form, Bitmap bitmap, bool displayFrame)
         {
-            int rc = UnsafeNativeMethods.DwmSetIconicLivePreviewBitmap(Program.HackerWindowHandle, bitmap.GetHbitmap(), IntPtr.Zero, displayFrame ? SafeNativeMethods.DWM_SIT_DISPLAYFRAME : (uint)0);
-            
-            if (rc != 0)
-                throw Marshal.GetExceptionForHR(rc);
+            HResult dwmSetIconicLivePreviewBitmapResult = UnsafeNativeMethods.DwmSetIconicLivePreviewBitmap(
+                form.Handle, bitmap.GetHbitmap(), IntPtr.Zero, displayFrame ? SafeNativeMethods.DWM_SIT_DISPLAYFRAME : (uint)0);
+            dwmSetIconicLivePreviewBitmapResult.ThrowIf();
         }
       
         /// <summary>
@@ -212,12 +211,13 @@ namespace TaskbarLib
         /// displayed as "remembered" by the DWM.</param>
         /// <param name="displayFrame">Whether to display a standard window
         /// frame around the bitmap.</param>
-        public static void SetPeekBitmap(Bitmap bitmap, Point offset, bool displayFrame)
+        public static void SetPeekBitmap(this Form form, Bitmap bitmap, Point offset, bool displayFrame)
         {
             var nativePoint = new POINT(offset.X, offset.Y);
-            int rc = UnsafeNativeMethods.DwmSetIconicLivePreviewBitmap(Program.HackerWindowHandle, bitmap.GetHbitmap(), ref nativePoint, displayFrame ? SafeNativeMethods.DWM_SIT_DISPLAYFRAME : (uint)0);
-            if (rc != 0)
-                throw Marshal.GetExceptionForHR(rc);
+            HResult dwmSetIconicLivePreviewResult = 
+                UnsafeNativeMethods.DwmSetIconicLivePreviewBitmap(
+                form.Handle, bitmap.GetHbitmap(), ref nativePoint, displayFrame ? SafeNativeMethods.DWM_SIT_DISPLAYFRAME : (uint)0);
+            dwmSetIconicLivePreviewResult.ThrowIf();
         }
 
         #endregion
