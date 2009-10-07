@@ -238,6 +238,14 @@ namespace ProcessHacker
                 Logging.Log(ex);
             }
 
+            //when PH ElevationLevel is set to AlwaysElevate, start elevated
+            if (Properties.Settings.Default.ElevationLevel == 2 
+                && Program.ElevationType == TokenElevationType.Limited || pArgs.ContainsKey("-uac"))
+            {
+                Program.StartProcessHackerAdmin();
+                return Program.Exit(ExitCode.Success);
+            }
+
             try
             {
                 // Only load KPH if we're on 32-bit and it's enabled.
