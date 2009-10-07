@@ -3019,8 +3019,6 @@ namespace ProcessHacker
             //serviceP.Dispose();
             //networkP.Dispose();
 
-            this.thumbButtonManager.Dispose();
-
             this.ExecuteOnIcons((icon) => icon.Visible = false);
             this.ExecuteOnIcons((icon) => icon.Dispose());
             SaveSettings();
