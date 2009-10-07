@@ -128,7 +128,7 @@ namespace ProcessHacker
             // Setup exception handling at first opportunity to catch exceptions generatable anywhere.
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException, true);
 
             try
             {
