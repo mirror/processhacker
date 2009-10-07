@@ -154,7 +154,19 @@ namespace ProcessHacker
                 sessionRequest.UserAgent = "Process Hacker " + Application.ProductVersion;
                 sessionRequest.Timeout = System.Threading.Timeout.Infinite;
                 sessionRequest.KeepAlive = true;
+                
+                if (Settings.UseProxy)
+                {
+                    WebProxy wp = new WebProxy(Settings.ProxyAddress + ":" + Settings.ProxyPort, Settings.BypassProxyOnLocal);
 
+                    if (Settings.UseCredentials)
+                    {
+                        wp.Credentials = new NetworkCredential(Settings.ProxyUsername, Settings.ProxyPassword);
+                    }
+
+                    sessionRequest.Proxy = wp;
+                }
+              
                 using (WebResponse Response = sessionRequest.GetResponse())
                 using (Stream WebStream = Response.GetResponseStream())
                 using (StreamReader Reader = new StreamReader(WebStream))
@@ -194,6 +206,18 @@ namespace ProcessHacker
             uploadRequest.Timeout = System.Threading.Timeout.Infinite;
             uploadRequest.KeepAlive = true;
             uploadRequest.Method = WebRequestMethods.Http.Post;
+
+            if (Settings.UseProxy)
+            {
+                WebProxy wp = new WebProxy(Settings.ProxyAddress + ":" + Settings.ProxyPort, Settings.BypassProxyOnLocal);
+
+                if (Settings.UseCredentials)
+                {
+                    wp.Credentials = new NetworkCredential(Settings.ProxyUsername, Settings.ProxyPassword);
+                }
+
+                uploadRequest.Proxy = wp;
+            }
 
             // Build up the 'post' message header
             StringBuilder sb = new StringBuilder();
