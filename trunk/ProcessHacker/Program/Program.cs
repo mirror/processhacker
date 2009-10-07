@@ -112,7 +112,7 @@ namespace ProcessHacker
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        public static int Main(string[] args)
+        public static void Main(string[] args)
         {
             Dictionary<string, string> pArgs = null;
 
@@ -121,9 +121,8 @@ namespace ProcessHacker
 
             if (Environment.Version.Major < 2)  
             {
-                //We do this here to prevent Application.SetUnhandledExceptionMode throwing an exception
                 PhUtils.ShowError("You must have .NET Framework 2.0 or higher to use Process Hacker.");
-                return Program.Exit(ExitCode.Error);
+                Environment.Exit(1);
             }
 
             // Setup exception handling at first opportunity to catch exceptions generatable anywhere.
@@ -144,7 +143,13 @@ namespace ProcessHacker
             if (pArgs.ContainsKey("-h") || pArgs.ContainsKey("-help") || pArgs.ContainsKey("-?"))
             {
                 ShowCommandLineUsage();
-                return Program.Exit(ExitCode.Success);
+                return;
+            }
+
+            if (pArgs.ContainsKey("-elevate"))
+            {
+                StartProcessHackerAdmin();
+                return;
             }
 
             // In case the settings file is corrupt PH won't crash here - it will be dealt with later.
@@ -238,14 +243,6 @@ namespace ProcessHacker
                 Logging.Log(ex);
             }
 
-            //when PH ElevationLevel is set to AlwaysElevate, start elevated
-            if (Properties.Settings.Default.ElevationLevel == 2 
-                && Program.ElevationType == TokenElevationType.Limited || pArgs.ContainsKey("-uac"))
-            {
-                Program.StartProcessHackerAdmin();
-                return Program.Exit(ExitCode.Success);
-            }
-
             try
             {
                 // Only load KPH if we're on 32-bit and it's enabled.
@@ -286,7 +283,7 @@ namespace ProcessHacker
             }
 
             if (ProcessCommandLine(pArgs))
-                return Program.Exit(ExitCode.Success);
+                return;
 
             Win32.FileIconInit(true);
             LoadProviders();
@@ -300,44 +297,6 @@ namespace ProcessHacker
 
             new HackerWindow();
             Application.Run();
-
-            return Program.Exit(ExitCode.Success);
-        }
-
-        /// <summary>
-        /// Process Hacker Exit Codes
-        /// </summary>
-        public enum ExitCode : int
-        {
-            Success = 0, //OS defined Success Code
-            Error = 1, //OS defined Error Code
-            //ExitCode > 1 is application defined
-            InvalidArgument = 2,
-            UnknownError = 10
-        }
-
-        /// <summary>
-        /// Entry Point wrapper for returning Process Hacker's execution status  
-        /// </summary>
-        /// <param name="code">The Exit code for returning to the Operating System</param>
-        /// <returns>A exit code for the Operating System</returns>
-        public static int Exit(ExitCode code)
-        {
-            switch (code)
-            {
-                case ExitCode.Success:
-                    {
-                        return (int)ExitCode.Success;
-                    }
-                case ExitCode.Error:
-                    {
-                        return (int)ExitCode.Error;
-                    }
-                default:
-                    {
-                        return (int)ExitCode.UnknownError;
-                    }
-            }
         }
 
         private static void ShowCommandLineUsage()
@@ -502,6 +461,42 @@ namespace ProcessHacker
                 }
 
                 return true;
+            }
+
+            if (pArgs.ContainsKey("-installkph"))
+            {
+                try
+                {
+                    using (var scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
+                    {
+                        scm.CreateService(
+                            "KProcessHacker",
+                            "KProcessHacker",
+                            ServiceType.KernelDriver,
+                            ServiceStartType.BootStart,
+                            Application.StartupPath + "\\kprocesshacker.sys"
+                            );
+                    }
+                }
+                catch (WindowsException ex)
+                {
+                    // Need to pass status back.
+                    Environment.Exit((int)ex.ErrorCode);
+                }
+            }
+
+            if (pArgs.ContainsKey("-uninstallkph"))
+            {
+                try
+                {
+                    using (var shandle = new ServiceHandle("KProcessHacker", (ServiceAccess)StandardRights.Delete))
+                        shandle.Delete();
+                }
+                catch (WindowsException ex)
+                {
+                    // Need to pass status back.
+                    Environment.Exit((int)ex.ErrorCode);
+                }
             }
 
             if (pArgs.ContainsKey("-ip"))
