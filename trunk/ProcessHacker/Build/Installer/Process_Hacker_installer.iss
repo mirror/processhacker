@@ -305,7 +305,7 @@ begin
   // Create a mutex for the installer and if it's already running then expose a message and stop installation
   if CheckForMutexes(installer_mutex_name) then begin
   if not WizardSilent() then
-    MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarningInstall}'), mbError, MB_OK);
+    MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarning}'), mbCriticalError, MB_OK);
     Result := False;
   end
   else begin
@@ -335,7 +335,7 @@ begin
   Result := True;
   if CheckForMutexes(installer_mutex_name) then begin
     if not WizardSilent() then
-      MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarningUninstall}'), mbError, MB_OK);
+      MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarning}'), mbCriticalError, MB_OK);
       Result := False;
     end
     else begin

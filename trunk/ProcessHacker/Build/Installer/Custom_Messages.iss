@@ -1,8 +1,7 @@
 [CustomMessages]
 ;sm=Start Menu, tsk=Task, com=Comment, msg=Message
 ;English
-en.msg_SetupIsRunningWarningInstall=Process Hacker Setup is already running!
-en.msg_SetupIsRunningWarningUninstall=Process Hacker Setup is already running!
+en.msg_SetupIsRunningWarning=Process Hacker Setup is already running!
 en.msg_asknetdown=Process Hacker requires the .NET Framework 2.0. Please download and install the .NET Framework and run setup again. %n%nDo you want to download the .NET Framework 2.0 now?
 en.msg_DeleteLogSettings=Do you also want to delete Process Hacker's logs and settings? %nIf you plan on reinstalling Process Hacker you do not have to delete them.
 en.msg_createkprocesshacker=Creating KProcessHacker service...
@@ -30,8 +29,7 @@ en.sm_readmefile=ReadMe
 en.sm_com_readmefile=Process Hacker's ReadMe
 
 ;Greek
-gr.msg_SetupIsRunningWarningInstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
-gr.msg_SetupIsRunningWarningUninstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
+gr.msg_SetupIsRunningWarning=Η εγκατάσταση του Process Hacker τρέχει ήδη!
 gr.msg_asknetdown=Το Process Hacker χρειάζεται το .NET Framework 2.0. Παρακαλώ κατεβάστε και εγκαταστήσετε το .NET Framework και τρέξτε την εγκατάσταση πάλι. %n%nΘέλετε να κατεβάσετε το .NET Framework 2.0 τώρα;
 gr.msg_DeleteLogSettings=Θέλετε να διαγράψετε τις επιλογές και τα αρχεία καταγραφής του Process Hacker; %nΑν σκοπεύετε να εγκαταστήσετε πάλι το Process Hacker δεν χρειάζεται να τα διαγράψετε.
 gr.msg_createkprocesshacker=Δημιουργία της υπηρεσίας KProcessHacker...
