@@ -192,6 +192,7 @@ namespace ProcessHacker.Components
                 buttonStop.Enabled = false;
                 buttonDependents.Enabled = false;
                 buttonDependencies.Enabled = false;
+                buttonPermissions.Enabled = false;
                 comboType.Enabled = false;
                 comboStartType.Enabled = false;
                 comboErrorControl.Enabled = false;         
@@ -207,6 +208,7 @@ namespace ProcessHacker.Components
                     buttonStop.Enabled = true;
                     buttonDependents.Enabled = true;
                     buttonDependencies.Enabled = true;
+                    buttonPermissions.Enabled = true;
                     comboType.Enabled = true;
                     comboStartType.Enabled = true;
                     comboErrorControl.Enabled = true;
