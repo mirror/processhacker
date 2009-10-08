@@ -253,8 +253,14 @@ namespace ProcessHacker
 
             try
             {
-                // Only load KPH if we're on 32-bit and it's enabled.
-                if (IntPtr.Size == 4 && Properties.Settings.Default.EnableKPH && !NoKph)
+                if (
+                    // Only load KPH if we're on 32-bit and it's enabled.
+                    IntPtr.Size == 4 &&
+                    Properties.Settings.Default.EnableKPH &&
+                    !NoKph &&
+                    // Don't load KPH if we're going to install/uninstall it.
+                    !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph")
+                    )
                     KProcessHacker.Instance = new KProcessHacker("KProcessHacker");
             }
             catch
@@ -480,13 +486,20 @@ namespace ProcessHacker
                 {
                     using (var scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
                     {
-                        scm.CreateService(
+                        using (var shandle = scm.CreateService(
                             "KProcessHacker",
                             "KProcessHacker",
                             ServiceType.KernelDriver,
-                            ServiceStartType.BootStart,
-                            Application.StartupPath + "\\kprocesshacker.sys"
-                            );
+                            ServiceStartType.SystemStart,
+                            ServiceErrorControl.Ignore,
+                            Application.StartupPath + "\\kprocesshacker.sys",
+                            null,
+                            null,
+                            null
+                            ))
+                        {
+                            shandle.Start();
+                        }
                     }
                 }
                 catch (WindowsException ex)
@@ -494,20 +507,29 @@ namespace ProcessHacker
                     // Need to pass status back.
                     Environment.Exit((int)ex.ErrorCode);
                 }
+
+                return true;
             }
 
             if (pArgs.ContainsKey("-uninstallkph"))
             {
                 try
                 {
-                    using (var shandle = new ServiceHandle("KProcessHacker", (ServiceAccess)StandardRights.Delete))
+                    using (var shandle = new ServiceHandle("KProcessHacker", ServiceAccess.Stop | (ServiceAccess)StandardRights.Delete))
+                    {
+                        try { shandle.Control(ServiceControl.Stop); }
+                        catch { }
+
                         shandle.Delete();
+                    }
                 }
                 catch (WindowsException ex)
                 {
                     // Need to pass status back.
                     Environment.Exit((int)ex.ErrorCode);
                 }
+
+                return true;
             }
 
             if (pArgs.ContainsKey("-ip"))
