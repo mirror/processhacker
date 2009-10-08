@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using ProcessHacker.Native;
 
 
 //VistaMenu v1.7, created by Wyatt O'Day
@@ -31,7 +32,6 @@ namespace wyDay.Controls
         private readonly Hashtable menuParents = new Hashtable();
 
         private bool formHasBeenIntialized;
-        private bool isVistaOrLater;
 
         // performance hacks
         private Queue<KeyValuePair<MenuItem, Image>> _pendingSetImageCalls =
@@ -62,8 +62,6 @@ namespace wyDay.Controls
 
         public VistaMenu()
         {
-            isVistaOrLater = Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major >= 6;
-
             InitializeComponent();
         }
 
@@ -175,7 +173,7 @@ namespace wyDay.Controls
             if (DesignMode)
                 prop.Image = value;
 
-            if (!DesignMode && isVistaOrLater)
+            if (!DesignMode && OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
             {
                 //Destroy old bitmap object
                 if (prop.renderBmpHbitmap != IntPtr.Zero)
@@ -207,7 +205,7 @@ namespace wyDay.Controls
                     AddVistaMenuItem(mnuItem);
                 }
             }
-            else if (!DesignMode && !isVistaOrLater)
+            else if (!DesignMode && OSVersion.IsBelow(WindowsVersion.Vista))
             {
                 if (prop.PreVistaBitmap != null)
                 {
@@ -325,7 +323,7 @@ namespace wyDay.Controls
         {
             if (!DesignMode)
             {
-                if (isVistaOrLater)
+                if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
                 {
                     foreach (DictionaryEntry de in properties)
                     {
