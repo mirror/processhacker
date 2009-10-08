@@ -130,8 +130,8 @@ namespace ProcessHacker
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException, true);
 
-            ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
-            ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
+            //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
+            //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
 
             try
             {
@@ -149,10 +149,10 @@ namespace ProcessHacker
                 return;
             }
 
-            if (pArgs.ContainsKey("-recovered"))
-            {
-                ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RecoverLastSession();
-            }
+            //if (pArgs.ContainsKey("-recovered"))
+            //{
+            //    ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RecoverLastSession();
+            //}
 
             if (pArgs.ContainsKey("-elevate"))
             {
@@ -312,18 +312,18 @@ namespace ProcessHacker
             PhUtils.ShowInformation(
                 "Option: \tUsage:\n" +
                 "-a\tAggressive mode.\n" +
+                "-elevate\tStarts Process Hacker elevated.\n" +
                 "-h\tDisplays command line usage information.\n" +
-                "-ip pid\tDisplays the main window, then properties for the specified \t\tprocess.\n" +
+                "-installkph\tInstalls the KProcessHacker service.\n" +
+                "-ip pid\tDisplays the main window, then properties for the specified process.\n" +
                 "-m\tStarts Process Hacker hidden.\n" +
                 "-nokph\tDisables KProcessHacker. Use this if you encounter BSODs.\n" +
                 "-o\tShows Options.\n" +
                 "-pw pid\tDisplays properties for the specified process.\n" +
                 "-pt pid\tDisplays properties for the specified process' token.\n" +
-                "-t n\tShows the specified tab. 0 is Processes, 1 is Services and 2 \t\tis Network.\n" +
+                "-t n\tShows the specified tab. 0 is Processes, 1 is Services and 2 is Network.\n" +
+                "-uninstallkph\tUninstalls the KProcessHacker service.\n" +
                 "-v\tStarts Process Hacker visible.\n" +
-                "-elevate\tStarts Process Hacker elevated.\n" +
-                "-installkph\tInstalls KProcessHacker Service.\n" +
-                "-uninstallkph\tUninstalls KProcessHacker Service.\n" +
                 ""
                 );
         }
