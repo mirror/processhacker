@@ -96,7 +96,7 @@ namespace ProcessHacker.Native.Api
     {
         public static bool IsError(this HResult result)
         {
-            //Return != OK because there are come errors with lower values than HResult.Fail
+            //Return != OK because there are come errors with lower values than HResult.False
             return result != HResult.OK;
         }
 

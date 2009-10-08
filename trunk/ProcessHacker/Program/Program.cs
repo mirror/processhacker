@@ -130,6 +130,9 @@ namespace ProcessHacker
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException, true);
 
+            ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
+            ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
+
             try
             {
                 pArgs = ParseArgs(args);
@@ -144,6 +147,11 @@ namespace ProcessHacker
             {
                 ShowCommandLineUsage();
                 return;
+            }
+
+            if (pArgs.ContainsKey("-recovered"))
+            {
+                ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RecoverLastSession();
             }
 
             if (pArgs.ContainsKey("-elevate"))
