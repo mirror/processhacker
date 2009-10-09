@@ -195,7 +195,7 @@
             // 
             // tokenThreadMenuItem
             // 
-            this.vistaMenu.SetImage(this.tokenThreadMenuItem, global::ProcessHacker.Properties.Resources._lock);
+            this.vistaMenu.SetImage(this.tokenThreadMenuItem, global::ProcessHacker.Properties.Resources.locked);
             this.tokenThreadMenuItem.Index = 8;
             this.tokenThreadMenuItem.Text = "Token";
             this.tokenThreadMenuItem.Click += new System.EventHandler(this.tokenThreadMenuItem_Click);

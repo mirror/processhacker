@@ -60,13 +60,6 @@ namespace ProcessHacker.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap _lock {
-            get {
-                object obj = ResourceManager.GetObject("lock", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap active_search {
             get {
                 object obj = ResourceManager.GetObject("active_search", resourceCulture);
@@ -315,6 +308,13 @@ namespace ProcessHacker.Properties {
         internal static System.Drawing.Bitmap lock_edit {
             get {
                 object obj = ResourceManager.GetObject("lock_edit", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap locked {
+            get {
+                object obj = ResourceManager.GetObject("locked", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
