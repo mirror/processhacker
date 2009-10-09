@@ -3387,7 +3387,7 @@ namespace ProcessHacker
             Program.UpdateWindowMenu(windowMenuItem, this);
             this.ApplyFont(Properties.Settings.Default.Font);
             this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
-
+            
             //TODO: NetworkInfo unfinished, hidden for 1.6 release
             networkInfomationMenuItem.Visible = false;
         }
@@ -3440,6 +3440,10 @@ namespace ProcessHacker
             if (isFirstPaint)
             {
                 isFirstPaint = false;
+
+                ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
+                ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
+
                 this.CreateShutdownMenuItems();
                 this.LoadFixMenuItems();
                 this.LoadUac();
