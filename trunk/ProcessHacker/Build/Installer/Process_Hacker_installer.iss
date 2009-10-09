@@ -4,7 +4,7 @@
 ; *Inno Setup QuickStart Pack:
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
-#define installer_build_number "37"
+#define installer_build_number "38"
 
 #define VerMajor
 #define VerMinor
@@ -15,9 +15,6 @@
 #define app_version str(VerMajor) + "." + str(VerMinor) + "." + str(VerRevision) + "." + str(VerBuild)
 #define simple_app_version str(VerMajor) + "." + str(VerMinor)
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
-
-; Include the installer's custom messages
-#include "Custom_Messages.iss"
 
 
 ; From now on you'll probably won't have to change anything, so be careful
@@ -78,6 +75,11 @@ Name: en; MessagesFile: compiler:Default.isl
 Name: gr; MessagesFile: Languages\Greek.isl
 
 
+; Include the installer's custom messages and services stuff
+#include "Custom_Messages.iss"
+#include "Services.iss"
+
+
 [Messages]
 BeveledLabel=Process Hacker v{#= simple_app_version} by wj32                                                                      Setup v{#= installer_build_number} built on {#= installer_build_date}
 
@@ -107,8 +109,8 @@ Name: startup_task; Description: {cm:tsk_startupdescr}; GroupDescription: {cm:ts
 Name: startup_task\minimized; Description: {cm:tsk_startupdescrmin}; GroupDescription: {cm:tsk_startup}; Check: StartupCheck(); Flags: unchecked
 Name: remove_startup_task; Description: {cm:tsk_removestartup}; GroupDescription: {cm:tsk_startup}; Check: NOT StartupCheck(); Flags: unchecked
 
-Name: create_KPH_service; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
-Name: delete_KPH_service; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND NOT KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
+Name: create_KPH_service; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: NOT KProcessHackerStateCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
+Name: delete_KPH_service; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: KProcessHackerStateCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
 
 Name: reset_settings; Description: {cm:tsk_resetsettings}; GroupDescription: {cm:tsk_other}; Check: SettingsExistCheck(); Flags: unchecked checkablealone
 
@@ -175,12 +177,7 @@ Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Exec
 
 
 [Run]
-Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: scExeExistsCheck() AND KProcessHackerStateCheck(); StatusMsg: {cm:msg_stopkprocesshacker}; Flags: runhidden runascurrentuser
-Filename: {sys}\sc.exe; Parameters: "create KProcessHacker binPath= ""{app}\kprocesshacker.sys"" type= kernel start= auto"; Tasks: create_KPH_service; StatusMsg: {cm:msg_createkprocesshacker}; Flags: runhidden runascurrentuser
-Filename: {sys}\sc.exe; Parameters: start KProcessHacker; Tasks: create_KPH_service; StatusMsg: {cm:msg_startkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe; Parameters: "install ""{app}\ProcessHacker.exe"""; StatusMsg: {cm:msg_optimizingperformance}; Flags: runhidden runascurrentuser skipifdoesntexist
-Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Tasks: delete_KPH_service; Flags: runhidden runascurrentuser
-Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Tasks: delete_KPH_service; Flags: runhidden runascurrentuser
 
 Filename: {app}\ProcessHacker.exe; Description: {cm:LaunchProgram,Process Hacker}; Flags: nowait postinstall skipifsilent runascurrentuser
 Filename: http://processhacker.sourceforge.net/; Description: {cm:run_visitwebsite}; Flags: nowait postinstall skipifsilent shellexec runascurrentuser unchecked
@@ -190,18 +187,13 @@ Filename: http://processhacker.sourceforge.net/; Description: {cm:run_visitwebsi
 Type: files; Name: {app}\Homepage.url
 
 
-[UninstallRun]
-Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: scExeExistsCheck() AND KProcessHackerStateCheck(); Flags: runhidden
-Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Check: scExeExistsCheck() AND KProcessHackerStateCheck(); Flags: runhidden
-
-
 [Code]
 // Create a mutex for the installer
 const installer_mutex_name = 'process_hacker_setup_mutex';
 
 
 // Check if Process Hacker is configured to run on startup in order to control
-// startup choice within the installer
+// startup choice from within the installer
 function StartupCheck(): Boolean;
 begin
   Result := True;
@@ -233,34 +225,50 @@ begin
 end;
 
 
-// Check if KProcessHacker is started
-function KProcessHackerStateCheck(): Boolean;
-begin
-  Result := False;
-  if RegKeyExists(HKLM, 'SYSTEM\CurrentControlSet\Services\KProcessHacker') then
-  Result := True;
-end;
-
-
 // Check if KProcessHacker is installed as a service
 function KPHServiceCheck(): Boolean;
 var
   dvalue: DWORD;
 begin
-  Result := True;
+  Result := False;
   if RegQueryDWordValue(HKLM, 'SYSTEM\CurrentControlSet\Services\KProcessHacker', 'Start', dvalue) then begin
     if dvalue = 2 then
-    Result := False;
+    Result := True;
   end;
 end;
 
 
-// Check if sc.exe exists
-function scExeExistsCheck(): Boolean;
+// Check if Process Hacker's settings exist
+function KProcessHackerStateCheck(): Boolean;
 begin
   Result := False;
-  if FileExists(ExpandConstant('{sys}\sc.exe')) then
+  if KPHServiceCheck AND IsServiceRunning('KProcessHacker') then
   Result := True;
+end;
+
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssInstall then begin
+   if KProcessHackerStateCheck then begin
+    StopService('KProcessHacker');
+   end;
+  if IsTaskSelected('delete_KPH_service') then begin
+    StopService('KProcessHacker');
+    RemoveService('KProcessHacker');
+  end;
+  end;
+  if CurStep = ssPostInstall then begin
+   if KPHServiceCheck AND NOT IsTaskSelected('delete_KPH_service') then begin
+    StartService('KProcessHacker');
+   end;
+    if IsTaskSelected('create_KPH_service') then begin
+     StopService('KProcessHacker');
+     RemoveService('KProcessHacker');
+     InstallService(ExpandConstant('{app}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_AUTO_START);
+     StartService('KProcessHacker');
+    end;
+  end;
 end;
 
 
@@ -340,5 +348,8 @@ begin
     end
     else begin
     CreateMutex(installer_mutex_name);
+
+    StopService('KProcessHacker');
+    RemoveService('KProcessHacker');
   end;
 end;
