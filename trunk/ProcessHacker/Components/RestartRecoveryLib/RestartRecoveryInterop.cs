@@ -1,4 +1,27 @@
-﻿using System.Runtime.InteropServices;
+﻿/*
+ * Process Hacker - 
+ *   ProcessHacker Restart and Recovery Extensions
+ * 
+ * Copyright (C) 2009 dmex
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
+using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using System.Security;
 using System;
@@ -49,10 +72,10 @@ namespace ProcessHackerRestartRecovery
         [PreserveSig]
         internal static extern HResult GetApplicationRecoveryCallback(
             IntPtr processHandle,
-            out RecoveryCallback recoveryCallback,
-            out object state,
-            out uint pingInterval,
-            out uint flags
+            [Out] RecoveryCallback recoveryCallback,
+            [Out] out object state,
+            [Out] out uint pingInterval,
+            [Out] out uint flags
             );
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
@@ -78,7 +101,7 @@ namespace ProcessHackerRestartRecovery
             IntPtr process,
             IntPtr commandLine,
             ref uint size,
-            out RestartRestrictions flags
+            [Out] out RestartRestrictions flags
             );
 
         [DllImport("kernel32.dll")]

@@ -241,11 +241,26 @@ namespace ProcessHacker.Common
 
         public static bool IsInternetConnected
         {
+            get
+            {
+                try
+                {
+                    System.Net.IPHostEntry entry = System.Net.Dns.GetHostEntry("http://www.msftncsi.com");
+                    return true;
+                   
+                    //http://www.msftncsi.com/ncsi.txt 
+                    //Vista/Win7 'Network and Sharing Center' Internet Connectivity test address, 
+                    //Every Vista/Win7 machine uses this for checking Internet Connectivity.
+                    //Probably the most reliable internet address...
+                }
+                catch
+                { return false; }
+            }
+        }
+
+        public static bool IsInternetConnectedEx
+        {
             get { return Win32.InternetCheckConnection("http://www.msftncsi.com", 1, 0); }
-            //http://www.msftncsi.com/ncsi.txt 
-            //Vista/Win7 'Network and Sharing Center' Internet Connectivity test address, 
-            //Every Vista/Win7 machine uses this for checking Internet Connectivity.
-            //Probably the most reliable internet address...
         }
 
         /// <summary>
