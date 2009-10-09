@@ -278,7 +278,7 @@ namespace ProcessAnalyzer
                         KProcessHacker.Instance.KphReadVirtualMemoryUnsafe(
                             ProcessHandle.Current,
                             address.ToInt32(),
-                            currentPage,
+                            (IntPtr)currentPage,
                             Windows.PageSize,
                             out bytesRead
                             );

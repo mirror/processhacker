@@ -630,7 +630,7 @@ namespace ProcessHacker.Native
             return KphReadVirtualMemoryUnsafe(processHandle, baseAddress, new IntPtr(buffer), length, out bytesRead);
         }
 
-        private bool KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
+        public bool KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
         {
             byte* inData = stackalloc byte[0x14];
             int returnLength;

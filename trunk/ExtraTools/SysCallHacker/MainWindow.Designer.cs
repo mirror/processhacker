@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.hackerMenuItem = new System.Windows.Forms.MenuItem();
+            this.clearHackerMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.removeAllFiltersMenuItem = new System.Windows.Forms.MenuItem();
@@ -48,7 +49,6 @@
             this.toolBar = new System.Windows.Forms.ToolBar();
             this.statusBar = new System.Windows.Forms.StatusBar();
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
-            this.clearHackerMenuItem = new System.Windows.Forms.MenuItem();
             this.SuspendLayout();
             // 
             // mainMenu
@@ -64,6 +64,12 @@
             this.clearHackerMenuItem,
             this.exitMenuItem});
             this.hackerMenuItem.Text = "Hacker";
+            // 
+            // clearHackerMenuItem
+            // 
+            this.clearHackerMenuItem.Index = 0;
+            this.clearHackerMenuItem.Text = "Clear";
+            this.clearHackerMenuItem.Click += new System.EventHandler(this.clearHackerMenuItem_Click);
             // 
             // exitMenuItem
             // 
@@ -188,12 +194,6 @@
             this.timerUpdate.Enabled = true;
             this.timerUpdate.Interval = 500;
             this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
-            // 
-            // clearHackerMenuItem
-            // 
-            this.clearHackerMenuItem.Index = 0;
-            this.clearHackerMenuItem.Text = "Clear";
-            this.clearHackerMenuItem.Click += new System.EventHandler(this.clearHackerMenuItem_Click);
             // 
             // MainWindow
             // 
