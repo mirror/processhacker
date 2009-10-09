@@ -219,7 +219,7 @@ namespace ProcessHacker.Common
                 Win32.NdfCloseIncident(ndfhandle);
             }
         }
-
+        
         public static void IsNetworkError(string url, IntPtr hwnd)
         {
             if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
@@ -232,6 +232,20 @@ namespace ProcessHacker.Common
                 Win32.NdfExecuteDiagnosis(ndfhandle, hwnd); //Will throw error if user cancels
                 Win32.NdfCloseIncident(ndfhandle);
             }
+        }
+
+        public static bool IsInternetAddressReachable(string url)
+        {
+            return Win32.InternetCheckConnection(url, 1, 0);
+        }
+
+        public static bool IsInternetConnected
+        {
+            get { return Win32.InternetCheckConnection("http://www.msftncsi.com", 1, 0); }
+            //http://www.msftncsi.com/ncsi.txt 
+            //Vista/Win7 'Network and Sharing Center' Internet Connectivity test address, 
+            //Every Vista/Win7 machine uses this for checking Internet Connectivity.
+            //Probably the most reliable internet address...
         }
 
         /// <summary>

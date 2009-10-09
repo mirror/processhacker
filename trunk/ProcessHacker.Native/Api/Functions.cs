@@ -713,7 +713,15 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
-        #region Network Diagnostics
+        #region Network
+
+        [DllImport("wininet.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public extern static bool InternetCheckConnection(
+            [In] string Url,
+            [In] int Flags,
+            [In] int Reserved
+            );
 
         /// <summary>
         /// The NdfCancelIncident function is used to cancel unneeded functions which have been previously called on an existing incident.
