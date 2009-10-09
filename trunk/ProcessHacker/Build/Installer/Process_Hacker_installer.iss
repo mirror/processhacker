@@ -232,7 +232,7 @@ var
 begin
   Result := False;
   if RegQueryDWordValue(HKLM, 'SYSTEM\CurrentControlSet\Services\KProcessHacker', 'Start', dvalue) then begin
-    if dvalue = 2 then
+    if dvalue = 1 then
     Result := True;
   end;
 end;
