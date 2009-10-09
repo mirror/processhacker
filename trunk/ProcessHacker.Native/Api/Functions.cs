@@ -715,6 +715,13 @@ namespace ProcessHacker.Native.Api
 
         #region Network
 
+        /// <summary>
+        /// Allows an application to check if a connection to the Internet can be established.
+        /// </summary>
+        /// <param name="Url">A string that specifies the URL to use for checking the connection.</param>
+        /// <param name="Flags">Forces a connection, must be 1.</param>
+        /// <param name="Reserved">This parameter is reserved and must be 0.</param>
+        /// <returns></returns>
         [DllImport("wininet.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public extern static bool InternetCheckConnection(

@@ -234,11 +234,20 @@ namespace ProcessHacker.Common
             }
         }
 
+        /// <summary>
+        /// Checks if a connection to the URL can be established.
+        /// </summary>
+        /// <param name="url">URL Address to check</param>
+        /// <returns>true if established</returns>
         public static bool IsInternetAddressReachable(string url)
         {
             return Win32.InternetCheckConnection(url, 1, 0);
         }
 
+        /// <summary>
+        /// Fast method of checking a connection to the Internet can be established.
+        /// </summary>
+        /// <returns>True if connected</returns>
         public static bool IsInternetConnected
         {
             get
@@ -249,15 +258,20 @@ namespace ProcessHacker.Common
                     return true;
                    
                     //http://www.msftncsi.com/ncsi.txt 
-                    //Vista/Win7 'Network and Sharing Center' Internet Connectivity test address, 
+                    //Vista/Win7 Internet Connectivity test address, 
                     //Every Vista/Win7 machine uses this for checking Internet Connectivity.
                     //Probably the most reliable internet address...
+                    //More Info: http://technet.microsoft.com/en-us/library/cc766017%28WS.10%29.aspx
                 }
                 catch
                 { return false; }
             }
         }
 
+        /// <summary>
+        /// Reliable but slower method of checking if a connection to the Internet can be established.
+        /// </summary>
+        /// <returns>True if connected</returns>
         public static bool IsInternetConnectedEx
         {
             get { return Win32.InternetCheckConnection("http://www.msftncsi.com", 1, 0); }
