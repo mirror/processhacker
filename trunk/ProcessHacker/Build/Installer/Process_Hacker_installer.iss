@@ -265,7 +265,7 @@ begin
     if IsTaskSelected('create_KPH_service') then begin
      StopService('KProcessHacker');
      RemoveService('KProcessHacker');
-     InstallService(ExpandConstant('{app}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_AUTO_START);
+     InstallService(ExpandConstant('{app}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_SYSTEM_START);
      StartService('KProcessHacker');
     end;
   end;
