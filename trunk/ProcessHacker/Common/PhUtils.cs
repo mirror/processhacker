@@ -254,7 +254,7 @@ namespace ProcessHacker.Common
             {
                 try
                 {
-                    System.Net.IPHostEntry entry = System.Net.Dns.GetHostEntry("http://www.msftncsi.com");
+                    System.Net.IPHostEntry entry = System.Net.Dns.GetHostEntry("www.msftncsi.com");
                     return true;
                    
                     //http://www.msftncsi.com/ncsi.txt 

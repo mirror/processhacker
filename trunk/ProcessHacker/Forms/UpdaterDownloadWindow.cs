@@ -67,18 +67,6 @@ namespace ProcessHacker
             _webClient.Headers.Add("User-Agent", "PH/" + version + " (compatible; PH " +
                 version + "; PH " + version + "; .NET CLR " + Environment.Version.ToString() + ";)");
 
-            if (Settings.UseProxy)
-            {
-                WebProxy wp = new WebProxy(Settings.ProxyAddress + ":" + Settings.ProxyPort, Settings.BypassProxyOnLocal);
-
-                if (Settings.UseCredentials)
-                {
-                    wp.Credentials = new NetworkCredential(Settings.ProxyUsername, Settings.ProxyPassword);
-                }
-
-                _webClient.Proxy = wp;
-            }
-
             try
             {
                 _webClient.DownloadFileAsync(new Uri(_updateItem.Url), _fileName);

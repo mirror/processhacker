@@ -37,6 +37,8 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.textMaxSamples = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.comboToolbarStyle = new System.Windows.Forms.ComboBox();
             this.checkFloatChildWindows = new System.Windows.Forms.CheckBox();
@@ -102,27 +104,14 @@
             this.checkUpdateAutomatically = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.optUpdateStable = new System.Windows.Forms.RadioButton();
-            this.UseProxyCheckBox = new System.Windows.Forms.CheckBox();
             this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
             this.optUpdateBeta = new System.Windows.Forms.RadioButton();
-            this.ProxySettingsBox = new System.Windows.Forms.GroupBox();
-            this.BypassProxyOnLocalCheckBox = new System.Windows.Forms.CheckBox();
-            this.UseCredentialsCheckBox = new System.Windows.Forms.CheckBox();
-            this.label27 = new System.Windows.Forms.Label();
-            this.ProxyPortTextBox = new System.Windows.Forms.TextBox();
-            this.ProxyPasswordTextBox = new System.Windows.Forms.TextBox();
-            this.ProxyUsernameTextBox = new System.Windows.Forms.TextBox();
-            this.ProxyAddressTextBox = new System.Windows.Forms.TextBox();
-            this.label26 = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.textMaxSamples = new System.Windows.Forms.NumericUpDown();
-            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).BeginInit();
             this.tabAdvanced.SuspendLayout();
             this.tabHighlighting.SuspendLayout();
@@ -132,8 +121,6 @@
             this.tabSymbols.SuspendLayout();
             this.tabUpdates.SuspendLayout();
             this.UpdaterSettingsGroupBox.SuspendLayout();
-            this.ProxySettingsBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -273,6 +260,42 @@
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // textMaxSamples
+            // 
+            this.textMaxSamples.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Location = new System.Drawing.Point(320, 6);
+            this.textMaxSamples.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Name = "textMaxSamples";
+            this.textMaxSamples.Size = new System.Drawing.Size(72, 20);
+            this.textMaxSamples.TabIndex = 20;
+            this.textMaxSamples.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(208, 8);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(106, 13);
+            this.label6.TabIndex = 21;
+            this.label6.Text = "Max. Sample History:";
             // 
             // label20
             // 
@@ -958,7 +981,6 @@
             // tabUpdates
             // 
             this.tabUpdates.Controls.Add(this.UpdaterSettingsGroupBox);
-            this.tabUpdates.Controls.Add(this.ProxySettingsBox);
             this.tabUpdates.Location = new System.Drawing.Point(4, 22);
             this.tabUpdates.Name = "tabUpdates";
             this.tabUpdates.Padding = new System.Windows.Forms.Padding(3);
@@ -972,7 +994,6 @@
             this.UpdaterSettingsGroupBox.Controls.Add(this.checkUpdateAutomatically);
             this.UpdaterSettingsGroupBox.Controls.Add(this.label5);
             this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateStable);
-            this.UpdaterSettingsGroupBox.Controls.Add(this.UseProxyCheckBox);
             this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateAlpha);
             this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateBeta);
             this.UpdaterSettingsGroupBox.Location = new System.Drawing.Point(11, 11);
@@ -1015,17 +1036,6 @@
             this.optUpdateStable.Text = "Stable releases";
             this.optUpdateStable.UseVisualStyleBackColor = true;
             // 
-            // UseProxyCheckBox
-            // 
-            this.UseProxyCheckBox.AutoSize = true;
-            this.UseProxyCheckBox.Location = new System.Drawing.Point(10, 43);
-            this.UseProxyCheckBox.Name = "UseProxyCheckBox";
-            this.UseProxyCheckBox.Size = new System.Drawing.Size(108, 17);
-            this.UseProxyCheckBox.TabIndex = 28;
-            this.UseProxyCheckBox.Text = "Use Proxy Server";
-            this.UseProxyCheckBox.UseVisualStyleBackColor = true;
-            this.UseProxyCheckBox.CheckedChanged += new System.EventHandler(this.UseProxyCheckBox_CheckedChanged);
-            // 
             // optUpdateAlpha
             // 
             this.optUpdateAlpha.AutoSize = true;
@@ -1047,113 +1057,6 @@
             this.optUpdateBeta.TabIndex = 22;
             this.optUpdateBeta.Text = "Beta releases";
             this.optUpdateBeta.UseVisualStyleBackColor = true;
-            // 
-            // ProxySettingsBox
-            // 
-            this.ProxySettingsBox.Controls.Add(this.BypassProxyOnLocalCheckBox);
-            this.ProxySettingsBox.Controls.Add(this.UseCredentialsCheckBox);
-            this.ProxySettingsBox.Controls.Add(this.label27);
-            this.ProxySettingsBox.Controls.Add(this.ProxyPortTextBox);
-            this.ProxySettingsBox.Controls.Add(this.ProxyPasswordTextBox);
-            this.ProxySettingsBox.Controls.Add(this.ProxyUsernameTextBox);
-            this.ProxySettingsBox.Controls.Add(this.ProxyAddressTextBox);
-            this.ProxySettingsBox.Controls.Add(this.label26);
-            this.ProxySettingsBox.Controls.Add(this.label25);
-            this.ProxySettingsBox.Controls.Add(this.label24);
-            this.ProxySettingsBox.Enabled = false;
-            this.ProxySettingsBox.Location = new System.Drawing.Point(11, 117);
-            this.ProxySettingsBox.Name = "ProxySettingsBox";
-            this.ProxySettingsBox.Size = new System.Drawing.Size(323, 136);
-            this.ProxySettingsBox.TabIndex = 29;
-            this.ProxySettingsBox.TabStop = false;
-            this.ProxySettingsBox.Text = "Proxy Configuration";
-            // 
-            // BypassProxyOnLocalCheckBox
-            // 
-            this.BypassProxyOnLocalCheckBox.AutoSize = true;
-            this.BypassProxyOnLocalCheckBox.Location = new System.Drawing.Point(11, 53);
-            this.BypassProxyOnLocalCheckBox.Name = "BypassProxyOnLocalCheckBox";
-            this.BypassProxyOnLocalCheckBox.Size = new System.Drawing.Size(104, 17);
-            this.BypassProxyOnLocalCheckBox.TabIndex = 29;
-            this.BypassProxyOnLocalCheckBox.Text = "Bypass on Local";
-            this.BypassProxyOnLocalCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // UseCredentialsCheckBox
-            // 
-            this.UseCredentialsCheckBox.AutoSize = true;
-            this.UseCredentialsCheckBox.Location = new System.Drawing.Point(121, 53);
-            this.UseCredentialsCheckBox.Name = "UseCredentialsCheckBox";
-            this.UseCredentialsCheckBox.Size = new System.Drawing.Size(100, 17);
-            this.UseCredentialsCheckBox.TabIndex = 30;
-            this.UseCredentialsCheckBox.Text = "Use Credentials";
-            this.UseCredentialsCheckBox.UseVisualStyleBackColor = true;
-            this.UseCredentialsCheckBox.CheckedChanged += new System.EventHandler(this.UseCredentialsCheckBox_CheckedChanged);
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(236, 27);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(29, 13);
-            this.label27.TabIndex = 31;
-            this.label27.Text = "Port:";
-            // 
-            // ProxyPortTextBox
-            // 
-            this.ProxyPortTextBox.Location = new System.Drawing.Point(271, 24);
-            this.ProxyPortTextBox.Name = "ProxyPortTextBox";
-            this.ProxyPortTextBox.Size = new System.Drawing.Size(41, 20);
-            this.ProxyPortTextBox.TabIndex = 30;
-            // 
-            // ProxyPasswordTextBox
-            // 
-            this.ProxyPasswordTextBox.Enabled = false;
-            this.ProxyPasswordTextBox.Location = new System.Drawing.Point(72, 102);
-            this.ProxyPasswordTextBox.Name = "ProxyPasswordTextBox";
-            this.ProxyPasswordTextBox.Size = new System.Drawing.Size(240, 20);
-            this.ProxyPasswordTextBox.TabIndex = 29;
-            // 
-            // ProxyUsernameTextBox
-            // 
-            this.ProxyUsernameTextBox.Enabled = false;
-            this.ProxyUsernameTextBox.Location = new System.Drawing.Point(72, 76);
-            this.ProxyUsernameTextBox.Name = "ProxyUsernameTextBox";
-            this.ProxyUsernameTextBox.Size = new System.Drawing.Size(240, 20);
-            this.ProxyUsernameTextBox.TabIndex = 28;
-            // 
-            // ProxyAddressTextBox
-            // 
-            this.ProxyAddressTextBox.Location = new System.Drawing.Point(72, 24);
-            this.ProxyAddressTextBox.Name = "ProxyAddressTextBox";
-            this.ProxyAddressTextBox.Size = new System.Drawing.Size(158, 20);
-            this.ProxyAddressTextBox.TabIndex = 27;
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(8, 104);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(56, 13);
-            this.label26.TabIndex = 2;
-            this.label26.Text = "Password:";
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(8, 79);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(58, 13);
-            this.label25.TabIndex = 1;
-            this.label25.Text = "Username:";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(18, 27);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(48, 13);
-            this.label24.TabIndex = 0;
-            this.label24.Text = "Address:";
             // 
             // buttonCancel
             // 
@@ -1180,42 +1083,6 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
-            // textMaxSamples
-            // 
-            this.textMaxSamples.Increment = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Location = new System.Drawing.Point(320, 6);
-            this.textMaxSamples.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Name = "textMaxSamples";
-            this.textMaxSamples.Size = new System.Drawing.Size(72, 20);
-            this.textMaxSamples.TabIndex = 20;
-            this.textMaxSamples.Value = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(208, 8);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(106, 13);
-            this.label6.TabIndex = 21;
-            this.label6.Text = "Max. Sample History:";
-            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
@@ -1240,6 +1107,7 @@
             this.tabControl.ResumeLayout(false);
             this.tabGeneral.ResumeLayout(false);
             this.tabGeneral.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).EndInit();
             this.tabAdvanced.ResumeLayout(false);
             this.tabAdvanced.PerformLayout();
@@ -1254,9 +1122,6 @@
             this.tabUpdates.ResumeLayout(false);
             this.UpdaterSettingsGroupBox.ResumeLayout(false);
             this.UpdaterSettingsGroupBox.PerformLayout();
-            this.ProxySettingsBox.ResumeLayout(false);
-            this.ProxySettingsBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1340,19 +1205,7 @@
         private System.Windows.Forms.CheckBox checkUpdateAutomatically;
         private System.Windows.Forms.ComboBox comboElevationLevel;
         private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.CheckBox UseProxyCheckBox;
-        private System.Windows.Forms.GroupBox ProxySettingsBox;
-        private System.Windows.Forms.TextBox ProxyAddressTextBox;
-        private System.Windows.Forms.Label label26;
-        private System.Windows.Forms.Label label25;
-        private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.TextBox ProxyUsernameTextBox;
-        private System.Windows.Forms.TextBox ProxyPasswordTextBox;
-        private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.TextBox ProxyPortTextBox;
-        private System.Windows.Forms.CheckBox UseCredentialsCheckBox;
         private System.Windows.Forms.GroupBox UpdaterSettingsGroupBox;
-        private System.Windows.Forms.CheckBox BypassProxyOnLocalCheckBox;
         private System.Windows.Forms.NumericUpDown textMaxSamples;
         private System.Windows.Forms.Label label6;
     }
