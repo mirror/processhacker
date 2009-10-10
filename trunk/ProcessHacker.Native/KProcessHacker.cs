@@ -157,7 +157,7 @@ namespace ProcessHacker.Native
             {
                 if (
                     ex.Status == NtStatus.NoSuchDevice ||
-                    ex.Status == NtStatus.NoSuchFile || 
+                    ex.Status == NtStatus.NoSuchFile ||
                     ex.Status == NtStatus.ObjectNameNotFound
                     )
                 {
@@ -188,6 +188,10 @@ namespace ProcessHacker.Native
                         // The SCM will delete the service when it is stopped.
                         shandle.Delete();
                     }
+                }
+                else
+                {
+                    throw ex;
                 }
             }
 
