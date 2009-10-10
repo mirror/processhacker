@@ -1750,22 +1750,27 @@ namespace ProcessHacker
             if (treeProcesses.SelectedNodes.Count != 1)
                 return;
 
-            if (string.IsNullOrEmpty(treeProcesses.SelectedNodes[0].FileName)) 
+            if (PhUtils.IsInternetConnected)
             {
-                PhUtils.ShowWarning("Unable to upload because the process' file location could not be determined.");
-                return;
+                if (string.IsNullOrEmpty(treeProcesses.SelectedNodes[0].FileName))
+                {
+                    PhUtils.ShowWarning("Unable to upload because the process' file location could not be determined.");
+                    return;
+                }
+
+                VirusTotalUploaderWindow vt = new VirusTotalUploaderWindow(
+                     treeProcesses.SelectedNodes[0].Name,
+                     treeProcesses.SelectedNodes[0].FileName
+                     );
+
+                int Y = this.Top + (this.Height - vt.Height) / 2;
+                int X = this.Left + (this.Width - vt.Width) / 2;
+
+                vt.Location = new Point(X, Y);
+                vt.Show();
             }
-
-            VirusTotalUploaderWindow vt = new VirusTotalUploaderWindow(
-                 treeProcesses.SelectedNodes[0].Name,
-                 treeProcesses.SelectedNodes[0].FileName
-                 );
-
-            int Y = this.Top + (this.Height - vt.Height) / 2;
-            int X = this.Left + (this.Width - vt.Width) / 2;
-
-            vt.Location = new Point(X, Y);
-            vt.Show();
+            else
+                PhUtils.ShowWarning("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void analyzeWaitChainProcessMenuItem_Click(object sender, EventArgs e)
