@@ -100,7 +100,9 @@ namespace ProcessHacker
                 LVGroup group = new LVGroup();
                 group.CbSize = Marshal.SizeOf(group);
                 group.GroupState = grpState;
+                group.Task = "Inspect";         
                 group.Mask = ListViewGroupMask.State;
+                
                 if (GrpId != null)
                 {
                     group.GroupId = GrpId.Value;
@@ -132,8 +134,8 @@ namespace ProcessHacker
               
                 LVGroup group = new LVGroup();
                 group.CbSize = Marshal.SizeOf(group);
-                group.Footer = footer;
-                group.Mask = ListViewGroupMask.Footer;
+                group.Task = footer;
+                group.Mask = ListViewGroupMask.Task;
                
                 if (grpId != null)
                 {
@@ -165,15 +167,14 @@ namespace ProcessHacker
                     {
                         HResult setThemeResult = Win32.SetWindowTheme(this.Handle, "explorer", null);
                         setThemeResult.ThrowIf();
-                        
+ 
                         Win32.SendMessage(this.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
                         break;
                     }                  
-                case 0x0202: /*WM_LBUTTONUP*/
+                case (0x004E): /*WM_NOTIFY*/
                     {
-                        base.DefWndProc(ref m);
                         break;
-                    }  
+                    }
                 default:
                     { 
                         break;
@@ -313,6 +314,34 @@ namespace ProcessHacker
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszSubsetTitle member. If the structure is not receiving information about a group, this member is ignored.
             /// </summary>
             public int CchSubsetTitle;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct NMLVLINK
+        {
+            NMHDR hdr;
+            LITEM link;
+            int iItem;
+            int iSubItem;
+        }
+
+        [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct LITEM
+        {
+            public uint mask;
+            public int iLink;
+            public uint state;
+            public uint stateMask;
+            public string szID;
+            public string szUrl;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct NMHDR
+        {
+            public IntPtr hwndFrom;
+            public IntPtr idFrom;
+            public int code;
         }
     }
 
