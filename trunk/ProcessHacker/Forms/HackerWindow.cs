@@ -525,6 +525,11 @@ namespace ProcessHacker
             createServiceWindow.ShowDialog();
         }
 
+        private void donateMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.TryStart("http://sourceforge.net/project/project_donations.php?group_id=242527");
+        }
+
         private void checkForUpdatesMenuItem_Click(object sender, EventArgs e)
         {
             this.UpdateProgram(true);
@@ -3484,9 +3489,7 @@ namespace ProcessHacker
 
                 if (Properties.Settings.Default.AppUpdateAutomatic)
                     this.UpdateProgram(false);
-
             }
         }
-
     }
 }

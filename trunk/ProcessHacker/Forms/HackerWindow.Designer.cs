@@ -121,6 +121,7 @@
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.logMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
+            this.donateMenuItem = new System.Windows.Forms.MenuItem();
             this.aboutMenuItem = new System.Windows.Forms.MenuItem();
             this.statusBar = new System.Windows.Forms.StatusBar();
             this.statusGeneral = new System.Windows.Forms.StatusBarPanel();
@@ -808,6 +809,7 @@
             this.menuItem1,
             this.logMenuItem,
             this.helpMenuItem,
+            this.donateMenuItem,
             this.aboutMenuItem});
             this.helpMenu.Text = "H&elp";
             // 
@@ -844,10 +846,17 @@
             this.helpMenuItem.Text = "&Help";
             this.helpMenuItem.Click += new System.EventHandler(this.helpMenuItem_Click);
             // 
+            // donateMenuItem
+            // 
+            this.vistaMenu.SetImage(this.donateMenuItem, global::ProcessHacker.Properties.Resources.money);
+            this.donateMenuItem.Index = 5;
+            this.donateMenuItem.Text = "Donate";
+            this.donateMenuItem.Click += new System.EventHandler(this.donateMenuItem_Click);
+            // 
             // aboutMenuItem
             // 
             this.vistaMenu.SetImage(this.aboutMenuItem, global::ProcessHacker.Properties.Resources.information);
-            this.aboutMenuItem.Index = 5;
+            this.aboutMenuItem.Index = 6;
             this.aboutMenuItem.Text = "&About";
             this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
             // 
@@ -1516,6 +1525,7 @@
         private System.Windows.Forms.MenuItem VirusTotalMenuItem;
         private System.Windows.Forms.MenuItem networkInfomationMenuItem;
         private System.Windows.Forms.MenuItem analyzeWaitChainProcessMenuItem;
+        private System.Windows.Forms.MenuItem donateMenuItem;
     }
 }
 
