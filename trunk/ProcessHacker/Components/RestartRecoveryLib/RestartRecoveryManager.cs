@@ -52,7 +52,7 @@ namespace ProcessHackerRestartRecovery
             // In some cases it might make sense to pass this initial state.
             // Another approach: When doing "auto-save", register for recovery everytime, and pass
             // the current state I.E. data for recovery at that time. 
-            RecoveryData data = new RecoveryData(new RecoveryCallback(RecoveryProcedure), true);
+            RecoveryData data = new RecoveryData(new RecoveryCallback(RecoveryProcedure), null);
             RecoverySettings settings = new RecoverySettings(data, 0);
             ApplicationRestartRecoveryManager.RegisterForApplicationRecovery(settings);
         }
