@@ -138,14 +138,14 @@ namespace ProcessHacker.Native.Objects
 
                     if (status >= NtStatus.Error)
                         Win32.ThrowLastError(status);
+
+                    return valueStr.Read();
                 }
             }
             finally
             {
                 nameStr.Dispose();
             }
-
-            return valueStr.Read();
         }
 
         public EnvironmentBlock SetCurrent()
