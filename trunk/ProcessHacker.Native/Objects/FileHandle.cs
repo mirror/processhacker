@@ -49,7 +49,7 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Creates or opens a file for synchronous access.
+        /// Creates or opens a file.
         /// </summary>
         /// <param name="access">The desired access to the file.</param>
         /// <param name="fileName">
@@ -63,7 +63,7 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Creates or opens a file for synchronous access.
+        /// Creates or opens a file.
         /// </summary>
         /// <param name="access">The desired access to the file.</param>
         /// <param name="fileName">
