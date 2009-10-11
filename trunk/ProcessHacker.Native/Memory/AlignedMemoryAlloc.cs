@@ -21,6 +21,7 @@ namespace ProcessHacker.Native
 
             // aligned memory = (memory + alignment - 1) & ~(alignment - 1)
             this.Memory = _realMemory.Increment(alignment - 1).And((alignment - 1).ToIntPtr().Not());
+            this.Size = size;
         }
 
         protected override void Free()

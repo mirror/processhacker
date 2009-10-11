@@ -1278,7 +1278,8 @@ namespace ProcessHacker.Common
         /// <returns>The size of the structure.</returns>
         public static int SizeOf<T>(int alignment)
         {
-            return (SizeOf<T>() + alignment - 1) & ~(alignment - 1);
+            // HACK: This is wrong, but it works.
+            return SizeOf<T>() + alignment;
         }
 
         /// <summary>
