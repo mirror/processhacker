@@ -2512,6 +2512,13 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Misc.
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr NtCurrentTeb();
+
+        #endregion
+
         #region Run-Time Library
 
         #region Access Control

@@ -170,6 +170,15 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets a pointer to the current thread's environment block.
+        /// </summary>
+        /// <returns>A pointer to the current TEB.</returns>
+        public unsafe static Teb* GetCurrentTeb()
+        {
+            return (Teb*)Win32.NtCurrentTeb();
+        }
+
+        /// <summary>
         /// Opens the current thread.
         /// </summary>
         /// <param name="access">The desired access to the thread.</param>

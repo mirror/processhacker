@@ -1536,6 +1536,18 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct NtTib
+    {
+        public IntPtr ExceptionList; // ExceptionRegistrationRecord*
+        public IntPtr StackBase;
+        public IntPtr StackLimit;
+        public IntPtr SubSystemTib;
+        public IntPtr FiberData;
+        public IntPtr ArbitraryUserPointer;
+        public IntPtr Self; // NtTib*
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct ObjectAttributes : IDisposable
     {
         public ObjectAttributes(
@@ -2134,6 +2146,8 @@ namespace ProcessHacker.Native.Api
             Marshal.OffsetOf(typeof(RtlUserProcessParameters), "ShellInfo").ToInt32();
         public static readonly int RuntimeDataOffset =
             Marshal.OffsetOf(typeof(RtlUserProcessParameters), "RuntimeData").ToInt32();
+        public static readonly int CurrentDirectoriesOffset =
+            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "CurrentDirectories").ToInt32();
 
         public struct CurDir
         {
@@ -2182,8 +2196,9 @@ namespace ProcessHacker.Native.Api
         public UnicodeString ShellInfo;
         public UnicodeString RuntimeData;
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public RtlDriveLetterCurDir[] CurrentDirectories;
+        //[MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        //public RtlDriveLetterCurDir[] CurrentDirectories;
+        public RtlDriveLetterCurDir CurrentDirectories;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2723,6 +2738,27 @@ namespace ProcessHacker.Native.Api
         public int Reserved;
         public long BootTimeBias;
         public long SleepTimeBias;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct Teb
+    {
+        public NtTib NtTib;
+        public IntPtr EnvironmentPointer;
+        public ClientId ClientId;
+        public IntPtr ActiveRpcHandle;
+        public IntPtr ThreadLocalStoragePointer;
+        public IntPtr ProcessEnvironmentBlock; // Peb*
+        public Win32Error LastErrorValue;
+        public int CountOfOwnedCriticalSections;
+        public IntPtr CsrClientThread;
+        public IntPtr Win32ThreadInfo;
+        public fixed int User32Reserved[26];
+        public fixed int UserReserved[5];
+        public IntPtr Wow32Reserved;
+        public int CurrentLocale;
+        public int FpSoftwareStatusRegister;
+        // Variable size part follows
     }
 
     [StructLayout(LayoutKind.Sequential)]

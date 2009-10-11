@@ -413,6 +413,20 @@ namespace ProcessHacker.Native.Objects
             return Win32.GetCurrentProcessId();
         }
 
+        /// <summary>
+        /// Gets a pointer to the current process' environment block.
+        /// </summary>
+        /// <returns>A pointer to the current PEB.</returns>
+        public unsafe static Peb* GetCurrentPeb()
+        {
+            return (Peb*)ThreadHandle.GetCurrentTeb()->ProcessEnvironmentBlock;
+        }
+
+        public unsafe static RtlUserProcessParameters* GetCurrentProcessParameters()
+        {
+            return (RtlUserProcessParameters*)GetCurrentPeb()->ProcessParameters;
+        }
+
         private static int GetPebOffset(PebOffset offset)
         {
             switch (offset)

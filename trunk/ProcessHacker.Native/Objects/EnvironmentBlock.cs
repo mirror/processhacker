@@ -11,15 +11,10 @@ namespace ProcessHacker.Native.Objects
     {
         public static EnvironmentBlock GetCurrent()
         {
-            IntPtr peb;
-            IntPtr processParameters;
-            IntPtr environment;
-
-            peb = ProcessHandle.Current.GetBasicInformation().PebBaseAddress;
-            processParameters = Marshal.ReadIntPtr(peb.Increment(Peb.ProcessParametersOffset));
-            environment = Marshal.ReadIntPtr(processParameters.Increment(RtlUserProcessParameters.EnvironmentOffset));
-
-            return new EnvironmentBlock(environment);
+            unsafe
+            {
+                return new EnvironmentBlock(ProcessHandle.GetCurrentProcessParameters()->Environment);
+            }
         }
 
         public string GetCurrentVariable(string name)

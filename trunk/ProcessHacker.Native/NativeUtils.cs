@@ -105,25 +105,24 @@ namespace ProcessHacker.Native
                         );
 
                     // Copy over the startup info data.
-                    MemoryRegion paramsRegion = new MemoryRegion(processParameters);
-                    RtlUserProcessParameters paramsStruct = paramsRegion.ReadStruct<RtlUserProcessParameters>();
+                    RtlUserProcessParameters* paramsStruct = (RtlUserProcessParameters*)processParameters;
 
-                    paramsStruct.Environment = newEnvironment;
-                    paramsStruct.StartingX = startupInfo.X;
-                    paramsStruct.StartingY = startupInfo.Y;
-                    paramsStruct.CountX = startupInfo.XSize;
-                    paramsStruct.CountY = startupInfo.YSize;
-                    paramsStruct.CountCharsX = startupInfo.XCountChars;
-                    paramsStruct.CountCharsY = startupInfo.YCountChars;
-                    paramsStruct.FillAttribute = startupInfo.FillAttribute;
-                    paramsStruct.WindowFlags = startupInfo.Flags;
-                    paramsStruct.ShowWindowFlags = startupInfo.ShowWindow;
+                    paramsStruct->Environment = newEnvironment;
+                    paramsStruct->StartingX = startupInfo.X;
+                    paramsStruct->StartingY = startupInfo.Y;
+                    paramsStruct->CountX = startupInfo.XSize;
+                    paramsStruct->CountY = startupInfo.YSize;
+                    paramsStruct->CountCharsX = startupInfo.XCountChars;
+                    paramsStruct->CountCharsY = startupInfo.YCountChars;
+                    paramsStruct->FillAttribute = startupInfo.FillAttribute;
+                    paramsStruct->WindowFlags = startupInfo.Flags;
+                    paramsStruct->ShowWindowFlags = startupInfo.ShowWindow;
 
                     if ((startupInfo.Flags & StartupFlags.UseStdHandles) == StartupFlags.UseStdHandles)
                     {
-                        paramsStruct.StandardInput = startupInfo.StdInputHandle;
-                        paramsStruct.StandardOutput = startupInfo.StdOutputHandle;
-                        paramsStruct.StandardError = startupInfo.StdErrorHandle;
+                        paramsStruct->StandardInput = startupInfo.StdInputHandle;
+                        paramsStruct->StandardOutput = startupInfo.StdOutputHandle;
+                        paramsStruct->StandardError = startupInfo.StdErrorHandle;
                     }
 
                     // TODO: Add console support.
@@ -132,7 +131,7 @@ namespace ProcessHacker.Native
                     // the process parameters.
 
                     IntPtr newProcessParameters;
-                    IntPtr regionSize = paramsStruct.Length.ToIntPtr();
+                    IntPtr regionSize = paramsStruct->Length.ToIntPtr();
 
                     newProcessParameters = processHandle.AllocateMemory(
                         IntPtr.Zero,
@@ -141,10 +140,9 @@ namespace ProcessHacker.Native
                         MemoryProtection.ReadWrite
                         );
 
-                    paramsStruct.MaximumLength = regionSize.ToInt32();
+                    paramsStruct->MaximumLength = regionSize.ToInt32();
 
-                    paramsRegion.WriteStruct<RtlUserProcessParameters>(paramsStruct);
-                    processHandle.WriteMemory(newProcessParameters, processParameters, paramsStruct.Length);
+                    processHandle.WriteMemory(newProcessParameters, processParameters, paramsStruct->Length);
 
                     // Modify the process parameters pointer in the PEB.
                     processHandle.WriteMemory(
