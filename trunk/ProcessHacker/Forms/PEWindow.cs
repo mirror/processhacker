@@ -300,10 +300,7 @@ namespace ProcessHacker
             }
 
             //we set Groupstate here else there are no groups to set state
-            listImports.SetGroupState(ListViewGroupState.Normal | ListViewGroupState.Collapsible);
-
-            //foreach (ListViewGroup lvg in listImports.Groups) //Works - just commented out
-                //listImports.SetGroupFooter(lvg, "Imports " + lvg.Items.Count + " " + lvg.Header.ToLower() + " item(s)...");
+            listImports.SetGroupState(ListViewGroupState.Collapsed | ListViewGroupState.Collapsible, "Properties");
 
             #endregion
         }

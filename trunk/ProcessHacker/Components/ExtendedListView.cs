@@ -38,6 +38,8 @@ namespace ProcessHacker
         private const int LVM_SetExtendedListViewStyle = (LVM_First + 54); // Sets extended styles in list-view controls. 
         private const int LVS_Ex_DoubleBuffer = 0x00010000;                // Paints via double-buffering, which reduces flicker. also enables alpha-blended marquee selection.
 
+        private const int LVN_LINKCLICK = (LVM_First - 84);
+
         private delegate void CallBackSetGroupState(ListViewGroup lvGroup, ListViewGroupState lvState, string task);
         private delegate void CallbackSetGroupString(ListViewGroup lvGroup, string value);
 
@@ -125,38 +127,41 @@ namespace ProcessHacker
 
         protected override void OnNotifyMessage(Message m)
         {
-            bool handled = false;
+            //notification for linkclick never reaches here?
+            //http://msdn.microsoft.com/en-us/library/bb774851%28VS.85%29.aspx
+
+            //System.Diagnostics.Debug.WriteLine(m.ToString());
 
             if (WM_NOTIFY == m.Msg)
             {
-                //System.Diagnostics.Debug.WriteLine(m.Msg);
-
-                //NMHDR header = (NMHDR)Marshal.PtrToStructure(m.LParam, typeof(NMHDR));
-                //if (0 == header.code)
-                //{
-                //    // TODO: handle notification here
-                //    handled = true;
-                //}
+                NMHDR nmHdr = new NMHDR();
+                Marshal.PtrToStructure(m.LParam, nmHdr);
+                if (nmHdr.code != 0)
+                {
+                    switch (nmHdr.code)
+                    {
+                        case LVN_LINKCLICK:
+                            {
+                                break;
+                            }
+                    }
+                }
             }
 
             //Filter out the WM_ERASEBKGND message and prevent any type of flickering
-            if (m.Msg != 0x14 && !handled)
+            if (m.Msg != 0x14)
             {
                 base.OnNotifyMessage(m);
             }
-        }
-
-        private struct NMHDR
-        {
-            public IntPtr hwndFrom;
-            public int idFrom;
-            public int code;
         }
 
         private const int WM_NOTIFY = 0x004E;
 
         protected override void WndProc(ref Message m)
         {
+            //notification for linkclick never reaches here?
+            //System.Diagnostics.Debug.WriteLine(m.ToString());
+
             switch (m.Msg)
             {
                 case 0x1: /*WM_CREATE*/
@@ -172,11 +177,8 @@ namespace ProcessHacker
                         base.DefWndProc(ref m);
                         break;
                     }
-                default:
-                    {
-                        break;
-                    }
             }
+
             base.WndProc(ref m);
         }
 
@@ -310,6 +312,62 @@ namespace ProcessHacker
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszSubsetTitle member. If the structure is not receiving information about a group, this member is ignored.
             /// </summary>
             public uint CchSubsetTitle;
+        }
+
+        //http://msdn.microsoft.com/en-us/library/ms229669.aspx
+        //http://msdn.microsoft.com/en-us/magazine/dvdarchive/cc163384.aspx       
+        /// <summary>
+        /// WM_NOTIFY notificaiton message header.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public class NMHDR
+        {
+            /// <summary>
+            /// Window handle to the control sending a message.
+            /// </summary>
+            private IntPtr hwndFrom;
+            /// <summary>
+            /// Identifier of the control sending a message.
+            /// </summary>
+            public uint idFrom;
+            /// <summary>
+            /// Notification code. This member can be a control-specific notification code or it can be one of the common notification codes.
+            /// </summary>
+            public uint code;
+        }
+
+        /// <summary>
+        /// Native representation of a point.
+        /// </summary>
+        public struct POINT
+        {
+            /// <summary>
+            /// The x-coordinate of the point.
+            /// </summary>
+            public int X;
+            /// <summary>
+            /// The y-coordinate of the point.
+            /// </summary>
+            public int Y;
+        }
+
+        /// <summary>
+        /// Native representation of TVHITTESTINFO.
+        /// </summary>
+        public struct TVHITTESTINFO
+        {
+            /// <summary>
+            /// Client coordinates of the point to test.
+            /// </summary>
+            public POINT pt;
+            /// <summary>
+            /// Variable that receives information about the results of a hit test.
+            /// </summary>
+            public uint flags;
+            /// <summary>
+            /// Handle to the item that occupies the point.
+            /// </summary>
+            public IntPtr hItem;
         }
     }
 
