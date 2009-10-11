@@ -1261,6 +1261,27 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Calculates the size of a structure.
+        /// </summary>
+        /// <typeparam name="T">The structure type.</typeparam>
+        /// <returns>The size of the structure.</returns>
+        public static int SizeOf<T>()
+        {
+            return System.Runtime.InteropServices.Marshal.SizeOf(typeof(T));
+        }
+
+        /// <summary>
+        /// Calculates the size of a structure.
+        /// </summary>
+        /// <typeparam name="T">The structure type.</typeparam>
+        /// <param name="alignment">A power-of-two whole-structure alignment to apply.</param>
+        /// <returns>The size of the structure.</returns>
+        public static int SizeOf<T>(int alignment)
+        {
+            return (SizeOf<T>() + alignment - 1) & (alignment - 1);
+        }
+
+        /// <summary>
         /// Returns a sorted list of the names in a given enum type.
         /// </summary>
         /// <param name="enumType">The enum type to process.</param>

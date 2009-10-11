@@ -15,8 +15,8 @@ namespace ProcessHacker.Native
             if (alignment <= 0 || Utils.CountBits(alignment) != 1)
                 throw new ArgumentOutOfRangeException("alignment");
 
-            // Since we are going to align our pointer, we need to ask for 
-            // size + alignment bytes to account for any padding.
+            // Since we are going to align our pointer, we need to account for 
+            // any padding at the beginning.
             _realMemory = MemoryAlloc.PrivateHeap.Allocate(0, size + alignment - 1);
 
             // aligned memory = (memory + alignment - 1) & ~(alignment - 1)

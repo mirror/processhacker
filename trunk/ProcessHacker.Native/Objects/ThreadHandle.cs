@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -585,7 +586,7 @@ namespace ProcessHacker.Native.Objects
 
             // HACK: To avoid a datatype misalignment error, allocate some 
             // aligned memory.
-            using (var data = new AlignedMemoryAlloc(Marshal.SizeOf(typeof(ContextAmd64)), 16))
+            using (var data = new AlignedMemoryAlloc(Utils.SizeOf<ContextAmd64>(16), 16))
             {
                 data.WriteStruct<ContextAmd64>(context);
 
@@ -987,7 +988,7 @@ namespace ProcessHacker.Native.Objects
 
             // HACK: To avoid a datatype misalignment error, allocate 
             // some aligned memory.
-            using (var data = new AlignedMemoryAlloc(Marshal.SizeOf(typeof(ContextAmd64)), 16))
+            using (var data = new AlignedMemoryAlloc(Utils.SizeOf<ContextAmd64>(16), 16))
             {
                 data.WriteStruct<ContextAmd64>(context);
 
