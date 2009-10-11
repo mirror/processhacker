@@ -87,7 +87,7 @@ namespace ProcessHacker
             return grpId;
         }
 
-        private static void SetGrpState(ListViewGroup lvGroup, ListViewGroupState grpState, string task)
+        private void SetGrpState(ListViewGroup lvGroup, ListViewGroupState grpState, string task)
         {
             if (OSVersion.IsBelow(WindowsVersion.Vista))
                 return;
@@ -115,12 +115,12 @@ namespace ProcessHacker
                 if (GrpId != null)
                 {
                     group.GroupId = GrpId.Value;
-                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
+                    SendMessage(base.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
                 }
                 else
                 {
                     group.GroupId = gIndex;
-                    SendMessage(lvGroup.ListView.Handle, LVM_SetGroupInfo, gIndex, ref group);
+                    SendMessage(base.Handle, LVM_SetGroupInfo, gIndex, ref group);
                 }
                 lvGroup.ListView.Refresh();
             }
@@ -148,15 +148,15 @@ namespace ProcessHacker
             {
                 case 0x1: /*WM_CREATE*/
                     {
-                        HResult setThemeResult = Win32.SetWindowTheme(this.Handle, "explorer", null);
+                        HResult setThemeResult = Win32.SetWindowTheme(base.Handle, "explorer", null);
                         setThemeResult.ThrowIf();
 
                         unchecked
                         {
-                            Win32.SendMessage(this.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
+                            Win32.SendMessage(base.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
                         }
 
-                        SubclassHWnd(this.Handle);
+                        SubclassHWnd(base.Handle);
                         
                         break;
                     }
@@ -378,41 +378,6 @@ namespace ProcessHacker
             public int code;
         }
 
-        /// <summary>
-        /// Native representation of a point.
-        /// </summary>  
-        [StructLayout(LayoutKind.Sequential)]
-        private struct POINT
-        {
-            /// <summary>
-            /// The x-coordinate of the point.
-            /// </summary>
-            public int X;
-            /// <summary>
-            /// The y-coordinate of the point.
-            /// </summary>
-            public int Y;
-        }
-
-        /// <summary>
-        /// Native representation of TVHITTESTINFO.
-        /// </summary>  
-        [StructLayout(LayoutKind.Sequential)]
-        private struct TVHITTESTINFO
-        {
-            /// <summary>
-            /// Client coordinates of the point to test.
-            /// </summary>
-            public POINT pt;
-            /// <summary>
-            /// Variable that receives information about the results of a hit test.
-            /// </summary>
-            public uint flags;
-            /// <summary>
-            /// Handle to the item that occupies the point.
-            /// </summary>
-            public IntPtr hItem;
-        }
     }
 
     [Flags]
