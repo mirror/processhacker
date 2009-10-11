@@ -17,7 +17,7 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        public string GetCurrentVariable(string name)
+        public static string GetCurrentVariable(string name)
         {
             return GetCurrent().GetVariable(name);
         }
