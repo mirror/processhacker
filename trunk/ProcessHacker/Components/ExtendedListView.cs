@@ -144,9 +144,6 @@ namespace ProcessHacker
 
         protected override void WndProc(ref Message m)
         {
-            //notification for linkclick never reaches here?
-            //System.Diagnostics.Debug.WriteLine(m.ToString());
-
             switch (m.Msg)
             {
                 case 0x1: /*WM_CREATE*/
@@ -158,21 +155,9 @@ namespace ProcessHacker
                         {
                             Win32.SendMessage(this.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
                         }
+
+                        SubclassHWnd(this.Handle);
                         
-                        break;
-                    }
-                case 0x4e:
-                    {
-                        unsafe
-                        {
-                            NMHDR* hdr = (NMHDR*)m.LParam;
-
-                            if (hdr->code == LVN_LINKCLICK)
-                            {
-                                MessageBox.Show("Link clicked!");
-                            }
-                        }
-
                         break;
                     }
                 case 0x0202: /*WM_LBUTTONUP*/
@@ -184,6 +169,60 @@ namespace ProcessHacker
 
             base.WndProc(ref m);
         }
+
+        // Win32 API needed
+        [DllImport("user32")]
+        private static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, Win32WndProc newProc);
+        [DllImport("user32")]
+        private static extern int CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, int Msg, int wParam, int lParam);
+
+        // A delegate that matches Win32 WNDPROC:
+        private delegate int Win32WndProc(IntPtr hWnd, int Msg, int wParam, int lParam);
+
+        // from winuser.h:
+        private const int GWL_WNDPROC = -4;
+        private const int WM_LBUTTONDOWN = 0x0201;
+
+        // program variables
+        private IntPtr oldWndProc = IntPtr.Zero;
+        private Win32WndProc newWndProc = null;
+
+        void SubclassHWnd(IntPtr hWnd)
+        {
+            // hWnd is the window we want to subclass..., create a new delegate for the new wndproc
+            newWndProc = new Win32WndProc(MyWndProc);
+            // subclass
+            oldWndProc = SetWindowLong(hWnd, GWL_WNDPROC, newWndProc);
+        }
+
+        // this is the new wndproc, just show a messagebox on left button down:
+        private int MyWndProc(IntPtr hWnd, int Msg, int wParam, int lParam)
+        {
+            switch (Msg)
+            {
+                case 0x4e:
+                    {
+                        unsafe
+                        {
+                            NMHDR* hdr = (NMHDR*)lParam;
+
+                            if (hdr->code == LVN_LINKCLICK)
+                            {
+                                MessageBox.Show("Link clicked!");
+                                return 0;
+                            }
+                        }
+
+                        break;
+                    }
+
+                default:
+                    break;
+            }
+
+            return CallWindowProc(oldWndProc, hWnd, Msg, wParam, lParam);
+        }
+
 
         //http://msdn.microsoft.com/en-us/library/bb774769(VS.85).aspx
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
