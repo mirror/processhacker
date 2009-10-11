@@ -42,46 +42,17 @@ namespace ProcessHacker.Common
 
         #region Constants
 
-        public static string[] SizeUnitNames = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
-
-        public static string[] PrivilegeNames =
+        public static int[] Primes = 
         {
-            "SeCreateTokenPrivilege",
-            "SeAssignPrimaryTokenPrivilege",
-            "SeLockMemoryPrivilege",
-            "SeIncreaseQuotaPrivilege",
-            "SeUnsolicitedInputPrivilege",
-            "SeMachineAccountPrivilege",
-            "SeTcbPrivilege",
-            "SeSecurityPrivilege",
-            "SeTakeOwnershipPrivilege",
-            "SeLoadDriverPrivilege",
-            "SeSystemProfilePrivilege",
-            "SeSystemtimePrivilege",
-            "SeProfileSingleProcessPrivilege",
-            "SeIncreaseBasePriorityPrivilege",
-            "SeCreatePagefilePrivilege",
-            "SeCreatePermanentPrivilege",
-            "SeBackupPrivilege",
-            "SeRestorePrivilege",
-            "SeShutdownPrivilege",
-            "SeDebugPrivilege",
-            "SeAuditPrivilege",
-            "SeSystemEnvironmentPrivilege",
-            "SeChangeNotifyPrivilege",
-            "SeRemoteShutdownPrivilege",
-            "SeUndockPrivilege",
-            "SeSyncAgentPrivilege",
-            "SeEnableDelegationPrivilege",
-            "SeManageVolumePrivilege",
-            "SeImpersonatePrivilege",
-            "SeCreateGlobalPrivilege",
-            "SeTrustedCredManAccessPrivilege",
-            "SeRelabelPrivilege",
-            "SeIncreaseWorkingSetPrivilege",
-            "SeTimeZonePrivilege",
-            "SeCreateSymbolicLinkPrivilege"
+            3, 7, 11, 0x11, 0x17, 0x1d, 0x25, 0x2f, 0x3b, 0x47, 0x59, 0x6b, 0x83, 0xa3, 0xc5, 0xef, 
+            0x125, 0x161, 0x1af, 0x209, 0x277, 0x2f9, 0x397, 0x44f, 0x52f, 0x63d, 0x78b, 0x91d, 0xaf1,
+            0xd2b, 0xfd1, 0x12fd, 0x16cf, 0x1b65, 0x20e3, 0x2777, 0x2f6f, 0x38ff, 0x446f, 0x521f, 0x628d,
+            0x7655, 0x8e01, 0xaa6b, 0xcc89, 0xf583, 0x126a7, 0x1619b, 0x1a857, 0x1fd3b, 0x26315, 0x2dd67,
+            0x3701b, 0x42023, 0x4f361, 0x5f0ed, 0x72125, 0x88e31, 0xa443b, 0xc51eb, 0xec8c1, 0x11bdbf,
+            0x154a3f, 0x198c4f, 0x1ea867, 0x24ca19, 0x2c25c1, 0x34fa1b, 0x3f928f, 0x4c4987, 0x5b8b6f, 0x6dda89
         };
+
+        public static string[] SizeUnitNames = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
 
         #endregion
 
@@ -363,6 +334,12 @@ namespace ProcessHacker.Common
             str = str.Replace("\"", "\\\"");
 
             return str;
+        }
+
+        public static void Fill<T>(this T[] array, T value)
+        {
+            for (int i = 0; i < array.Length; i++)
+                array[i] = value;
         }
 
         /// <summary>
@@ -809,6 +786,26 @@ namespace ProcessHacker.Common
             return (new DateTime(1970, 1, 1, 0, 0, 0)).Add(new TimeSpan(0, 0, 0, (int)time));
         }
 
+        public static int GetPrime(int minimum)
+        {
+            if (minimum < 0)
+                throw new ArgumentOutOfRangeException("minimum");
+
+            for (int i = 0; i < Primes.Length; i++)
+            {
+                if (Primes[i] >= minimum)
+                    return Primes[i];
+            }
+
+            for (int i = minimum | 1; i < int.MaxValue; i += 2)
+            {
+                if (IsPrime(i))
+                    return i;
+            }
+
+            return minimum;
+        }
+
         /// <summary>
         /// Parses a string and produces a rectangle.
         /// </summary>
@@ -850,6 +847,25 @@ namespace ProcessHacker.Common
             foreach (byte b in array)
             {
                 if (b != 0)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public static bool IsPrime(this int number)
+        {
+            int x;
+
+            // Is the number even?
+            if ((number & 1) == 0)
+                return number == 2;
+
+            x = (int)Math.Sqrt(number);
+
+            for (int i = 3; i <= x; i += 2)
+            {
+                if ((number % i) == 0)
                     return false;
             }
 
@@ -1245,7 +1261,7 @@ namespace ProcessHacker.Common
             nameList.Sort((kvp1, kvp2) => kvp2.Value.CountBits().CompareTo(kvp1.Value.CountBits()));
 
             return nameList;
-        }
+        }   
 
         public static int ToInt32(this byte[] data)
         {

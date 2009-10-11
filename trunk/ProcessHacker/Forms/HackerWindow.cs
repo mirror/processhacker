@@ -1885,7 +1885,7 @@ namespace ProcessHacker
                 this.GetFirstIcon().ShowBalloonTip(2000, "New Process",
                     "The process " + item.Name + " (" + item.Pid.ToString() +
                     ") was started" + ((parentText != "") ? " by " +
-                    parent.Name + " (PID " + parent.Pid.ToString() + ")" : "") + ".", ToolTipIcon.Info);
+                    parent.Name + " (" + parent.Pid.ToString() + ")" : "") + ".", ToolTipIcon.Info);
         }
 
         public void processP_DictionaryRemoved(ProcessItem item)

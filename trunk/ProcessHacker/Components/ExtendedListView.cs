@@ -22,13 +22,12 @@
  */
 
 
-using System.Windows.Forms;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
 using System;
 using System.Reflection;
-using ProcessHacker.Native.Api;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
@@ -51,6 +50,11 @@ namespace ProcessHacker
             //Enable the OnNotifyMessage event so we get a chance to filter out 
             //Windows messages before they get to the form's WndProc
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.EnableNotifyMessage, true);
+        }
+
+        public void SetGroupState(ListViewGroupState state)
+        {
+            this.SetGroupState(state, null);
         }
 
         public void SetGroupState(ListViewGroupState state, string taskLabel)
