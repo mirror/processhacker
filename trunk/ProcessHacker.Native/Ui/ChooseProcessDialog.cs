@@ -49,7 +49,7 @@ namespace ProcessHacker.Native.Ui
                         using (var sid = thandle.GetUser())
                             userName = sid.GetFullName(true);
 
-                        fileName = FileUtils.GetFileName(phandle.GetNativeImageFileName());
+                        fileName = FileUtils.GetFileName(phandle.GetImageFileName());
                     }
                 }
                 catch

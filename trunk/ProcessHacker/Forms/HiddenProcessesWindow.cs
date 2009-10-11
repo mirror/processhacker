@@ -82,7 +82,7 @@ namespace ProcessHacker
             Func<int, bool> exists
             )
         {
-            string fileName = phandle.GetNativeImageFileName();
+            string fileName = phandle.GetImageFileName();
 
             if (fileName != null)
                 fileName = FileUtils.GetFileName(fileName);

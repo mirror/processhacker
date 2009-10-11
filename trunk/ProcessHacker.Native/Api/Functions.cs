@@ -732,12 +732,11 @@ namespace ProcessHacker.Native.Api
 
         /// <summary>
         /// The NdfCancelIncident function is used to cancel unneeded functions which have been previously called on an existing incident.
-        /// <seealso cref="http://msdn.microsoft.com/en-us/library/ee309551%28VS.85%29.aspx"/>
         /// </summary>
         /// <remarks>Before using this API, an application must call an incident creation function such as NdfCreateWebIncident.
         /// NdfCloseIncident should be used to close an incident once it has been resolved, as NdfCancelIncident does not actually close the incident itself.
         /// </remarks>
-        /// <param name="Ndfhandle">A handle to the Network Diagnostics Framework incident. 
+        /// <param name="NdfHandle">A handle to the Network Diagnostics Framework incident. 
         /// This handle should match the handle of an existing incident.</param>
         /// <returns>A HResult value indicating the result</returns>
         [DllImport("ndfapi.dll")]
@@ -748,7 +747,7 @@ namespace ProcessHacker.Native.Api
         /// <summary>
         /// The NdfCloseIncident function is used to close an Network Diagnostics Framework (NDF) incident following its resolution.
         /// </summary>
-        /// <param name="Ndfhandle">The handle to the NDF incident that is being closed.</param>
+        /// <param name="NdfHandle">The handle to the NDF incident that is being closed.</param>
         /// <returns>A HResult value indicating the result</returns>
         [DllImport("ndfapi.dll")]
         public static extern HResult NdfCloseIncident(
@@ -758,7 +757,7 @@ namespace ProcessHacker.Native.Api
         /// <summary>
         /// The NdfCreateConnectivityIncident function diagnoses generic internet connectivity problems.
         /// </summary>
-        /// <param name="Ndfhandle">The handle to the Network Diagnostics Framework incident.</param>
+        /// <param name="NdfHandle">The handle to the Network Diagnostics Framework incident.</param>
         /// <returns>A HResult value indicating the result</returns>
         [DllImport("ndfapi.dll")]
         public static extern HResult NdfCreateConnectivityIncident(
@@ -783,7 +782,7 @@ namespace ProcessHacker.Native.Api
             [In, Optional] int userID, //Incorrect
             [In, Optional] int localTarget, //Incorrect
                            int protocol, //Incorrect
-                           int dwFlags, ///IsUnum: NDF_INBOUND_FLAG
+                           int dwFlags, //IsUnum: NDF_INBOUND_FLAG
             [In, Out] ref IntPtr NdfHandle
             );
 

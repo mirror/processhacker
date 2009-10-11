@@ -625,19 +625,19 @@ namespace ProcessHacker
                         // file name spoofing.
                         try
                         {
-                            fileName = FileUtils.GetFileName(phandle.GetNativeImageFileName());
+                            fileName = FileUtils.GetFileName(phandle.GetImageFileName());
                         }
                         catch
                         { }
 
                         // If we couldn't get it or we couldn't resolve the \Device prefix,
-                        // we'll just use the normal method (which only works on Vista).
-                        if ((fileName == null || fileName.StartsWith("\\Device\\")) &&
+                        // we'll use the Win32 variant.
+                        if ((fileName == null || fileName.StartsWith("\\")) &&
                             OSVersion.HasWin32ImageFileName)
                         {
                             try
                             {
-                                fileName = phandle.GetImageFileName();
+                                fileName = phandle.GetImageFileNameWin32();
                             }
                             catch
                             { }

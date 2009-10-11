@@ -1490,19 +1490,23 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Gets the file name of the process' image. This requires the
-        /// PROCESS_QUERY_LIMITED_INFORMATION permission.
+        /// Gets the file name of the process' image. This requires 
+        /// QueryLimitedInformation access.
         /// </summary>
-        /// <returns>A file name, in DOS (normal) format.</returns>
+        /// <returns>A file name, in native format.</returns>
         public string GetImageFileName()
         {
-            var sb = new StringBuilder(1024);
-            int len = 1024;
+            return this.GetInformationUnicodeString(ProcessInformationClass.ProcessImageFileName);
+        }
 
-            if (!Win32.QueryFullProcessImageName(this, false, sb, ref len))
-                Win32.ThrowLastError();
-
-            return FileUtils.GetFileName(sb.ToString(0, len));
+        /// <summary>
+        /// Gets the file name of the process' image. This requires 
+        /// QueryLimitedInformation access.
+        /// </summary>
+        /// <returns>A file name, in DOS format.</returns>
+        public string GetImageFileNameWin32()
+        {
+            return this.GetInformationUnicodeString(ProcessInformationClass.ProcessImageFileNameWin32);
         }
 
         /// <summary>
@@ -1539,6 +1543,22 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(status);
 
             return value;
+        }
+
+        private string GetInformationUnicodeString(ProcessInformationClass infoClass)
+        {
+            NtStatus status;
+            int retLen;
+
+            Win32.NtQueryInformationProcess(this, infoClass, IntPtr.Zero, 0, out retLen);
+
+            using (MemoryAlloc data = new MemoryAlloc(retLen))
+            {
+                if ((status = Win32.NtQueryInformationProcess(this, infoClass, data, retLen, out retLen)) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                return data.ReadStruct<UnicodeString>().Read();
+            }
         }
 
         /// <summary>
@@ -1600,7 +1620,7 @@ namespace ProcessHacker.Native.Objects
             if (this.GetBasicInformation().UniqueProcessId.Equals(4))
                 return KnownProcess.System;
 
-            string fileName = FileUtils.GetFileName(this.GetNativeImageFileName());
+            string fileName = FileUtils.GetFileName(this.GetImageFileName());
 
             if (fileName.ToLower().StartsWith(Environment.SystemDirectory.ToLower()))
             {
@@ -1706,29 +1726,6 @@ namespace ProcessHacker.Native.Objects
             });
 
             return modules.ToArray();
-        }
-
-        /// <summary>
-        /// Gets the file name of the process' image, in device name format. This 
-        /// requires the PROCESS_QUERY_LIMITED_INFORMATION permission.
-        /// </summary>
-        /// <returns>A file name, in device/native format.</returns>
-        public string GetNativeImageFileName()
-        {
-            NtStatus status;
-            int retLen;
-
-            Win32.NtQueryInformationProcess(this, ProcessInformationClass.ProcessImageFileName,
-                IntPtr.Zero, 0, out retLen);
-
-            using (MemoryAlloc data = new MemoryAlloc(retLen))
-            {
-                if ((status = Win32.NtQueryInformationProcess(this, ProcessInformationClass.ProcessImageFileName,
-                    data, retLen, out retLen)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
-
-                return data.ReadStruct<UnicodeString>().Read();
-            }
         }
 
         /// <summary>

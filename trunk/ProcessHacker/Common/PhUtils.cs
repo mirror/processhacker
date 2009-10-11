@@ -99,7 +99,7 @@ namespace ProcessHacker.Common
                     foreach (string s in DangerousNames)
                     {
                         if ((Environment.SystemDirectory + "\\" + s).Equals(
-                            FileUtils.GetFileName(FileUtils.GetFileName(phandle.GetNativeImageFileName())),
+                            FileUtils.GetFileName(FileUtils.GetFileName(phandle.GetImageFileName())),
                             StringComparison.InvariantCultureIgnoreCase))
                         {
                             return true;
