@@ -583,9 +583,9 @@ namespace ProcessHacker.Native.Objects
         {
             NtStatus status;
 
-            // HACK: To avoid a datatype misalignment error, create a temporary 
-            // heap allocation aligned on a 16 byte boundary.
-            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(ContextAmd64)), HeapFlags.CreateAlign16))
+            // HACK: To avoid a datatype misalignment error, allocate some 
+            // aligned memory.
+            using (var data = new AlignedMemoryAlloc(Marshal.SizeOf(typeof(ContextAmd64)), 16))
             {
                 data.WriteStruct<ContextAmd64>(context);
 
@@ -985,9 +985,9 @@ namespace ProcessHacker.Native.Objects
         {
             NtStatus status;
 
-            // HACK: To avoid a datatype misalignment error, use a 
-            // heap allocation aligned on a 16 byte boundary.
-            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(ContextAmd64)), HeapFlags.CreateAlign16))
+            // HACK: To avoid a datatype misalignment error, allocate 
+            // some aligned memory.
+            using (var data = new AlignedMemoryAlloc(Marshal.SizeOf(typeof(ContextAmd64)), 16))
             {
                 data.WriteStruct<ContextAmd64>(context);
 

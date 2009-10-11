@@ -28,6 +28,14 @@ namespace ProcessHacker.Native
 {
     public static class IntPtrExtensions
     {
+        public static IntPtr And(this IntPtr ptr, int value)
+        {
+            if (IntPtr.Size == sizeof(Int32))
+                return new IntPtr(ptr.ToInt32() & value);
+            else
+                return new IntPtr(ptr.ToInt64() & value);
+        }
+
         public static IntPtr And(this IntPtr ptr, IntPtr value)
         {
             if (IntPtr.Size == sizeof(Int32))

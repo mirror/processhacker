@@ -110,6 +110,24 @@ namespace ProcessHacker.Common
         /// </summary>
         /// <param name="value">The number to process.</param>
         /// <returns>The number of bits in the specified number.</returns>
+        public static int CountBits(this int value)
+        {
+            int count = 0;
+
+            while (value != 0)
+            {
+                count++;
+                value &= value - 1;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Counts the number of bits in the specified number.
+        /// </summary>
+        /// <param name="value">The number to process.</param>
+        /// <returns>The number of bits in the specified number.</returns>
         public static int CountBits(this long value)
         {
             int count = 0;
