@@ -195,6 +195,9 @@ Root: HKCU; SubKey: Software\Microsoft\Windows\CurrentVersion\Run; ValueName: Pr
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueType: string; ValueName: Debugger; ValueData: """{app}\ProcessHacker.exe"""; Tasks: set_default_taskmgr
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueType: string; ValueName: Debugger; ValueData: """{app}\ProcessHacker.exe"""; Flags: uninsdeletevalue; Check: NOT PHDefaulTaskmgrCheck()
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueName: Debugger; Tasks: restore_taskmgr reset_settings; Flags: deletevalue uninsdeletevalue; Check: NOT PHDefaulTaskmgrCheck()
+Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: expandsz; ValueName: DumpFolder; ValueData: C:\ProgramData\wj32\mdmp; Flags: createvalueifdoesntexist deletevalue uninsdeletevalue; MinVersion: 0,6.0.6000; Tasks: ; Languages: 
+Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: dword; ValueName: DumpCount; ValueData: 8; Flags: createvalueifdoesntexist uninsdeletevalue deletevalue; MinVersion: 0,6.0.6000; Tasks: ; Languages: 
+Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: dword; ValueName: DumpType; ValueData: 1; Flags: createvalueifdoesntexist deletevalue uninsdeletevalue; MinVersion: 0,6.0.6000; Languages: 
 
 
 [Run]
