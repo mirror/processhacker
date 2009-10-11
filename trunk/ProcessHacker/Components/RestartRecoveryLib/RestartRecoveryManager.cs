@@ -72,8 +72,6 @@ namespace ProcessHackerRestartRecovery
 
             try
             {
-                ProcessHacker.Properties.Settings.Default.Save();
-
                 // Remove the icons or they remain in the system try.
                 ProcessHacker.Program.HackerWindow.ExecuteOnIcons((icon) => icon.Visible = false);
                 ProcessHacker.Program.HackerWindow.ExecuteOnIcons((icon) => icon.Dispose());
@@ -82,8 +80,7 @@ namespace ProcessHackerRestartRecovery
                 if (ProcessHacker.Native.KProcessHacker.Instance != null)
                     ProcessHacker.Native.KProcessHacker.Instance.Close();
             }
-            catch (Exception)
-            {  }
+            catch { }
 
             // Application is now shutting down...
             // Signal to WER that the recovery has finished, only call this once. 
@@ -113,13 +110,7 @@ namespace ProcessHackerRestartRecovery
         /// </summary>
         public static void RecoverLastSession()
         {
-            if (!System.IO.File.Exists("C:\\SomeFile"))
-            {
-                System.Windows.Forms.MessageBox.Show("Recovery file does not exist");
-                return;
-            }
-
-            // Perform application state restoration actions here.
+            // TODO: Perform application state restoration actions here.
             // Do {LoadData, ShowError, ShowRecovered} etc
         }
 
