@@ -196,7 +196,8 @@ Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Exec
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueType: string; ValueName: Debugger; ValueData: """{app}\ProcessHacker.exe"""; Flags: uninsdeletevalue; Check: NOT PHDefaulTaskmgrCheck()
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueName: Debugger; Tasks: restore_taskmgr reset_settings; Flags: deletevalue uninsdeletevalue; Check: NOT PHDefaulTaskmgrCheck()
 
-Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps; ValueType: none; Flags: uninsdeletekeyifempty; MinVersion: 0,6.0.6001
+; Windows Error Reporting keys
+Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps; ValueType: none; Flags: uninsdeletekeyifempty createvalueifdoesntexist; MinVersion: 0,6.0.6001
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: none; Flags: uninsdeletekey; MinVersion: 0,6.0.6001
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: dword; ValueName: DumpCount; ValueData: 5; Flags: uninsdeletevalue; MinVersion: 0,6.0.6001
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: expandsz; ValueName: DumpFolder; ValueData: """{sd}\ProgramData\wj32"""; Flags: uninsdeletevalue; MinVersion: 0,6.0.6001
@@ -212,8 +213,8 @@ Filename: http://processhacker.sourceforge.net/; Description: {cm:run_visitwebsi
 
 [UninstallDelete]
 Name: {app}\Homepage.url; Type: files
-Name: {sd}\ProgramData\wj32\*.dmp; Type: files
-Name: {sd}\ProgramData\wj32; Type: dirifempty
+Name: {sd}\ProgramData\wj32\*.dmp; Type: files; MinVersion: 0,6.0.6001
+Name: {sd}\ProgramData\wj32; Type: dirifempty; MinVersion: 0,6.0.6001
 
 
 [Code]
