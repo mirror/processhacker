@@ -38,6 +38,7 @@ namespace ProcessHacker
         private const int LVM_SetExtendedListViewStyle = (LVM_First + 54); // Sets extended styles in list-view controls. 
         private const int LVS_Ex_DoubleBuffer = 0x00010000;                // Paints via double-buffering, which reduces flicker. also enables alpha-blended marquee selection.
 
+        private const int LVN_First = -100;
         private const int LVN_LINKCLICK = (LVM_First - 84);
 
         private delegate void CallBackSetGroupState(ListViewGroup lvGroup, ListViewGroupState lvState, string task);
@@ -132,22 +133,6 @@ namespace ProcessHacker
 
             //System.Diagnostics.Debug.WriteLine(m.ToString());
 
-            if (WM_NOTIFY == m.Msg)
-            {
-                NMHDR nmHdr = new NMHDR();
-                Marshal.PtrToStructure(m.LParam, nmHdr);
-                if (nmHdr.code != 0)
-                {
-                    switch (nmHdr.code)
-                    {
-                        case LVN_LINKCLICK:
-                            {
-                                break;
-                            }
-                    }
-                }
-            }
-
             //Filter out the WM_ERASEBKGND message and prevent any type of flickering
             if (m.Msg != 0x14)
             {
@@ -169,7 +154,25 @@ namespace ProcessHacker
                         HResult setThemeResult = Win32.SetWindowTheme(this.Handle, "explorer", null);
                         setThemeResult.ThrowIf();
 
-                        Win32.SendMessage(this.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
+                        unchecked
+                        {
+                            Win32.SendMessage(this.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
+                        }
+                        
+                        break;
+                    }
+                case 0x4e:
+                    {
+                        unsafe
+                        {
+                            NMHDR* hdr = (NMHDR*)m.LParam;
+
+                            if (hdr->code == LVN_LINKCLICK)
+                            {
+                                MessageBox.Show("Link clicked!");
+                            }
+                        }
+
                         break;
                     }
                 case 0x0202: /*WM_LBUTTONUP*/
@@ -320,26 +323,27 @@ namespace ProcessHacker
         /// WM_NOTIFY notificaiton message header.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        public class NMHDR
+        private struct NMHDR
         {
             /// <summary>
             /// Window handle to the control sending a message.
             /// </summary>
-            private IntPtr hwndFrom;
+            public IntPtr hwndFrom;
             /// <summary>
             /// Identifier of the control sending a message.
             /// </summary>
-            public uint idFrom;
+            public IntPtr idFrom;
             /// <summary>
             /// Notification code. This member can be a control-specific notification code or it can be one of the common notification codes.
             /// </summary>
-            public uint code;
+            public int code;
         }
 
         /// <summary>
         /// Native representation of a point.
-        /// </summary>
-        public struct POINT
+        /// </summary>  
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT
         {
             /// <summary>
             /// The x-coordinate of the point.
@@ -353,8 +357,9 @@ namespace ProcessHacker
 
         /// <summary>
         /// Native representation of TVHITTESTINFO.
-        /// </summary>
-        public struct TVHITTESTINFO
+        /// </summary>  
+        [StructLayout(LayoutKind.Sequential)]
+        private struct TVHITTESTINFO
         {
             /// <summary>
             /// Client coordinates of the point to test.
