@@ -18,7 +18,7 @@
 ;* along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
 
 
-; ISTool v5.3.0/Inno Setup v5.3.5
+; Inno Setup v5.3.5
 ;
 ; Requirements:
 ; *Inno Setup QuickStart Pack:
@@ -196,6 +196,12 @@ Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Exec
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueType: string; ValueName: Debugger; ValueData: """{app}\ProcessHacker.exe"""; Flags: uninsdeletevalue; Check: NOT PHDefaulTaskmgrCheck()
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueName: Debugger; Tasks: restore_taskmgr reset_settings; Flags: deletevalue uninsdeletevalue; Check: NOT PHDefaulTaskmgrCheck()
 
+Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps; ValueType: none; Flags: uninsdeletekeyifempty; MinVersion: 0,6.0.6001
+Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: none; Flags: uninsdeletekey; MinVersion: 0,6.0.6001
+Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: dword; ValueName: DumpCount; ValueData: 5; Flags: uninsdeletevalue; MinVersion: 0,6.0.6001
+Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: expandsz; ValueName: DumpFolder; ValueData: """{sd}\ProgramData\wj32"""; Flags: uninsdeletevalue; MinVersion: 0,6.0.6001
+Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: dword; ValueName: DumpType; ValueData: 1; Flags: uninsdeletevalue; MinVersion: 0,6.0.6001
+
 
 [Run]
 Filename: {win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe; Parameters: "install ""{app}\ProcessHacker.exe"""; StatusMsg: {cm:msg_optimizingperformance}; Flags: runhidden runascurrentuser skipifdoesntexist
@@ -205,7 +211,9 @@ Filename: http://processhacker.sourceforge.net/; Description: {cm:run_visitwebsi
 
 
 [UninstallDelete]
-Type: files; Name: {app}\Homepage.url
+Name: {app}\Homepage.url; Type: files
+Name: {sd}\ProgramData\wj32\*.dmp; Type: files
+Name: {sd}\ProgramData\wj32; Type: dirifempty
 
 
 [Code]
