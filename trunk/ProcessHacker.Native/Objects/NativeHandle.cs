@@ -285,56 +285,25 @@ namespace ProcessHacker.Native.Objects
             return null;
         }
 
+        /// <summary>
+        /// Gets the security descriptor of the object.
+        /// </summary>
+        /// <param name="securityInformation">The information to retrieve.</param>
+        /// <returns>A security descriptor.</returns>
         public virtual SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
         {
-            NtStatus status;
-            int retLength;
-
-            using (var data = new MemoryAlloc(0x100))
-            {
-                status = Win32.NtQuerySecurityObject(
-                    this,
-                    securityInformation,
-                    data,
-                    data.Size,
-                    out retLength
-                    );
-
-                if (status == NtStatus.BufferTooSmall)
-                {
-                    data.Resize(retLength);
-
-                    status = Win32.NtQuerySecurityObject(
-                        this,
-                        securityInformation,
-                        data,
-                        data.Size,
-                        out retLength
-                        );
-                }
-
-                if (status >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
-
-                return new SecurityDescriptor(data);
-            }
+            return SecurityDescriptor.GetSecurity(this, securityInformation);
         }
 
+        /// <summary>
+        /// Gets the security descriptor of the object.
+        /// </summary>
+        /// <param name="objectType">The type of the object.</param>
+        /// <param name="securityInformation">The information to retrieve.</param>
+        /// <returns>A security descriptor.</returns>
         protected SecurityDescriptor GetSecurity(SeObjectType objectType, SecurityInformation securityInformation)
         {
-            Win32Error result;
-            IntPtr dummy, securityDescriptor;
-
-            if ((result = Win32.GetSecurityInfo(
-                this,
-                objectType,
-                securityInformation,
-                out dummy, out dummy, out dummy, out dummy,
-                out securityDescriptor
-                )) != 0)
-                Win32.ThrowLastError(result);
-
-            return new SecurityDescriptor(new LocalMemoryAlloc(securityDescriptor));
+            return SecurityDescriptor.GetSecurity(this, objectType, securityInformation);
         }
 
         /// <summary>
@@ -381,45 +350,25 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
+        /// <summary>
+        /// Sets the security descriptor of the object.
+        /// </summary>
+        /// <param name="securityInformation">The information to modify.</param>
+        /// <param name="securityDescriptor">The security descriptor.</param>
         public virtual void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtSetSecurityObject(
-                this,
-                securityInformation,
-                securityDescriptor
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+            SecurityDescriptor.SetSecurity(this, securityInformation, securityDescriptor);
         }
 
+        /// <summary>
+        /// Sets the security descriptor of the object.
+        /// </summary>
+        /// <param name="objectType">The type of the object.</param>
+        /// <param name="securityInformation">The information to modify.</param>
+        /// <param name="securityDescriptor">The security descriptor.</param>
         protected void SetSecurity(SeObjectType objectType, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
         {
-            Win32Error result;
-            IntPtr dacl = IntPtr.Zero;
-            IntPtr group = IntPtr.Zero;
-            IntPtr owner = IntPtr.Zero;
-            IntPtr sacl = IntPtr.Zero;
-
-            if ((securityInformation & SecurityInformation.Dacl) == SecurityInformation.Dacl)
-                dacl = securityDescriptor.Dacl ?? IntPtr.Zero;
-            if ((securityInformation & SecurityInformation.Group) == SecurityInformation.Group)
-                group = securityDescriptor.Group;
-            if ((securityInformation & SecurityInformation.Owner) == SecurityInformation.Owner)
-                owner = securityDescriptor.Owner;
-            if ((securityInformation & SecurityInformation.Sacl) == SecurityInformation.Sacl)
-                sacl = securityDescriptor.Sacl ?? IntPtr.Zero;
-
-            if ((result = Win32.SetSecurityInfo(
-                this,
-                objectType,
-                securityInformation,
-                owner,
-                group,
-                dacl,
-                sacl
-                )) != 0)
-                Win32.ThrowLastError(result);
+            SecurityDescriptor.SetSecurity(this, objectType, securityInformation, securityDescriptor);
         }
 
         /// <summary>

@@ -32,14 +32,10 @@ namespace ProcessHacker.Native.Security.AccessControl
 {
     public class SecurityEditor : IDisposable, ISecurityInformation
     {
-        private class GenericSecurableObject : NativeHandle
+        private class GenericSecurableObject : ISecurable
         {
             private SeObjectType _objectType;
             private Func<StandardRights, NativeHandle> _openMethod;
-
-            private GenericSecurableObject(IntPtr handle, bool owned)
-                : base(handle, owned)
-            { }
 
             public GenericSecurableObject(SeObjectType objectType, Func<StandardRights, NativeHandle> openMethod)
             {
@@ -47,20 +43,21 @@ namespace ProcessHacker.Native.Security.AccessControl
                 _openMethod = openMethod;
             }
 
-            public override SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
+            public SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
             {
                 using (var dupHandle = _openMethod(StandardRights.ReadControl))
-                    return (new GenericSecurableObject(dupHandle, false)).GetSecurity(_objectType, securityInformation); 
+                    return SecurityDescriptor.GetSecurity(dupHandle, _objectType, securityInformation); 
             }
 
-            public override void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
+            public void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
             {
                 using (var dupHandle = _openMethod(
                     ((securityInformation & SecurityInformation.Dacl) != 0 ? StandardRights.WriteDac : 0) |
                     ((securityInformation & SecurityInformation.Owner) != 0 ? StandardRights.WriteOwner : 0)
                     ))
                 {
-                    (new GenericSecurableObject(dupHandle, false)).SetSecurity(
+                    SecurityDescriptor.SetSecurity(
+                        dupHandle,
                         _objectType,
                         securityInformation,
                         securityDescriptor
