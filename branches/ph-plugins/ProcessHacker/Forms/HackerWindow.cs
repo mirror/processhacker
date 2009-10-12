@@ -38,6 +38,7 @@ using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
 using TaskbarLib;
+using ProcessHacker.Base;
 
 namespace ProcessHacker
 {
@@ -3321,8 +3322,8 @@ namespace ProcessHacker
                 // We need to call this here or we dont recieve the TaskbarButtonCreated WindowMessage
                 Windows7Taskbar.AllowWindowMessagesThroughUipi();
                 Windows7Taskbar.AppId = "ProcessHacker";
-                Windows7Taskbar.ProcessAppId  = "ProcessHacker";
-                
+                Windows7Taskbar.ProcessAppId = "ProcessHacker";
+
                 thumbButtonManager = new ThumbButtonManager(this);
                 thumbButtonManager.TaskbarButtonCreated += new EventHandler(thumbButtonManager_TaskbarButtonCreated);
             }
@@ -3335,6 +3336,24 @@ namespace ProcessHacker
             this.LoadOtherSettings();
             this.LoadControls();
             this.LoadNotificationIcons();
+
+            // Create the application instance object and load plugins.
+            Program.AppInstance = new ApplicationInstance();
+
+            {
+                System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(Application.StartupPath + "\\plugins");
+
+                if (di.Exists)
+                {
+                    foreach (var fi in di.GetFiles())
+                    {
+                        if (fi.Extension.Equals(".dll", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            Program.AppInstance.LoadPlugin(fi.FullName);
+                        }
+                    }
+                }
+            }
 
             if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) ||
                 Program.StartVisible)

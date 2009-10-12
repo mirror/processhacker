@@ -81,6 +81,10 @@ namespace ProcessHacker
 
             Program.PWindows.Add(_pid, this);
 
+            // Add plugin-handled tab pages.
+            foreach (var d in Program.AppInstance.ProcessWindow.GetTabPages())
+                tabControl.TabPages.Add(d(_pid));
+
             this.FixTabs();
 
             _dontCalculate = false;

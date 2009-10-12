@@ -27,6 +27,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using ProcessHacker.Base;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Objects;
 using ProcessHacker.Components;
@@ -91,6 +92,7 @@ namespace ProcessHacker
         public static ServiceProvider ServiceProvider;
         public static NetworkProvider NetworkProvider;
 
+        public static ApplicationInstance AppInstance;
         public static bool BadConfig = false;
         public static TokenElevationType ElevationType;
         public static ProcessHacker.Native.Threading.Mutant GlobalMutex;
