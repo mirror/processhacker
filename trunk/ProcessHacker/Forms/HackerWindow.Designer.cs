@@ -127,9 +127,6 @@
             this.statusGeneral = new System.Windows.Forms.StatusBarPanel();
             this.statusCPU = new System.Windows.Forms.StatusBarPanel();
             this.statusMemory = new System.Windows.Forms.StatusBarPanel();
-            this.statusIcon = new System.Windows.Forms.StatusBarPanel();
-            this.statusText = new System.Windows.Forms.StatusBarPanel();
-            this.timerMessages = new System.Windows.Forms.Timer(this.components);
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcesses = new System.Windows.Forms.TabPage();
             this.treeProcesses = new ProcessHacker.ProcessTree();
@@ -186,8 +183,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.statusText)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabProcesses.SuspendLayout();
             this.tabServices.SuspendLayout();
@@ -867,9 +862,7 @@
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
             this.statusCPU,
-            this.statusMemory,
-            this.statusIcon,
-            this.statusText});
+            this.statusMemory});
             this.statusBar.ShowPanels = true;
             this.statusBar.Size = new System.Drawing.Size(804, 22);
             this.statusBar.TabIndex = 5;
@@ -891,26 +884,6 @@
             this.statusMemory.Name = "statusMemory";
             this.statusMemory.Text = "Phys. Memory: 50%";
             this.statusMemory.Width = 120;
-            // 
-            // statusIcon
-            // 
-            this.statusIcon.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents;
-            this.statusIcon.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.None;
-            this.statusIcon.MinWidth = 0;
-            this.statusIcon.Name = "statusIcon";
-            this.statusIcon.Width = 10;
-            // 
-            // statusText
-            // 
-            this.statusText.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents;
-            this.statusText.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.None;
-            this.statusText.Name = "statusText";
-            this.statusText.Width = 10;
-            // 
-            // timerMessages
-            // 
-            this.timerMessages.Interval = 2000;
-            this.timerMessages.Tick += new System.EventHandler(this.timerMessages_Tick);
             // 
             // tabControl
             // 
@@ -1357,8 +1330,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.statusText)).EndInit();
             this.tabControl.ResumeLayout(false);
             this.tabProcesses.ResumeLayout(false);
             this.tabServices.ResumeLayout(false);
@@ -1406,9 +1377,6 @@
         private System.Windows.Forms.MenuItem propertiesProcessMenuItem;
         private System.Windows.Forms.MenuItem searchProcessMenuItem;
         private System.Windows.Forms.StatusBar statusBar;
-        private System.Windows.Forms.Timer timerMessages;
-        private System.Windows.Forms.StatusBarPanel statusIcon;
-        private System.Windows.Forms.StatusBarPanel statusText;
         private System.Windows.Forms.MenuItem logMenuItem;
         private System.Windows.Forms.StatusBarPanel statusGeneral;
         private System.Windows.Forms.TabControl tabControl;

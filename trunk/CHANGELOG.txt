@@ -23,6 +23,7 @@ Process Hacker
    * Configurable elevation prompts
    * Better Windows 7 user interface support
    * Exception reporting from within Process Hacker
+   * Slimmer thread call stack window
  * FIXED:
    * #2820170 - "System.ArgumentOutOfRangeException in network list"
    * #2845427 - "Indicator integer overflow"
@@ -40,6 +41,8 @@ Process Hacker
    * Commit and Physical Memory History icon colors
    * Packed file detection, PE reader
    * Performance history buffer problems
+ * REMOVED:
+   * Messages in the main window's status bar
 
 1.5
  * NEW/IMPROVED:

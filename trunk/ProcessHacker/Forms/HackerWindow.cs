@@ -146,10 +146,6 @@ namespace ProcessHacker
         int processSelectedPid = -1;
 
         /// <summary>
-        /// A queue of status messages, processed by the message timer.
-        /// </summary>
-        Queue<KeyValuePair<string, Icon>> statusMessages = new Queue<KeyValuePair<string, Icon>>();
-        /// <summary>
         /// The PH log, with events such as process creation/termination and various 
         /// service events.
         /// </summary>
@@ -1879,7 +1875,7 @@ namespace ProcessHacker
                 }
             }
 
-            this.QueueMessage("New Process: " + item.Name + " (PID " + item.Pid.ToString() + ")" + parentText, item.Icon);
+            this.QueueMessage("New Process: " + item.Name + " (PID " + item.Pid.ToString() + ")" + parentText);
 
             if (NPMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "New Process",
@@ -1890,7 +1886,7 @@ namespace ProcessHacker
 
         public void processP_DictionaryRemoved(ProcessItem item)
         {
-            this.QueueMessage("Terminated Process: " + item.Name + " (PID " + item.Pid.ToString() + ")", null);
+            this.QueueMessage("Terminated Process: " + item.Name + " (PID " + item.Pid.ToString() + ")");
 
             if (processServices.ContainsKey(item.Pid))
                 processServices.Remove(item.Pid);
@@ -1924,7 +1920,7 @@ namespace ProcessHacker
                 " (" + item.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                 ((item.Status.DisplayName != "") ?
                 " (" + item.Status.DisplayName + ")" :
-                ""), null);
+                ""));
 
             if (NSMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "New Service",
@@ -1956,7 +1952,7 @@ namespace ProcessHacker
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                     ((newItem.Status.DisplayName != "") ?
                     " (" + newItem.Status.DisplayName + ")" :
-                    ""), null);
+                    ""));
 
                 if (startedSMenuItem.Checked)
                     this.GetFirstIcon().ShowBalloonTip(2000, "Service Started",
@@ -1970,7 +1966,7 @@ namespace ProcessHacker
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                     ((newItem.Status.DisplayName != "") ?
                     " (" + newItem.Status.DisplayName + ")" :
-                    ""), null);
+                    ""));
 
             if (oldState == ServiceState.Running &&
                 newState == ServiceState.Stopped)
@@ -1979,7 +1975,7 @@ namespace ProcessHacker
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                     ((newItem.Status.DisplayName != "") ?
                     " (" + newItem.Status.DisplayName + ")" :
-                    ""), null);
+                    ""));
 
                 if (stoppedSMenuItem.Checked)
                     this.GetFirstIcon().ShowBalloonTip(2000, "Service Stopped",
@@ -2022,7 +2018,7 @@ namespace ProcessHacker
                 " (" + item.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                 ((item.Status.DisplayName != "") ?
                 " (" + item.Status.DisplayName + ")" :
-                ""), null);
+                ""));
 
             if (DSMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "Service Deleted",
@@ -2317,29 +2313,6 @@ namespace ProcessHacker
             appLogButton.Click += new EventHandler(appLogButton_Clicked);
 
             thumbButtonManager.AddThumbButtons(sysInfoButton, appHandleButton, appLogButton);
-        }
-
-        #endregion
-
-        #region Timers
-
-        private void timerMessages_Tick(object sender, EventArgs e)
-        {
-            if (statusMessages.Count != 0)
-            {
-                KeyValuePair<string, Icon> v = statusMessages.Dequeue();
-                statusText.Text = v.Key;
-
-                if (v.Value != null)
-                    statusIcon.Icon = v.Value;
-                else
-                    statusIcon.Icon = null;
-            }
-            else
-            {
-                statusText.Text = "";
-                statusIcon.Icon = null;
-            }
         }
 
         #endregion
@@ -2657,21 +2630,15 @@ namespace ProcessHacker
 
         public void QueueMessage(string message)
         {
-            this.QueueMessage(message, null);
-        }
-
-        public void QueueMessage(string message, Icon icon)
-        {
             if (this.InvokeRequired)
             {
-                this.BeginInvoke(new MethodInvoker(() => this.QueueMessage(message, icon)));
+                this.BeginInvoke(new MethodInvoker(() => this.QueueMessage(message)));
                 return;
             }
 
             var value = new KeyValuePair<DateTime, string>(DateTime.Now, message);
 
             _log.Add(value);
-            statusMessages.Enqueue(new KeyValuePair<string, Icon>(message, icon));
 
             if (this.LogUpdated != null)
                 this.LogUpdated(value);
@@ -3071,7 +3038,6 @@ namespace ProcessHacker
 
         private void UpdateCommon()
         {
-            timerMessages.Enabled = true;
             treeProcesses.RefreshItems();
         }
 
@@ -3319,8 +3285,6 @@ namespace ProcessHacker
 
         private void LoadOther()
         {
-            statusText.Text = "Waiting...";
-
             try
             {
                 using (var thandle = ProcessHandle.GetCurrent().GetToken(TokenAccess.Query))
