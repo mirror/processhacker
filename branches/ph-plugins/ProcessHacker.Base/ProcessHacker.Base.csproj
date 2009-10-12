@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -42,6 +43,7 @@
     <Compile Include="PluginSettingsControlBase.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="ProcessHighlightingManager.cs" />
     <Compile Include="ProcessWindowManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

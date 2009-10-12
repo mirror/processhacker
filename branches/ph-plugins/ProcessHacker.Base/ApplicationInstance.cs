@@ -9,7 +9,13 @@ namespace ProcessHacker.Base
     {
         private Dictionary<string, PluginBase> _plugins = new Dictionary<string, PluginBase>();
 
+        private ProcessHighlightingManager _processHighlighting = new ProcessHighlightingManager();
         private ProcessWindowManager _processWindow = new ProcessWindowManager();
+
+        public ProcessHighlightingManager ProcessHighlighting
+        {
+            get { return _processHighlighting; }
+        }
 
         public ProcessWindowManager ProcessWindow
         {

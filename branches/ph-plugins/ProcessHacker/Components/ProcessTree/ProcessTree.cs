@@ -262,6 +262,14 @@ namespace ProcessHacker
 
         private Color GetProcessColor(ProcessItem p)
         {
+            foreach (var filter in Program.AppInstance.ProcessHighlighting.GetFilters())
+            {
+                Color color = SystemColors.Window;
+
+                if (filter(p.Pid, ref color))
+                    return color;
+            }
+
             if (Properties.Settings.Default.UseColorDebuggedProcesses && p.IsBeingDebugged)
                 return Properties.Settings.Default.ColorDebuggedProcesses;
             else if (Properties.Settings.Default.UseColorElevatedProcesses &&

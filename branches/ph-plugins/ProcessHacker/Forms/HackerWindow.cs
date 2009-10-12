@@ -3357,7 +3357,14 @@ namespace ProcessHacker
                     {
                         if (fi.Extension.Equals(".dll", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            Program.AppInstance.LoadPlugin(fi.FullName);
+                            try
+                            {
+                                Program.AppInstance.LoadPlugin(fi.FullName);
+                            }
+                            catch
+                            {
+                                Logging.Log(Logging.Importance.Error, "Unable to load the plugin " + fi.FullName);
+                            }
                         }
                     }
                 }
