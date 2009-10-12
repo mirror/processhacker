@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationInstance.cs" />
+    <Compile Include="MenuItemManager.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginSettingsControlBase.cs">
       <SubType>UserControl</SubType>

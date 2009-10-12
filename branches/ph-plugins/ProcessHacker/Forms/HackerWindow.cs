@@ -3312,6 +3312,29 @@ namespace ProcessHacker
             } 
         }
 
+        private void LoadPlugins()
+        {
+            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(Application.StartupPath + "\\plugins");
+
+            if (di.Exists)
+            {
+                foreach (var fi in di.GetFiles())
+                {
+                    if (fi.Extension.Equals(".dll", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        try
+                        {
+                            Program.AppInstance.LoadPlugin(fi.FullName);
+                        }
+                        catch
+                        {
+                            Logging.Log(Logging.Importance.Error, "Unable to load the plugin " + fi.FullName);
+                        }
+                    }
+                }
+            }
+        }
+
         public HackerWindow()
         {
             Program.HackerWindow = this;
@@ -3345,30 +3368,15 @@ namespace ProcessHacker
             this.LoadControls();
             this.LoadNotificationIcons();
 
-            // Create the application instance object and load plugins.
             Program.AppInstance = new ApplicationInstance();
 
-            {
-                System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(Application.StartupPath + "\\plugins");
+            Program.AppInstance.MainMenu = new MainMenuManager(mainMenu.MenuItems);
+            Program.AppInstance.MainMenu.Hacker = new MenuItemManager(hackerMenuItem.MenuItems);
+            Program.AppInstance.MainMenu.View = new MenuItemManager(viewMenuItem.MenuItems);
+            Program.AppInstance.MainMenu.Tools = new MenuItemManager(toolsMenuItem.MenuItems);
+            Program.AppInstance.MainMenu.Help = new MenuItemManager(helpMenu.MenuItems);
 
-                if (di.Exists)
-                {
-                    foreach (var fi in di.GetFiles())
-                    {
-                        if (fi.Extension.Equals(".dll", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            try
-                            {
-                                Program.AppInstance.LoadPlugin(fi.FullName);
-                            }
-                            catch
-                            {
-                                Logging.Log(Logging.Importance.Error, "Unable to load the plugin " + fi.FullName);
-                            }
-                        }
-                    }
-                }
-            }
+            this.LoadPlugins();
 
             if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) ||
                 Program.StartVisible)

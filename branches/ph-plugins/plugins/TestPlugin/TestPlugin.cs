@@ -35,6 +35,15 @@ namespace TestPlugin
         {
             AppInstance.ProcessHighlighting.AddFilter("sandboxieFilter", this.SandboxieFilter);
             AppInstance.ProcessWindow.AddTabPage("testTabPage", this.MakeTestTabPage);
+
+            MenuItem testPluginHelp = new MenuItem(
+                "Test Plugin Help",
+                (sender, e) =>
+                {
+                    MessageBox.Show("There is no help available.");
+                });
+
+            AppInstance.MainMenu.Help.InsertAfter("Help", testPluginHelp);
         }
 
         public override PluginSettingsControlBase OnRetrieveSettingsControl()
