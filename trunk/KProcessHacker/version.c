@@ -51,6 +51,11 @@ static char KiFastCallEntry51[] =
     0x8b, 0xf2, 0x8b, 0x5f, 0x0c, 0x33, 0xc9, 0x8a,
     0x0c, 0x18, 0x8b, 0x3f, 0x8b, 0x1c, 0x87, 0x2b
 };
+static char KiFastCallEntry52[] =
+{
+    0x8b, 0xf2, 0x8b, 0x5f, 0x0c, 0x33, 0xc9, 0x8a,
+    0x0c, 0x18, 0x8b, 0x3f, 0x8b, 0x1c, 0x87, 0x2b
+}; /* same as 5.1 */
 static char KiFastCallEntry60[] =
 {
     0x8b, 0xf2, 0x33, 0xc9, 0x8b, 0x57, 0x0c, 0x8b,
@@ -60,7 +65,7 @@ static char KiFastCallEntry61[] =
 {
     0x8b, 0xf2, 0x33, 0xc9, 0x8b, 0x57, 0x0c, 0x8b,
     0x3f, 0x8a, 0x0c, 0x10, 0x8b, 0x14, 0x87, 0x2b
-};
+}; /* same as 6.0 */
 /* Below is the scan to find the start of KiFastCallEntry. */
 /* static char KiFastCallEntry[] =
 {
@@ -91,6 +96,11 @@ static char PspTerminateProcess51[] =
     0x8b, 0xff, 0x55, 0x8b, 0xec, 0x56, 0x64, 0xa1,
     0x24, 0x01, 0x00, 0x00, 0x8b, 0x75, 0x08, 0x3b
 };
+static char PspTerminateProcess52[] =
+{
+    0x8b, 0xff, 0x55, 0x8b, 0xec, 0x56, 0x8b, 0x75,
+    0x08, 0x57, 0x8d, 0xbe, 0x40, 0x02, 0x00, 0x00
+};
 static char PsTerminateProcess60[] =
 {
     0x8b, 0xff, 0x55, 0x8b, 0xec, 0x53, 0x56, 0x57,
@@ -112,6 +122,11 @@ static char PspTerminateThreadByPointer51[] =
 {
     0x8b, 0xff, 0x55, 0x8b, 0xec, 0x83, 0xec, 0x0c,
     0x83, 0x4d, 0xf8, 0xff, 0x56, 0x57, 0x8b, 0x7d
+};
+static char PspTerminateThreadByPointer52[] =
+{
+    0x8b, 0xff, 0x55, 0x8b, 0xec, 0x53, 0x56, 0x57,
+    0x8b, 0x7d, 0x08, 0x8d, 0xb7, 0x40, 0x02, 0x00
 };
 static char PspTerminateThreadByPointer60[] =
 {
@@ -193,6 +208,7 @@ NTSTATUS KvInit()
         
         SsNtContinue = 0x20;
         
+        /* KiFastCallEntry isn't hooked properly yet. Disabled for now. */
         /* INIT_SCAN(
             KiFastCallEntryScan,
             KiFastCallEntry51,
@@ -241,10 +257,67 @@ NTSTATUS KvInit()
     /* Windows Server 2003 */
     else if (majorVersion == 5 && minorVersion == 2)
     {
-        WindowsVersion = WINDOWS_SERVER_2003;
+        ULONG_PTR psSearchOffset = (ULONG_PTR)GetSystemRoutineAddress(L"RtlCreateHeap");
         
-        /* Not supported yet */
-        return STATUS_NOT_SUPPORTED;
+        WindowsVersion = WINDOWS_SERVER_2003;
+        ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xfff;
+        ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x3ff;
+        
+        OffEtClientId = 0x1e4;
+        OffEtSpareByteForSs = 0x24f; /* Padding, last */
+        OffEtStartAddress = 0x21c;
+        OffEtWin32StartAddress = 0x220;
+        OffEpJob = 0x120;
+        OffEpObjectTable = 0xd4;
+        OffEpProtectedProcessOff = 0;
+        OffEpProtectedProcessBit = 0;
+        OffEpRundownProtect = 0x90;
+        OffOhBody = 0x18;
+        OffOtName = 0x40;
+        OffOtiGenericMapping = 0x60 + 0x8;
+        OffOtiOpenProcedure = 0x60 + 0x30;
+        
+        SsNtContinue = 0x22;
+        
+        /* Can't find on ntoskrnl *and* ntkrnlpa. Disabled for now. */
+        /* INIT_SCAN(
+            KiFastCallEntryScan,
+            KiFastCallEntry52,
+            sizeof(KiFastCallEntry52),
+            (ULONG_PTR)__ZwClose, SCAN_LENGTH, -7
+            ); */
+        /* We are scanning for PspTerminateProcess which has 
+           the same signature as PsTerminateProcess because 
+           PsTerminateProcess is simply a wrapper on Server 2003.
+         */
+        INIT_SCAN(
+            PsTerminateProcessScan,
+            PspTerminateProcess52,
+            sizeof(PspTerminateProcess52),
+            psSearchOffset - 0x50000, SCAN_LENGTH, 0
+            );
+        INIT_SCAN(
+            PspTerminateThreadByPointerScan,
+            PspTerminateThreadByPointer52,
+            sizeof(PspTerminateThreadByPointer52),
+            psSearchOffset - 0x20000, SCAN_LENGTH, 0
+            );
+        
+        if (servicePack == 0)
+        {
+        }
+        else if (servicePack == 1)
+        {
+        }
+        else if (servicePack == 2)
+        {
+        }
+        else
+        {
+            return STATUS_NOT_SUPPORTED;
+        }
+        
+        dprintf("Initialized version-specific data for Windows Server 2003 SP%d\n", servicePack);
     }
     /* Windows Vista, Windows Server 2008 */
     else if (majorVersion == 6 && minorVersion == 0)
@@ -252,8 +325,9 @@ NTSTATUS KvInit()
         ULONG_PTR searchOffset = (ULONG_PTR)__NtClose;
         
         WindowsVersion = WINDOWS_VISTA;
-        ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
-        ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
+        ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x1fff;
+        ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xfff;
+        
         OffEtClientId = 0x20c;
         OffEtSpareByteForSs = 0x26f; /* Padding, second-last */
         OffEtStartAddress = 0x1f8;
@@ -441,7 +515,7 @@ NTSTATUS KvInit()
         
         dprintf("Initialized version-specific data for Windows Vista SP%d/Windows Server 2008\n", servicePack);
     }
-    /* Windows 7 */
+    /* Windows 7, Windows Server 2008 R2 */
     else if (majorVersion == 6 && minorVersion == 1)
     {
         ULONG_PTR psSearchOffset = (ULONG_PTR)GetSystemRoutineAddress(L"PsSetCreateProcessNotifyRoutine");
@@ -451,8 +525,9 @@ NTSTATUS KvInit()
             return STATUS_NOT_SUPPORTED;
         
         WindowsVersion = WINDOWS_7;
-        ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
-        ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
+        ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x1fff;
+        ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xfff;
+        
         OffEtClientId = 0x22c;
         OffEtSpareByteForSs = 0x2b4; /* Padding, last */
         OffEtStartAddress = 0x218;
