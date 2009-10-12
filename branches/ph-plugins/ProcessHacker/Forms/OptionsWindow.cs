@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
+using ProcessHacker.Base;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
@@ -47,6 +48,9 @@ namespace ProcessHacker
         private string _oldTaskMgrDebugger;
         private Font _font;
         private bool _dontApply;
+
+        private Dictionary<PluginBase, PluginSettingsControlBase> _pluginSettings =
+            new Dictionary<PluginBase, PluginSettingsControlBase>();
 
         public OptionsWindow()
             : this(false)
@@ -82,6 +86,9 @@ namespace ProcessHacker
             {
                 buttonChangeReplaceTaskManager.Visible = false;
             }
+
+            listPlugins.SetDoubleBuffered(true);
+            listPlugins.SetTheme("explorer");
         }
 
         protected override void WndProc(ref Message m)
@@ -110,6 +117,13 @@ namespace ProcessHacker
 
             if (!OSVersion.HasUac)
                 comboElevationLevel.Enabled = false;
+
+            labelPluginDescription.Text = "";
+
+            foreach (var plugin in Program.AppInstance.GetPlugins())
+            {
+                listPlugins.Items.Add(new ListViewItem() { Tag = plugin.Name, Text = plugin.Title });
+            }
 
             bool visualStyles = Application.RenderWithVisualStyles;
 
@@ -538,6 +552,9 @@ namespace ProcessHacker
                     PhUtils.ShowException("Unable to replace Task Manager with Process Hacker", ex);
                 }
             }
+
+            foreach (var control in _pluginSettings.Values)
+                control.OnSettingsSaved();
         }
 
         private void ApplySettings()
@@ -676,6 +693,41 @@ namespace ProcessHacker
             this.ApplySettings();
             this.buttonApply.Enabled = false;
             this.buttonOK.Select();
+        }
+
+        private void listPlugins_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listPlugins.SelectedItems.Count == 0)
+            {
+                labelPluginTitle.Text = "No plugin selected";
+                labelPluginDescription.Text = "";
+                panelPluginOptions.Controls.Clear();
+            }
+            else
+            {
+                string pluginName = (string)listPlugins.SelectedItems[0].Tag;
+                PluginBase plugin = Program.AppInstance.GetPlugin(pluginName);
+
+                labelPluginTitle.Text = plugin.Title + " (" + plugin.Author + ")";
+                labelPluginDescription.Text = plugin.Description;
+
+                if (_pluginSettings.ContainsKey(plugin))
+                {
+                    panelPluginOptions.Controls.Add(_pluginSettings[plugin]);
+                }
+                else
+                {
+                    PluginSettingsControlBase settingsControl = plugin.OnRetrieveSettingsControl();
+
+                    if (settingsControl != null)
+                    {
+                        settingsControl.Dock = DockStyle.Fill;
+                        settingsControl.Location = new Point(0, 0);
+                        _pluginSettings.Add(plugin, settingsControl);
+                        panelPluginOptions.Controls.Add(_pluginSettings[plugin]);
+                    }
+                }
+            }
         }
     }
 }

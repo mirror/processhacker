@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 
 namespace ProcessHacker.Base
 {
@@ -13,6 +14,7 @@ namespace ProcessHacker.Base
         public abstract string Name { get; }
         public abstract string Title { get; }
         public abstract void OnLoad();
+        public virtual PluginSettingsControlBase OnRetrieveSettingsControl() { return null; }
         public abstract void OnUnload();
 
         public ApplicationInstance AppInstance

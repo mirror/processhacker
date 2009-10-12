@@ -34,5 +34,17 @@ namespace TestPlugin.Properties {
                 this["MySetting"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Enter some text here and it will be saved.")]
+        public string SomeText {
+            get {
+                return ((string)(this["SomeText"]));
+            }
+            set {
+                this["SomeText"] = value;
+            }
+        }
     }
 }

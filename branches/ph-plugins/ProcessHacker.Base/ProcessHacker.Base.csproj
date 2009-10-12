@@ -39,6 +39,9 @@
   <ItemGroup>
     <Compile Include="ApplicationInstance.cs" />
     <Compile Include="PluginBase.cs" />
+    <Compile Include="PluginSettingsControlBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="ProcessWindowManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -74,8 +74,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.tabPlotting = new System.Windows.Forms.TabPage();
             this.textStep = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -86,12 +84,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
-            this.colorIORO = new ProcessHacker.Components.ColorModifier();
-            this.colorIOW = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.tabSymbols = new System.Windows.Forms.TabPage();
             this.checkUndecorate = new System.Windows.Forms.CheckBox();
             this.textSearchPath = new System.Windows.Forms.TextBox();
@@ -108,6 +100,20 @@
             this.optUpdateBeta = new System.Windows.Forms.RadioButton();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
+            this.tabPlugins = new System.Windows.Forms.TabPage();
+            this.listPlugins = new System.Windows.Forms.ListView();
+            this.panelPluginOptions = new System.Windows.Forms.Panel();
+            this.labelPluginTitle = new System.Windows.Forms.Label();
+            this.labelPluginDescription = new System.Windows.Forms.Label();
+            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorIORO = new ProcessHacker.Components.ColorModifier();
+            this.colorIOW = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
+            this.columnPluginTitle = new System.Windows.Forms.ColumnHeader();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -121,6 +127,7 @@
             this.tabSymbols.SuspendLayout();
             this.tabUpdates.SuspendLayout();
             this.UpdaterSettingsGroupBox.SuspendLayout();
+            this.tabPlugins.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -223,6 +230,7 @@
             this.tabControl.Controls.Add(this.tabPlotting);
             this.tabControl.Controls.Add(this.tabSymbols);
             this.tabControl.Controls.Add(this.tabUpdates);
+            this.tabControl.Controls.Add(this.tabPlugins);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -723,22 +731,6 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "New Objects:";
             // 
-            // colorRemovedProcesses
-            // 
-            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
-            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
-            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorRemovedProcesses.TabIndex = 2;
-            // 
-            // colorNewProcesses
-            // 
-            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
-            this.colorNewProcesses.Name = "colorNewProcesses";
-            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorNewProcesses.TabIndex = 1;
-            // 
             // tabPlotting
             // 
             this.tabPlotting.Controls.Add(this.textStep);
@@ -854,54 +846,6 @@
             this.label17.Size = new System.Drawing.Size(91, 13);
             this.label17.TabIndex = 9;
             this.label17.Text = "CPU Kernel Time:";
-            // 
-            // colorIORO
-            // 
-            this.colorIORO.Color = System.Drawing.Color.Transparent;
-            this.colorIORO.Location = new System.Drawing.Point(124, 163);
-            this.colorIORO.Name = "colorIORO";
-            this.colorIORO.Size = new System.Drawing.Size(40, 20);
-            this.colorIORO.TabIndex = 6;
-            // 
-            // colorIOW
-            // 
-            this.colorIOW.Color = System.Drawing.Color.Transparent;
-            this.colorIOW.Location = new System.Drawing.Point(124, 189);
-            this.colorIOW.Name = "colorIOW";
-            this.colorIOW.Size = new System.Drawing.Size(40, 20);
-            this.colorIOW.TabIndex = 7;
-            // 
-            // colorMemoryWS
-            // 
-            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
-            this.colorMemoryWS.Name = "colorMemoryWS";
-            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryWS.TabIndex = 5;
-            // 
-            // colorMemoryPB
-            // 
-            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
-            this.colorMemoryPB.Name = "colorMemoryPB";
-            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryPB.TabIndex = 4;
-            // 
-            // colorCPUUT
-            // 
-            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
-            this.colorCPUUT.Name = "colorCPUUT";
-            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUUT.TabIndex = 3;
-            // 
-            // colorCPUKT
-            // 
-            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
-            this.colorCPUKT.Name = "colorCPUKT";
-            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUKT.TabIndex = 2;
             // 
             // tabSymbols
             // 
@@ -1083,6 +1027,139 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
+            // tabPlugins
+            // 
+            this.tabPlugins.Controls.Add(this.labelPluginDescription);
+            this.tabPlugins.Controls.Add(this.labelPluginTitle);
+            this.tabPlugins.Controls.Add(this.panelPluginOptions);
+            this.tabPlugins.Controls.Add(this.listPlugins);
+            this.tabPlugins.Location = new System.Drawing.Point(4, 22);
+            this.tabPlugins.Name = "tabPlugins";
+            this.tabPlugins.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPlugins.Size = new System.Drawing.Size(481, 308);
+            this.tabPlugins.TabIndex = 6;
+            this.tabPlugins.Text = "Plugins";
+            this.tabPlugins.UseVisualStyleBackColor = true;
+            // 
+            // listPlugins
+            // 
+            this.listPlugins.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.listPlugins.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnPluginTitle});
+            this.listPlugins.FullRowSelect = true;
+            this.listPlugins.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listPlugins.HideSelection = false;
+            this.listPlugins.Location = new System.Drawing.Point(6, 6);
+            this.listPlugins.MultiSelect = false;
+            this.listPlugins.Name = "listPlugins";
+            this.listPlugins.Size = new System.Drawing.Size(154, 296);
+            this.listPlugins.TabIndex = 0;
+            this.listPlugins.UseCompatibleStateImageBehavior = false;
+            this.listPlugins.View = System.Windows.Forms.View.Details;
+            this.listPlugins.SelectedIndexChanged += new System.EventHandler(this.listPlugins_SelectedIndexChanged);
+            // 
+            // panelPluginOptions
+            // 
+            this.panelPluginOptions.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelPluginOptions.AutoScroll = true;
+            this.panelPluginOptions.Location = new System.Drawing.Point(166, 76);
+            this.panelPluginOptions.Name = "panelPluginOptions";
+            this.panelPluginOptions.Padding = new System.Windows.Forms.Padding(3);
+            this.panelPluginOptions.Size = new System.Drawing.Size(309, 226);
+            this.panelPluginOptions.TabIndex = 1;
+            // 
+            // labelPluginTitle
+            // 
+            this.labelPluginTitle.AutoSize = true;
+            this.labelPluginTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelPluginTitle.Location = new System.Drawing.Point(166, 6);
+            this.labelPluginTitle.Name = "labelPluginTitle";
+            this.labelPluginTitle.Size = new System.Drawing.Size(113, 13);
+            this.labelPluginTitle.TabIndex = 2;
+            this.labelPluginTitle.Text = "No plugin selected";
+            // 
+            // labelPluginDescription
+            // 
+            this.labelPluginDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelPluginDescription.Location = new System.Drawing.Point(166, 25);
+            this.labelPluginDescription.Name = "labelPluginDescription";
+            this.labelPluginDescription.Size = new System.Drawing.Size(309, 48);
+            this.labelPluginDescription.TabIndex = 3;
+            this.labelPluginDescription.Text = "N/A";
+            // 
+            // colorRemovedProcesses
+            // 
+            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
+            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
+            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorRemovedProcesses.TabIndex = 2;
+            // 
+            // colorNewProcesses
+            // 
+            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
+            this.colorNewProcesses.Name = "colorNewProcesses";
+            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorNewProcesses.TabIndex = 1;
+            // 
+            // colorIORO
+            // 
+            this.colorIORO.Color = System.Drawing.Color.Transparent;
+            this.colorIORO.Location = new System.Drawing.Point(124, 163);
+            this.colorIORO.Name = "colorIORO";
+            this.colorIORO.Size = new System.Drawing.Size(40, 20);
+            this.colorIORO.TabIndex = 6;
+            // 
+            // colorIOW
+            // 
+            this.colorIOW.Color = System.Drawing.Color.Transparent;
+            this.colorIOW.Location = new System.Drawing.Point(124, 189);
+            this.colorIOW.Name = "colorIOW";
+            this.colorIOW.Size = new System.Drawing.Size(40, 20);
+            this.colorIOW.TabIndex = 7;
+            // 
+            // colorMemoryWS
+            // 
+            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
+            this.colorMemoryWS.Name = "colorMemoryWS";
+            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryWS.TabIndex = 5;
+            // 
+            // colorMemoryPB
+            // 
+            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
+            this.colorMemoryPB.Name = "colorMemoryPB";
+            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryPB.TabIndex = 4;
+            // 
+            // colorCPUUT
+            // 
+            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
+            this.colorCPUUT.Name = "colorCPUUT";
+            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUUT.TabIndex = 3;
+            // 
+            // colorCPUKT
+            // 
+            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
+            this.colorCPUKT.Name = "colorCPUKT";
+            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUKT.TabIndex = 2;
+            // 
+            // columnPluginTitle
+            // 
+            this.columnPluginTitle.Text = "Title";
+            this.columnPluginTitle.Width = 120;
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
@@ -1122,6 +1199,8 @@
             this.tabUpdates.ResumeLayout(false);
             this.UpdaterSettingsGroupBox.ResumeLayout(false);
             this.UpdaterSettingsGroupBox.PerformLayout();
+            this.tabPlugins.ResumeLayout(false);
+            this.tabPlugins.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1208,5 +1287,11 @@
         private System.Windows.Forms.GroupBox UpdaterSettingsGroupBox;
         private System.Windows.Forms.NumericUpDown textMaxSamples;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TabPage tabPlugins;
+        private System.Windows.Forms.ListView listPlugins;
+        private System.Windows.Forms.Panel panelPluginOptions;
+        private System.Windows.Forms.Label labelPluginTitle;
+        private System.Windows.Forms.Label labelPluginDescription;
+        private System.Windows.Forms.ColumnHeader columnPluginTitle;
     }
 }

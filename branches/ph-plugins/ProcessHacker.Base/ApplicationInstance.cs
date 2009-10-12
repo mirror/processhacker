@@ -34,6 +34,11 @@ namespace ProcessHacker.Base
             return _plugins[name];
         }
 
+        public IEnumerable<PluginBase> GetPlugins()
+        {
+            return _plugins.Values;
+        }
+
         public void LoadPlugin(string fileName)
         {
             Assembly assembly = Assembly.LoadFile(fileName);

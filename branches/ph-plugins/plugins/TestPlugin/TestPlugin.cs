@@ -33,6 +33,11 @@ namespace TestPlugin
             AppInstance.ProcessWindow.AddTabPage("testTabPage", this.MakeTestTabPage);
         }
 
+        public override PluginSettingsControlBase OnRetrieveSettingsControl()
+        {
+            return new TestPluginSettingsControl();
+        }
+
         public override void OnUnload()
         {
             AppInstance.ProcessWindow.RemoveTabPage("testTabPage");

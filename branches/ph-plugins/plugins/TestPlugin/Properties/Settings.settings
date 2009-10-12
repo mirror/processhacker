@@ -5,5 +5,8 @@
     <Setting Name="MySetting" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="SomeText" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Enter some text here and it will be saved.</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

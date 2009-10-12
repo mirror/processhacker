@@ -5,10 +5,10 @@ using System.Windows.Forms;
 
 namespace ProcessHacker.Base
 {
-    public delegate TabPage GetTabPageDelegate(int pid);
-
     public sealed class ProcessWindowManager
     {
+        public delegate TabPage GetTabPageDelegate(int pid);
+
         private Dictionary<string, GetTabPageDelegate> _tabPages =
             new Dictionary<string, GetTabPageDelegate>();
 
