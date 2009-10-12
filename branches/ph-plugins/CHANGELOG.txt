@@ -1,0 +1,725 @@
+Process Hacker
+
+1.6
+ * NEW/IMPROVED:
+   * #2817429 - "Add Port and IP Address columns to Network tab"
+   * #2845829 - "System uptime"
+   * #2853452 - "Find handles window: Minor usability improvements"
+   * Update system
+   * Network tools: ping, traceroute and whois
+   * Object security editor
+   * Displays IPv6 network connections
+   * VirusTotal uploader
+   * Two new terminator tests: W1 (send WM_DESTROY messages) and 
+     W2 (send WM_QUIT messages)
+   * Wait chain analysis
+   * Mutant owner information
+   * Elevation prompt when attempting to view process properties
+   * All list views now have sort arrows
+   * Network list now displays process tooltips
+   * Enabled DLL injection into processes from other sessions
+   * Decreased memory and CPU usage
+   * Added a glossary to Help
+   * Configurable elevation prompts
+   * Better Windows 7 user interface support
+   * Exception reporting from within Process Hacker
+   * Slimmer thread call stack window
+ * FIXED:
+   * #2820170 - "System.ArgumentOutOfRangeException in network list"
+   * #2845427 - "Indicator integer overflow"
+   * #2847691 - "Apply button bug"
+   * #2849052 - "not defined by current visual style"
+   * #2863305 - "Unhandled exception in comparer"
+   * Critical KProcessHacker denial-of-service security issues
+   * Crashes within the process tree model
+   * Incorrect menu items for System threads
+   * Crash when viewing error details in the event 
+     of a corrupt configuration file
+   * Notification icons were fixed at 16x16 size
+   * Sort order for the relative start time column
+   * Incorrect process priority class display
+   * Commit and Physical Memory History icon colors
+   * Packed file detection, PE reader
+   * Performance history buffer problems
+ * REMOVED:
+   * Messages in the main window's status bar
+
+1.5
+ * NEW/IMPROVED:
+   * #2831605 - "Add handle count by type to process properties handle tab"
+   * #2836706 - "Signature Column in Processes"
+   * Improved kernel modules list
+   * Detects custom kernels
+   * Performance improvements
+   * KTM resource manager information
+ * FIXED:
+   * Windows XP BSODs
+   * Incorrect drive letter resolving for file handles
+   * Linked token display on x64
+
+1.4
+ * NEW/IMPROVED:
+   * Full support for Windows 7 SP0
+   * Basic support for Windows 64-bit
+   * Ability to unload drivers
+   * Handle names for Kernel Transaction Manager (KTM) objects
+   * Ability to save details for processes
+   * Improved handle granted access display
+   * Improved process window exit status display
+   * Improved user prompts
+   * Ability to open key handles in regedit
+   * Thread list is more responsive
+   * Process exit notification (in the process window) is now instant
+   * Improved control tab indicies
+   * Small performance improvements
+ * FIXED:
+   * #2821437 - "Windows 7 PsTerminateProcess crash"
+   * #2834578 - "Unable to replace Task Manager with Process Hacker error"
+   * Properties menu item for handles was disabled most of the time
+   * Handle names could not be viewed properly without KPH and 
+     on systems without the VC++ 9 runtime
+   * Minor KPH pool leak
+   * Annoying popup when Process Hacker replaces Task Manager on 
+     Windows 7
+   * No symbols for protected processes
+
+1.3.9.0
+ * NEW/IMPROVED:
+   * #2812814 - "Auto-scroll option should be remembered"
+   * Kernel-mode stack traces
+   * POSIX process support, including command lines and 
+     highlighting
+   * Hidden processes scanner can now detect FUTo
+   * Highlighting for .NET and relocated DLLs
+   * Ability to terminate system threads
+   * Ability to force terminate threads
+   * Ability to create services
+   * Ability to set DEP status of processes in other sessions
+   * Ability to unload modules of processes in other sessions
+   * Ability to dump memory to a file
+   * Process window manipulation
+   * Process heap information
+   * Paged and non-paged pool limit display
+   * Terminator test: TP1a (TP1, alternative method)
+   * Terminator test: TT1a (TT1, alternative method)
+   * Terminator test: TT4 (dangerous thread termination)
+   * Better file object names without KProcessHacker
+   * Better IP address resolving
+   * CPU, I/O and memory indicators
+   * Child windows float by default
+   * dbghelp is now set up automatically when Process Hacker is 
+     run the first time
+   * Thread wait analysis now detects NtQueryObject hangs and 
+     named pipe connections
+   * Automatic tree text coloring, allowing for dark highlighting 
+     colors
+   * Small performance improvements
+ * FIXED:
+   * #2811733 - "System.NullReferenceException"
+   * Broken system thread start addresses due to sign-extending 
+     instead of zero-extending pointers
+   * Broken Ctrl+A for memory, results, and PE lists
+   * Removed several annoying thread-related warnings
+   * Network connections now display process IDs
+   * Ctrl+C in the log window
+   * Window location problem when hiding and restoring the window
+   * ObjectDisposedExceptions when closing search options windows
+   * "Inject DLL" menu item enabling problem
+   * InvalidCastException when attempting to close handles in 
+     the handle filter window
+
+1.3.8.5
+ * NEW/IMPROVED:
+   * Full support for Windows Vista SP2
+   * Users/sessions list
+   * Window process finder
+   * Thread wait analysis - right-click a thread and choose 
+     Analyze > Wait to see what a thread is hanging on
+   * Added ability to create dump files for processes
+   * Added ability to detach processes from debuggers
+   * Added "scroll down process tree on startup" option
+   * Notification icon process list is now sorted
+   * Lists are dramatically faster (especially the handle list)
+   * Detailed handle properties
+   * Event objects can now be modified - set, clear, pulse, reset
+   * Event pair objects can now be modified - set high, set low
+   * Semaphore objects can now be modified - acquire, release
+   * Statistics for token objects
+   * Token object names now include their session LUIDs
+   * Added Shift+Del for Terminate Process Tree
+ * FIXED:
+   * #2795871 - "Hidden Processes window resizing problem"
+   * #2800710 - "System.ObjectDisposedException"
+   * Windows 7 RC BSOD (Windows 7 Beta is no longer supported) at
+     startup; support is STILL EXPERIMENTAL
+   * Memory search addresses being in decimal
+   * Disabling "Warn about dangerous actions" now disables all 
+     process-related prompts
+   * Terminator window would be hidden if the main window was top-most
+   * Using the keyboard (Up/Down/Left/Right) in the process list was fixed
+   * Potential BSOD with KphReadVirtualMemory and KphWriteVirtualMemory 
+     due to incorrect address probing
+   * Get Function Address window would return incorrect hex addresses
+
+1.3.8.0
+ * NEW/IMPROVED:
+   * KProcessHacker can now perform process memory reading/writing 
+     by itself and does not require MmCopyVirtualMemory
+   * KProcessHacker can now bypass all handle-opening protections
+   * Experimental process protection feature
+   * Ability to set handle flags such as protect-from-close and inherit
+   * Better highlighting
+   * Terminator test: TD1 (debugs a process and closes the debug object)
+   * Terminator test: TT3 (TT1 is now completely user-mode)
+   * Shows function file and line numbers where available
+   * Icon updating is now done on the shared thread to avoid the GUI 
+     blocking when explorer.exe is suspended or is hanging
+ * FIXED:
+   * #2785648 - "cursor down crashes PH"
+   * #2790404 - "System.InvalidOperationException"
+   * Incomplete or inaccurate thread call stacks
+   * Windows 7 BSOD
+   * Crash upon executing terminator test M1
+   * Unexpected actions being performed when a key was pressed in 
+     the memory and handle lists
+   * Changed I/O tray icon tooltip from ROW to RWO
+   * Corrupted usernames
+   * .NET processes getting recognized as packed
+   * Start times like "20 centuries ago"
+   * Unable to change service configurations
+   * "Access denied" when changing DEP status or unloading a module 
+     on Windows XP
+
+1.3.7.5
+ * NEW/IMPROVED:
+   * #2780260 - "add <Enter> key to open Proc Properties"
+   * #2780277 - "add <ENTER> to shortcut list for default action"
+   * #2781625 - "System Idle Process should not have network connections"
+   * #2784954 - "Ctrl+F find DLLs and not just Handles"
+   * Customizable tray icons - CPU History, CPU Usage, I/O History, 
+     Commit History and Physical Memory History
+   * Base Priority, Start Time, and CPU Time columns
+   * "Terminate Process Tree"
+   * Can close TCP connections
+   * Process tree loads instantly
+   * Process properties (appears to) loads faster
+   * Decreased CPU usage
+   * Significantly less memory usage, especially when opening 
+     process properties
+   * Thread termination now prompts
+   * Implemented Esc to close windows
+   * Cycles, Page Priority and I/O Priority in process statistics
+   * Integrity, I/O priority and page priority columns
+   * Windows are protected from being offscreen when they load
+   * Process property window locations are now saved
+   * The main window dimensions are saved when exiting minimized
+   * Enabled Reduce Working Set for multiple processes at a time
+   * Hides Process Hacker network connections by default
+ * FIXED:
+   * #2782808 - "Exception generated when CPU History is set to first column."
+   * #2784922 - "Hidden processes window: window location not remembered"
+   * #2784924 - "Network connections: process's icon not shown"
+   * Unhandled exception when process properties is closed within 100ms of 
+     being opened
+   * Handle filter took a while to start up
+   * Forgot to add sorting for Private WS, Shared WS and Shareable WS
+   * dbghelp warnings were not being shown the first time process 
+     properties opened
+   * Random file-object-related BSODs
+   * Increased PID limit in Hidden Processes to 65536
+   * Inaccurate I/O Total rates when using a refresh interval other than 
+     1000ms
+   * Incorrect thread start addresses
+
+1.3.7.1
+ * NEW:
+   * "-nokph" command line switch to disable KProcessHacker
+ * FIXED:
+   * #2779558 - "TreeViewAdv font cannot be initialized"
+   * KProcessHacker BSOD on some Vista systems
+   * Minor issue where new handle providers in the process window would 
+     not be added to the shared thread provider
+
+1.3.7.0
+ * NEW/IMPROVED:
+   * Terminating processes and threads now bypasses all but the most 
+     advanced anti-termination methods
+   * Better hidden processes scanner (similar to Blacklight's and IceSword's) 
+     which can now detect both Hacker Defender and FU.
+   * Basic support for Windows 7 in Process Hacker and KProcessHacker
+   * Proper symbol support with dbghelp.dll
+   * Private, Shared and Shareable Working Set columns
+   * Improved handle viewing with KProcessHacker - more object types are visible, 
+     including ALPC Ports and protected process handles
+   * Stack viewing uses KProcessHacker on Windows Vista
+   * Handle highlighting
+   * Lists now have column sorting priority
+   * Memory list is much faster
+   * Better thread start addresses, especially on Windows XP
+   * Job termination
+   * Elevation button in Options now spawns a child options window instead of 
+     restarting Process Hacker elevated
+   * Can open process properties from the handle list
+   * Better "could not initialize configuration" message for Windows Vista
+   * New Terminator method: assigns a job object to the process and terminates it
+   * Process Properties menu item in the handle filter window
+   * Can now close multiple handles at once from the handle filter window
+ * FIXED:
+   * Service properties Key handle leak
+   * Handle deletion detection
+   * Unhandled exceptions when viewing performance/statistics for a non-existent process
+   * Network connections for processes without icons would not be displayed
+   * Virtualization menu item visible on Windows XP
+   * When processes are terminated they are deselected (to provide feedback to the user)
+   * When Native API calls failed they would pass through the exception handling 
+     code unchecked, causing random crashes (rarely)
+ * REMOVED:
+   * Useless Window menu items (PITA + causes memory leaks due to Microsoft's poor 
+     implementation of MenuItem)
+   * Registers from the thread window
+
+1.3.6.5
+ * NEW/IMPROVED:
+   * #2702907 - "CSR Processes: Enable termination of multiple processes"
+   * #2702909 - "CSR Processes: Show process name when confirming termination"
+   * #2702911 - "Show process name when terminating process in properties"
+   * #2702929 - "Add a Cancel button in Options"
+   * #2713088 - "Network: Ctrl+A and Ctrl+C should copy the processes' names"
+   * #2714130 - "Option to disable/enable all highlighting colors"
+   * Job information
+   * "Inject DLL" function
+   * Statistics times in System Information and process properties
+   * Highlighting system
+   * Configurable max. samples and plotter step size
+   * Network list with icons
+   * Can close multiple handles at once
+   * Less memory usage
+   * Confirmation dialogs are now consistent and use new Vista interfaces where possible
+   * KProcessHacker now retrieves thread start addresses
+   * KProcessHacker now performs memory manipulation (allowing the command lines of more 
+     processes to be displayed)
+   * KProcessHacker now performs process suspending/resuming on Windows Vista
+   * Custom module information querying; can now display the modules for protected processes
+   * Displays service DLL paths
+   * Thread list displays cycles instead of context switches on Windows Vista
+   * GUI threads are highlighted (with KProcessHacker)
+   * Suspended and GUI thread highlighting can be configured
+   * Special tooltip information for dllhost.exe (shows COM target)
+ * FIXED:
+   * #2642442 - "System Information label text gets clipped"
+   * #2694437 - "Crash when sorting the process list"
+   * #2713087 - "Processes: Copy should copy only the columns currently used"
+   * #2716815 - "PH crashes during EnumProcesses"
+   * Network connections would be readded if their state changed
+   * Integer overflows in the process provider and system statistics
+   * Memory leaks with various windows
+   * Crash when saving with the I/O or CPU History column visible
+   * Inconsistent Copy menu after columns are modified
+   * Crash when F5 (Refresh) is held down
+   * Resizable statusbar
+   * Module unloading now works properly
+ * REMOVED:
+   * Disassembler - not used very often
+
+1.3.6.1
+ * NEW:
+   * CPU and I/O history columns
+   * System Cache value in System Information
+ * FIXED:
+   * #2625167 - "Commit charge limit should not be 16EB"
+   * #2642385 - "Maximum File Cache size should not be 16EB"
+   * Minimize size of the System Information window
+   * Settings were lost between versions
+   * Handle and memory leaks
+   * Integer overflows in System Information
+
+1.3.6.0
+ * NEW:
+   * #2596473 - "Add "Save Processes""
+   * #2596481 - "Add option for one instance of Process Hacker"
+   * #2601397 - "Ability to sort by name, type etc to all of the windows"
+   * #2605155 - "CSR Processes: Add Save Processes"
+   * #2625192 - "Log: Add clear log"
+   * #2625193 - "Add warning before shutting down, or restarting pc etc."
+   * #2647235 - "Update Log even when it’s open"
+   * #2647387 - "Add descriptions to Memory Editor's buttons"
+   * #2647418 - "Add ctrl+A and ctrl+C to threads, token, modules etc"
+   * #2647422 - "Suggest filename in Memory Editor->Data->Save"
+   * #2647435 - "Add descriptions to Memory search results window"
+   * #2657138 - "Add a toolbar"
+   * #2657143 - "Add Changelog in Help menu"
+   * #2675859 - "Log: auto-scroll option"
+   * #2675864 - "System Information improvements"
+   * #2675871 - "Suggest file extension everywhere"
+   * Full CPU, I/O and memory usage history for processes and the OS
+   * Tooltips for graphs
+   * Modules tab shows mapped files
+   * "Reduce Working Set" function
+   * Can change virtualization for processes
+   * Customizable columns for the process list/tree
+   * All lists now have Ctrl+A and Ctrl+C support
+   * Vista-style lists
+   * Changing service settings under a limited account now prompts for 
+     elevation instead of giving an Access Denied error
+   * Run As now works under a limited account and prompts for elevation
+   * Shows environment variables
+   * Unicode string memory scanning
+   * Better Terminate Process confirmation dialog
+ * FIXED:
+   * #2602541 - "Bug with 'Hide When Minimized' enabled -svn635"
+   * Replace Task Manager works correctly when Start hidden is enabled
+   * csc.exe launching
+   * Black border bug when restoring from minimized state
+   * Nulls at the ends of handle names
+   * Errors when changing service settings
+   * Slow closing of various windows
+   * "Hide when minimized" is better
+   * Opened process properties when a plus/minus was double-clicked
+   * Redrawing of the process tree when the window is activated/deactivated
+   * Double-escaping in the Run As tool
+   * Priority getting/setting under limited accounts
+   * Run As tool sets new environment variables for the child process
+   * .NET processes are sometimes labelled as packed
+   * KProcessHacker BSOD
+
+1.3.5.0
+ * NEW:
+   * #2596502 - "Add access keys"
+   * #2596509 - "Double click on mutant-->Open properties window"
+   * #2596512 - "General tab window goes in the background"
+   * #2600995 - "Improvements to Help file"
+   * #2602538 - "Move some options to new window"
+   * #2602553 - "Add access key for Help"
+   * #2602606 - "Display a warning when running on 64bit WIN"
+   * #2605000 - "Add descriptions to some buttons"
+   * #2605133 - "Add access key to Log"
+   * #2605140 - "Save Log-->Suggest Log.txt"
+   * #2605146 - "When you open Log, the entries shouldn't be selected"
+   * #2605148 - "CSR Processes: Add select all and/or ctrl+A"
+   * #2605158 - "Log: Add Copy to clipboard and ctrl+A"
+   * #2605167 - "Add "Hide When Closed" option"
+   * #2608710 - "Notifications menu improvements"
+   * #2608801 - "Add Shutdown options"
+   * #2609039 - "Use thousands separator"
+   * #2613838 - "Add process' icon before process' name in process' window"
+   * #2615707 - "Improvements to Log"
+   * #2617637 - "Help file improvements No2"
+   * #2617691 - "Add option to replace task manager with Process Hacker"
+   * #2628961 - "Add ctrl+A in Services and Network window"
+   * #2628967 - "Add ctrl+C in Processes, Services and Network window"
+   * #2642505 - "Make some columns' size bigger"
+   * KProcessHacker is now enabled by default
+   * KProcessHacker now supports multiple clients at one time
+   * Process termination now uses KProcessHacker
+   * Process Hacker can now use KProcessHacker under a limited user account if it is 
+     loaded, giving it full admin-like permissions to processes
+   * Process Hacker no longer requires UAC elevation - instead, there are two extra 
+     menu items, "Run As Administrator..." and "Show Details for All Processes". It 
+     also automatically prompts for elevation for specific tasks.
+   * "Run" function
+   * "Restart" function
+   * "Set Token" function for Windows XP
+   * "Verify File Signature" function
+   * "Re-analyze" function
+   * Around 50% reduction in CPU usage
+   * Specific highlighting can be enabled/disabled
+   * CSR Processes tool - displays hidden processes (this does not detect Hacker 
+     Defender but does detect simple kernel-mode rootkits)
+   * Processes list in the notification icon menu, for quick actions on processes
+   * Options window has a detailed description for each setting
+   * Process window has descriptions for each field
+   * File processing (signature verification, checks for packed images) is now 
+     asynchronous. This means that there are no more delays when starting 
+     certain programs.
+   * Notification icon looks better and shows both user and kernel time
+   * GDI and USER handle counts
+   * Terminator's TT2 test is more effective now
+ * FIXED:
+   * Bug #2553406 - "COMException: Class not registered"
+   * Bug #2601383 - "Threads' column's width is not remembered."
+   * Bug #2612242 - "CPU usage > 100%"
+   * Bug #2615591 - "Bug with Show one graph per cpu?"
+   * Limited user account weirdness
+   * No longer deletes the KProcessHacker service if it's already started
+   * Memory searching now uses KProcessHacker if possible
+   * Incorrect labeling of process files which can't be read (due to permissions) 
+     as packed
+   * Insane memory usage on Windows XP
+   * Now uses the proper method of detecting .NET processes
+   * System Information now runs on a separate thread
+   * Disables "Show one graph per CPU" in System Information if there is only one CPU
+   * Process tree weirdness for users with limited privileges
+   * CPU usage is now correctly displayed in graphs - K+U are not overlayed anymore
+   * "Require signatures for" names are now forced to be lower-case
+   * "Hide handles with no name" is now unique to each process window - 
+     changing it in one window does not affect others
+   * Dialog/input boxes are now more consistent
+   * Very old bug where the refresh interval isn't applied at startup
+   * Displays-2-more-processes-than-actual-number bug
+   * System Information screwing up when the user tries to open it when it's 
+     already open
+   * "a hour" -> "an hour", "yesterday ago" -> "a day ago"
+   * Handle leaks in the process window, thread window, handle list and process updater
+   * GDI+ handle leaks in the icon menu
+   * PH window is permanently offscreen if it is hidden when minimized
+   * Process colors not being refreshed when items are removed
+
+1.3.2.0
+ * NEW:
+   * Network tab - shows current network connections
+   * KProcessHacker - an experimental kernel-mode driver for Process Hacker which 
+     finally enables Process Hacker to display all file handles without freezing
+   * Can protect and unprotect processes (Vista's DRM protection)
+   * System Information menu item in the tray icon menu
+   * Hide when minimized option
+   * Now resolves device names into drive letters - e.g. "\Device\Harddisk1\FileName" into 
+     "C:\FileName".
+   * Properly verifies system components instead of just checking file permissions
+   * Configurable dangerous-process-names highlighting
+   * Added protection against PEB file name spoofing
+   * Customizable fonts
+   * Command line switch: -m to hide Process Hacker
+   * Nice relative times - "2 seconds ago", "14 minutes and 33 seconds ago", etc.
+   * Displays service descriptions, dependencies, and dependents
+   * Offers to reset settings if they are corrupt
+ * FIXED:
+   * Bug #2527154 - "Process Hacker crashes on Win XP"
+   * Small UI enabling/disabling fixes
+   * Now the process tree and service list update instantly after 
+     starting Process Hacker instead of waiting
+   * Random "Generic GDI+ Error" exceptions
+   * Small performance improvements
+   * Now shows proper command lines of programs where they contain null characters
+   * Handle filter actually works now
+   * Relative RunDLL targets
+   * Handle leaks with threads
+
+1.3.1.0
+ * NEW:
+   * "Free" and "Decommit" actions for memory regions
+   * "Description" column for processes
+   * Current Directory for processes automatically updates
+   * Can now display the file names of DRM-protected 
+     processes (like audiodg.exe)
+   * Now displays thread information under the thread list
+   * Module file name info for thread start addresses 
+     and stack traces
+   * Highlighting for .NET processes and packed executables
+   * Shows CPU usage and physical memory usage in the status bar
+   * "Reload Struct Definitions" menu item
+   * Struct Searcher - displays addresses which match the specified 
+     struct definition
+   * Ability to unload remote modules (by remote thread 
+     injection)
+   * New float and double types for structs
+   * Special tooltip info for rundll32.exe
+   * Verifies file signatures (and detects Windows components by 
+     checking the files' owners and ACLs)
+   * Highlights processes which have invalid signatures or are 
+     pretending to be system processes
+   * Better method for suspending/resuming processes
+ * FIXED:
+   * System information window resizing
+   * "Overflow error" exceptions
+   * Problems with the search button
+   * Process properties for DPCs and Interrupts
+   * Disabled expanding of processes when double-clicking 
+     them
+   * Now shows non-existent parent PIDs
+   * build-and-clean script is now XP compatible
+   * Redrawing problems with the lists in the process window
+
+1.3.0.0
+ * NEW:
+   * Process tree using TreeViewAdv
+   * Process properties window with statistics and graphs
+   * System Information Window with statistics and graphs
+   * Detailed token information, including source, owner and primary group
+   * Information about remote handles to events, mutants, sections and tokens
+   * Terminator tool - tries many techniques to terminate processes
+   * Highlighting for UAC elevated processes and processes in job objects
+   * Struct reader for examining PEBs and TEBs - note that this can be 
+     extended by writing your own definitions
+   * Better tray icon - displays a graph, and the tooltip contains the current 
+     CPU usage and the process using most of the CPU
+ * FIXED:
+   * Shows SIDs without names (like Logon IDs) in SDDL format
+   * Uses PROCESS_QUERY_LIMITED_INFORMATION on Windows Vista - e.g. on audiodg.exe
+   * Symbols are now bound to each process - no more weird stack traces/symbols
+   * Handle filtering is now much faster - uses a cache for session ID checking
+
+1.2.6.5
+ * A new member of the project - Dean
+ * Can view thread usernames, groups and privileges
+ * The handle filter window is now faster
+ * Added thread start addresses in thread list
+ * The process list now has less CPU usage
+ * Fixed some processes not having icons
+
+1.2.6.0
+ * Fixed the fix for the huge regression - the cause was a double "free" of the same handle
+ * Added Assistant - can start processes as any user, including SYSTEM, 
+   LOCAL SERVICE and NETWORK SERVICE. Injector's create process item is 
+   now deprecated.
+ * Fixed service handle leaks which caused service deletions to be 
+   undetected.
+ * Fixed service list in process tooltips when new own-process services are started and when 
+   shared-process services are stopped.
+
+1.2.5.1
+ * Fixed huge regression caused by revision #250 in Win32.ProcessHandle.~ProcessHandle()
+
+1.2.5.0
+ * Fixed wrong usernames when Process Hacker is running as a non-admin user
+ * Gets command line of processes without using Injector
+ * Added highlighting for debugged processes
+ * Added viewing/setting of process affinity
+ * Fixed all handle leaks
+ * Added I/O counters to misc. info
+ * Added CPU usage column
+ * Fixed services in tooltips
+ * Added highlighting for processes with services
+ * System and System Idle Processes now have usernames (hardcoded in)
+ * Handle finder now only searches in processes with same session ID (faster, 
+   avoids hangs)
+ * Fixed window activation when showing Process Hacker from the tray icon
+ * Fixed highlighting
+ * Fixed various memory corruption issues
+
+1.2.3.5
+ * Added handle viewing/closing support
+ * Fixed random crashes
+ * Doesn't update threads/handles unless viewing them
+ * Fixed most handle leaks
+ * Fixed randomly changing process usernames
+ * Added WaitReason column in thread list
+ * Highlights suspended threads in thread list
+ * Only require highestAvailable elevation for UAC
+
+1.2.3.0
+ * Fixed incorrect messages about "new services" (actually fixed this time)
+ * Fixed Injector - now uses MinGW instead of Visual C++
+ * "Create Process..." feature of Injector works on XP now
+ * Added StartType column in services list
+
+1.2.2.5
+ * Now shows function parameters in call stack
+ * Added Injector
+ * Added "Get Symbol Name From Address..." and "Find SYSTEM processes with same Session ID"
+ * Services list now displays a blank space when there is no PID
+ * Fixed services with own process and interactive type
+ * Fixed random crashes with the process list and services list
+ * Added copyright information (to comply with VistaMenu and SplitButton licensing)
+ * Now displays user names of most processes using the Terminal Server APIs
+ * Fixed incorrect messages about "new services"
+ * Added tray icon
+
+1.2.1.5
+ * Fixed disassemblies from PE window - they disassemble the right function now
+ * Fixed UI inconsistencies
+ * Allow Toolhelp module listings
+ * Updated help
+ * Fixed service start/stop buttons in service window
+
+1.2.1.0
+ * Can now display services
+ * Displays services in process tooltips
+
+1.2.0.5
+ * Updated credits
+ * Fixed crash when opening two thread inspectors with the same process and thread
+ * Disassembler window can now display backward short jumps (>0x7fffffff)
+ * Now unloads symbols for all other EXEs before opening the thread inspector
+ * Improvements in symbol loading
+
+1.2.0.0
+ * Added PE Inspector (can read exe/dll/sys files and their properties)
+ * Added "Search Online" menu item
+ * Added highlighting of processes and threads
+ * Added "Always on Top" menu item
+ * Added status bar messages and log
+ * Added "Go to Parent" menu item
+ * Removed "Close Active Window" menu item - practically same as "Terminate Process"
+ * Added disassembler
+ * Added Thread Inspector - shows call stack of threads
+
+1.1.5.0
+ * Fixed memory leak with process icons
+ * Removed useless starting "\" in account names
+ * Fixed group menu item enabling and disabling
+ * Added filtering of search results
+
+1.1.4.5
+ * Fixed crash when attempting to open privileges for System on XP
+ * Added Groups Window (to view process groups)
+ * Fixed Search window startup position
+
+1.1.4.0
+ * Enabled Select All for all lists on the main window
+ * Added Privileges Window (to enable, disable and remove privileges)
+ * Fixed error messages - they now have the correct Win32 error descriptions
+
+1.1.3.5
+ * Now saves column settings
+ * Now saves results and memory window settings
+ * Now saves selected tab
+
+1.1.3.0
+ * Completely rewrote thread list code
+ * Can now display kernel threads on Vista
+ * Disables thread priority menu item when there is an error
+ * Now displays process 0 as System Idle Process
+ * Fixed thread list for System Idle Process
+ * Now displays description for System
+ * Now has a good system of copying list items (currently in every ListView)
+
+1.1.2.0
+ * Completely rewrote process list code
+ * Added lots of information to process tooltips
+
+1.1.1.0
+ * Memory editor is now properly activated from the Hacker Window
+ * Fixed obscure bug where the process list disables itself
+ * Added my email address
+ * Added CONTEXT code
+ * Now bolds the kernel name when the System process is selected
+ * Fixed opening Memory Editor from Results Window
+ * Changed Search button to a SplitButton
+ * Added username column
+ * Now shows process description and filename in tooltip
+ * Added more "options"
+ * Added keyboard shortcuts for terminating process(es) (Del) and refreshing (F5)
+ * Added some menu items - Select All and Refresh
+
+1.1.0.5
+ * Upgraded messageboxes when performing operations on processes and threads to OKCancel
+ * Fixed checking for dangerous PIDs on XP
+ * Fixed getting icons for certain processes on XP
+ * Fixed crashes when attempting to read from invalid memory locations
+ * Fixed crash when opening help window after closing it
+ * Fixed default menu item text drawing
+
+1.1.0.0
+ * Fixed certain programs' modules not having a description
+ * Major refactoring in code
+ * Moved memory editor panel into its own form
+ * Moved search into its own form
+ * Merged string scanning and heap scanning into the Search form
+ * Removed debug programs option
+ * Now has proper main menu
+ * Search results window is now on its own thread
+ * Search results list now uses VirtualMode - huge speed increase
+ * Added "prevent overlapping results" option
+ * Made memory editor windows spawn in separate threads
+ * Removed all Application.DoEvents() calls
+ * Fixed cursor problems
+ * Now displays busy cursor on startup
+ * Intersect menu is now sorted
+ * Fixed form focusing
+ * Added Window menu items in all forms
+
+1.0.1.0
+ * Fixed occasional "Object not set to an instance of object" error
+ * Added link to SourceForge project page
+ * Fixed FlatStyle inconsistencies
+ * Fixed "invalid characters in path name" problem on Windows X

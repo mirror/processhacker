@@ -1,0 +1,1010 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EEEA1778-1702-4964-8793-A98FE37E4D2B}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ProcessHacker</RootNamespace>
+    <AssemblyName>ProcessHacker</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>ProcessHacker.ico</ApplicationIcon>
+    <StartupObject>ProcessHacker.Program</StartupObject>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Components\Be.Windows.Forms.HexBox\ByteCollection.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\DataBlock.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\DataMap.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\Design\HexFontEditor.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\DynamicByteProvider.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\DynamicFileByteProvider.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\FileByteProvider.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\FileDataBlock.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\HexBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Be.Windows.Forms.HexBox\IByteProvider.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\MemoryDataBlock.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\NativeMethods.cs" />
+    <Compile Include="Forms\HelpWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HelpWindow.Designer.cs">
+      <DependentUpon>HelpWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HackerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HackerWindow.Designer.cs">
+      <DependentUpon>HackerWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program\Program.cs" />
+    <Compile Include="Forms\PromptBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PromptBox.Designer.cs">
+      <DependentUpon>PromptBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\HackerWindow.resx">
+      <DependentUpon>HackerWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Components\Be.Windows.Forms.HexBox\HexBox.snk" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Components\VistaMenu\OwnerDrawnMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\VistaMenu\VistaMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Components\Be.Windows.Forms.HexBox\HexBox.bmp" />
+    <EmbeddedResource Include="Components\Be.Windows.Forms.HexBox\HexBox.resx">
+      <DependentUpon>HexBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\ColorModifier.resx">
+      <DependentUpon>ColorModifier.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\EventPairProperties.resx">
+      <DependentUpon>EventPairProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\EventProperties.resx">
+      <DependentUpon>EventProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\Indicator.resx">
+      <DependentUpon>Indicator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\JobProperties.resx">
+      <DependentUpon>JobProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\MutantProperties.resx">
+      <DependentUpon>MutantProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\NetworkList.resx">
+      <DependentUpon>NetworkList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\FileNameBox.resx">
+      <DependentUpon>FileNameBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\MemoryList.resx">
+      <DependentUpon>MemoryList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\ModuleList.resx">
+      <DependentUpon>ModuleList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\HandleList.resx">
+      <DependentUpon>HandleList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\Plotter.resx">
+      <DependentUpon>Plotter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\ProcessStatistics.resx">
+      <DependentUpon>ProcessStatistics.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\SectionProperties.resx">
+      <DependentUpon>SectionProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\SemaphoreProperties.resx">
+      <DependentUpon>SemaphoreProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\ServiceList.resx">
+      <DependentUpon>ServiceList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\ServiceProperties.resx">
+      <DependentUpon>ServiceProperties.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\StructViewer.resx">
+      <DependentUpon>StructViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\ThreadList.resx">
+      <DependentUpon>ThreadList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\ProcessTree\ProcessTree.resx">
+      <DependentUpon>ProcessTree.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\TimerProperties.resx">
+      <DependentUpon>TimerProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\TmRmProperties.resx">
+      <DependentUpon>TmRmProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\TmTmProperties.resx">
+      <DependentUpon>TmTmProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\TokenGroupsList.resx">
+      <DependentUpon>TokenGroupsList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\TokenProperties.resx">
+      <DependentUpon>TokenProperties.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\UtilitiesButton.resx">
+      <DependentUpon>UtilitiesButton.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\VerticleProgressBar.resx">
+      <DependentUpon>VerticleProgressBar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\VistaSearchBox.resx">
+      <DependentUpon>VistaSearchBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AboutWindow.resx">
+      <DependentUpon>AboutWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ChooseColumnsWindow.resx">
+      <DependentUpon>ChooseColumnsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ComboBoxPickerWindow.resx">
+      <DependentUpon>ComboBoxPickerWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CreateServiceWindow.resx">
+      <DependentUpon>CreateServiceWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HandleStatisticsWindow.resx">
+      <DependentUpon>HandleStatisticsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HeapsWindow.resx">
+      <DependentUpon>HeapsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HiddenProcessesWindow.resx">
+      <DependentUpon>HiddenProcessesWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditDEPWindow.resx">
+      <DependentUpon>EditDEPWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetProcAddressWindow.resx">
+      <DependentUpon>GetProcAddressWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\IPInfoWindow.resx">
+      <DependentUpon>IPInfoWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\JobWindow.resx">
+      <DependentUpon>JobWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ListPickerWindow.resx">
+      <DependentUpon>ListPickerWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ListWindow.resx">
+      <DependentUpon>ListWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LogWindow.resx">
+      <DependentUpon>LogWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MessageBoxWindow.resx">
+      <DependentUpon>MessageBoxWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MiniSysInfo.resx">
+      <DependentUpon>MiniSysInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProcessPickerWindow.resx">
+      <DependentUpon>ProcessPickerWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProcessWindow.resx">
+      <DependentUpon>ProcessWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProtectProcessWindow.resx">
+      <DependentUpon>ProtectProcessWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ScratchpadWindow.resx">
+      <DependentUpon>ScratchpadWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SessionInformationWindow.resx">
+      <DependentUpon>SessionInformationWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\StructWindow.resx">
+      <DependentUpon>StructWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SysInfoWindow.resx">
+      <DependentUpon>SysInfoWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TerminatorWindow.resx">
+      <DependentUpon>TerminatorWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TokenWindow.resx">
+      <DependentUpon>TokenWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProcessAffinity.resx">
+      <DependentUpon>ProcessAffinity.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ErrorDialog.resx">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HandleFilterWindow.resx">
+      <DependentUpon>HandleFilterWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HelpWindow.resx">
+      <DependentUpon>HelpWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MemoryEditor.resx">
+      <DependentUpon>MemoryEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OptionsWindow.resx">
+      <DependentUpon>OptionsWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InformationBox.resx">
+      <DependentUpon>InformationBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PEWindow.resx">
+      <DependentUpon>PEWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PromptBox.resx">
+      <DependentUpon>PromptBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ResultsWindow.resx">
+      <DependentUpon>ResultsWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RunWindow.resx">
+      <DependentUpon>RunWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SearchWindow.resx">
+      <DependentUpon>SearchWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ServiceWindow.resx">
+      <DependentUpon>ServiceWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ThreadWindow.resx">
+      <DependentUpon>ThreadWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\VirtualProtectWindow.resx">
+      <DependentUpon>VirtualProtectWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\VirusTotalUploaderWindow.resx">
+      <DependentUpon>VirusTotalUploaderWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Help.htm">
+      <SubType>Form</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UpdaterDownloadWindow.resx">
+      <DependentUpon>UpdaterDownloadWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NetInfoWindow.resx">
+      <DependentUpon>NetInfoWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WaitChainWindow.resx">
+      <DependentUpon>WaitChainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Resources\information.png" />
+    <None Include="Resources\page_save.png" />
+    <None Include="Resources\arrow_up.png" />
+    <None Include="Resources\page_gear.png" />
+    <None Include="app.config" />
+    <None Include="Resources\folder_explore.png" />
+    <None Include="Resources\pencil_go.png" />
+    <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Components\RestartRecoveryLib\RestartRecoveryManager.cs" />
+    <Compile Include="Components\RestartRecoveryLib\RestartRecoveryInterop.cs" />
+    <Compile Include="Components\RestartRecoveryLib\RecoveryData.cs" />
+    <Compile Include="Components\RestartRecoveryLib\RecoverySettings.cs" />
+    <Compile Include="Components\RestartRecoveryLib\RestartSettings.cs" />
+    <Compile Include="Components\EventPairProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\EventPairProperties.Designer.cs">
+      <DependentUpon>EventPairProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\EventProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\EventProperties.Designer.cs">
+      <DependentUpon>EventProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ExtendedListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Indicator.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\Indicator.Designer.cs">
+      <DependentUpon>Indicator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\MutantProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MutantProperties.Designer.cs">
+      <DependentUpon>MutantProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ProcessStatistics.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ProcessStatistics.Designer.cs">
+      <DependentUpon>ProcessStatistics.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SectionProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\SectionProperties.Designer.cs">
+      <DependentUpon>SectionProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SemaphoreProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\SemaphoreProperties.Designer.cs">
+      <DependentUpon>SemaphoreProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TargetWindowButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\TaskbarLib\Interop\COMTypes.cs" />
+    <Compile Include="Components\TaskbarLib\Interop\Interop.cs" />
+    <Compile Include="Components\TaskbarLib\JumpLists\JumpListImpl.cs" />
+    <Compile Include="Components\TaskbarLib\JumpLists\JumpListManager.cs" />
+    <Compile Include="Components\TaskbarLib\ThumbnailButtons\ThumbButton.cs" />
+    <Compile Include="Components\TaskbarLib\ThumbnailButtons\ThumbButtonManager.cs" />
+    <Compile Include="Components\TaskbarLib\Windows7Taskbar.cs" />
+    <Compile Include="Components\TimerProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\TimerProperties.Designer.cs">
+      <DependentUpon>TimerProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TmRmProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\TmRmProperties.Designer.cs">
+      <DependentUpon>TmRmProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TmTmProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\TmTmProperties.Designer.cs">
+      <DependentUpon>TmTmProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\VistaSearchBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\VistaSearchBox.designer.cs">
+      <DependentUpon>VistaSearchBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ExtendedTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\CreateServiceWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CreateServiceWindow.Designer.cs">
+      <DependentUpon>CreateServiceWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HandleStatisticsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HandleStatisticsWindow.Designer.cs">
+      <DependentUpon>HandleStatisticsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HeapsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HeapsWindow.Designer.cs">
+      <DependentUpon>HeapsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\IPInfoWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\IPInfoWindow.Designer.cs">
+      <DependentUpon>IPInfoWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\JobWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\JobWindow.Designer.cs">
+      <DependentUpon>JobWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MessageBoxWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MessageBoxWindow.Designer.cs">
+      <DependentUpon>MessageBoxWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProtectProcessWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProtectProcessWindow.Designer.cs">
+      <DependentUpon>ProtectProcessWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ScratchpadWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ScratchpadWindow.Designer.cs">
+      <DependentUpon>ScratchpadWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SessionInformationWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SessionInformationWindow.Designer.cs">
+      <DependentUpon>SessionInformationWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\VirusTotalUploaderWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\VirusTotalUploaderWindow.Designer.cs">
+      <DependentUpon>VirusTotalUploaderWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NetInfoWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NetInfoWindow.Designer.cs">
+      <DependentUpon>NetInfoWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program\Settings.cs" />
+    <Compile Include="Program\Updater.cs" />
+    <Compile Include="Forms\UpdaterDownloadWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UpdaterDownloadWindow.Designer.cs">
+      <DependentUpon>UpdaterDownloadWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Actions\ElevationLevel.cs" />
+    <Compile Include="UI\Actions\SessionActions.cs" />
+    <Compile Include="UI\GenericViewMenu.cs" />
+    <Compile Include="UI\Icons\CommitHistoryIcon.cs" />
+    <Compile Include="UI\Icons\PhysMemHistoryIcon.cs" />
+    <Compile Include="UI\Icons\CpuUsageIcon.cs" />
+    <Compile Include="UI\Icons\UsageIcon.cs" />
+    <Compile Include="UI\Icons\IoHistoryIcon.cs" />
+    <Compile Include="UI\Icons\CpuHistoryIcon.cs" />
+    <Compile Include="UI\Icons\ProviderIcon.cs" />
+    <Compile Include="Program\ThemingScope.cs" />
+    <Compile Include="UI\Actions\ServiceActions.cs" />
+    <Compile Include="Components\ColorModifier.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ColorModifier.Designer.cs">
+      <DependentUpon>ColorModifier.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\JobProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\JobProperties.Designer.cs">
+      <DependentUpon>JobProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\NetworkList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\NetworkList.Designer.cs">
+      <DependentUpon>NetworkList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\FileNameBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\FileNameBox.Designer.cs">
+      <DependentUpon>FileNameBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\MemoryList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MemoryList.Designer.cs">
+      <DependentUpon>MemoryList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ModuleList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ModuleList.Designer.cs">
+      <DependentUpon>ModuleList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\HandleList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\HandleList.Designer.cs">
+      <DependentUpon>HandleList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\NodePlotter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\ProcessTree\ProcessToolTipProvider.cs" />
+    <Compile Include="Components\ProcessTree\ProcessNode.cs" />
+    <Compile Include="Components\ProcessTree\ProcessTreeModel.cs" />
+    <Compile Include="Components\ServiceList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ServiceList.Designer.cs">
+      <DependentUpon>ServiceList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Plotter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\Plotter.Designer.cs">
+      <DependentUpon>Plotter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ServiceProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ServiceProperties.Designer.cs">
+      <DependentUpon>ServiceProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\StructViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\StructViewer.Designer.cs">
+      <DependentUpon>StructViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TaskDialog\ActiveTaskDialog.cs" />
+    <Compile Include="Components\TaskDialog\TaskDialog.cs" />
+    <Compile Include="Components\TaskDialog\TaskDialogCommonDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\TaskDialog\TaskDialogNotificationArgs.cs" />
+    <Compile Include="Components\TaskDialog\UnsafeNativeMethods.cs" />
+    <Compile Include="Components\ThreadList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ThreadList.Designer.cs">
+      <DependentUpon>ThreadList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ProcessTree\ProcessTree.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ProcessTree\ProcessTree.Designer.cs">
+      <DependentUpon>ProcessTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TokenGroupsList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\TokenGroupsList.Designer.cs">
+      <DependentUpon>TokenGroupsList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TokenProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\TokenProperties.Designer.cs">
+      <DependentUpon>TokenProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\VerticleProgressBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\VerticleProgressBar.Designer.cs">
+      <DependentUpon>VerticleProgressBar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program\ExtendedCmd.cs" />
+    <Compile Include="UI\Async\AsyncUtils.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\Async\HandleFilter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\ChooseColumnsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChooseColumnsWindow.Designer.cs">
+      <DependentUpon>ChooseColumnsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ComboBoxPickerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ComboBoxPickerWindow.Designer.cs">
+      <DependentUpon>ComboBoxPickerWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HiddenProcessesWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HiddenProcessesWindow.Designer.cs">
+      <DependentUpon>HiddenProcessesWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EditDEPWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditDEPWindow.Designer.cs">
+      <DependentUpon>EditDEPWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GetProcAddressWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GetProcAddressWindow.Designer.cs">
+      <DependentUpon>GetProcAddressWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ListPickerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ListPickerWindow.Designer.cs">
+      <DependentUpon>ListPickerWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ListWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ListWindow.Designer.cs">
+      <DependentUpon>ListWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LogWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LogWindow.Designer.cs">
+      <DependentUpon>LogWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MiniSysInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MiniSysInfo.Designer.cs">
+      <DependentUpon>MiniSysInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProcessPickerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProcessPickerWindow.Designer.cs">
+      <DependentUpon>ProcessPickerWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProcessWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProcessWindow.Designer.cs">
+      <DependentUpon>ProcessWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\StructWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\StructWindow.Designer.cs">
+      <DependentUpon>StructWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SysInfoWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SysInfoWindow.Designer.cs">
+      <DependentUpon>SysInfoWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TerminatorWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TerminatorWindow.Designer.cs">
+      <DependentUpon>TerminatorWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TokenWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TokenWindow.Designer.cs">
+      <DependentUpon>TokenWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProcessAffinity.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProcessAffinity.Designer.cs">
+      <DependentUpon>ProcessAffinity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ErrorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ErrorDialog.Designer.cs">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HandleFilterWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HandleFilterWindow.Designer.cs">
+      <DependentUpon>HandleFilterWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\PEWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PEWindow.Designer.cs">
+      <DependentUpon>PEWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\RunWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RunWindow.Designer.cs">
+      <DependentUpon>RunWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ServiceWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ServiceWindow.Designer.cs">
+      <DependentUpon>ServiceWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\VirtualProtectWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\VirtualProtectWindow.Designer.cs">
+      <DependentUpon>VirtualProtectWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WindowFromHandle.cs" />
+    <Compile Include="UI\HighlightedListViewItem.cs" />
+    <Compile Include="UI\ColumnSettings.cs" />
+    <Compile Include="Providers\Internal\IProvider.cs" />
+    <Compile Include="Providers\Internal\SharedThreadProvider.cs" />
+    <Compile Include="SharpDevelop\NDebugger.cs" />
+    <Compile Include="SharpDevelop\MTA2STA.cs" />
+    <Compile Include="SharpDevelop\Wrappers\CorPub\Autogenerated\CorPublishClass.cs" />
+    <Compile Include="SharpDevelop\Wrappers\CorPub\Autogenerated\CorpubPublish.cs" />
+    <Compile Include="SharpDevelop\Wrappers\CorPub\Autogenerated\ICorPublish.cs" />
+    <Compile Include="SharpDevelop\Wrappers\CorPub\Autogenerated\ICorPublishAppDomain.cs" />
+    <Compile Include="SharpDevelop\Wrappers\CorPub\Autogenerated\ICorPublishAppDomainEnum.cs" />
+    <Compile Include="SharpDevelop\Wrappers\CorPub\Autogenerated\ICorPublishEnum.cs" />
+    <Compile Include="SharpDevelop\Wrappers\CorPub\Autogenerated\ICorPublishProcess.cs" />
+    <Compile Include="SharpDevelop\Wrappers\CorPub\Autogenerated\ICorPublishProcessEnum.cs" />
+    <Compile Include="SharpDevelop\Wrappers\CorPub\ICorPublish.cs" />
+    <Compile Include="SharpDevelop\Wrappers\CorPub\ICorPublishProcess.cs" />
+    <Compile Include="SharpDevelop\Wrappers\NativeMethods.cs" />
+    <Compile Include="SharpDevelop\Wrappers\ResourceManager.cs" />
+    <Compile Include="SharpDevelop\Wrappers\Util.cs" />
+    <Compile Include="UI\Actions\ProcessActions.cs" />
+    <Compile Include="Symbols\SymbolProviderExtensions.cs" />
+    <Compile Include="UI\Icons\PlotterIcon.cs" />
+    <Compile Include="Providers\NetworkProvider.cs" />
+    <Compile Include="Providers\ProcessSystemProvider.cs" />
+    <Compile Include="Providers\MemoryProvider.cs" />
+    <Compile Include="Providers\ModuleProvider.cs" />
+    <Compile Include="Providers\HandleProvider.cs" />
+    <Compile Include="Providers\ServiceProvider.cs" />
+    <Compile Include="Providers\ThreadProvider.cs" />
+    <Compile Include="Components\SplitButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\UtilitiesButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\UtilitiesButton.Designer.cs">
+      <DependentUpon>UtilitiesButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MemoryEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MemoryEditor.Designer.cs">
+      <DependentUpon>MemoryEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ResultsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ResultsWindow.Designer.cs">
+      <DependentUpon>ResultsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SearchWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SearchWindow.Designer.cs">
+      <DependentUpon>SearchWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ThreadWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ThreadWindow.Designer.cs">
+      <DependentUpon>ThreadWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Common\PhUtils.cs" />
+    <Compile Include="Providers\Internal\Provider.cs" />
+    <Compile Include="Program\Save.cs" />
+    <Compile Include="Searchers\StructSearcher.cs" />
+    <Compile Include="Searchers\HeapSearcher.cs" />
+    <Compile Include="Searchers\RegexSearcher.cs" />
+    <Compile Include="Searchers\StringSearcher.cs" />
+    <Compile Include="Searchers\SearchOptions.cs" />
+    <Compile Include="Searchers\LiteralSearcher.cs" />
+    <Compile Include="Searchers\Searcher.cs" />
+    <Compile Include="Forms\AboutWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AboutWindow.Designer.cs">
+      <DependentUpon>AboutWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\OptionsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\OptionsWindow.Designer.cs">
+      <DependentUpon>OptionsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\InformationBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InformationBox.Designer.cs">
+      <DependentUpon>InformationBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Structs\ProcessMemoryIO.cs" />
+    <Compile Include="Structs\FieldValue.cs" />
+    <Compile Include="Structs\FieldType.cs" />
+    <Compile Include="Structs\IStructIOProvider.cs" />
+    <Compile Include="Structs\StructField.cs" />
+    <Compile Include="Structs\StructDef.cs" />
+    <Compile Include="Structs\StructParser.cs" />
+    <Compile Include="Forms\WaitChainWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WaitChainWindow.Designer.cs">
+      <DependentUpon>WaitChainWindow.cs</DependentUpon>
+    </Compile>
+    <None Include="app.manifest" />
+    <None Include="Resources\control_stop_blue.png" />
+    <None Include="Resources\control_play_blue.png" />
+    <None Include="Resources\control_pause_blue.png" />
+    <None Include="Resources\control_equalizer_blue.png" />
+    <None Include="Resources\control_equalizer.png" />
+    <None Include="Resources\find.png" />
+    <None Include="Resources\page.png" />
+    <None Include="Resources\lock_edit.png" />
+    <None Include="Resources\application_view_detail.png" />
+    <None Include="Resources\page_copy.png" />
+    <None Include="Resources\cross.png" />
+    <None Include="Resources\page_edit.png" />
+    <None Include="Resources\arrow_right.png" />
+    <None Include="Resources\application_delete.png" />
+    <None Include="Resources\control_play.png" />
+    <None Include="Resources\control_pause.png" />
+    <None Include="Resources\control_stop.png" />
+    <None Include="Resources\application.png" />
+    <None Include="Resources\help.png" />
+    <None Include="Resources\application_form_magnify.png" />
+    <None Include="Resources\door_out.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow_refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pencil.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\disk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_relationship.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Process_small.ico" />
+    <None Include="Icons\Process.ico" />
+    <Content Include="base.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\mouse.png" />
+    <None Include="Resources\application_go.png" />
+    <None Include="Resources\sflogo.png" />
+    <None Include="Resources\lock.png" />
+    <None Include="Resources\VirusTotal-logo.png" />
+    <None Include="Resources\active_search.png" />
+    <None Include="Resources\inactive_search.png" />
+    <None Include="Resources\money.png" />
+    <Content Include="SharpDevelop\LICENSE.txt" />
+    <Content Include="ProcessHacker.ico" />
+    <None Include="Resources\bricks.png" />
+    <None Include="Resources\report.png" />
+    <None Include="Resources\chart_curve.png" />
+    <None Include="Resources\chart_line.png" />
+    <None Include="Resources\lightbulb_off.png" />
+    <Content Include="structs.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\cog_edit.png" />
+    <None Include="Resources\folder_go.png" />
+    <None Include="Resources\report_user.png" />
+    <None Include="Resources\asterisk_orange.png" />
+    <None Include="Resources\cog.png" />
+    <None Include="Resources\page_white_text.png" />
+    <None Include="Resources\table_sort.png" />
+    <None Include="Resources\user.png" />
+    <None Include="Resources\group.png" />
+    <None Include="Resources\delete.png" />
+    <None Include="Resources\tick.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ProcessHacker.Common\ProcessHacker.Common.csproj">
+      <Project>{8E10F5E8-D4FA-4980-BB23-2EDD134AC15E}</Project>
+      <Name>ProcessHacker.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProcessHacker.Native\ProcessHacker.Native.csproj">
+      <Project>{8A448157-E1A7-4DDF-954E-287F1117832B}</Project>
+      <Name>ProcessHacker.Native</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TreeViewAdv\Aga.Controls.csproj">
+      <Project>{E73BB233-D88B-44A7-A98F-D71EE158381D}</Project>
+      <Name>Aga.Controls</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName)==Release "$(SolutionDir)\ProcessHacker\Build\release.cmd" "$(SolutionDir)\ProcessHacker\$(OutDir)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

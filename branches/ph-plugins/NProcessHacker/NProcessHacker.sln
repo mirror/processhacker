@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NProcessHacker", "NProcessHacker.vcproj", "{52426135-4597-4988-B5BC-BE8E93489A53}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcproj", "{A910A5C9-9BCA-47BA-AFAD-92698E512DED}"
+	ProjectSection(ProjectDependencies) = postProject
+		{52426135-4597-4988-B5BC-BE8E93489A53} = {52426135-4597-4988-B5BC-BE8E93489A53}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NProcessHackerHook", "NProcessHackerHook\NProcessHackerHook.vcproj", "{DC2D13B6-4BD1-4AC8-933F-DDB0DE850162}"
+	ProjectSection(ProjectDependencies) = postProject
+		{52426135-4597-4988-B5BC-BE8E93489A53} = {52426135-4597-4988-B5BC-BE8E93489A53}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|Win64 = Debug|Win64
+		Release|Win32 = Release|Win32
+		Release|Win64 = Release|Win64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{52426135-4597-4988-B5BC-BE8E93489A53}.Debug|Win32.ActiveCfg = Debug|x64
+		{52426135-4597-4988-B5BC-BE8E93489A53}.Debug|Win32.Build.0 = Debug|x64
+		{52426135-4597-4988-B5BC-BE8E93489A53}.Debug|Win64.ActiveCfg = Debug|x64
+		{52426135-4597-4988-B5BC-BE8E93489A53}.Debug|Win64.Build.0 = Debug|x64
+		{52426135-4597-4988-B5BC-BE8E93489A53}.Release|Win32.ActiveCfg = Release|Win32
+		{52426135-4597-4988-B5BC-BE8E93489A53}.Release|Win32.Build.0 = Release|Win32
+		{52426135-4597-4988-B5BC-BE8E93489A53}.Release|Win64.ActiveCfg = Release|x64
+		{52426135-4597-4988-B5BC-BE8E93489A53}.Release|Win64.Build.0 = Release|x64
+		{A910A5C9-9BCA-47BA-AFAD-92698E512DED}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A910A5C9-9BCA-47BA-AFAD-92698E512DED}.Debug|Win32.Build.0 = Debug|Win32
+		{A910A5C9-9BCA-47BA-AFAD-92698E512DED}.Debug|Win64.ActiveCfg = Debug|x64
+		{A910A5C9-9BCA-47BA-AFAD-92698E512DED}.Debug|Win64.Build.0 = Debug|x64
+		{A910A5C9-9BCA-47BA-AFAD-92698E512DED}.Release|Win32.ActiveCfg = Release|Win32
+		{A910A5C9-9BCA-47BA-AFAD-92698E512DED}.Release|Win32.Build.0 = Release|Win32
+		{A910A5C9-9BCA-47BA-AFAD-92698E512DED}.Release|Win64.ActiveCfg = Release|x64
+		{A910A5C9-9BCA-47BA-AFAD-92698E512DED}.Release|Win64.Build.0 = Release|x64
+		{DC2D13B6-4BD1-4AC8-933F-DDB0DE850162}.Debug|Win32.ActiveCfg = Debug|x64
+		{DC2D13B6-4BD1-4AC8-933F-DDB0DE850162}.Debug|Win32.Build.0 = Debug|x64
+		{DC2D13B6-4BD1-4AC8-933F-DDB0DE850162}.Debug|Win64.ActiveCfg = Debug|x64
+		{DC2D13B6-4BD1-4AC8-933F-DDB0DE850162}.Debug|Win64.Build.0 = Debug|x64
+		{DC2D13B6-4BD1-4AC8-933F-DDB0DE850162}.Release|Win32.ActiveCfg = Release|Win32
+		{DC2D13B6-4BD1-4AC8-933F-DDB0DE850162}.Release|Win32.Build.0 = Release|Win32
+		{DC2D13B6-4BD1-4AC8-933F-DDB0DE850162}.Release|Win64.ActiveCfg = Release|x64
+		{DC2D13B6-4BD1-4AC8-933F-DDB0DE850162}.Release|Win64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

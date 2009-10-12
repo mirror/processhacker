@@ -1,0 +1,1 @@
+ngen.exe install ..\bin\Release\ProcessHacker.exe
