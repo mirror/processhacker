@@ -62,14 +62,12 @@ namespace ProcessHackerRestartRecovery
             );
 
         [DllImport("kernel32.dll")]
-        [PreserveSig]
         internal static extern HResult ApplicationRecoveryInProgress(
             [Out, MarshalAs(UnmanagedType.Bool)] 
             out bool canceled
             );
 
         [DllImport("kernel32.dll")]
-        [PreserveSig]
         internal static extern HResult GetApplicationRecoveryCallback(
             IntPtr processHandle,
             [Out] RecoveryCallback recoveryCallback,
@@ -79,7 +77,6 @@ namespace ProcessHackerRestartRecovery
             );
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        [PreserveSig]
         internal static extern HResult RegisterApplicationRecoveryCallback(
             InternalRecoveryCallback callback, IntPtr param,
             uint pingInterval,
@@ -88,15 +85,13 @@ namespace ProcessHackerRestartRecovery
 
 
         [DllImport("kernel32.dll")]
-        [PreserveSig]
         internal static extern HResult RegisterApplicationRestart(
-            [MarshalAs(UnmanagedType.BStr)] 
+            [MarshalAs(UnmanagedType.LPWStr)] 
             string commandLineArgs,
             RestartRestrictions flags
             );
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        [PreserveSig]
         internal static extern HResult GetApplicationRestartSettings(
             IntPtr process,
             IntPtr commandLine,
@@ -105,11 +100,9 @@ namespace ProcessHackerRestartRecovery
             );
 
         [DllImport("kernel32.dll")]
-        [PreserveSig]
         internal static extern HResult UnregisterApplicationRecoveryCallback();
 
         [DllImport("kernel32.dll")]
-        [PreserveSig]
         internal static extern HResult UnregisterApplicationRestart();
 
         #endregion
