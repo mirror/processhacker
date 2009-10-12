@@ -2997,6 +2997,14 @@ namespace ProcessHacker
             //serviceP.Dispose();
             //networkP.Dispose();
 
+            // Notify all plugins of shutdown.
+            try
+            {
+                Program.AppInstance.OnShutdown();
+            }
+            catch
+            { }
+
             this.ExecuteOnIcons((icon) => icon.Visible = false);
             this.ExecuteOnIcons((icon) => icon.Dispose());
             SaveSettings();

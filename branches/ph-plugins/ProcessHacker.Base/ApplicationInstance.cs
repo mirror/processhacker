@@ -47,6 +47,12 @@ namespace ProcessHacker.Base
             }
         }
 
+        public void OnShutdown()
+        {
+            foreach (var plugin in _plugins.Values)
+                plugin.OnUnload();
+        }
+
         public void RemovePlugin(PluginBase plugin)
         {
             if (!_plugins.ContainsKey(plugin.Name))
