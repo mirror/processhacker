@@ -26,8 +26,7 @@ IF NOT EXIST %ILMergePath% (FOR %%a IN (ILMerge.exe) DO IF %%~$PATH:a' NEQ ' (
 	SET ILMergePath="%%~$PATH:a") ELSE (SET "N_=T"
 		ECHO:ILMerge IS NOT INSTALLED!!!&&(GOTO CLEANUP)))
 
-SET RequiredDLLs="Aga.Controls.dll" "ProcessHacker.Common.dll"^
- "ProcessHacker.Native.dll"
+SET RequiredDLLs="Aga.Controls.dll"
 
 REM Create a temporary directory for the merged files
 MD tmp >NUL 2>&1

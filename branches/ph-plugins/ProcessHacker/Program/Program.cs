@@ -101,6 +101,7 @@ namespace ProcessHacker
             new System.Collections.Specialized.StringCollection();
         public static int InspectPid = -1;
         public static bool NoKph = false;
+        public static bool Recovered = false;
         public static string SelectTab = "Processes";
         public static bool StartHidden = false;
         public static bool StartVisible = false;
@@ -150,9 +151,10 @@ namespace ProcessHacker
                 return;
             }
 
-            if (pArgs.ContainsKey("-recovered")) //used for Windows Error Reporting recovery
+            if (pArgs.ContainsKey("-recovered")) // used for Windows Error Reporting recovery
             {
-                ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RecoverLastSession();
+                Recovered = true;
+                //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RecoverLastSession();
             }
 
             if (pArgs.ContainsKey("-elevate"))

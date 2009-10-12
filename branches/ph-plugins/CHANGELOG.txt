@@ -5,6 +5,7 @@ Process Hacker
    * #2817429 - "Add Port and IP Address columns to Network tab"
    * #2845829 - "System uptime"
    * #2853452 - "Find handles window: Minor usability improvements"
+   * KProcessHacker support for Windows Server 2003
    * Update system
    * Network tools: ping, traceroute and whois
    * Object security editor
