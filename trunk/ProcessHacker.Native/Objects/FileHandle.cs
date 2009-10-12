@@ -226,7 +226,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="shareMode">The share mode to use.</param>
         /// <param name="access">The desired access to the file.</param>
         public FileHandle(string fileName, FileShareMode shareMode, FileAccess access)
-            : this(fileName, shareMode, FileCreateOptions.NonDirectoryFile | FileCreateOptions.SynchronousIoNonAlert, access)
+            : this(fileName, shareMode, FileCreateOptions.NonDirectoryFile | FileCreateOptions.SynchronousIoNonAlert, access | (FileAccess)StandardRights.Synchronize)
         { }
 
         /// <summary>
