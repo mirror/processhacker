@@ -39,7 +39,7 @@ namespace ProcessHacker
         private const int LVS_Ex_DoubleBuffer = 0x00010000;                // Paints via double-buffering, which reduces flicker. also enables alpha-blended marquee selection.
 
         private const int LVN_First = -100;
-        private const int LVN_LINKCLICK = (LVM_First - 84);
+        private const int LVN_LINKCLICK = (LVN_First - 84);
 
         private delegate void CallBackSetGroupState(ListViewGroup lvGroup, ListViewGroupState lvState, string task);
         private delegate void CallbackSetGroupString(ListViewGroup lvGroup, string value);
@@ -101,13 +101,16 @@ namespace ProcessHacker
                 int gIndex = lvGroup.ListView.Groups.IndexOf(lvGroup);
                 LVGroup group = new LVGroup();
                 group.CbSize = Marshal.SizeOf(group);
-                group.Mask = ListViewGroupMask.Task 
+                group.Mask |= ListViewGroupMask.Task 
                     | ListViewGroupMask.State 
                     | ListViewGroupMask.Align;
 
+                IntPtr taskString = Marshal.StringToHGlobalAuto(task);
+
                 if (task.Length > 1)
                 {
-                    group.Task = task;
+                    group.Task = taskString;
+                    group.CchTask = task.Length;
                 }
 
                 group.GroupState = grpState;
@@ -123,6 +126,8 @@ namespace ProcessHacker
                     SendMessage(base.Handle, LVM_SetGroupInfo, gIndex, ref group);
                 }
                 lvGroup.ListView.Refresh();
+
+                Marshal.FreeHGlobal(taskString);
             }
         }
 
@@ -131,7 +136,7 @@ namespace ProcessHacker
             //notification for linkclick never reaches here?
             //http://msdn.microsoft.com/en-us/library/bb774851%28VS.85%29.aspx
 
-            //System.Diagnostics.Debug.WriteLine(m.ToString());
+            //
 
             //Filter out the WM_ERASEBKGND message and prevent any type of flickering
             if (m.Msg != 0x14)
@@ -148,6 +153,8 @@ namespace ProcessHacker
             {
                 case 0x1: /*WM_CREATE*/
                     {
+                        SubclassHWnd(base.Handle);
+             
                         HResult setThemeResult = Win32.SetWindowTheme(base.Handle, "explorer", null);
                         setThemeResult.ThrowIf();
 
@@ -156,14 +163,16 @@ namespace ProcessHacker
                             Win32.SendMessage(base.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
                         }
 
-                        SubclassHWnd(base.Handle);
-                        
                         break;
-                    }
-                case 0x0202: /*WM_LBUTTONUP*/
+                    }  
+                case 0x202:
+                case 0x205:
+                case 520:
+                case 0x203:
+                case 0x2a1:
                     {
                         base.DefWndProc(ref m);
-                        break;
+                        return;
                     }
             }
 
@@ -198,6 +207,9 @@ namespace ProcessHacker
         // this is the new wndproc, just show a messagebox on left button down:
         private int MyWndProc(IntPtr hWnd, int Msg, int wParam, int lParam)
         {
+            System.Diagnostics.Debug.WriteLine(Msg.ToString());
+
+
             switch (Msg)
             {
                 case 0x4e:
@@ -212,10 +224,8 @@ namespace ProcessHacker
                                 return 0;
                             }
                         }
-
                         break;
                     }
-
                 default:
                     break;
             }
@@ -241,8 +251,8 @@ namespace ProcessHacker
             /// <summary>
             /// Pointer to a null-terminated string that contains the header text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the header text.
             /// </summary>
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string pszHeader;
+            //[MarshalAs(UnmanagedType.LPWStr)]
+            public IntPtr pszHeader;
 
             /// <summary>
             /// Size in TCHARs of the buffer pointed to by the pszHeader member. If the structure is not receiving information about a group, this member is ignored.
@@ -252,8 +262,8 @@ namespace ProcessHacker
             /// <summary>
             /// Pointer to a null-terminated string that contains the footer text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the footer text.
             /// </summary>
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string pszFooter;
+            //[MarshalAs(UnmanagedType.LPWStr)]
+            public IntPtr pszFooter;
 
             /// <summary>
             /// Size in TCHARs of the buffer pointed to by the pszFooter member. If the structure is not receiving information about a group, this member is ignored.
@@ -283,8 +293,8 @@ namespace ProcessHacker
             /// <summary>
             /// Windows Vista. Pointer to a null-terminated string that contains the subtitle text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the subtitle text. This element is drawn under the header text.
             /// </summary>
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string PszSubtitle;
+            //[MarshalAs(UnmanagedType.LPWStr)]
+            public IntPtr PszSubtitle;
 
             /// <summary>
             /// Windows Vista. Size, in TCHARs, of the buffer pointed to by the pszSubtitle member. If the structure is not receiving information about a group, this member is ignored.
@@ -294,19 +304,19 @@ namespace ProcessHacker
             /// <summary>
             /// Windows Vista. Pointer to a null-terminated string that contains the text for a task link when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the task text. This item is drawn right-aligned opposite the header text. When clicked by the user, the task link generates an LVN_LINKCLICK notification.
             /// </summary>
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string Task;
+            //[MarshalAs(UnmanagedType.LPWStr)]
+            public IntPtr Task;
 
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszTask member. If the structure is not receiving information about a group, this member is ignored.
             /// </summary>
-            public uint CchTask;
+            public int CchTask;
 
             /// <summary>
             /// Windows Vista. Pointer to a null-terminated string that contains the top description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the top description text. This item is drawn opposite the title image when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
             /// </summary>
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string DescriptionTop;
+            //[MarshalAs(UnmanagedType.LPWStr)]
+            public IntPtr DescriptionTop;
 
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionTop member. If the structure is not receiving information about a group, this member is ignored.
@@ -316,8 +326,8 @@ namespace ProcessHacker
             /// <summary>
             /// Windows Vista. Pointer to a null-terminated string that contains the bottom description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the bottom description text. This item is drawn under the top description text when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
             /// </summary>
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string DescriptionBottom;
+            //[MarshalAs(UnmanagedType.LPWStr)]
+            public IntPtr DescriptionBottom;
 
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionBottom member. If the structure is not receiving information about a group, this member is ignored.
@@ -347,8 +357,8 @@ namespace ProcessHacker
             /// <summary>
             /// Windows Vista. NULL if group is not a subset. Pointer to a null-terminated string that contains the subset title text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the subset title text.
             /// </summary>
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string PszSubsetTitle;
+            //[MarshalAs(UnmanagedType.LPWStr)]
+            public IntPtr PszSubsetTitle;
 
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszSubsetTitle member. If the structure is not receiving information about a group, this member is ignored.
