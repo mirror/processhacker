@@ -163,16 +163,28 @@ namespace ProcessHacker.Native
                 {
                     // Attempt to load the driver, then try again.
                     ServiceHandle shandle;
+                    bool created = false;
 
-                    using (var scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
+                    try
                     {
-                        shandle = scm.CreateService(
-                            deviceName,
-                            deviceName,
-                            ServiceType.KernelDriver,
-                            fileName
-                            );
-                        shandle.Start();
+                        using (shandle = new ServiceHandle("KProcessHacker", ServiceAccess.Start))
+                        {
+                            shandle.Start();
+                        }
+                    }
+                    catch
+                    {
+                        using (var scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
+                        {
+                            shandle = scm.CreateService(
+                                deviceName,
+                                deviceName,
+                                ServiceType.KernelDriver,
+                                fileName
+                                );
+                            shandle.Start();
+                            created = true;
+                        }
                     }
 
                     try
@@ -185,8 +197,16 @@ namespace ProcessHacker.Native
                     }
                     finally
                     {
-                        // The SCM will delete the service when it is stopped.
-                        shandle.Delete();
+                        if (shandle != null)
+                        {
+                            if (created)
+                            {
+                                // The SCM will delete the service when it is stopped.
+                                shandle.Delete();
+                            }
+
+                            shandle.Dispose();
+                        }
                     }
                 }
                 else
