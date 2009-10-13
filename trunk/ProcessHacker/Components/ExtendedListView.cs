@@ -33,13 +33,26 @@ namespace ProcessHacker
 {
     public class ExtendedListView : ListView
     {
+        #region Messages
         private const int LVM_First = 0x1000;                              // ListView messages
         private const int LVM_SetGroupInfo = (LVM_First + 147);            // ListView messages Setinfo on Group
         private const int LVM_SetExtendedListViewStyle = (LVM_First + 54); // Sets extended styles in list-view controls. 
         private const int LVS_Ex_DoubleBuffer = 0x00010000;                // Paints via double-buffering, which reduces flicker. also enables alpha-blended marquee selection.
 
         private const int LVN_First = -100;
-        private const int LVN_LINKCLICK = (LVN_First - 84);
+        
+        private const int WM_KEYDOWN = 0x100;
+        private const int WM_KEYUP = 0x101;
+        private const int WM_MOUSEMOVE = 0x200;
+        private const int WM_LBUTTONDOWN = 0x201;
+        private const int WM_LBUTTONUP = 0x202;
+
+        private const int WM_CREATE = 0x1;
+        private const int WM_ERASEBKGND = 0x14;
+
+        public const int WM_NOTIFY = 0x4e;
+        public const int LVN_LINKCLICK = (LVN_First - 84);
+        #endregion
 
         private delegate void CallBackSetGroupState(ListViewGroup lvGroup, ListViewGroupState lvState, string task);
         private delegate void CallbackSetGroupString(ListViewGroup lvGroup, string value);
@@ -49,15 +62,8 @@ namespace ProcessHacker
 
         public ExtendedListView()
         {
-            //Activate double buffering and
-            //Enable the OnNotifyMessage event so we get a chance to filter out 
-            //Windows messages before they get to the form's WndProc
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.EnableNotifyMessage, true);
-        }
-
-        public void SetGroupState(ListViewGroupState state)
-        {
-            this.SetGroupState(state, null);
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
         }
 
         public void SetGroupState(ListViewGroupState state, string taskLabel)
@@ -130,107 +136,26 @@ namespace ProcessHacker
                 Marshal.FreeHGlobal(taskString);
             }
         }
-
-        protected override void OnNotifyMessage(Message m)
-        {
-            //notification for linkclick never reaches here?
-            //http://msdn.microsoft.com/en-us/library/bb774851%28VS.85%29.aspx
-
-            //
-
-            //Filter out the WM_ERASEBKGND message and prevent any type of flickering
-            if (m.Msg != 0x14)
-            {
-                base.OnNotifyMessage(m);
-            }
-        }
-
-        private const int WM_NOTIFY = 0x004E;
-
+   
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
             {
-                case 0x1: /*WM_CREATE*/
+                case WM_CREATE:
                     {
-                        SubclassHWnd(base.Handle);
-             
-                        HResult setThemeResult = Win32.SetWindowTheme(base.Handle, "explorer", null);
-                        setThemeResult.ThrowIf();
-
-                        unchecked
-                        {
-                            Win32.SendMessage(base.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
-                        }
-
+                        Win32.SetWindowTheme(base.Handle, "explorer", null);
+                        Win32.SendMessage(base.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
                         break;
-                    }  
-                case 0x202:
-                case 0x205:
-                case 520:
-                case 0x203:
-                case 0x2a1:
+                    }
+                case WM_LBUTTONUP:
+                case WM_NOTIFY:
                     {
                         base.DefWndProc(ref m);
-                        return;
-                    }
+                        break;
+                    }  
             }
 
             base.WndProc(ref m);
-        }
-
-        // Win32 API needed
-        [DllImport("user32")]
-        private static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, Win32WndProc newProc);
-        [DllImport("user32")]
-        private static extern int CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, int Msg, int wParam, int lParam);
-
-        // A delegate that matches Win32 WNDPROC:
-        private delegate int Win32WndProc(IntPtr hWnd, int Msg, int wParam, int lParam);
-
-        // from winuser.h:
-        private const int GWL_WNDPROC = -4;
-        private const int WM_LBUTTONDOWN = 0x0201;
-
-        // program variables
-        private IntPtr oldWndProc = IntPtr.Zero;
-        private Win32WndProc newWndProc = null;
-
-        void SubclassHWnd(IntPtr hWnd)
-        {
-            // hWnd is the window we want to subclass..., create a new delegate for the new wndproc
-            newWndProc = new Win32WndProc(MyWndProc);
-            // subclass
-            oldWndProc = SetWindowLong(hWnd, GWL_WNDPROC, newWndProc);
-        }
-
-        // this is the new wndproc, just show a messagebox on left button down:
-        private int MyWndProc(IntPtr hWnd, int Msg, int wParam, int lParam)
-        {
-            System.Diagnostics.Debug.WriteLine(Msg.ToString());
-
-
-            switch (Msg)
-            {
-                case 0x4e:
-                    {
-                        unsafe
-                        {
-                            NMHDR* hdr = (NMHDR*)lParam;
-
-                            if (hdr->code == LVN_LINKCLICK)
-                            {
-                                MessageBox.Show("Link clicked!");
-                                return 0;
-                            }
-                        }
-                        break;
-                    }
-                default:
-                    break;
-            }
-
-            return CallWindowProc(oldWndProc, hWnd, Msg, wParam, lParam);
         }
 
 
@@ -372,7 +297,7 @@ namespace ProcessHacker
         /// WM_NOTIFY notificaiton message header.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        private struct NMHDR
+        public struct NMHDR
         {
             /// <summary>
             /// Window handle to the control sending a message.
@@ -387,7 +312,6 @@ namespace ProcessHacker
             /// </summary>
             public int code;
         }
-
     }
 
     [Flags]
