@@ -44,6 +44,52 @@ namespace ProcessHacker.Native
         /// </summary>
         private static Dictionary<string, string> _fileNamePrefixes = new Dictionary<string, string>();
 
+        public static string FindFile(string basePath, string fileName)
+        {
+            string path;
+
+            if (basePath != null)
+            {
+                // Search the base path first.
+                if (System.IO.File.Exists(basePath + "\\" + fileName))
+                    return System.IO.Path.Combine(basePath, fileName);
+            }
+
+            path = Environment.GetEnvironmentVariable("Path");
+
+            string[] directories = path.Split(';');
+
+            foreach (var directory in directories)
+            {
+                if (System.IO.File.Exists(directory + "\\" + fileName))
+                    return System.IO.Path.Combine(directory, fileName);
+            }
+
+            return null;
+        }
+
+        public static string FindFileWin32(string fileName)
+        {
+            using (var data = new MemoryAlloc(0x400))
+            {
+                int retLength;
+                IntPtr filePart;
+
+                retLength = Win32.SearchPath(null, fileName, null, data.Size / 2, data, out filePart);
+
+                if (retLength * 2 > data.Size)
+                {
+                    data.Resize(retLength * 2);
+                    retLength = Win32.SearchPath(null, fileName, null, data.Size / 2, data, out filePart);
+                }
+
+                if (retLength == 0)
+                    return null;
+
+                return data.ReadUnicodeString(0, retLength);
+            }
+        }
+
         public static Icon GetFileIcon(string fileName)
         {
             return GetFileIcon(fileName, false);

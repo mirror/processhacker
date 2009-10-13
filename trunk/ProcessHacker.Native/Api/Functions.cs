@@ -158,6 +158,16 @@ namespace ProcessHacker.Native.Api
 
         #region Files
 
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int SearchPath(
+            [In] [Optional] string Path,
+            [In] string FileName,
+            [In] [Optional] string Extension,
+            [In] int BufferLength,
+            [In] IntPtr Buffer,
+            [Out] out IntPtr FilePart
+            );
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool GetFileInformationByHandleEx(
             [In] IntPtr FileHandle,

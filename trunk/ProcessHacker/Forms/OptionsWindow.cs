@@ -224,8 +224,6 @@ namespace ProcessHacker
 
         private void listHighlightingColors_DoubleClick(object sender, EventArgs e)
         {
-            listHighlightingColors.SelectedItems[0].Checked = !listHighlightingColors.SelectedItems[0].Checked;
-
             ColorDialog cd = new ColorDialog();
 
             cd.Color = listHighlightingColors.SelectedItems[0].BackColor;

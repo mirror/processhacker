@@ -56,11 +56,11 @@
             this.columnSectionCharacteristics = new System.Windows.Forms.ColumnHeader();
             this.tabExports = new System.Windows.Forms.TabPage();
             this.listExports = new System.Windows.Forms.ListView();
-            this.columnExportName = new System.Windows.Forms.ColumnHeader();
             this.columnExportOrdinal = new System.Windows.Forms.ColumnHeader();
+            this.columnExportName = new System.Windows.Forms.ColumnHeader();
             this.columnExportFileAddress = new System.Windows.Forms.ColumnHeader();
             this.tabImports = new System.Windows.Forms.TabPage();
-            this.listImports = new ProcessHacker.ExtendedListView();
+            this.listImports = new ProcessHacker.Components.ExtendedListView();
             this.columnImportName = new System.Windows.Forms.ColumnHeader();
             this.columnImportHint = new System.Windows.Forms.ColumnHeader();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
@@ -294,14 +294,14 @@
             this.listExports.DoubleClick += new System.EventHandler(this.listExports_DoubleClick);
             this.listExports.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listExports_RetrieveVirtualItem);
             // 
+            // columnExportOrdinal
+            // 
+            this.columnExportOrdinal.Text = "Ordinal";
+            // 
             // columnExportName
             // 
             this.columnExportName.Text = "Name";
             this.columnExportName.Width = 220;
-            // 
-            // columnExportOrdinal
-            // 
-            this.columnExportOrdinal.Text = "Ordinal";
             // 
             // columnExportFileAddress
             // 
@@ -325,6 +325,7 @@
             this.columnImportName,
             this.columnImportHint});
             this.listImports.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listImports.DoubleClickChecks = true;
             this.listImports.FullRowSelect = true;
             this.listImports.HideSelection = false;
             this.listImports.Location = new System.Drawing.Point(3, 3);
@@ -335,6 +336,7 @@
             this.listImports.TabIndex = 2;
             this.listImports.UseCompatibleStateImageBehavior = false;
             this.listImports.View = System.Windows.Forms.View.Details;
+            this.listImports.GroupLinkClicked += new ProcessHacker.Components.LinkClickedEventHandler(this.listImports_GroupLinkClicked);
             // 
             // columnImportName
             // 
@@ -404,7 +406,7 @@
         private System.Windows.Forms.ColumnHeader columnIDName;
         private System.Windows.Forms.ColumnHeader columnIDRVA;
         private System.Windows.Forms.ColumnHeader columnIDSize;
-        private ExtendedListView listImports;
+        private ProcessHacker.Components.ExtendedListView listImports;
         private System.Windows.Forms.ColumnHeader columnImportName;
         private System.Windows.Forms.ColumnHeader columnImportHint;
     }

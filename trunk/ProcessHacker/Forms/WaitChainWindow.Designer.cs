@@ -34,7 +34,7 @@
             this.buttonEndThread = new System.Windows.Forms.Button();
             this.moreInfoLink = new System.Windows.Forms.LinkLabel();
             this.buttonProperties = new System.Windows.Forms.Button();
-            this.threadTree = new VistaTreeView();
+            this.threadTree = new ProcessHacker.Components.VistaTreeView();
             this.SuspendLayout();
             // 
             // textDescription
@@ -149,6 +149,6 @@
         private System.Windows.Forms.Button buttonEndThread;
         private System.Windows.Forms.LinkLabel moreInfoLink;
         private System.Windows.Forms.Button buttonProperties;
-        private VistaTreeView threadTree;
+        private ProcessHacker.Components.VistaTreeView threadTree;
     }
 }

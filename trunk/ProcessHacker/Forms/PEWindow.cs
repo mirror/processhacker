@@ -24,10 +24,11 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ProcessHacker.Common;
-using ProcessHacker.UI;
+using ProcessHacker.Components;
 using ProcessHacker.Native;
-using ProcessHacker.Native.Image;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Image;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
@@ -116,6 +117,8 @@ namespace ProcessHacker
             listExports.AddShortcuts(this.listExports_RetrieveVirtualItem);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEExportsColumns, listExports);
 
+            listImports.SetDoubleBuffered(true);
+            listImports.SetTheme("explorer");
             listImports.ContextMenu = listImports.GetCopyMenu();
             listImports.AddShortcuts();
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEImportsColumns, listImports);
@@ -299,8 +302,8 @@ namespace ProcessHacker
                 }
             }
 
-            //we set Groupstate here else there are no groups to set state
-            listImports.SetGroupState(ListViewGroupState.Collapsed | ListViewGroupState.Collapsible, "Properties");
+            // We set GroupState here else there are no groups to set state.
+            listImports.SetGroupState(ListViewGroupState.Collapsible, "Properties");
 
             #endregion
         }
@@ -329,6 +332,35 @@ namespace ProcessHacker
             //    _exportVAs[_peFile.ExportData.ExportOrdinalTable[listExports.SelectedIndices[0]]], -1);
 
             //dw.Show();
+        }
+
+        private void listImports_GroupLinkClicked(object sender, ProcessHacker.Components.LinkClickedEventArgs e)
+        {
+            string fileName;
+
+            this.Cursor = Cursors.WaitCursor;
+
+            try
+            {
+                fileName = FileUtils.FindFile(System.IO.Path.GetDirectoryName(_path), e.Group.Header);
+
+                if (fileName != null)
+                {
+                    Program.GetPEWindow(fileName, (f) => Program.FocusWindow(f));
+                }
+                else
+                {
+                    PhUtils.ShowError("Unable to find the DLL.");
+                }
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to inspect the DLL", ex);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
         }
     }
 }

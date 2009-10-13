@@ -68,7 +68,7 @@
             this.label11 = new System.Windows.Forms.Label();
             this.buttonDisableAll = new System.Windows.Forms.Button();
             this.buttonEnableAll = new System.Windows.Forms.Button();
-            this.listHighlightingColors = new System.Windows.Forms.ListView();
+            this.listHighlightingColors = new ProcessHacker.Components.ExtendedListView();
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.textHighlightingDuration = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
@@ -651,6 +651,7 @@
             this.listHighlightingColors.CheckBoxes = true;
             this.listHighlightingColors.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnDescription});
+            this.listHighlightingColors.DoubleClickChecks = false;
             this.listHighlightingColors.FullRowSelect = true;
             this.listHighlightingColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.listHighlightingColors.HideSelection = false;
@@ -1173,7 +1174,7 @@
         private System.Windows.Forms.CheckBox checkEnableKPH;
         private System.Windows.Forms.CheckBox checkHideHandlesWithNoName;
         private System.Windows.Forms.CheckBox checkVerifySignatures;
-        private System.Windows.Forms.ListView listHighlightingColors;
+        private ProcessHacker.Components.ExtendedListView listHighlightingColors;
         private System.Windows.Forms.ColumnHeader columnDescription;
         private System.Windows.Forms.Button buttonChangeReplaceTaskManager;
         private System.Windows.Forms.CheckBox checkAllowOnlyOneInstance;

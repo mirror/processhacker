@@ -26,37 +26,40 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
-namespace ProcessHacker
+namespace ProcessHacker.Components
 {
     public delegate void LinkClickedEventHandler(object sender, LinkClickedEventArgs e);
 
     public sealed class LinkClickedEventArgs : EventArgs
     {
-        private int _groupIndex;
+        private ListViewGroup _group;
 
-        public LinkClickedEventArgs(int groupIndex)
+        public LinkClickedEventArgs(ListViewGroup group)
         {
-            _groupIndex = groupIndex;
+            _group = group;
         }
 
-        public int GroupIndex
+        public ListViewGroup Group
         {
-            get { return _groupIndex; }
+            get { return _group; }
         }
     }
 
     public class ExtendedListView : ListView
     {
         private const int LVM_First = 0x1000;                              // ListView messages
-        private const int LVM_SetGroupInfo = (LVM_First + 147);            // ListView messages Setinfo on Group
-        private const int LVM_SetExtendedListViewStyle = (LVM_First + 54); // Sets extended styles in list-view controls. 
-        private const int LVS_Ex_DoubleBuffer = 0x00010000;                // Paints via double-buffering, which reduces flicker. also enables alpha-blended marquee selection.
+        private const int LVM_SetGroupInfo = LVM_First + 147;            // ListView messages Setinfo on Group
+        private const int LVM_SetExtendedListViewStyle = LVM_First + 54; // Sets extended styles in list-view controls.
+        private const int LVM_HITTEST = LVM_First + 18;
 
         private const int LVN_First = -100;
         private const int LVN_LINKCLICK = (LVN_First - 84);
+
+        private const int NM_DBLCLK = -3;
 
         private delegate void CallBackSetGroupState(ListViewGroup lvGroup, ListViewGroupState lvState, string task);
         private delegate void CallbackSetGroupString(ListViewGroup lvGroup, string value);
@@ -66,20 +69,25 @@ namespace ProcessHacker
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref LVGroup lParam);
 
+        // http://blogs.msdn.com/hippietim/archive/2006/03/27/562256.aspx
+        private bool _doubleClickChecks = true;
+        private bool _doubleClickCheckHackActive = false;
+
         public ExtendedListView()
         {
             this.DoubleBuffered = true;
         }
 
-        protected override void Dispose(bool disposing)
+        public bool DoubleClickChecks
         {
-            base.Dispose(disposing);
+            get { return _doubleClickChecks; }
+            set { _doubleClickChecks = value; }
         }
 
-        private void OnGroupLinkClicked(int groupIndex)
+        private void OnGroupLinkClicked(ListViewGroup group)
         {
             if (this.GroupLinkClicked != null)
-                this.GroupLinkClicked(this, new LinkClickedEventArgs(groupIndex));
+                this.GroupLinkClicked(this, new LinkClickedEventArgs(group));
         }
 
         public void SetGroupState(ListViewGroupState state)
@@ -93,6 +101,17 @@ namespace ProcessHacker
             {
                 SetGrpState(lvg, state, taskLabel);
             }
+        }
+
+        private ListViewGroup FindGroup(int id)
+        {
+            foreach (ListViewGroup group in this.Groups)
+            {
+                if (GetGroupID(group).Value == id)
+                    return group;
+            }
+
+            return null;
         }
 
         private static int? GetGroupID(ListViewGroup lvGroup)
@@ -128,33 +147,40 @@ namespace ProcessHacker
                 int gIndex = lvGroup.ListView.Groups.IndexOf(lvGroup);
                 LVGroup group = new LVGroup();
                 group.CbSize = Marshal.SizeOf(group);
-                group.Mask |= ListViewGroupMask.Task 
-                    | ListViewGroupMask.State 
-                    | ListViewGroupMask.Align;
+                group.Mask =
+                    ListViewGroupMask.Task |
+                    ListViewGroupMask.State |
+                    ListViewGroupMask.Align;
 
                 IntPtr taskString = Marshal.StringToHGlobalAuto(task);
 
-                if (task.Length > 1)
+                try
                 {
-                    group.Task = taskString;
-                    group.CchTask = task.Length;
-                }
+                    if (task.Length > 1)
+                    {
+                        group.Task = taskString;
+                        group.CchTask = task.Length;
+                    }
 
-                group.GroupState = grpState;
-          
-                if (GrpId != null)
-                {
-                    group.GroupId = GrpId.Value;
-                    SendMessage(base.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
-                }
-                else
-                {
-                    group.GroupId = gIndex;
-                    SendMessage(base.Handle, LVM_SetGroupInfo, gIndex, ref group);
-                }
-                lvGroup.ListView.Refresh();
+                    group.GroupState = grpState;
 
-                Marshal.FreeHGlobal(taskString);
+                    if (GrpId != null)
+                    {
+                        group.GroupId = GrpId.Value;
+                        SendMessage(base.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
+                    }
+                    else
+                    {
+                        group.GroupId = gIndex;
+                        SendMessage(base.Handle, LVM_SetGroupInfo, gIndex, ref group);
+                    }
+
+                    lvGroup.ListView.Refresh();
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(taskString);
+                }
             }
         }
 
@@ -162,23 +188,17 @@ namespace ProcessHacker
         {
             switch (m.Msg)
             {
-                case 0x1: /*WM_CREATE*/
+                case LVM_HITTEST:
                     {
-                        HResult setThemeResult = Win32.SetWindowTheme(base.Handle, "explorer", null);
-                        setThemeResult.ThrowIf();
-                        Win32.SendMessage(base.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
+                        if (_doubleClickCheckHackActive)
+                        {
+                            m.Result = (-1).ToIntPtr();
+                            _doubleClickCheckHackActive = false;
 
-                        break;
-                    }  
-                case 0x202:
-                case 0x205:
-                case 520:
-                case 0x203:
-                case 0x2a1:
-                    {
-                        base.DefWndProc(ref m);
-                        return;
+                            return;
+                        }
                     }
+                    break;
 
                 case (int)WindowMessage.Reflect + (int)WindowMessage.Notify:
                     unsafe
@@ -189,9 +209,16 @@ namespace ProcessHacker
                         {
                             NMLVLINK link = (NMLVLINK)Marshal.PtrToStructure(m.LParam, typeof(NMLVLINK));
 
-                            this.OnGroupLinkClicked(link.SubItemIndex);
+                            this.OnGroupLinkClicked(this.FindGroup(link.SubItemIndex));
 
                             return;
+                        }
+                        else if (hdr->code == NM_DBLCLK)
+                        {
+                            if (!_doubleClickChecks && this.CheckBoxes)
+                            {
+                                _doubleClickCheckHackActive = true;
+                            }
                         }
                     }
                     break;
@@ -354,7 +381,7 @@ namespace ProcessHacker
             public int code;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct LITEM
         {
             public int Mask;

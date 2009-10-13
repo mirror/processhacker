@@ -21,29 +21,32 @@
  * 
  */
 
-using System.Runtime.InteropServices;
-using ProcessHacker.Native.Api;
-using ProcessHacker.Native;
 using System;
+using System.Runtime.InteropServices;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 
-public class VistaTreeView : System.Windows.Forms.TreeView
+namespace ProcessHacker.Components
 {
-    //http://www.danielmoth.com/Blog/2007/01/treeviewvista.html
-    //http://www.danielmoth.com/Blog/2006/12/tvsexautohscroll.html
-
-    private const int TV_FIRST = 0x1100;
-    private const int TVM_SETEXTENDEDSTYLE = TV_FIRST + 44;
-    private const int TVS_EX_AUTOHSCROLL = 0x0020; //autoscroll horizontaly
-    private const int TVS_EX_FADEINOUTEXPANDOS = 0x0040; //auto hide the +/- signs
-
-    protected override void OnHandleCreated(System.EventArgs e)
+    public class VistaTreeView : System.Windows.Forms.TreeView
     {
-        if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+        //http://www.danielmoth.com/Blog/2007/01/treeviewvista.html
+        //http://www.danielmoth.com/Blog/2006/12/tvsexautohscroll.html
+
+        private const int TV_FIRST = 0x1100;
+        private const int TVM_SETEXTENDEDSTYLE = TV_FIRST + 44;
+        private const int TVS_EX_AUTOHSCROLL = 0x0020; //autoscroll horizontaly
+        private const int TVS_EX_FADEINOUTEXPANDOS = 0x0040; //auto hide the +/- signs
+
+        protected override void OnHandleCreated(System.EventArgs e)
         {
-            Win32.SendMessage(this.Handle, (WindowMessage)TVM_SETEXTENDEDSTYLE, 0, TVS_EX_FADEINOUTEXPANDOS);
-            HResult setThemeResult = Win32.SetWindowTheme(this.Handle, "explorer", null);
-            setThemeResult.ThrowIf();
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+            {
+                Win32.SendMessage(this.Handle, (WindowMessage)TVM_SETEXTENDEDSTYLE, 0, TVS_EX_FADEINOUTEXPANDOS);
+                HResult setThemeResult = Win32.SetWindowTheme(this.Handle, "explorer", null);
+                setThemeResult.ThrowIf();
+            }
+            base.OnHandleCreated(e);
         }
-        base.OnHandleCreated(e);
     }
 }
