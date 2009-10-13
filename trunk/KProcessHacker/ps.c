@@ -1141,9 +1141,12 @@ NTSTATUS PsTerminateProcess(
         return STATUS_NOT_SUPPORTED;
     
 #ifdef _X86_
-    if (WindowsVersion == WINDOWS_XP)
+    if (
+        WindowsVersion == WINDOWS_XP || 
+        WindowsVersion == WINDOWS_SERVER_2003
+        )
     {
-        /* PspTerminateProcess on XP is stdcall. */
+        /* PspTerminateProcess on XP and Server 2003 is stdcall. */
         __asm
         {
             push    [ExitStatus]
@@ -1200,11 +1203,12 @@ NTSTATUS PspTerminateThreadByPointer(
             );
     }
     else if (
+        WindowsVersion == WINDOWS_SERVER_2003 || 
         WindowsVersion == WINDOWS_VISTA || 
         WindowsVersion == WINDOWS_7
         )
     {
-        return ((_PspTerminateThreadByPointer60)pspTerminateThreadByPointer)(
+        return ((_PspTerminateThreadByPointer52)pspTerminateThreadByPointer)(
             Thread,
             ExitStatus,
             Thread == PsGetCurrentThread()
