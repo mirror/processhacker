@@ -91,7 +91,7 @@ namespace ProcessHacker.Native.Objects
         public static FileHandle Create(
             FileAccess access,
             string fileName,
-            FileHandle rootDirectory,
+            NativeHandle rootDirectory,
             FileShareMode shareMode,
             FileCreationDisposition creationDisposition,
             FileCreateOptions createOptions
@@ -117,7 +117,7 @@ namespace ProcessHacker.Native.Objects
             FileAccess access,
             string fileName,
             ObjectFlags objectFlags,
-            FileHandle rootDirectory,
+            NativeHandle rootDirectory,
             FileShareMode shareMode,
             FileCreationDisposition creationDisposition,
             long allocationSize,
@@ -258,7 +258,7 @@ namespace ProcessHacker.Native.Objects
         public FileHandle(
             string fileName,
             ObjectFlags objectFlags,
-            FileHandle rootDirectory,
+            NativeHandle rootDirectory,
             FileShareMode shareMode,
             FileCreateOptions openOptions,
             FileAccess access
