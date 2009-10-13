@@ -90,7 +90,7 @@ namespace ProcessHacker.Native
             KphOpenThreadProcess,
             KphCaptureStackBackTraceThread,
             KphDangerousTerminateThread,
-            KphOpenDevice,
+            KphOpenType,
             KphOpenDriver,
             KphQueryInformationDriver,
             KphOpenDirectoryObject,
@@ -103,7 +103,8 @@ namespace ProcessHacker.Native
             SsAddThreadIdRule,
             SsAddPreviousModeRule,
             SsAddNumberRule,
-            SsEnableClientEntry
+            SsEnableClientEntry,
+            KphOpenNamedObject
         }
 
         [Flags]
@@ -463,19 +464,6 @@ namespace ProcessHacker.Native
             return *(int*)outData;
         }
 
-        public int KphOpenDevice(ObjectAttributes objectAttributes)
-        {
-            byte* inData = stackalloc byte[8];
-            int deviceHandle;
-
-            *(int*)inData = (int)&deviceHandle;
-            *(int*)(inData + 4) = (int)&objectAttributes;
-
-            _fileHandle.IoControl(CtlCode(Control.KphOpenDevice), inData, 8, null, 0);
-
-            return deviceHandle;
-        }
-
         public int KphOpenDirectoryObject(DirectoryAccess access, ObjectAttributes objectAttributes)
         {
             byte* inData = stackalloc byte[0xc];
@@ -501,6 +489,19 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(CtlCode(Control.KphOpenDriver), inData, 8, null, 0);
 
             return driverHandle;
+        }
+
+        public int KphOpenNamedObject(ObjectAttributes objectAttributes)
+        {
+            byte* inData = stackalloc byte[8];
+            int handle;
+
+            *(int*)inData = (int)&handle;
+            *(int*)(inData + 4) = (int)&objectAttributes;
+
+            _fileHandle.IoControl(CtlCode(Control.KphOpenNamedObject), inData, 8, null, 0);
+
+            return handle;
         }
 
         public int KphOpenProcess(int pid, ProcessAccess desiredAccess)
@@ -566,6 +567,19 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(CtlCode(Control.KphOpenThreadProcess), inData, 8, outData, 4);
 
             return *(int*)outData;
+        }
+
+        public int KphOpenType(ObjectAttributes objectAttributes)
+        {
+            byte* inData = stackalloc byte[8];
+            int typeHandle;
+
+            *(int*)inData = (int)&typeHandle;
+            *(int*)(inData + 4) = (int)&objectAttributes;
+
+            _fileHandle.IoControl(CtlCode(Control.KphOpenType), inData, 8, null, 0);
+
+            return typeHandle;
         }
 
         public void KphQueryInformationDriver(

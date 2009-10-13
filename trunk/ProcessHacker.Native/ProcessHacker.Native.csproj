@@ -103,6 +103,7 @@
     <Compile Include="Objects\ResourceManagerHandle.cs" />
     <Compile Include="Objects\TerminalServerHandle.cs" />
     <Compile Include="Objects\TmHandle.cs" />
+    <Compile Include="Objects\TypeObjectHandle.cs" />
     <Compile Include="Objects\WindowHandle.cs" />
     <Compile Include="Security\AccessControl\Ace.cs" />
     <Compile Include="Security\AccessControl\Acl.cs" />
@@ -162,7 +163,7 @@
     <Compile Include="Security\DirectoryAccess.cs" />
     <Compile Include="Security\ISecurable.cs" />
     <Compile Include="Security\AccessControl\SecurityEditor.cs" />
-    <Compile Include="Security\ObjectTypeAccess.cs" />
+    <Compile Include="Security\TypeObjectAccess.cs" />
     <Compile Include="Security\PortAccess.cs" />
     <Compile Include="Objects\SectionHandle.cs" />
     <Compile Include="Objects\WindowStationHandle.cs" />

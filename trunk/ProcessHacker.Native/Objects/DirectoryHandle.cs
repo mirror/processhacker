@@ -80,6 +80,10 @@ namespace ProcessHacker.Native.Objects
             : base(handle, owned)
         { }
 
+        public DirectoryHandle(string name, DirectoryAccess access)
+            : this(name, 0, null, access)
+        { }
+
         public DirectoryHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, DirectoryAccess access)
         {
             NtStatus status;
@@ -88,8 +92,15 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                if ((status = Win32.NtOpenDirectoryObject(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                if (KProcessHacker.Instance != null)
+                {
+                    handle = KProcessHacker.Instance.KphOpenDirectoryObject(access, oa).ToIntPtr();
+                }
+                else
+                {
+                    if ((status = Win32.NtOpenDirectoryObject(out handle, access, ref oa)) >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+                }
             }
             finally
             {
@@ -98,10 +109,6 @@ namespace ProcessHacker.Native.Objects
 
             this.Handle = handle;
         }
-
-        public DirectoryHandle(string name, DirectoryAccess access)
-            : this(name, 0, null, access)
-        { }
 
         public void EnumObjects(EnumObjectsDelegate callback)
         {

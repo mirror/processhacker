@@ -219,7 +219,7 @@ NTSTATUS KphOpenDirectoryObject(
         DirectoryObjectHandle,
         DesiredAccess,
         ObjectAttributes,
-        NULL,
+        *ObDirectoryObjectType,
         AccessMode
         );
 }
@@ -317,6 +317,25 @@ NTSTATUS KphOpenNamedObject(
     }
     
     return status;
+}
+
+/* KphOpenType
+ * 
+ * Opens a type object.
+ */
+NTSTATUS KphOpenType(
+    __out PHANDLE TypeHandle,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in KPROCESSOR_MODE AccessMode
+    )
+{
+    return KphOpenNamedObject(
+        TypeHandle,
+        0,
+        ObjectAttributes,
+        *ObTypeObjectType,
+        AccessMode
+        );
 }
 
 /* KphQueryFileObjectName

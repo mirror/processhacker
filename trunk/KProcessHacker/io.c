@@ -27,25 +27,6 @@ VOID KphpCopyInfoUnicodeString(
     __in PUNICODE_STRING UnicodeString
     );
 
-/* KphOpenDevice
- * 
- * Opens a device object.
- */
-NTSTATUS KphOpenDevice(
-    __out PHANDLE DeviceHandle,
-    __in POBJECT_ATTRIBUTES ObjectAttributes,
-    __in KPROCESSOR_MODE AccessMode
-    )
-{
-    return KphOpenNamedObject(
-        DeviceHandle,
-        0,
-        ObjectAttributes,
-        *IoDeviceObjectType,
-        AccessMode
-        );
-}
-
 /* KphOpenDriver
  * 
  * Opens a driver object.

@@ -70,6 +70,9 @@
 #define EQNULL
 #endif
 
+EXT POBJECT_TYPE *ObDirectoryObjectType EQNULL;
+EXT POBJECT_TYPE *ObTypeObjectType EQNULL;
+
 EXT PKSERVICE_TABLE_DESCRIPTOR __KeServiceDescriptorTable EQNULL;
 EXT PVOID __KiFastCallEntry EQNULL;
 EXT _NtClose __NtClose EQNULL;
@@ -250,12 +253,6 @@ NTSTATUS KphGetThreadWin32Thread(
     __in KPROCESSOR_MODE AccessMode
     );
 
-NTSTATUS KphOpenDevice(
-    __out PHANDLE DeviceHandle,
-    __in POBJECT_ATTRIBUTES ObjectAttributes,
-    __in KPROCESSOR_MODE AccessMode
-    );
-
 NTSTATUS KphOpenDirectoryObject(
     __out PHANDLE DirectoryObjectHandle,
     __in ACCESS_MASK DesiredAccess,
@@ -312,6 +309,12 @@ NTSTATUS KphOpenThreadProcess(
     __in HANDLE ThreadHandle,
     __in ACCESS_MASK DesiredAccess,
     __out PHANDLE ProcessHandle,
+    __in KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphOpenType(
+    __out PHANDLE TypeHandle,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
     __in KPROCESSOR_MODE AccessMode
     );
 

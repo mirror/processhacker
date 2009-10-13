@@ -402,8 +402,8 @@ namespace ProcessHacker.Native
                 case ObjectType.Type:
                     entries = new AccessEntry[]
                     {
-                        new AccessEntry("Full control", ObjectTypeAccess.All, true, true),
-                        new AccessEntry("Create", ObjectTypeAccess.Create, true, true)
+                        new AccessEntry("Full control", TypeObjectAccess.All, true, true),
+                        new AccessEntry("Create", TypeObjectAccess.Create, true, true)
                     };
                     break;
                 case ObjectType.WindowStation:
@@ -498,7 +498,7 @@ namespace ProcessHacker.Native
                 case ObjectType.Token:
                     return typeof(TokenAccess);
                 case ObjectType.Type:
-                    return typeof(ObjectTypeAccess);
+                    return typeof(TypeObjectAccess);
                 case ObjectType.WindowStation:
                     return typeof(WindowStationAccess);
                 default:

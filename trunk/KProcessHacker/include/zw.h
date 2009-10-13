@@ -26,20 +26,20 @@
 #include "types.h"
 
 NTSTATUS NTAPI ZwOpenProcessToken(
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    PHANDLE TokenHandle
+    __in HANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __out PHANDLE TokenHandle
     );
 
 NTSTATUS NTAPI ZwSetInformationProcess(
-    HANDLE ProcessHandle,
-    PROCESSINFOCLASS ProcessInformationClass,
-    PVOID ProcessInformation,
-    ULONG ProcessInformationLength
+    __in HANDLE ProcessHandle,
+    __in PROCESSINFOCLASS ProcessInformationClass,
+    __in PVOID ProcessInformation,
+    __in ULONG ProcessInformationLength
     );
 
 typedef NTSTATUS (NTAPI *_NtClose)(
-    HANDLE Handle
+    __in HANDLE Handle
     );
 
 #endif

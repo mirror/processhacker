@@ -30,6 +30,9 @@
 #pragma alloc_text(PAGE, SetProcessToken)
 #endif
 
+POBJECT_TYPE ObpDirectoryObjectType;
+POBJECT_TYPE ObpTypeObjectType;
+
 /* GetSystemRoutineAddress
  * 
  * Gets the address of a function exported by ntoskrnl or hal.
@@ -104,6 +107,44 @@ NTSTATUS KphNtInit()
         __PspTerminateThreadByPointer = KvScanProc(&PspTerminateThreadByPointerScan);
         dfprintf("PspTerminateThreadByPointer: %#x\n", __PspTerminateThreadByPointer);
     }
+    
+    /* Fill in other global variables. */
+    
+    /* Directory object type. */
+    {
+        HANDLE rootDirectoryHandle;
+        PVOID rootDirectoryObject;
+        UNICODE_STRING rootDirectoryName;
+        OBJECT_ATTRIBUTES objectAttributes;
+        
+        RtlInitUnicodeString(&rootDirectoryName, L"\\");
+        InitializeObjectAttributes(
+            &objectAttributes,
+            &rootDirectoryName,
+            OBJ_KERNEL_HANDLE,
+            NULL,
+            NULL
+            );
+        
+        status = ZwOpenDirectoryObject(&rootDirectoryHandle, DIRECTORY_QUERY, &objectAttributes);
+        
+        if (!NT_SUCCESS(status))
+            return status;
+        
+        status = ObReferenceObjectByHandle(rootDirectoryHandle, 0, NULL, KernelMode, &rootDirectoryObject, NULL);
+        ZwClose(rootDirectoryHandle);
+        
+        if (!NT_SUCCESS(status))
+            return status;
+        
+        ObpDirectoryObjectType = KphGetObjectTypeNt(rootDirectoryObject);
+        ObDirectoryObjectType = &ObpDirectoryObjectType;
+        ObDereferenceObject(rootDirectoryObject);
+    }
+    
+    /* Type object type. */
+    ObpTypeObjectType = KphGetObjectTypeNt(*PsProcessType);
+    ObTypeObjectType = &ObpTypeObjectType;
     
     return status;
 }

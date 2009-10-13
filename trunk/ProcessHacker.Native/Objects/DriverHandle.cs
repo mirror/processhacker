@@ -26,7 +26,7 @@ using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class DriverHandle : NativeHandle
+    public sealed class DriverHandle : NativeHandle
     {
         public DriverHandle(string name)
             : this(name, 0, null)

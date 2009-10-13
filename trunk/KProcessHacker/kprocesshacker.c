@@ -571,8 +571,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "KphCaptureStackBackTraceThread";
         case KPH_DANGEROUSTERMINATETHREAD:
             return "KphDangerousTerminateThread";
-        case KPH_OPENDEVICE:
-            return "KphOpenDevice";
+        case KPH_OPENTYPE:
+            return "KphOpenType";
         case KPH_OPENDRIVER:
             return "KphOpenDriver";
         case KPH_QUERYINFORMATIONDRIVER:
@@ -1791,21 +1791,21 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
-        /* KphOpenDevice
+        /* KphOpenType
          * 
-         * Opens a device object.
+         * Opens a type object.
          */
-        case KPH_OPENDEVICE:
+        case KPH_OPENTYPE:
         {
             struct
             {
-                PHANDLE DeviceHandle;
+                PHANDLE TypeHandle;
                 POBJECT_ATTRIBUTES ObjectAttributes;
             } *args = dataBuffer;
             
             CHECK_IN_LENGTH;
             
-            status = KphOpenDevice(args->DeviceHandle, args->ObjectAttributes, UserMode);
+            status = KphOpenType(args->TypeHandle, args->ObjectAttributes, UserMode);
         }
         break;
         
@@ -2300,6 +2300,30 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             /* Enable/disable the client entry. */
             status = KphSsEnableClientEntry(clientEntry, args->Enable);
             KphDereferenceObject(clientEntry);
+        }
+        break;
+        
+        /* KphOpenNamedObject
+         * 
+         * Opens a named object of any type.
+         */
+        case KPH_OPENNAMEDOBJECT:
+        {
+            struct
+            {
+                PHANDLE Handle;
+                POBJECT_ATTRIBUTES ObjectAttributes;
+            } *args = dataBuffer;
+            
+            CHECK_IN_LENGTH;
+            
+            status = KphOpenNamedObject(
+                args->Handle,
+                0,
+                args->ObjectAttributes,
+                NULL,
+                UserMode
+                );
         }
         break;
         
