@@ -1,7 +1,8 @@
 ﻿/*
  * Process Hacker - 
- *   ProcessHacker Extended ListView 
+ *   extended ListView component
  * 
+ * Copyright (C) 2009 wj32
  * Copyright (C) 2009 dmex
  * 
  * This file is part of Process Hacker.
@@ -21,7 +22,6 @@
  * 
  */
 
-
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -31,39 +31,60 @@ using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
+    public delegate void LinkClickedEventHandler(object sender, LinkClickedEventArgs e);
+
+    public sealed class LinkClickedEventArgs : EventArgs
+    {
+        private int _groupIndex;
+
+        public LinkClickedEventArgs(int groupIndex)
+        {
+            _groupIndex = groupIndex;
+        }
+
+        public int GroupIndex
+        {
+            get { return _groupIndex; }
+        }
+    }
+
     public class ExtendedListView : ListView
     {
-        #region Messages
         private const int LVM_First = 0x1000;                              // ListView messages
         private const int LVM_SetGroupInfo = (LVM_First + 147);            // ListView messages Setinfo on Group
         private const int LVM_SetExtendedListViewStyle = (LVM_First + 54); // Sets extended styles in list-view controls. 
         private const int LVS_Ex_DoubleBuffer = 0x00010000;                // Paints via double-buffering, which reduces flicker. also enables alpha-blended marquee selection.
 
         private const int LVN_First = -100;
-        
-        private const int WM_KEYDOWN = 0x100;
-        private const int WM_KEYUP = 0x101;
-        private const int WM_MOUSEMOVE = 0x200;
-        private const int WM_LBUTTONDOWN = 0x201;
-        private const int WM_LBUTTONUP = 0x202;
-
-        private const int WM_CREATE = 0x1;
-        private const int WM_ERASEBKGND = 0x14;
-
-        public const int WM_NOTIFY = 0x4e;
-        public const int LVN_LINKCLICK = (LVN_First - 84);
-        #endregion
+        private const int LVN_LINKCLICK = (LVN_First - 84);
 
         private delegate void CallBackSetGroupState(ListViewGroup lvGroup, ListViewGroupState lvState, string task);
         private delegate void CallbackSetGroupString(ListViewGroup lvGroup, string value);
+
+        public event LinkClickedEventHandler GroupLinkClicked;
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref LVGroup lParam);
 
         public ExtendedListView()
         {
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            this.DoubleBuffered = true;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+        }
+
+        private void OnGroupLinkClicked(int groupIndex)
+        {
+            if (this.GroupLinkClicked != null)
+                this.GroupLinkClicked(this, new LinkClickedEventArgs(groupIndex));
+        }
+
+        public void SetGroupState(ListViewGroupState state)
+        {
+            this.SetGroupState(state, null);
         }
 
         public void SetGroupState(ListViewGroupState state, string taskLabel)
@@ -136,28 +157,48 @@ namespace ProcessHacker
                 Marshal.FreeHGlobal(taskString);
             }
         }
-   
+
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
             {
-                case WM_CREATE:
+                case 0x1: /*WM_CREATE*/
                     {
-                        Win32.SetWindowTheme(base.Handle, "explorer", null);
+                        HResult setThemeResult = Win32.SetWindowTheme(base.Handle, "explorer", null);
+                        setThemeResult.ThrowIf();
                         Win32.SendMessage(base.Handle, (WindowMessage)LVM_SetExtendedListViewStyle, LVS_Ex_DoubleBuffer, LVS_Ex_DoubleBuffer);
-                        break;
-                    }
-                case WM_LBUTTONUP:
-                case WM_NOTIFY:
-                    {
-                        base.DefWndProc(ref m);
+
                         break;
                     }  
+                case 0x202:
+                case 0x205:
+                case 520:
+                case 0x203:
+                case 0x2a1:
+                    {
+                        base.DefWndProc(ref m);
+                        return;
+                    }
+
+                case (int)WindowMessage.Reflect + (int)WindowMessage.Notify:
+                    unsafe
+                    {
+                        NMHDR* hdr = (NMHDR*)m.LParam;
+
+                        if (hdr->code == LVN_LINKCLICK)
+                        {
+                            NMLVLINK link = (NMLVLINK)Marshal.PtrToStructure(m.LParam, typeof(NMLVLINK));
+
+                            this.OnGroupLinkClicked(link.SubItemIndex);
+
+                            return;
+                        }
+                    }
+                    break;
             }
 
             base.WndProc(ref m);
         }
-
 
         //http://msdn.microsoft.com/en-us/library/bb774769(VS.85).aspx
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
@@ -297,7 +338,7 @@ namespace ProcessHacker
         /// WM_NOTIFY notificaiton message header.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        public struct NMHDR
+        private struct NMHDR
         {
             /// <summary>
             /// Window handle to the control sending a message.
@@ -311,6 +352,28 @@ namespace ProcessHacker
             /// Notification code. This member can be a control-specific notification code or it can be one of the common notification codes.
             /// </summary>
             public int code;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct LITEM
+        {
+            public int Mask;
+            public int LinkIndex;
+            public int State;
+            public int StateMask;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 48)]
+            public string Id;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 2048 + 32 + 4)]
+            public string Url;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct NMLVLINK
+        {
+            public NMHDR Header;
+            public LITEM Link;
+            public int ItemIndex;
+            public int SubItemIndex;
         }
     }
 

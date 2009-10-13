@@ -936,6 +936,8 @@ namespace ProcessHacker.Native.Api
         
         User = 0x400,
 
+        Reflect = User + 0x1c00,
+
         BcmSetShield = 0x160c,
 
         App = 0x8000
