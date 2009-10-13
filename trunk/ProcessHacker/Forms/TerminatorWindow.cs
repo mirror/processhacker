@@ -50,7 +50,7 @@ namespace ProcessHacker
             this.AddTest("TP2", "Creates a remote thread in the process which terminates the process");
             this.AddTest("TT1", "Terminates the process' threads");
             this.AddTest("TT2", "Modifies the process' threads with contexts which terminate the process");
-            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Server2003))
             {
                 this.AddTest("TP1a", "Terminates the process using NtTerminateProcess (alternative method)");
                 this.AddTest("TT1a", "Terminates the process' threads (alternative method)");
