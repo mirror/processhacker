@@ -79,12 +79,7 @@ namespace Aga.Controls.Tree.NodeControls
 		public string DataPropertyName
 		{
 			get { return _propertyName; }
-			set 
-			{
-				if (_propertyName == null)
-					_propertyName = string.Empty;
-				_propertyName = value; 
-			}
+			set { _propertyName = value != null ? value : ""; }
 		}
 
 		private bool _incrementalSearchEnabled = false;
