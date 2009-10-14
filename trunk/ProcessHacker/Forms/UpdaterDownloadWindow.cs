@@ -302,7 +302,7 @@ namespace ProcessHacker
 
             if (success)
             {
-                Program.HackerWindow.Exit();
+                Program.HackerWindow.Exit(true);
             }
             else
             {

@@ -673,5 +673,17 @@ namespace ProcessHacker
             this.buttonApply.Enabled = false;
             this.buttonOK.Select();
         }
+
+        private void buttonResetSettings_Click(object sender, EventArgs e)
+        {
+            if (PhUtils.ShowConfirmMessage("Reset all Settings", "", "Resetting Settings will reset and restart ProcessHacker?", true)) 
+            {
+                ProcessHacker.Properties.Settings.Default.Reset();
+
+                // todo: fix Application.Restart(); not being applicable/usable
+                Program.TryStart(Application.ExecutablePath);
+                Program.HackerWindow.Exit(false);             
+            }
+        }
     }
 }

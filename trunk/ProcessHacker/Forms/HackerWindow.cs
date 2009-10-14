@@ -293,7 +293,7 @@ namespace ProcessHacker
         {
             Program.StartProcessHackerAdmin("-v", () =>
                 {
-                    this.Exit();
+                    this.Exit(true);
                 }, this.Handle);
         }
 
@@ -412,7 +412,7 @@ namespace ProcessHacker
 
         private void exitMenuItem_Click(object sender, EventArgs e)
         {
-            this.Exit();
+            this.Exit(true);
         }
 
         private void toolbarMenuItem_Click(object sender, EventArgs e)
@@ -956,7 +956,7 @@ namespace ProcessHacker
 
         private void exitTrayMenuItem_Click(object sender, EventArgs e)
         {
-            this.Exit();
+            this.Exit(true);
         }
 
         #endregion
@@ -3005,7 +3005,7 @@ namespace ProcessHacker
             base.WndProc(ref m);
         }
 
-        public void Exit()
+        public void Exit(bool saveSettings)
         {
             //processP.Dispose();
             //serviceP.Dispose();
@@ -3013,11 +3013,16 @@ namespace ProcessHacker
 
             this.ExecuteOnIcons((icon) => icon.Visible = false);
             this.ExecuteOnIcons((icon) => icon.Dispose());
-            SaveSettings();
+
             this.Visible = false;
 
             if (KProcessHacker.Instance != null)
                 KProcessHacker.Instance.Close();
+
+            if (saveSettings)
+            {
+                SaveSettings();
+            }
 
             try
             {
@@ -3031,7 +3036,7 @@ namespace ProcessHacker
         {
             if (e.CloseReason == CloseReason.WindowsShutDown)
             {
-                this.Exit();
+                this.Exit(true);
                 return;
             }
 
@@ -3043,7 +3048,7 @@ namespace ProcessHacker
                 return;
             }
 
-            this.Exit();
+            this.Exit(true);
         }
 
         private void CheckedMenuItem_Click(object sender, EventArgs e)
