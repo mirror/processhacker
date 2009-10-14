@@ -256,6 +256,16 @@ namespace ProcessHacker.Native.Security
             get { return _memory; }
         }
 
+        public string Name
+        {
+            get
+            {
+                if (_name == null)
+                    this.GetNameAndUse(out _domain, out _name, out _nameUse);
+                return _name;
+            }
+        }
+
         public SidNameUse NameUse
         {
             get
@@ -263,16 +273,6 @@ namespace ProcessHacker.Native.Security
                 if (_nameUse == 0)
                     this.GetNameAndUse(out _domain, out _name, out _nameUse);
                 return _nameUse;
-            }
-        }
-
-        public string UserName
-        {
-            get
-            {
-                if (_name == null)
-                    this.GetNameAndUse(out _domain, out _name, out _nameUse);
-                return _name;
             }
         }
 
@@ -332,12 +332,12 @@ namespace ProcessHacker.Native.Security
         {
             try
             {
-                if (string.IsNullOrEmpty(this.UserName))
+                if (string.IsNullOrEmpty(this.Name))
                     return this.StringSid;
                 if (includeDomain)
-                    return this.DomainName + "\\" + this.UserName;
+                    return this.DomainName + "\\" + this.Name;
                 else
-                    return this.UserName;
+                    return this.Name;
             }
             catch
             {

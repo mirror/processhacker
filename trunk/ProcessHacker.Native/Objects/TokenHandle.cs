@@ -554,15 +554,31 @@ namespace ProcessHacker.Native.Objects
         /// <param name="attributes">The new attributes of the privilege.</param>
         public void SetPrivilege(string privilegeName, SePrivilegeAttributes attributes)
         {
-            Luid privilegeLuid;
-
-            if (!Win32.LookupPrivilegeValue(null, privilegeName, out privilegeLuid))
-                throw new Exception("Invalid privilege name '" + privilegeName + "'.");
-
-            this.SetPrivilege(privilegeLuid, attributes);
+            if (!this.TrySetPrivilege(privilegeName, attributes))
+                Win32.ThrowLastError();
         }
 
         public void SetPrivilege(Luid privilegeLuid, SePrivilegeAttributes attributes)
+        {
+            if (!this.TrySetPrivilege(privilegeLuid, attributes))
+                Win32.ThrowLastError();
+        }
+
+        /// <summary>
+        /// Sets a privilege's attributes.
+        /// </summary>
+        /// <param name="privilegeName">The name of the privilege.</param>
+        /// <param name="attributes">The new attributes of the privilege.</param>
+        /// <returns>True if the function succeeded, otherwise false.</returns>
+        public bool TrySetPrivilege(string privilegeName, SePrivilegeAttributes attributes)
+        {
+            return this.TrySetPrivilege(
+                LsaPolicyHandle.LookupPolicyHandle.LookupPrivilegeValue(privilegeName),
+                attributes
+                );
+        }
+
+        public bool TrySetPrivilege(Luid privilegeLuid, SePrivilegeAttributes attributes)
         {
             TokenPrivileges tkp = new TokenPrivileges();
 
@@ -575,7 +591,9 @@ namespace ProcessHacker.Native.Objects
             Win32.AdjustTokenPrivileges(this, false, ref tkp, 0, IntPtr.Zero, IntPtr.Zero);
 
             if (Marshal.GetLastWin32Error() != 0)
-                Win32.ThrowLastError();
+                return false;
+
+            return true;
         }
 
         /// <summary>

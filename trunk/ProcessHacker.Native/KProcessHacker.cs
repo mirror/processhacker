@@ -640,12 +640,17 @@ namespace ProcessHacker.Native
 
         public void KphReadVirtualMemory(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
         {
-            if (!KphReadVirtualMemorySafe(processHandle, baseAddress, buffer, length, out bytesRead))
-                Win32.ThrowLastError();
+            NtStatus status;
+
+            status = KphReadVirtualMemorySafe(processHandle, baseAddress, buffer, length, out bytesRead);
+
+            if (status >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
-        public bool KphReadVirtualMemorySafe(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
+        public NtStatus KphReadVirtualMemorySafe(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
         {
+            NtStatus status;
             byte* inData = stackalloc byte[0x14];
             int returnLength;
             int br;
@@ -656,21 +661,21 @@ namespace ProcessHacker.Native
             *(int*)(inData + 0xc) = length;
             *(int*)(inData + 0x10) = (int)&br;
 
-            bool r = Win32.DeviceIoControl(_fileHandle, (int)CtlCode(Control.KphReadVirtualMemory), 
-                inData, 0x14, null, 0, out returnLength, IntPtr.Zero);
+            status = _fileHandle.IoControl(CtlCode(Control.KphReadVirtualMemory), (IntPtr)inData, 0x14, IntPtr.Zero, 0, out returnLength);
 
             bytesRead = br;
 
-            return r;
+            return status;
         }
 
-        public bool KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, int baseAddress, void* buffer, int length, out int bytesRead)
+        public NtStatus KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, int baseAddress, void* buffer, int length, out int bytesRead)
         {
             return KphReadVirtualMemoryUnsafe(processHandle, baseAddress, new IntPtr(buffer), length, out bytesRead);
         }
 
-        public bool KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
+        public NtStatus KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
         {
+            NtStatus status;
             byte* inData = stackalloc byte[0x14];
             int returnLength;
             int br;
@@ -681,12 +686,11 @@ namespace ProcessHacker.Native
             *(int*)(inData + 0xc) = length;
             *(int*)(inData + 0x10) = (int)&br;
 
-            bool r = Win32.DeviceIoControl(_fileHandle, (int)CtlCode(Control.KphUnsafeReadVirtualMemory),
-                inData, 0x14, null, 0, out returnLength, IntPtr.Zero);
+            status = _fileHandle.IoControl(CtlCode(Control.KphUnsafeReadVirtualMemory), (IntPtr)inData, 0x14, IntPtr.Zero, 0, out returnLength);
 
             bytesRead = br;
 
-            return r;
+            return status;
         }
 
         public void KphResumeProcess(ProcessHandle processHandle)

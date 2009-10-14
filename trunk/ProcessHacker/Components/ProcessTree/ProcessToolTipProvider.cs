@@ -71,11 +71,14 @@ namespace ProcessHacker
                         filename = pNode.ProcessItem.FileName;
                     }
 
-                    FileVersionInfo info = FileVersionInfo.GetVersionInfo(filename);
+                    if (filename != null)
+                    {
+                        FileVersionInfo info = FileVersionInfo.GetVersionInfo(filename);
 
-                    fileText = "File:\n    " + info.FileName + "\n    " +
-                        info.FileDescription + " " + info.FileVersion + "\n    " +
-                        info.CompanyName;
+                        fileText = "File:\n    " + info.FileName + "\n    " +
+                            info.FileDescription + " " + info.FileVersion + "\n    " +
+                            info.CompanyName;
+                    }
                 }
                 catch
                 {

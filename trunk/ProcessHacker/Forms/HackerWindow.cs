@@ -2622,7 +2622,7 @@ namespace ProcessHacker
             // Find the location of the dbghelp.dll we loaded and load symsrv.dll.
             try
             {
-                ProcessHandle.GetCurrent().EnumModules((module) =>
+                ProcessHandle.Current.EnumModules((module) =>
                     {
                         if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
                         {
@@ -3302,7 +3302,7 @@ namespace ProcessHacker
         {
             try
             {
-                using (var thandle = ProcessHandle.GetCurrent().GetToken(TokenAccess.Query))
+                using (var thandle = ProcessHandle.Current.GetToken(TokenAccess.Query))
                 using (var sid = thandle.GetUser())
                     this.Text += " [" + sid.GetFullName(true) + (KProcessHacker.Instance != null ? "+" : "") + "]";
             }

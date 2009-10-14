@@ -438,17 +438,20 @@ namespace ProcessHacker
                 { }
             }
 
-            try
+            if (pid > 4)
             {
-                using (var phandle = new ProcessHandle(pid,
-                    Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                try
                 {
-                    fpResult.CmdLine = phandle.GetCommandLine();
-                    fpResult.IsPosix = phandle.IsPosix();
+                    using (var phandle = new ProcessHandle(pid,
+                        Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                    {
+                        fpResult.CmdLine = phandle.GetCommandLine();
+                        fpResult.IsPosix = phandle.IsPosix();
+                    }
                 }
+                catch
+                { }
             }
-            catch
-            { }
 
             if (addToQueue)
                 _messageQueue.Enqueue(fpResult);
@@ -1041,7 +1044,7 @@ namespace ProcessHacker
 
                     // If we didn't get a username, try to use Terminal Services 
                     // to get the SID of the process' token's user.
-                    if (item.Username == null)
+                    if (pid > 4 && item.Username == null)
                     {
                         if (tsProcesses.Count == 0)
                         {

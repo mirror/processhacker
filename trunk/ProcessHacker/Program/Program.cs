@@ -214,20 +214,14 @@ namespace ProcessHacker
 
             try
             {
-                using (var thandle = ProcessHandle.GetCurrent().GetToken())
+                using (var thandle = ProcessHandle.Current.GetToken())
                 {
-                    try { thandle.SetPrivilege("SeDebugPrivilege", SePrivilegeAttributes.Enabled); }
-                    catch { }
-                    try { thandle.SetPrivilege("SeIncreaseBasePriorityPrivilege", SePrivilegeAttributes.Enabled); }
-                    catch { }
-                    try { thandle.SetPrivilege("SeLoadDriverPrivilege", SePrivilegeAttributes.Enabled); }
-                    catch { }
-                    try { thandle.SetPrivilege("SeRestorePrivilege", SePrivilegeAttributes.Enabled); }
-                    catch { }
-                    try { thandle.SetPrivilege("SeShutdownPrivilege", SePrivilegeAttributes.Enabled); }
-                    catch { }
-                    try { thandle.SetPrivilege("SeTakeOwnershipPrivilege", SePrivilegeAttributes.Enabled); }
-                    catch { }
+                    thandle.TrySetPrivilege("SeDebugPrivilege", SePrivilegeAttributes.Enabled);
+                    thandle.TrySetPrivilege("SeIncreaseBasePriorityPrivilege", SePrivilegeAttributes.Enabled);
+                    thandle.TrySetPrivilege("SeLoadDriverPrivilege", SePrivilegeAttributes.Enabled);
+                    thandle.TrySetPrivilege("SeRestorePrivilege", SePrivilegeAttributes.Enabled);
+                    thandle.TrySetPrivilege("SeShutdownPrivilege", SePrivilegeAttributes.Enabled);
+                    thandle.TrySetPrivilege("SeTakeOwnershipPrivilege", SePrivilegeAttributes.Enabled);
 
                     if (OSVersion.HasUac)
                     {
@@ -655,7 +649,7 @@ namespace ProcessHacker
             IntPtr ntdll = Win32.GetModuleHandle("ntdll.dll");
             MemoryProtection oldProtection;
 
-            oldProtection = ProcessHandle.GetCurrent().ProtectMemory(
+            oldProtection = ProcessHandle.Current.ProtectMemory(
                 ntdll,
                 (int)file.Size,
                 MemoryProtection.ExecuteReadWrite
@@ -682,7 +676,7 @@ namespace ProcessHacker
                 }
             }
 
-            ProcessHandle.GetCurrent().ProtectMemory(
+            ProcessHandle.Current.ProtectMemory(
                 ntdll,
                 (int)file.Size,
                 oldProtection
@@ -730,7 +724,7 @@ namespace ProcessHacker
 
         public static void StartProcessHackerAdmin(string args, MethodInvoker successAction, IntPtr hWnd)
         {
-            StartProgramAdmin(ProcessHandle.GetCurrent().GetMainModule().FileName,
+            StartProgramAdmin(ProcessHandle.Current.GetMainModule().FileName,
                 args, successAction, ShowWindowType.Show, hWnd);
         }
 
@@ -744,7 +738,7 @@ namespace ProcessHacker
             var info = new ShellExecuteInfo();
 
             info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(info);
-            info.lpFile = ProcessHandle.GetCurrent().GetMainModule().FileName;
+            info.lpFile = ProcessHandle.Current.GetMainModule().FileName;
             info.nShow = ShowWindowType.Show;
             info.fMask = 0x40; // SEE_MASK_NOCLOSEPROCESS
             info.lpVerb = "runas";

@@ -247,14 +247,14 @@ namespace ProcessHacker
 
             // Read the two variables, stored in kernel-mode memory.
             KProcessHacker.Instance.KphReadVirtualMemoryUnsafe(
-                ProcessHacker.Native.Objects.ProcessHandle.GetCurrent(),
+                ProcessHacker.Native.Objects.ProcessHandle.Current,
                 _mmSizeOfPagedPoolInBytes.ToInt32(),
                 &pagedLocal,
                 sizeof(int),
                 out retLength
                 );
             KProcessHacker.Instance.KphReadVirtualMemoryUnsafe(
-                ProcessHacker.Native.Objects.ProcessHandle.GetCurrent(),
+                ProcessHacker.Native.Objects.ProcessHandle.Current,
                 _mmMaximumNonPagedPoolInBytes.ToInt32(),
                 &nonPagedLocal,
                 sizeof(int),

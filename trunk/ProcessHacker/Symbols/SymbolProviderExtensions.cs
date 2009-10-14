@@ -38,7 +38,7 @@ namespace ProcessHacker.Native.Symbols
 
             try
             {
-                var modules = ProcessHandle.GetCurrent().GetModules();
+                var modules = ProcessHandle.Current.GetModules();
 
                 foreach (var module in modules)
                 {

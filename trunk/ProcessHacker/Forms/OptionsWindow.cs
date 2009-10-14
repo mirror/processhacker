@@ -376,7 +376,7 @@ namespace ProcessHacker
                     ))
                 {
                     if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", "")).ToLower().Trim('"') ==
-                        ProcessHandle.GetCurrent().GetMainModule().FileName.ToLower())
+                        ProcessHandle.Current.GetMainModule().FileName.ToLower())
                     {
                         checkReplaceTaskManager.Checked = true;
                     }
@@ -504,7 +504,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    string fileName = ProcessHandle.GetCurrent().GetMainModule().FileName;
+                    string fileName = ProcessHandle.Current.GetMainModule().FileName;
 
                     using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
                         "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",
@@ -519,14 +519,12 @@ namespace ProcessHacker
                         }
                         else
                         {
+                            // If we were replacing Task Manager and the user unchecked the box, 
+                            // don't replace Task Manager anymore.
                             if (_oldTaskMgrDebugger.ToLower().Trim('"') == fileName.ToLower())
                             {
                                 key.DeleteValue("Debugger");
                                 _oldTaskMgrDebugger = "";
-                            }
-                            else if (_oldTaskMgrDebugger != "")
-                            {
-                                key.SetValue("Debugger", _oldTaskMgrDebugger);
                             }
                         }
                     }

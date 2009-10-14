@@ -477,7 +477,10 @@ namespace ProcessHacker.Native.Symbols
             using (Win32.DbgHelpLock.AcquireContext())
             {
                 if (Win32.SymLoadModule64(_handle, IntPtr.Zero, fileName, null, baseAddress, size) == 0)
-                    Win32.ThrowLastError();
+                {
+                    if (Marshal.GetLastWin32Error() != 0)
+                        Win32.ThrowLastError();
+                }
             }
 
             lock (_modules)

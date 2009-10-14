@@ -1199,7 +1199,7 @@ namespace ProcessHacker.Native.Objects
                     delegate(IntPtr processHandle, ulong baseAddress, IntPtr buffer, int size, out int bytesRead)
                     {
                         return KProcessHacker.Instance.KphReadVirtualMemorySafe(
-                            ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead);
+                            ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead).IsSuccess();
                     });
             }
 

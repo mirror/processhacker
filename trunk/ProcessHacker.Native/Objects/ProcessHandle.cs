@@ -1612,17 +1612,14 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A job object handle.</returns>
         public JobObjectHandle GetJobObject(JobObjectAccess access)
         {
-            try
-            {
-                return new JobObjectHandle(this, access);
-            }
-            catch (WindowsException ex)
-            {
-                if (ex.Status == NtStatus.ProcessNotInJob)
-                    return null;
-                else
-                    throw ex;
-            }
+            IntPtr handle;
+
+            handle = JobObjectHandle.Open(this, access);
+
+            if (handle != IntPtr.Zero)
+                return new JobObjectHandle(handle, true);
+            else
+                return null;
         }
 
         /// <summary>

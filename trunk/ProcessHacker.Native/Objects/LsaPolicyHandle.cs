@@ -312,7 +312,16 @@ namespace ProcessHacker.Native.Objects
                     out referencedDomains,
                     out names
                 )) >= NtStatus.Error)
+            {
+                if (status == NtStatus.NoneMapped)
+                {
+                    nameUse = SidNameUse.Unknown;
+                    domainName = null;
+                    return null;
+                }
+
                 Win32.ThrowLastError(status);
+            }
 
             using (var referencedDomainsAlloc = new LsaMemoryAlloc(referencedDomains))
             using (var namesAlloc = new LsaMemoryAlloc(names))
@@ -463,7 +472,16 @@ namespace ProcessHacker.Native.Objects
                     out referencedDomains,
                     out sids
                     )) >= NtStatus.Error)
+                {
+                    if (status == NtStatus.NoneMapped)
+                    {
+                        nameUse = SidNameUse.Unknown;
+                        domainName = null;
+                        return null;
+                    }
+
                     Win32.ThrowLastError(status);
+                }
             }
             finally
             {
