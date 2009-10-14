@@ -410,26 +410,14 @@
     <Setting Name="ElevationLevel" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
-    <Setting Name="ProxyUse" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+    <Setting Name="IPInfoWhoIsListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)">0,410</Value>
     </Setting>
-    <Setting Name="ProxyBypassOnLocal" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+    <Setting Name="IPInfoTracertListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)">0,30|1,60|2,100|3,200</Value>
     </Setting>
-    <Setting Name="ProxyUsername" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="ProxyPassword" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="ProxyAddress" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="ProxyPort" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="ProxyUseCredentials" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+    <Setting Name="IPInfoPingListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)">0,400</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -69,26 +69,41 @@ namespace ProcessHacker
                 t = new Thread(new ParameterizedThreadStart(Whois));
                 labelInfo.Text = "Whois host infomation for address: " + _ipAddress.ToString();
                 labelStatus.Text = "Checking...";
-                listInfo.Columns.Add("Results", 410);
+                listInfo.Columns.Add("Results");
+                ColumnSettings.LoadSettings(Properties.Settings.Default.IPInfoWhoIsListViewColumns, listInfo);
             }
             else if (_ipAction == IpAction.Tracert)
             {
                 t = new Thread(new ParameterizedThreadStart(Tracert));
                 labelStatus.Text = "Tracing route...";
-                listInfo.Columns.Add("Count", 30);
-                listInfo.Columns.Add("Reply Time", 60);
-                listInfo.Columns.Add("IP Address", 100);
-                listInfo.Columns.Add("Hostname", 200);
+                listInfo.Columns.Add("Count");
+                listInfo.Columns.Add("Reply Time");
+                listInfo.Columns.Add("IP Address");
+                listInfo.Columns.Add("Hostname");
+                ColumnSettings.LoadSettings(Properties.Settings.Default.IPInfoTracertListViewColumns, listInfo);
             }
             else if (_ipAction == IpAction.Ping)
             {
                 t = new Thread(new ParameterizedThreadStart(Ping));
                 labelStatus.Text = "Pinging...";
-                listInfo.Columns.Add("Results", 400);
+                listInfo.Columns.Add("Results");
+                ColumnSettings.LoadSettings(Properties.Settings.Default.IPInfoPingListViewColumns, listInfo);
             }
 
             t.IsBackground = true;
             t.Start(_ipAddress);
+        }
+
+        private void IPInfoWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_ipAction == IpAction.Whois)
+                Properties.Settings.Default.IPInfoWhoIsListViewColumns = ColumnSettings.SaveSettings(listInfo);
+            else if (_ipAction == IpAction.Tracert)
+                Properties.Settings.Default.IPInfoTracertListViewColumns = ColumnSettings.SaveSettings(listInfo);
+            else if (_ipAction == IpAction.Ping)
+                Properties.Settings.Default.IPInfoPingListViewColumns = ColumnSettings.SaveSettings(listInfo);
+
+            Properties.Settings.Default.Save();
         }
 
         private void buttonClose_Click(object sender, EventArgs e)
@@ -325,5 +340,6 @@ namespace ProcessHacker
 
             listInfo.Items.Add(litem);
         }
+
     }
 }

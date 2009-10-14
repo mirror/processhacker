@@ -1659,85 +1659,37 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ProxyUse {
+        [global::System.Configuration.DefaultSettingValueAttribute("0,410")]
+        public string IPInfoWhoIsListViewColumns {
             get {
-                return ((bool)(this["ProxyUse"]));
+                return ((string)(this["IPInfoWhoIsListViewColumns"]));
             }
             set {
-                this["ProxyUse"] = value;
+                this["IPInfoWhoIsListViewColumns"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ProxyBypassOnLocal {
+        [global::System.Configuration.DefaultSettingValueAttribute("0,30|1,60|2,100|3,200")]
+        public string IPInfoTracertListViewColumns {
             get {
-                return ((bool)(this["ProxyBypassOnLocal"]));
+                return ((string)(this["IPInfoTracertListViewColumns"]));
             }
             set {
-                this["ProxyBypassOnLocal"] = value;
+                this["IPInfoTracertListViewColumns"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ProxyUsername {
+        [global::System.Configuration.DefaultSettingValueAttribute("0,400")]
+        public string IPInfoPingListViewColumns {
             get {
-                return ((string)(this["ProxyUsername"]));
+                return ((string)(this["IPInfoPingListViewColumns"]));
             }
             set {
-                this["ProxyUsername"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ProxyPassword {
-            get {
-                return ((string)(this["ProxyPassword"]));
-            }
-            set {
-                this["ProxyPassword"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ProxyAddress {
-            get {
-                return ((string)(this["ProxyAddress"]));
-            }
-            set {
-                this["ProxyAddress"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ProxyPort {
-            get {
-                return ((string)(this["ProxyPort"]));
-            }
-            set {
-                this["ProxyPort"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ProxyUseCredentials {
-            get {
-                return ((bool)(this["ProxyUseCredentials"]));
-            }
-            set {
-                this["ProxyUseCredentials"] = value;
+                this["IPInfoPingListViewColumns"] = value;
             }
         }
     }
