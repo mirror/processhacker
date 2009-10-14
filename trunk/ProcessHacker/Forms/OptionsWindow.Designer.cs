@@ -68,10 +68,14 @@
             this.label11 = new System.Windows.Forms.Label();
             this.buttonDisableAll = new System.Windows.Forms.Button();
             this.buttonEnableAll = new System.Windows.Forms.Button();
+            this.listHighlightingColors = new ProcessHacker.Components.ExtendedListView();
+            this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.textHighlightingDuration = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.tabPlotting = new System.Windows.Forms.TabPage();
             this.textStep = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -82,6 +86,12 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
+            this.colorIORO = new ProcessHacker.Components.ColorModifier();
+            this.colorIOW = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.tabSymbols = new System.Windows.Forms.TabPage();
             this.checkUndecorate = new System.Windows.Forms.CheckBox();
             this.textSearchPath = new System.Windows.Forms.TextBox();
@@ -98,17 +108,7 @@
             this.optUpdateBeta = new System.Windows.Forms.RadioButton();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.buttonResetSettings = new System.Windows.Forms.Button();
-            this.listHighlightingColors = new ProcessHacker.Components.ExtendedListView();
-            this.columnDescription = new System.Windows.Forms.ColumnHeader();
-            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorIORO = new ProcessHacker.Components.ColorModifier();
-            this.colorIOW = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
+            this.buttonReset = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -472,7 +472,6 @@
             // 
             // tabAdvanced
             // 
-            this.tabAdvanced.Controls.Add(this.buttonResetSettings);
             this.tabAdvanced.Controls.Add(this.comboElevationLevel);
             this.tabAdvanced.Controls.Add(this.label22);
             this.tabAdvanced.Controls.Add(this.checkEnableExperimentalFeatures);
@@ -645,6 +644,33 @@
             this.buttonEnableAll.UseVisualStyleBackColor = true;
             this.buttonEnableAll.Click += new System.EventHandler(this.buttonEnableAll_Click);
             // 
+            // listHighlightingColors
+            // 
+            this.listHighlightingColors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHighlightingColors.CheckBoxes = true;
+            this.listHighlightingColors.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnDescription});
+            this.listHighlightingColors.DoubleClickChecks = false;
+            this.listHighlightingColors.FullRowSelect = true;
+            this.listHighlightingColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listHighlightingColors.HideSelection = false;
+            this.listHighlightingColors.Location = new System.Drawing.Point(6, 60);
+            this.listHighlightingColors.MultiSelect = false;
+            this.listHighlightingColors.Name = "listHighlightingColors";
+            this.listHighlightingColors.ShowItemToolTips = true;
+            this.listHighlightingColors.Size = new System.Drawing.Size(469, 213);
+            this.listHighlightingColors.TabIndex = 3;
+            this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
+            this.listHighlightingColors.View = System.Windows.Forms.View.Details;
+            this.listHighlightingColors.DoubleClick += new System.EventHandler(this.listHighlightingColors_DoubleClick);
+            // 
+            // columnDescription
+            // 
+            this.columnDescription.Text = "Description";
+            this.columnDescription.Width = 250;
+            // 
             // textHighlightingDuration
             // 
             this.textHighlightingDuration.Increment = new decimal(new int[] {
@@ -698,6 +724,22 @@
             this.label3.Size = new System.Drawing.Size(71, 13);
             this.label3.TabIndex = 7;
             this.label3.Text = "New Objects:";
+            // 
+            // colorRemovedProcesses
+            // 
+            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
+            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
+            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorRemovedProcesses.TabIndex = 2;
+            // 
+            // colorNewProcesses
+            // 
+            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
+            this.colorNewProcesses.Name = "colorNewProcesses";
+            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorNewProcesses.TabIndex = 1;
             // 
             // tabPlotting
             // 
@@ -814,6 +856,54 @@
             this.label17.Size = new System.Drawing.Size(91, 13);
             this.label17.TabIndex = 9;
             this.label17.Text = "CPU Kernel Time:";
+            // 
+            // colorIORO
+            // 
+            this.colorIORO.Color = System.Drawing.Color.Transparent;
+            this.colorIORO.Location = new System.Drawing.Point(124, 163);
+            this.colorIORO.Name = "colorIORO";
+            this.colorIORO.Size = new System.Drawing.Size(40, 20);
+            this.colorIORO.TabIndex = 6;
+            // 
+            // colorIOW
+            // 
+            this.colorIOW.Color = System.Drawing.Color.Transparent;
+            this.colorIOW.Location = new System.Drawing.Point(124, 189);
+            this.colorIOW.Name = "colorIOW";
+            this.colorIOW.Size = new System.Drawing.Size(40, 20);
+            this.colorIOW.TabIndex = 7;
+            // 
+            // colorMemoryWS
+            // 
+            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
+            this.colorMemoryWS.Name = "colorMemoryWS";
+            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryWS.TabIndex = 5;
+            // 
+            // colorMemoryPB
+            // 
+            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
+            this.colorMemoryPB.Name = "colorMemoryPB";
+            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryPB.TabIndex = 4;
+            // 
+            // colorCPUUT
+            // 
+            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
+            this.colorCPUUT.Name = "colorCPUUT";
+            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUUT.TabIndex = 3;
+            // 
+            // colorCPUKT
+            // 
+            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
+            this.colorCPUKT.Name = "colorCPUKT";
+            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUKT.TabIndex = 2;
             // 
             // tabSymbols
             // 
@@ -995,107 +1085,16 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
-            // buttonResetSettings
+            // buttonReset
             // 
-            this.buttonResetSettings.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonResetSettings.Location = new System.Drawing.Point(6, 216);
-            this.buttonResetSettings.Name = "buttonResetSettings";
-            this.buttonResetSettings.Size = new System.Drawing.Size(89, 23);
-            this.buttonResetSettings.TabIndex = 12;
-            this.buttonResetSettings.Text = "Reset Settings";
-            this.buttonResetSettings.UseVisualStyleBackColor = true;
-            this.buttonResetSettings.Click += new System.EventHandler(this.buttonResetSettings_Click);
-            // 
-            // listHighlightingColors
-            // 
-            this.listHighlightingColors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listHighlightingColors.CheckBoxes = true;
-            this.listHighlightingColors.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnDescription});
-            this.listHighlightingColors.DoubleClickChecks = false;
-            this.listHighlightingColors.FullRowSelect = true;
-            this.listHighlightingColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.listHighlightingColors.HideSelection = false;
-            this.listHighlightingColors.Location = new System.Drawing.Point(6, 60);
-            this.listHighlightingColors.MultiSelect = false;
-            this.listHighlightingColors.Name = "listHighlightingColors";
-            this.listHighlightingColors.ShowItemToolTips = true;
-            this.listHighlightingColors.Size = new System.Drawing.Size(469, 213);
-            this.listHighlightingColors.TabIndex = 3;
-            this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
-            this.listHighlightingColors.View = System.Windows.Forms.View.Details;
-            this.listHighlightingColors.DoubleClick += new System.EventHandler(this.listHighlightingColors_DoubleClick);
-            // 
-            // columnDescription
-            // 
-            this.columnDescription.Text = "Description";
-            this.columnDescription.Width = 250;
-            // 
-            // colorRemovedProcesses
-            // 
-            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
-            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
-            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorRemovedProcesses.TabIndex = 2;
-            // 
-            // colorNewProcesses
-            // 
-            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
-            this.colorNewProcesses.Name = "colorNewProcesses";
-            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorNewProcesses.TabIndex = 1;
-            // 
-            // colorIORO
-            // 
-            this.colorIORO.Color = System.Drawing.Color.Transparent;
-            this.colorIORO.Location = new System.Drawing.Point(124, 163);
-            this.colorIORO.Name = "colorIORO";
-            this.colorIORO.Size = new System.Drawing.Size(40, 20);
-            this.colorIORO.TabIndex = 6;
-            // 
-            // colorIOW
-            // 
-            this.colorIOW.Color = System.Drawing.Color.Transparent;
-            this.colorIOW.Location = new System.Drawing.Point(124, 189);
-            this.colorIOW.Name = "colorIOW";
-            this.colorIOW.Size = new System.Drawing.Size(40, 20);
-            this.colorIOW.TabIndex = 7;
-            // 
-            // colorMemoryWS
-            // 
-            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
-            this.colorMemoryWS.Name = "colorMemoryWS";
-            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryWS.TabIndex = 5;
-            // 
-            // colorMemoryPB
-            // 
-            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
-            this.colorMemoryPB.Name = "colorMemoryPB";
-            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryPB.TabIndex = 4;
-            // 
-            // colorCPUUT
-            // 
-            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
-            this.colorCPUUT.Name = "colorCPUUT";
-            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUUT.TabIndex = 3;
-            // 
-            // colorCPUKT
-            // 
-            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
-            this.colorCPUKT.Name = "colorCPUKT";
-            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUKT.TabIndex = 2;
+            this.buttonReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonReset.Location = new System.Drawing.Point(12, 352);
+            this.buttonReset.Name = "buttonReset";
+            this.buttonReset.Size = new System.Drawing.Size(75, 23);
+            this.buttonReset.TabIndex = 4;
+            this.buttonReset.Text = "Reset";
+            this.buttonReset.UseVisualStyleBackColor = true;
+            this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
             // 
             // OptionsWindow
             // 
@@ -1103,6 +1102,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(513, 387);
+            this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.tabControl);
@@ -1222,6 +1222,6 @@
         private System.Windows.Forms.GroupBox UpdaterSettingsGroupBox;
         private System.Windows.Forms.NumericUpDown textMaxSamples;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button buttonResetSettings;
+        private System.Windows.Forms.Button buttonReset;
     }
 }

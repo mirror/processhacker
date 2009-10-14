@@ -674,15 +674,14 @@ namespace ProcessHacker
             this.buttonOK.Select();
         }
 
-        private void buttonResetSettings_Click(object sender, EventArgs e)
+        private void buttonReset_Click(object sender, EventArgs e)
         {
-            if (PhUtils.ShowConfirmMessage("Reset all Settings", "", "Resetting Settings will reset and restart ProcessHacker?", true)) 
+            if (PhUtils.ShowConfirmMessage("reset", "the settings and restart Process Hacker", null, false))
             {
-                ProcessHacker.Properties.Settings.Default.Reset();
-
-                // todo: fix Application.Restart(); not being applicable/usable
-                Program.TryStart(Application.ExecutablePath);
-                Program.HackerWindow.Exit(false);             
+                Properties.Settings.Default.Reset();
+                Program.GlobalMutex.Dispose();
+                Program.TryStart(ProcessHandle.Current.GetMainModule().FileName);
+                Program.HackerWindow.Exit(false);
             }
         }
     }

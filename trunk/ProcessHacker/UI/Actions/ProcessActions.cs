@@ -319,7 +319,7 @@ namespace ProcessHacker.UI.Actions
             {
                 Program.StartProcessHackerAdmin("-v -ip " + pid.ToString(), () =>
                 {
-                    Program.HackerWindow.Exit(true);
+                    Program.HackerWindow.Exit();
                 }, window.Handle);
 
                 return false;

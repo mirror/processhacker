@@ -997,9 +997,12 @@ namespace ProcessHacker
                     tabControl.SelectedTab = tabThreads;
                     var litem = listThreads.Items[_selectTid.ToString()];
 
-                    Program.HackerWindow.DeselectAll(listThreads.List);
-                    litem.Selected = true;
-                    litem.EnsureVisible();
+                    if (litem != null)
+                    {
+                        Program.HackerWindow.DeselectAll(listThreads.List);
+                        litem.Selected = true;
+                        litem.EnsureVisible();
+                    }
                 }));
             }
         }
