@@ -3439,12 +3439,9 @@ namespace ProcessHacker
             if (isFirstPaint)
             {
                 isFirstPaint = false;
-
-                if (!Program.Recovered)
-                {
-                    ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
-                    //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
-                }
+    
+                ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
+                //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
 
                 this.CreateShutdownMenuItems();
                 this.LoadFixMenuItems();

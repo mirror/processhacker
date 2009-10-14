@@ -99,7 +99,6 @@ namespace ProcessHacker
             new System.Collections.Specialized.StringCollection();
         public static int InspectPid = -1;
         public static bool NoKph = false;
-        public static bool Recovered = false;
         public static string SelectTab = "Processes";
         public static bool StartHidden = false;
         public static bool StartVisible = false;
@@ -125,13 +124,11 @@ namespace ProcessHacker
                 PhUtils.ShowError("You must have .NET Framework 2.0 or higher to use Process Hacker.");
                 Environment.Exit(1);
             }
-
 #if !DEBUG            
             // Setup exception handling at first opportunity to catch exceptions generatable anywhere.
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException, true);
-
 #endif
             try
             {
@@ -151,7 +148,6 @@ namespace ProcessHacker
 
             if (pArgs.ContainsKey("-recovered")) // used for Windows Error Reporting recovery
             {
-                Recovered = true;
                 //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RecoverLastSession();
             }
 
