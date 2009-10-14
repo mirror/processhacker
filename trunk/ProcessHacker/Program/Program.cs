@@ -170,7 +170,7 @@ namespace ProcessHacker
                     !(pArgs.ContainsKey("-e") || pArgs.ContainsKey("-o") ||
                     pArgs.ContainsKey("-pw") || pArgs.ContainsKey("-pt"))
                     )
-                    CheckForPreviousInstance();
+                    ActivatePreviousInstance();
             }
             catch
             { }
@@ -685,7 +685,30 @@ namespace ProcessHacker
             file.Dispose();
         }
 
-        private static void CheckForPreviousInstance()
+        public static bool CheckPreviousInstance()
+        {
+            // Close the handle to the mutex. If the object still exists, 
+            // it means there is another handle to the mutex, and most likely 
+            // there is another instance of PH running.
+
+            if (GlobalMutex == null)
+                return false;
+
+            GlobalMutex.Dispose();
+            GlobalMutex = null;
+
+            try
+            {
+                return NativeUtils.ObjectExists(GlobalMutexName);
+            }
+            finally
+            {
+                try { GlobalMutex = new ProcessHacker.Native.Threading.Mutant(GlobalMutexName); }
+                catch { }
+            }
+        }
+
+        private static void ActivatePreviousInstance()
         {
             bool found = false;
 

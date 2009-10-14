@@ -3019,7 +3019,9 @@ namespace ProcessHacker
             this.ExecuteOnIcons((icon) => icon.Visible = false);
             this.ExecuteOnIcons((icon) => icon.Dispose());
 
-            if (saveSettings)
+            // Only save settings if requested and no other instance of 
+            // PH is running.
+            if (saveSettings && !Program.CheckPreviousInstance())
                 SaveSettings();
 
             this.Visible = false;
