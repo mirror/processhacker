@@ -51,27 +51,27 @@ namespace ProcessHacker.Components
 
     public class ExtendedListView : ListView
     {
-        private const int LVM_First = 0x1000;                              // ListView messages
-        private const int LVM_SetGroupInfo = LVM_First + 147;            // ListView messages Setinfo on Group
-        private const int LVM_SetExtendedListViewStyle = LVM_First + 54; // Sets extended styles in list-view controls.
-        private const int LVM_HITTEST = LVM_First + 18;
-
-        private const int LVN_First = -100;
-        private const int LVN_LINKCLICK = (LVN_First - 84);
-
-        private const int NM_DBLCLK = -3;
-
-        private delegate void CallBackSetGroupState(ListViewGroup lvGroup, ListViewGroupState lvState, string task);
-        private delegate void CallbackSetGroupString(ListViewGroup lvGroup, string value);
-
-        public event LinkClickedEventHandler GroupLinkClicked;
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref LVGroup lParam);
+        private const int LVM_First = 0x1000;                                                     // ListView messages
+        private const int LVM_HitTest = LVM_First + 18;                                    // Determines which list-view item, if any, is at a specified position.
+        private const int LVM_SetGroupInfo = LVM_First + 147;                      // ListView messages Setinfo on Group
+        private const int LVM_SetExtendedListViewStyle = LVM_First + 54;  // Sets extended styles in list-view controls.
+        
+        private const int LVN_First = -100;                                                          
+        private const int LVN_LinkClick = (LVN_First - 84);                              // Notifies a list-view control's parent window that a link has been clicked on.
+        private const int WM_LButtonUp = 0x202;                                             // Sent when the user releases the left mouse button while the cursor is in the client area of a window.
+        private const int NM_DBLClk = -3;                                                          // Sent when the user double-clicks an item with the left mouse button.
 
         // http://blogs.msdn.com/hippietim/archive/2006/03/27/562256.aspx
         private bool _doubleClickChecks = true;
         private bool _doubleClickCheckHackActive = false;
+
+        public event LinkClickedEventHandler GroupLinkClicked;
+
+        private delegate void CallBackSetGroupState(ListViewGroup lvGroup, ListViewGroupState lvState, string task);
+        private delegate void CallbackSetGroupString(ListViewGroup lvGroup, string value);
+      
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref LVGroup lParam);
 
         public ExtendedListView()
         {
@@ -188,7 +188,7 @@ namespace ProcessHacker.Components
         {
             switch (m.Msg)
             {
-                case LVM_HITTEST:
+                case LVM_HitTest:
                     {
                         if (_doubleClickCheckHackActive)
                         {
@@ -199,35 +199,44 @@ namespace ProcessHacker.Components
                         }
                     }
                     break;
-
                 case (int)WindowMessage.Reflect + (int)WindowMessage.Notify:
-                    unsafe
-                    {
-                        NMHDR* hdr = (NMHDR*)m.LParam;
-
-                        if (hdr->code == LVN_LINKCLICK)
+                        unsafe
                         {
-                            NMLVLINK link = (NMLVLINK)Marshal.PtrToStructure(m.LParam, typeof(NMLVLINK));
+                            NMHDR* hdr = (NMHDR*)m.LParam;
 
-                            this.OnGroupLinkClicked(this.FindGroup(link.SubItemIndex));
-
-                            return;
-                        }
-                        else if (hdr->code == NM_DBLCLK)
-                        {
-                            if (!_doubleClickChecks && this.CheckBoxes)
+                            if (hdr->code == LVN_LinkClick)
                             {
-                                _doubleClickCheckHackActive = true;
+                                NMLVLINK link = (NMLVLINK)Marshal.PtrToStructure(m.LParam, typeof(NMLVLINK));
+
+                                this.OnGroupLinkClicked(this.FindGroup(link.SubItemIndex));
+
+                                return;
+                            }
+                            else if (hdr->code == NM_DBLClk)
+                            {
+                                if (!_doubleClickChecks && this.CheckBoxes)
+                                {
+                                    _doubleClickCheckHackActive = true;
+                                }
                             }
                         }
-                    }
                     break;
-            }
+                case WM_LButtonUp:  //handle LButtonUp event and allow groups to be collapsed
+                    {
+                        base.DefWndProc(ref m);
+                        break;
+                    }
 
+                   //todo: mouse flicker bug:  http://blogs.msdn.com/oldnewthing/archive/2006/11/21/1115695.aspx
+            }
+            
             base.WndProc(ref m);
         }
 
         //http://msdn.microsoft.com/en-us/library/bb774769(VS.85).aspx
+        /// <summary>
+        /// Used to set and retrieve groups.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
         private struct LVGroup
         {
@@ -381,25 +390,66 @@ namespace ProcessHacker.Components
             public int code;
         }
 
+        /// <summary>
+        ///  Used to set and retrieve information about a link item.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct LITEM
         {
+            /// <summary>
+            /// Combination of one or more of the LIF flags
+            /// </summary>
             public int Mask;
+            /// <summary>
+            /// Value of type int that contains the item index.
+            /// This numeric index is used to access a SysLink control link.
+            /// </summary>
             public int LinkIndex;
+            /// <summary>
+            /// Combination of one or more of the LIS flags.
+            /// </summary>
             public int State;
+            /// <summary>
+            /// Use stateMask to get or set the state of the link.
+            /// </summary>
             public int StateMask;
+            /// <summary>
+            /// Specify the item by the ID value.
+            /// </summary>
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 48)]
             public string Id;
+            /// <summary>
+            /// Set or get the URL for this item.
+            /// </summary>
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 2048 + 32 + 4)]
             public string Url;
         }
 
+        /// <summary>
+        /// Contains information about an LVN_LINKCLICK  notification. 
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         private struct NMLVLINK
         {
+            /// <summary>
+            /// NMHDR structure that contains basic
+            /// information about the notification message.
+            /// </summary>
             public NMHDR Header;
+            /// <summary>
+            /// LITEM structure that contains 
+            /// information about the link that was clicked.
+            /// </summary>
             public LITEM Link;
+            /// <summary>
+            /// Index of the item that contains the link.
+            /// </summary>
             public int ItemIndex;
+            /// <summary>
+            /// Subitem if any. This member may be NULL.
+            /// For a link in a group header, this is the
+            /// group identifier, as set in LVGROUP.
+            /// </summary>
             public int SubItemIndex;
         }
     }
@@ -407,20 +457,20 @@ namespace ProcessHacker.Components
     [Flags]
     public enum ListViewGroupMask : uint
     {
-        None = 0x00000,
-        Header = 0x00001,
-        Footer = 0x00002,
-        State = 0x00004,
-        Align = 0x00008,
-        GroupId = 0x00010,
-        SubTitle = 0x00100,
-        Task = 0x00200,
-        DescriptionTop = 0x00400,
-        DescriptionBottom = 0x00800,
-        TitleImage = 0x01000,
-        ExtendedImage = 0x02000,
-        Items = 0x04000,
-        Subset = 0x08000,
+        None = 0x0,
+        Header = 0x1,
+        Footer = 0x2,
+        State = 0x4,
+        Align = 0x8,
+        GroupId = 0x10,
+        SubTitle = 0x100,
+        Task = 0x200,
+        DescriptionTop = 0x400,
+        DescriptionBottom = 0x800,
+        TitleImage = 0x1000,
+        ExtendedImage = 0x2000,
+        Items = 0x4000,
+        Subset = 0x8000,
         SubsetItems = 0x10000
     }
 
