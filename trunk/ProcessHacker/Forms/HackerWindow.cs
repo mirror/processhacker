@@ -666,16 +666,22 @@ namespace ProcessHacker
             if (listNetwork.SelectedItems.Count != 1)
                 return;
 
-            foreach (ListViewItem item in listNetwork.SelectedItems)
+            if (PhUtils.IsInternetConnected)
             {
-                var remote = ((NetworkItem)item.Tag).Connection.Remote;
 
-                if (remote != null)
+                foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
-                    IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Whois);
-                    iw.ShowDialog(this);
+                    var remote = ((NetworkItem)item.Tag).Connection.Remote;
+
+                    if (remote != null)
+                    {
+                        IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Whois);
+                        iw.ShowDialog(this);
+                    }
                 }
             }
+            else
+                PhUtils.ShowWarning("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void tracertNetworkMenuItem_Click(object sender, EventArgs e)
@@ -683,33 +689,42 @@ namespace ProcessHacker
             if (listNetwork.SelectedItems.Count != 1)
                 return;
 
-            foreach (ListViewItem item in listNetwork.SelectedItems)
+            if (PhUtils.IsInternetConnected)
             {
-                var remote = ((NetworkItem)item.Tag).Connection.Remote;
-
-                if (remote != null)
+                foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
-                    IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Tracert);
-                    iw.ShowDialog(this);
+                    var remote = ((NetworkItem)item.Tag).Connection.Remote;
+
+                    if (remote != null)
+                    {
+                        IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Tracert);
+                        iw.ShowDialog(this);
+                    }
                 }
             }
+            else
+                PhUtils.ShowWarning("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void pingNetworkMenuItem_Click(object sender, EventArgs e)
         {
             if (listNetwork.SelectedItems.Count != 1)
                 return;
-
-            foreach (ListViewItem item in listNetwork.SelectedItems)
+            if (PhUtils.IsInternetConnected)
             {
-                var remote = ((NetworkItem)item.Tag).Connection.Remote;
-
-                if (remote != null)
+                foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
-                    IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Ping);
-                    iw.ShowDialog(this);
+                    var remote = ((NetworkItem)item.Tag).Connection.Remote;
+
+                    if (remote != null)
+                    {
+                        IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Ping);
+                        iw.ShowDialog(this);
+                    }
                 }
             }
+            else
+                PhUtils.ShowWarning("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void closeNetworkMenuItem_Click(object sender, EventArgs e)
