@@ -666,7 +666,7 @@ namespace ProcessHacker
             if (listNetwork.SelectedItems.Count != 1)
                 return;
 
-            if (PhUtils.IsInternetConnected)
+            if (PhUtils.IsInternetConnected())
             {
 
                 foreach (ListViewItem item in listNetwork.SelectedItems)
@@ -681,7 +681,7 @@ namespace ProcessHacker
                 }
             }
             else
-                PhUtils.ShowWarning("An Internet session could not be established. Please verify connectivity.");
+                PhUtils.ShowError("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void tracertNetworkMenuItem_Click(object sender, EventArgs e)
@@ -689,7 +689,7 @@ namespace ProcessHacker
             if (listNetwork.SelectedItems.Count != 1)
                 return;
 
-            if (PhUtils.IsInternetConnected)
+            if (PhUtils.IsInternetConnected())
             {
                 foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
@@ -703,14 +703,14 @@ namespace ProcessHacker
                 }
             }
             else
-                PhUtils.ShowWarning("An Internet session could not be established. Please verify connectivity.");
+                PhUtils.ShowError("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void pingNetworkMenuItem_Click(object sender, EventArgs e)
         {
             if (listNetwork.SelectedItems.Count != 1)
                 return;
-            if (PhUtils.IsInternetConnected)
+            if (PhUtils.IsInternetConnected())
             {
                 foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
@@ -724,7 +724,7 @@ namespace ProcessHacker
                 }
             }
             else
-                PhUtils.ShowWarning("An Internet session could not be established. Please verify connectivity.");
+                PhUtils.ShowError("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void closeNetworkMenuItem_Click(object sender, EventArgs e)
@@ -1766,7 +1766,7 @@ namespace ProcessHacker
             if (treeProcesses.SelectedNodes.Count != 1)
                 return;
 
-            if (PhUtils.IsInternetConnected)
+            if (PhUtils.IsInternetConnected())
             {
                 if (string.IsNullOrEmpty(treeProcesses.SelectedNodes[0].FileName))
                 {
@@ -1786,7 +1786,7 @@ namespace ProcessHacker
                 vt.Show();
             }
             else
-                PhUtils.ShowWarning("An Internet session could not be established. Please verify connectivity.");
+                PhUtils.ShowError("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void analyzeWaitChainProcessMenuItem_Click(object sender, EventArgs e)

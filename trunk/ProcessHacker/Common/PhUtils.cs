@@ -248,33 +248,30 @@ namespace ProcessHacker.Common
         /// Fast method of checking a connection to the Internet can be established.
         /// </summary>
         /// <returns>True if connected</returns>
-        public static bool IsInternetConnected
+        public static bool IsInternetConnected()
         {
-            get
+            try
             {
-                try
-                {
-                    System.Net.IPHostEntry entry = System.Net.Dns.GetHostEntry("www.msftncsi.com");
-                    return true;
-                   
-                    //http://www.msftncsi.com/ncsi.txt 
-                    //Vista/Win7 Internet Connectivity test address, 
-                    //Every Vista/Win7 machine uses this for checking Internet Connectivity.
-                    //Probably the most reliable internet address...
-                    //More Info: http://technet.microsoft.com/en-us/library/cc766017%28WS.10%29.aspx
-                }
-                catch
-                { return false; }
+                System.Net.IPHostEntry entry = System.Net.Dns.GetHostEntry("www.msftncsi.com");
+                return true;
+               
+                //http://www.msftncsi.com/ncsi.txt 
+                //Vista/Win7 Internet Connectivity test address, 
+                //Every Vista/Win7 machine uses this for checking Internet Connectivity.
+                //Probably the most reliable internet address...
+                //More Info: http://technet.microsoft.com/en-us/library/cc766017%28WS.10%29.aspx
             }
+            catch
+            { return false; }
         }
 
         /// <summary>
         /// Reliable but slower method of checking if a connection to the Internet can be established.
         /// </summary>
         /// <returns>True if connected</returns>
-        public static bool IsInternetConnectedEx
+        public static bool IsInternetConnectedSlow()
         {
-            get { return Win32.InternetCheckConnection("http://www.msftncsi.com", 1, 0); }
+            return Win32.InternetCheckConnection("http://www.msftncsi.com", 1, 0);
         }
 
         /// <summary>

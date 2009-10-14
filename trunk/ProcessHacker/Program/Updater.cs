@@ -28,8 +28,6 @@ using System.Xml;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
-using System.Net;
-using System.IO;
 
 namespace ProcessHacker
 {
@@ -99,48 +97,51 @@ namespace ProcessHacker
 
         public static void Update(Form form, bool interactive)
         {
-            if (PhUtils.IsInternetConnected)
+            if (!PhUtils.IsInternetConnected())
             {
-                XmlDocument xDoc = new XmlDocument();
+                if (interactive)
+                    PhUtils.ShowError("Unable to connect to the internet.");
+                else
+                    Program.HackerWindow.QueueMessage("Unable to connect to the internet.");
+            }
 
+            XmlDocument xDoc = new XmlDocument();
+
+            try
+            {
+                xDoc.Load(Properties.Settings.Default.AppUpdateUrl);
+            }
+            catch (Exception ex)
+            {
+                if (interactive)
+                    PhUtils.ShowException("Unable to download update information", ex);
+                else
+                    Program.HackerWindow.QueueMessage("Unable to download update information: " + ex.Message);
+
+                return;
+            }
+
+            UpdateItem currentVersion = new UpdateItem();
+            UpdateItem bestUpdate = currentVersion;
+
+            XmlNodeList nodes = xDoc.SelectNodes("//update");
+            foreach (XmlNode node in nodes)
+            {
                 try
                 {
-                    xDoc.Load(Properties.Settings.Default.AppUpdateUrl);
+                    UpdateItem update = new UpdateItem(node);
+
+                    // Check if this update is better than the one we already have.
+                    if (update.IsBetterThan(bestUpdate, (AppUpdateLevel)Properties.Settings.Default.AppUpdateLevel))
+                        bestUpdate = update;
                 }
                 catch (Exception ex)
                 {
-                    if (interactive)
-                        PhUtils.ShowException("Unable to download update information", ex);
-                    else
-                        Program.HackerWindow.QueueMessage("Unable to download update information: " + ex.Message);
-
-                    return;
+                    Logging.Log(ex);
                 }
-
-                UpdateItem currentVersion = new UpdateItem();
-                UpdateItem bestUpdate = currentVersion;
-
-                XmlNodeList nodes = xDoc.SelectNodes("//update");
-                foreach (XmlNode node in nodes)
-                {
-                    try
-                    {
-                        UpdateItem update = new UpdateItem(node);
-
-                        // Check if this update is better than the one we already have.
-                        if (update.IsBetterThan(bestUpdate, (AppUpdateLevel)Properties.Settings.Default.AppUpdateLevel))
-                            bestUpdate = update;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logging.Log(ex);
-                    }
-                }
-
-                PromptWithUpdate(form, bestUpdate, currentVersion, interactive);
             }
-            else if (interactive)
-                PhUtils.ShowWarning("An Internet session could not be established. Please verify connectivity.");
+
+            PromptWithUpdate(form, bestUpdate, currentVersion, interactive);
         }
 
         private static void PromptWithUpdate(Form form, UpdateItem bestUpdate, UpdateItem currentVersion, bool interactive)
