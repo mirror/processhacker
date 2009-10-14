@@ -130,8 +130,8 @@ Name: startup_task; Description: {cm:tsk_startupdescr}; GroupDescription: {cm:ts
 Name: startup_task\minimized; Description: {cm:tsk_startupdescrmin}; GroupDescription: {cm:tsk_startup}; Check: StartupCheck(); Flags: unchecked
 Name: remove_startup_task; Description: {cm:tsk_removestartup}; GroupDescription: {cm:tsk_startup}; Check: NOT StartupCheck(); Flags: unchecked
 
-Name: create_KPH_service; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: NOT KProcessHackerStateCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
-Name: delete_KPH_service; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: KProcessHackerStateCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
+Name: create_KPH_service; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: NOT KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
+Name: delete_KPH_service; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
 
 Name: reset_settings; Description: {cm:tsk_resetsettings}; GroupDescription: {cm:tsk_other}; Check: SettingsExistCheck(); Flags: unchecked checkablealone
 
@@ -200,7 +200,7 @@ Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Exec
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps; ValueType: none; Flags: uninsdeletekeyifempty createvalueifdoesntexist; MinVersion: 0,6.0.6001
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: none; Flags: uninsdeletekey; MinVersion: 0,6.0.6001
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: dword; ValueName: DumpCount; ValueData: 5; Flags: uninsdeletevalue; MinVersion: 0,6.0.6001
-Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: expandsz; ValueName: DumpFolder; ValueData: {sd}\ProgramData\wj32; Flags: uninsdeletevalue; MinVersion: 0,6.0.6001
+Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: expandsz; ValueName: DumpFolder; ValueData: {sd}\ProgramData\wj32\mdmp; Flags: uninsdeletevalue; MinVersion: 0,6.0.6001
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\ProcessHacker.exe; ValueType: dword; ValueName: DumpType; ValueData: 1; Flags: uninsdeletevalue; MinVersion: 0,6.0.6001
 
 
@@ -214,6 +214,8 @@ Filename: http://processhacker.sourceforge.net/; Description: {cm:run_visitwebsi
 [UninstallDelete]
 Name: {app}\Homepage.url; Type: files
 Name: {sd}\ProgramData\wj32\*.dmp; Type: files; MinVersion: 0,6.0.6001
+Name: {sd}\ProgramData\wj32\mdmp\*.dmp; Type: files; MinVersion: 0,6.0.6001
+Name: {sd}\ProgramData\wj32\mdmp; Type: dirifempty; MinVersion: 0,6.0.6001
 Name: {sd}\ProgramData\wj32; Type: dirifempty; MinVersion: 0,6.0.6001
 
 
@@ -268,19 +270,10 @@ begin
 end;
 
 
-// Check if Process Hacker's settings exist
-function KProcessHackerStateCheck(): Boolean;
-begin
-  Result := False;
-  if KPHServiceCheck AND IsServiceRunning('KProcessHacker') then
-  Result := True;
-end;
-
-
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssInstall then begin
-   if KProcessHackerStateCheck then begin
+   if IsServiceRunning('KProcessHacker') then begin
     StopService('KProcessHacker');
    end;
   if IsTaskSelected('delete_KPH_service') then begin
@@ -290,10 +283,11 @@ begin
   end;
   if CurStep = ssPostInstall then begin
    if KPHServiceCheck AND NOT IsTaskSelected('delete_KPH_service') then begin
+    RemoveService('KProcessHacker');
+    InstallService(ExpandConstant('{app}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_SYSTEM_START);
     StartService('KProcessHacker');
    end;
     if IsTaskSelected('create_KPH_service') then begin
-     StopService('KProcessHacker');
      RemoveService('KProcessHacker');
      InstallService(ExpandConstant('{app}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_SYSTEM_START);
      StartService('KProcessHacker');
