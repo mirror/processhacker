@@ -79,6 +79,7 @@ namespace ProcessHacker
             SaveFileDialog sfd = new SaveFileDialog();
 
             sfd.FileName = DefaultFileName;
+            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             sfd.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
 
             if (sfd.ShowDialog() == DialogResult.OK)

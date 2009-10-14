@@ -68,7 +68,7 @@ namespace ProcessHacker
         private void buttonDiagnostics_Click(object sender, EventArgs e)
         {
             InformationBox box = new InformationBox(Program.GetDiagnosticInformation());
-
+            box.DefaultFileName = "Process Hacker Diagnostics Info";    
             box.ShowDialog();
         }
 
