@@ -150,5 +150,14 @@ namespace SysCallHacker
         {
             this.Close();
         }
+
+        private void EventProperties_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Close();
+                e.Handled = true;
+            }
+        }
     }
 }

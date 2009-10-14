@@ -19,6 +19,7 @@ namespace SysCallHacker
     public partial class MainWindow : Form
     {
         private static Dictionary<int, string> _sysCallNames = new Dictionary<int, string>();
+        private static Dictionary<string, int> _reverseSysCallNames = new Dictionary<string, int>();
 
         public static Dictionary<int, string> SysCallNames
         {
@@ -78,6 +79,10 @@ namespace SysCallHacker
                         number,
                         "Nt" + symbol.Name.Substring(2)
                         );
+                    _reverseSysCallNames.Add(
+                        "Nt" + symbol.Name.Substring(2),
+                        number
+                        );
 
                     return true;
                 });
@@ -92,8 +97,8 @@ namespace SysCallHacker
             _logger = new SsLogger(4096, false);
             _logger.EventBlockReceived += new EventBlockReceivedDelegate(logger_EventBlockReceived);
             _logger.ArgumentBlockReceived += new ArgumentBlockReceivedDelegate(logger_ArgumentBlockReceived);
-            _logger.AddPreviousModeRule(FilterType.Include, KProcessorMode.UserMode);
             _logger.AddProcessIdRule(FilterType.Exclude, ProcessHandle.GetCurrentId());
+            _logger.AddPreviousModeRule(FilterType.Include, KProcessorMode.UserMode);
             //_logger.Start();
 
             listEvents.SetDoubleBuffered(true);
@@ -228,6 +233,24 @@ namespace SysCallHacker
 
             if (cpd.ShowDialog() == DialogResult.OK)
                 _rules.Add(_logger.AddProcessIdRule(FilterType.Include, cpd.SelectedPid));
+        }
+
+        private void addNumberFiltersMenuItem_Click(object sender, EventArgs e)
+        {
+            SelectSystemCallWindow sscw = new SelectSystemCallWindow(_sysCallNames.Values);
+
+            if (sscw.ShowDialog() == DialogResult.OK)
+                _rules.Add(_logger.AddNumberRule(FilterType.Include, _reverseSysCallNames[sscw.SelectedItem]));
+        }
+
+        private void addKernelModeFiltersMenuItem_Click(object sender, EventArgs e)
+        {
+            _rules.Add(_logger.AddPreviousModeRule(FilterType.Include, KProcessorMode.KernelMode));
+        }
+
+        private void addUserModeFiltersMenuItem_Click(object sender, EventArgs e)
+        {
+            _rules.Add(_logger.AddPreviousModeRule(FilterType.Include, KProcessorMode.UserMode));
         }
     }
 }

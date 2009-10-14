@@ -12,12 +12,131 @@ namespace ProcessHacker.Native.SsLogging
 {
     public delegate void ArgumentBlockReceivedDelegate(SsData argBlock);
     public delegate void EventBlockReceivedDelegate(SsEvent eventBlock);
+    public delegate void RawArgumentBlockReceivedDelegate(MemoryRegion argBlock);
+    public delegate void RawEventBlockReceivedDelegate(MemoryRegion eventBlock);
 
     public sealed class SsLogger
     {
         private const int _highBlockSize = 0x200;
 
-        internal static string ReadWString(MemoryRegion data)
+        public static SsData ReadArgumentBlock(MemoryRegion data)
+        {
+            var argBlock = data.ReadStruct<KphSsArgumentBlock>();
+
+            MemoryRegion dataRegion;
+            SsData ssArg = null;
+
+            dataRegion = new MemoryRegion(data, KphSsArgumentBlock.DataOffset);
+
+            // Process the argument block based on its type.
+            switch (argBlock.Type)
+            {
+                case KphSsArgumentType.Int8:
+                    {
+                        SsSimple simpleArg = new SsSimple();
+
+                        simpleArg.Argument = argBlock.Data.Int8;
+                        simpleArg.Type = typeof(Byte);
+                        ssArg = simpleArg;
+                    }
+                    break;
+                case KphSsArgumentType.Int16:
+                    {
+                        SsSimple simpleArg = new SsSimple();
+
+                        simpleArg.Argument = argBlock.Data.Int16;
+                        simpleArg.Type = typeof(Int16);
+                        ssArg = simpleArg;
+                    }
+                    break;
+                case KphSsArgumentType.Int32:
+                    {
+                        SsSimple simpleArg = new SsSimple();
+
+                        simpleArg.Argument = argBlock.Data.Int32;
+                        simpleArg.Type = typeof(Int32);
+                        ssArg = simpleArg;
+                    }
+                    break;
+                case KphSsArgumentType.Int64:
+                    {
+                        SsSimple simpleArg = new SsSimple();
+
+                        simpleArg.Argument = argBlock.Data.Int64;
+                        simpleArg.Type = typeof(Int64);
+                        ssArg = simpleArg;
+                    }
+                    break;
+                case KphSsArgumentType.Handle:
+                    {
+                        ssArg = new SsHandle(dataRegion);
+                    }
+                    break;
+                case KphSsArgumentType.UnicodeString:
+                    {
+                        ssArg = new SsUnicodeString(dataRegion);
+                    }
+                    break;
+                case KphSsArgumentType.ObjectAttributes:
+                    {
+                        ssArg = new SsObjectAttributes(dataRegion);
+                    }
+                    break;
+                case KphSsArgumentType.ClientId:
+                    {
+                        ssArg = new SsClientId(dataRegion);
+                    }
+                    break;
+            }
+
+            ssArg.Index = argBlock.Index;
+
+            return ssArg;
+        }
+
+        public static SsEvent ReadEventBlock(MemoryRegion data)
+        {
+            var eventBlock = data.ReadStruct<KphSsEventBlock>();
+
+            int[] arguments;
+            IntPtr[] stackTrace;
+
+            // Reconstruct the argument and stack trace arrays.
+
+            arguments = new int[eventBlock.NumberOfArguments];
+            stackTrace = new IntPtr[eventBlock.TraceCount];
+
+            for (int i = 0; i < arguments.Length; i++)
+                arguments[i] = data.ReadInt32(eventBlock.ArgumentsOffset, i);
+            for (int i = 0; i < stackTrace.Length; i++)
+                stackTrace[i] = data.ReadIntPtr(eventBlock.TraceOffset, i);
+
+            // Create an event object.
+            SsEvent ssEvent = new SsEvent();
+
+            // Basic information
+            ssEvent.Time = DateTime.FromFileTime(eventBlock.Time);
+            ssEvent.ThreadId = eventBlock.ClientId.ThreadId;
+            ssEvent.ProcessId = eventBlock.ClientId.ProcessId;
+            ssEvent.Arguments = arguments;
+            ssEvent.StackTrace = stackTrace;
+
+            // Flags
+            ssEvent.ArgumentsCopyFailed =
+                (eventBlock.Flags & KphSsEventFlags.CopyArgumentsFailed) == KphSsEventFlags.CopyArgumentsFailed;
+            ssEvent.ArgumentsProbeFailed =
+                (eventBlock.Flags & KphSsEventFlags.ProbeArgumentsFailed) == KphSsEventFlags.ProbeArgumentsFailed;
+            ssEvent.CallNumber = eventBlock.Number;
+
+            if ((eventBlock.Flags & KphSsEventFlags.UserMode) == KphSsEventFlags.UserMode)
+                ssEvent.Mode = KProcessorMode.UserMode;
+            else
+                ssEvent.Mode = KProcessorMode.KernelMode;
+
+            return ssEvent;
+        }
+
+        public static string ReadWString(MemoryRegion data)
         {
             KphSsWString wString = data.ReadStruct<KphSsWString>();
 
@@ -26,6 +145,8 @@ namespace ProcessHacker.Native.SsLogging
 
         public event ArgumentBlockReceivedDelegate ArgumentBlockReceived;
         public event EventBlockReceivedDelegate EventBlockReceived;
+        public event RawArgumentBlockReceivedDelegate RawArgumentBlockReceived;
+        public event RawEventBlockReceivedDelegate RawEventBlockReceived;
 
         private bool _started = false;
         private object _startLock = new object();
@@ -147,123 +268,21 @@ namespace ProcessHacker.Native.SsLogging
                 // Process the block.
                 if (blockHeader.Type == KphSsBlockType.Event)
                 {
-                    var eventBlock = _buffer.ReadStruct<KphSsEventBlock>(cursor, 0);
-                    int[] arguments;
-                    IntPtr[] stackTrace;
+                    // Raise the events.
 
-                    // Reconstruct the argument and stack trace arrays.
-
-                    arguments = new int[eventBlock.NumberOfArguments];
-                    stackTrace = new IntPtr[eventBlock.TraceCount];
-
-                    for (int i = 0; i < arguments.Length; i++)
-                        arguments[i] = _buffer.ReadInt32(cursor + eventBlock.ArgumentsOffset, i);
-                    for (int i = 0; i < stackTrace.Length; i++)
-                        stackTrace[i] = _buffer.ReadIntPtr(cursor + eventBlock.TraceOffset, i);
-
-                    // Create an event object.
-                    SsEvent ssEvent = new SsEvent();
-
-                    // Basic information
-                    ssEvent.Time = DateTime.FromFileTime(eventBlock.Time);
-                    ssEvent.ThreadId = eventBlock.ClientId.ThreadId;
-                    ssEvent.ProcessId = eventBlock.ClientId.ProcessId;
-                    ssEvent.Arguments = arguments;
-                    ssEvent.StackTrace = stackTrace;
-
-                    // Flags
-                    ssEvent.ArgumentsCopyFailed =
-                        (eventBlock.Flags & KphSsEventFlags.CopyArgumentsFailed) == KphSsEventFlags.CopyArgumentsFailed;
-                    ssEvent.ArgumentsProbeFailed =
-                        (eventBlock.Flags & KphSsEventFlags.ProbeArgumentsFailed) == KphSsEventFlags.ProbeArgumentsFailed;
-                    ssEvent.CallNumber = eventBlock.Number;
-
-                    if ((eventBlock.Flags & KphSsEventFlags.UserMode) == KphSsEventFlags.UserMode)
-                        ssEvent.Mode = KProcessorMode.UserMode;
-                    else
-                        ssEvent.Mode = KProcessorMode.KernelMode;
-
-                    // Raise the event.
                     if (this.EventBlockReceived != null)
-                        this.EventBlockReceived(ssEvent);
+                        this.EventBlockReceived(ReadEventBlock(new MemoryRegion(_buffer, cursor)));
+                    if (this.RawEventBlockReceived != null)
+                        this.RawEventBlockReceived(new MemoryRegion(_buffer, cursor));
                 }
                 else if (blockHeader.Type == KphSsBlockType.Argument)
                 {
-                    var argBlock = _buffer.ReadStruct<KphSsArgumentBlock>(cursor, 0);
-                    MemoryRegion dataRegion;
-                    SsData ssArg = null;
+                    // Raise the events.
 
-                    dataRegion = new MemoryRegion(_buffer, cursor + KphSsArgumentBlock.DataOffset);
-
-                    // Process the argument block based on its type.
-                    switch (argBlock.Type)
-                    {
-                        case KphSsArgumentType.Int8:
-                            {
-                                SsSimple simpleArg = new SsSimple();
-
-                                simpleArg.Argument = argBlock.Data.Int8;
-                                simpleArg.Type = typeof(Byte);
-                                ssArg = simpleArg;
-                            }
-                            break;
-                        case KphSsArgumentType.Int16:
-                            {
-                                SsSimple simpleArg = new SsSimple();
-
-                                simpleArg.Argument = argBlock.Data.Int16;
-                                simpleArg.Type = typeof(Int16);
-                                ssArg = simpleArg;
-                            }
-                            break;
-                        case KphSsArgumentType.Int32:
-                            {
-                                SsSimple simpleArg = new SsSimple();
-
-                                simpleArg.Argument = argBlock.Data.Int32;
-                                simpleArg.Type = typeof(Int32);
-                                ssArg = simpleArg;
-                            }
-                            break;
-                        case KphSsArgumentType.Int64:
-                            {
-                                SsSimple simpleArg = new SsSimple();
-
-                                simpleArg.Argument = argBlock.Data.Int64;
-                                simpleArg.Type = typeof(Int64);
-                                ssArg = simpleArg;
-                            }
-                            break;
-                        case KphSsArgumentType.Handle:
-                            {
-                                ssArg = new SsHandle(dataRegion);
-                            }
-                            break;
-                        case KphSsArgumentType.UnicodeString:
-                            {
-                                ssArg = new SsUnicodeString(dataRegion);
-                            }
-                            break;
-                        case KphSsArgumentType.ObjectAttributes:
-                            {
-                                ssArg = new SsObjectAttributes(dataRegion);
-                            }
-                            break;
-                        case KphSsArgumentType.ClientId:
-                            {
-                                ssArg = new SsClientId(dataRegion);
-                            }
-                            break;
-                    }
-
-                    ssArg.Index = argBlock.Index;
-
-                    // Raise the event.
-                    if (ssArg != null)
-                    {
-                        if (this.ArgumentBlockReceived != null)
-                            this.ArgumentBlockReceived(ssArg);
-                    }
+                    if (this.ArgumentBlockReceived != null)
+                        this.ArgumentBlockReceived(ReadArgumentBlock(new MemoryRegion(_buffer, cursor)));
+                    if (this.RawArgumentBlockReceived != null)
+                        this.RawArgumentBlockReceived(new MemoryRegion(_buffer, cursor));
                 }
 
                 // Advance the cursor.

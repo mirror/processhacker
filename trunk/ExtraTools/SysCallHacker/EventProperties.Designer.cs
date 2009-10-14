@@ -269,6 +269,7 @@
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EventProperties";
@@ -276,6 +277,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Event Properties";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EventProperties_KeyDown);
             this.tabControl.ResumeLayout(false);
             this.tabEvent.ResumeLayout(false);
             this.groupArguments.ResumeLayout(false);

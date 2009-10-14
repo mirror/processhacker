@@ -37,6 +37,10 @@
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.removeAllFiltersMenuItem = new System.Windows.Forms.MenuItem();
             this.addProcessFiltersMenuItem = new System.Windows.Forms.MenuItem();
+            this.addNumberFiltersMenuItem = new System.Windows.Forms.MenuItem();
+            this.addKernelModeFiltersMenuItem = new System.Windows.Forms.MenuItem();
+            this.addUserModeFiltersMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.listEvents = new System.Windows.Forms.ListView();
             this.columnTime = new System.Windows.Forms.ColumnHeader();
             this.columnClient = new System.Windows.Forms.ColumnHeader();
@@ -55,7 +59,8 @@
             // 
             this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.hackerMenuItem,
-            this.menuItem1});
+            this.menuItem1,
+            this.menuItem2});
             // 
             // hackerMenuItem
             // 
@@ -82,7 +87,10 @@
             this.menuItem1.Index = 1;
             this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.removeAllFiltersMenuItem,
-            this.addProcessFiltersMenuItem});
+            this.addProcessFiltersMenuItem,
+            this.addNumberFiltersMenuItem,
+            this.addKernelModeFiltersMenuItem,
+            this.addUserModeFiltersMenuItem});
             this.menuItem1.Text = "Filters";
             // 
             // removeAllFiltersMenuItem
@@ -96,6 +104,29 @@
             this.addProcessFiltersMenuItem.Index = 1;
             this.addProcessFiltersMenuItem.Text = "Add Process...";
             this.addProcessFiltersMenuItem.Click += new System.EventHandler(this.addProcessFiltersMenuItem_Click);
+            // 
+            // addNumberFiltersMenuItem
+            // 
+            this.addNumberFiltersMenuItem.Index = 2;
+            this.addNumberFiltersMenuItem.Text = "Add System Call...";
+            this.addNumberFiltersMenuItem.Click += new System.EventHandler(this.addNumberFiltersMenuItem_Click);
+            // 
+            // addKernelModeFiltersMenuItem
+            // 
+            this.addKernelModeFiltersMenuItem.Index = 3;
+            this.addKernelModeFiltersMenuItem.Text = "Add Kernel-mode...";
+            this.addKernelModeFiltersMenuItem.Click += new System.EventHandler(this.addKernelModeFiltersMenuItem_Click);
+            // 
+            // addUserModeFiltersMenuItem
+            // 
+            this.addUserModeFiltersMenuItem.Index = 4;
+            this.addUserModeFiltersMenuItem.Text = "Add User-mode...";
+            this.addUserModeFiltersMenuItem.Click += new System.EventHandler(this.addUserModeFiltersMenuItem_Click);
+            // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 2;
+            this.menuItem2.Text = "Find";
             // 
             // listEvents
             // 
@@ -234,6 +265,10 @@
         private System.Windows.Forms.MenuItem removeAllFiltersMenuItem;
         private System.Windows.Forms.MenuItem addProcessFiltersMenuItem;
         private System.Windows.Forms.MenuItem clearHackerMenuItem;
+        private System.Windows.Forms.MenuItem menuItem2;
+        private System.Windows.Forms.MenuItem addNumberFiltersMenuItem;
+        private System.Windows.Forms.MenuItem addKernelModeFiltersMenuItem;
+        private System.Windows.Forms.MenuItem addUserModeFiltersMenuItem;
 
 
     }
