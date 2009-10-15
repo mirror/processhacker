@@ -56,6 +56,11 @@ namespace ProcessHacker.Common.Settings
             _rootNode = _doc.SelectSingleNode("/" + _rootElementName);
         }
 
+        public string FileName
+        {
+            get { return _fileName; }
+        }
+
         public void Flush()
         {
             lock (_doc)

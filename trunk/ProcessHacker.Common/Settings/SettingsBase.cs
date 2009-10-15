@@ -182,5 +182,10 @@ namespace ProcessHacker.Common.Settings
                     _modifiedSettings.Add(name, value);
             }
         }
+
+        public ISettingsStore Store
+        {
+            get { return _store; }
+        }
     }
 }

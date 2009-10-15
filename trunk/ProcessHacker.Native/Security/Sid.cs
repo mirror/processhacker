@@ -334,7 +334,8 @@ namespace ProcessHacker.Native.Security
             {
                 if (string.IsNullOrEmpty(this.Name))
                     return this.StringSid;
-                if (includeDomain)
+
+                if (includeDomain && !string.IsNullOrEmpty(this.DomainName))
                     return this.DomainName + "\\" + this.Name;
                 else
                     return this.Name;

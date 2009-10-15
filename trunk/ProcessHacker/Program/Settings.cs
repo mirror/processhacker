@@ -1,263 +1,146 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
-using ProcessHacker.Common;
 using System.Xml;
+using ProcessHacker.Common;
+using ProcessHacker.Common.Settings;
+using System.Windows.Forms;
 
 namespace ProcessHacker
 {
-    public static class Settings
+    public class Settings : SettingsBase
     {
-        private static XmlDocument basedoc;
-        private static string settingsPath = 
-            System.Windows.Forms.Application.StartupPath + "\\Settings.xml";
+        private static Settings _instance;
+        private static XmlFileSettingsStore _store;
 
-        #region Settings
-
-        public static string AppUpdateUrl
+        public static Settings Instance
         {
-            get { return Settings.GetStringKey("AppUpdateUrl"); }
-            set { Settings.UpdateKey("AppUpdateUrl", value); }
+            get { return _instance; }
+            set { _instance = value; }
         }
 
-        public static string DbgHelpPath
+        public Settings(string fileName)
+            : base(new XmlFileSettingsStore(fileName))
         {
-            get { return Settings.GetStringKey("DbgHelpPath"); }
-            set { Settings.UpdateKey("DbgHelpPath", value); }
+            this.Invalidate();
         }
 
-        public static int RefreshInterval
+        protected override void Invalidate()
         {
-            get { return Settings.GetIntKey("RefreshInterval"); }
-            set { Settings.UpdateKey("RefreshInterval", value.ToString()); }
+            _refreshInterval = (int)this["RefreshInterval"];
         }
 
-        public static bool ShowAccountDomains
+        private string _memoryListViewColumns;
+        [SettingDefault("")]
+        public string MemoryListViewColumns
         {
-            get { return Settings.GetBoolKey("ShowAccountDomains"); }
-            set { Settings.UpdateKey("ShowAccountDomains", value.ToString()); }
+            get { return _memoryListViewColumns != null ? _memoryListViewColumns : (string)this["MemoryListViewColumns"]; }
+            set { this["MemoryListViewColumns"] = _memoryListViewColumns = value; }
         }
 
-        #endregion
-
-        #region Settings Management
-
-        public static void AddKey(string id, string strValue)
+        private Size? _memoryWindowSize;
+        [SettingDefault("791, 503")]
+        public Size MemoryWindowSize
         {
-            LoadBaseSettings();
-
-            XmlNode appSettingsNode = basedoc.SelectSingleNode("//setting[@id='" + id + "']");
-            
-            try
-            {
-                if (!KeyExists(id))
-                {
-                    Logging.Log(new ArgumentException(
-                        "Key name: <" + id + "> already exists in the configuration."));
-                    return;
-                }
-
-                System.Xml.XmlNode newChild = appSettingsNode.FirstChild.Clone();
-                newChild.Attributes["id"].Value = id;
-                newChild.Attributes["value"].Value = strValue;
-                
-                appSettingsNode.AppendChild(newChild);
-
-                System.Xml.XmlNode newNode = basedoc.SelectSingleNode("//setting[@id='" + id + "']");
-                //get the node where you want to insert the data
-                System.Xml.XmlNode childNode = basedoc.CreateNode(System.Xml.XmlNodeType.Element, "your node name where you want to insert data", "");
-
-                //In the below step "name" is your node name and "sree" is your data to insert
-                System.Xml.XmlAttribute newAttribute = basedoc.CreateAttribute("name", "sree", "");
-                childNode.Attributes.Append(newAttribute);
-                newNode.AppendChild(childNode);
-
-                Settings.SaveBaseSettings();
-                Settings.LoadBaseSettings();
-            }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
-            }
+            get { return _memoryWindowSize.HasValue ? _memoryWindowSize.Value : (Size)this["MemoryWindowSize"]; }
+            set { this["MemoryWindowSize"] = _memoryWindowSize = value; }
         }
 
-        public static void UpdateKey(string id, string Value)
+        private string _moduleListViewColumns;
+        [SettingDefault("")]
+        public string ModuleListViewColumns
         {
-            if (basedoc == null)
-                Settings.LoadBaseSettings();
-
-            XmlNode appSettingsNode = basedoc.SelectSingleNode("//setting[@id='" + id + "']");
-            System.Xml.XmlNode currNode;
-            System.Xml.XmlDocumentFragment docFrag = basedoc.CreateDocumentFragment();
-            docFrag.InnerXml =
-                "<setting id=" + id + ">" +
-                "<value>" + Value + "</value>" +
-                "<defvalue>" + Value + "</defvalue>" + 
-                "</item>";
-
-            //insert the node into the document 
-            currNode = basedoc.DocumentElement;
-            currNode.InsertBefore(docFrag, currNode.FirstChild);
-
-            Settings.SaveBaseSettings();
-            Settings.LoadBaseSettings();
+            get { return _moduleListViewColumns != null ? _moduleListViewColumns : (string)this["ModuleListViewColumns"]; }
+            set { this["ModuleListViewColumns"] = _moduleListViewColumns = value; }
         }
 
-        public static void DeleteKey(string id)
+        private string _processTreeColumns;
+        [SettingDefault("")]
+        public string ProcessTreeColumns
         {
-            XmlNodeList newXMLNodes = basedoc.SelectNodes("//setting[@id='" + id + "']");
-            foreach (XmlNode newXMLNode in newXMLNodes)
-            {
-                newXMLNode.ParentNode.RemoveChild(newXMLNode);
-            }
-
-            Settings.SaveBaseSettings();
-            Settings.LoadBaseSettings();
+            get { return _processTreeColumns != null ? _processTreeColumns : (string)this["ProcessTreeColumns"]; }
+            set { this["ProcessTreeColumns"] = _processTreeColumns = value; }
         }
 
-        #endregion
-
-        #region Settings Helpers
-
-        public static string GetStringKey(string id)
+        private int _refreshInterval;
+        [SettingDefault("1000")]
+        public int RefreshInterval
         {
-            if (basedoc == null)
-                Settings.LoadBaseSettings();
-
-            if (!KeyExists(id))
-            {
-                Logging.Log(new ArgumentNullException
-                    ("Key", "<" + id + "> does not exist in the configuration. Update failed."));
-                return string.Empty;
-            }
-
-            System.Xml.XmlNodeList nodes = basedoc.SelectNodes("//setting[@id='" + id + "']");
-            foreach (System.Xml.XmlNode node in nodes)
-            {
-                return node["value"].InnerText;
-            }
-            return null;
+            get { return _refreshInterval; }
+            set { this["RefreshInterval"] = _refreshInterval = value; }
         }
 
-        public static bool GetBoolKey(string id)
+        private string _resultsListViewColumns;
+        [SettingDefault("")]
+        public string ResultsListViewColumns
         {
-            if (basedoc == null)
-                Settings.LoadBaseSettings();
-
-            if (!KeyExists(id))
-            {
-                Logging.Log(new ArgumentNullException
-                    ("Key", "<" + id + "> does not exist in the configuration. Update failed."));
-                return false;
-            }
-
-            System.Xml.XmlNodeList nodes = basedoc.SelectNodes("//setting[@id='" + id + "']");
-            foreach (System.Xml.XmlNode node in nodes)
-            {
-                return (node["value"].InnerText.Length != 0);
-            }
-
-            return false;
+            get { return _resultsListViewColumns != null ? _resultsListViewColumns : (string)this["ResultsListViewColumns"]; }
+            set { this["ResultsListViewColumns"] = _resultsListViewColumns = value; }
         }
 
-        public static int GetIntKey(string id)
+        private Size? _resultsWindowSize;
+        [SettingDefault("504, 482")]
+        public Size ResultsWindowSize
         {
-            if (basedoc == null)
-                Settings.LoadBaseSettings();
-
-            if (!KeyExists(id))
-            {
-                Logging.Log(new ArgumentNullException
-                    ("Key", "<" + id + "> does not exist in the configuration. Update failed."));
-                return 0;
-            }
-
-            System.Xml.XmlNodeList nodes = basedoc.SelectNodes("//setting[@id='" + id + "']");
-            foreach (System.Xml.XmlNode node in nodes)
-            {
-                return Convert.ToInt32(node["value"].InnerText);
-            }
-
-            return 0;
+            get { return _resultsWindowSize.HasValue ? _resultsWindowSize.Value : (Size)this["ResultsWindowSize"]; }
+            set { this["ResultsWindowSize"] = _resultsWindowSize = value; }
         }
 
-        public static bool KeyExists(string id)
+        private string _searchType;
+        [SettingDefault("&String Scan...")]
+        public string SearchType
         {
-            if (basedoc == null)
-                Settings.LoadBaseSettings();
-
-            System.Xml.XmlNode appSettingsNode =  basedoc.SelectSingleNode("//setting[@id='" + id + "']");
-
-            if (appSettingsNode != null)
-            {
-                return true;
-            }
-            else
-            {
-                UpdateKey(id, "");
-                return true;
-            }
+            get { return _searchType != null ? _searchType : (string)this["SearchType"]; }
+            set { this["SearchType"] = _searchType = value; }
         }
 
-        #endregion
-
-        #region Settings Base
-
-        public static bool LoadBaseSettings()
+        private bool _showAccountDomains;
+        [SettingDefault("False")]
+        public bool ShowAccountDomains
         {
-            basedoc = new System.Xml.XmlDocument();
-
-            try
-            {
-                if (System.IO.File.Exists(settingsPath))
-                {
-                    basedoc.Load(settingsPath);
-                    return true;
-                }
-                else
-                {
-                    Settings.ResetBaseSettings(); //reset config, reload base    
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
-                return false;
-            }
+            get { return _showAccountDomains; }
+            set { this["ShowAccountDomains"] = _showAccountDomains = value; }
         }
 
-        public static bool ResetBaseSettings()
+        private string _threadListViewColumns;
+        [SettingDefault("")]
+        public string ThreadListViewColumns
         {
-            try
-            {
-                basedoc = new System.Xml.XmlDocument();
-                basedoc.LoadXml(ProcessHacker.Properties.Resources.Settings);
-
-                //if (true)? portable mode?? commandline switch??    
-                Settings.SaveBaseSettings();
-
-                basedoc = null; // making sure new config file is used
-
-                Settings.LoadBaseSettings(); // switch settings to newly created config file   
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
-                return false;
-            }
+            get { return _threadListViewColumns != null ? _threadListViewColumns : (string)this["ThreadListViewColumns"]; }
+            set { this["ThreadListViewColumns"] = _threadListViewColumns = value; }
         }
 
-        public static void SaveBaseSettings()
+        private bool _warnDangerous;
+        [SettingDefault("True")]
+        public bool WarnDangerous
         {
-            if (basedoc == null)
-                Settings.LoadBaseSettings();
-
-            basedoc.Save(settingsPath);
+            get { return _warnDangerous; }
+            set { this["WarnDangerous"] = _warnDangerous = value; }
         }
 
-        #endregion
+        private Point? _windowLocation;
+        [SettingDefault("200, 200")]
+        public Point WindowLocation
+        {
+            get { return _windowLocation.HasValue ? _windowLocation.Value : (Point)this["WindowLocation"]; }
+            set { this["WindowLocation"] = _windowLocation = value; }
+        }
 
+        private Size? _windowSize;
+        [SettingDefault("844, 550")]
+        public Size WindowSize
+        {
+            get { return _windowSize.HasValue ? _windowSize.Value : (Size)this["WindowSize"]; }
+            set { this["WindowSize"] = _windowSize = value; }
+        }
+
+        private FormWindowState? _windowState;
+        [SettingDefault("Normal")]
+        public FormWindowState WindowState
+        {
+            get { return _windowState.HasValue ? _windowState.Value : (FormWindowState)this["WindowState"]; }
+            set { this["WindowState"] = _windowState = value; }
+        }
     }
 }
