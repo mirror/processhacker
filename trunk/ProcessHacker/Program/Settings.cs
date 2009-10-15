@@ -143,6 +143,14 @@ namespace ProcessHacker
             set { this["HandleListViewColumns"] = _handleListViewColumns = value; }
         }
 
+        private bool? _hideWhenMinimized;
+        [SettingDefault("False")]
+        public bool HideWhenMinimized
+        {
+            get { return _hideWhenMinimized.HasValue ? _hideWhenMinimized.Value : (bool)this["HideWhenMinimized"]; }
+            set { this["HideWhenMinimized"] = _hideWhenMinimized = value; }
+        }
+
         private int _highlightingDuration;
         [SettingDefault("1000")]
         public int HighlightingDuration
@@ -247,6 +255,62 @@ namespace ProcessHacker
             set { this["PEWindowSize"] = _peWindowSize = value; }
         }
 
+        private bool _plotterAntialias;
+        [SettingDefault("False")]
+        public bool PlotterAntialias
+        {
+            get { return _plotterAntialias; }
+            set { this["PlotterAntialias"] = _plotterAntialias = value; }
+        }
+
+        private Color? _plotterCPUKernelColor;
+        [SettingDefault("Lime")]
+        public Color PlotterCPUKernelColor
+        {
+            get { return _plotterCPUKernelColor.HasValue ? _plotterCPUKernelColor.Value : (Color)this["PlotterCPUKernelColor"]; }
+            set { this["PlotterCPUKernelColor"] = _plotterCPUKernelColor = value; }
+        }
+
+        private Color? _plotterCPUUserColor;
+        [SettingDefault("Red")]
+        public Color PlotterCPUUserColor
+        {
+            get { return _plotterCPUUserColor.HasValue ? _plotterCPUUserColor.Value : (Color)this["PlotterCPUUserColor"]; }
+            set { this["PlotterCPUUserColor"] = _plotterCPUUserColor = value; }
+        }
+
+        private Color? _plotterIOROColor;
+        [SettingDefault("Yellow")]
+        public Color PlotterIOROColor
+        {
+            get { return _plotterIOROColor.HasValue ? _plotterIOROColor.Value : (Color)this["PlotterIOROColor"]; }
+            set { this["PlotterIOROColor"] = _plotterIOROColor = value; }
+        }
+
+        private Color? _plotterIOWColor;
+        [SettingDefault("DarkViolet")]
+        public Color PlotterIOWColor
+        {
+            get { return _plotterIOWColor.HasValue ? _plotterIOWColor.Value : (Color)this["PlotterIOWColor"]; }
+            set { this["PlotterIOWColor"] = _plotterIOWColor = value; }
+        }
+
+        private Color? _plotterMemoryPrivateColor;
+        [SettingDefault("Orange")]
+        public Color PlotterMemoryPrivateColor
+        {
+            get { return _plotterMemoryPrivateColor.HasValue ? _plotterMemoryPrivateColor.Value : (Color)this["PlotterMemoryPrivateColor"]; }
+            set { this["PlotterMemoryPrivateColor"] = _plotterMemoryPrivateColor = value; }
+        }
+
+        private Color? _plotterMemoryWSColor;
+        [SettingDefault("Cyan")]
+        public Color PlotterMemoryWSColor
+        {
+            get { return _plotterMemoryWSColor.HasValue ? _plotterMemoryWSColor.Value : (Color)this["PlotterMemoryWSColor"]; }
+            set { this["PlotterMemoryWSColor"] = _plotterMemoryWSColor = value; }
+        }
+
         private string _privilegeListColumns;
         [SettingDefault("")]
         public string PrivilegeListColumns
@@ -269,6 +333,14 @@ namespace ProcessHacker
         {
             get { return _processWindowSelectedTab != null ? _processWindowSelectedTab : (string)this["ProcessWindowSelectedTab"]; }
             set { this["ProcessWindowSelectedTab"] = _processWindowSelectedTab = value; }
+        }
+
+        private Size? _processWindowSize;
+        [SettingDefault("505, 512")]
+        public Size ProcessWindowSize
+        {
+            get { return _processWindowSize.HasValue ? _processWindowSize.Value : (Size)this["ProcessWindowSize"]; }
+            set { this["ProcessWindowSize"] = _processWindowSize = value; }
         }
 
         private string _promptBoxText;
@@ -301,6 +373,14 @@ namespace ProcessHacker
         {
             get { return _resultsWindowSize.HasValue ? _resultsWindowSize.Value : (Size)this["ResultsWindowSize"]; }
             set { this["ResultsWindowSize"] = _resultsWindowSize = value; }
+        }
+
+        private string _runAsCommand;
+        [SettingDefault("")]
+        public string RunAsCommand
+        {
+            get { return _runAsCommand != null ? _runAsCommand : (string)this["RunAsCommand"]; }
+            set { this["RunAsCommand"] = _runAsCommand = value; }
         }
 
         private string _runAsUsername;
@@ -389,6 +469,14 @@ namespace ProcessHacker
         {
             get { return _tokenWindowSize.HasValue ? _tokenWindowSize.Value : (Size)this["TokenWindowSize"]; }
             set { this["TokenWindowSize"] = _tokenWindowSize = value; }
+        }
+
+        private string _tokenWindowTab;
+        [SettingDefault("tabPrivileges")]
+        public string TokenWindowTab
+        {
+            get { return _tokenWindowTab != null ? _tokenWindowTab : (string)this["TokenWindowTab"]; }
+            set { this["TokenWindowTab"] = _tokenWindowTab = value; }
         }
 
         private bool _warnDangerous;
