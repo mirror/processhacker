@@ -9,8 +9,6 @@ namespace ProcessHacker
     public static class Settings
     {
         private static XmlDocument basedoc;
-        
-        //temporary, will be added as a setting
         private static string settingsPath = 
             System.Windows.Forms.Application.StartupPath + "\\Settings.xml";
 
@@ -46,10 +44,7 @@ namespace ProcessHacker
 
         public static void AddKey(string id, string strValue)
         {
-            if (basedoc == null)
-                loadBaseSettings();
-
-            loadBaseSettings();
+            LoadBaseSettings();
 
             XmlNode appSettingsNode = basedoc.SelectSingleNode("//setting[@id='" + id + "']");
             
@@ -77,7 +72,8 @@ namespace ProcessHacker
                 childNode.Attributes.Append(newAttribute);
                 newNode.AppendChild(childNode);
 
-                basedoc.Save(settingsPath);
+                Settings.SaveBaseSettings();
+                Settings.LoadBaseSettings();
             }
             catch (Exception ex)
             {
@@ -85,20 +81,26 @@ namespace ProcessHacker
             }
         }
 
-        public static void UpdateKey(string id, string newValue)
+        public static void UpdateKey(string id, string Value)
         {
             if (basedoc == null)
-                loadBaseSettings();
+                Settings.LoadBaseSettings();
 
             XmlNode appSettingsNode = basedoc.SelectSingleNode("//setting[@id='" + id + "']");
+            System.Xml.XmlNode currNode;
+            System.Xml.XmlDocumentFragment docFrag = basedoc.CreateDocumentFragment();
+            docFrag.InnerXml =
+                "<setting id=" + id + ">" +
+                "<value>" + Value + "</value>" +
+                "<defvalue>" + Value + "</defvalue>" + 
+                "</item>";
 
-            // Attempt to locate the requested setting.
-            foreach (XmlNode childNode in appSettingsNode)
-            {
-                childNode.InnerText = newValue;
-            }
+            //insert the node into the document 
+            currNode = basedoc.DocumentElement;
+            currNode.InsertBefore(docFrag, currNode.FirstChild);
 
-            basedoc.Save(settingsPath);
+            Settings.SaveBaseSettings();
+            Settings.LoadBaseSettings();
         }
 
         public static void DeleteKey(string id)
@@ -109,33 +111,8 @@ namespace ProcessHacker
                 newXMLNode.ParentNode.RemoveChild(newXMLNode);
             }
 
-            Settings.SaveSettings();
-            Settings.ReloadSettings();
-        }
-
-        #endregion
-
-        #region Settings Functions
-
-        public static void ReloadSettings()
-        {
-            RefreshInterval = Settings.GetIntKey("RefreshInterval");         
-            ShowAccountDomains = Settings.GetBoolKey("ShowAccountDomains");
-            AppUpdateUrl = Settings.GetStringKey("AppUpdateUrl");
-
-            //System.Windows.Forms.MessageBox.Show(Settings.GetStringKey("AppUpdateUrl"));
-
-            //Settings.UpdateKey("AppUpdateUrl", "http://address.com");
-
-            //System.Windows.Forms.MessageBox.Show(Settings.GetStringKey("AppUpdateUrl"));
-        }
-
-        public static void SaveSettings()
-        {
-            if (basedoc == null)
-                Settings.loadBaseSettings();
-
-            basedoc.Save(settingsPath);
+            Settings.SaveBaseSettings();
+            Settings.LoadBaseSettings();
         }
 
         #endregion
@@ -145,7 +122,7 @@ namespace ProcessHacker
         public static string GetStringKey(string id)
         {
             if (basedoc == null)
-                loadBaseSettings();
+                Settings.LoadBaseSettings();
 
             if (!KeyExists(id))
             {
@@ -165,7 +142,7 @@ namespace ProcessHacker
         public static bool GetBoolKey(string id)
         {
             if (basedoc == null)
-                loadBaseSettings();
+                Settings.LoadBaseSettings();
 
             if (!KeyExists(id))
             {
@@ -186,7 +163,7 @@ namespace ProcessHacker
         public static int GetIntKey(string id)
         {
             if (basedoc == null)
-                loadBaseSettings();
+                Settings.LoadBaseSettings();
 
             if (!KeyExists(id))
             {
@@ -204,13 +181,10 @@ namespace ProcessHacker
             return 0;
         }
 
-        /// <summary>
-        /// Determines if a key exists within the App.config
-        /// </summary>
         public static bool KeyExists(string id)
         {
             if (basedoc == null)
-                loadBaseSettings();
+                Settings.LoadBaseSettings();
 
             System.Xml.XmlNode appSettingsNode =  basedoc.SelectSingleNode("//setting[@id='" + id + "']");
 
@@ -229,7 +203,7 @@ namespace ProcessHacker
 
         #region Settings Base
 
-        public static bool loadBaseSettings()
+        public static bool LoadBaseSettings()
         {
             basedoc = new System.Xml.XmlDocument();
 
@@ -242,7 +216,7 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    Settings.resetBaseSettings(); //reset config, reload base    
+                    Settings.ResetBaseSettings(); //reset config, reload base    
                     return true;
                 }
             }
@@ -253,18 +227,19 @@ namespace ProcessHacker
             }
         }
 
-        public static bool resetBaseSettings()
+        public static bool ResetBaseSettings()
         {
             try
             {
                 basedoc = new System.Xml.XmlDocument();
-
                 basedoc.LoadXml(ProcessHacker.Properties.Resources.Settings);
 
                 //if (true)? portable mode?? commandline switch??    
-                Settings.SaveSettings();
+                Settings.SaveBaseSettings();
 
-                Settings.loadBaseSettings(); // switch settings to newly created config file   
+                basedoc = null; // making sure new config file is used
+
+                Settings.LoadBaseSettings(); // switch settings to newly created config file   
                 return true;
             }
             catch (Exception ex)
@@ -272,6 +247,14 @@ namespace ProcessHacker
                 Logging.Log(ex);
                 return false;
             }
+        }
+
+        public static void SaveBaseSettings()
+        {
+            if (basedoc == null)
+                Settings.LoadBaseSettings();
+
+            basedoc.Save(settingsPath);
         }
 
         #endregion

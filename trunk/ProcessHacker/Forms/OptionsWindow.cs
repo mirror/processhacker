@@ -538,8 +538,6 @@ namespace ProcessHacker
 
         private void ApplySettings()
         {
-            Settings.ReloadSettings();
-
             Program.ImposterNames = new System.Collections.Specialized.StringCollection();
             Utils.UnitSpecifier = Properties.Settings.Default.UnitSpecifier;
 

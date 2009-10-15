@@ -429,10 +429,23 @@ namespace ProcessHacker.Properties {
         ///&lt;settings&gt;
         ///  
         ///  &lt;setting id=&quot;AppUpdateUrl&quot;&gt;
-        ///    &lt;value&gt;http://www.someadd.com&lt;/value&gt;
+        ///    &lt;value&gt;http://processhacker.sourceforge.net/AppUpdate.xml&lt;/value&gt;
+        ///    &lt;defvalue&gt;http://processhacker.sourceforge.net/AppUpdate.xml&lt;/defvalue&gt;
         ///  &lt;/setting&gt;
-        ///  
-        ///&lt;/settings&gt;.
+        ///
+        ///  &lt;setting id=&quot;RefreshInterval&quot;&gt;
+        ///    &lt;value&gt;1000&lt;/value&gt;
+        ///    &lt;defvalue&gt;1000&lt;/defvalue&gt;
+        ///  &lt;/setting&gt;
+        ///
+        ///  &lt;setting id=&quot;ShowAccountDomains&quot;&gt;
+        ///    &lt;value&gt;0&lt;/value&gt;
+        ///    &lt;defvalue&gt;0&lt;/defvalue&gt;
+        ///  &lt;/setting&gt;
+        ///
+        ///  &lt;setting id=&quot;DbgHelpPath&quot;&gt;
+        ///    &lt;value&gt;dbghelp.dll&lt;/value&gt;
+        ///    &lt;de [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Settings {
             get {
