@@ -1,177 +1,280 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ProcessHacker.Common;
 using System.Xml;
 
 namespace ProcessHacker
 {
     public static class Settings
     {
-        private static System.Xml.XmlDocument basedoc;
-        private static System.Xml.XmlDocument rootdoc;
+        private static XmlDocument basedoc;
+        
+        //temporary, will be added as a setting
+        private static string settingsPath = 
+            System.Windows.Forms.Application.StartupPath + "\\Settings.xml";
 
-        public static void Refresh()
+        #region Settings
+
+        public static string AppUpdateUrl
         {
-            RefreshInterval = Properties.Settings.Default.RefreshInterval;
-            ShowAccountDomains = Properties.Settings.Default.ShowAccountDomains;
-
-            LoadConfig();
+            get { return Settings.GetStringKey("AppUpdateUrl"); }
+            set { Settings.UpdateKey("AppUpdateUrl", value); }
         }
 
-        public static void LoadConfig()
+        public static string DbgHelpPath
         {
-            basedoc = new System.Xml.XmlDocument();
-            rootdoc = new System.Xml.XmlDocument();
-            
-            basedoc.Load(AppDomain.CurrentDomain.BaseDirectory + "..\\..\\App.config");
-            rootdoc.Load(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
-
-            //we can use this code to setup the location of our own config file location here, or keep the mfcrs in sync :P
-            //Create appdomainsetup information for the new appdomain.
-            //AppDomainSetup domaininfo = new AppDomainSetup();
-            //domaininfo.ApplicationBase = System.Environment.CurrentDirectory;
-            //domaininfo.ConfigurationFile = System.Environment.CurrentDirectory + "\\ProcessHacker.exe.config";
-            //domaininfo.ApplicationName = "PHAlpha";
-            //domaininfo.LicenseFile = System.Environment.CurrentDirectory + "\\license.txt";
-
-            //Create evidence for new appdomain.
-            //System.Security.Policy.Evidence adevidence = AppDomain.CurrentDomain.Evidence;
-            ////Add the zone and url information to restrict permissions assigned to the appdomain.
-            //adevidence.AddHost(new System.Security.Policy.Url("http://www.example.com"));
-            //adevidence.AddHost(new System.Security.Policy.Zone(System.Security.SecurityZone.Internet));
-
-            //Create the application domain.
-            //AppDomain newDomain = AppDomain.CreateDomain("MyDom", adevidence, domaininfo);
-
-            //Write out the application domain information.
-            //ProcessHacker.Program.HackerWindow.QueueMessage("Host domain: " + AppDomain.CurrentDomain.FriendlyName);
-            //ProcessHacker.Program.HackerWindow.QueueMessage("child domain: " + newDomain.FriendlyName);
-            //ProcessHacker.Program.HackerWindow.QueueMessage("Application base is: " + newDomain.SetupInformation.ApplicationBase);
-            //ProcessHacker.Program.HackerWindow.QueueMessage("Configuration file is: " + newDomain.SetupInformation.ConfigurationFile);
-            //ProcessHacker.Program.HackerWindow.QueueMessage("Application name is: " + newDomain.SetupInformation.ApplicationName);
-            //ProcessHacker.Program.HackerWindow.QueueMessage("License file is: " + newDomain.SetupInformation.LicenseFile);
-            //ProcessHacker.Program.HackerWindow.QueueMessage("OS Version: " + ProcessHacker.Native.OSVersion.WindowsVersion.ToString());
-
-            //System.Collections.IEnumerator newevidenceenum = newDomain.Evidence.GetEnumerator();
-            //while (newevidenceenum.MoveNext())
-            //    ProcessHacker.Program.HackerWindow.QueueMessage(newevidenceenum.Current.ToString());
-
-            //AppDomain.Unload(newDomain);
+            get { return Settings.GetStringKey("DbgHelpPath"); }
+            set { Settings.UpdateKey("DbgHelpPath", value); }
         }
 
-        private static int _refreshInterval;
         public static int RefreshInterval
         {
-            get { return _refreshInterval; }
-            set
-            {
-                Properties.Settings.Default.RefreshInterval = _refreshInterval = value;
-            }
+            get { return Settings.GetIntKey("RefreshInterval"); }
+            set { Settings.UpdateKey("RefreshInterval", value.ToString()); }
         }
 
-        private static bool _showAccountDomains;
         public static bool ShowAccountDomains
         {
-            get { return _showAccountDomains; }
-            set
-            {
-                Properties.Settings.Default.ShowAccountDomains = _showAccountDomains = value;
-            }
+            get { return Settings.GetBoolKey("ShowAccountDomains"); }
+            set { Settings.UpdateKey("ShowAccountDomains", value.ToString()); }
         }
 
-        #region Settings Methods
+        #endregion
 
-        //This code will add a listviewitem
-        //to a listview for each database entry 
-        //in the appSettings section of an App.config file.
-        private static void loadFromConfig()
+        #region Settings Management
+
+        public static void AddKey(string id, string strValue)
         {
-            //this.lst.Items.Clear();
-            basedoc = new XmlDocument();
-            basedoc.Load(AppDomain.CurrentDomain.BaseDirectory + "..\\..\\App.config");
+            if (basedoc == null)
+                loadBaseSettings();
 
-            XmlNode appSettingsNode = basedoc.SelectSingleNode("configuration/appSettings");
-            foreach (XmlNode node in appSettingsNode.ChildNodes)
-            {
-                System.Windows.Forms.ListViewItem lvi = new System.Windows.Forms.ListViewItem();
-                string connStr = node.Attributes["value"].Value.ToString();
-                string keyName = node.Attributes["key"].Value.ToString();
-                lvi.Text = keyName;
-                lvi.SubItems.Add(connStr);
-                //this.lst.Items.Add(lvi);
-            }
-        }
+            loadBaseSettings();
 
-        /// <summary>
-        /// Adds a key and value to the App.config
-        /// </summary>
-        /// <param name="strKey"></param>
-        /// <param name="strValue"></param>
-        public static void AddKey(string strKey, string strValue)
-        {
-            XmlNode appSettingsNode = rootdoc.SelectSingleNode("configuration/appSettings");
+            XmlNode appSettingsNode = basedoc.SelectSingleNode("//setting[@id='" + id + "']");
+            
             try
             {
-                if (KeyExists(strKey))
-                     ProcessHacker.Common.Logging.Log(new ArgumentException("Key name: <" + strKey + "> already exists in the configuration."));
-                XmlNode newChild = appSettingsNode.FirstChild.Clone();
-                newChild.Attributes["key"].Value = strKey;
+                if (!KeyExists(id))
+                {
+                    Logging.Log(new ArgumentException(
+                        "Key name: <" + id + "> already exists in the configuration."));
+                    return;
+                }
+
+                System.Xml.XmlNode newChild = appSettingsNode.FirstChild.Clone();
+                newChild.Attributes["id"].Value = id;
                 newChild.Attributes["value"].Value = strValue;
+                
                 appSettingsNode.AppendChild(newChild);
 
-                //We have to save the configuration in two places, 
-                //because while we have a root App.config,
-                //we also have an ApplicationName.exe.config.
-                basedoc.Save(AppDomain.CurrentDomain.BaseDirectory + "..\\..\\App.config");
-                rootdoc.Save(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
+                System.Xml.XmlNode newNode = basedoc.SelectSingleNode("//setting[@id='" + id + "']");
+                //get the node where you want to insert the data
+                System.Xml.XmlNode childNode = basedoc.CreateNode(System.Xml.XmlNodeType.Element, "your node name where you want to insert data", "");
+
+                //In the below step "name" is your node name and "sree" is your data to insert
+                System.Xml.XmlAttribute newAttribute = basedoc.CreateAttribute("name", "sree", "");
+                childNode.Attributes.Append(newAttribute);
+                newNode.AppendChild(childNode);
+
+                basedoc.Save(settingsPath);
             }
-            catch (Exception)
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
-        /// <summary>
-        /// Updates a key within the App.config
-        /// </summary>
-        /// <param name="strKey"></param>
-        /// <param name="newValue"></param>
-        public static void UpdateKey(string strKey, string newValue)
+        public static void UpdateKey(string id, string newValue)
         {
-            if (!KeyExists(strKey))
-               ProcessHacker.Common.Logging.Log(new ArgumentNullException("Key", "<" + strKey + "> does not exist in the configuration. Update failed."));
-            System.Xml.XmlNode appSettingsNode = rootdoc.SelectSingleNode("configuration/appSettings");
-            
+            if (basedoc == null)
+                loadBaseSettings();
+
+            XmlNode appSettingsNode = basedoc.SelectSingleNode("//setting[@id='" + id + "']");
+
             // Attempt to locate the requested setting.
-            foreach (System.Xml.XmlNode childNode in appSettingsNode)
+            foreach (XmlNode childNode in appSettingsNode)
             {
-                if (childNode.Attributes["key"].Value == strKey)
-                    childNode.Attributes["value"].Value = newValue;
+                childNode.InnerText = newValue;
             }
 
-            //We have to save the configuration in two places, 
-            //because while we have a root App.config,
-            //we also have an ApplicationName.exe.config.
-            basedoc.Save(AppDomain.CurrentDomain.BaseDirectory + "..\\..\\App.config");
-            rootdoc.Save(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
+            basedoc.Save(settingsPath);
+        }
+
+        public static void DeleteKey(string id)
+        {
+            XmlNodeList newXMLNodes = basedoc.SelectNodes("//setting[@id='" + id + "']");
+            foreach (XmlNode newXMLNode in newXMLNodes)
+            {
+                newXMLNode.ParentNode.RemoveChild(newXMLNode);
+            }
+
+            Settings.SaveSettings();
+            Settings.ReloadSettings();
+        }
+
+        #endregion
+
+        #region Settings Functions
+
+        public static void ReloadSettings()
+        {
+            RefreshInterval = Settings.GetIntKey("RefreshInterval");         
+            ShowAccountDomains = Settings.GetBoolKey("ShowAccountDomains");
+            AppUpdateUrl = Settings.GetStringKey("AppUpdateUrl");
+
+            //System.Windows.Forms.MessageBox.Show(Settings.GetStringKey("AppUpdateUrl"));
+
+            //Settings.UpdateKey("AppUpdateUrl", "http://address.com");
+
+            //System.Windows.Forms.MessageBox.Show(Settings.GetStringKey("AppUpdateUrl"));
+        }
+
+        public static void SaveSettings()
+        {
+            if (basedoc == null)
+                Settings.loadBaseSettings();
+
+            basedoc.Save(settingsPath);
+        }
+
+        #endregion
+
+        #region Settings Helpers
+
+        public static string GetStringKey(string id)
+        {
+            if (basedoc == null)
+                loadBaseSettings();
+
+            if (!KeyExists(id))
+            {
+                Logging.Log(new ArgumentNullException
+                    ("Key", "<" + id + "> does not exist in the configuration. Update failed."));
+                return string.Empty;
+            }
+
+            System.Xml.XmlNodeList nodes = basedoc.SelectNodes("//setting[@id='" + id + "']");
+            foreach (System.Xml.XmlNode node in nodes)
+            {
+                return node["value"].InnerText;
+            }
+            return null;
+        }
+
+        public static bool GetBoolKey(string id)
+        {
+            if (basedoc == null)
+                loadBaseSettings();
+
+            if (!KeyExists(id))
+            {
+                Logging.Log(new ArgumentNullException
+                    ("Key", "<" + id + "> does not exist in the configuration. Update failed."));
+                return false;
+            }
+
+            System.Xml.XmlNodeList nodes = basedoc.SelectNodes("//setting[@id='" + id + "']");
+            foreach (System.Xml.XmlNode node in nodes)
+            {
+                return (node["value"].InnerText.Length != 0);
+            }
+
+            return false;
+        }
+
+        public static int GetIntKey(string id)
+        {
+            if (basedoc == null)
+                loadBaseSettings();
+
+            if (!KeyExists(id))
+            {
+                Logging.Log(new ArgumentNullException
+                    ("Key", "<" + id + "> does not exist in the configuration. Update failed."));
+                return 0;
+            }
+
+            System.Xml.XmlNodeList nodes = basedoc.SelectNodes("//setting[@id='" + id + "']");
+            foreach (System.Xml.XmlNode node in nodes)
+            {
+                return Convert.ToInt32(node["value"].InnerText);
+            }
+
+            return 0;
         }
 
         /// <summary>
         /// Determines if a key exists within the App.config
         /// </summary>
-        /// <param name="strKey"></param>
-        /// <returns></returns>
-        public static bool KeyExists(string strKey)
+        public static bool KeyExists(string id)
         {
-            XmlNode appSettingsNode = rootdoc.SelectSingleNode("configuration/appSettings");
+            if (basedoc == null)
+                loadBaseSettings();
 
-            // Attempt to locate the requested setting.
-            foreach (System.Xml.XmlNode childNode in appSettingsNode)
+            System.Xml.XmlNode appSettingsNode =  basedoc.SelectSingleNode("//setting[@id='" + id + "']");
+
+            if (appSettingsNode != null)
             {
-                if (childNode.Attributes["key"].Value == strKey)
-                    return true;
+                return true;
             }
-            return false;
+            else
+            {
+                UpdateKey(id, "");
+                return true;
+            }
         }
 
         #endregion
+
+        #region Settings Base
+
+        public static bool loadBaseSettings()
+        {
+            basedoc = new System.Xml.XmlDocument();
+
+            try
+            {
+                if (System.IO.File.Exists(settingsPath))
+                {
+                    basedoc.Load(settingsPath);
+                    return true;
+                }
+                else
+                {
+                    Settings.resetBaseSettings(); //reset config, reload base    
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+                return false;
+            }
+        }
+
+        public static bool resetBaseSettings()
+        {
+            try
+            {
+                basedoc = new System.Xml.XmlDocument();
+
+                basedoc.LoadXml(ProcessHacker.Properties.Resources.Settings);
+
+                //if (true)? portable mode?? commandline switch??    
+                Settings.SaveSettings();
+
+                Settings.loadBaseSettings(); // switch settings to newly created config file   
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+                return false;
+            }
+        }
+
+        #endregion
+
     }
 }

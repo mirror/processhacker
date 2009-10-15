@@ -960,6 +960,9 @@
     <None Include="Resources\active_search.png" />
     <None Include="Resources\inactive_search.png" />
     <None Include="Resources\money.png" />
+    <Content Include="Program\Settings.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="SharpDevelop\LICENSE.txt" />
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />

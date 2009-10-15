@@ -3355,7 +3355,7 @@ namespace ProcessHacker
             this.AddEscapeToClose();
 
             Logging.Logged += this.QueueMessage;
-            Settings.Refresh();
+            Settings.ReloadSettings();
             this.LoadWindowSettings();
             this.LoadOtherSettings();
             this.LoadControls();
