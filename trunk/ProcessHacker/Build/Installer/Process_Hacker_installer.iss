@@ -65,6 +65,7 @@ MinVersion=0,5.01.2600
 AppReadmeFile={app}\README.txt
 LicenseFile=..\..\..\LICENSE.txt
 InfoAfterFile=..\..\..\CHANGELOG.txt
+InfoBeforeFile=..\..\..\README.txt
 SetupIconFile=Icons\ProcessHacker.ico
 UninstallDisplayIcon={app}\ProcessHacker.exe
 WizardImageFile=Icons\ProcessHackerLarge.bmp
@@ -111,6 +112,7 @@ Source: ..\..\bin\Release\base.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\CHANGELOG.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\Help.htm; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\LICENSE.txt; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\bin\Release\kprocesshacker.sys; DestDir: {sys}; Flags: ignoreversion; Tasks: create_KPH_service; Check: NOT Is64BitInstallMode()
 Source: ..\..\bin\Release\kprocesshacker.sys; DestDir: {app}; Flags: ignoreversion; Check: NOT Is64BitInstallMode()
 Source: ..\..\bin\Release\NProcessHacker.dll; DestDir: {app}; Flags: ignoreversion; Check: NOT Is64BitInstallMode()
 Source: ..\..\bin\Release\NProcessHacker64.dll; DestName: NProcessHacker.dll; DestDir: {app}; Flags: ignoreversion; Check: Is64BitInstallMode()
@@ -159,6 +161,7 @@ Type: files; Name: {app}\HACKING.txt
 Type: files; Name: {app}\psvince.dll
 Type: files; Name: {app}\Homepage.url
 Type: files; Name: {app}\kprocesshacker.sys; Check: Is64BitInstallMode()
+Type: files; Name: {sys}\kprocesshacker.sys; Check: NOT Is64BitInstallMode() AND NOT IsTaskSelected('create_KPH_service')
 
 Type: files; Name: {userdesktop}\Process Hacker.lnk; Check: NOT IsTaskSelected('desktopicon\user')
 Type: files; Name: {commondesktop}\Process Hacker.lnk; Check: NOT IsTaskSelected('desktopicon\common')
@@ -213,6 +216,7 @@ Filename: http://processhacker.sourceforge.net/; Description: {cm:run_visitwebsi
 
 [UninstallDelete]
 Name: {app}\Homepage.url; Type: files
+Name: {sys}\kprocesshacker.sys; Type: files
 Name: {sd}\ProgramData\wj32\*.dmp; Type: files; MinVersion: 0,6.0.6001
 Name: {sd}\ProgramData\wj32\mdmp\*.dmp; Type: files; MinVersion: 0,6.0.6001
 Name: {sd}\ProgramData\wj32\mdmp; Type: dirifempty; MinVersion: 0,6.0.6001
@@ -284,12 +288,12 @@ begin
   if CurStep = ssPostInstall then begin
    if KPHServiceCheck AND NOT IsTaskSelected('delete_KPH_service') then begin
     RemoveService('KProcessHacker');
-    InstallService(ExpandConstant('{app}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_SYSTEM_START);
+    InstallService(ExpandConstant('{sys}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_SYSTEM_START);
     StartService('KProcessHacker');
    end;
     if IsTaskSelected('create_KPH_service') then begin
      RemoveService('KProcessHacker');
-     InstallService(ExpandConstant('{app}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_SYSTEM_START);
+     InstallService(ExpandConstant('{sys}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_SYSTEM_START);
      StartService('KProcessHacker');
     end;
   end;

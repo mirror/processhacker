@@ -372,6 +372,9 @@
     <EmbeddedResource Include="Forms\NetInfoWindow.resx">
       <DependentUpon>NetInfoWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WaitChainWindow.resx">
+      <DependentUpon>WaitChainWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Resources\information.png" />
     <None Include="Resources\page_save.png" />
     <None Include="Resources\arrow_up.png" />
@@ -899,6 +902,12 @@
     <Compile Include="Structs\StructField.cs" />
     <Compile Include="Structs\StructDef.cs" />
     <Compile Include="Structs\StructParser.cs" />
+    <Compile Include="Forms\WaitChainWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WaitChainWindow.Designer.cs">
+      <DependentUpon>WaitChainWindow.cs</DependentUpon>
+    </Compile>
     <None Include="app.manifest" />
     <None Include="Resources\control_stop_blue.png" />
     <None Include="Resources\control_play_blue.png" />

@@ -1791,15 +1791,15 @@ namespace ProcessHacker
 
         private void analyzeWaitChainProcessMenuItem_Click(object sender, EventArgs e)
         {
-            //WaitChainWindow wcw = new WaitChainWindow(
-            //    treeProcesses.SelectedNodes[0].Name, 
-            //    treeProcesses.SelectedNodes[0].Pid);
+            WaitChainWindow wcw = new WaitChainWindow(
+                treeProcesses.SelectedNodes[0].Name, 
+                treeProcesses.SelectedNodes[0].Pid);
 
-            //int Y = this.Top + (this.Height - wcw.Height) / 2;
-            //int X = this.Left + (this.Width - wcw.Width) / 2;
+            int Y = this.Top + (this.Height - wcw.Height) / 2;
+            int X = this.Left + (this.Width - wcw.Width) / 2;
 
-            //wcw.Location = new Point(X, Y);
-            //wcw.Show();
+            wcw.Location = new Point(X, Y);
+            wcw.Show();
         }
 
         #endregion
@@ -3086,7 +3086,7 @@ namespace ProcessHacker
             if (!OSVersion.HasUac)
                 virtualizationProcessMenuItem.Visible = false;
 
-            if (true) // hide for 1.6 release
+            if (OSVersion.IsBelow(WindowsVersion.Vista))
                 analyzeWaitChainProcessMenuItem.Visible = false;
         }
 
