@@ -70,7 +70,7 @@ namespace ProcessHacker
                 labelInfo.Text = "Whois host infomation for address: " + _ipAddress.ToString();
                 labelStatus.Text = "Checking...";
                 listInfo.Columns.Add("Results");
-                ColumnSettings.LoadSettings(Properties.Settings.Default.IPInfoWhoIsListViewColumns, listInfo);
+                ColumnSettings.LoadSettings(Settings.Instance.IPInfoWhoIsListViewColumns, listInfo);
             }
             else if (_ipAction == IpAction.Tracert)
             {
@@ -80,14 +80,14 @@ namespace ProcessHacker
                 listInfo.Columns.Add("Reply Time");
                 listInfo.Columns.Add("IP Address");
                 listInfo.Columns.Add("Hostname");
-                ColumnSettings.LoadSettings(Properties.Settings.Default.IPInfoTracertListViewColumns, listInfo);
+                ColumnSettings.LoadSettings(Settings.Instance.IPInfoTracertListViewColumns, listInfo);
             }
             else if (_ipAction == IpAction.Ping)
             {
                 t = new Thread(new ParameterizedThreadStart(Ping));
                 labelStatus.Text = "Pinging...";
                 listInfo.Columns.Add("Results");
-                ColumnSettings.LoadSettings(Properties.Settings.Default.IPInfoPingListViewColumns, listInfo);
+                ColumnSettings.LoadSettings(Settings.Instance.IPInfoPingListViewColumns, listInfo);
             }
 
             t.IsBackground = true;
@@ -97,13 +97,13 @@ namespace ProcessHacker
         private void IPInfoWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (_ipAction == IpAction.Whois)
-                Properties.Settings.Default.IPInfoWhoIsListViewColumns = ColumnSettings.SaveSettings(listInfo);
+                Settings.Instance.IPInfoWhoIsListViewColumns = ColumnSettings.SaveSettings(listInfo);
             else if (_ipAction == IpAction.Tracert)
-                Properties.Settings.Default.IPInfoTracertListViewColumns = ColumnSettings.SaveSettings(listInfo);
+                Settings.Instance.IPInfoTracertListViewColumns = ColumnSettings.SaveSettings(listInfo);
             else if (_ipAction == IpAction.Ping)
-                Properties.Settings.Default.IPInfoPingListViewColumns = ColumnSettings.SaveSettings(listInfo);
+                Settings.Instance.IPInfoPingListViewColumns = ColumnSettings.SaveSettings(listInfo);
 
-            Properties.Settings.Default.Save();
+            Settings.Instance.Save();
         }
 
         private void buttonClose_Click(object sender, EventArgs e)

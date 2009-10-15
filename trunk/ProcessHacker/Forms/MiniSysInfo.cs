@@ -92,13 +92,13 @@ namespace ProcessHacker
         {
             this.BeginInvoke(new MethodInvoker(delegate
             {
-                plotterCPU.LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
-                plotterCPU.LineColor2 = Properties.Settings.Default.PlotterCPUUserColor;
+                plotterCPU.LineColor1 = Settings.Instance.PlotterCPUKernelColor;
+                plotterCPU.LineColor2 = Settings.Instance.PlotterCPUUserColor;
                 plotterCPU.MoveGrid();
                 plotterCPU.Draw();
 
-                plotterIO.LineColor1 = Properties.Settings.Default.PlotterIOROColor;
-                plotterIO.LineColor2 = Properties.Settings.Default.PlotterIOWColor;
+                plotterIO.LineColor1 = Settings.Instance.PlotterIOROColor;
+                plotterIO.LineColor2 = Settings.Instance.PlotterIOWColor;
                 plotterIO.MoveGrid();
                 plotterIO.Draw();
             }));

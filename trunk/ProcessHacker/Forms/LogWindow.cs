@@ -50,10 +50,10 @@ namespace ProcessHacker
 
             Program.HackerWindow.LogUpdated += new HackerWindow.LogUpdatedEventHandler(HackerWindow_LogUpdated);
 
-            this.Size = Properties.Settings.Default.LogWindowSize;
+            this.Size = Settings.Instance.LogWindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(
-                Properties.Settings.Default.LogWindowLocation, this.Size), this).Location;
-            checkAutoscroll.Checked = Properties.Settings.Default.LogWindowAutoScroll;
+                Settings.Instance.LogWindowLocation, this.Size), this).Location;
+            checkAutoscroll.Checked = Settings.Instance.LogWindowAutoScroll;
         }
 
         private void HackerWindow_LogUpdated(KeyValuePair<DateTime, string>? value)
@@ -79,11 +79,11 @@ namespace ProcessHacker
         {
             if (this.WindowState == FormWindowState.Normal)
             {
-                Properties.Settings.Default.LogWindowLocation = this.Location;
-                Properties.Settings.Default.LogWindowSize = this.Size;
+                Settings.Instance.LogWindowLocation = this.Location;
+                Settings.Instance.LogWindowSize = this.Size;
             }
 
-            Properties.Settings.Default.LogWindowAutoScroll = checkAutoscroll.Checked;
+            Settings.Instance.LogWindowAutoScroll = checkAutoscroll.Checked;
             
             Program.HackerWindow.LogUpdated -= new HackerWindow.LogUpdatedEventHandler(HackerWindow_LogUpdated);
         }

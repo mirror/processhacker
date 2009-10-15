@@ -177,7 +177,7 @@ namespace ProcessHacker
                 ProcessWindow pForm = Program.GetProcessWindow(Program.HackerWindow.processP.Dictionary[processPid],
                     new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                     {
-                        Properties.Settings.Default.ProcessWindowSelectedTab = "tabThreads";
+                        Settings.Instance.ProcessWindowSelectedTab = "tabThreads";
                         f.Show();
                         f.Activate();
                     }));

@@ -56,7 +56,7 @@ namespace ProcessHacker.Components
             listMemory.MouseDown += new MouseEventHandler(listMemory_MouseDown);
             listMemory.MouseUp += new MouseEventHandler(listMemory_MouseUp);
 
-            ColumnSettings.LoadSettings(Properties.Settings.Default.MemoryListViewColumns, listMemory);
+            ColumnSettings.LoadSettings(Settings.Instance.MemoryListViewColumns, listMemory);
             listMemory.ContextMenu = menuMemory;
             GenericViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
 
@@ -380,7 +380,7 @@ namespace ProcessHacker.Components
 
         public void SaveSettings()
         {
-            Properties.Settings.Default.MemoryListViewColumns = ColumnSettings.SaveSettings(listMemory);
+            Settings.Instance.MemoryListViewColumns = ColumnSettings.SaveSettings(listMemory);
         }
 
         private void listMemory_DoubleClick(object sender, EventArgs e)

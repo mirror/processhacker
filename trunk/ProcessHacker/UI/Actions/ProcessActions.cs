@@ -45,7 +45,7 @@ namespace ProcessHacker.UI.Actions
         private static bool Prompt(IWin32Window window, int[] pids, string[] names, 
             string action, string content, bool promptOnlyIfDangerous)
         {
-            if (!Properties.Settings.Default.WarnDangerous)
+            if (!Settings.Instance.WarnDangerous)
                 return true;
 
             string name = "the selected process(es)";
@@ -182,7 +182,7 @@ namespace ProcessHacker.UI.Actions
         private static ElevationAction PromptForElevation(IWin32Window window, int[] pids, string[] names,
             ProcessAccess access, string elevateAction, string action)
         {
-            if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Never)
+            if (Settings.Instance.ElevationLevel == (int)ElevationLevel.Never)
                 return ElevationAction.NotRequired;
 
             if (
@@ -204,7 +204,7 @@ namespace ProcessHacker.UI.Actions
                     if (ex.ErrorCode != Win32Error.AccessDenied)
                         return ElevationAction.NotRequired;
 
-                    if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Elevate)
+                    if (Settings.Instance.ElevationLevel == (int)ElevationLevel.Elevate)
                         return ElevationAction.Elevate;
 
                     TaskDialog td = new TaskDialog();

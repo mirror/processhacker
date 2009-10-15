@@ -67,7 +67,7 @@ namespace ProcessHacker.UI.Actions
         private static bool ElevateIfRequired(IWin32Window window, string service,
             ServiceAccess access, string action)
         {
-            if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Never)
+            if (Settings.Instance.ElevationLevel == (int)ElevationLevel.Never)
                 return false;
 
             if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited)
@@ -81,7 +81,7 @@ namespace ProcessHacker.UI.Actions
                 {
                     DialogResult result;
 
-                    if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Elevate)
+                    if (Settings.Instance.ElevationLevel == (int)ElevationLevel.Elevate)
                     {
                         result = DialogResult.Yes;
                     }

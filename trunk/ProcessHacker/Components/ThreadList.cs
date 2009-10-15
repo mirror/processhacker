@@ -100,7 +100,7 @@ namespace ProcessHacker.Components
             listThreads.MouseUp += new MouseEventHandler(listThreads_MouseUp);
             listThreads.SelectedIndexChanged += new System.EventHandler(listThreads_SelectedIndexChanged);
 
-            ColumnSettings.LoadSettings(Properties.Settings.Default.ThreadListViewColumns, listThreads);
+            ColumnSettings.LoadSettings(Settings.Instance.ThreadListViewColumns, listThreads);
             listThreads.ContextMenu = menuThread;
             GenericViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads, null);
             listThreads_SelectedIndexChanged(null, null);
@@ -376,10 +376,10 @@ namespace ProcessHacker.Components
 
         private System.Drawing.Color GetThreadColor(ThreadItem titem)
         {
-            if (Properties.Settings.Default.UseColorSuspended && titem.WaitReason == KWaitReason.Suspended)
-                return Properties.Settings.Default.ColorSuspended;
-            else if (Properties.Settings.Default.UseColorGuiThreads && titem.IsGuiThread)
-                return Properties.Settings.Default.ColorGuiThreads;
+            if (Settings.Instance.UseColorSuspended && titem.WaitReason == KWaitReason.Suspended)
+                return Settings.Instance.ColorSuspended;
+            else if (Settings.Instance.UseColorGuiThreads && titem.IsGuiThread)
+                return Settings.Instance.ColorGuiThreads;
 
             return System.Drawing.SystemColors.Window;
         }
@@ -462,7 +462,7 @@ namespace ProcessHacker.Components
 
         public void SaveSettings()
         {
-            Properties.Settings.Default.ThreadListViewColumns = ColumnSettings.SaveSettings(listThreads);
+            Settings.Instance.ThreadListViewColumns = ColumnSettings.SaveSettings(listThreads);
         }
 
         private void SetThreadPriority(ThreadPriorityLevel priority)
@@ -716,7 +716,7 @@ namespace ProcessHacker.Components
 
             if (Program.ElevationType == TokenElevationType.Limited && 
                 KProcessHacker.Instance == null &&
-                Properties.Settings.Default.ElevationLevel != (int)ElevationLevel.Never)
+                Settings.Instance.ElevationLevel != (int)ElevationLevel.Never)
             {
                 try
                 {
@@ -804,7 +804,7 @@ namespace ProcessHacker.Components
 
             if (Program.ElevationType == TokenElevationType.Limited &&
                 KProcessHacker.Instance == null &&
-                Properties.Settings.Default.ElevationLevel != (int)ElevationLevel.Never)
+                Settings.Instance.ElevationLevel != (int)ElevationLevel.Never)
             {
                 try
                 {
@@ -862,7 +862,7 @@ namespace ProcessHacker.Components
 
             if (Program.ElevationType == TokenElevationType.Limited &&
                 KProcessHacker.Instance == null &&
-                Properties.Settings.Default.ElevationLevel != (int)ElevationLevel.Never)
+                Settings.Instance.ElevationLevel != (int)ElevationLevel.Never)
             {
                 try
                 {

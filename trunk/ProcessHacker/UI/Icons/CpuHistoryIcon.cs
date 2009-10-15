@@ -35,8 +35,8 @@ namespace ProcessHacker
 
         protected override void ProviderUpdated()
         {
-            this.LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
-            this.LineColor2 = Properties.Settings.Default.PlotterCPUUserColor;
+            this.LineColor1 = Settings.Instance.PlotterCPUKernelColor;
+            this.LineColor2 = Settings.Instance.PlotterCPUUserColor;
             this.Update(this.Provider.CurrentCpuKernelUsage, this.Provider.CurrentCpuUserUsage);
             this.Redraw();
 

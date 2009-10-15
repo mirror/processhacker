@@ -172,6 +172,16 @@ namespace ProcessHacker.Common.Settings
             _store.Flush();
         }
 
+        public void Upgrade()
+        {
+            lock (_modifiedSettings)
+            {
+
+            }
+
+            _store.Flush();
+        }
+
         private void SetValue(string name, object value)
         {
             lock (_modifiedSettings)

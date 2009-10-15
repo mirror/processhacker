@@ -190,10 +190,10 @@ namespace ProcessHacker
                         else if (pNode.ProcessItem.VerifyResult == VerifyResult.TrustedInstaller)
                             otherNotes += "\n    Verified Windows component.";
                         else if (pNode.ProcessItem.VerifyResult == VerifyResult.Unknown &&
-                            !Properties.Settings.Default.VerifySignatures)
+                            !Settings.Instance.VerifySignatures)
                             otherNotes += "";
                         else if (pNode.ProcessItem.VerifyResult == VerifyResult.Unknown &&
-                            Properties.Settings.Default.VerifySignatures)
+                            Settings.Instance.VerifySignatures)
                             otherNotes += "\n    File has not been processed yet. Please wait...";
                         else if (pNode.ProcessItem.VerifyResult != VerifyResult.NoSignature)
                             otherNotes += "\n    Signature present but invalid.";

@@ -40,7 +40,7 @@ namespace ProcessHacker.Components
     {
         public static bool ConfirmHandleClose()
         {
-            if (Properties.Settings.Default.WarnDangerous)
+            if (Settings.Instance.WarnDangerous)
             {
                 return PhUtils.ShowConfirmMessage(
                     "close",
@@ -258,7 +258,7 @@ namespace ProcessHacker.Components
 
             listHandles.ContextMenu = menuHandle;
             GenericViewMenu.AddMenuItems(copyHandleMenuItem.MenuItems, listHandles, null);
-            ColumnSettings.LoadSettings(Properties.Settings.Default.HandleListViewColumns, listHandles);
+            ColumnSettings.LoadSettings(Settings.Instance.HandleListViewColumns, listHandles);
 
             if (KProcessHacker.Instance == null)
             {
@@ -436,14 +436,14 @@ namespace ProcessHacker.Components
 
         private Color GetHandleColor(HandleItem item)
         {
-            if (Properties.Settings.Default.UseColorProtectedHandles &&
+            if (Settings.Instance.UseColorProtectedHandles &&
                 (item.Handle.Flags & HandleFlags.ProtectFromClose) != 0
                 )
-                return Properties.Settings.Default.ColorProtectedHandles;
-            else if (Properties.Settings.Default.UseColorInheritHandles &&
+                return Settings.Instance.ColorProtectedHandles;
+            else if (Settings.Instance.UseColorInheritHandles &&
                 (item.Handle.Flags & HandleFlags.Inherit) != 0
                 )
-                return Properties.Settings.Default.ColorInheritHandles;
+                return Settings.Instance.ColorInheritHandles;
             else
                 return SystemColors.Window;
         }
@@ -490,7 +490,7 @@ namespace ProcessHacker.Components
 
         public void SaveSettings()
         {
-            Properties.Settings.Default.HandleListViewColumns = ColumnSettings.SaveSettings(listHandles);
+            Settings.Instance.HandleListViewColumns = ColumnSettings.SaveSettings(listHandles);
         }
 
         private void menuHandle_Popup(object sender, EventArgs e)

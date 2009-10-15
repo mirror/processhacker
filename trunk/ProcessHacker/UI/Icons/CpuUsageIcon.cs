@@ -79,9 +79,9 @@ namespace ProcessHacker
                 {
                     int kl = (int)(k * height);
                     int ul = (int)(u * height);
-                    Color kline = Properties.Settings.Default.PlotterCPUKernelColor;
+                    Color kline = Settings.Instance.PlotterCPUKernelColor;
                     Color kfill = Color.FromArgb(100, kline);
-                    Color uline = Properties.Settings.Default.PlotterCPUUserColor;
+                    Color uline = Settings.Instance.PlotterCPUUserColor;
                     Color ufill = Color.FromArgb(100, uline);
 
                     g.FillRectangle(new SolidBrush(Color.Black), g.ClipBounds);

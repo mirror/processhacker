@@ -40,7 +40,7 @@ namespace ProcessHacker.Components
 
             _jobObject = jobObject;
             _jobObject.Reference();
-            timerUpdate.Interval = Properties.Settings.Default.RefreshInterval;
+            timerUpdate.Interval = Settings.Instance.RefreshInterval;
             this.UpdateStatistics();
 
             try

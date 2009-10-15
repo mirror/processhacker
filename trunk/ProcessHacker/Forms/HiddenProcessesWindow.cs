@@ -57,21 +57,21 @@ namespace ProcessHacker
         private void HiddenProcessesWindow_Load(object sender, EventArgs e)
         {
             buttonScan.Select();
-            ColumnSettings.LoadSettings(Properties.Settings.Default.HiddenProcessesColumns, listProcesses);
+            ColumnSettings.LoadSettings(Settings.Instance.HiddenProcessesColumns, listProcesses);
 
-            this.Size = Properties.Settings.Default.HiddenProcessesWindowSize;
+            this.Size = Settings.Instance.HiddenProcessesWindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(
-                Properties.Settings.Default.HiddenProcessesWindowLocation, this.Size), this).Location;
+                Settings.Instance.HiddenProcessesWindowLocation, this.Size), this).Location;
         }
 
         private void HiddenProcessesWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.HiddenProcessesColumns = ColumnSettings.SaveSettings(listProcesses);
+            Settings.Instance.HiddenProcessesColumns = ColumnSettings.SaveSettings(listProcesses);
 
             if (this.WindowState == FormWindowState.Normal)
             {
-                Properties.Settings.Default.HiddenProcessesWindowSize = this.Size;
-                Properties.Settings.Default.HiddenProcessesWindowLocation = this.Location;
+                Settings.Instance.HiddenProcessesWindowSize = this.Size;
+                Settings.Instance.HiddenProcessesWindowLocation = this.Location;
             }
         }
 

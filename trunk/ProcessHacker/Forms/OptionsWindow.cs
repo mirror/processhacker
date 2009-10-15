@@ -240,7 +240,7 @@ namespace ProcessHacker
         {
             try
             {
-                Properties.Settings.Default.RefreshInterval = Int32.Parse(textUpdateInterval.Value.ToString());
+                Settings.Instance.RefreshInterval = Int32.Parse(textUpdateInterval.Value.ToString());
             }
             catch
             {
@@ -253,7 +253,7 @@ namespace ProcessHacker
         {
             try
             {
-                Properties.Settings.Default.IconMenuProcessCount = Int32.Parse(textIconMenuProcesses.Value.ToString());
+                Settings.Instance.IconMenuProcessCount = Int32.Parse(textIconMenuProcesses.Value.ToString());
             }
             catch
             {
@@ -262,44 +262,45 @@ namespace ProcessHacker
             }
         }
 
+        [Obsolete("Contains untested lookup syntax for settings")]
         private void LoadSettings()
         {
             // General
-            _font = Properties.Settings.Default.Font;
+            _font = Settings.Instance.Font;
             buttonFont.Font = _font;
-            textUpdateInterval.Value = Properties.Settings.Default.RefreshInterval;
-            textIconMenuProcesses.Value = Properties.Settings.Default.IconMenuProcessCount;
-            textMaxSamples.Value = Properties.Settings.Default.MaxSamples;
-            textStep.Value = Properties.Settings.Default.PlotterStep;
-            textSearchEngine.Text = Properties.Settings.Default.SearchEngine;
+            textUpdateInterval.Value = Settings.Instance.RefreshInterval;
+            textIconMenuProcesses.Value = Settings.Instance.IconMenuProcessCount;
+            textMaxSamples.Value = Settings.Instance.MaxSamples;
+            textStep.Value = Settings.Instance.PlotterStep;
+            textSearchEngine.Text = Settings.Instance.SearchEngine;
             comboSizeUnits.SelectedItem =
-                Utils.SizeUnitNames[Properties.Settings.Default.UnitSpecifier];
-            checkWarnDangerous.Checked = Properties.Settings.Default.WarnDangerous;
-            checkShowProcessDomains.Checked = Properties.Settings.Default.ShowAccountDomains;
-            checkHideWhenMinimized.Checked = Properties.Settings.Default.HideWhenMinimized;
-            checkHideWhenClosed.Checked = Properties.Settings.Default.HideWhenClosed;
-            checkAllowOnlyOneInstance.Checked = Properties.Settings.Default.AllowOnlyOneInstance;
-            checkVerifySignatures.Checked = Properties.Settings.Default.VerifySignatures;
-            checkHideHandlesWithNoName.Checked = Properties.Settings.Default.HideHandlesWithNoName;
-            checkEnableKPH.Checked = Properties.Settings.Default.EnableKPH;
-            checkEnableExperimentalFeatures.Checked = Properties.Settings.Default.EnableExperimentalFeatures;
-            checkStartHidden.Checked = Properties.Settings.Default.StartHidden;
-            checkScrollDownProcessTree.Checked = Properties.Settings.Default.ScrollDownProcessTree;
-            checkFloatChildWindows.Checked = Properties.Settings.Default.FloatChildWindows;
-            checkHidePhConnections.Checked = Properties.Settings.Default.HideProcessHackerNetworkConnections;
+                Utils.SizeUnitNames[Settings.Instance.UnitSpecifier];
+            checkWarnDangerous.Checked = Settings.Instance.WarnDangerous;
+            checkShowProcessDomains.Checked = Settings.Instance.ShowAccountDomains;
+            checkHideWhenMinimized.Checked = Settings.Instance.HideWhenMinimized;
+            checkHideWhenClosed.Checked = Settings.Instance.HideWhenClosed;
+            checkAllowOnlyOneInstance.Checked = Settings.Instance.AllowOnlyOneInstance;
+            checkVerifySignatures.Checked = Settings.Instance.VerifySignatures;
+            checkHideHandlesWithNoName.Checked = Settings.Instance.HideHandlesWithNoName;
+            checkEnableKPH.Checked = Settings.Instance.EnableKPH;
+            checkEnableExperimentalFeatures.Checked = Settings.Instance.EnableExperimentalFeatures;
+            checkStartHidden.Checked = Settings.Instance.StartHidden;
+            checkScrollDownProcessTree.Checked = Settings.Instance.ScrollDownProcessTree;
+            checkFloatChildWindows.Checked = Settings.Instance.FloatChildWindows;
+            checkHidePhConnections.Checked = Settings.Instance.HideProcessHackerNetworkConnections;
 
             if (OSVersion.HasUac)
             {
-                comboElevationLevel.SelectedIndex = Properties.Settings.Default.ElevationLevel;
+                comboElevationLevel.SelectedIndex = Settings.Instance.ElevationLevel;
             }
             else
             {
                 comboElevationLevel.SelectedIndex = 0;
             }
 
-            textImposterNames.Text = Properties.Settings.Default.ImposterNames;
+            textImposterNames.Text = Settings.Instance.ImposterNames;
 
-            switch (Properties.Settings.Default.ToolStripDisplayStyle)
+            switch (Settings.Instance.ToolStripDisplayStyle)
             {
                 case 0:
                     comboToolbarStyle.SelectedIndex = 0;
@@ -316,14 +317,19 @@ namespace ProcessHacker
             }
 
             // Highlighting       
-            textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
-            colorNewProcesses.Color = Properties.Settings.Default.ColorNew;
-            colorRemovedProcesses.Color = Properties.Settings.Default.ColorRemoved;
-
+            textHighlightingDuration.Value = Settings.Instance.HighlightingDuration;
+            colorNewProcesses.Color = Settings.Instance.ColorNew;
+            colorRemovedProcesses.Color = Settings.Instance.ColorRemoved;
+           
             foreach (ListViewItem item in listHighlightingColors.Items)
             {
-                Color c = (Color)Properties.Settings.Default[item.Name];
-                bool use = (bool)Properties.Settings.Default["Use" + item.Name];
+                //
+                //
+                // settings lookup method is untested
+                //
+                //
+                Color c = (Color)Settings.Instance[item.Name];
+                bool use = (bool)Settings.Instance["Use" + item.Name];
 
                 item.BackColor = c;
                 item.ForeColor = TreeNodeAdv.GetForeColor(item.BackColor);
@@ -331,13 +337,13 @@ namespace ProcessHacker
             }
 
             // Plotting
-            checkPlotterAntialias.Checked = Properties.Settings.Default.PlotterAntialias;
-            colorCPUKT.Color = Properties.Settings.Default.PlotterCPUKernelColor;
-            colorCPUUT.Color = Properties.Settings.Default.PlotterCPUUserColor;
-            colorMemoryPB.Color = Properties.Settings.Default.PlotterMemoryPrivateColor;
-            colorMemoryWS.Color = Properties.Settings.Default.PlotterMemoryWSColor;
-            colorIORO.Color = Properties.Settings.Default.PlotterIOROColor;
-            colorIOW.Color = Properties.Settings.Default.PlotterIOWColor;
+            checkPlotterAntialias.Checked = Settings.Instance.PlotterAntialias;
+            colorCPUKT.Color = Settings.Instance.PlotterCPUKernelColor;
+            colorCPUUT.Color = Settings.Instance.PlotterCPUUserColor;
+            colorMemoryPB.Color = Settings.Instance.PlotterMemoryPrivateColor;
+            colorMemoryWS.Color = Settings.Instance.PlotterMemoryWSColor;
+            colorIORO.Color = Settings.Instance.PlotterIOROColor;
+            colorIOW.Color = Settings.Instance.PlotterIOWColor;
 
             // Replace Task Manager
             // See if we can write to the key.
@@ -394,16 +400,16 @@ namespace ProcessHacker
             // Symbols
             try
             {
-                _oldDbghelp = textDbghelpPath.Text = Properties.Settings.Default.DbgHelpPath;
-                textSearchPath.Text = Properties.Settings.Default.DbgHelpSearchPath;
-                checkUndecorate.Checked = Properties.Settings.Default.DbgHelpUndecorate;
+                _oldDbghelp = textDbghelpPath.Text = Settings.Instance.DbgHelpPath;
+                textSearchPath.Text = Settings.Instance.DbgHelpSearchPath;
+                checkUndecorate.Checked = Settings.Instance.DbgHelpUndecorate;
             }
             catch
             { }
 
-            checkUpdateAutomatically.Checked = Properties.Settings.Default.AppUpdateAutomatic;
+            checkUpdateAutomatically.Checked = Settings.Instance.AppUpdateAutomatic;
 
-            switch ((AppUpdateLevel)Properties.Settings.Default.AppUpdateLevel)
+            switch ((AppUpdateLevel)Settings.Instance.AppUpdateLevel)
             {
                 case AppUpdateLevel.Stable:
                 default:
@@ -418,87 +424,92 @@ namespace ProcessHacker
             }
         }
 
+        [Obsolete("Contains untested lookup syntax for settings")]
         private void SaveSettings()
         {
-            Properties.Settings.Default.Font = _font;
-            Properties.Settings.Default.SearchEngine = textSearchEngine.Text;
-            Properties.Settings.Default.WarnDangerous = checkWarnDangerous.Checked;
-            Properties.Settings.Default.ShowAccountDomains = checkShowProcessDomains.Checked;
-            Properties.Settings.Default.HideWhenMinimized = checkHideWhenMinimized.Checked;
-            Properties.Settings.Default.HideWhenClosed = checkHideWhenClosed.Checked;
-            Properties.Settings.Default.AllowOnlyOneInstance = checkAllowOnlyOneInstance.Checked;
-            Properties.Settings.Default.UnitSpecifier =
-                Array.IndexOf(Utils.SizeUnitNames, comboSizeUnits.SelectedItem);
-            Properties.Settings.Default.VerifySignatures = checkVerifySignatures.Checked;
-            Properties.Settings.Default.HideHandlesWithNoName = checkHideHandlesWithNoName.Checked;
-            Properties.Settings.Default.ScrollDownProcessTree = checkScrollDownProcessTree.Checked;
-            Properties.Settings.Default.FloatChildWindows = checkFloatChildWindows.Checked;
-            Properties.Settings.Default.StartHidden = checkStartHidden.Checked;
-            Properties.Settings.Default.EnableKPH = checkEnableKPH.Checked;
-            Properties.Settings.Default.EnableExperimentalFeatures = checkEnableExperimentalFeatures.Checked;
-            Properties.Settings.Default.ImposterNames = textImposterNames.Text.ToLower();
-            Properties.Settings.Default.HideProcessHackerNetworkConnections = checkHidePhConnections.Checked;
-            Properties.Settings.Default.ElevationLevel = comboElevationLevel.SelectedIndex;
+            Settings.Instance.Font = _font;
+            Settings.Instance.SearchEngine = textSearchEngine.Text;
+            Settings.Instance.WarnDangerous = checkWarnDangerous.Checked;
+            Settings.Instance.ShowAccountDomains = checkShowProcessDomains.Checked;
+            Settings.Instance.HideWhenMinimized = checkHideWhenMinimized.Checked;
+            Settings.Instance.HideWhenClosed = checkHideWhenClosed.Checked;
+            Settings.Instance.AllowOnlyOneInstance = checkAllowOnlyOneInstance.Checked;
+            Settings.Instance.UnitSpecifier = Array.IndexOf(Utils.SizeUnitNames, comboSizeUnits.SelectedItem);
+            Settings.Instance.VerifySignatures = checkVerifySignatures.Checked;
+            Settings.Instance.HideHandlesWithNoName = checkHideHandlesWithNoName.Checked;
+            Settings.Instance.ScrollDownProcessTree = checkScrollDownProcessTree.Checked;
+            Settings.Instance.FloatChildWindows = checkFloatChildWindows.Checked;
+            Settings.Instance.StartHidden = checkStartHidden.Checked;
+            Settings.Instance.EnableKPH = checkEnableKPH.Checked;
+            Settings.Instance.EnableExperimentalFeatures = checkEnableExperimentalFeatures.Checked;
+            Settings.Instance.ImposterNames = textImposterNames.Text.ToLower();
+            Settings.Instance.HideProcessHackerNetworkConnections = checkHidePhConnections.Checked;
+            Settings.Instance.ElevationLevel = comboElevationLevel.SelectedIndex;
 
-            Properties.Settings.Default.MaxSamples = (int)textMaxSamples.Value;
-            HistoryManager.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
-            Properties.Settings.Default.PlotterStep = (int)textStep.Value;
-            ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
+            Settings.Instance.MaxSamples = (int)textMaxSamples.Value;
+            HistoryManager.GlobalMaxCount = Settings.Instance.MaxSamples;
+            Settings.Instance.PlotterStep = (int)textStep.Value;
+            ProcessHacker.Components.Plotter.GlobalMoveStep = Settings.Instance.PlotterStep;
 
-            Properties.Settings.Default.HighlightingDuration = (int)textHighlightingDuration.Value;
-            Properties.Settings.Default.ColorNew = colorNewProcesses.Color;
-            Properties.Settings.Default.ColorRemoved = colorRemovedProcesses.Color;
+            Settings.Instance.HighlightingDuration = (int)textHighlightingDuration.Value;
+            Settings.Instance.ColorNew = colorNewProcesses.Color;
+            Settings.Instance.ColorRemoved = colorRemovedProcesses.Color;
 
+            //
+            //
+            // settings lookup method is untested
+            //
+            //
             foreach (ListViewItem item in listHighlightingColors.Items)
             {
-                Properties.Settings.Default[item.Name] = item.BackColor;
-                Properties.Settings.Default["Use" + item.Name] = item.Checked;
+                Settings.Instance[item.Name] = item.BackColor;
+                Settings.Instance["Use" + item.Name] = item.Checked;
             }
 
-            Properties.Settings.Default.PlotterAntialias = checkPlotterAntialias.Checked;
-            Properties.Settings.Default.PlotterCPUKernelColor = colorCPUKT.Color;
-            Properties.Settings.Default.PlotterCPUUserColor = colorCPUUT.Color;
-            Properties.Settings.Default.PlotterMemoryPrivateColor = colorMemoryPB.Color;
-            Properties.Settings.Default.PlotterMemoryWSColor = colorMemoryWS.Color;
-            Properties.Settings.Default.PlotterIOROColor = colorIORO.Color;
-            Properties.Settings.Default.PlotterIOWColor = colorIOW.Color;
+            Settings.Instance.PlotterAntialias = checkPlotterAntialias.Checked;
+            Settings.Instance.PlotterCPUKernelColor = colorCPUKT.Color;
+            Settings.Instance.PlotterCPUUserColor = colorCPUUT.Color;
+            Settings.Instance.PlotterMemoryPrivateColor = colorMemoryPB.Color;
+            Settings.Instance.PlotterMemoryWSColor = colorMemoryWS.Color;
+            Settings.Instance.PlotterIOROColor = colorIORO.Color;
+            Settings.Instance.PlotterIOWColor = colorIOW.Color;
 
-            Properties.Settings.Default.DbgHelpPath = textDbghelpPath.Text;
-            Properties.Settings.Default.DbgHelpSearchPath = textSearchPath.Text;
-            Properties.Settings.Default.DbgHelpUndecorate = checkUndecorate.Checked;
+            Settings.Instance.DbgHelpPath = textDbghelpPath.Text;
+            Settings.Instance.DbgHelpSearchPath = textSearchPath.Text;
+            Settings.Instance.DbgHelpUndecorate = checkUndecorate.Checked;
 
             if (optUpdateStable.Checked)
             {
-                Properties.Settings.Default.AppUpdateLevel = (int)AppUpdateLevel.Stable;
+                Settings.Instance.AppUpdateLevel = (int)AppUpdateLevel.Stable;
             }
             else if (optUpdateBeta.Checked)
             {
-                Properties.Settings.Default.AppUpdateLevel = (int)AppUpdateLevel.Beta;
+                Settings.Instance.AppUpdateLevel = (int)AppUpdateLevel.Beta;
             }
             else if (optUpdateAlpha.Checked)
             {
-                Properties.Settings.Default.AppUpdateLevel = (int)AppUpdateLevel.Alpha;
+                Settings.Instance.AppUpdateLevel = (int)AppUpdateLevel.Alpha;
             }
 
-            Properties.Settings.Default.AppUpdateAutomatic = checkUpdateAutomatically.Checked;
+            Settings.Instance.AppUpdateAutomatic = checkUpdateAutomatically.Checked;
 
             switch (comboToolbarStyle.SelectedIndex)
             {
                 case 0:
-                    Properties.Settings.Default.ToolStripDisplayStyle = 0;
+                    Settings.Instance.ToolStripDisplayStyle = 0;
                     break;
                 case 1:
-                    Properties.Settings.Default.ToolStripDisplayStyle = 1;
+                    Settings.Instance.ToolStripDisplayStyle = 1;
                     break;
                 case 2:
-                    Properties.Settings.Default.ToolStripDisplayStyle = 2;
+                    Settings.Instance.ToolStripDisplayStyle = 2;
                     break;
                 default:
-                    Properties.Settings.Default.ToolStripDisplayStyle = 0;
+                    Settings.Instance.ToolStripDisplayStyle = 0;
                     break;
             }
-         
-            Properties.Settings.Default.Save();
+
+            Settings.Instance.Save();
 
             if (checkReplaceTaskManager.Enabled)
             {
@@ -539,32 +550,32 @@ namespace ProcessHacker
         private void ApplySettings()
         {
             Program.ImposterNames = new System.Collections.Specialized.StringCollection();
-            Utils.UnitSpecifier = Properties.Settings.Default.UnitSpecifier;
+            Utils.UnitSpecifier = Settings.Instance.UnitSpecifier;
 
-            foreach (string s in Properties.Settings.Default.ImposterNames.Split(','))
+            foreach (string s in Settings.Instance.ImposterNames.Split(','))
                 Program.ImposterNames.Add(s.Trim());
 
             Program.HackerWindow.ApplyIconVisibilities();
             Program.HackerWindow.LoadFixMenuItems();
-            Program.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.ProcessProvider.Interval = Settings.Instance.RefreshInterval;
+            Program.ServiceProvider.Interval = Settings.Instance.RefreshInterval;
+            Program.NetworkProvider.Interval = Settings.Instance.RefreshInterval;
 
-            HighlightingContext.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
-            HighlightingContext.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNew;
-            HighlightingContext.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemoved;
+            HighlightingContext.HighlightingDuration = Settings.Instance.HighlightingDuration;
+            HighlightingContext.Colors[ListViewItemState.New] = Settings.Instance.ColorNew;
+            HighlightingContext.Colors[ListViewItemState.Removed] = Settings.Instance.ColorRemoved;
 
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNew;
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemoved;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Settings.Instance.ColorNew;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Settings.Instance.ColorRemoved;
 
-            Program.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.SharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.SecondarySharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.ProcessProvider.Interval = Settings.Instance.RefreshInterval;
+            Program.ServiceProvider.Interval = Settings.Instance.RefreshInterval;
+            Program.NetworkProvider.Interval = Settings.Instance.RefreshInterval;
+            Program.SharedThreadProvider.Interval = Settings.Instance.RefreshInterval;
+            Program.SecondarySharedThreadProvider.Interval = Settings.Instance.RefreshInterval;
 
             Program.HackerWindow.ProcessTree.RefreshItems();
-            Program.ApplyFont(Properties.Settings.Default.Font);
+            Program.ApplyFont(Settings.Instance.Font);
 
             if (_oldDbghelp != textDbghelpPath.Text)
                 PhUtils.ShowInformation("One or more options you have changed require a restart of Process Hacker.");
@@ -625,7 +636,7 @@ namespace ProcessHacker
 
                     this.BeginInvoke(new MethodInvoker(() =>
                         {
-                            Properties.Settings.Default.Reload();
+                            Settings.Instance.Reload();
                             this.LoadSettings();
                             if (!_dontApply)
                                 this.ApplySettings();
@@ -676,7 +687,7 @@ namespace ProcessHacker
         {
             if (PhUtils.ShowConfirmMessage("reset", "the settings and restart Process Hacker", null, false))
             {
-                Properties.Settings.Default.Reset();
+                Settings.Instance.Reset();
                 Program.GlobalMutex.Dispose();
                 Program.TryStart(ProcessHandle.Current.GetMainModule().FileName);
                 Program.HackerWindow.Exit(false);

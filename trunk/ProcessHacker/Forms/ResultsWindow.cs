@@ -80,9 +80,9 @@ namespace ProcessHacker
 
             listResults.ContextMenu = listResults.GetCopyMenu(listResults_RetrieveVirtualItem);
 
-            this.Size = Properties.Settings.Default.ResultsWindowSize;
+            this.Size = Settings.Instance.ResultsWindowSize;
 
-            ColumnSettings.LoadSettings(Properties.Settings.Default.ResultsListViewColumns, listResults);
+            ColumnSettings.LoadSettings(Settings.Instance.ResultsListViewColumns, listResults);
             this.SetPhParent(false);
         }
 
@@ -91,9 +91,9 @@ namespace ProcessHacker
             this.Visible = false;
 
             if (this.WindowState == FormWindowState.Normal)
-                Properties.Settings.Default.ResultsWindowSize = this.Size;
+                Settings.Instance.ResultsWindowSize = this.Size;
 
-            Properties.Settings.Default.ResultsListViewColumns = ColumnSettings.SaveSettings(listResults);
+            Settings.Instance.ResultsListViewColumns = ColumnSettings.SaveSettings(listResults);
         }
 
         public ListView ResultsList

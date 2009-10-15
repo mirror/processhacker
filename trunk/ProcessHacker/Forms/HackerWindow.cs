@@ -420,8 +420,8 @@ namespace ProcessHacker
             toolbarMenuItem.Checked = !toolbarMenuItem.Checked;
             toolStrip.Visible = toolbarMenuItem.Checked;
 
-            Properties.Settings.Default.ToolbarVisible = toolStrip.Visible;
-            Properties.Settings.Default.Save();
+            Settings.Instance.ToolbarVisible = toolStrip.Visible;
+            Settings.Instance.Save();
         }
 
         private void updateNowMenuItem_Click(object sender, EventArgs e)
@@ -535,35 +535,35 @@ namespace ProcessHacker
 
         private void cpuHistoryMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.CpuHistoryIconVisible =
+            Settings.Instance.CpuHistoryIconVisible =
                 cpuHistoryMenuItem.Checked = !cpuHistoryMenuItem.Checked;
             this.ApplyIconVisibilities();
         }
 
         private void cpuUsageMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.CpuUsageIconVisible =
+            Settings.Instance.CpuUsageIconVisible =
                 cpuUsageMenuItem.Checked = !cpuUsageMenuItem.Checked;
             this.ApplyIconVisibilities();
         }
 
         private void ioHistoryMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.IoHistoryIconVisible =
+            Settings.Instance.IoHistoryIconVisible =
                 ioHistoryMenuItem.Checked = !ioHistoryMenuItem.Checked;
             this.ApplyIconVisibilities();
         }
 
         private void commitHistoryMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.CommitHistoryIconVisible =
+            Settings.Instance.CommitHistoryIconVisible =
              commitHistoryMenuItem.Checked = !commitHistoryMenuItem.Checked;
             this.ApplyIconVisibilities();
         }
 
         private void physMemHistoryMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.PhysMemHistoryIconVisible =
+            Settings.Instance.PhysMemHistoryIconVisible =
                physMemHistoryMenuItem.Checked = !physMemHistoryMenuItem.Checked;
             this.ApplyIconVisibilities();
         }
@@ -806,7 +806,7 @@ namespace ProcessHacker
                 }
 
                 // Remove zero CPU usage processes and processes running as other users
-                for (int i = 0; i < processes.Count && processes.Count > Properties.Settings.Default.IconMenuProcessCount; i++)
+                for (int i = 0; i < processes.Count && processes.Count > Settings.Instance.IconMenuProcessCount; i++)
                 {
                     if (processes[i].CpuUsage == 0)
                     {
@@ -823,11 +823,11 @@ namespace ProcessHacker
                 // Sort the processes by CPU usage and remove processes with low CPU usage
                 processes.Sort((i1, i2) => -i1.CpuUsage.CompareTo(i2.CpuUsage));
 
-                if (processes.Count > Properties.Settings.Default.IconMenuProcessCount)
+                if (processes.Count > Settings.Instance.IconMenuProcessCount)
                 {
                     int c = processes.Count;
-                    processes.RemoveRange(Properties.Settings.Default.IconMenuProcessCount,
-                        processes.Count - Properties.Settings.Default.IconMenuProcessCount);
+                    processes.RemoveRange(Settings.Instance.IconMenuProcessCount,
+                        processes.Count - Settings.Instance.IconMenuProcessCount);
                 }
 
                 // Then sort the processes by name
@@ -908,16 +908,16 @@ namespace ProcessHacker
         {
             if (this.WindowState == FormWindowState.Normal && this.Visible)
             {
-                Properties.Settings.Default.WindowLocation = this.Location;
-                Properties.Settings.Default.WindowSize = this.Size;
+                Settings.Instance.WindowLocation = this.Location;
+                Settings.Instance.WindowSize = this.Size;
             }
 
             this.Visible = !this.Visible;
 
             if (this.WindowState == FormWindowState.Minimized)
             {
-                this.Location = Properties.Settings.Default.WindowLocation;
-                this.Size = Properties.Settings.Default.WindowSize;
+                this.Location = Settings.Instance.WindowLocation;
+                this.Size = Settings.Instance.WindowSize;
                 this.WindowState = FormWindowState.Normal;
             }
 
@@ -1519,7 +1519,7 @@ namespace ProcessHacker
         {
             try
             {
-                Properties.Settings.Default.RunAsCommand = processP.Dictionary[processSelectedPid].FileName;
+                Settings.Instance.RunAsCommand = processP.Dictionary[processSelectedPid].FileName;
 
                 RunWindow run = new RunWindow();
                 run.ShowDialog();
@@ -1739,7 +1739,7 @@ namespace ProcessHacker
             if (treeProcesses.SelectedNodes.Count != 1)
                 return;
 
-            Program.TryStart(Properties.Settings.Default.SearchEngine.Replace("%s",
+            Program.TryStart(Settings.Instance.SearchEngine.Replace("%s",
                 treeProcesses.SelectedNodes[0].Name));
         }
 
@@ -1821,7 +1821,7 @@ namespace ProcessHacker
                     treeProcesses.Tree.EndCompleteUpdate();
                     treeProcesses.Tree.EndUpdate();
 
-                    if (Properties.Settings.Default.ScrollDownProcessTree)
+                    if (Settings.Instance.ScrollDownProcessTree)
                     {
                         // HACK HACK HACK HACK
                         // HACK HACK HACK HACK
@@ -2529,26 +2529,26 @@ namespace ProcessHacker
 
         private void LoadWindowSettings()
         {
-            this.TopMost = Program.HackerWindowTopMost = Properties.Settings.Default.AlwaysOnTop;
+            this.TopMost = Program.HackerWindowTopMost = Settings.Instance.AlwaysOnTop;
 
-            this.Size = Properties.Settings.Default.WindowSize;
+            this.Size = Settings.Instance.WindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(
-                Properties.Settings.Default.WindowLocation, this.Size), this).Location;
+                Settings.Instance.WindowLocation, this.Size), this).Location;
 
-            if (Properties.Settings.Default.WindowState != FormWindowState.Minimized)
-                this.WindowState = Properties.Settings.Default.WindowState;
+            if (Settings.Instance.WindowState != FormWindowState.Minimized)
+                this.WindowState = Settings.Instance.WindowState;
             else
                 this.WindowState = FormWindowState.Normal;
         }
 
         private void LoadOtherSettings()
         {
-            Utils.UnitSpecifier = Properties.Settings.Default.UnitSpecifier;
+            Utils.UnitSpecifier = Settings.Instance.UnitSpecifier;
 
-            PromptBox.LastValue = Properties.Settings.Default.PromptBoxText;
-            toolbarMenuItem.Checked = toolStrip.Visible = Properties.Settings.Default.ToolbarVisible;
+            PromptBox.LastValue = Settings.Instance.PromptBoxText;
+            toolbarMenuItem.Checked = toolStrip.Visible = Settings.Instance.ToolbarVisible;
 
-            if (Properties.Settings.Default.ToolStripDisplayStyle == 1)
+            if (Settings.Instance.ToolStripDisplayStyle == 1)
             {
                 findHandlesToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
                 sysInfoToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
@@ -2556,7 +2556,7 @@ namespace ProcessHacker
                 optionsToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
                 shutDownToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Image;
             }
-            else if (Properties.Settings.Default.ToolStripDisplayStyle == 2)
+            else if (Settings.Instance.ToolStripDisplayStyle == 2)
             {
                 refreshToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
                 optionsToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
@@ -2573,22 +2573,22 @@ namespace ProcessHacker
                 sysInfoToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;   
             }
 
-                ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessTreeColumns, treeProcesses.Tree);
-            ColumnSettings.LoadSettings(Properties.Settings.Default.ServiceListViewColumns, listServices.List);
-            ColumnSettings.LoadSettings(Properties.Settings.Default.NetworkListViewColumns, listNetwork.List);
+            ColumnSettings.LoadSettings(Settings.Instance.ProcessTreeColumns, treeProcesses.Tree);
+            ColumnSettings.LoadSettings(Settings.Instance.ServiceListViewColumns, listServices.List);
+            ColumnSettings.LoadSettings(Settings.Instance.NetworkListViewColumns, listNetwork.List);
 
-            HighlightingContext.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNew;
-            HighlightingContext.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemoved;
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNew;
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemoved;
+            HighlightingContext.Colors[ListViewItemState.New] = Settings.Instance.ColorNew;
+            HighlightingContext.Colors[ListViewItemState.Removed] = Settings.Instance.ColorRemoved;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Settings.Instance.ColorNew;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Settings.Instance.ColorRemoved;
 
             Program.ImposterNames = new System.Collections.Specialized.StringCollection();
 
-            foreach (string s in Properties.Settings.Default.ImposterNames.Split(','))
+            foreach (string s in Settings.Instance.ImposterNames.Split(','))
                 Program.ImposterNames.Add(s.Trim());
 
-            HistoryManager.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
-            ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
+            HistoryManager.GlobalMaxCount = Settings.Instance.MaxSamples;
+            ProcessHacker.Components.Plotter.GlobalMoveStep = Settings.Instance.PlotterStep;
 
             // Set up symbols...
 
@@ -2598,7 +2598,7 @@ namespace ProcessHacker
             // ProgramFiles variable set incorrectly.
             try
             {
-                if (Properties.Settings.Default.FirstRun)
+                if (Settings.Instance.FirstRun)
                 {
                     string defaultDbghelp = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
                         "\\Debugging Tools for Windows (" +
@@ -2606,7 +2606,7 @@ namespace ProcessHacker
                         ")\\dbghelp.dll";
 
                     if (System.IO.File.Exists(defaultDbghelp))
-                        Properties.Settings.Default.DbgHelpPath = defaultDbghelp;
+                        Settings.Instance.DbgHelpPath = defaultDbghelp;
                 }
             }
             catch (Exception ex)
@@ -2616,7 +2616,7 @@ namespace ProcessHacker
 
             // If we couldn't load dbghelp.dll from the user's location, load the default one 
             // in PATH (usually in system32).
-            if (Loader.LoadDll(Properties.Settings.Default.DbgHelpPath) == IntPtr.Zero)
+            if (Loader.LoadDll(Settings.Instance.DbgHelpPath) == IntPtr.Zero)
                 Loader.LoadDll("dbghelp.dll");
 
             // Find the location of the dbghelp.dll we loaded and load symsrv.dll.
@@ -2640,7 +2640,7 @@ namespace ProcessHacker
             { }
 
             // Set the first run setting here.
-            Properties.Settings.Default.FirstRun = false;
+            Settings.Instance.FirstRun = false;
         }
 
         public void QueueMessage(string message)
@@ -2663,31 +2663,31 @@ namespace ProcessHacker
         {
             if (this.WindowState == FormWindowState.Normal && this.Visible)
             {
-                Properties.Settings.Default.WindowLocation = this.Location;
-                Properties.Settings.Default.WindowSize = this.Size;
+                Settings.Instance.WindowLocation = this.Location;
+                Settings.Instance.WindowSize = this.Size;
             }
 
-            Properties.Settings.Default.AlwaysOnTop = this.TopMost;
-            Properties.Settings.Default.WindowState = this.WindowState == FormWindowState.Minimized ?
+            Settings.Instance.AlwaysOnTop = this.TopMost;
+            Settings.Instance.WindowState = this.WindowState == FormWindowState.Minimized ?
                 FormWindowState.Normal : this.WindowState;
-            Properties.Settings.Default.ToolbarVisible = toolStrip.Visible;
+            Settings.Instance.ToolbarVisible = toolStrip.Visible;
 
-            Properties.Settings.Default.PromptBoxText = PromptBox.LastValue;
+            Settings.Instance.PromptBoxText = PromptBox.LastValue;
 
-            Properties.Settings.Default.ProcessTreeColumns = ColumnSettings.SaveSettings(treeProcesses.Tree);
-            Properties.Settings.Default.ServiceListViewColumns = ColumnSettings.SaveSettings(listServices.List);
-            Properties.Settings.Default.NetworkListViewColumns = ColumnSettings.SaveSettings(listNetwork.List);
+            Settings.Instance.ProcessTreeColumns = ColumnSettings.SaveSettings(treeProcesses.Tree);
+            Settings.Instance.ServiceListViewColumns = ColumnSettings.SaveSettings(listServices.List);
+            Settings.Instance.NetworkListViewColumns = ColumnSettings.SaveSettings(listNetwork.List);
 
-            Properties.Settings.Default.NewProcesses = NPMenuItem.Checked;
-            Properties.Settings.Default.TerminatedProcesses = TPMenuItem.Checked;
-            Properties.Settings.Default.NewServices = NSMenuItem.Checked;
-            Properties.Settings.Default.StartedServices = startedSMenuItem.Checked;
-            Properties.Settings.Default.StoppedServices = stoppedSMenuItem.Checked;
-            Properties.Settings.Default.DeletedServices = DSMenuItem.Checked;
+            Settings.Instance.NewProcesses = NPMenuItem.Checked;
+            Settings.Instance.TerminatedProcesses = TPMenuItem.Checked;
+            Settings.Instance.NewServices = NSMenuItem.Checked;
+            Settings.Instance.StartedServices = startedSMenuItem.Checked;
+            Settings.Instance.StoppedServices = stoppedSMenuItem.Checked;
+            Settings.Instance.DeletedServices = DSMenuItem.Checked;
 
             try
             {
-                Properties.Settings.Default.Save();
+                Settings.Instance.Save();
             }
             catch (Exception ex)
             {
@@ -2899,11 +2899,11 @@ namespace ProcessHacker
 
         public void ApplyIconVisibilities()
         {
-            cpuHistoryIcon.Visible = cpuHistoryIcon.Enabled = Properties.Settings.Default.CpuHistoryIconVisible;
-            cpuUsageIcon.Visible = cpuUsageIcon.Enabled = Properties.Settings.Default.CpuUsageIconVisible;
-            ioHistoryIcon.Visible = ioHistoryIcon.Enabled = Properties.Settings.Default.IoHistoryIconVisible;
-            commitHistoryIcon.Visible = commitHistoryIcon.Enabled = Properties.Settings.Default.CommitHistoryIconVisible;
-            physMemHistoryIcon.Visible = physMemHistoryIcon.Enabled = Properties.Settings.Default.PhysMemHistoryIconVisible;
+            cpuHistoryIcon.Visible = cpuHistoryIcon.Enabled = Settings.Instance.CpuHistoryIconVisible;
+            cpuUsageIcon.Visible = cpuUsageIcon.Enabled = Settings.Instance.CpuUsageIconVisible;
+            ioHistoryIcon.Visible = ioHistoryIcon.Enabled = Settings.Instance.IoHistoryIconVisible;
+            commitHistoryIcon.Visible = commitHistoryIcon.Enabled = Settings.Instance.CommitHistoryIconVisible;
+            physMemHistoryIcon.Visible = physMemHistoryIcon.Enabled = Settings.Instance.PhysMemHistoryIconVisible;
 
             if (cpuHistoryIcon.Visible)
                 UsageIcon.ActiveUsageIcon = cpuHistoryIcon;
@@ -2924,8 +2924,8 @@ namespace ProcessHacker
 
                         if (this.WindowState == FormWindowState.Minimized)
                         {
-                            this.Location = Properties.Settings.Default.WindowLocation;
-                            this.Size = Properties.Settings.Default.WindowSize;
+                            this.Location = Settings.Instance.WindowLocation;
+                            this.Size = Settings.Instance.WindowSize;
                             this.WindowState = FormWindowState.Normal;
                         }
                         m.Result = new IntPtr(0x1119);
@@ -2942,11 +2942,11 @@ namespace ProcessHacker
                             {
                                 if (this.WindowState == FormWindowState.Normal && this.Visible)
                                 {
-                                    Properties.Settings.Default.WindowLocation = this.Location;
-                                    Properties.Settings.Default.WindowSize = this.Size;
+                                    Settings.Instance.WindowLocation = this.Location;
+                                    Settings.Instance.WindowSize = this.Size;
                                 }
 
-                                if (this.GetIconsVisibleCount() > 0 && Properties.Settings.Default.HideWhenMinimized)
+                                if (this.GetIconsVisibleCount() > 0 && Settings.Instance.HideWhenMinimized)
                                 {
                                     this.Visible = false;
 
@@ -3046,7 +3046,7 @@ namespace ProcessHacker
             }
 
             if (this.GetIconsVisibleCount() > 0 &&
-                Properties.Settings.Default.HideWhenClosed)
+                Settings.Instance.HideWhenClosed)
             {
                 e.Cancel = true;
                 showHideMenuItem_Click(sender, null);
@@ -3080,7 +3080,7 @@ namespace ProcessHacker
             if (KProcessHacker.Instance == null || !OSVersion.HasSetAccessToken)
                 setTokenProcessMenuItem.Visible = false;
 
-            if (KProcessHacker.Instance == null || !Properties.Settings.Default.EnableExperimentalFeatures)
+            if (KProcessHacker.Instance == null || !Settings.Instance.EnableExperimentalFeatures)
                 protectionProcessMenuItem.Visible = false;
 
             if (!OSVersion.HasUac)
@@ -3177,19 +3177,19 @@ namespace ProcessHacker
 
             this.ExecuteOnIcons((icon) => icon.ContextMenu = menuIcon);
             this.ExecuteOnIcons((icon) => icon.MouseDoubleClick += notifyIcon_MouseDoubleClick);
-            cpuHistoryMenuItem.Checked = Properties.Settings.Default.CpuHistoryIconVisible;
-            cpuUsageMenuItem.Checked = Properties.Settings.Default.CpuUsageIconVisible;
-            ioHistoryMenuItem.Checked = Properties.Settings.Default.IoHistoryIconVisible;
-            commitHistoryMenuItem.Checked = Properties.Settings.Default.CommitHistoryIconVisible;
-            physMemHistoryMenuItem.Checked = Properties.Settings.Default.PhysMemHistoryIconVisible;
+            cpuHistoryMenuItem.Checked = Settings.Instance.CpuHistoryIconVisible;
+            cpuUsageMenuItem.Checked = Settings.Instance.CpuUsageIconVisible;
+            ioHistoryMenuItem.Checked = Settings.Instance.IoHistoryIconVisible;
+            commitHistoryMenuItem.Checked = Settings.Instance.CommitHistoryIconVisible;
+            physMemHistoryMenuItem.Checked = Settings.Instance.PhysMemHistoryIconVisible;
             this.ApplyIconVisibilities();
 
-            NPMenuItem.Checked = Properties.Settings.Default.NewProcesses;
-            TPMenuItem.Checked = Properties.Settings.Default.TerminatedProcesses;
-            NSMenuItem.Checked = Properties.Settings.Default.NewServices;
-            startedSMenuItem.Checked = Properties.Settings.Default.StartedServices;
-            stoppedSMenuItem.Checked = Properties.Settings.Default.StoppedServices;
-            DSMenuItem.Checked = Properties.Settings.Default.DeletedServices;
+            NPMenuItem.Checked = Settings.Instance.NewProcesses;
+            TPMenuItem.Checked = Settings.Instance.TerminatedProcesses;
+            NSMenuItem.Checked = Settings.Instance.NewServices;
+            startedSMenuItem.Checked = Settings.Instance.StartedServices;
+            stoppedSMenuItem.Checked = Settings.Instance.StoppedServices;
+            DSMenuItem.Checked = Settings.Instance.DeletedServices;
 
             NPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
             TPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
@@ -3209,7 +3209,7 @@ namespace ProcessHacker
             listServices.ContextMenu = menuService;
             listNetwork.ContextMenu = menuNetwork;
 
-            processP.Interval = Properties.Settings.Default.RefreshInterval;
+            processP.Interval = Settings.Instance.RefreshInterval;
             treeProcesses.Provider = processP;
             treeProcesses.Tree.BeginUpdate();
             treeProcesses.Tree.BeginCompleteUpdate();
@@ -3221,11 +3221,11 @@ namespace ProcessHacker
             processP.Enabled = true;
             updateProcessesMenuItem.Checked = true;
 
-            HighlightingContext.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
+            HighlightingContext.HighlightingDuration = Settings.Instance.HighlightingDuration;
             HighlightingContext.StateHighlighting = false;
 
             listServices.List.BeginUpdate();
-            serviceP.Interval = Properties.Settings.Default.RefreshInterval;
+            serviceP.Interval = Settings.Instance.RefreshInterval;
             listServices.Provider = serviceP;
             serviceP.DictionaryAdded += serviceP_DictionaryAdded_Process;
             serviceP.DictionaryModified += serviceP_DictionaryModified_Process;
@@ -3233,7 +3233,7 @@ namespace ProcessHacker
             serviceP.Updated += serviceP_Updated;
             updateServicesMenuItem.Checked = true;
 
-            networkP.Interval = Properties.Settings.Default.RefreshInterval;
+            networkP.Interval = Settings.Instance.RefreshInterval;
             listNetwork.Provider = networkP;
 
             treeProcesses.Tree.MouseDown += (sender, e) =>
@@ -3360,7 +3360,7 @@ namespace ProcessHacker
             this.LoadControls();
             this.LoadNotificationIcons();
 
-            if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) ||
+            if ((!Settings.Instance.StartHidden && !Program.StartHidden) ||
                 Program.StartVisible)
             {
                 this.Visible = true;
@@ -3383,7 +3383,7 @@ namespace ProcessHacker
         private void HackerWindow_Load(object sender, EventArgs e)
         {
             Program.UpdateWindowMenu(windowMenuItem, this);
-            this.ApplyFont(Properties.Settings.Default.Font);
+            this.ApplyFont(Settings.Instance.Font);
             this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
             
             //TODO: NetworkInfo unfinished, hidden for 1.6 release
@@ -3475,7 +3475,7 @@ namespace ProcessHacker
                 try { Win32.SetProcessShutdownParameters(0x100, 0); }
                 catch { }
 
-                if (Properties.Settings.Default.AppUpdateAutomatic)
+                if (Settings.Instance.AppUpdateAutomatic)
                     this.UpdateProgram(false);
             }
         }

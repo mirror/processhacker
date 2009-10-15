@@ -159,10 +159,10 @@ namespace ProcessHacker
                             _symbols = new SymbolProvider();
 
                         SymbolProvider.Options = SymbolOptions.DeferredLoads |
-                            (Properties.Settings.Default.DbgHelpUndecorate ? SymbolOptions.UndName : 0);
+                            (Settings.Instance.DbgHelpUndecorate ? SymbolOptions.UndName : 0);
 
-                        if (Properties.Settings.Default.DbgHelpSearchPath != "")
-                            _symbols.SearchPath = Properties.Settings.Default.DbgHelpSearchPath;
+                        if (Settings.Instance.DbgHelpSearchPath != "")
+                            _symbols.SearchPath = Settings.Instance.DbgHelpSearchPath;
 
                         try
                         {

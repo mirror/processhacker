@@ -34,7 +34,7 @@ namespace ProcessHacker
             this.SetTopMost();
 
             if (!Program.BadConfig)
-                this.Size = Properties.Settings.Default.InformationBoxSize;
+                this.Size = Settings.Instance.InformationBoxSize;
 
             textValues.Text = values;
             textValues.Select(0, 0);
@@ -50,7 +50,7 @@ namespace ProcessHacker
         private void InformationBox_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!Program.BadConfig)
-                Properties.Settings.Default.InformationBoxSize = this.Size;
+                Settings.Instance.InformationBoxSize = this.Size;
         }
 
         public TextBox TextBox { get { return textValues; } }

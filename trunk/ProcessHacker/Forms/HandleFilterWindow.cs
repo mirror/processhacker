@@ -62,10 +62,10 @@ namespace ProcessHacker
 
         private void HandleFilterWindow_Load(object sender, EventArgs e)
         {
-            ColumnSettings.LoadSettings(Properties.Settings.Default.HandleFilterWindowListViewColumns, listHandles);
-            this.Size = Properties.Settings.Default.HandleFilterWindowSize;
+            ColumnSettings.LoadSettings(Settings.Instance.HandleFilterWindowListViewColumns, listHandles);
+            this.Size = Settings.Instance.HandleFilterWindowSize;
             this.Location = Utils.FitRectangle(new System.Drawing.Rectangle(
-                Properties.Settings.Default.HandleFilterWindowLocation, this.Size), this).Location;
+                Settings.Instance.HandleFilterWindowLocation, this.Size), this).Location;
             listHandles.AddShortcuts();
         }
 
@@ -79,12 +79,12 @@ namespace ProcessHacker
                     );
             }
 
-            Properties.Settings.Default.HandleFilterWindowListViewColumns = ColumnSettings.SaveSettings(listHandles);
+            Settings.Instance.HandleFilterWindowListViewColumns = ColumnSettings.SaveSettings(listHandles);
 
             if (this.WindowState == FormWindowState.Normal)
             {
-                Properties.Settings.Default.HandleFilterWindowSize = this.Size;
-                Properties.Settings.Default.HandleFilterWindowLocation = this.Location;
+                Settings.Instance.HandleFilterWindowSize = this.Size;
+                Settings.Instance.HandleFilterWindowLocation = this.Location;
             }
 
             e.Cancel = true;

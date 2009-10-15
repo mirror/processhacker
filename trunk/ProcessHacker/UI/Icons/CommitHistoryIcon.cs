@@ -42,7 +42,7 @@ namespace ProcessHacker
 
         protected override void ProviderUpdated()
         {
-            this.LineColor1 = Properties.Settings.Default.PlotterMemoryPrivateColor;
+            this.LineColor1 = Settings.Instance.PlotterMemoryPrivateColor;
             this.Update(this.Provider.Performance.CommittedPages, 0);
             this.Redraw();
 

@@ -40,7 +40,7 @@ namespace ProcessHacker.Components
             {
                 ListViewItem item = listGroups.Items.Add(new ListViewItem());
 
-                item.Text = groups[i].GetFullName(Properties.Settings.Default.ShowAccountDomains);
+                item.Text = groups[i].GetFullName(Settings.Instance.ShowAccountDomains);
                 item.BackColor = GetAttributeColor(groups[i].Attributes);
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, GetAttributeString(groups[i].Attributes)));
             }
@@ -48,13 +48,13 @@ namespace ProcessHacker.Components
             listGroups.ListViewItemSorter = new SortedListViewComparer(listGroups);
             listGroups.SetDoubleBuffered(true);
             listGroups.ContextMenu = listGroups.GetCopyMenu();
-            ColumnSettings.LoadSettings(Properties.Settings.Default.GroupListColumns, listGroups);
+            ColumnSettings.LoadSettings(Settings.Instance.GroupListColumns, listGroups);
             listGroups.AddShortcuts();
         }
 
         public void SaveSettings()
         {
-            Properties.Settings.Default.GroupListColumns = ColumnSettings.SaveSettings(listGroups);
+            Settings.Instance.GroupListColumns = ColumnSettings.SaveSettings(listGroups);
         }
 
         private string GetAttributeString(SidAttributes Attributes)

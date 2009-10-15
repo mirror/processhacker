@@ -39,8 +39,8 @@ namespace ProcessHacker
             if (this.Provider.RunCount < 2)
                 return;
 
-            this.LineColor1 = Properties.Settings.Default.PlotterIOROColor;
-            this.LineColor2 = Properties.Settings.Default.PlotterIOWColor;
+            this.LineColor1 = Settings.Instance.PlotterIOROColor;
+            this.LineColor2 = Settings.Instance.PlotterIOWColor;
 
             this.Update(
                 this.Provider.LongDeltas[SystemStats.IoRead] +

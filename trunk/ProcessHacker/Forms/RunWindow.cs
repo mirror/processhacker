@@ -94,17 +94,17 @@ namespace ProcessHacker
         {
             if (_pid == -1)
             {
-                comboUsername.Text = Properties.Settings.Default.RunAsUsername;
+                comboUsername.Text = Settings.Instance.RunAsUsername;
             }
 
-            textCmdLine.Text = Properties.Settings.Default.RunAsCommand;
+            textCmdLine.Text = Settings.Instance.RunAsCommand;
             textCmdLine.Select();
         }
 
         private void RunWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.RunAsCommand = textCmdLine.Text;
-            Properties.Settings.Default.RunAsUsername = comboUsername.Text;
+            Settings.Instance.RunAsCommand = textCmdLine.Text;
+            Settings.Instance.RunAsUsername = comboUsername.Text;
         }
 
         private void buttonBrowse_Click(object sender, EventArgs e)

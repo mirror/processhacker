@@ -60,7 +60,7 @@ namespace ProcessHacker.Components
             listModules.MouseUp += new MouseEventHandler(listModules_MouseUp);
             listModules.DoubleClick += new EventHandler(listModules_DoubleClick);
 
-            ColumnSettings.LoadSettings(Properties.Settings.Default.ModuleListViewColumns, listModules);
+            ColumnSettings.LoadSettings(Settings.Instance.ModuleListViewColumns, listModules);
             listModules.ContextMenu = menuModule;
             GenericViewMenu.AddMenuItems(copyModuleMenuItem.MenuItems, listModules, null);
         }
@@ -253,14 +253,14 @@ namespace ProcessHacker.Components
 
         private Color GetModuleColor(ModuleItem item)
         {
-            if (Properties.Settings.Default.UseColorDotNetProcesses &&
+            if (Settings.Instance.UseColorDotNetProcesses &&
                 (item.Flags & LdrpDataTableEntryFlags.CorImage) != 0
                 )
-                return Properties.Settings.Default.ColorDotNetProcesses;
-            else if (Properties.Settings.Default.UseColorRelocatedDlls &&
+                return Settings.Instance.ColorDotNetProcesses;
+            else if (Settings.Instance.UseColorRelocatedDlls &&
                 (item.Flags & LdrpDataTableEntryFlags.ImageNotAtBase) != 0
                 )
-                return Properties.Settings.Default.ColorRelocatedDlls;
+                return Settings.Instance.ColorRelocatedDlls;
             else
                 return SystemColors.Window;
         }
@@ -296,7 +296,7 @@ namespace ProcessHacker.Components
 
         public void SaveSettings()
         {
-            Properties.Settings.Default.ModuleListViewColumns = ColumnSettings.SaveSettings(listModules);
+            Settings.Instance.ModuleListViewColumns = ColumnSettings.SaveSettings(listModules);
         }
 
         private void menuModule_Popup(object sender, EventArgs e)
@@ -347,7 +347,7 @@ namespace ProcessHacker.Components
         {
             try
             {
-                Process.Start(Properties.Settings.Default.SearchEngine.Replace("%s",
+                Process.Start(Settings.Instance.SearchEngine.Replace("%s",
                     listModules.SelectedItems[0].Text));
             }
             catch (Exception ex)

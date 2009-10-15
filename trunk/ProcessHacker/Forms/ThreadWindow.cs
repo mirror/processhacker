@@ -142,16 +142,16 @@ namespace ProcessHacker
             listViewCallStack.SetTheme("explorer");
             listViewCallStack.AddShortcuts();
 
-            this.Size = Properties.Settings.Default.ThreadWindowSize;
-            ColumnSettings.LoadSettings(Properties.Settings.Default.CallStackColumns, listViewCallStack);
+            this.Size = Settings.Instance.ThreadWindowSize;
+            ColumnSettings.LoadSettings(Settings.Instance.CallStackColumns, listViewCallStack);
 
             this.WalkCallStack();
         }
 
         private void ThreadWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.ThreadWindowSize = this.Size;
-            Properties.Settings.Default.CallStackColumns = ColumnSettings.SaveSettings(listViewCallStack);
+            Settings.Instance.ThreadWindowSize = this.Size;
+            Settings.Instance.CallStackColumns = ColumnSettings.SaveSettings(listViewCallStack);
             _symbols = null;
         }
 

@@ -33,7 +33,7 @@ namespace ProcessHacker.Native.Symbols
     {
         public static void ShowWarning(IWin32Window window, bool force)
         {
-            if (Properties.Settings.Default.DbgHelpWarningShown && !force)
+            if (Settings.Instance.DbgHelpWarningShown && !force)
                 return;
 
             try
@@ -47,7 +47,7 @@ namespace ProcessHacker.Native.Symbols
                         if (!File.Exists(Path.GetDirectoryName(module.FileName) + "\\symsrv.dll"))
                         {
                             if (!force)
-                                Properties.Settings.Default.DbgHelpWarningShown = true;
+                                Settings.Instance.DbgHelpWarningShown = true;
 
                             if (OSVersion.HasTaskDialogs)
                             {
@@ -92,7 +92,7 @@ namespace ProcessHacker.Native.Symbols
                                 td.Show(window, out verificationChecked);
 
                                 if (!force)
-                                    Properties.Settings.Default.DbgHelpWarningShown = verificationChecked;
+                                    Settings.Instance.DbgHelpWarningShown = verificationChecked;
                             }
                             else
                             {

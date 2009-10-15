@@ -537,7 +537,7 @@ namespace ProcessHacker
             // 1. The function-to-library ratio is lower than 4
             //   (on average less than 4 functions are imported from each library)
             // 2. It references more than 3 libraries but less than 14 libraries.
-            if (fileName != null && (Properties.Settings.Default.VerifySignatures || forced))
+            if (fileName != null && (Settings.Instance.VerifySignatures || forced))
             {
                 try
                 {
@@ -570,7 +570,7 @@ namespace ProcessHacker
 
             try
             {
-                if (Properties.Settings.Default.VerifySignatures || forced)
+                if (Settings.Instance.VerifySignatures || forced)
                 {
                     if (fileName != null)
                     {

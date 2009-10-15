@@ -99,7 +99,7 @@ namespace ProcessHacker
                 foreach (var connection in list)
                 {
                     if (connection.Pid == Program.CurrentProcessId &&
-                        Properties.Settings.Default.HideProcessHackerNetworkConnections)
+                        Settings.Instance.HideProcessHackerNetworkConnections)
                         continue;
 
                     string id = connection.Pid.ToString() + "-" + connection.Local.ToString() + "-" +

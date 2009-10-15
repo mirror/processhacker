@@ -134,7 +134,7 @@ namespace ProcessHacker
         {
             int tickCount = Environment.TickCount;
 
-            if (tickCount - _lastTooltipTickCount >= Settings.RefreshInterval)
+            if (tickCount - _lastTooltipTickCount >= Settings.Instance.RefreshInterval)
             {
                 _tooltipText = provider.GetToolTip(this);
                 _lastTooltipTickCount = tickCount;
@@ -178,8 +178,8 @@ namespace ProcessHacker
                     UseLongData = false,
                     Data1 = _pitem.FloatHistoryManager[ProcessStats.CpuKernel],
                     Data2 = _pitem.FloatHistoryManager[ProcessStats.CpuUser],
-                    LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor,
-                    LineColor2 = Properties.Settings.Default.PlotterCPUUserColor
+                    LineColor1 = Settings.Instance.PlotterCPUKernelColor,
+                    LineColor2 = Settings.Instance.PlotterCPUUserColor
                 };
             }
         }
@@ -195,8 +195,8 @@ namespace ProcessHacker
                     UseLongData = true,
                     LongData1 = _pitem.LongHistoryManager[ProcessStats.IoReadOther],
                     LongData2 = _pitem.LongHistoryManager[ProcessStats.IoWrite],
-                    LineColor1 = Properties.Settings.Default.PlotterIOROColor,
-                    LineColor2 = Properties.Settings.Default.PlotterIOWColor
+                    LineColor1 = Settings.Instance.PlotterIOROColor,
+                    LineColor2 = Settings.Instance.PlotterIOWColor
                 };
             }
         }
@@ -358,7 +358,7 @@ namespace ProcessHacker
 
         public string Username
         {
-            get { return this.GetBestUsername(_pitem.Username, Settings.ShowAccountDomains); }
+            get { return this.GetBestUsername(_pitem.Username, Settings.Instance.ShowAccountDomains); }
         }
 
         public string SessionId
@@ -548,7 +548,7 @@ namespace ProcessHacker
                 else
                     return (_pitem.LongHistoryManager[ProcessStats.IoReadOther][0] +
                         _pitem.LongHistoryManager[ProcessStats.IoWrite][0]) * 1000 /
-                        Settings.RefreshInterval;
+                        Settings.Instance.RefreshInterval;
             }
         }
 
@@ -571,7 +571,7 @@ namespace ProcessHacker
                     return 0;
                 else
                     return _pitem.LongHistoryManager[ProcessStats.IoReadOther][0] * 1000 /
-                        Settings.RefreshInterval;
+                        Settings.Instance.RefreshInterval;
             }
         }
 
@@ -594,7 +594,7 @@ namespace ProcessHacker
                     return 0;
                 else
                     return _pitem.LongHistoryManager[ProcessStats.IoWrite][0] * 1000 /
-                        Settings.RefreshInterval;
+                        Settings.Instance.RefreshInterval;
             }
         }
 

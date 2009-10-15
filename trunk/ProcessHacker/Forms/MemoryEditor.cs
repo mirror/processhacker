@@ -110,7 +110,7 @@ namespace ProcessHacker
         {
             Program.UpdateWindowMenu(windowMenuItem, this);
 
-            this.Size = Properties.Settings.Default.MemoryWindowSize;
+            this.Size = Settings.Instance.MemoryWindowSize;
             this.SetPhParent(false);
         }
 
@@ -119,7 +119,7 @@ namespace ProcessHacker
             this.Visible = false;
 
             if (this.WindowState == FormWindowState.Normal)
-                Properties.Settings.Default.MemoryWindowSize = this.Size;
+                Settings.Instance.MemoryWindowSize = this.Size;
         }
 
         public bool ReadOnly

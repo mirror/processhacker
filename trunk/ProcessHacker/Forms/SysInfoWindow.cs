@@ -49,9 +49,9 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
-            this.Size = Properties.Settings.Default.SysInfoWindowSize;
+            this.Size = Settings.Instance.SysInfoWindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(
-                Properties.Settings.Default.SysInfoWindowLocation, this.Size), this).Location;
+                Settings.Instance.SysInfoWindowLocation, this.Size), this).Location;
 
             // Load the pool limit addresses.
             if (
@@ -93,10 +93,10 @@ namespace ProcessHacker
             indicatorPhysical.Maximum = (int)_pages;
 
             // Set indicators color
-            indicatorCpu.Color1 = Properties.Settings.Default.PlotterCPUKernelColor;
-            indicatorCpu.Color2 = Properties.Settings.Default.PlotterCPUUserColor;
-            indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;
-            indicatorPhysical.Color1 = Properties.Settings.Default.PlotterMemoryWSColor;  
+            indicatorCpu.Color1 = Settings.Instance.PlotterCPUKernelColor;
+            indicatorCpu.Color2 = Settings.Instance.PlotterCPUUserColor;
+            indicatorIO.Color1 = Settings.Instance.PlotterIOROColor;
+            indicatorPhysical.Color1 = Settings.Instance.PlotterMemoryWSColor;  
 
 
             // Set up the plotter controls.
@@ -151,7 +151,7 @@ namespace ProcessHacker
 
             tableCPUs.Visible = true;
             tableCPUs.Visible = false;
-            checkShowOneGraphPerCPU.Checked = Properties.Settings.Default.ShowOneGraphPerCPU;
+            checkShowOneGraphPerCPU.Checked = Settings.Instance.ShowOneGraphPerCPU;
 
             if (_noOfCPUs == 1)
                 checkShowOneGraphPerCPU.Enabled = false;
@@ -171,13 +171,13 @@ namespace ProcessHacker
         {
             if (this.WindowState == FormWindowState.Normal)
             {
-                Properties.Settings.Default.SysInfoWindowLocation = this.Location;
-                Properties.Settings.Default.SysInfoWindowSize = this.Size;
+                Settings.Instance.SysInfoWindowLocation = this.Location;
+                Settings.Instance.SysInfoWindowSize = this.Size;
             }
             
             Program.ProcessProvider.Updated -=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
-            Properties.Settings.Default.ShowOneGraphPerCPU = checkShowOneGraphPerCPU.Checked;   
+            Settings.Instance.ShowOneGraphPerCPU = checkShowOneGraphPerCPU.Checked;   
         }
 
         private void UpdateGraphs()
@@ -202,17 +202,17 @@ namespace ProcessHacker
             plotterIO.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther];
             plotterIO.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.IoWrite];
 
-            plotterCPU.LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
-            plotterCPU.LineColor2 = Properties.Settings.Default.PlotterCPUUserColor;
-            plotterIO.LineColor1 = Properties.Settings.Default.PlotterIOROColor;
-            plotterIO.LineColor2 = Properties.Settings.Default.PlotterIOWColor;
-            plotterMemory.LineColor1 = Properties.Settings.Default.PlotterMemoryPrivateColor;
-            plotterMemory.LineColor2 = Properties.Settings.Default.PlotterMemoryWSColor;
+            plotterCPU.LineColor1 = Settings.Instance.PlotterCPUKernelColor;
+            plotterCPU.LineColor2 = Settings.Instance.PlotterCPUUserColor;
+            plotterIO.LineColor1 = Settings.Instance.PlotterIOROColor;
+            plotterIO.LineColor2 = Settings.Instance.PlotterIOWColor;
+            plotterMemory.LineColor1 = Settings.Instance.PlotterMemoryPrivateColor;
+            plotterMemory.LineColor2 = Settings.Instance.PlotterMemoryWSColor;
 
             for (int i = 0; i < _cpuPlotters.Length; i++)
             {
-                _cpuPlotters[i].LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
-                _cpuPlotters[i].LineColor2 = Properties.Settings.Default.PlotterCPUUserColor;
+                _cpuPlotters[i].LineColor1 = Settings.Instance.PlotterCPUKernelColor;
+                _cpuPlotters[i].LineColor2 = Settings.Instance.PlotterCPUUserColor;
                 _cpuPlotters[i].Text = ((_cpuPlotters[i].Data1[0] + _cpuPlotters[i].Data2[0]) * 100).ToString("F2") +
                     "% (K: " + (_cpuPlotters[i].Data1[0] * 100).ToString("F2") +
                     "%, U: " + (_cpuPlotters[i].Data2[0] * 100).ToString("F2") + "%)";

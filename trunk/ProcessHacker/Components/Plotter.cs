@@ -100,7 +100,7 @@ namespace ProcessHacker.Components
             int tHeight = this.Height;
             int moveStep = this.EffectiveMoveStep;
 
-            g.SmoothingMode = Properties.Settings.Default.PlotterAntialias ? 
+            g.SmoothingMode = Settings.Instance.PlotterAntialias ? 
                 SmoothingMode.AntiAlias : SmoothingMode.Default;
 
             g.FillRectangle(new SolidBrush(this.BackColor), 0, 0, tWidth, tHeight);

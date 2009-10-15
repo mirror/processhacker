@@ -262,46 +262,46 @@ namespace ProcessHacker
 
         private Color GetProcessColor(ProcessItem p)
         {
-            if (Properties.Settings.Default.UseColorDebuggedProcesses && p.IsBeingDebugged)
-                return Properties.Settings.Default.ColorDebuggedProcesses;
-            else if (Properties.Settings.Default.UseColorElevatedProcesses &&
+            if (Settings.Instance.UseColorDebuggedProcesses && p.IsBeingDebugged)
+                return Settings.Instance.ColorDebuggedProcesses;
+            else if (Settings.Instance.UseColorElevatedProcesses &&
                 p.ElevationType == TokenElevationType.Full)
-                return Properties.Settings.Default.ColorElevatedProcesses;
-            else if (Properties.Settings.Default.UseColorPosixProcesses &&
+                return Settings.Instance.ColorElevatedProcesses;
+            else if (Settings.Instance.UseColorPosixProcesses &&
                 p.IsPosix)
-                return Properties.Settings.Default.ColorPosixProcesses;
-            else if (Properties.Settings.Default.UseColorWow64Processes &&
+                return Settings.Instance.ColorPosixProcesses;
+            else if (Settings.Instance.UseColorWow64Processes &&
                 p.IsWow64)
-                return Properties.Settings.Default.ColorWow64Processes;
-            else if (Properties.Settings.Default.UseColorJobProcesses && p.IsInSignificantJob)
-                return Properties.Settings.Default.ColorJobProcesses;
-            else if (Properties.Settings.Default.UseColorPackedProcesses &&
-                Properties.Settings.Default.VerifySignatures &&
+                return Settings.Instance.ColorWow64Processes;
+            else if (Settings.Instance.UseColorJobProcesses && p.IsInSignificantJob)
+                return Settings.Instance.ColorJobProcesses;
+            else if (Settings.Instance.UseColorPackedProcesses &&
+                Settings.Instance.VerifySignatures &&
                 Program.ImposterNames.Contains(p.Name.ToLower()) &&
                 p.VerifyResult != VerifyResult.Trusted &&
                 p.VerifyResult != VerifyResult.TrustedInstaller &&
                 p.VerifyResult != VerifyResult.Unknown &&
                 p.FileName != null)
-                return Properties.Settings.Default.ColorPackedProcesses;
-            else if (Properties.Settings.Default.UseColorPackedProcesses &&
-                Properties.Settings.Default.VerifySignatures &&
+                return Settings.Instance.ColorPackedProcesses;
+            else if (Settings.Instance.UseColorPackedProcesses &&
+                Settings.Instance.VerifySignatures &&
                 p.VerifyResult != VerifyResult.Trusted &&
                 p.VerifyResult != VerifyResult.TrustedInstaller &&
                 p.VerifyResult != VerifyResult.NoSignature &&
                 p.VerifyResult != VerifyResult.Unknown)
-                return Properties.Settings.Default.ColorPackedProcesses;
-            else if (Properties.Settings.Default.UseColorDotNetProcesses && p.IsDotNet)
-                return Properties.Settings.Default.ColorDotNetProcesses;
-            else if (Properties.Settings.Default.UseColorPackedProcesses && p.IsPacked)
-                return Properties.Settings.Default.ColorPackedProcesses;
-            else if (Properties.Settings.Default.UseColorServiceProcesses &&
+                return Settings.Instance.ColorPackedProcesses;
+            else if (Settings.Instance.UseColorDotNetProcesses && p.IsDotNet)
+                return Settings.Instance.ColorDotNetProcesses;
+            else if (Settings.Instance.UseColorPackedProcesses && p.IsPacked)
+                return Settings.Instance.ColorPackedProcesses;
+            else if (Settings.Instance.UseColorServiceProcesses &&
                 Program.HackerWindow.ProcessServices.ContainsKey(p.Pid) &&
                 Program.HackerWindow.ProcessServices[p.Pid].Count > 0)
-                return Properties.Settings.Default.ColorServiceProcesses;
-            else if (Properties.Settings.Default.UseColorSystemProcesses && p.Username == "NT AUTHORITY\\SYSTEM")
-                return Properties.Settings.Default.ColorSystemProcesses;
-            else if (Properties.Settings.Default.UseColorOwnProcesses && p.Username == Program.CurrentUsername)
-                return Properties.Settings.Default.ColorOwnProcesses;
+                return Settings.Instance.ColorServiceProcesses;
+            else if (Settings.Instance.UseColorSystemProcesses && p.Username == "NT AUTHORITY\\SYSTEM")
+                return Settings.Instance.ColorSystemProcesses;
+            else if (Settings.Instance.UseColorOwnProcesses && p.Username == Program.CurrentUsername)
+                return Settings.Instance.ColorOwnProcesses;
             else
                 return SystemColors.Window;
         }
@@ -321,7 +321,7 @@ namespace ProcessHacker
                         if (item.RunId > 0 && _runCount > 0)
                         {
                             node.State = TreeNodeAdv.NodeState.New;
-                            this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
+                            this.PerformDelayed(Settings.Instance.HighlightingDuration,
                                 new MethodInvoker(delegate
                             {
                                 node.State = TreeNodeAdv.NodeState.Normal;
@@ -367,7 +367,7 @@ namespace ProcessHacker
                         //if (this.StateHighlighting)
                         //{
                             node.State = TreeNodeAdv.NodeState.Removed;
-                            this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
+                            this.PerformDelayed(Settings.Instance.HighlightingDuration,
                                 new MethodInvoker(delegate
                             {
                                 try

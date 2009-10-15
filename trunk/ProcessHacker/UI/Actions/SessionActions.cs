@@ -44,7 +44,7 @@ namespace ProcessHacker.UI.Actions
 
         private static void ElevateIfRequired(IWin32Window window, int session, string actionName, Action action)
         {
-            if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Never)
+            if (Settings.Instance.ElevationLevel == (int)ElevationLevel.Never)
                 return;
 
             try
@@ -59,7 +59,7 @@ namespace ProcessHacker.UI.Actions
                 {
                     DialogResult result;
 
-                    if (Properties.Settings.Default.ElevationLevel == (int)ElevationLevel.Elevate)
+                    if (Settings.Instance.ElevationLevel == (int)ElevationLevel.Elevate)
                     {
                         result = DialogResult.Yes;
                     }

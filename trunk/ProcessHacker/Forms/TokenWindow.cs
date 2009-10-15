@@ -50,13 +50,13 @@ namespace ProcessHacker
 
         private void TokenWindow_Load(object sender, EventArgs e)
         {
-            this.Size = Properties.Settings.Default.TokenWindowSize;
+            this.Size = Settings.Instance.TokenWindowSize;
         }
 
         private void TokenWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             _tokenProps.SaveSettings();
-            Properties.Settings.Default.TokenWindowSize = this.Size;
+            Settings.Instance.TokenWindowSize = this.Size;
         }
 
         private void buttonClose_Click(object sender, EventArgs e)

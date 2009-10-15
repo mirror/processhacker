@@ -69,7 +69,7 @@ namespace ProcessHacker
         {
             try
             {
-                Properties.Settings.Default.Save();
+                Settings.Instance.Save();
 
                 // Remove the icons or they remain in the system try.
                 Program.HackerWindow.ExecuteOnIcons((icon) => icon.Visible = false);

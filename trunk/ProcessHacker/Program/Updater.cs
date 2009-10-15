@@ -109,7 +109,7 @@ namespace ProcessHacker
 
             try
             {
-                xDoc.Load(Properties.Settings.Default.AppUpdateUrl);
+                xDoc.Load(Settings.Instance.AppUpdateUrl);
             }
             catch (Exception ex)
             {
@@ -132,7 +132,7 @@ namespace ProcessHacker
                     UpdateItem update = new UpdateItem(node);
 
                     // Check if this update is better than the one we already have.
-                    if (update.IsBetterThan(bestUpdate, (AppUpdateLevel)Properties.Settings.Default.AppUpdateLevel))
+                    if (update.IsBetterThan(bestUpdate, (AppUpdateLevel)Settings.Instance.AppUpdateLevel))
                         bestUpdate = update;
                 }
                 catch (Exception ex)

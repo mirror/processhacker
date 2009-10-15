@@ -89,16 +89,16 @@ namespace ProcessHacker
         private void ProcessWindow_Load(object sender, EventArgs e)
         {
             // Load settings.
-            this.Size = Properties.Settings.Default.ProcessWindowSize;
-            buttonSearch.Text = Properties.Settings.Default.SearchType;
-            checkHideHandlesNoName.Checked = Properties.Settings.Default.HideHandlesWithNoName;
+            this.Size = Settings.Instance.ProcessWindowSize;
+            buttonSearch.Text = Settings.Instance.SearchType;
+            checkHideHandlesNoName.Checked = Settings.Instance.HideHandlesWithNoName;
 
-            if (tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab] != null)
-                tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab];
+            if (tabControl.TabPages[Settings.Instance.ProcessWindowSelectedTab] != null)
+                tabControl.SelectedTab = tabControl.TabPages[Settings.Instance.ProcessWindowSelectedTab];
 
             // Load location, cascade if possible.
             Rectangle bounds = Screen.GetWorkingArea(this);
-            Point location = Properties.Settings.Default.ProcessWindowLocation;
+            Point location = Settings.Instance.ProcessWindowLocation;
 
             if (Program.PWindows.Count > 1)
             {
@@ -106,7 +106,7 @@ namespace ProcessHacker
                 location.Y += 20;
             }
 
-            Properties.Settings.Default.ProcessWindowLocation = this.Location = 
+            Settings.Instance.ProcessWindowLocation = this.Location = 
                 Utils.FitRectangle(new Rectangle(location, this.Size), this).Location;
 
             // Update the Window menu.
@@ -308,12 +308,12 @@ namespace ProcessHacker
                 Program.ProcessProvider.TimeHistory[i].ToString();
 
             // Set the indicator colors.
-            indicatorCpu.Color1 = Properties.Settings.Default.PlotterCPUKernelColor;
-            indicatorCpu.Color2 = Properties.Settings.Default.PlotterCPUUserColor;
-            indicatorPvt.Color1 = Properties.Settings.Default.PlotterMemoryPrivateColor;
-            indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;
+            indicatorCpu.Color1 = Settings.Instance.PlotterCPUKernelColor;
+            indicatorCpu.Color2 = Settings.Instance.PlotterCPUUserColor;
+            indicatorPvt.Color1 = Settings.Instance.PlotterMemoryPrivateColor;
+            indicatorIO.Color1 = Settings.Instance.PlotterIOROColor;
 
-            this.ApplyFont(Properties.Settings.Default.Font);
+            this.ApplyFont(Settings.Instance.Font);
 
             this.InitializeSubControls();
 
@@ -340,15 +340,15 @@ namespace ProcessHacker
         {
             if (this.WindowState == FormWindowState.Normal)
             {
-                Properties.Settings.Default.ProcessWindowSize = this.Size;
+                Settings.Instance.ProcessWindowSize = this.Size;
 
-                Point p = Properties.Settings.Default.ProcessWindowLocation;
+                Point p = Settings.Instance.ProcessWindowLocation;
 
                 if (
                     (this.Location.X < p.X && this.Location.Y < p.Y && 
                     Program.PWindows.Count > 1) || 
                     Program.PWindows.Count <= 1)
-                    Properties.Settings.Default.ProcessWindowLocation = this.Location;
+                    Settings.Instance.ProcessWindowLocation = this.Location;
             }
 
             this.Visible = false;
@@ -396,9 +396,9 @@ namespace ProcessHacker
             Program.ProcessProvider.Updated -=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
 
-            Properties.Settings.Default.EnvironmentListViewColumns = ColumnSettings.SaveSettings(listEnvironment);
-            Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
-            Properties.Settings.Default.SearchType = buttonSearch.Text;
+            Settings.Instance.EnvironmentListViewColumns = ColumnSettings.SaveSettings(listEnvironment);
+            Settings.Instance.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
+            Settings.Instance.SearchType = buttonSearch.Text;
         }
 
         private void ProcessWindow_SizeChanged(object sender, EventArgs e)
@@ -657,7 +657,7 @@ namespace ProcessHacker
             listEnvironment.SetDoubleBuffered(true);
             listEnvironment.SetTheme("explorer");
             listEnvironment.ContextMenu = listEnvironment.GetCopyMenu();
-            ColumnSettings.LoadSettings(Properties.Settings.Default.EnvironmentListViewColumns, listEnvironment);
+            ColumnSettings.LoadSettings(Settings.Instance.EnvironmentListViewColumns, listEnvironment);
         }
 
         private void InitializeProviders()
@@ -665,7 +665,7 @@ namespace ProcessHacker
             listThreads.BeginUpdate();
             _threadP = new ThreadProvider(_pid);
             Program.SecondarySharedThreadProvider.Add(_threadP);
-            _threadP.Interval = Properties.Settings.Default.RefreshInterval;
+            _threadP.Interval = Settings.Instance.RefreshInterval;
             _threadP.Updated += new ThreadProvider.ProviderUpdateOnce(_threadP_Updated);
             listThreads.Provider = _threadP;
             //_threadP.RunOnceAsync();
@@ -673,7 +673,7 @@ namespace ProcessHacker
             listModules.BeginUpdate();
             _moduleP = new ModuleProvider(_pid);
             Program.SecondarySharedThreadProvider.Add(_moduleP);
-            _moduleP.Interval = Properties.Settings.Default.RefreshInterval;
+            _moduleP.Interval = Settings.Instance.RefreshInterval;
             _moduleP.Updated += new ModuleProvider.ProviderUpdateOnce(_moduleP_Updated);
             listModules.Provider = _moduleP;
             //_moduleP.RunOnceAsync();
@@ -682,7 +682,7 @@ namespace ProcessHacker
             _memoryP = new MemoryProvider(_pid);
             Program.SecondarySharedThreadProvider.Add(_memoryP);
             _memoryP.IgnoreFreeRegions = true;
-            _memoryP.Interval = Properties.Settings.Default.RefreshInterval;
+            _memoryP.Interval = Settings.Instance.RefreshInterval;
             _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
             listMemory.Provider = _memoryP;
             //_memoryP.RunOnceAsync();
@@ -690,8 +690,8 @@ namespace ProcessHacker
             listHandles.BeginUpdate();
             _handleP = new HandleProvider(_pid);
             Program.SecondarySharedThreadProvider.Add(_handleP);
-            _handleP.HideHandlesWithNoName = Properties.Settings.Default.HideHandlesWithNoName;
-            _handleP.Interval = Properties.Settings.Default.RefreshInterval;
+            _handleP.HideHandlesWithNoName = Settings.Instance.HideHandlesWithNoName;
+            _handleP.Interval = Settings.Instance.RefreshInterval;
             _handleP.Updated += new HandleProvider.ProviderUpdateOnce(_handleP_Updated);
             listHandles.Provider = _handleP;
             //_handleP.RunOnceAsync();
@@ -909,12 +909,12 @@ namespace ProcessHacker
 
             ProcessItem item = sysProvider.Dictionary[_pid];
 
-            plotterCPUUsage.LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
-            plotterCPUUsage.LineColor2 = Properties.Settings.Default.PlotterCPUUserColor;
-            plotterMemory.LineColor1 = Properties.Settings.Default.PlotterMemoryPrivateColor;
-            plotterMemory.LineColor2 = Properties.Settings.Default.PlotterMemoryWSColor;
-            plotterIO.LineColor1 = Properties.Settings.Default.PlotterIOROColor;
-            plotterIO.LineColor2 = Properties.Settings.Default.PlotterIOWColor;          
+            plotterCPUUsage.LineColor1 = Settings.Instance.PlotterCPUKernelColor;
+            plotterCPUUsage.LineColor2 = Settings.Instance.PlotterCPUUserColor;
+            plotterMemory.LineColor1 = Settings.Instance.PlotterMemoryPrivateColor;
+            plotterMemory.LineColor2 = Settings.Instance.PlotterMemoryWSColor;
+            plotterIO.LineColor1 = Settings.Instance.PlotterIOROColor;
+            plotterIO.LineColor2 = Settings.Instance.PlotterIOWColor;          
 
             // Update the graphs.
             long sysTotal = sysProvider.LongDeltas[SystemStats.CpuKernel] + sysProvider.LongDeltas[SystemStats.CpuUser]
@@ -1148,7 +1148,7 @@ namespace ProcessHacker
                 _handleP = new HandleProvider(_pid);
                 Program.SecondarySharedThreadProvider.Add(_handleP);
                 _handleP.HideHandlesWithNoName = checkHideHandlesNoName.Checked;
-                _handleP.Interval = Properties.Settings.Default.RefreshInterval;
+                _handleP.Interval = Settings.Instance.RefreshInterval;
                 _handleP.Updated += new HandleProvider.ProviderUpdateOnce(_handleP_Updated);
                 _handleP.RunOnceAsync();
                 listHandles.Provider = _handleP;

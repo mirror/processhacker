@@ -64,7 +64,7 @@ namespace ProcessHacker
 
         private void PEWindow_Load(object sender, EventArgs e)
         {
-            this.Size = Properties.Settings.Default.PEWindowSize;
+            this.Size = Settings.Instance.PEWindowSize;
 
             this.SetPhParent();
         }
@@ -73,13 +73,13 @@ namespace ProcessHacker
         {
             this.Visible = false;
 
-            Properties.Settings.Default.PECOFFHColumns = ColumnSettings.SaveSettings(listCOFFHeader);
-            Properties.Settings.Default.PECOFFOHColumns = ColumnSettings.SaveSettings(listCOFFOptionalHeader);
-            Properties.Settings.Default.PEImageDataColumns = ColumnSettings.SaveSettings(listImageData);
-            Properties.Settings.Default.PESectionsColumns = ColumnSettings.SaveSettings(listSections);
-            Properties.Settings.Default.PEExportsColumns = ColumnSettings.SaveSettings(listExports);
-            Properties.Settings.Default.PEImportsColumns = ColumnSettings.SaveSettings(listImports);
-            Properties.Settings.Default.PEWindowSize = this.Size;
+            Settings.Instance.PECOFFHColumns = ColumnSettings.SaveSettings(listCOFFHeader);
+            Settings.Instance.PECOFFOHColumns = ColumnSettings.SaveSettings(listCOFFOptionalHeader);
+            Settings.Instance.PEImageDataColumns = ColumnSettings.SaveSettings(listImageData);
+            Settings.Instance.PESectionsColumns = ColumnSettings.SaveSettings(listSections);
+            Settings.Instance.PEExportsColumns = ColumnSettings.SaveSettings(listExports);
+            Settings.Instance.PEImportsColumns = ColumnSettings.SaveSettings(listImports);
+            Settings.Instance.PEWindowSize = this.Size;
 
             if (_mappedImage != null)
                 _mappedImage.Dispose();
@@ -91,37 +91,37 @@ namespace ProcessHacker
             listCOFFHeader.SetTheme("explorer");
             listCOFFHeader.ContextMenu = listCOFFHeader.GetCopyMenu();
             listCOFFHeader.AddShortcuts();
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFHColumns, listCOFFHeader);
+            ColumnSettings.LoadSettings(Settings.Instance.PECOFFHColumns, listCOFFHeader);
 
             listCOFFOptionalHeader.SetDoubleBuffered(true);
             listCOFFOptionalHeader.SetTheme("explorer");
             listCOFFOptionalHeader.ContextMenu = listCOFFOptionalHeader.GetCopyMenu();
             listCOFFOptionalHeader.AddShortcuts();
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFOHColumns, listCOFFOptionalHeader);
+            ColumnSettings.LoadSettings(Settings.Instance.PECOFFOHColumns, listCOFFOptionalHeader);
 
             listImageData.SetDoubleBuffered(true);
             listImageData.SetTheme("explorer");
             listImageData.ContextMenu = listImageData.GetCopyMenu();
             listImageData.AddShortcuts();
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PEImageDataColumns, listImageData);
+            ColumnSettings.LoadSettings(Settings.Instance.PEImageDataColumns, listImageData);
 
             listSections.SetDoubleBuffered(true);
             listSections.SetTheme("explorer");
             listSections.ContextMenu = listSections.GetCopyMenu();
             listSections.AddShortcuts();
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PESectionsColumns, listSections);
+            ColumnSettings.LoadSettings(Settings.Instance.PESectionsColumns, listSections);
 
             listExports.SetDoubleBuffered(true);
             listExports.SetTheme("explorer");
             listExports.ContextMenu = listExports.GetCopyMenu(listExports_RetrieveVirtualItem);
             listExports.AddShortcuts(this.listExports_RetrieveVirtualItem);
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PEExportsColumns, listExports);
+            ColumnSettings.LoadSettings(Settings.Instance.PEExportsColumns, listExports);
 
             listImports.SetDoubleBuffered(true);
             listImports.SetTheme("explorer");
             listImports.ContextMenu = listImports.GetCopyMenu();
             listImports.AddShortcuts();
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PEImportsColumns, listImports);
+            ColumnSettings.LoadSettings(Settings.Instance.PEImportsColumns, listImports);
         }
 
         public string Id

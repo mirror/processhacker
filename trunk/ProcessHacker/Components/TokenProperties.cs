@@ -217,10 +217,10 @@ namespace ProcessHacker.Components
                 textVirtualized.Text = "";
             }
 
-            if (tabControl.TabPages[Properties.Settings.Default.TokenWindowTab] != null)
-                tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.TokenWindowTab];
+            if (tabControl.TabPages[Settings.Instance.TokenWindowTab] != null)
+                tabControl.SelectedTab = tabControl.TabPages[Settings.Instance.TokenWindowTab];
 
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PrivilegeListColumns, listPrivileges);
+            ColumnSettings.LoadSettings(Settings.Instance.PrivilegeListColumns, listPrivileges);
             listPrivileges.AddShortcuts();
         }
 
@@ -234,8 +234,8 @@ namespace ProcessHacker.Components
             if (_groups != null)
                 _groups.SaveSettings();
 
-            Properties.Settings.Default.TokenWindowTab = tabControl.SelectedTab.Name;
-            Properties.Settings.Default.PrivilegeListColumns = ColumnSettings.SaveSettings(listPrivileges);
+            Settings.Instance.TokenWindowTab = tabControl.SelectedTab.Name;
+            Settings.Instance.PrivilegeListColumns = ColumnSettings.SaveSettings(listPrivileges);
         }
 
         private string GetAttributeString(SePrivilegeAttributes Attributes)

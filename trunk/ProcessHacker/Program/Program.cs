@@ -162,7 +162,7 @@ namespace ProcessHacker
             {
                 if (pArgs.ContainsKey("-nokph"))
                     NoKph = true;
-                if (Properties.Settings.Default.AllowOnlyOneInstance && 
+                if (Settings.Instance.AllowOnlyOneInstance && 
                     !(pArgs.ContainsKey("-e") || pArgs.ContainsKey("-o") ||
                     pArgs.ContainsKey("-pw") || pArgs.ContainsKey("-pt"))
                     )
@@ -174,11 +174,11 @@ namespace ProcessHacker
             // Try to upgrade settings.
             try
             {
-                if (Properties.Settings.Default.NeedsUpgrade)
+                if (Settings.Instance.NeedsUpgrade)
                 {
                     try
                     {
-                        Properties.Settings.Default.Upgrade();
+                        Settings.Instance.Upgrade();
                     }
                     catch (Exception ex)
                     {
@@ -186,7 +186,7 @@ namespace ProcessHacker
                         PhUtils.ShowWarning("Process Hacker could not upgrade its settings from a previous version.");
                     }
 
-                    Properties.Settings.Default.NeedsUpgrade = false;
+                    Settings.Instance.NeedsUpgrade = false;
                 }
             }
             catch
@@ -247,7 +247,7 @@ namespace ProcessHacker
                 if (
                     // Only load KPH if we're on 32-bit and it's enabled.
                     IntPtr.Size == 4 &&
-                    Properties.Settings.Default.EnableKPH &&
+                    Settings.Instance.EnableKPH &&
                     !NoKph &&
                     // Don't load KPH if we're going to install/uninstall it.
                     !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph")
@@ -330,13 +330,13 @@ namespace ProcessHacker
             ProcessProvider = new ProcessSystemProvider();
             ServiceProvider = new ServiceProvider();
             NetworkProvider = new NetworkProvider();
-            Program.SharedThreadProvider = 
-                new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+            Program.SharedThreadProvider =
+                new SharedThreadProvider(Settings.Instance.RefreshInterval);
             Program.SharedThreadProvider.Add(ProcessProvider);
             Program.SharedThreadProvider.Add(ServiceProvider);
             Program.SharedThreadProvider.Add(NetworkProvider);
-            Program.SecondarySharedThreadProvider = 
-                new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+            Program.SecondarySharedThreadProvider =
+                new SharedThreadProvider(Settings.Instance.RefreshInterval);
         }
 
         private static void DeleteSettings()
@@ -356,7 +356,7 @@ namespace ProcessHacker
             // Try to get a setting. If the file is corrupt, we can reset the settings.
             try
             {
-                var a = Properties.Settings.Default.AlwaysOnTop;
+                var a = Settings.Instance.AlwaysOnTop;
             }
             catch (Exception ex)
             {
@@ -530,8 +530,8 @@ namespace ProcessHacker
             {
                 int pid = int.Parse(pArgs["-pw"]);
 
-                SharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
-                SecondarySharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+                SharedThreadProvider = new SharedThreadProvider(Settings.Instance.RefreshInterval);
+                SecondarySharedThreadProvider = new SharedThreadProvider(Settings.Instance.RefreshInterval);
 
                 ProcessProvider = new ProcessSystemProvider();
                 ServiceProvider = new ServiceProvider();
@@ -542,7 +542,7 @@ namespace ProcessHacker
                 ProcessProvider.Enabled = true;
                 ServiceProvider.Enabled = true;
 
-                Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath);
+                Win32.LoadLibrary(Settings.Instance.DbgHelpPath);
 
                 if (!ProcessProvider.Dictionary.ContainsKey(pid))
                 {
@@ -1378,7 +1378,7 @@ namespace ProcessHacker
 
         public static void SetPhParent(this Form f, bool hideInTaskbar)
         {
-            if (Properties.Settings.Default.FloatChildWindows)
+            if (Settings.Instance.FloatChildWindows)
             {
                 if (hideInTaskbar)
                     f.ShowInTaskbar = false;
