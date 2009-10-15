@@ -262,7 +262,6 @@ namespace ProcessHacker
             }
         }
 
-        [Obsolete("Contains untested lookup syntax for settings")]
         private void LoadSettings()
         {
             // General
@@ -424,7 +423,6 @@ namespace ProcessHacker
             }
         }
 
-        [Obsolete("Contains untested lookup syntax for settings")]
         private void SaveSettings()
         {
             Settings.Instance.Font = _font;

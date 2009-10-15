@@ -424,6 +424,18 @@ namespace ProcessHacker.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
+        ///&lt;settings&gt;
+        ///    
+        ///&lt;/settings&gt;.
+        /// </summary>
+        internal static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
         internal static System.Drawing.Bitmap sflogo {
             get {
                 object obj = ResourceManager.GetObject("sflogo", resourceCulture);

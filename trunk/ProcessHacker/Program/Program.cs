@@ -360,6 +360,9 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
+                new Settings("X:\\Settings.xml");
+                return;
+
                 Logging.Log(ex);
 
                 try { ThemingScope.Activate(); }

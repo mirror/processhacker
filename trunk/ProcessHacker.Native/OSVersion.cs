@@ -3,7 +3,6 @@
  *   operating system version information
  *
  * Copyright (C) 2009 wj32
- * Copyright (C) 2009 dmex
  * 
  * This file is part of Process Hacker.
  * 
@@ -35,11 +34,6 @@ namespace ProcessHacker.Native
     public enum WindowsVersion
     {
         /// <summary>
-        /// Windows 2000 SP0, SP1, SP2, SP3, SP4, Server
-        /// </summary>
-        Win2000 = 50,
-
-        /// <summary>
         /// Windows XP SP2, SP3.
         /// </summary>
         XP = 51,
@@ -63,144 +57,6 @@ namespace ProcessHacker.Native
         /// An unreleased version of Windows.
         /// </summary>
         Unreleased = int.MaxValue
-    }
-
-    public enum WindowsType : uint
-    {
-        /// <summary>
-        /// Business Edition
-        /// </summary>
-        Business = 0x00000006,
-
-        /// <summary>
-        /// Business N Edition
-        /// </summary>
-        BusinessN = 0x00000010,
-
-        /// <summary>
-        /// Cluster Server Edition
-        /// </summary>
-        ClusterServer = 0x00000012,
-
-        /// <summary>
-        /// Server Datacenter Edition (full installation)
-        /// </summary>
-        DatacenterServer = 0x00000008,
-
-        /// <summary>
-        /// Server Datacenter Edition (core installation)
-        /// </summary>
-        DatacenterServerCore = 0x0000000C,
-
-        /// <summary>
-        /// Enterprise Edition
-        /// </summary>
-        Enterprise = 0x00000004,
-
-        /// <summary>
-        /// Server Enterprise Edition (full installation)
-        /// </summary>
-        EnterpriseServer = 0x0000000A,
-
-        /// <summary>
-        /// Server Enterprise Edition (core installation)
-        /// </summary>
-        EnterpriseServerCore = 0x0000000E,
-
-        /// <summary>
-        /// Server Enterprise Edition for Itanium-based Systems
-        /// </summary>
-        EnterpriseServerIa64 = 0x0000000F,
-
-        /// <summary>
-        /// Home Basic Edition
-        /// </summary>
-        HomeBasic = 0x00000002,
-
-        /// <summary>
-        /// Home Basic N Edition
-        /// </summary>
-        HomeBasicN = 0x00000005,
-
-        /// <summary>
-        /// Home Premium Edition
-        /// </summary>
-        HomePremium = 0x00000003,
-
-        /// <summary>
-        /// Home Server Edition
-        /// </summary>
-        HomeServer = 0x00000013,
-
-        /// <summary>
-        /// Server for Small Business Edition
-        /// </summary>
-        ServerForSmallbusiness = 0x00000018,
-
-        /// <summary>
-        /// Small Business Server
-        /// </summary>
-        SmallbusinessServer = 0x00000009,
-
-        /// <summary>
-        /// Small Business Server Premium Edition
-        /// </summary>
-        SmallbusinessServerPremium = 0x00000019,
-
-        /// <summary>
-        /// Server Standard Edition (full installation)
-        /// </summary>
-        StandardServer = 0x00000007,
-
-        /// <summary>
-        /// Server Standard Edition (core installation)
-        /// </summary>
-        StandardServerCore = 0x0000000D,
-
-        /// <summary>
-        /// Starter Edition
-        /// </summary>
-        Starter = 0x0000000B,
-
-        /// <summary>
-        /// Storage Server Enterprise Edition
-        /// </summary>
-        StorageEnterpriseServer = 0x00000017,
-
-        /// <summary>
-        /// Storage Server Express Edition
-        /// </summary>
-        StorageExpressServer = 0x00000014,
-
-        /// <summary>
-        /// Storage Server Standard Edition
-        /// </summary>
-        StorageStandardServer = 0x00000015,
-
-        /// <summary>
-        /// Storage Server Workgroup Edition
-        /// </summary>
-        StorageWorkgroupServer = 0x00000016,
-
-        /// <summary>
-        /// An unknown product
-        /// </summary>
-        Undefined = 0x00000000,
-
-        /// <summary>
-        /// Unknown non- activated version that has had its grace period expire
-        /// </summary>
-        Unlicensed = 0xABCDABCD,
-
-        /// <summary>
-        /// Ultimate Edition
-        /// </summary>
-        Ultimate = 0x00000001,
-
-        /// <summary>
-        /// Web Server Edition
-        /// </summary>
-        WebServer = 0x00000011
     }
 
     public static class OSVersion
@@ -227,9 +83,7 @@ namespace ProcessHacker.Native
         {
             System.Version version = Environment.OSVersion.Version;
 
-            if (version.Major == 5 && version.Minor == 0)
-                _windowsVersion = WindowsVersion.Win2000;
-            else if (version.Major == 5 && version.Minor == 1)
+            if (version.Major == 5 && version.Minor == 1)
                 _windowsVersion = WindowsVersion.XP;
             else if (version.Major == 5 && version.Minor == 2)
                 _windowsVersion = WindowsVersion.Server2003;
@@ -375,134 +229,5 @@ namespace ProcessHacker.Native
         {
             return (int)_windowsVersion < (int)version;
         }
-
-
-        /// <summary>
-        /// Returns the product type of the operating system running on this computer.
-        /// </summary>
-        /// <returns>A string containing the the operating system product type.</returns>
-        private static string GetOSProductType()
-        {    
-            int VER_NT_WORKSTATION = 1;
-            int VER_NT_DOMAIN_CONTROLLER = 2;
-            int VER_NT_SERVER = 3;
-            int VER_SUITE_SMALLBUSINESS = 1;
-            int VER_SUITE_ENTERPRISE = 2;
-            int VER_SUITE_TERMINAL = 16;
-            int VER_SUITE_DATACENTER = 128;
-            int VER_SUITE_SINGLEUSERTS = 256;
-            int VER_SUITE_PERSONAL = 512;
-            int VER_SUITE_BLADE = 1024;
-            
-            OSVERSIONINFOEX osVersionInfo = new OSVERSIONINFOEX();
-            OperatingSystem osInfo = Environment.OSVersion;
-
-            osVersionInfo.dwOSVersionInfoSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(OSVERSIONINFOEX));
-
-            if (!GetVersionEx(ref osVersionInfo))
-            {
-                return "Unknown";
-            }
-            else
-            {
-                if (osInfo.Version.Major == 5)
-                {
-                    if (osVersionInfo.wProductType == VER_NT_WORKSTATION)
-                    {
-                        if ((osVersionInfo.wSuiteMask & VER_SUITE_PERSONAL) == VER_SUITE_PERSONAL)
-                        { return "Home Edition"; } /* Windows XP Home Edition */
-                        else
-                        { return "Professional"; } /* Windows XP / Windows 2000 Professional */
-                    }
-                    else if (osVersionInfo.wProductType == VER_NT_SERVER)
-                    {
-                        if (osInfo.Version.Minor == 0)
-                        {
-                            if ((osVersionInfo.wSuiteMask & VER_SUITE_DATACENTER) == VER_SUITE_DATACENTER)
-                            { return "Datacenter Server"; } // Windows 2000 Datacenter Server
-                            else if ((osVersionInfo.wSuiteMask & VER_SUITE_ENTERPRISE) == VER_SUITE_ENTERPRISE)
-                            { return "Advanced Server"; } // Windows 2000 Advanced Server
-                            else
-                            { return "Server"; } //Windows 2000 Server
-                        }
-                        else
-                        {
-                            if ((osVersionInfo.wSuiteMask & VER_SUITE_DATACENTER) == VER_SUITE_DATACENTER)
-                            { return "Datacenter Edition"; }//Windows Server 2003 Datacenter Edition
-                            else if ((osVersionInfo.wSuiteMask & VER_SUITE_ENTERPRISE) == VER_SUITE_ENTERPRISE)
-                            { return "Enterprise Edition"; }//Windows Server 2003 Enterprise Edition
-                            else if ((osVersionInfo.wSuiteMask & VER_SUITE_BLADE) == VER_SUITE_BLADE)
-                            { return "Web Edition"; } //Windows Server 2003 Web Edition
-                            else
-                            { return "Standard Edition"; }// Windows Server 2003 Standard Edition
-                        }
-                    }
-                }
-            }
-
-            return "";
-        }
-
-        /// <summary>
-        /// Returns the service pack of the operating system running on this computer.
-        /// </summary>
-        /// <returns>A string containing the the operating system service pack information.</returns>
-        private static string GetOSServicePack()
-        {
-            OSVERSIONINFOEX osVersionInfo = new OSVERSIONINFOEX();
-            osVersionInfo.dwOSVersionInfoSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(OSVERSIONINFOEX));
-
-            if (!GetVersionEx(ref osVersionInfo))
-            {
-                return "SP0";
-            }
-            else
-            {
-                return osVersionInfo.szCSDVersion;
-            }
-        }
-
-        public static string GetProductType()
-        {
-            //If IsAboveOrEqual Vista then query API and return OS edition type 
-            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
-            {
-                WindowsType edition = WindowsType.Undefined;
-
-                GetProductInfo(6, 0, 0, 0, out edition);
-
-                return "Windows " + _windowsVersion + " " + edition.ToString() + " " + GetOSServicePack();
-            }
-            else //return OS type based on VersionEx API output
-            {
-                return "Windows " + _windowsVersion + " " + GetOSProductType() + " " + GetOSServicePack();
-            }
-        }
-
-        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-        private struct OSVERSIONINFOEX
-        {
-            public int dwOSVersionInfoSize;
-            public int dwMajorVersion;
-            public int dwMinorVersion;
-            public int dwBuildNumber;
-            public int dwPlatformId;
-            [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 128)]
-            public string szCSDVersion;
-            public short wServicePackMajor;
-            public short wServicePackMinor;
-            public short wSuiteMask;
-            public byte wProductType;
-            public byte wReserved;
-        }
-
-        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
-        private static extern bool GetVersionEx(ref OSVERSIONINFOEX osVersionInfo);       
-
-
-        //API is only supported in version 6.0.0.0 or higher
-        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
-        private static extern bool GetProductInfo(int osMajorVersion, int osMinorVersion, int spMajorVersion, int spMinorVersion, out WindowsType edition);
-
     }
 }
