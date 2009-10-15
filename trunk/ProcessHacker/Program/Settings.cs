@@ -47,6 +47,14 @@ namespace ProcessHacker
             set { this["CallStackColumns"] = _callStackColumns = value; }
         }
 
+        private Color? _colorDebuggedProcesses;
+        [SettingDefault("204, 187, 255")]
+        public Color ColorDebuggedProcesses
+        {
+            get { return _colorDebuggedProcesses.HasValue ? _colorDebuggedProcesses.Value : (Color)this["ColorDebuggedProcesses"]; }
+            set { this["ColorDebuggedProcesses"] = _colorDebuggedProcesses = value; }
+        }
+
         private Color? _colorElevatedProcesses;
         [SettingDefault("255, 170, 0")]
         public Color ColorElevatedProcesses
@@ -79,6 +87,14 @@ namespace ProcessHacker
             set { this["ColorRemoved"] = _colorRemoved = value; }
         }
 
+        private Color? _colorServiceProcesses;
+        [SettingDefault("204, 255, 255")]
+        public Color ColorServiceProcesses
+        {
+            get { return _colorServiceProcesses.HasValue ? _colorServiceProcesses.Value : (Color)this["ColorServiceProcesses"]; }
+            set { this["ColorServiceProcesses"] = _colorServiceProcesses = value; }
+        }
+
         private Color? _colorSystemProcesses;
         [SettingDefault("170, 204, 255")]
         public Color ColorSystemProcesses
@@ -101,6 +117,30 @@ namespace ProcessHacker
         {
             get { return _groupListColumns != null ? _groupListColumns : (string)this["GroupListColumns"]; }
             set { this["GroupListColumns"] = _groupListColumns = value; }
+        }
+
+        private string _handleFilterWindowListViewColumns;
+        [SettingDefault("")]
+        public string HandleFilterWindowListViewColumns
+        {
+            get { return _handleFilterWindowListViewColumns != null ? _handleFilterWindowListViewColumns : (string)this["HandleFilterWindowListViewColumns"]; }
+            set { this["HandleFilterWindowListViewColumns"] = _handleFilterWindowListViewColumns = value; }
+        }
+
+        private Size? _handleFilterWindowSize;
+        [SettingDefault("554, 463")]
+        public string HandleFilterWindowSize
+        {
+            get { return _handleFilterWindowSize.HasValue ? _handleFilterWindowSize.Value : (Size)this["HandleFilterWindowSize"]; }
+            set { this["HandleFilterWindowSize"] = _handleFilterWindowSize = value; }
+        }
+
+        private string _handleListViewColumns;
+        [SettingDefault("")]
+        public string HandleListViewColumns
+        {
+            get { return _handleListViewColumns != null ? _handleListViewColumns : (string)this["HandleListViewColumns"]; }
+            set { this["HandleListViewColumns"] = _handleListViewColumns = value; }
         }
 
         private int _highlightingDuration;
@@ -231,6 +271,14 @@ namespace ProcessHacker
             set { this["ProcessWindowSelectedTab"] = _processWindowSelectedTab = value; }
         }
 
+        private string _promptBoxText;
+        [SettingDefault("")]
+        public string PromptBoxText
+        {
+            get { return _promptBoxText != null ? _promptBoxText : (string)this["PromptBoxText"]; }
+            set { this["PromptBoxText"] = _promptBoxText = value; }
+        }
+
         private int _refreshInterval;
         [SettingDefault("1000")]
         public int RefreshInterval
@@ -255,6 +303,14 @@ namespace ProcessHacker
             set { this["ResultsWindowSize"] = _resultsWindowSize = value; }
         }
 
+        private string _runAsUsername;
+        [SettingDefault("")]
+        public string RunAsUsername
+        {
+            get { return _runAsUsername != null ? _runAsUsername : (string)this["RunAsUsername"]; }
+            set { this["RunAsUsername"] = _runAsUsername = value; }
+        }
+
         private string _searchEngine;
         [SettingDefault("http://www.google.com/search?q=%s")]
         public string SearchEngine
@@ -269,6 +325,14 @@ namespace ProcessHacker
         {
             get { return _searchType != null ? _searchType : (string)this["SearchType"]; }
             set { this["SearchType"] = _searchType = value; }
+        }
+
+        private string _serviceListViewColumns;
+        [SettingDefault("")]
+        public string ServiceListViewColumns
+        {
+            get { return _serviceListViewColumns != null ? _serviceListViewColumns : (string)this["ServiceListViewColumns"]; }
+            set { this["ServiceListViewColumns"] = _serviceListViewColumns = value; }
         }
 
         private bool _showAccountDomains;
