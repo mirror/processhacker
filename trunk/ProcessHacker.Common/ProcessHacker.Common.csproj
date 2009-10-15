@@ -82,7 +82,8 @@
     <Compile Include="Objects\SecuredHandleTable.cs" />
     <Compile Include="Settings\SettingDefaultAttribute.cs" />
     <Compile Include="Settings\SettingsBase.cs" />
-    <Compile Include="Settings\SettingsStore.cs" />
+    <Compile Include="Settings\ISettingsStore.cs" />
+    <Compile Include="Settings\XmlFileSettingsStore.cs" />
     <Compile Include="Threading\FastMutex.cs" />
     <Compile Include="Objects\DelayedReleasePool.cs" />
     <Compile Include="DeltaManager.cs" />
