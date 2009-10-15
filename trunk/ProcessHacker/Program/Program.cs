@@ -146,27 +146,14 @@ namespace ProcessHacker
                 return;
             }
 
-            if (pArgs.ContainsKey("-recovered")) // used for Windows Error Reporting recovery
-            {
-                //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RecoverLastSession();
-            }
-
             if (pArgs.ContainsKey("-elevate"))
             {
                 StartProcessHackerAdmin();
                 return;
             }
 
-            //standalone mode, use all defaults, do not create or use config
-            if (!pArgs.ContainsKey("-nosettings"))
-            {
-                // load settings here, called by following methods.
-                // settings file is less than 2kb, keep XMLDoc loaded
-                // by static reference unless config refreshed
-                Settings.Instance.Reload();
-            }
+            LoadSettings(!pArgs.ContainsKey("-nosettings"), pArgs.ContainsKey("-settings") ? pArgs["-settings"] : null);
 
-            // In case the settings file is corrupt PH won't crash here - it will be dealt with later.
             try
             {
                 if (pArgs.ContainsKey("-nokph"))
@@ -179,29 +166,6 @@ namespace ProcessHacker
             }
             catch
             { }
-
-            // Try to upgrade settings.
-            try
-            {
-                if (Settings.Instance.NeedsUpgrade)
-                {
-                    try
-                    {
-                        Settings.Instance.Upgrade();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logging.Log(ex);
-                        PhUtils.ShowWarning("Process Hacker could not upgrade its settings from a previous version.");
-                    }
-
-                    Settings.Instance.NeedsUpgrade = false;
-                }
-            }
-            catch
-            { }
-
-            VerifySettings();
 
             ThreadPool.SetMinThreads(1, 1);
             ThreadPool.SetMaxThreads(2, 2);
@@ -348,119 +312,80 @@ namespace ProcessHacker
                 new SharedThreadProvider(Settings.Instance.RefreshInterval);
         }
 
-        private static void DeleteSettings()
+        private static void LoadSettings(bool useSettings, string settingsFileName)
         {
-            if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-                + "\\wj32"))
-                System.IO.Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-                    + "\\wj32", true);
-            if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                + "\\wj32"))
-                System.IO.Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                    + "\\wj32", true);
-        }
+            if (!useSettings)
+            {
+                Settings.Instance = new Settings(null);
+                return;
+            }
 
-        private static void VerifySettings()
-        {
-            // Try to get a setting. If the file is corrupt, we can reset the settings.
+            if (settingsFileName == null)
+                settingsFileName = Application.StartupPath + "\\settings.xml";
+
             try
             {
-                var a = Settings.Instance.AlwaysOnTop;
+                Settings.Instance = new Settings(settingsFileName);
             }
-            catch (Exception ex)
+            catch
             {
-                Logging.Log(ex);
+                // Settings file is probably corrupt. Delete the settings file 
+                // with confirmation from the user.
 
                 try { ThemingScope.Activate(); }
                 catch { }
 
-                BadConfig = true;
+                DialogResult result;
 
                 if (OSVersion.HasTaskDialogs)
                 {
                     TaskDialog td = new TaskDialog();
 
+                    td.MainInstruction = "The settings file is corrupt";
                     td.WindowTitle = "Process Hacker";
-                    td.MainInstruction = "Process Hacker could not initialize the configuration manager";
-                    td.Content = "The Process Hacker configuration file is corrupt or the configuration manager " +
-                        "could not be initialized. Do you want Process Hacker to reset your settings?";
-                    td.MainIcon = TaskDialogIcon.Warning;
-                    td.CommonButtons = TaskDialogCommonButtons.Cancel;
+                    td.Content = "The settings file used by Process Hacker is corrupt. You can either " +
+                        "delete the settings file or start Process Hacker with default settings.";
+                    td.UseCommandLinks = true;
+
                     td.Buttons = new TaskDialogButton[]
                     {
-                        new TaskDialogButton((int)DialogResult.Yes, "Yes, reset the settings and restart Process Hacker"),
-                        new TaskDialogButton((int)DialogResult.No, "No, attempt to start Process Hacker anyway"),
-                        new TaskDialogButton((int)DialogResult.Retry, "Show me the error message")
+                        new TaskDialogButton((int)DialogResult.Yes, "Delete the settings file\n" + settingsFileName),
+                        new TaskDialogButton((int)DialogResult.No, "Start with default settings\n" + 
+                            "Any settings you change will not be saved."),
                     };
-                    td.UseCommandLinks = true;
-                    td.Callback = (taskDialog, args, userData) =>
-                    {
-                        if (args.Notification == TaskDialogNotification.ButtonClicked)
-                        {
-                            if (args.ButtonId == (int)DialogResult.Yes)
-                            {
-                                taskDialog.SetMarqueeProgressBar(true);
-                                taskDialog.SetProgressBarMarquee(true, 1000);
+                    td.CommonButtons = TaskDialogCommonButtons.Cancel;
 
-                                try
-                                {
-                                    DeleteSettings();
-                                    System.Diagnostics.Process.Start(Application.ExecutablePath);
-                                }
-                                catch (Exception ex2)
-                                {
-                                    taskDialog.SetProgressBarMarquee(false, 1000);
-                                    PhUtils.ShowException("Unable to reset the settings", ex2);
-                                    return true;
-                                }
-
-                                return false;
-                            }
-                            else if (args.ButtonId == (int)DialogResult.Retry)
-                            {
-                                InformationBox box = new InformationBox(ex.ToString());
-
-                                box.ShowDialog();
-
-                                return true;
-                            }
-                        }
-
-                        return false;
-                    };
-
-                    int result = td.Show();
-
-                    if (result == (int)DialogResult.No)
-                    {
-                        return;
-                    }
+                    result = (DialogResult)td.Show();
                 }
                 else
                 {
-                    if (MessageBox.Show("Process Hacker cannot start because your configuration file is corrupt. " +
-                        "Do you want Process Hacker to reset your settings?", "Process Hacker", MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Exclamation) == DialogResult.Yes)
-                    {
-                        try
-                        {
-                            DeleteSettings();
-                            MessageBox.Show("Process Hacker has reset your settings and will now restart.", "Process Hacker",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            System.Diagnostics.Process.Start(Application.ExecutablePath);
-                        }
-                        catch (Exception ex2)
-                        {
-                            Logging.Log(ex2);
+                    result = MessageBox.Show("");
 
-                            MessageBox.Show("Process Hacker could not reset your settings. Please delete the folder " +
-                                "'wj32' in your Application Data/Local Application Data directories.",
-                                "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        }
-                    }
+                    if (result == DialogResult.OK)
+                        result = DialogResult.Yes;
+                    else
+                        result = DialogResult.Cancel;
                 }
 
-                Win32.ExitProcess(0);
+                if (result == DialogResult.Yes)
+                {
+                    try { System.IO.File.Delete(settingsFileName); }
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowException("Unable to delete the settings file", ex);
+                        Environment.Exit(1);
+                    }
+
+                    Settings.Instance = new Settings(settingsFileName);
+                }
+                else if (result == DialogResult.No)
+                {
+                    Settings.Instance = new Settings(null);
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    Environment.Exit(0);
+                }
             }
         }
 

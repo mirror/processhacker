@@ -35,16 +35,48 @@ namespace ProcessHacker.Common.Settings
         private const string _nameAttributeName = "name";
 
         private string _fileName;
+        private object _docLock = new object();
         private XmlDocument _doc;
         private XmlNode _rootNode;
 
         public XmlFileSettingsStore(string fileName)
         {
             _fileName = fileName;
+            this.Initialize();
+        }
+
+        public string FileName
+        {
+            get { return _fileName; }
+        }
+
+        public void Flush()
+        {
+            lock (_docLock)
+            {
+                _doc.Save(_fileName);
+            }
+        }
+
+        public string GetValue(string name)
+        {
+            lock (_docLock)
+            {
+                var nodes = _rootNode.SelectNodes(_settingElementName + "[@" + _nameAttributeName + "='" + name + "']");
+
+                if (nodes.Count == 0)
+                    return null;
+
+                return nodes[0].InnerText;
+            }
+        }
+
+        private void Initialize()
+        {
             _doc = new XmlDocument();
 
             // Does the file exist? If not, initialize a new XML document.
-            if (File.Exists(_fileName))
+            if (!string.IsNullOrEmpty(_fileName) && File.Exists(_fileName))
             {
                 _doc.Load(_fileName);
             }
@@ -56,41 +88,23 @@ namespace ProcessHacker.Common.Settings
             _rootNode = _doc.SelectSingleNode("/" + _rootElementName);
         }
 
-        public string FileName
-        {
-            get { return _fileName; }
-        }
-
-        public void Flush()
-        {
-            lock (_doc)
-            {
-                _doc.Save(_fileName);
-            }
-        }
-
-        public string GetValue(string name)
-        {
-            lock (_doc)
-            {
-                var nodes = _rootNode.SelectNodes(_settingElementName + "[@" + _nameAttributeName + "='" + name + "']");
-
-                if (nodes.Count == 0)
-                    return null;
-
-                return nodes[0].InnerText;
-            }
-        }
-
         private void InitializeNew(XmlDocument doc)
         {
             doc.RemoveAll();
             doc.AppendChild(doc.CreateElement(_rootElementName));
         }
 
+        public void Reload()
+        {
+            lock (_docLock)
+            {
+                this.Initialize();
+            }
+        }
+
         public void Reset()
         {
-            lock (_doc)
+            lock (_docLock)
             {
                 this.InitializeNew(_doc);
                 _doc.Save(_fileName);
@@ -99,7 +113,7 @@ namespace ProcessHacker.Common.Settings
 
         public void SetValue(string name, string value)
         {
-            lock (_doc)
+            lock (_docLock)
             {
                 var nodes = _rootNode.SelectNodes(_settingElementName + "[@" + _nameAttributeName + "='" + name + "']");
 

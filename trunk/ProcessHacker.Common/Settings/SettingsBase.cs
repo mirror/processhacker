@@ -46,6 +46,11 @@ namespace ProcessHacker.Common.Settings
             set { this.SetValue(name, value); }
         }
 
+        public ISettingsStore Store
+        {
+            get { return _store; }
+        }
+
         protected virtual object ConvertFromString(string value, Type valueType)
         {
             if (valueType.IsPrimitive)
@@ -121,6 +126,7 @@ namespace ProcessHacker.Common.Settings
         private object GetValue(string name)
         {
             string value;
+            Type settingType;
 
             lock (_modifiedSettings)
             {
@@ -135,10 +141,20 @@ namespace ProcessHacker.Common.Settings
             if (value == null)
                 value = "";
 
-            return this.ConvertFromString(value, this.GetSettingType(name));
+            settingType = this.GetSettingType(name);
+
+            try
+            {
+                return this.ConvertFromString(value, settingType);
+            }
+            catch
+            {
+                // The stored value must be invalid. Return the default value.
+                return this.ConvertFromString(this.GetSettingDefault(name), settingType);
+            }
         }
 
-        protected virtual void Invalidate() { }
+        public virtual void Invalidate() { }
 
         public void Reload()
         {
@@ -172,16 +188,6 @@ namespace ProcessHacker.Common.Settings
             _store.Flush();
         }
 
-        public void Upgrade()
-        {
-            lock (_modifiedSettings)
-            {
-
-            }
-
-            _store.Flush();
-        }
-
         private void SetValue(string name, object value)
         {
             lock (_modifiedSettings)
@@ -191,11 +197,6 @@ namespace ProcessHacker.Common.Settings
                 else
                     _modifiedSettings.Add(name, value);
             }
-        }
-
-        public ISettingsStore Store
-        {
-            get { return _store; }
         }
     }
 }

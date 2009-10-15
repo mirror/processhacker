@@ -453,11 +453,6 @@ namespace ProcessHacker
             Settings.Instance.ColorNew = colorNewProcesses.Color;
             Settings.Instance.ColorRemoved = colorRemovedProcesses.Color;
 
-            //
-            //
-            // settings lookup method is untested
-            //
-            //
             foreach (ListViewItem item in listHighlightingColors.Items)
             {
                 Settings.Instance[item.Name] = item.BackColor;
@@ -508,6 +503,8 @@ namespace ProcessHacker
             }
 
             Settings.Instance.Save();
+            // We manually set settings, so we must invalidate.
+            Settings.Instance.Invalidate();
 
             if (checkReplaceTaskManager.Enabled)
             {

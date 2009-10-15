@@ -26,9 +26,156 @@ namespace ProcessHacker
             this.Invalidate();
         }
 
-        protected override void Invalidate()
+        public string SettingsFileName
         {
+            get { return _store.FileName; }
+        }
+
+        public override void Invalidate()
+        {
+            _allowOnlyOneInstance = null;
+            _alwaysOnTop = null;
+            _appUpdateAutomatic = null;
+            _appUpdateLevel = null;
+            _appUpdateUrl = null;
+            _callStackColumns = null;
+            _colorDebuggedProcesses = null;
+            _colorDotNetProcesses = null;
+            _colorElevatedProcesses = null;
+            _colorGuiThreads = null;
+            _colorInheritHandles = null;
+            _colorJobProcesses = null;
+            _colorNew = null;
+            _colorOwnProcesses = null;
+            _colorPackedProcesses = null;
+            _colorPosixProcesses = null;
+            _colorProtectedHandles = null;
+            _colorRelocatedDlls = null;
+            _colorRemoved = null;
+            _colorServiceProcesses = null;
+            _colorSuspended = null;
+            _colorSystemProcesses = null;
+            _colorWow64Processes = null;
+            _commitHistoryIconVisible = null;
+            _cpuHistoryIconVisible = null;
+            _cpuUsageIconVisible = null;
+            _dbgHelpPath = null;
+            _dbgHelpSearchPath = null;
+            _dbgHelpUndecorate = null;
+            _dbgHelpWarningShown = null;
+            _deletedServices = null;
+            _elevationLevel = (int)this["ElevationLevel"];
+            _enableExperimentalFeatures = null;
+            _enableKPH = null;
+            _environmentListViewColumns = null;
+            _firstRun = null;
+            _floatChildWindows = null;
+            _font = null;
+            _groupListColumns = null;
+            _handleFilterWindowListViewColumns = null;
+            _handleFilterWindowLocation = null;
+            _handleFilterWindowSize = null;
+            _handleListViewColumns = null;
+            _hiddenProcessesColumns = null;
+            _hiddenProcessesWindowLocation = null;
+            _hiddenProcessesWindowSize = null;
+            _hideHandlesWithNoName = null;
+            _hideProcessHackerNetworkConnections = null;
+            _hideWhenClosed = null;
+            _hideWhenMinimized = null;
+            _highlightingDuration = (int)this["HighlightingDuration"];
+            _iconMenuProcessCount = (int)this["IconMenuProcessCount"];
+            _imposterNames = null;
+            _informationBoxSize = null;
+            _ioHistoryIconVisible = null;
+            _ipInfoPingListViewColumns = null;
+            _ipInfoTracertListViewColumns = null;
+            _ipInfoWhoIsListViewColumns = null;
+            _logWindowAutoScroll = null;
+            _logWindowLocation = null;
+            _logWindowSize = null;
+            _maxSamples = (int)this["MaxSamples"];
+            _memoryListViewColumns = null;
+            _memoryWindowSize = null;
+            _moduleListViewColumns = null;
+            _networkListViewColumns = null;
+            _newProcesses = null;
+            _newServices = null;
+            _peCoffHColumns = null;
+            _peCoffOHColumns = null;
+            _peExportsColumns = null;
+            _peImageDataColumns = null;
+            _peImportsColumns = null;
+            _peSectionsColumns = null;
+            _peWindowSize = null;
+            _physMemHistoryIconVisible = null;
+            _plotterAntialias = (bool)this["PlotterAntialias"];
+            _plotterCPUKernelColor = null;
+            _plotterCPUUserColor = null;
+            _plotterIOROColor = null;
+            _plotterIOWColor = null;
+            _plotterMemoryPrivateColor = null;
+            _plotterMemoryWSColor = null;
+            _plotterStep = (int)this["PlotterStep"];
+            _privilegeListColumns = null;
+            _processTreeColumns = null;
+            _processWindowLocation = null;
+            _processWindowSelectedTab = null;
+            _processWindowSize = null;
+            _promptBoxText = null;
             _refreshInterval = (int)this["RefreshInterval"];
+            _resultsListViewColumns = null;
+            _resultsWindowSize = null;
+            _runAsCommand = null;
+            _runAsUsername = null;
+            _scrollDownProcessTree = null;
+            _searchEngine = null;
+            _searchType = null;
+            _serviceListViewColumns = null;
+            _serviceMiniListColumns = null;
+            _showAccountDomains = (bool)this["ShowAccountDomains"];
+            _showOneGraphPerCPU = null;
+            _startedServices = null;
+            _startHidden = null;
+            _stoppedServices = null;
+            _sysInfoWindowLocation = null;
+            _sysInfoWindowSize = null;
+            _terminatedProcesses = null;
+            _threadListViewColumns = null;
+            _threadWindowSize = null;
+            _tokenWindowSize = null;
+            _tokenWindowTab = null;
+            _toolbarVisible = null;
+            _toolStripDisplayStyle = null;
+            _unitSpecifier = (int)this["UnitSpecifier"];
+            _useColorDebuggedProcesses = null;
+            _useColorDotNetProcesses = null;
+            _useColorElevatedProcesses = null;
+            _useColorGuiThreads = null;
+            _useColorInheritHandles = null;
+            _useColorJobProcesses = null;
+            _useColorOwnProcesses = null;
+            _useColorPackedProcesses = null;
+            _useColorPosixProcesses = null;
+            _useColorProtectedHandles = null;
+            _useColorRelocatedDlls = null;
+            _useColorServiceProcesses = null;
+            _useColorSuspended = null;
+            _useColorSystemProcesses = null;
+            _useColorWow64Processes = null;
+            _verifySignatures = null;
+            _warnDangerous = (bool)this["WarnDangerous"];
+            _windowLocation = null;
+            _windowSize = null;
+            _windowState = null;
+        }
+
+        private bool? _allowOnlyOneInstance;
+        [SettingDefault("False")]
+        public bool AllowOnlyOneInstance
+        {
+            get { return _allowOnlyOneInstance.HasValue ? _allowOnlyOneInstance.Value : (bool)this["AllowOnlyOneInstance"]; }
+            set { this["AllowOnlyOneInstance"] = _allowOnlyOneInstance = value; }
         }
 
         private bool? _alwaysOnTop;
@@ -37,6 +184,30 @@ namespace ProcessHacker
         {
             get { return _alwaysOnTop.HasValue ? _alwaysOnTop.Value : (bool)this["AlwaysOnTop"]; }
             set { this["AlwaysOnTop"] = _alwaysOnTop = value; }
+        }
+
+        private bool? _appUpdateAutomatic;
+        [SettingDefault("True")]
+        public bool AppUpdateAutomatic
+        {
+            get { return _appUpdateAutomatic.HasValue ? _appUpdateAutomatic.Value : (bool)this["AppUpdateAutomatic"]; }
+            set { this["AppUpdateAutomatic"] = _appUpdateAutomatic = value; }
+        }
+
+        private int? _appUpdateLevel;
+        [SettingDefault("1")]
+        public int AppUpdateLevel
+        {
+            get { return _appUpdateLevel.HasValue ? _appUpdateLevel.Value : (int)this["AppUpdateLevel"]; }
+            set { this["AppUpdateLevel"] = _appUpdateLevel = value; }
+        }
+
+        private string _appUpdateUrl;
+        [SettingDefault("http://processhacker.sourceforge.net/AppUpdate.xml")]
+        public string AppUpdateUrl
+        {
+            get { return _appUpdateUrl != null ? _appUpdateUrl : (string)this["AppUpdateUrl"]; }
+            set { this["AppUpdateUrl"] = _appUpdateUrl = value; }
         }
 
         private string _callStackColumns;
@@ -55,12 +226,44 @@ namespace ProcessHacker
             set { this["ColorDebuggedProcesses"] = _colorDebuggedProcesses = value; }
         }
 
+        private Color? _colorDotNetProcesses;
+        [SettingDefault("222, 255, 0")]
+        public Color ColorDotNetProcesses
+        {
+            get { return _colorDotNetProcesses.HasValue ? _colorDotNetProcesses.Value : (Color)this["ColorDotNetProcesses"]; }
+            set { this["ColorDotNetProcesses"] = _colorDotNetProcesses = value; }
+        }
+
         private Color? _colorElevatedProcesses;
         [SettingDefault("255, 170, 0")]
         public Color ColorElevatedProcesses
         {
             get { return _colorElevatedProcesses.HasValue ? _colorElevatedProcesses.Value : (Color)this["ColorElevatedProcesses"]; }
             set { this["ColorElevatedProcesses"] = _colorElevatedProcesses = value; }
+        }
+
+        private Color? _colorGuiThreads;
+        [SettingDefault("255, 255, 128")]
+        public Color ColorGuiThreads
+        {
+            get { return _colorGuiThreads.HasValue ? _colorGuiThreads.Value : (Color)this["ColorGuiThreads"]; }
+            set { this["ColorGuiThreads"] = _colorGuiThreads = value; }
+        }
+
+        private Color? _colorInheritHandles;
+        [SettingDefault("128, 255, 255")]
+        public Color ColorInheritHandles
+        {
+            get { return _colorInheritHandles.HasValue ? _colorInheritHandles.Value : (Color)this["ColorInheritHandles"]; }
+            set { this["ColorInheritHandles"] = _colorInheritHandles = value; }
+        }
+
+        private Color? _colorJobProcesses;
+        [SettingDefault("Peru")]
+        public Color ColorJobProcesses
+        {
+            get { return _colorJobProcesses.HasValue ? _colorJobProcesses.Value : (Color)this["ColorJobProcesses"]; }
+            set { this["ColorJobProcesses"] = _colorJobProcesses = value; }
         }
 
         private Color? _colorNew;
@@ -79,6 +282,38 @@ namespace ProcessHacker
             set { this["ColorOwnProcesses"] = _colorOwnProcesses = value; }
         }
 
+        private Color? _colorPackedProcesses;
+        [SettingDefault("DeepPink")]
+        public Color ColorPackedProcesses
+        {
+            get { return _colorPackedProcesses.HasValue ? _colorPackedProcesses.Value : (Color)this["ColorPackedProcesses"]; }
+            set { this["ColorPackedProcesses"] = _colorPackedProcesses = value; }
+        }
+
+        private Color? _colorPosixProcesses;
+        [SettingDefault("DarkSlateBlue")]
+        public Color ColorPosixProcesses
+        {
+            get { return _colorPosixProcesses.HasValue ? _colorPosixProcesses.Value : (Color)this["ColorPosixProcesses"]; }
+            set { this["ColorPosixProcesses"] = _colorPosixProcesses = value; }
+        }
+
+        private Color? _colorProtectedHandles;
+        [SettingDefault("Gray")]
+        public Color ColorProtectedHandles
+        {
+            get { return _colorProtectedHandles.HasValue ? _colorProtectedHandles.Value : (Color)this["ColorProtectedHandles"]; }
+            set { this["ColorProtectedHandles"] = _colorProtectedHandles = value; }
+        }
+
+        private Color? _colorRelocatedDlls;
+        [SettingDefault("255, 192, 128")]
+        public Color ColorRelocatedDlls
+        {
+            get { return _colorRelocatedDlls.HasValue ? _colorRelocatedDlls.Value : (Color)this["ColorRelocatedDlls"]; }
+            set { this["ColorRelocatedDlls"] = _colorRelocatedDlls = value; }
+        }
+
         private Color? _colorRemoved;
         [SettingDefault("255, 60, 40")]
         public Color ColorRemoved
@@ -95,6 +330,14 @@ namespace ProcessHacker
             set { this["ColorServiceProcesses"] = _colorServiceProcesses = value; }
         }
 
+        private Color? _colorSuspended;
+        [SettingDefault("Silver")]
+        public Color ColorSuspended
+        {
+            get { return _colorSuspended.HasValue ? _colorSuspended.Value : (Color)this["ColorSuspended"]; }
+            set { this["ColorSuspended"] = _colorSuspended = value; }
+        }
+
         private Color? _colorSystemProcesses;
         [SettingDefault("170, 204, 255")]
         public Color ColorSystemProcesses
@@ -103,12 +346,132 @@ namespace ProcessHacker
             set { this["ColorSystemProcesses"] = _colorSystemProcesses = value; }
         }
 
+        private Color? _colorWow64Processes;
+        [SettingDefault("DeepPink")]
+        public Color ColorWow64Processes
+        {
+            get { return _colorWow64Processes.HasValue ? _colorWow64Processes.Value : (Color)this["ColorWow64Processes"]; }
+            set { this["ColorWow64Processes"] = _colorWow64Processes = value; }
+        }
+
+        private bool? _commitHistoryIconVisible;
+        [SettingDefault("False")]
+        public bool CommitHistoryIconVisible
+        {
+            get { return _commitHistoryIconVisible.HasValue ? _commitHistoryIconVisible.Value : (bool)this["CommitHistoryIconVisible"]; }
+            set { this["CommitHistoryIconVisible"] = _commitHistoryIconVisible = value; }
+        }
+
+        private bool? _cpuHistoryIconVisible;
+        [SettingDefault("True")]
+        public bool CpuHistoryIconVisible
+        {
+            get { return _cpuHistoryIconVisible.HasValue ? _cpuHistoryIconVisible.Value : (bool)this["CpuHistoryIconVisible"]; }
+            set { this["CpuHistoryIconVisible"] = _cpuHistoryIconVisible = value; }
+        }
+
+        private bool? _cpuUsageIconVisible;
+        [SettingDefault("False")]
+        public bool CpuUsageIconVisible
+        {
+            get { return _cpuUsageIconVisible.HasValue ? _cpuUsageIconVisible.Value : (bool)this["CpuUsageIconVisible"]; }
+            set { this["CpuUsageIconVisible"] = _cpuUsageIconVisible = value; }
+        }
+
+        private string _dbgHelpPath;
+        [SettingDefault("dbghelp.dll")]
+        public string DbgHelpPath
+        {
+            get { return _dbgHelpPath != null ? _dbgHelpPath : (string)this["DbgHelpPath"]; }
+            set { this["DbgHelpPath"] = _dbgHelpPath = value; }
+        }
+
+        private string _dbgHelpSearchPath;
+        [SettingDefault("")]
+        public string DbgHelpSearchPath
+        {
+            get { return _dbgHelpSearchPath != null ? _dbgHelpSearchPath : (string)this["DbgHelpSearchPath"]; }
+            set { this["DbgHelpSearchPath"] = _dbgHelpSearchPath = value; }
+        }
+
+        private bool? _dbgHelpUndecorate;
+        [SettingDefault("True")]
+        public bool DbgHelpUndecorate
+        {
+            get { return _dbgHelpUndecorate.HasValue ? _dbgHelpUndecorate.Value : (bool)this["DbgHelpUndecorate"]; }
+            set { this["DbgHelpUndecorate"] = _dbgHelpUndecorate = value; }
+        }
+
+        private bool? _dbgHelpWarningShown;
+        [SettingDefault("False")]
+        public bool DbgHelpWarningShown
+        {
+            get { return _dbgHelpWarningShown.HasValue ? _dbgHelpWarningShown.Value : (bool)this["DbgHelpWarningShown"]; }
+            set { this["DbgHelpWarningShown"] = _dbgHelpWarningShown = value; }
+        }
+
         private bool? _deletedServices;
         [SettingDefault("True")]
         public bool DeletedServices
         {
             get { return _deletedServices.HasValue ? _deletedServices.Value : (bool)this["DeletedServices"]; }
             set { this["DeletedServices"] = _deletedServices = value; }
+        }
+
+        private int _elevationLevel;
+        [SettingDefault("1")]
+        public int ElevationLevel
+        {
+            get { return _elevationLevel; }
+            set { this["ElevationLevel"] = _elevationLevel = value; }
+        }
+
+        private bool? _enableExperimentalFeatures;
+        [SettingDefault("False")]
+        public bool EnableExperimentalFeatures
+        {
+            get { return _enableExperimentalFeatures.HasValue ? _enableExperimentalFeatures.Value : (bool)this["EnableExperimentalFeatures"]; }
+            set { this["AllowOnlyOneInstance"] = _enableExperimentalFeatures = value; }
+        }
+
+        private bool? _enableKPH;
+        [SettingDefault("True")]
+        public bool EnableKPH
+        {
+            get { return _enableKPH.HasValue ? _enableKPH.Value : (bool)this["EnableKPH"]; }
+            set { this["EnableKPH"] = _enableKPH = value; }
+        }
+
+        private string _environmentListViewColumns;
+        [SettingDefault("")]
+        public string EnvironmentListViewColumns
+        {
+            get { return _environmentListViewColumns != null ? _environmentListViewColumns : (string)this["EnvironmentListViewColumns"]; }
+            set { this["EnvironmentListViewColumns"] = _environmentListViewColumns = value; }
+        }
+
+        private bool? _firstRun;
+        [SettingDefault("True")]
+        public bool FirstRun
+        {
+            get { return _firstRun.HasValue ? _firstRun.Value : (bool)this["FirstRun"]; }
+            set { this["FirstRun"] = _firstRun = value; }
+        }
+
+        private bool? _floatChildWindows;
+        [SettingDefault("True")]
+        public bool FloatChildWindows
+        {
+            get { return _floatChildWindows.HasValue ? _floatChildWindows.Value : (bool)this["FloatChildWindows"]; }
+            set { this["FloatChildWindows"] = _floatChildWindows = value; }
+        }
+
+        private Font _font;
+        [SettingDefault("Microsoft Sans Serif, 8.25pt")]
+        public Font Font
+        {
+            get { return _font != null ? _font : (Font)this["Font"]; }
+            set { this["Font"] = _font = value; }
         }
 
         private string _groupListColumns;
@@ -127,6 +490,14 @@ namespace ProcessHacker
             set { this["HandleFilterWindowListViewColumns"] = _handleFilterWindowListViewColumns = value; }
         }
 
+        private Point? _handleFilterWindowLocation;
+        [SettingDefault("200, 200")]
+        public Point HandleFilterWindowLocation
+        {
+            get { return _handleFilterWindowLocation.HasValue ? _handleFilterWindowLocation.Value : (Point)this["HandleFilterWindowLocation"]; }
+            set { this["HandleFilterWindowLocation"] = _handleFilterWindowLocation = value; }
+        }
+
         private Size? _handleFilterWindowSize;
         [SettingDefault("554, 463")]
         public Size HandleFilterWindowSize
@@ -143,6 +514,54 @@ namespace ProcessHacker
             set { this["HandleListViewColumns"] = _handleListViewColumns = value; }
         }
 
+        private string _hiddenProcessesColumns;
+        [SettingDefault("")]
+        public string HiddenProcessesColumns
+        {
+            get { return _hiddenProcessesColumns != null ? _hiddenProcessesColumns : (string)this["HiddenProcessesColumns"]; }
+            set { this["HiddenProcessesColumns"] = _hiddenProcessesColumns = value; }
+        }
+
+        private Point? _hiddenProcessesWindowLocation;
+        [SettingDefault("200, 200")]
+        public Point HiddenProcessesWindowLocation
+        {
+            get { return _hiddenProcessesWindowLocation.HasValue ? _hiddenProcessesWindowLocation.Value : (Point)this["HiddenProcessesWindowLocation"]; }
+            set { this["HiddenProcessesWindowLocation"] = _hiddenProcessesWindowLocation = value; }
+        }
+
+        private Size? _hiddenProcessesWindowSize;
+        [SettingDefault("527, 429")]
+        public Size HiddenProcessesWindowSize
+        {
+            get { return _hiddenProcessesWindowSize.HasValue ? _hiddenProcessesWindowSize.Value : (Size)this["HiddenProcessesWindowSize"]; }
+            set { this["HiddenProcessesWindowSize"] = _hiddenProcessesWindowSize = value; }
+        }
+
+        private bool? _hideHandlesWithNoName;
+        [SettingDefault("True")]
+        public bool HideHandlesWithNoName
+        {
+            get { return _hideHandlesWithNoName.HasValue ? _hideHandlesWithNoName.Value : (bool)this["HideHandlesWithNoName"]; }
+            set { this["HideHandlesWithNoName"] = _hideHandlesWithNoName = value; }
+        }
+
+        private bool? _hideProcessHackerNetworkConnections;
+        [SettingDefault("True")]
+        public bool HideProcessHackerNetworkConnections
+        {
+            get { return _hideProcessHackerNetworkConnections.HasValue ? _hideProcessHackerNetworkConnections.Value : (bool)this["HideProcessHackerNetworkConnections"]; }
+            set { this["HideProcessHackerNetworkConnections"] = _hideProcessHackerNetworkConnections = value; }
+        }
+
+        private bool? _hideWhenClosed;
+        [SettingDefault("False")]
+        public bool HideWhenClosed
+        {
+            get { return _hideWhenClosed.HasValue ? _hideWhenClosed.Value : (bool)this["HideWhenClosed"]; }
+            set { this["HideWhenClosed"] = _hideWhenClosed = value; }
+        }
+
         private bool? _hideWhenMinimized;
         [SettingDefault("False")]
         public bool HideWhenMinimized
@@ -157,6 +576,94 @@ namespace ProcessHacker
         {
             get { return _highlightingDuration; }
             set { this["HighlightingDuration"] = _highlightingDuration = value; }
+        }
+
+        private int _iconMenuProcessCount;
+        [SettingDefault("10")]
+        public int IconMenuProcessCount
+        {
+            get { return _iconMenuProcessCount; }
+            set { this["IconMenuProcessCount"] = _iconMenuProcessCount = value; }
+        }
+
+        private string _imposterNames;
+        [SettingDefault("audiodg.exe, csrss.exe, dwm.exe, explorer.exe, logonui.exe, lsass.exe, lsm.exe, ntkrnlpa.exe, ntoskrnl.exe, procexp.exe, rundll32.exe, services.exe, smss.exe, spoolsv.exe, svchost.exe, taskeng.exe, taskmgr.exe, wininit.exe, winlogon.exe")]
+        public string ImposterNames
+        {
+            get { return _imposterNames != null ? _imposterNames : (string)this["ImposterNames"]; }
+            set { this["ImposterNames"] = _imposterNames = value; }
+        }
+
+        private Size? _informationBoxSize;
+        [SettingDefault("565, 377")]
+        public Size InformationBoxSize
+        {
+            get { return _informationBoxSize.HasValue ? _informationBoxSize.Value : (Size)this["InformationBoxSize"]; }
+            set { this["InformationBoxSize"] = _informationBoxSize = value; }
+        }
+
+        private bool? _ioHistoryIconVisible;
+        [SettingDefault("False")]
+        public bool IoHistoryIconVisible
+        {
+            get { return _ioHistoryIconVisible.HasValue ? _ioHistoryIconVisible.Value : (bool)this["IoHistoryIconVisible"]; }
+            set { this["IoHistoryIconVisible"] = _ioHistoryIconVisible = value; }
+        }
+
+        private string _ipInfoPingListViewColumns;
+        [SettingDefault("0,30|1,60|2,100|3,200")]
+        public string IPInfoPingListViewColumns
+        {
+            get { return _ipInfoPingListViewColumns != null ? _ipInfoPingListViewColumns : (string)this["IPInfoPingListViewColumns"]; }
+            set { this["IPInfoPingListViewColumns"] = _ipInfoPingListViewColumns = value; }
+        }
+
+        private string _ipInfoTracertListViewColumns;
+        [SettingDefault("0,30|1,60|2,100|3,200")]
+        public string IPInfoTracertListViewColumns
+        {
+            get { return _ipInfoTracertListViewColumns != null ? _ipInfoTracertListViewColumns : (string)this["IPInfoTracertListViewColumns"]; }
+            set { this["IPInfoTracertListViewColumns"] = _ipInfoTracertListViewColumns = value; }
+        }
+
+        private string _ipInfoWhoIsListViewColumns;
+        [SettingDefault("0,410")]
+        public string IPInfoWhoIsListViewColumns
+        {
+            get { return _ipInfoWhoIsListViewColumns != null ? _ipInfoWhoIsListViewColumns : (string)this["IPInfoWhoIsListViewColumns"]; }
+            set { this["IPInfoWhoIsListViewColumns"] = _ipInfoWhoIsListViewColumns = value; }
+        }
+
+        private bool? _logWindowAutoScroll;
+        [SettingDefault("False")]
+        public bool LogWindowAutoScroll
+        {
+            get { return _logWindowAutoScroll.HasValue ? _logWindowAutoScroll.Value : (bool)this["LogWindowAutoScroll"]; }
+            set { this["LogWindowAutoScroll"] = _logWindowAutoScroll = value; }
+        }
+
+        private Point? _logWindowLocation;
+        [SettingDefault("300, 300")]
+        public Point LogWindowLocation
+        {
+            get { return _logWindowLocation.HasValue ? _logWindowLocation.Value : (Point)this["LogWindowLocation"]; }
+            set { this["LogWindowLocation"] = _logWindowLocation = value; }
+        }
+
+        private Size? _logWindowSize;
+        [SettingDefault("595, 508")]
+        public Size LogWindowSize
+        {
+            get { return _logWindowSize.HasValue ? _logWindowSize.Value : (Size)this["LogWindowSize"]; }
+            set { this["LogWindowSize"] = _logWindowSize = value; }
+        }
+
+        private int _maxSamples;
+        [SettingDefault("600")]
+        public int MaxSamples
+        {
+            get { return _maxSamples; }
+            set { this["MaxSamples"] = _maxSamples = value; }
         }
 
         private string _memoryListViewColumns;
@@ -181,6 +688,14 @@ namespace ProcessHacker
         {
             get { return _moduleListViewColumns != null ? _moduleListViewColumns : (string)this["ModuleListViewColumns"]; }
             set { this["ModuleListViewColumns"] = _moduleListViewColumns = value; }
+        }
+
+        private string _networkListViewColumns;
+        [SettingDefault("")]
+        public string NetworkListViewColumns
+        {
+            get { return _networkListViewColumns != null ? _networkListViewColumns : (string)this["NetworkListViewColumns"]; }
+            set { this["NetworkListViewColumns"] = _networkListViewColumns = value; }
         }
 
         private bool? _newProcesses;
@@ -255,6 +770,14 @@ namespace ProcessHacker
             set { this["PEWindowSize"] = _peWindowSize = value; }
         }
 
+        private bool? _physMemHistoryIconVisible;
+        [SettingDefault("False")]
+        public bool PhysMemHistoryIconVisible
+        {
+            get { return _physMemHistoryIconVisible.HasValue ? _physMemHistoryIconVisible.Value : (bool)this["PhysMemHistoryIconVisible"]; }
+            set { this["PhysMemHistoryIconVisible"] = _physMemHistoryIconVisible = value; }
+        }
+
         private bool _plotterAntialias;
         [SettingDefault("False")]
         public bool PlotterAntialias
@@ -311,6 +834,14 @@ namespace ProcessHacker
             set { this["PlotterMemoryWSColor"] = _plotterMemoryWSColor = value; }
         }
 
+        private int _plotterStep;
+        [SettingDefault("2")]
+        public int PlotterStep
+        {
+            get { return _plotterStep; }
+            set { this["PlotterStep"] = _plotterStep = value; }
+        }
+
         private string _privilegeListColumns;
         [SettingDefault("")]
         public string PrivilegeListColumns
@@ -325,6 +856,14 @@ namespace ProcessHacker
         {
             get { return _processTreeColumns != null ? _processTreeColumns : (string)this["ProcessTreeColumns"]; }
             set { this["ProcessTreeColumns"] = _processTreeColumns = value; }
+        }
+
+        private Point? _processWindowLocation;
+        [SettingDefault("200, 200")]
+        public Point ProcessWindowLocation
+        {
+            get { return _processWindowLocation.HasValue ? _processWindowLocation.Value : (Point)this["ProcessWindowLocation"]; }
+            set { this["ProcessWindowLocation"] = _processWindowLocation = value; }
         }
 
         private string _processWindowSelectedTab;
@@ -391,6 +930,14 @@ namespace ProcessHacker
             set { this["RunAsUsername"] = _runAsUsername = value; }
         }
 
+        private bool? _scrollDownProcessTree;
+        [SettingDefault("False")]
+        public bool ScrollDownProcessTree
+        {
+            get { return _scrollDownProcessTree.HasValue ? _scrollDownProcessTree.Value : (bool)this["ScrollDownProcessTree"]; }
+            set { this["ScrollDownProcessTree"] = _scrollDownProcessTree = value; }
+        }
+
         private string _searchEngine;
         [SettingDefault("http://www.google.com/search?q=%s")]
         public string SearchEngine
@@ -415,12 +962,28 @@ namespace ProcessHacker
             set { this["ServiceListViewColumns"] = _serviceListViewColumns = value; }
         }
 
+        private string _serviceMiniListColumns;
+        [SettingDefault("")]
+        public string ServiceMiniListColumns
+        {
+            get { return _serviceMiniListColumns != null ? _serviceMiniListColumns : (string)this["ServiceMiniListColumns"]; }
+            set { this["ServiceMiniListColumns"] = _serviceMiniListColumns = value; }
+        }
+
         private bool _showAccountDomains;
         [SettingDefault("False")]
         public bool ShowAccountDomains
         {
             get { return _showAccountDomains; }
             set { this["ShowAccountDomains"] = _showAccountDomains = value; }
+        }
+
+        private bool? _showOneGraphPerCPU;
+        [SettingDefault("False")]
+        public bool ShowOneGraphPerCPU
+        {
+            get { return _showOneGraphPerCPU.HasValue ? _showOneGraphPerCPU.Value : (bool)this["ShowOneGraphPerCPU"]; }
+            set { this["ShowOneGraphPerCPU"] = _showOneGraphPerCPU = value; }
         }
 
         private bool? _startedServices;
@@ -431,12 +994,36 @@ namespace ProcessHacker
             set { this["StartedServices"] = _startedServices = value; }
         }
 
+        private bool? _startHidden;
+        [SettingDefault("False")]
+        public bool StartHidden
+        {
+            get { return _startHidden.HasValue ? _startHidden.Value : (bool)this["StartHidden"]; }
+            set { this["StartHidden"] = _startHidden = value; }
+        }
+
         private bool? _stoppedServices;
         [SettingDefault("False")]
         public bool StoppedServices
         {
             get { return _stoppedServices.HasValue ? _stoppedServices.Value : (bool)this["StoppedServices"]; }
             set { this["StoppedServices"] = _stoppedServices = value; }
+        }
+
+        private Point? _sysInfoWindowLocation;
+        [SettingDefault("100, 100")]
+        public Point SysInfoWindowLocation
+        {
+            get { return _sysInfoWindowLocation.HasValue ? _sysInfoWindowLocation.Value : (Point)this["SysInfoWindowLocation"]; }
+            set { this["SysInfoWindowLocation"] = _sysInfoWindowLocation = value; }
+        }
+
+        private Size? _sysInfoWindowSize;
+        [SettingDefault("851, 577")]
+        public Size SysInfoWindowSize
+        {
+            get { return _sysInfoWindowSize.HasValue ? _sysInfoWindowSize.Value : (Size)this["SysInfoWindowSize"]; }
+            set { this["SysInfoWindowSize"] = _sysInfoWindowSize = value; }
         }
 
         private bool? _terminatedProcesses;
@@ -479,6 +1066,158 @@ namespace ProcessHacker
             set { this["TokenWindowTab"] = _tokenWindowTab = value; }
         }
 
+        private bool? _toolbarVisible;
+        [SettingDefault("False")]
+        public bool ToolbarVisible
+        {
+            get { return _toolbarVisible.HasValue ? _toolbarVisible.Value : (bool)this["ToolbarVisible"]; }
+            set { this["ToolbarVisible"] = _toolbarVisible = value; }
+        }
+
+        private int? _toolStripDisplayStyle;
+        [SettingDefault("1")]
+        public int ToolStripDisplayStyle
+        {
+            get { return _toolStripDisplayStyle.HasValue ? _toolStripDisplayStyle.Value : (int)this["ToolStripDisplayStyle"]; }
+            set { this["ToolStripDisplayStyle"] = _toolStripDisplayStyle = value; }
+        }
+
+        private int _unitSpecifier;
+        [SettingDefault("6")]
+        public int UnitSpecifier
+        {
+            get { return _unitSpecifier; }
+            set { this["UnitSpecifier"] = _unitSpecifier = value; }
+        }
+
+        private bool? _useColorDebuggedProcesses;
+        [SettingDefault("True")]
+        public bool UseColorDebuggedProcesses
+        {
+            get { return _useColorDebuggedProcesses.HasValue ? _useColorDebuggedProcesses.Value : (bool)this["UseColorDebuggedProcesses"]; }
+            set { this["UseColorDebuggedProcesses"] = _useColorDebuggedProcesses = value; }
+        }
+
+        private bool? _useColorDotNetProcesses;
+        [SettingDefault("True")]
+        public bool UseColorDotNetProcesses
+        {
+            get { return _useColorDotNetProcesses.HasValue ? _useColorDotNetProcesses.Value : (bool)this["UseColorDotNetProcesses"]; }
+            set { this["UseColorDotNetProcesses"] = _useColorDotNetProcesses = value; }
+        }
+
+        private bool? _useColorElevatedProcesses;
+        [SettingDefault("True")]
+        public bool UseColorElevatedProcesses
+        {
+            get { return _useColorElevatedProcesses.HasValue ? _useColorElevatedProcesses.Value : (bool)this["UseColorElevatedProcesses"]; }
+            set { this["UseColorElevatedProcesses"] = _useColorElevatedProcesses = value; }
+        }
+
+        private bool? _useColorGuiThreads;
+        [SettingDefault("True")]
+        public bool UseColorGuiThreads
+        {
+            get { return _useColorGuiThreads.HasValue ? _useColorGuiThreads.Value : (bool)this["UseColorGuiThreads"]; }
+            set { this["UseColorGuiThreads"] = _useColorGuiThreads = value; }
+        }
+
+        private bool? _useColorInheritHandles;
+        [SettingDefault("True")]
+        public bool UseColorInheritHandles
+        {
+            get { return _useColorInheritHandles.HasValue ? _useColorInheritHandles.Value : (bool)this["UseColorInheritHandles"]; }
+            set { this["UseColorInheritHandles"] = _useColorInheritHandles = value; }
+        }
+
+        private bool? _useColorJobProcesses;
+        [SettingDefault("True")]
+        public bool UseColorJobProcesses
+        {
+            get { return _useColorJobProcesses.HasValue ? _useColorJobProcesses.Value : (bool)this["UseColorJobProcesses"]; }
+            set { this["UseColorJobProcesses"] = _useColorJobProcesses = value; }
+        }
+
+        private bool? _useColorOwnProcesses;
+        [SettingDefault("True")]
+        public bool UseColorOwnProcesses
+        {
+            get { return _useColorOwnProcesses.HasValue ? _useColorOwnProcesses.Value : (bool)this["UseColorOwnProcesses"]; }
+            set { this["UseColorOwnProcesses"] = _useColorOwnProcesses = value; }
+        }
+
+        private bool? _useColorPackedProcesses;
+        [SettingDefault("True")]
+        public bool UseColorPackedProcesses
+        {
+            get { return _useColorPackedProcesses.HasValue ? _useColorPackedProcesses.Value : (bool)this["UseColorPackedProcesses"]; }
+            set { this["UseColorPackedProcesses"] = _useColorPackedProcesses = value; }
+        }
+
+        private bool? _useColorPosixProcesses;
+        [SettingDefault("True")]
+        public bool UseColorPosixProcesses
+        {
+            get { return _useColorPosixProcesses.HasValue ? _useColorPosixProcesses.Value : (bool)this["UseColorPosixProcesses"]; }
+            set { this["UseColorPosixProcesses"] = _useColorPosixProcesses = value; }
+        }
+
+        private bool? _useColorProtectedHandles;
+        [SettingDefault("True")]
+        public bool UseColorProtectedHandles
+        {
+            get { return _useColorProtectedHandles.HasValue ? _useColorProtectedHandles.Value : (bool)this["UseColorProtectedHandles"]; }
+            set { this["UseColorProtectedHandles"] = _useColorProtectedHandles = value; }
+        }
+
+        private bool? _useColorRelocatedDlls;
+        [SettingDefault("True")]
+        public bool UseColorRelocatedDlls
+        {
+            get { return _useColorRelocatedDlls.HasValue ? _useColorRelocatedDlls.Value : (bool)this["UseColorRelocatedDlls"]; }
+            set { this["UseColorRelocatedDlls"] = _useColorRelocatedDlls = value; }
+        }
+
+        private bool? _useColorServiceProcesses;
+        [SettingDefault("True")]
+        public bool UseColorServiceProcesses
+        {
+            get { return _useColorServiceProcesses.HasValue ? _useColorServiceProcesses.Value : (bool)this["UseColorServiceProcesses"]; }
+            set { this["UseColorServiceProcesses"] = _useColorServiceProcesses = value; }
+        }
+
+        private bool? _useColorSuspended;
+        [SettingDefault("True")]
+        public bool UseColorSuspended
+        {
+            get { return _useColorSuspended.HasValue ? _useColorSuspended.Value : (bool)this["UseColorSuspended"]; }
+            set { this["UseColorSuspended"] = _useColorSuspended = value; }
+        }
+
+        private bool? _useColorSystemProcesses;
+        [SettingDefault("True")]
+        public bool UseColorSystemProcesses
+        {
+            get { return _useColorSystemProcesses.HasValue ? _useColorSystemProcesses.Value : (bool)this["UseColorSystemProcesses"]; }
+            set { this["UseColorSystemProcesses"] = _useColorSystemProcesses = value; }
+        }
+
+        private bool? _useColorWow64Processes;
+        [SettingDefault("True")]
+        public bool UseColorWow64Processes
+        {
+            get { return _useColorWow64Processes.HasValue ? _useColorWow64Processes.Value : (bool)this["UseColorWow64Processes"]; }
+            set { this["UseColorWow64Processes"] = _useColorWow64Processes = value; }
+        }
+
+        private bool? _verifySignatures;
+        [SettingDefault("False")]
+        public bool VerifySignatures
+        {
+            get { return _verifySignatures.HasValue ? _verifySignatures.Value : (bool)this["VerifySignatures"]; }
+            set { this["VerifySignatures"] = _verifySignatures = value; }
+        }
+
         private bool _warnDangerous;
         [SettingDefault("True")]
         public bool WarnDangerous
@@ -510,619 +1249,5 @@ namespace ProcessHacker
             get { return _windowState.HasValue ? _windowState.Value : (FormWindowState)this["WindowState"]; }
             set { this["WindowState"] = _windowState = value; }
         }
-
-
-        #region UnSorted - Awaiting Go ahead
-
-        private Color? _ColorSuspended;
-        [SettingDefault("Silver")]
-        public Color ColorSuspended
-        {
-            get { return _ColorSuspended.HasValue ? _ColorSuspended.Value : (Color)this["ColorSuspended"]; }
-            set { this["ColorSuspended"] = _ColorSuspended = value; }
-        }
-
-        private Color? _ColorGuiThreads;
-        [SettingDefault("255, 255, 128")]
-        public Color ColorGuiThreads
-        {
-            get { return _ColorGuiThreads.HasValue ? _ColorGuiThreads.Value : (Color)this["ColorGuiThreads"]; }
-            set { this["ColorGuiThreads"] = _ColorGuiThreads = value; }
-        }
-
-        private Color? _ColorProtectedHandles;
-        [SettingDefault("Gray")]
-        public Color ColorProtectedHandles
-        {
-            get { return _ColorProtectedHandles.HasValue ? _ColorProtectedHandles.Value : (Color)this["ColorProtectedHandles"]; }
-            set { this["ColorProtectedHandles"] = _ColorProtectedHandles = value; }
-        }
-
-        private Color? _ColorInheritHandles;
-        [SettingDefault("128, 255, 255")]
-        public Color ColorInheritHandles
-        {
-            get { return _ColorInheritHandles.HasValue ? _ColorInheritHandles.Value : (Color)this["ColorInheritHandles"]; }
-            set { this["ColorInheritHandles"] = _ColorInheritHandles = value; }
-        }
-
-        private Color? _ColorPackedProcesses;
-        [SettingDefault("DeepPink")]
-        public Color ColorPackedProcesses
-        {
-            get { return _ColorPackedProcesses.HasValue ? _ColorPackedProcesses.Value : (Color)this["ColorPackedProcesses"]; }
-            set { this["ColorPackedProcesses"] = _ColorPackedProcesses = value; }
-        }
-
-        private Color? _ColorJobProcesses;
-        [SettingDefault("Peru")]
-        public Color ColorJobProcesses
-        {
-            get { return _ColorJobProcesses.HasValue ? _ColorJobProcesses.Value : (Color)this["ColorJobProcesses"]; }
-            set { this["ColorJobProcesses"] = _ColorJobProcesses = value; }
-        }
-
-        private Color? _ColorWow64Processes;
-        [SettingDefault("DeepPink")]
-        public Color ColorWow64Processes
-        {
-            get { return _ColorWow64Processes.HasValue ? _ColorWow64Processes.Value : (Color)this["ColorWow64Processes"]; }
-            set { this["ColorWow64Processes"] = _ColorWow64Processes = value; }
-        }
-
-        private Color? _ColorDotNetProcesses;
-        [SettingDefault("222, 255, 0")]
-        public Color ColorDotNetProcesses
-        {
-            get { return _ColorDotNetProcesses.HasValue ? _ColorDotNetProcesses.Value : (Color)this["ColorDotNetProcesses"]; }
-            set { this["ColorDotNetProcesses"] = _ColorDotNetProcesses = value; }
-        }
-
-        private Color? _ColorPosixProcesses;
-        [SettingDefault("DarkSlateBlue")]
-        public Color ColorPosixProcesses
-        {
-            get { return _ColorPosixProcesses.HasValue ? _ColorPosixProcesses.Value : (Color)this["ColorPosixProcesses"]; }
-            set { this["ColorPosixProcesses"] = _ColorPosixProcesses = value; }
-        }
-
-        private Color? _ColorRelocatedDlls;
-        [SettingDefault("255, 192, 128")]
-        public Color ColorRelocatedDlls
-        {
-            get { return _ColorRelocatedDlls.HasValue ? _ColorRelocatedDlls.Value : (Color)this["ColorRelocatedDlls"]; }
-            set { this["ColorRelocatedDlls"] = _ColorRelocatedDlls = value; }
-        }
-
-        private Font _Font;
-        [SettingDefault("Microsoft Sans Serif, 8.25pt")]
-        public Font Font
-        {
-            get { return _Font != null ? _Font : (Font)this["Font"]; }
-            set { this["Font"] = _Font = value; }
-        }
-
-        private string _HiddenProcessesColumns;
-        [SettingDefault("")]
-        public string HiddenProcessesColumns
-        {
-            get { return _HiddenProcessesColumns != null ? _HiddenProcessesColumns : (string)this["HiddenProcessesColumns"]; }
-            set { this["HiddenProcessesColumns"] = _HiddenProcessesColumns = value; }
-        }
-
-        private string _appUpdateUrl;
-        [SettingDefault("http://processhacker.sourceforge.net/AppUpdate.xml")]
-        public string AppUpdateUrl
-        {
-            get { return _appUpdateUrl != null ? _appUpdateUrl : (string)this["AppUpdateUrl"]; }
-            set { this["AppUpdateUrl"] = _appUpdateUrl = value; }
-        }
-
-        private string _IPInfoWhoIsListViewColumns;
-        [SettingDefault("0,410")]
-        public string IPInfoWhoIsListViewColumns
-        {
-            get { return _IPInfoWhoIsListViewColumns != null ? _IPInfoWhoIsListViewColumns : (string)this["IPInfoWhoIsListViewColumns"]; }
-            set { this["IPInfoWhoIsListViewColumns"] = _IPInfoWhoIsListViewColumns = value; }
-        }
-
-        private string _IPInfoTracertListViewColumns;
-        [SettingDefault("0,30|1,60|2,100|3,200")]
-        public string IPInfoTracertListViewColumns
-        {
-            get { return _IPInfoTracertListViewColumns != null ? _IPInfoTracertListViewColumns : (string)this["IPInfoTracertListViewColumns"]; }
-            set { this["IPInfoTracertListViewColumns"] = _IPInfoTracertListViewColumns = value; }
-        }
-
-        private string _IPInfoPingListViewColumns;
-        [SettingDefault("0,30|1,60|2,100|3,200")]
-        public string IPInfoPingListViewColumns
-        {
-            get { return _IPInfoPingListViewColumns != null ? _IPInfoPingListViewColumns : (string)this["IPInfoPingListViewColumns"]; }
-            set { this["IPInfoPingListViewColumns"] = _IPInfoPingListViewColumns = value; }
-        }
-
-        private string _NetworkListViewColumns;
-        [SettingDefault("0,137|1,160|2,71|3,195|4,75|5,80|6,70")]
-        public string NetworkListViewColumns
-        {
-            get { return _NetworkListViewColumns != null ? _NetworkListViewColumns : (string)this["NetworkListViewColumns"]; }
-            set { this["NetworkListViewColumns"] = _NetworkListViewColumns = value; }
-        }
-
-        private string _ImposterNames;
-        [SettingDefault("audiodg.exe, csrss.exe, dwm.exe, explorer.exe, logonui.exe, lsass.exe, lsm.exe, ntkrnlpa.exe, ntoskrnl.exe, procexp.exe, rundll32.exe, services.exe, smss.exe, spoolsv.exe, svchost.exe, taskeng.exe, taskmgr.exe, wininit.exe, winlogon.exe")]
-        public string ImposterNames
-        {
-            get { return _ImposterNames != null ? _ImposterNames : (string)this["ImposterNames"]; }
-            set { this["ImposterNames"] = _ImposterNames = value; }
-        }
-
-        private string _DbgHelpSearchPath;
-        [SettingDefault("")]
-        public string DbgHelpSearchPath
-        {
-            get { return _DbgHelpSearchPath != null ? _DbgHelpSearchPath : (string)this["DbgHelpSearchPath"]; }
-            set { this["DbgHelpSearchPath"] = _DbgHelpSearchPath = value; }
-        }
-
-        private string _DbgHelpPath;
-        [SettingDefault("dbghelp.dll")]
-        public string DbgHelpPath
-        {
-            get { return _DbgHelpPath != null ? _DbgHelpPath : (string)this["DbgHelpPath"]; }
-            set { this["DbgHelpPath"] = _DbgHelpPath = value; }
-        }
-
-        private string _EnvironmentListViewColumns;
-        [SettingDefault("")]
-        public string EnvironmentListViewColumns
-        {
-            get { return _EnvironmentListViewColumns != null ? _EnvironmentListViewColumns : (string)this["EnvironmentListViewColumns"]; }
-            set { this["EnvironmentListViewColumns"] = _EnvironmentListViewColumns = value; }
-        }
-
-        private string _ServiceMiniListColumns;
-        [SettingDefault("")]
-        public string ServiceMiniListColumns
-        {
-            get { return _ServiceMiniListColumns != null ? _ServiceMiniListColumns : (string)this["ServiceMiniListColumns"]; }
-            set { this["ServiceMiniListColumns"] = _ServiceMiniListColumns = value; }
-        }
-
-        private int _ElevationLevel;
-        [SettingDefault("1")]
-        public int ElevationLevel
-        {
-            get { return _ElevationLevel; }
-            set { this["ElevationLevel"] = _ElevationLevel = value; }
-        }
-
-        private int _ToolStripDisplayStyle;
-        [SettingDefault("1")]
-        public int ToolStripDisplayStyle
-        {
-            get { return _ToolStripDisplayStyle; }
-            set { this["ToolStripDisplayStyle"] = _ToolStripDisplayStyle = value; }
-        }
-
-        private int _PlotterStep;
-        [SettingDefault("2")]
-        public int PlotterStep
-        {
-            get { return _PlotterStep; }
-            set { this["PlotterStep"] = _PlotterStep = value; }
-        }
-
-        private int _UnitSpecifier;
-        [SettingDefault("6")]
-        public int UnitSpecifier
-        {
-            get { return _UnitSpecifier; }
-            set { this["UnitSpecifier"] = _UnitSpecifier = value; }
-        }
-
-        private int _MaxSamples;
-        [SettingDefault("600")]
-        public int MaxSamples
-        {
-            get { return _MaxSamples; }
-            set { this["MaxSamples"] = _MaxSamples = value; }
-        }
-
-        private int _AppUpdateLevel;
-        [SettingDefault("1")]
-        public int AppUpdateLevel
-        {
-            get { return _AppUpdateLevel; }
-            set { this["AppUpdateLevel"] = _AppUpdateLevel = value; }
-        }
-
-        private bool? _AppUpdateAutomatic;
-        [SettingDefault("True")]
-        public bool AppUpdateAutomatic
-        {
-            get { return _AppUpdateAutomatic.HasValue ? _AppUpdateAutomatic.Value : (bool)this["AppUpdateAutomatic"]; }
-            set { this["AppUpdateAutomatic"] = _AppUpdateAutomatic = value; }
-        }
-
-        private bool? _UseColorSuspended;
-        [SettingDefault("True")]
-        public bool UseColorSuspended
-        {
-            get { return _UseColorSuspended.HasValue ? _UseColorSuspended.Value : (bool)this["UseColorSuspended"]; }
-            set { this["UseColorSuspended"] = _UseColorSuspended = value; }
-        }
-
-        private bool? _UseColorGuiThreads;
-        [SettingDefault("True")]
-        public bool UseColorGuiThreads
-        {
-            get { return _UseColorGuiThreads.HasValue ? _UseColorGuiThreads.Value : (bool)this["UseColorGuiThreads"]; }
-            set { this["UseColorGuiThreads"] = _UseColorGuiThreads = value; }
-        }
-
-        private bool? _UseColorServiceProcesses;
-        [SettingDefault("True")]
-        public bool UseColorServiceProcesses
-        {
-            get { return _UseColorServiceProcesses.HasValue ? _UseColorServiceProcesses.Value : (bool)this["UseColorServiceProcesses"]; }
-            set { this["UseColorServiceProcesses"] = _UseColorServiceProcesses = value; }
-        }
-
-        private bool? _UseColorSystemProcesses;
-        [SettingDefault("True")]
-        public bool UseColorSystemProcesses
-        {
-            get { return _UseColorSystemProcesses.HasValue ? _UseColorSystemProcesses.Value : (bool)this["UseColorSystemProcesses"]; }
-            set { this["UseColorSystemProcesses"] = _UseColorSystemProcesses = value; }
-        }
-
-        private bool? _UseColorProtectedHandles;
-        [SettingDefault("True")]
-        public bool UseColorProtectedHandles
-        {
-            get { return _UseColorProtectedHandles.HasValue ? _UseColorProtectedHandles.Value : (bool)this["UseColorProtectedHandles"]; }
-            set { this["UseColorProtectedHandles"] = _UseColorProtectedHandles = value; }
-        }
-
-        private bool? _UseColorInheritHandles;
-        [SettingDefault("True")]
-        public bool UseColorInheritHandles
-        {
-            get { return _UseColorInheritHandles.HasValue ? _UseColorInheritHandles.Value : (bool)this["UseColorInheritHandles"]; }
-            set { this["UseColorInheritHandles"] = _UseColorInheritHandles = value; }
-        }
-
-        private bool? _UseColorRelocatedDlls;
-        [SettingDefault("True")]
-        public bool UseColorRelocatedDlls
-        {
-            get { return _UseColorRelocatedDlls.HasValue ? _UseColorRelocatedDlls.Value : (bool)this["UseColorRelocatedDlls"]; }
-            set { this["UseColorRelocatedDlls"] = _UseColorRelocatedDlls = value; }
-        }
-                
-        private int _IconMenuProcessCount;
-        [SettingDefault("10")]
-        public int IconMenuProcessCount
-        {
-            get { return _IconMenuProcessCount; }
-            set { this["IconMenuProcessCount"] = _IconMenuProcessCount = value; }
-        }
-
-        private bool? _NeedsUpgrade;
-        [SettingDefault("True")]
-        public bool NeedsUpgrade
-        {
-            get { return _NeedsUpgrade.HasValue ? _NeedsUpgrade.Value : (bool)this["NeedsUpgrade"]; }
-            set { this["NeedsUpgrade"] = _NeedsUpgrade = value; }
-        }
-
-        private bool? _UseColorWow64Processes;
-        [SettingDefault("True")]
-        public bool UseColorWow64Processes
-        {
-            get { return _UseColorWow64Processes.HasValue ? _UseColorWow64Processes.Value : (bool)this["UseColorWow64Processes"]; }
-            set { this["UseColorWow64Processes"] = _UseColorWow64Processes = value; }
-        }
-
-        private bool? _UseColorJobProcesses;
-        [SettingDefault("True")]
-        public bool UseColorJobProcesses
-        {
-            get { return _UseColorJobProcesses.HasValue ? _UseColorJobProcesses.Value : (bool)this["UseColorJobProcesses"]; }
-            set { this["UseColorJobProcesses"] = _UseColorJobProcesses = value; }
-        }
-
-        private bool? _CpuHistoryIconVisible;
-        [SettingDefault("True")]
-        public bool CpuHistoryIconVisible
-        {
-            get { return _CpuHistoryIconVisible.HasValue ? _CpuHistoryIconVisible.Value : (bool)this["CpuHistoryIconVisible"]; }
-            set { this["CpuHistoryIconVisible"] = _CpuHistoryIconVisible = value; }
-        }
-
-        private bool? _UseColorDebuggedProcesses;
-        [SettingDefault("True")]
-        public bool UseColorDebuggedProcesses
-        {
-            get { return _UseColorDebuggedProcesses.HasValue ? _UseColorDebuggedProcesses.Value : (bool)this["UseColorDebuggedProcesses"]; }
-            set { this["UseColorDebuggedProcesses"] = _UseColorDebuggedProcesses = value; }
-        }
-
-        private bool? _UseColorElevatedProcesses;
-        [SettingDefault("True")]
-        public bool UseColorElevatedProcesses
-        {
-            get { return _UseColorElevatedProcesses.HasValue ? _UseColorElevatedProcesses.Value : (bool)this["UseColorElevatedProcesses"]; }
-            set { this["UseColorElevatedProcesses"] = _UseColorElevatedProcesses = value; }
-        }
-
-        private bool? _UseColorOwnProcesses;
-        [SettingDefault("True")]
-        public bool UseColorOwnProcesses
-        {
-            get { return _UseColorOwnProcesses.HasValue ? _UseColorOwnProcesses.Value : (bool)this["UseColorOwnProcesses"]; }
-            set { this["UseColorOwnProcesses"] = _UseColorOwnProcesses = value; }
-        }
-
-        private bool? _UseColorPosixProcesses;
-        [SettingDefault("True")]
-        public bool UseColorPosixProcesses
-        {
-            get { return _UseColorPosixProcesses.HasValue ? _UseColorPosixProcesses.Value : (bool)this["UseColorPosixProcesses"]; }
-            set { this["UseColorPosixProcesses"] = _UseColorPosixProcesses = value; }
-        }
-
-        private bool? _FirstRun;
-        [SettingDefault("True")]
-        public bool FirstRun
-        {
-            get { return _FirstRun.HasValue ? _FirstRun.Value : (bool)this["FirstRun"]; }
-            set { this["FirstRun"] = _FirstRun = value; }
-        }
-
-        private bool? _HideHandlesWithNoName;
-        [SettingDefault("True")]
-        public bool HideHandlesWithNoName
-        {
-            get { return _HideHandlesWithNoName.HasValue ? _HideHandlesWithNoName.Value : (bool)this["HideHandlesWithNoName"]; }
-            set { this["HideHandlesWithNoName"] = _HideHandlesWithNoName = value; }
-        }
-
-        private bool? _UseColorPackedProcesses;
-        [SettingDefault("True")]
-        public bool UseColorPackedProcesses
-        {
-            get { return _UseColorPackedProcesses.HasValue ? _UseColorPackedProcesses.Value : (bool)this["UseColorPackedProcesses"]; }
-            set { this["UseColorPackedProcesses"] = _UseColorPackedProcesses = value; }
-        }
-
-        private bool? _FloatChildWindows;
-        [SettingDefault("True")]
-        public bool FloatChildWindows
-        {
-            get { return _FloatChildWindows.HasValue ? _FloatChildWindows.Value : (bool)this["FloatChildWindows"]; }
-            set { this["FloatChildWindows"] = _FloatChildWindows = value; }
-        }
-
-        private bool? _UseColorDotNetProcesses;
-        [SettingDefault("True")]
-        public bool UseColorDotNetProcesses
-        {
-            get { return _UseColorDotNetProcesses.HasValue ? _UseColorDotNetProcesses.Value : (bool)this["UseColorDotNetProcesses"]; }
-            set { this["UseColorDotNetProcesses"] = _UseColorDotNetProcesses = value; }
-        }
-
-        private bool? _HideProcessHackerNetworkConnections;
-        [SettingDefault("True")]
-        public bool HideProcessHackerNetworkConnections
-        {
-            get { return _HideProcessHackerNetworkConnections.HasValue ? _HideProcessHackerNetworkConnections.Value : (bool)this["HideProcessHackerNetworkConnections"]; }
-            set { this["HideProcessHackerNetworkConnections"] = _HideProcessHackerNetworkConnections = value; }
-        }
-
-        private bool? _EnableExperimentalFeatures;
-        [SettingDefault("False")]
-        public bool EnableExperimentalFeatures
-        {
-            get { return _EnableExperimentalFeatures.HasValue ? _EnableExperimentalFeatures.Value : (bool)this["EnableExperimentalFeatures"]; }
-            set { this["AllowOnlyOneInstance"] = _EnableExperimentalFeatures = value; }
-        }
-
-        private bool? _AllowOnlyOneInstance;
-        [SettingDefault("False")]
-        public bool AllowOnlyOneInstance
-        {
-            get { return _AllowOnlyOneInstance.HasValue ? _AllowOnlyOneInstance.Value : (bool)this["AllowOnlyOneInstance"]; }
-            set { this["AllowOnlyOneInstance"] = _AllowOnlyOneInstance = value; }
-        }
-
-        private bool? _StartHidden;
-        [SettingDefault("False")]
-        public bool StartHidden
-        {
-            get { return _StartHidden.HasValue ? _StartHidden.Value : (bool)this["StartHidden"]; }
-            set { this["StartHidden"] = _StartHidden = value; }
-        }
-
-        private bool? _IoHistoryIconVisible;
-        [SettingDefault("False")]
-        public bool IoHistoryIconVisible
-        {
-            get { return _IoHistoryIconVisible.HasValue ? _IoHistoryIconVisible.Value : (bool)this["IoHistoryIconVisible"]; }
-            set { this["IoHistoryIconVisible"] = _IoHistoryIconVisible = value; }
-        }
-
-        private bool? _CommitHistoryIconVisible;
-        [SettingDefault("False")]
-        public bool CommitHistoryIconVisible
-        {
-            get { return _CommitHistoryIconVisible.HasValue ? _CommitHistoryIconVisible.Value : (bool)this["CommitHistoryIconVisible"]; }
-            set { this["CommitHistoryIconVisible"] = _CommitHistoryIconVisible = value; }
-        }
-
-        private bool? _PhysMemHistoryIconVisible;
-        [SettingDefault("False")]
-        public bool PhysMemHistoryIconVisible
-        {
-            get { return _PhysMemHistoryIconVisible.HasValue ? _PhysMemHistoryIconVisible.Value : (bool)this["PhysMemHistoryIconVisible"]; }
-            set { this["PhysMemHistoryIconVisible"] = _PhysMemHistoryIconVisible = value; }
-        }
-
-        private bool? _ToolbarVisible;
-        [SettingDefault("False")]
-        public bool ToolbarVisible
-        {
-            get { return _ToolbarVisible.HasValue ? _ToolbarVisible.Value : (bool)this["ToolbarVisible"]; }
-            set { this["ToolbarVisible"] = _ToolbarVisible = value; }
-        }
-
-        private bool? _ShowOneGraphPerCPU;
-        [SettingDefault("False")]
-        public bool ShowOneGraphPerCPU
-        {
-            get { return _ShowOneGraphPerCPU.HasValue ? _ShowOneGraphPerCPU.Value : (bool)this["ShowOneGraphPerCPU"]; }
-            set { this["ShowOneGraphPerCPU"] = _ShowOneGraphPerCPU = value; }
-        }
-
-        private bool? _ScrollDownProcessTree;
-        [SettingDefault("False")]
-        public bool ScrollDownProcessTree
-        {
-            get { return _ScrollDownProcessTree.HasValue ? _ScrollDownProcessTree.Value : (bool)this["ScrollDownProcessTree"]; }
-            set { this["ScrollDownProcessTree"] = _ScrollDownProcessTree = value; }
-        }
-
-        private bool? _CpuUsageIconVisible;
-        [SettingDefault("False")]
-        public bool CpuUsageIconVisible
-        {
-            get { return _CpuUsageIconVisible.HasValue ? _CpuUsageIconVisible.Value : (bool)this["CpuUsageIconVisible"]; }
-            set { this["CpuUsageIconVisible"] = _CpuUsageIconVisible = value; }
-        }
-
-        private bool? _VerifySignatures;
-        [SettingDefault("False")]
-        public bool VerifySignatures
-        {
-            get { return _VerifySignatures.HasValue ? _VerifySignatures.Value : (bool)this["VerifySignatures"]; }
-            set { this["VerifySignatures"] = _VerifySignatures = value; }
-        }
-
-        private bool? _HideWhenClosed;
-        [SettingDefault("False")]
-        public bool HideWhenClosed
-        {
-            get { return _HideWhenClosed.HasValue ? _HideWhenClosed.Value : (bool)this["HideWhenClosed"]; }
-            set { this["HideWhenClosed"] = _HideWhenClosed = value; }
-        }
-
-        private bool? _EnableKPH;
-        [SettingDefault("True")]
-        public bool EnableKPH
-        {
-            get { return _EnableKPH.HasValue ? _EnableKPH.Value : (bool)this["EnableKPH"]; }
-            set { this["EnableKPH"] = _EnableKPH = value; }
-        }
-
-        private bool? _DbgHelpUndecorate;
-        [SettingDefault("True")]
-        public bool DbgHelpUndecorate
-        {
-            get { return _DbgHelpUndecorate.HasValue ? _DbgHelpUndecorate.Value : (bool)this["DbgHelpUndecorate"]; }
-            set { this["DbgHelpUndecorate"] = _DbgHelpUndecorate = value; }
-        }
-
-        private bool? _DbgHelpWarningShown;
-        [SettingDefault("False")]
-        public bool DbgHelpWarningShown
-        {
-            get { return _DbgHelpWarningShown.HasValue ? _DbgHelpWarningShown.Value : (bool)this["DbgHelpWarningShown"]; }
-            set { this["DbgHelpWarningShown"] = _DbgHelpWarningShown = value; }
-        }
-
-        private bool? _LogWindowAutoScroll;
-        [SettingDefault("False")]
-        public bool LogWindowAutoScroll
-        {
-            get { return _LogWindowAutoScroll.HasValue ? _LogWindowAutoScroll.Value : (bool)this["LogWindowAutoScroll"]; }
-            set { this["LogWindowAutoScroll"] = _LogWindowAutoScroll = value; }
-        }
-
-        private Size? _InformationBoxSize;
-        [SettingDefault("565, 377")]
-        public Size InformationBoxSize
-        {
-            get { return _InformationBoxSize.HasValue ? _InformationBoxSize.Value : (Size)this["InformationBoxSize"]; }
-            set { this["InformationBoxSize"] = _InformationBoxSize = value; }
-        }
-
-        private Size? _SysInfoWindowSize;
-        [SettingDefault("851, 577")]
-        public Size SysInfoWindowSize
-        {
-            get { return _SysInfoWindowSize.HasValue ? _SysInfoWindowSize.Value : (Size)this["SysInfoWindowSize"]; }
-            set { this["SysInfoWindowSize"] = _SysInfoWindowSize = value; }
-        }
-
-        private Size? _LogWindowSize;
-        [SettingDefault("595, 508")]
-        public Size LogWindowSize
-        {
-            get { return _LogWindowSize.HasValue ? _LogWindowSize.Value : (Size)this["LogWindowSize"]; }
-            set { this["LogWindowSize"] = _LogWindowSize = value; }
-        }
-
-        private Size? _HiddenProcessesWindowSize;
-        [SettingDefault("527, 429")]
-        public Size HiddenProcessesWindowSize
-        {
-            get { return _HiddenProcessesWindowSize.HasValue ? _HiddenProcessesWindowSize.Value : (Size)this["HiddenProcessesWindowSize"]; }
-            set { this["HiddenProcessesWindowSize"] = _HiddenProcessesWindowSize = value; }
-        }
-
-        private Point? _SysInfoWindowLocation;
-        [SettingDefault("100, 100")]
-        public Point SysInfoWindowLocation
-        {
-            get { return _SysInfoWindowLocation.HasValue ? _SysInfoWindowLocation.Value : (Point)this["SysInfoWindowLocation"]; }
-            set { this["SysInfoWindowLocation"] = _SysInfoWindowLocation = value; }
-        }
-
-        private Point? _HiddenProcessesWindowLocation;
-        [SettingDefault("200, 200")]
-        public Point HiddenProcessesWindowLocation
-        {
-            get { return _HiddenProcessesWindowLocation.HasValue ? _HiddenProcessesWindowLocation.Value : (Point)this["HiddenProcessesWindowLocation"]; }
-            set { this["HiddenProcessesWindowLocation"] = _HiddenProcessesWindowLocation = value; }
-        }
-
-        private Point? _LogWindowLocation;
-        [SettingDefault("300, 300")]
-        public Point LogWindowLocation
-        {
-            get { return _LogWindowLocation.HasValue ? _LogWindowLocation.Value : (Point)this["LogWindowLocation"]; }
-            set { this["LogWindowLocation"] = _LogWindowLocation = value; }
-        }
-
-        private Point? _HandleFilterWindowLocation;
-        [SettingDefault("200, 200")]
-        public Point HandleFilterWindowLocation
-        {
-            get { return _HandleFilterWindowLocation.HasValue ? _HandleFilterWindowLocation.Value : (Point)this["HandleFilterWindowLocation"]; }
-            set { this["HandleFilterWindowLocation"] = _HandleFilterWindowLocation = value; }
-        }
-
-        private Point? _ProcessWindowLocation;
-        [SettingDefault("200, 200")]
-        public Point ProcessWindowLocation
-        {
-            get { return _ProcessWindowLocation.HasValue ? _ProcessWindowLocation.Value : (Point)this["ProcessWindowLocation"]; }
-            set { this["ProcessWindowLocation"] = _ProcessWindowLocation = value; }
-        }
-
-        #endregion
-
     }
 }
