@@ -431,7 +431,7 @@ namespace ProcessHacker
         public bool EnableExperimentalFeatures
         {
             get { return _enableExperimentalFeatures.HasValue ? _enableExperimentalFeatures.Value : (bool)this["EnableExperimentalFeatures"]; }
-            set { this["AllowOnlyOneInstance"] = _enableExperimentalFeatures = value; }
+            set { this["EnableExperimentalFeatures"] = _enableExperimentalFeatures = value; }
         }
 
         private bool? _enableKPH;
