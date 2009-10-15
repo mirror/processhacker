@@ -41,6 +41,7 @@
             this.textSourceName = new System.Windows.Forms.TextBox();
             this.textSourceLUID = new System.Windows.Forms.TextBox();
             this.groupToken = new System.Windows.Forms.GroupBox();
+            this.buttonPermissions = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonLinkedToken = new System.Windows.Forms.Button();
@@ -83,7 +84,6 @@
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.buttonPermissions = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupSource.SuspendLayout();
@@ -197,6 +197,18 @@
             this.groupToken.TabStop = false;
             this.groupToken.Text = "Token";
             // 
+            // buttonPermissions
+            // 
+            this.buttonPermissions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonPermissions.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonPermissions.Location = new System.Drawing.Point(474, 201);
+            this.buttonPermissions.Name = "buttonPermissions";
+            this.buttonPermissions.Size = new System.Drawing.Size(75, 23);
+            this.buttonPermissions.TabIndex = 18;
+            this.buttonPermissions.Text = "Permissions";
+            this.buttonPermissions.UseVisualStyleBackColor = true;
+            this.buttonPermissions.Click += new System.EventHandler(this.buttonPermissions_Click);
+            // 
             // label9
             // 
             this.label9.AutoSize = true;
@@ -220,9 +232,9 @@
             this.buttonLinkedToken.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonLinkedToken.Location = new System.Drawing.Point(203, 147);
             this.buttonLinkedToken.Name = "buttonLinkedToken";
-            this.buttonLinkedToken.Size = new System.Drawing.Size(105, 23);
+            this.buttonLinkedToken.Size = new System.Drawing.Size(90, 23);
             this.buttonLinkedToken.TabIndex = 13;
-            this.buttonLinkedToken.Text = "Linked Token...";
+            this.buttonLinkedToken.Text = "Linked Token";
             this.buttonLinkedToken.UseVisualStyleBackColor = true;
             this.buttonLinkedToken.Click += new System.EventHandler(this.buttonLinkedToken_Click);
             // 
@@ -568,18 +580,6 @@
             // 
             this.vistaMenu.ContainerControl = this;
             this.vistaMenu.DelaySetImageCalls = false;
-            // 
-            // buttonPermissions
-            // 
-            this.buttonPermissions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonPermissions.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonPermissions.Location = new System.Drawing.Point(474, 201);
-            this.buttonPermissions.Name = "buttonPermissions";
-            this.buttonPermissions.Size = new System.Drawing.Size(75, 23);
-            this.buttonPermissions.TabIndex = 18;
-            this.buttonPermissions.Text = "Permissions";
-            this.buttonPermissions.UseVisualStyleBackColor = true;
-            this.buttonPermissions.Click += new System.EventHandler(this.buttonPermissions_Click);
             // 
             // TokenProperties
             // 

@@ -3086,7 +3086,7 @@ namespace ProcessHacker
             if (!OSVersion.HasUac)
                 virtualizationProcessMenuItem.Visible = false;
 
-            if (OSVersion.IsBelow(WindowsVersion.Vista))
+            if (OSVersion.IsBelow(WindowsVersion.Vista) || true) // hide for 1.6 release
                 analyzeWaitChainProcessMenuItem.Visible = false;
         }
 
