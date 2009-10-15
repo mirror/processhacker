@@ -65,6 +65,7 @@ MinVersion=0,5.01.2600
 AppReadmeFile={app}\README.txt
 LicenseFile=..\..\..\LICENSE.txt
 InfoAfterFile=..\..\..\CHANGELOG.txt
+InfoBeforeFile=..\..\..\README.txt
 SetupIconFile=Icons\ProcessHacker.ico
 UninstallDisplayIcon={app}\ProcessHacker.exe
 WizardImageFile=Icons\ProcessHackerLarge.bmp
