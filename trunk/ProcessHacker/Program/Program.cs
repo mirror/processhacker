@@ -157,6 +157,15 @@ namespace ProcessHacker
                 return;
             }
 
+            //standalone mode, use all defaults, do not create or use config
+            if (!pArgs.ContainsKey("-nosettings"))
+            {
+                // load settings here, called by following methods.
+                // settings file is less than 2kb, keep XMLDoc loaded
+                // by static reference unless config refreshed
+                Settings.Instance.Reload();
+            }
+
             // In case the settings file is corrupt PH won't crash here - it will be dealt with later.
             try
             {
