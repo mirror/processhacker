@@ -682,36 +682,26 @@ namespace ProcessHacker
         }
 
         public static bool CheckPreviousInstance()
-        {           
-            //get the list of all processes by the name of our process
-            //if Length > 1 then there is more than one process running...
-            return (System.Diagnostics.Process.GetProcessesByName(System.Diagnostics.Process.GetCurrentProcess().ProcessName).Length > 1);
-
-
-            //GlobalMutex doesnt get released until all app instances have exited,
-            //we cant use that mutux for checking previous instances
-            //for this type of Previous Instance checking without mataining
-            //a list of instances and releasing the mutux when theres only one instance left running.
-
+        {
             // Close the handle to the mutex. If the object still exists, 
             // it means there is another handle to the mutex, and most likely 
             // there is another instance of PH running.
-            
-            //if (GlobalMutex == null)
-            //    return false;
 
-            //GlobalMutex.Dispose();
-            //GlobalMutex = null;
+            if (GlobalMutex == null)
+                return false;
 
-            //try
-            //{
-            //    return NativeUtils.ObjectExists(GlobalMutexName);
-            //}
-            //finally
-            //{
-            //    try { GlobalMutex = new ProcessHacker.Native.Threading.Mutant(GlobalMutexName); }
-            //    catch { }
-            //}
+            GlobalMutex.Dispose();
+            GlobalMutex = null;
+
+            try
+            {
+                return NativeUtils.ObjectExists(GlobalMutexName);
+            }
+            finally
+            {
+                try { GlobalMutex = new ProcessHacker.Native.Threading.Mutant(GlobalMutexName); }
+                catch { }
+            }
         }
 
         private static void ActivatePreviousInstance()

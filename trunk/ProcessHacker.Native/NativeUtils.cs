@@ -235,7 +235,7 @@ namespace ProcessHacker.Native
 
             string[] s = name.Split('\\');
             string lastPart = s[s.Length - 1];
-            string dirPart = name.Substring(0, name.Length - s.Length - 1); // -1 char to leave out the trailing backslash
+            string dirPart = name.Substring(0, name.Length - lastPart.Length - 1); // -1 char to leave out the trailing backslash
 
             try
             {
@@ -249,7 +249,7 @@ namespace ProcessHacker.Native
                             return true;
                     }
 
-                    return true;
+                    return false;
                 }
             }
             catch (WindowsException)
