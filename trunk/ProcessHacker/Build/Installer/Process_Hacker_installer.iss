@@ -25,7 +25,7 @@
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 
-#define installer_build_number "38"
+#define installer_build_number "39"
 
 #define VerMajor
 #define VerMinor
@@ -185,7 +185,11 @@ Type: files; Name: {group}\Βοήθεια και Υποστήριξη\Αρχείο βοήθειας του Process Ha
 Type: files; Name: {group}\Βοήθεια και Υποστήριξη\Αρχείο ReadMe.lnk
 Type: dirifempty; Name: {group}\Βοήθεια και Υποστήριξη
 
-Type: filesandordirs; Name: {localappdata}\wj32; Tasks: reset_settings
+; Always remove older settings folder
+Type: filesandordirs; Name: {localappdata}\wj32
+
+Type: files; Name: {userappdata}\Process Hacker\settings.xml; Tasks: reset_settings
+Type: dirifempty; Name: {userappdata}\Process Hacker; Tasks: reset_settings
 
 
 [Registry]
@@ -239,7 +243,7 @@ end;
 function SettingsExistCheck(): Boolean;
 begin
   Result := False;
-  if DirExists(ExpandConstant('{localappdata}\wj32\')) then
+  if FileExists(ExpandConstant('{userappdata}\Process Hacker\settings.xml')) then
   Result := True;
 end;
 
@@ -302,7 +306,7 @@ begin
   // When uninstalling ask user to delete Process Hacker's logs and settings
   // based on whether these files exist only
   if CurUninstallStep = usUninstall then begin
-  if DirExists(ExpandConstant('{localappdata}\wj32\'))
+  if FileExists(ExpandConstant('{userappdata}\Process Hacker\settings.xml'))
   or fileExists(ExpandConstant('{app}\Process Hacker Log.txt'))
   or fileExists(ExpandConstant('{userdocs}\Process Hacker.txt'))
   or fileExists(ExpandConstant('{userdocs}\Process Hacker.log'))
@@ -312,7 +316,8 @@ begin
   or fileExists(ExpandConstant('{app}\scratchpad.txt'))then begin
     if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'),
      mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
-      DelTree(ExpandConstant('{localappdata}\wj32\'), True, True, True);
+      DeleteFile(ExpandConstant('{userappdata}\Process Hacker\settings.xml'));
+      DelTree(ExpandConstant('{userappdata}\Process Hacker\'), True, False, False);
       DeleteFile(ExpandConstant('{app}\Process Hacker.txt'));
       DeleteFile(ExpandConstant('{app}\Process Hacker.log'));
       DeleteFile(ExpandConstant('{app}\Process Hacker.csv'));
@@ -322,6 +327,8 @@ begin
       DeleteFile(ExpandConstant('{userdocs}\CSR Processes.txt'));
       DeleteFile(ExpandConstant('{app}\scratchpad.txt'));
       end;
+      //Always delete older settings folder
+      DelTree(ExpandConstant('{localappdata}\wj32\'), True, True, True);
     end;
   end;
 end;
