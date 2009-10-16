@@ -35,9 +35,8 @@ namespace TaskbarLib
     /// </summary>
     internal sealed class JumpListDestinations
     {
-        //TODO: This is highly inefficient, but we want to maintain
-        //insertion order when adding the categories because the bottom
-        //categories are first to be truncated if screen estate is low.
+        //TODO: This is highly inefficient, but we want to maintain insertion order when adding the categories 
+        //because the bottom categories are first to be truncated if screen estate is low.
         private SortedDictionary<int, List<IJumpListDestination>> _categorizedDestinations =
             new SortedDictionary<int, List<IJumpListDestination>>();
 

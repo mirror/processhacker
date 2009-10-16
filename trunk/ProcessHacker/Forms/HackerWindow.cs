@@ -1823,10 +1823,7 @@ namespace ProcessHacker
 
                     if (Settings.Instance.ScrollDownProcessTree)
                     {
-                        // HACK HACK HACK HACK
-                        // HACK HACK HACK HACK
-                        // HACK HACK HACK HACK
-                        // HACK HACK HACK HACK
+                        // HACK
                         try
                         {
                             foreach (var process in treeProcesses.Model.Roots)
@@ -3385,9 +3382,6 @@ namespace ProcessHacker
             Program.UpdateWindowMenu(windowMenuItem, this);
             this.ApplyFont(Settings.Instance.Font);
             this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
-            
-            //TODO: NetworkInfo unfinished, hidden for 1.6 release
-            networkInfomationMenuItem.Visible = false;
         }
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)
