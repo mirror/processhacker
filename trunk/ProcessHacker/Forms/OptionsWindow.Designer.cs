@@ -92,16 +92,15 @@
             this.buttonDbghelpBrowse = new System.Windows.Forms.Button();
             this.textDbghelpPath = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.tabUpdates = new System.Windows.Forms.TabPage();
+            this.buttonCancel = new System.Windows.Forms.Button();
+            this.buttonApply = new System.Windows.Forms.Button();
+            this.buttonReset = new System.Windows.Forms.Button();
             this.UpdaterSettingsGroupBox = new System.Windows.Forms.GroupBox();
             this.checkUpdateAutomatically = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.optUpdateStable = new System.Windows.Forms.RadioButton();
             this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
             this.optUpdateBeta = new System.Windows.Forms.RadioButton();
-            this.buttonCancel = new System.Windows.Forms.Button();
-            this.buttonApply = new System.Windows.Forms.Button();
-            this.buttonReset = new System.Windows.Forms.Button();
             this.listHighlightingColors = new ProcessHacker.Components.ExtendedListView();
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
@@ -124,7 +123,6 @@
             this.tabPlotting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textStep)).BeginInit();
             this.tabSymbols.SuspendLayout();
-            this.tabUpdates.SuspendLayout();
             this.UpdaterSettingsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -227,7 +225,6 @@
             this.tabControl.Controls.Add(this.tabHighlighting);
             this.tabControl.Controls.Add(this.tabPlotting);
             this.tabControl.Controls.Add(this.tabSymbols);
-            this.tabControl.Controls.Add(this.tabUpdates);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -510,6 +507,7 @@
             // 
             // tabAdvanced
             // 
+            this.tabAdvanced.Controls.Add(this.UpdaterSettingsGroupBox);
             this.tabAdvanced.Controls.Add(this.comboElevationLevel);
             this.tabAdvanced.Controls.Add(this.label22);
             this.tabAdvanced.Controls.Add(this.checkEnableExperimentalFeatures);
@@ -537,15 +535,15 @@
             "Never elevate",
             "Prompt for elevation",
             "Always elevate"});
-            this.comboElevationLevel.Location = new System.Drawing.Point(66, 174);
+            this.comboElevationLevel.Location = new System.Drawing.Point(315, 8);
             this.comboElevationLevel.Name = "comboElevationLevel";
-            this.comboElevationLevel.Size = new System.Drawing.Size(194, 21);
+            this.comboElevationLevel.Size = new System.Drawing.Size(157, 21);
             this.comboElevationLevel.TabIndex = 11;
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(6, 177);
+            this.label22.Location = new System.Drawing.Point(255, 11);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(54, 13);
             this.label22.TabIndex = 10;
@@ -927,86 +925,6 @@
             this.label9.TabIndex = 4;
             this.label9.Text = "Dbghelp.dll path:";
             // 
-            // tabUpdates
-            // 
-            this.tabUpdates.Controls.Add(this.UpdaterSettingsGroupBox);
-            this.tabUpdates.Location = new System.Drawing.Point(4, 22);
-            this.tabUpdates.Name = "tabUpdates";
-            this.tabUpdates.Padding = new System.Windows.Forms.Padding(3);
-            this.tabUpdates.Size = new System.Drawing.Size(481, 291);
-            this.tabUpdates.TabIndex = 5;
-            this.tabUpdates.Text = "Updates";
-            this.tabUpdates.UseVisualStyleBackColor = true;
-            // 
-            // UpdaterSettingsGroupBox
-            // 
-            this.UpdaterSettingsGroupBox.Controls.Add(this.checkUpdateAutomatically);
-            this.UpdaterSettingsGroupBox.Controls.Add(this.label5);
-            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateStable);
-            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateAlpha);
-            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateBeta);
-            this.UpdaterSettingsGroupBox.Location = new System.Drawing.Point(11, 11);
-            this.UpdaterSettingsGroupBox.Name = "UpdaterSettingsGroupBox";
-            this.UpdaterSettingsGroupBox.Size = new System.Drawing.Size(456, 100);
-            this.UpdaterSettingsGroupBox.TabIndex = 30;
-            this.UpdaterSettingsGroupBox.TabStop = false;
-            this.UpdaterSettingsGroupBox.Text = "Updater Settings";
-            // 
-            // checkUpdateAutomatically
-            // 
-            this.checkUpdateAutomatically.AutoSize = true;
-            this.checkUpdateAutomatically.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkUpdateAutomatically.Location = new System.Drawing.Point(10, 19);
-            this.checkUpdateAutomatically.Name = "checkUpdateAutomatically";
-            this.checkUpdateAutomatically.Size = new System.Drawing.Size(186, 18);
-            this.checkUpdateAutomatically.TabIndex = 27;
-            this.checkUpdateAutomatically.Text = " Check for updates automatically";
-            this.checkUpdateAutomatically.UseVisualStyleBackColor = true;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(278, 21);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(56, 13);
-            this.label5.TabIndex = 24;
-            this.label5.Text = "Check for:";
-            // 
-            // optUpdateStable
-            // 
-            this.optUpdateStable.AutoSize = true;
-            this.optUpdateStable.Checked = true;
-            this.optUpdateStable.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateStable.Location = new System.Drawing.Point(340, 19);
-            this.optUpdateStable.Name = "optUpdateStable";
-            this.optUpdateStable.Size = new System.Drawing.Size(103, 18);
-            this.optUpdateStable.TabIndex = 21;
-            this.optUpdateStable.TabStop = true;
-            this.optUpdateStable.Text = "Stable releases";
-            this.optUpdateStable.UseVisualStyleBackColor = true;
-            // 
-            // optUpdateAlpha
-            // 
-            this.optUpdateAlpha.AutoSize = true;
-            this.optUpdateAlpha.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateAlpha.Location = new System.Drawing.Point(340, 67);
-            this.optUpdateAlpha.Name = "optUpdateAlpha";
-            this.optUpdateAlpha.Size = new System.Drawing.Size(100, 18);
-            this.optUpdateAlpha.TabIndex = 23;
-            this.optUpdateAlpha.Text = "Alpha releases";
-            this.optUpdateAlpha.UseVisualStyleBackColor = true;
-            // 
-            // optUpdateBeta
-            // 
-            this.optUpdateBeta.AutoSize = true;
-            this.optUpdateBeta.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateBeta.Location = new System.Drawing.Point(340, 43);
-            this.optUpdateBeta.Name = "optUpdateBeta";
-            this.optUpdateBeta.Size = new System.Drawing.Size(95, 18);
-            this.optUpdateBeta.TabIndex = 22;
-            this.optUpdateBeta.Text = "Beta releases";
-            this.optUpdateBeta.UseVisualStyleBackColor = true;
-            // 
             // buttonCancel
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -1042,6 +960,75 @@
             this.buttonReset.Text = "Reset";
             this.buttonReset.UseVisualStyleBackColor = true;
             this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
+            // 
+            // UpdaterSettingsGroupBox
+            // 
+            this.UpdaterSettingsGroupBox.Controls.Add(this.checkUpdateAutomatically);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.label5);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateStable);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateAlpha);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateBeta);
+            this.UpdaterSettingsGroupBox.Location = new System.Drawing.Point(6, 186);
+            this.UpdaterSettingsGroupBox.Name = "UpdaterSettingsGroupBox";
+            this.UpdaterSettingsGroupBox.Size = new System.Drawing.Size(466, 99);
+            this.UpdaterSettingsGroupBox.TabIndex = 31;
+            this.UpdaterSettingsGroupBox.TabStop = false;
+            this.UpdaterSettingsGroupBox.Text = "Updater Settings";
+            // 
+            // checkUpdateAutomatically
+            // 
+            this.checkUpdateAutomatically.AutoSize = true;
+            this.checkUpdateAutomatically.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkUpdateAutomatically.Location = new System.Drawing.Point(6, 23);
+            this.checkUpdateAutomatically.Name = "checkUpdateAutomatically";
+            this.checkUpdateAutomatically.Size = new System.Drawing.Size(186, 18);
+            this.checkUpdateAutomatically.TabIndex = 27;
+            this.checkUpdateAutomatically.Text = " Check for updates automatically";
+            this.checkUpdateAutomatically.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(290, 23);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(56, 13);
+            this.label5.TabIndex = 24;
+            this.label5.Text = "Check for:";
+            // 
+            // optUpdateStable
+            // 
+            this.optUpdateStable.AutoSize = true;
+            this.optUpdateStable.Checked = true;
+            this.optUpdateStable.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.optUpdateStable.Location = new System.Drawing.Point(352, 21);
+            this.optUpdateStable.Name = "optUpdateStable";
+            this.optUpdateStable.Size = new System.Drawing.Size(103, 18);
+            this.optUpdateStable.TabIndex = 21;
+            this.optUpdateStable.TabStop = true;
+            this.optUpdateStable.Text = "Stable releases";
+            this.optUpdateStable.UseVisualStyleBackColor = true;
+            // 
+            // optUpdateAlpha
+            // 
+            this.optUpdateAlpha.AutoSize = true;
+            this.optUpdateAlpha.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.optUpdateAlpha.Location = new System.Drawing.Point(352, 69);
+            this.optUpdateAlpha.Name = "optUpdateAlpha";
+            this.optUpdateAlpha.Size = new System.Drawing.Size(100, 18);
+            this.optUpdateAlpha.TabIndex = 23;
+            this.optUpdateAlpha.Text = "Alpha releases";
+            this.optUpdateAlpha.UseVisualStyleBackColor = true;
+            // 
+            // optUpdateBeta
+            // 
+            this.optUpdateBeta.AutoSize = true;
+            this.optUpdateBeta.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.optUpdateBeta.Location = new System.Drawing.Point(352, 45);
+            this.optUpdateBeta.Name = "optUpdateBeta";
+            this.optUpdateBeta.Size = new System.Drawing.Size(95, 18);
+            this.optUpdateBeta.TabIndex = 22;
+            this.optUpdateBeta.Text = "Beta releases";
+            this.optUpdateBeta.UseVisualStyleBackColor = true;
             // 
             // listHighlightingColors
             // 
@@ -1173,7 +1160,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.textStep)).EndInit();
             this.tabSymbols.ResumeLayout(false);
             this.tabSymbols.PerformLayout();
-            this.tabUpdates.ResumeLayout(false);
             this.UpdaterSettingsGroupBox.ResumeLayout(false);
             this.UpdaterSettingsGroupBox.PerformLayout();
             this.ResumeLayout(false);
@@ -1249,22 +1235,21 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.CheckBox checkScrollDownProcessTree;
         private System.Windows.Forms.CheckBox checkFloatChildWindows;
-        private System.Windows.Forms.TabPage tabUpdates;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.RadioButton optUpdateAlpha;
-        private System.Windows.Forms.RadioButton optUpdateBeta;
-        private System.Windows.Forms.RadioButton optUpdateStable;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.ComboBox comboToolbarStyle;
-        private System.Windows.Forms.CheckBox checkUpdateAutomatically;
         private System.Windows.Forms.ComboBox comboElevationLevel;
         private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.GroupBox UpdaterSettingsGroupBox;
         private System.Windows.Forms.NumericUpDown textMaxSamples;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.ComboBox comboProcessNodeStyle;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox UpdaterSettingsGroupBox;
+        private System.Windows.Forms.CheckBox checkUpdateAutomatically;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.RadioButton optUpdateStable;
+        private System.Windows.Forms.RadioButton optUpdateAlpha;
+        private System.Windows.Forms.RadioButton optUpdateBeta;
     }
 }
