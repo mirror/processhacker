@@ -299,6 +299,20 @@ namespace ProcessHacker
 
             textImposterNames.Text = Settings.Instance.ImposterNames;
 
+
+            switch (Settings.Instance.ProcessTreeStyle)
+            {
+                case 0:
+                    comboProcessNodeStyle.SelectedIndex = 0;
+                    break;
+                case 1:
+                    comboProcessNodeStyle.SelectedIndex = 1;
+                    break;
+                default:
+                    comboToolbarStyle.SelectedIndex = 1;
+                    break;
+            }
+
             switch (Settings.Instance.ToolStripDisplayStyle)
             {
                 case 0:

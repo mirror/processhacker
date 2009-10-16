@@ -733,6 +733,13 @@ namespace ProcessHacker
             set { this["ProcessTreeColumns"] = value; }
         }
 
+        [SettingDefault("0")]
+        public int ProcessTreeStyle
+        {
+            get { return (int)this["ProcessTreeStyle"]; }
+            set { this["ProcessTreeStyle"] = value; }
+        }
+
         [SettingDefault("200, 200")]
         public Point ProcessWindowLocation
         {

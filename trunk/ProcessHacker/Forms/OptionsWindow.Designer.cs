@@ -37,6 +37,8 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.textMaxSamples = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.comboToolbarStyle = new System.Windows.Forms.ComboBox();
             this.checkFloatChildWindows = new System.Windows.Forms.CheckBox();
@@ -66,14 +68,10 @@
             this.label11 = new System.Windows.Forms.Label();
             this.buttonDisableAll = new System.Windows.Forms.Button();
             this.buttonEnableAll = new System.Windows.Forms.Button();
-            this.listHighlightingColors = new ProcessHacker.Components.ExtendedListView();
-            this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.textHighlightingDuration = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.tabPlotting = new System.Windows.Forms.TabPage();
             this.textStep = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -84,12 +82,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
-            this.colorIORO = new ProcessHacker.Components.ColorModifier();
-            this.colorIOW = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.tabSymbols = new System.Windows.Forms.TabPage();
             this.checkUndecorate = new System.Windows.Forms.CheckBox();
             this.textSearchPath = new System.Windows.Forms.TextBox();
@@ -107,11 +99,23 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
             this.buttonReset = new System.Windows.Forms.Button();
-            this.textMaxSamples = new System.Windows.Forms.NumericUpDown();
-            this.label6 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.comboProcessNodeStyle = new System.Windows.Forms.ComboBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.listHighlightingColors = new ProcessHacker.Components.ExtendedListView();
+            this.columnDescription = new System.Windows.Forms.ColumnHeader();
+            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorIORO = new ProcessHacker.Components.ColorModifier();
+            this.colorIOW = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).BeginInit();
             this.tabAdvanced.SuspendLayout();
             this.tabHighlighting.SuspendLayout();
@@ -121,7 +125,7 @@
             this.tabSymbols.SuspendLayout();
             this.tabUpdates.SuspendLayout();
             this.UpdaterSettingsGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -165,7 +169,7 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonOK.Location = new System.Drawing.Point(264, 352);
+            this.buttonOK.Location = new System.Drawing.Point(264, 365);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 1;
@@ -177,7 +181,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(211, 245);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(239, 51);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 12;
@@ -210,7 +214,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textSearchEngine.Location = new System.Drawing.Point(134, 58);
             this.textSearchEngine.Name = "textSearchEngine";
-            this.textSearchEngine.Size = new System.Drawing.Size(341, 20);
+            this.textSearchEngine.Size = new System.Drawing.Size(338, 20);
             this.textSearchEngine.TabIndex = 2;
             // 
             // tabControl
@@ -227,38 +231,72 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(489, 334);
+            this.tabControl.Size = new System.Drawing.Size(489, 347);
             this.tabControl.TabIndex = 0;
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.groupBox1);
+            this.tabGeneral.Controls.Add(this.comboProcessNodeStyle);
+            this.tabGeneral.Controls.Add(this.label19);
+            this.tabGeneral.Controls.Add(this.textMaxSamples);
+            this.tabGeneral.Controls.Add(this.label6);
             this.tabGeneral.Controls.Add(this.label20);
             this.tabGeneral.Controls.Add(this.comboToolbarStyle);
-            this.tabGeneral.Controls.Add(this.checkFloatChildWindows);
-            this.tabGeneral.Controls.Add(this.checkScrollDownProcessTree);
-            this.tabGeneral.Controls.Add(this.checkAllowOnlyOneInstance);
             this.tabGeneral.Controls.Add(this.buttonFont);
             this.tabGeneral.Controls.Add(this.textImposterNames);
             this.tabGeneral.Controls.Add(this.label21);
             this.tabGeneral.Controls.Add(this.comboSizeUnits);
             this.tabGeneral.Controls.Add(this.label18);
-            this.tabGeneral.Controls.Add(this.checkStartHidden);
-            this.tabGeneral.Controls.Add(this.checkHideWhenClosed);
-            this.tabGeneral.Controls.Add(this.checkHideWhenMinimized);
             this.tabGeneral.Controls.Add(this.label23);
             this.tabGeneral.Controls.Add(this.label1);
             this.tabGeneral.Controls.Add(this.textSearchEngine);
             this.tabGeneral.Controls.Add(this.textIconMenuProcesses);
             this.tabGeneral.Controls.Add(this.textUpdateInterval);
             this.tabGeneral.Controls.Add(this.label2);
-            this.tabGeneral.Controls.Add(this.checkShowProcessDomains);
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(481, 308);
+            this.tabGeneral.Size = new System.Drawing.Size(481, 321);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // textMaxSamples
+            // 
+            this.textMaxSamples.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Location = new System.Drawing.Point(320, 6);
+            this.textMaxSamples.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Name = "textMaxSamples";
+            this.textMaxSamples.Size = new System.Drawing.Size(72, 20);
+            this.textMaxSamples.TabIndex = 20;
+            this.textMaxSamples.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(208, 8);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(106, 13);
+            this.label6.TabIndex = 21;
+            this.label6.Text = "Max. Sample History:";
             // 
             // label20
             // 
@@ -280,14 +318,14 @@
             "Show All Text Labels"});
             this.comboToolbarStyle.Location = new System.Drawing.Point(134, 137);
             this.comboToolbarStyle.Name = "comboToolbarStyle";
-            this.comboToolbarStyle.Size = new System.Drawing.Size(135, 21);
+            this.comboToolbarStyle.Size = new System.Drawing.Size(147, 21);
             this.comboToolbarStyle.TabIndex = 18;
             // 
             // checkFloatChildWindows
             // 
             this.checkFloatChildWindows.AutoSize = true;
             this.checkFloatChildWindows.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkFloatChildWindows.Location = new System.Drawing.Point(211, 198);
+            this.checkFloatChildWindows.Location = new System.Drawing.Point(239, 75);
             this.checkFloatChildWindows.Name = "checkFloatChildWindows";
             this.checkFloatChildWindows.Size = new System.Drawing.Size(124, 18);
             this.checkFloatChildWindows.TabIndex = 10;
@@ -298,7 +336,7 @@
             // 
             this.checkScrollDownProcessTree.AutoSize = true;
             this.checkScrollDownProcessTree.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkScrollDownProcessTree.Location = new System.Drawing.Point(211, 221);
+            this.checkScrollDownProcessTree.Location = new System.Drawing.Point(239, 27);
             this.checkScrollDownProcessTree.Name = "checkScrollDownProcessTree";
             this.checkScrollDownProcessTree.Size = new System.Drawing.Size(213, 18);
             this.checkScrollDownProcessTree.TabIndex = 11;
@@ -309,7 +347,7 @@
             // 
             this.checkAllowOnlyOneInstance.AutoSize = true;
             this.checkAllowOnlyOneInstance.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(6, 269);
+            this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(16, 19);
             this.checkAllowOnlyOneInstance.Name = "checkAllowOnlyOneInstance";
             this.checkAllowOnlyOneInstance.Size = new System.Drawing.Size(143, 18);
             this.checkAllowOnlyOneInstance.TabIndex = 9;
@@ -319,9 +357,9 @@
             // buttonFont
             // 
             this.buttonFont.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonFont.Location = new System.Drawing.Point(6, 168);
+            this.buttonFont.Location = new System.Drawing.Point(23, 163);
             this.buttonFont.Name = "buttonFont";
-            this.buttonFont.Size = new System.Drawing.Size(75, 23);
+            this.buttonFont.Size = new System.Drawing.Size(82, 23);
             this.buttonFont.TabIndex = 5;
             this.buttonFont.Text = "Font...";
             this.buttonFont.UseVisualStyleBackColor = true;
@@ -333,7 +371,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textImposterNames.Location = new System.Drawing.Point(134, 84);
             this.textImposterNames.Name = "textImposterNames";
-            this.textImposterNames.Size = new System.Drawing.Size(341, 20);
+            this.textImposterNames.Size = new System.Drawing.Size(338, 20);
             this.textImposterNames.TabIndex = 3;
             // 
             // label21
@@ -358,15 +396,15 @@
             "TB",
             "PB",
             "EB"});
-            this.comboSizeUnits.Location = new System.Drawing.Point(134, 110);
+            this.comboSizeUnits.Location = new System.Drawing.Point(320, 31);
             this.comboSizeUnits.Name = "comboSizeUnits";
-            this.comboSizeUnits.Size = new System.Drawing.Size(67, 21);
+            this.comboSizeUnits.Size = new System.Drawing.Size(72, 21);
             this.comboSizeUnits.TabIndex = 4;
             // 
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(6, 113);
+            this.label18.Location = new System.Drawing.Point(208, 34);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(78, 13);
             this.label18.TabIndex = 17;
@@ -376,7 +414,7 @@
             // 
             this.checkStartHidden.AutoSize = true;
             this.checkStartHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkStartHidden.Location = new System.Drawing.Point(6, 245);
+            this.checkStartHidden.Location = new System.Drawing.Point(16, 91);
             this.checkStartHidden.Name = "checkStartHidden";
             this.checkStartHidden.Size = new System.Drawing.Size(89, 18);
             this.checkStartHidden.TabIndex = 8;
@@ -387,7 +425,7 @@
             // 
             this.checkHideWhenClosed.AutoSize = true;
             this.checkHideWhenClosed.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenClosed.Location = new System.Drawing.Point(6, 221);
+            this.checkHideWhenClosed.Location = new System.Drawing.Point(16, 67);
             this.checkHideWhenClosed.Name = "checkHideWhenClosed";
             this.checkHideWhenClosed.Size = new System.Drawing.Size(117, 18);
             this.checkHideWhenClosed.TabIndex = 7;
@@ -398,7 +436,7 @@
             // 
             this.checkHideWhenMinimized.AutoSize = true;
             this.checkHideWhenMinimized.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenMinimized.Location = new System.Drawing.Point(6, 197);
+            this.checkHideWhenMinimized.Location = new System.Drawing.Point(16, 43);
             this.checkHideWhenMinimized.Name = "checkHideWhenMinimized";
             this.checkHideWhenMinimized.Size = new System.Drawing.Size(131, 18);
             this.checkHideWhenMinimized.TabIndex = 6;
@@ -434,8 +472,6 @@
             // 
             // tabAdvanced
             // 
-            this.tabAdvanced.Controls.Add(this.textMaxSamples);
-            this.tabAdvanced.Controls.Add(this.label6);
             this.tabAdvanced.Controls.Add(this.comboElevationLevel);
             this.tabAdvanced.Controls.Add(this.label22);
             this.tabAdvanced.Controls.Add(this.checkEnableExperimentalFeatures);
@@ -449,7 +485,7 @@
             this.tabAdvanced.Location = new System.Drawing.Point(4, 22);
             this.tabAdvanced.Name = "tabAdvanced";
             this.tabAdvanced.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAdvanced.Size = new System.Drawing.Size(481, 308);
+            this.tabAdvanced.Size = new System.Drawing.Size(481, 321);
             this.tabAdvanced.TabIndex = 3;
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
@@ -463,7 +499,7 @@
             "Never elevate",
             "Prompt for elevation",
             "Always elevate"});
-            this.comboElevationLevel.Location = new System.Drawing.Point(66, 200);
+            this.comboElevationLevel.Location = new System.Drawing.Point(66, 174);
             this.comboElevationLevel.Name = "comboElevationLevel";
             this.comboElevationLevel.Size = new System.Drawing.Size(194, 21);
             this.comboElevationLevel.TabIndex = 11;
@@ -471,7 +507,7 @@
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(6, 203);
+            this.label22.Location = new System.Drawing.Point(6, 177);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(54, 13);
             this.label22.TabIndex = 10;
@@ -569,7 +605,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(481, 308);
+            this.tabHighlighting.Size = new System.Drawing.Size(481, 321);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -578,7 +614,7 @@
             // 
             this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 284);
+            this.label11.Location = new System.Drawing.Point(6, 297);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(165, 13);
             this.label11.TabIndex = 9;
@@ -588,7 +624,7 @@
             // 
             this.buttonDisableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDisableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDisableAll.Location = new System.Drawing.Point(400, 279);
+            this.buttonDisableAll.Location = new System.Drawing.Point(400, 292);
             this.buttonDisableAll.Name = "buttonDisableAll";
             this.buttonDisableAll.Size = new System.Drawing.Size(75, 23);
             this.buttonDisableAll.TabIndex = 5;
@@ -600,40 +636,13 @@
             // 
             this.buttonEnableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonEnableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonEnableAll.Location = new System.Drawing.Point(319, 279);
+            this.buttonEnableAll.Location = new System.Drawing.Point(319, 292);
             this.buttonEnableAll.Name = "buttonEnableAll";
             this.buttonEnableAll.Size = new System.Drawing.Size(75, 23);
             this.buttonEnableAll.TabIndex = 4;
             this.buttonEnableAll.Text = "&Enable All";
             this.buttonEnableAll.UseVisualStyleBackColor = true;
             this.buttonEnableAll.Click += new System.EventHandler(this.buttonEnableAll_Click);
-            // 
-            // listHighlightingColors
-            // 
-            this.listHighlightingColors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listHighlightingColors.CheckBoxes = true;
-            this.listHighlightingColors.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnDescription});
-            this.listHighlightingColors.DoubleClickChecks = false;
-            this.listHighlightingColors.FullRowSelect = true;
-            this.listHighlightingColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.listHighlightingColors.HideSelection = false;
-            this.listHighlightingColors.Location = new System.Drawing.Point(6, 60);
-            this.listHighlightingColors.MultiSelect = false;
-            this.listHighlightingColors.Name = "listHighlightingColors";
-            this.listHighlightingColors.ShowItemToolTips = true;
-            this.listHighlightingColors.Size = new System.Drawing.Size(469, 213);
-            this.listHighlightingColors.TabIndex = 3;
-            this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
-            this.listHighlightingColors.View = System.Windows.Forms.View.Details;
-            this.listHighlightingColors.DoubleClick += new System.EventHandler(this.listHighlightingColors_DoubleClick);
-            // 
-            // columnDescription
-            // 
-            this.columnDescription.Text = "Description";
-            this.columnDescription.Width = 250;
             // 
             // textHighlightingDuration
             // 
@@ -689,22 +698,6 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "New Objects:";
             // 
-            // colorRemovedProcesses
-            // 
-            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
-            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
-            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorRemovedProcesses.TabIndex = 2;
-            // 
-            // colorNewProcesses
-            // 
-            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
-            this.colorNewProcesses.Name = "colorNewProcesses";
-            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorNewProcesses.TabIndex = 1;
-            // 
             // tabPlotting
             // 
             this.tabPlotting.Controls.Add(this.textStep);
@@ -725,7 +718,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(481, 308);
+            this.tabPlotting.Size = new System.Drawing.Size(481, 321);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -821,54 +814,6 @@
             this.label17.TabIndex = 9;
             this.label17.Text = "CPU Kernel Time:";
             // 
-            // colorIORO
-            // 
-            this.colorIORO.Color = System.Drawing.Color.Transparent;
-            this.colorIORO.Location = new System.Drawing.Point(124, 163);
-            this.colorIORO.Name = "colorIORO";
-            this.colorIORO.Size = new System.Drawing.Size(40, 20);
-            this.colorIORO.TabIndex = 6;
-            // 
-            // colorIOW
-            // 
-            this.colorIOW.Color = System.Drawing.Color.Transparent;
-            this.colorIOW.Location = new System.Drawing.Point(124, 189);
-            this.colorIOW.Name = "colorIOW";
-            this.colorIOW.Size = new System.Drawing.Size(40, 20);
-            this.colorIOW.TabIndex = 7;
-            // 
-            // colorMemoryWS
-            // 
-            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
-            this.colorMemoryWS.Name = "colorMemoryWS";
-            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryWS.TabIndex = 5;
-            // 
-            // colorMemoryPB
-            // 
-            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
-            this.colorMemoryPB.Name = "colorMemoryPB";
-            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryPB.TabIndex = 4;
-            // 
-            // colorCPUUT
-            // 
-            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
-            this.colorCPUUT.Name = "colorCPUUT";
-            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUUT.TabIndex = 3;
-            // 
-            // colorCPUKT
-            // 
-            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
-            this.colorCPUKT.Name = "colorCPUKT";
-            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUKT.TabIndex = 2;
-            // 
             // tabSymbols
             // 
             this.tabSymbols.Controls.Add(this.checkUndecorate);
@@ -880,7 +825,7 @@
             this.tabSymbols.Location = new System.Drawing.Point(4, 22);
             this.tabSymbols.Name = "tabSymbols";
             this.tabSymbols.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSymbols.Size = new System.Drawing.Size(481, 308);
+            this.tabSymbols.Size = new System.Drawing.Size(481, 321);
             this.tabSymbols.TabIndex = 4;
             this.tabSymbols.Text = "Symbols";
             this.tabSymbols.UseVisualStyleBackColor = true;
@@ -950,7 +895,7 @@
             this.tabUpdates.Location = new System.Drawing.Point(4, 22);
             this.tabUpdates.Name = "tabUpdates";
             this.tabUpdates.Padding = new System.Windows.Forms.Padding(3);
-            this.tabUpdates.Size = new System.Drawing.Size(481, 308);
+            this.tabUpdates.Size = new System.Drawing.Size(481, 321);
             this.tabUpdates.TabIndex = 5;
             this.tabUpdates.Text = "Updates";
             this.tabUpdates.UseVisualStyleBackColor = true;
@@ -1028,7 +973,7 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCancel.Location = new System.Drawing.Point(345, 352);
+            this.buttonCancel.Location = new System.Drawing.Point(345, 365);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 2;
@@ -1041,7 +986,7 @@
             this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonApply.Enabled = false;
             this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonApply.Location = new System.Drawing.Point(426, 352);
+            this.buttonApply.Location = new System.Drawing.Point(426, 365);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(75, 23);
             this.buttonApply.TabIndex = 3;
@@ -1052,7 +997,7 @@
             // buttonReset
             // 
             this.buttonReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonReset.Location = new System.Drawing.Point(12, 352);
+            this.buttonReset.Location = new System.Drawing.Point(12, 365);
             this.buttonReset.Name = "buttonReset";
             this.buttonReset.Size = new System.Drawing.Size(75, 23);
             this.buttonReset.TabIndex = 4;
@@ -1060,48 +1005,141 @@
             this.buttonReset.UseVisualStyleBackColor = true;
             this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
             // 
-            // textMaxSamples
+            // label19
             // 
-            this.textMaxSamples.Increment = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Location = new System.Drawing.Point(118, 174);
-            this.textMaxSamples.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Name = "textMaxSamples";
-            this.textMaxSamples.Size = new System.Drawing.Size(72, 20);
-            this.textMaxSamples.TabIndex = 22;
-            this.textMaxSamples.Value = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 117);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(99, 13);
+            this.label19.TabIndex = 22;
+            this.label19.Text = "Process Tree Style:";
             // 
-            // label6
+            // comboProcessNodeStyle
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 176);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(106, 13);
-            this.label6.TabIndex = 23;
-            this.label6.Text = "Max. Sample History:";
+            this.comboProcessNodeStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboProcessNodeStyle.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.comboProcessNodeStyle.FormattingEnabled = true;
+            this.comboProcessNodeStyle.Items.AddRange(new object[] {
+            "Show Selective Nodes",
+            "Show All Process Nodes"});
+            this.comboProcessNodeStyle.Location = new System.Drawing.Point(134, 110);
+            this.comboProcessNodeStyle.Name = "comboProcessNodeStyle";
+            this.comboProcessNodeStyle.Size = new System.Drawing.Size(147, 21);
+            this.comboProcessNodeStyle.TabIndex = 23;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.checkHideWhenMinimized);
+            this.groupBox1.Controls.Add(this.checkHideWhenClosed);
+            this.groupBox1.Controls.Add(this.checkStartHidden);
+            this.groupBox1.Controls.Add(this.checkAllowOnlyOneInstance);
+            this.groupBox1.Controls.Add(this.checkFloatChildWindows);
+            this.groupBox1.Controls.Add(this.checkShowProcessDomains);
+            this.groupBox1.Controls.Add(this.checkScrollDownProcessTree);
+            this.groupBox1.Location = new System.Drawing.Point(9, 192);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(463, 121);
+            this.groupBox1.TabIndex = 24;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Window Settings";
+            // 
+            // listHighlightingColors
+            // 
+            this.listHighlightingColors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHighlightingColors.CheckBoxes = true;
+            this.listHighlightingColors.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnDescription});
+            this.listHighlightingColors.DoubleClickChecks = false;
+            this.listHighlightingColors.FullRowSelect = true;
+            this.listHighlightingColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listHighlightingColors.HideSelection = false;
+            this.listHighlightingColors.Location = new System.Drawing.Point(6, 60);
+            this.listHighlightingColors.MultiSelect = false;
+            this.listHighlightingColors.Name = "listHighlightingColors";
+            this.listHighlightingColors.ShowItemToolTips = true;
+            this.listHighlightingColors.Size = new System.Drawing.Size(469, 226);
+            this.listHighlightingColors.TabIndex = 3;
+            this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
+            this.listHighlightingColors.View = System.Windows.Forms.View.Details;
+            this.listHighlightingColors.DoubleClick += new System.EventHandler(this.listHighlightingColors_DoubleClick);
+            // 
+            // columnDescription
+            // 
+            this.columnDescription.Text = "Description";
+            this.columnDescription.Width = 250;
+            // 
+            // colorRemovedProcesses
+            // 
+            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
+            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
+            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorRemovedProcesses.TabIndex = 2;
+            // 
+            // colorNewProcesses
+            // 
+            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
+            this.colorNewProcesses.Name = "colorNewProcesses";
+            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorNewProcesses.TabIndex = 1;
+            // 
+            // colorIORO
+            // 
+            this.colorIORO.Color = System.Drawing.Color.Transparent;
+            this.colorIORO.Location = new System.Drawing.Point(124, 163);
+            this.colorIORO.Name = "colorIORO";
+            this.colorIORO.Size = new System.Drawing.Size(40, 20);
+            this.colorIORO.TabIndex = 6;
+            // 
+            // colorIOW
+            // 
+            this.colorIOW.Color = System.Drawing.Color.Transparent;
+            this.colorIOW.Location = new System.Drawing.Point(124, 189);
+            this.colorIOW.Name = "colorIOW";
+            this.colorIOW.Size = new System.Drawing.Size(40, 20);
+            this.colorIOW.TabIndex = 7;
+            // 
+            // colorMemoryWS
+            // 
+            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
+            this.colorMemoryWS.Name = "colorMemoryWS";
+            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryWS.TabIndex = 5;
+            // 
+            // colorMemoryPB
+            // 
+            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
+            this.colorMemoryPB.Name = "colorMemoryPB";
+            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryPB.TabIndex = 4;
+            // 
+            // colorCPUUT
+            // 
+            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
+            this.colorCPUUT.Name = "colorCPUUT";
+            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUUT.TabIndex = 3;
+            // 
+            // colorCPUKT
+            // 
+            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
+            this.colorCPUKT.Name = "colorCPUKT";
+            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUKT.TabIndex = 2;
             // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(513, 387);
+            this.ClientSize = new System.Drawing.Size(513, 400);
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.buttonCancel);
@@ -1121,6 +1159,7 @@
             this.tabControl.ResumeLayout(false);
             this.tabGeneral.ResumeLayout(false);
             this.tabGeneral.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).EndInit();
             this.tabAdvanced.ResumeLayout(false);
             this.tabAdvanced.PerformLayout();
@@ -1135,7 +1174,8 @@
             this.tabUpdates.ResumeLayout(false);
             this.UpdaterSettingsGroupBox.ResumeLayout(false);
             this.UpdaterSettingsGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1220,8 +1260,11 @@
         private System.Windows.Forms.ComboBox comboElevationLevel;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.GroupBox UpdaterSettingsGroupBox;
-        private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.NumericUpDown textMaxSamples;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button buttonReset;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.ComboBox comboProcessNodeStyle;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }
