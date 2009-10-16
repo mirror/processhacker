@@ -733,7 +733,7 @@ namespace ProcessHacker
             set { this["ProcessTreeColumns"] = value; }
         }
 
-        [SettingDefault("0")]
+        [SettingDefault("1")]
         public int ProcessTreeStyle
         {
             get { return (int)this["ProcessTreeStyle"]; }
