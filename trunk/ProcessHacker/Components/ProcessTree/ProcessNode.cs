@@ -146,20 +146,17 @@ namespace ProcessHacker
         public TreePath RefreshTreePath()
         {
             ProcessNode currentNode = this;
-            Stack<ProcessNode> stack = new Stack<ProcessNode>();
+            //Stack<ProcessNode> stack = new Stack<ProcessNode>();
+            List<ProcessNode> stack = new List<ProcessNode>();
 
             while (currentNode != null)
             {
-                // HACK to take down PH before it uses too much memory. 
-                // The underlying bug hasn't been fixed yet...
-                // FIXME TODO FIXME TODO
-                // FIXME TODO FIXME TODO
                 if (stack.Count > 1024)
                 {
                     throw new InvalidOperationException("Process tree depth is greater than 1024.");
                 }
 
-                stack.Push(currentNode);
+                stack.Add(currentNode);
                 currentNode = currentNode.Parent;
             }
 
