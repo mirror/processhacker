@@ -330,6 +330,14 @@ namespace ProcessHacker
             set { this["DeletedServices"] = _deletedServices = value; }
         }
 
+        private bool? _disableInactiveTabs;
+        [SettingDefault("True")]
+        public bool DisableInactiveTabs
+        {
+            get { return _disableInactiveTabs.HasValue ? _disableInactiveTabs.Value : (_disableInactiveTabs = (bool)this["DisableInactiveTabs"]).Value; }
+            set { this["DisableInactiveTabs"] = _disableInactiveTabs = value; }
+        }
+
         private int _elevationLevel;
         [SettingDefault("1")]
         public int ElevationLevel

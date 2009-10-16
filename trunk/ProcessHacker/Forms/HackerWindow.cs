@@ -2228,17 +2228,59 @@ namespace ProcessHacker
                 {
                     this.Cursor = Cursors.WaitCursor;
                     updateProcessesMenuItem.Checked = true;
-
-                    processP.Interval = Settings.Instance.RefreshInterval;
+                   
                     treeProcesses.Provider = processP;
                     treeProcesses.Tree.BeginUpdate();
                     treeProcesses.Tree.BeginCompleteUpdate();
+
+                    processP.Interval = Settings.Instance.RefreshInterval;
                     processP.Updated += processP_Updated;
                     processP.Updated += processP_InfoUpdater;
                     if (Program.InspectPid != -1) processP.ProcessQueryReceived += processP_FileProcessingReceived;
                    
                     processP.RunOnceAsync();
+                }
+
+                if (!processP.Enabled)
                     processP.Enabled = true;
+
+                if (Settings.Instance.DisableInactiveTabs)
+                {
+                    if (networkP != null)
+                        networkP.Enabled = false;
+                    if (serviceP != null)
+                        serviceP.Enabled = false;
+                }
+            }
+            else if (tabControl.SelectedTab == tabServices)
+            {
+                if (serviceP == null)
+                    serviceP = Program.ServiceProvider;
+
+                if (serviceP.RunCount < 1)
+                {
+                    updateServicesMenuItem.Checked = true;
+
+                    listServices.List.BeginUpdate();
+                    listServices.Provider = serviceP;
+                    serviceP.Interval = Settings.Instance.RefreshInterval;
+                    serviceP.DictionaryAdded += serviceP_DictionaryAdded_Process;
+                    serviceP.DictionaryModified += serviceP_DictionaryModified_Process;
+                    serviceP.DictionaryRemoved += serviceP_DictionaryRemoved_Process;
+                    serviceP.Updated += serviceP_Updated;
+                    
+                    serviceP.RunOnceAsync();
+                }
+
+                if (!serviceP.Enabled)
+                    serviceP.Enabled = true;
+
+                if (Settings.Instance.DisableInactiveTabs)
+                {
+                    if (processP != null)
+                        processP.Enabled = false;
+                    if (networkP != null)
+                        networkP.Enabled = false;
                 }
             }
             else if (tabControl.SelectedTab == tabNetwork)
@@ -2252,27 +2294,17 @@ namespace ProcessHacker
                     listNetwork.Provider = networkP;
 
                     networkP.RunOnceAsync();
-                    networkP.Enabled = true;
                 }
-            }
-            else if (tabControl.SelectedTab == tabServices)
-            {
-                if (serviceP == null)
-                    serviceP = Program.ServiceProvider;
 
-                if (serviceP.RunCount < 1)
+                if (!networkP.Enabled)
+                    networkP.Enabled = true;
+
+                if (Settings.Instance.DisableInactiveTabs)
                 {
-                    listServices.List.BeginUpdate();
-                    serviceP.Interval = Settings.Instance.RefreshInterval;
-                    listServices.Provider = serviceP;
-                    serviceP.DictionaryAdded += serviceP_DictionaryAdded_Process;
-                    serviceP.DictionaryModified += serviceP_DictionaryModified_Process;
-                    serviceP.DictionaryRemoved += serviceP_DictionaryRemoved_Process;
-                    serviceP.Updated += serviceP_Updated;
-                    updateServicesMenuItem.Checked = true;
-
-                    serviceP.RunOnceAsync();
-                    serviceP.Enabled = true;
+                    if (serviceP != null)
+                        serviceP.Enabled = false;
+                    if (processP != null)
+                        processP.Enabled = false;
                 }
             }
         }
