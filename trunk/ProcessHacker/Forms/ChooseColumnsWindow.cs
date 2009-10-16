@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.Common;
@@ -29,13 +30,19 @@ namespace ProcessHacker
 {
     public partial class ChooseColumnsWindow : Form
     {
+        private struct TvColumn
+        {
+            public string Header;
+            public int Index;
+            public bool Visible;
+        }
+
         private object _list;
 
         public ChooseColumnsWindow(ListView list)
             : this()
         {
             _list = list;
-
 
             foreach (ColumnHeader column in list.Columns)
             {
@@ -52,13 +59,42 @@ namespace ProcessHacker
         {
             _list = tree;
 
+            List<TvColumn> columns = new List<TvColumn>();
+
             foreach (TreeColumn column in tree.Columns)
+            {
+                columns.Add(new TvColumn()
+                {
+                    Header = column.Header,
+                    Index = column.Index,
+                    Visible = column.IsVisible
+                });
+            }
+
+            columns.Sort((tvc1, tvc2) =>
+                {
+                    // Sort by visibility first.
+                    if (tvc1.Visible != tvc2.Visible)
+                        return -tvc1.Visible.CompareTo(tvc2.Visible);
+
+                    // Sort the visible columns by index.
+                    if (tvc1.Visible == true)
+                        return tvc1.Index.CompareTo(tvc2.Index);
+
+                    // Sort the hidden columns by name.
+                    if (tvc1.Visible == false)
+                        return tvc1.Header.CompareTo(tvc2.Header);
+
+                    return 0;
+                });
+
+            foreach (var column in columns)
             {
                 listColumns.Items.Add(new ListViewItem()
                 {
                     Text = column.Header,
                     Name = column.Header,
-                    Checked = column.IsVisible 
+                    Checked = column.Visible
                 });
             }
         }
@@ -71,7 +107,6 @@ namespace ProcessHacker
 
             listColumns.SetDoubleBuffered(true);
             listColumns.SetTheme("explorer");
-            columnColumn.Width = listColumns.Width - 21;
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)

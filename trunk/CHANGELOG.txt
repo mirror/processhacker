@@ -2,6 +2,7 @@ Process Hacker
 
 1.7
  * NEW/IMPROVED:
+   * #2873973 - "Columns window improvements"
    * New settings system - settings can now be saved anywhere
 
 1.6

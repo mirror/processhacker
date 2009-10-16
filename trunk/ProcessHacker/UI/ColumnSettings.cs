@@ -33,7 +33,6 @@ namespace ProcessHacker.UI
     /// <summary>
     /// Provides methods for loading and saving ListView column settings.
     /// </summary>
-    [Obsolete("Possibly merged into settings operations?")]
     public static class ColumnSettings
     {
         /// <summary>
