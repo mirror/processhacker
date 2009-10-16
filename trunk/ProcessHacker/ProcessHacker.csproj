@@ -370,7 +370,6 @@
     <None Include="Resources\page_save.png" />
     <None Include="Resources\arrow_up.png" />
     <None Include="Resources\page_gear.png" />
-    <None Include="app.config" />
     <None Include="Resources\folder_explore.png" />
     <None Include="Resources\pencil_go.png" />
     <Compile Include="Common\Extensions.cs" />
