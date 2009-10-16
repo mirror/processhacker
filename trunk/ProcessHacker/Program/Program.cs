@@ -288,9 +288,11 @@ namespace ProcessHacker
                 "-ip pid\tDisplays the main window, then properties for the specified process.\n" +
                 "-m\tStarts Process Hacker hidden.\n" +
                 "-nokph\tDisables KProcessHacker. Use this if you encounter BSODs.\n" +
+                "-nosettings\tUses defaults for all settings and does not attempt to load or save any settings.\n" +
                 "-o\tShows Options.\n" +
                 "-pw pid\tDisplays properties for the specified process.\n" +
                 "-pt pid\tDisplays properties for the specified process' token.\n" +
+                "-settings filename\tUses the specified file name as the settings file.\n" +
                 "-t n\tShows the specified tab. 0 is Processes, 1 is Services and 2 is Network.\n" +
                 "-uninstallkph\tUninstalls the KProcessHacker service.\n" +
                 "-v\tStarts Process Hacker visible.\n" +
@@ -321,7 +323,39 @@ namespace ProcessHacker
             }
 
             if (settingsFileName == null)
-                settingsFileName = Application.StartupPath + "\\settings.xml";
+            {
+                bool success = true;
+                string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+                try
+                {
+                    if (!System.IO.Directory.Exists(appData + @"\Process Hacker"))
+                    {
+                        System.IO.Directory.CreateDirectory(appData + @"\Process Hacker");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowException("Unable to create the settings directory", ex);
+                    success = false;
+                }
+
+                if (success)
+                {
+                    settingsFileName = appData + @"\Process Hacker\settings.xml";
+                }
+                else
+                {
+                    settingsFileName = null;
+                }
+            }
+
+            // Make sure we have an absolute path so we don't run into problems 
+            // when saving.
+            if (settingsFileName != null)
+            {
+                settingsFileName = System.IO.Path.GetFullPath(settingsFileName);
+            }
 
             try
             {
@@ -329,8 +363,7 @@ namespace ProcessHacker
             }
             catch
             {
-                // Settings file is probably corrupt. Delete the settings file 
-                // with confirmation from the user.
+                // Settings file is probably corrupt. Ask the user.
 
                 try { ThemingScope.Activate(); }
                 catch { }

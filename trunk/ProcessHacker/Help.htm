@@ -31,10 +31,8 @@ pre {
       <li>.NET Framework 2.0</li>
     </ul>
 
-    <h2>Configuration Files</h2>
-    <p>On Windows Vista, the configuration files for Process Hacker are stored in 
-    <code>AppData\Local\wj32</code>. On Windows XP, they are stored in 
-    <code>Local Settings\Application Data\wj32</code>.</p>
+    <h2>Configuration File</h2>
+    <p>The settings file for Process Hacker is stored in: <code>[Roaming Application Data]\Process Hacker</code>.</p>
     
     <h2>Command Line Options</h2>
     <dl>
@@ -55,6 +53,8 @@ pre {
       <dd>Starts Process Hacker hidden, regardless of any settings.</dd>
       <dt>-nokph</dt>
       <dd>Disables KProcessHacker.</dd>
+      <dt>-nosettings</dt>
+      <dd>Uses defaults for all settings and does not attempt to load or save any settings.</dd>
       <dt>-o [-hwnd hWnd] [-rect x,y,width,height]</dt>
       <dd>Opens Process Hacker options without the main window. Note that the width and height parts of 
       the rectangle parameter are ignored.</dd>
@@ -62,6 +62,8 @@ pre {
       <dd>Opens process properties for the specified process without the main window.</dd>
       <dt>-pt pid</dt>
       <dd>Opens token properties for the token of the specified process without the main window.</dd>
+      <dt>-settings filename</dt>
+      <dd>Uses the specified file name as the settings file.</dd>
       <dt>-t tab</dt>
       <dd>Opens the specified tab at startup. Use 0 for Processes, 1 for Services and 2 for Network.</dd>
       <dt>-uninstallkph</dt>

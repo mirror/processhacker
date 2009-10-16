@@ -1,5 +1,9 @@
 Process Hacker
 
+1.7
+ * NEW/IMPROVED:
+   * New settings system - settings can now be saved anywhere
+
 1.6
  * NEW/IMPROVED:
    * #2817429 - "Add Port and IP Address columns to Network tab"
