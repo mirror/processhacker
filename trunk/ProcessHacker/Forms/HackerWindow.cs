@@ -2277,8 +2277,6 @@ namespace ProcessHacker
 
                 if (Settings.Instance.DisableInactiveTabs)
                 {
-                    if (processP != null)
-                        processP.Enabled = false;
                     if (networkP != null)
                         networkP.Enabled = false;
                 }
@@ -2303,8 +2301,6 @@ namespace ProcessHacker
                 {
                     if (serviceP != null)
                         serviceP.Enabled = false;
-                    if (processP != null)
-                        processP.Enabled = false;
                 }
             }
         }
