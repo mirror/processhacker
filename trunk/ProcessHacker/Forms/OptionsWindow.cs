@@ -143,20 +143,6 @@ namespace ProcessHacker
                         c.Click += (sender, e) => this.EnableApplyButton();
                 }
             }
-
-            foreach (Control c in UpdaterSettingsGroupBox.Controls)
-            {
-                // If we don't have visual styles or we're on XP, fix control backgrounds.
-                if (!visualStyles || OSVersion.IsBelowOrEqual(WindowsVersion.XP))
-                {
-                    if (c is CheckBox)
-                        (c as CheckBox).FlatStyle = FlatStyle.Standard;
-                    if (c is RadioButton)
-                        (c as RadioButton).FlatStyle = FlatStyle.Standard;
-                }
-
-                c.Click += (sender, e) => this.EnableApplyButton();
-            }
         }
 
         private void OptionsWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -299,20 +285,6 @@ namespace ProcessHacker
 
             textImposterNames.Text = Settings.Instance.ImposterNames;
 
-
-            switch (Settings.Instance.ProcessTreeStyle)
-            {
-                case 0:
-                    comboProcessNodeStyle.SelectedIndex = 0;
-                    break;
-                case 1:
-                    comboProcessNodeStyle.SelectedIndex = 1;
-                    break;
-                default:
-                    comboToolbarStyle.SelectedIndex = 1;
-                    break;
-            }
-
             switch (Settings.Instance.ToolStripDisplayStyle)
             {
                 case 0:
@@ -326,6 +298,19 @@ namespace ProcessHacker
                     break;
                 default:
                     comboToolbarStyle.SelectedIndex = 1;
+                    break;
+            }
+
+            switch (Settings.Instance.ProcessTreeStyle)
+            {
+                case 0:
+                    comboProcessStyle.SelectedIndex = 0;
+                    break;
+                case 1:
+                    comboProcessStyle.SelectedIndex = 1;
+                    break;
+                default:
+                    comboProcessStyle.SelectedIndex = 1;
                     break;
             }
 
@@ -513,6 +498,19 @@ namespace ProcessHacker
                     break;
                 default:
                     Settings.Instance.ToolStripDisplayStyle = 0;
+                    break;
+            }
+
+            switch (comboProcessStyle.SelectedIndex)
+            {
+                case 0:
+                    Settings.Instance.ProcessTreeStyle = 0;
+                    break;
+                case 1:
+                    Settings.Instance.ProcessTreeStyle = 1;
+                    break;
+                default:
+                    Settings.Instance.ProcessTreeStyle = 1;
                     break;
             }
 
