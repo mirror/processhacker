@@ -34,6 +34,10 @@ namespace ProcessHacker
 {
     public class ProcessNode : Node, IDisposable
     {
+        [ThreadStatic]
+        private static ProcessNode[] _processNodeTreePathBuffer;
+        private const int _processNodeTreePathMaxDepth = 512;
+
         private ProcessNode _parent = null;
         private List<ProcessNode> _children = new List<ProcessNode>();
         private TreePath _treePath = null;
@@ -146,21 +150,23 @@ namespace ProcessHacker
         public TreePath RefreshTreePath()
         {
             ProcessNode currentNode = this;
-            //Stack<ProcessNode> stack = new Stack<ProcessNode>();
-            List<ProcessNode> stack = new List<ProcessNode>();
+            int i = _processNodeTreePathMaxDepth;
 
-            while (currentNode != null)
+            if (_processNodeTreePathBuffer == null)
+                _processNodeTreePathBuffer = new ProcessNode[_processNodeTreePathMaxDepth];
+
+            while (i > 0 && currentNode != null)
             {
-                if (stack.Count > 1024)
-                {
-                    throw new InvalidOperationException("Process tree depth is greater than 1024.");
-                }
-
-                stack.Add(currentNode);
+                _processNodeTreePathBuffer[--i] = currentNode;
                 currentNode = currentNode.Parent;
             }
 
-            _treePath = new TreePath(stack.ToArray());
+            ProcessNode[] path;
+
+            path = new ProcessNode[_processNodeTreePathMaxDepth - i];
+            Array.Copy(_processNodeTreePathBuffer, i, path, 0, _processNodeTreePathMaxDepth - i);
+
+            _treePath = new TreePath(path);
 
             return _treePath;
         }
