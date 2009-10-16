@@ -382,6 +382,7 @@ namespace ProcessHacker
                 {
                     TaskDialog td = new TaskDialog();
 
+                    td.MainIcon = TaskDialogIcon.Warning;
                     td.MainInstruction = "The settings file is corrupt";
                     td.WindowTitle = "Process Hacker";
                     td.Content = "The settings file used by Process Hacker is corrupt. You can either " +
@@ -400,7 +401,8 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    result = MessageBox.Show("");
+                    result = MessageBox.Show("The settings file used by Process Hacker is corrupt. It will be deleted " + 
+                        "and all settings will be reset.", "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
 
                     if (result == DialogResult.OK)
                         result = DialogResult.Yes;

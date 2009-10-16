@@ -124,9 +124,9 @@ namespace ProcessHacker.Common
         private static string FormatException(string operation, Exception ex)
         {
             if (!string.IsNullOrEmpty(operation))
-                return operation + ": " + ex.Message;
+                return operation + ": " + ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : "");
             else
-                return ex.Message;
+                return ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : "");
         }
 
         public static string FormatPriorityClass(ProcessPriorityClass priorityClass)
