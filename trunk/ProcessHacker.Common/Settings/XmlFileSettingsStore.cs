@@ -52,7 +52,7 @@ namespace ProcessHacker.Common.Settings
 
         public void Flush()
         {
-            if (_fileName != null)
+            if (!string.IsNullOrEmpty(_fileName))
             {
                 lock (_docLock)
                 {
@@ -111,7 +111,7 @@ namespace ProcessHacker.Common.Settings
             {
                 this.InitializeNew(_doc);
 
-                if (_fileName != null)
+                if (!string.IsNullOrEmpty(_fileName))
                     _doc.Save(_fileName);
             }
         }
