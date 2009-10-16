@@ -877,12 +877,16 @@ namespace ProcessHacker
             info.AppendLine("OS Version: " + Environment.OSVersion.VersionString + " (" + OSVersion.BitsString + ")");
             info.AppendLine("Elevation: " + ElevationType.ToString());
             info.AppendLine("Working set: " + Utils.FormatSize(Environment.WorkingSet));
-            info.AppendLine("Settings file: " + Settings.Instance.SettingsFileName != null ? Settings.Instance.SettingsFileName : "(volatile)");
 
-            if (KProcessHacker.Instance == null)
-                info.AppendLine("KProcessHacker: not running");
+            if (Settings.Instance != null)
+                info.AppendLine("Settings file: " + (Settings.Instance.SettingsFileName != null ? Settings.Instance.SettingsFileName : "(volatile)"));
             else
+                info.AppendLine("Settings file: (not initialized)");
+
+            if (KProcessHacker.Instance != null)
                 info.AppendLine("KProcessHacker: " + KProcessHacker.Instance.Features.ToString());
+            else
+                info.AppendLine("KProcessHacker: not running");
 
             info.AppendLine();
             info.AppendLine("OBJECTS");
