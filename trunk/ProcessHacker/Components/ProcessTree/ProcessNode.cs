@@ -150,6 +150,15 @@ namespace ProcessHacker
 
             while (currentNode != null)
             {
+                // HACK to take down PH before it uses too much memory. 
+                // The underlying bug hasn't been fixed yet...
+                // FIXME TODO FIXME TODO
+                // FIXME TODO FIXME TODO
+                if (stack.Count > 1024)
+                {
+                    throw new InvalidOperationException("Process tree depth is greater than 1024.");
+                }
+
                 stack.Push(currentNode);
                 currentNode = currentNode.Parent;
             }
