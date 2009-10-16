@@ -513,7 +513,7 @@ namespace ProcessHacker
             set { this["IoHistoryIconVisible"] = value; }
         }
 
-        [SettingDefault("0,30|1,60|2,100|3,200")]
+        [SettingDefault("0,410")]
         public string IPInfoPingListViewColumns
         {
             get { return (string)this["IPInfoPingListViewColumns"]; }
