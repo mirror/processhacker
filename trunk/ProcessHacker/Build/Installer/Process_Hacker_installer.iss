@@ -314,27 +314,25 @@ end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
-  if CurStep = ssInstall then begin
+ case CurStep of ssInstall:
+  begin
    if IsServiceRunning('KProcessHacker') then begin
     StopService('KProcessHacker');
    end;
-  if IsTaskSelected('delete_KPH_service') then begin
-    StopService('KProcessHacker');
+   if IsTaskSelected('delete_KPH_service') then begin
     RemoveService('KProcessHacker');
+   end;
   end;
-  end;
-  if CurStep = ssPostInstall then begin
-   if KPHServiceCheck AND NOT IsTaskSelected('delete_KPH_service') then begin
+ ssPostInstall:
+  begin
+   if (KPHServiceCheck AND NOT IsTaskSelected('delete_KPH_service') OR (IsTaskSelected('create_KPH_service'))) then begin
+    StopService('KProcessHacker');
     RemoveService('KProcessHacker');
     InstallService(ExpandConstant('{app}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_SYSTEM_START);
     StartService('KProcessHacker');
    end;
-    if IsTaskSelected('create_KPH_service') then begin
-     RemoveService('KProcessHacker');
-     InstallService(ExpandConstant('{app}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_SYSTEM_START);
-     StartService('KProcessHacker');
-    end;
   end;
+ end;
 end;
 
 
