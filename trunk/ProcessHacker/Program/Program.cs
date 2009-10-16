@@ -354,7 +354,15 @@ namespace ProcessHacker
             // when saving.
             if (settingsFileName != null)
             {
-                settingsFileName = System.IO.Path.GetFullPath(settingsFileName);
+                try
+                {
+                    settingsFileName = System.IO.Path.GetFullPath(settingsFileName);
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowException("Unable to parse the settings file name", ex);
+                    Environment.Exit(1);
+                }
             }
 
             try
