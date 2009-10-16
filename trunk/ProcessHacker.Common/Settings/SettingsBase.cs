@@ -84,7 +84,7 @@ namespace ProcessHacker.Common.Settings
             // Since all types can convert to System.String, we also need to make sure they can 
             // convert from System.String.
             if (converter.CanConvertFrom(typeof(string)) && converter.CanConvertTo(typeof(string)))
-                return converter.ConvertFromString(value);
+                return converter.ConvertFromInvariantString(value);
 
             throw new InvalidOperationException("The setting '" + value + "' has an unsupported type.");
         }
@@ -107,7 +107,7 @@ namespace ProcessHacker.Common.Settings
             // Since all types can convert to System.String, we also need to make sure they can 
             // convert from System.String.
             if (converter.CanConvertFrom(typeof(string)) && converter.CanConvertTo(typeof(string)))
-                return converter.ConvertToString(value);
+                return converter.ConvertToInvariantString(value);
 
             throw new InvalidOperationException("The setting '" + value + "' has an unsupported type.");
         }
