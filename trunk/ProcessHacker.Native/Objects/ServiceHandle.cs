@@ -144,7 +144,14 @@ namespace ProcessHacker.Native.Objects
                 if (!Win32.QueryServiceConfig(this, data, data.Size, out requiredSize))
                     Win32.ThrowLastError();
 
-                return data.ReadStruct<QueryServiceConfig>();
+                var config = data.ReadStruct<QueryServiceConfig>();
+
+                config.BinaryPathName = string.Intern(config.BinaryPathName);
+                config.DisplayName = string.Intern(config.DisplayName);
+                config.LoadOrderGroup = string.Intern(config.LoadOrderGroup);
+                config.ServiceStartName = string.Intern(config.ServiceStartName);
+
+                return config;
             }
         }
 
