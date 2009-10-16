@@ -58,9 +58,18 @@
             this.label23 = new System.Windows.Forms.Label();
             this.textIconMenuProcesses = new System.Windows.Forms.NumericUpDown();
             this.tabAdvanced = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label24 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.UpdaterSettingsGroupBox = new System.Windows.Forms.GroupBox();
+            this.checkUpdateAutomatically = new System.Windows.Forms.CheckBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.optUpdateStable = new System.Windows.Forms.RadioButton();
+            this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
+            this.optUpdateBeta = new System.Windows.Forms.RadioButton();
             this.comboElevationLevel = new System.Windows.Forms.ComboBox();
-            this.label22 = new System.Windows.Forms.Label();
             this.checkEnableExperimentalFeatures = new System.Windows.Forms.CheckBox();
+            this.label22 = new System.Windows.Forms.Label();
             this.checkHidePhConnections = new System.Windows.Forms.CheckBox();
             this.buttonChangeReplaceTaskManager = new System.Windows.Forms.Button();
             this.checkReplaceTaskManager = new System.Windows.Forms.CheckBox();
@@ -71,10 +80,14 @@
             this.label11 = new System.Windows.Forms.Label();
             this.buttonDisableAll = new System.Windows.Forms.Button();
             this.buttonEnableAll = new System.Windows.Forms.Button();
+            this.listHighlightingColors = new ProcessHacker.Components.ExtendedListView();
+            this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.textHighlightingDuration = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.tabPlotting = new System.Windows.Forms.TabPage();
             this.textStep = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -85,6 +98,12 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
+            this.colorIORO = new ProcessHacker.Components.ColorModifier();
+            this.colorIOW = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.tabSymbols = new System.Windows.Forms.TabPage();
             this.checkUndecorate = new System.Windows.Forms.CheckBox();
             this.textSearchPath = new System.Windows.Forms.TextBox();
@@ -95,22 +114,6 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
             this.buttonReset = new System.Windows.Forms.Button();
-            this.UpdaterSettingsGroupBox = new System.Windows.Forms.GroupBox();
-            this.checkUpdateAutomatically = new System.Windows.Forms.CheckBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.optUpdateStable = new System.Windows.Forms.RadioButton();
-            this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
-            this.optUpdateBeta = new System.Windows.Forms.RadioButton();
-            this.listHighlightingColors = new ProcessHacker.Components.ExtendedListView();
-            this.columnDescription = new System.Windows.Forms.ColumnHeader();
-            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorIORO = new ProcessHacker.Components.ColorModifier();
-            this.colorIOW = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -118,12 +121,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).BeginInit();
             this.tabAdvanced.SuspendLayout();
+            this.UpdaterSettingsGroupBox.SuspendLayout();
             this.tabHighlighting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).BeginInit();
             this.tabPlotting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textStep)).BeginInit();
             this.tabSymbols.SuspendLayout();
-            this.UpdaterSettingsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -190,11 +193,11 @@
             // 
             this.checkWarnDangerous.AutoSize = true;
             this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 102);
+            this.checkWarnDangerous.Location = new System.Drawing.Point(11, 82);
             this.checkWarnDangerous.Name = "checkWarnDangerous";
-            this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
+            this.checkWarnDangerous.Size = new System.Drawing.Size(231, 18);
             this.checkWarnDangerous.TabIndex = 5;
-            this.checkWarnDangerous.Text = "Warn about potentially dangerous actions";
+            this.checkWarnDangerous.Text = "Warn about potentially dangerous actions.";
             this.checkWarnDangerous.UseVisualStyleBackColor = true;
             // 
             // label2
@@ -507,10 +510,13 @@
             // 
             // tabAdvanced
             // 
+            this.tabAdvanced.Controls.Add(this.button1);
+            this.tabAdvanced.Controls.Add(this.label24);
+            this.tabAdvanced.Controls.Add(this.textBox1);
             this.tabAdvanced.Controls.Add(this.UpdaterSettingsGroupBox);
             this.tabAdvanced.Controls.Add(this.comboElevationLevel);
-            this.tabAdvanced.Controls.Add(this.label22);
             this.tabAdvanced.Controls.Add(this.checkEnableExperimentalFeatures);
+            this.tabAdvanced.Controls.Add(this.label22);
             this.tabAdvanced.Controls.Add(this.checkHidePhConnections);
             this.tabAdvanced.Controls.Add(this.buttonChangeReplaceTaskManager);
             this.tabAdvanced.Controls.Add(this.checkReplaceTaskManager);
@@ -526,6 +532,105 @@
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
             // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.BackColor = System.Drawing.Color.White;
+            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.button1.Image = global::ProcessHacker.Properties.Resources.folder_explore;
+            this.button1.Location = new System.Drawing.Point(448, 157);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(27, 23);
+            this.button1.TabIndex = 34;
+            this.button1.UseVisualStyleBackColor = false;
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(177, 162);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(92, 13);
+            this.label24.TabIndex = 33;
+            this.label24.Text = "Settings Location:";
+            // 
+            // textBox1
+            // 
+            this.textBox1.BackColor = System.Drawing.Color.White;
+            this.textBox1.Location = new System.Drawing.Point(275, 159);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(167, 20);
+            this.textBox1.TabIndex = 32;
+            // 
+            // UpdaterSettingsGroupBox
+            // 
+            this.UpdaterSettingsGroupBox.Controls.Add(this.checkUpdateAutomatically);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.label5);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateStable);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateAlpha);
+            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateBeta);
+            this.UpdaterSettingsGroupBox.Location = new System.Drawing.Point(6, 186);
+            this.UpdaterSettingsGroupBox.Name = "UpdaterSettingsGroupBox";
+            this.UpdaterSettingsGroupBox.Size = new System.Drawing.Size(466, 99);
+            this.UpdaterSettingsGroupBox.TabIndex = 31;
+            this.UpdaterSettingsGroupBox.TabStop = false;
+            this.UpdaterSettingsGroupBox.Text = "Updater Settings";
+            // 
+            // checkUpdateAutomatically
+            // 
+            this.checkUpdateAutomatically.AutoSize = true;
+            this.checkUpdateAutomatically.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkUpdateAutomatically.Location = new System.Drawing.Point(6, 23);
+            this.checkUpdateAutomatically.Name = "checkUpdateAutomatically";
+            this.checkUpdateAutomatically.Size = new System.Drawing.Size(186, 18);
+            this.checkUpdateAutomatically.TabIndex = 27;
+            this.checkUpdateAutomatically.Text = " Check for updates automatically";
+            this.checkUpdateAutomatically.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(290, 23);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(56, 13);
+            this.label5.TabIndex = 24;
+            this.label5.Text = "Check for:";
+            // 
+            // optUpdateStable
+            // 
+            this.optUpdateStable.AutoSize = true;
+            this.optUpdateStable.Checked = true;
+            this.optUpdateStable.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.optUpdateStable.Location = new System.Drawing.Point(352, 21);
+            this.optUpdateStable.Name = "optUpdateStable";
+            this.optUpdateStable.Size = new System.Drawing.Size(103, 18);
+            this.optUpdateStable.TabIndex = 21;
+            this.optUpdateStable.TabStop = true;
+            this.optUpdateStable.Text = "Stable releases";
+            this.optUpdateStable.UseVisualStyleBackColor = true;
+            // 
+            // optUpdateAlpha
+            // 
+            this.optUpdateAlpha.AutoSize = true;
+            this.optUpdateAlpha.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.optUpdateAlpha.Location = new System.Drawing.Point(352, 69);
+            this.optUpdateAlpha.Name = "optUpdateAlpha";
+            this.optUpdateAlpha.Size = new System.Drawing.Size(100, 18);
+            this.optUpdateAlpha.TabIndex = 23;
+            this.optUpdateAlpha.Text = "Alpha releases";
+            this.optUpdateAlpha.UseVisualStyleBackColor = true;
+            // 
+            // optUpdateBeta
+            // 
+            this.optUpdateBeta.AutoSize = true;
+            this.optUpdateBeta.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.optUpdateBeta.Location = new System.Drawing.Point(352, 45);
+            this.optUpdateBeta.Name = "optUpdateBeta";
+            this.optUpdateBeta.Size = new System.Drawing.Size(95, 18);
+            this.optUpdateBeta.TabIndex = 22;
+            this.optUpdateBeta.Text = "Beta releases";
+            this.optUpdateBeta.UseVisualStyleBackColor = true;
+            // 
             // comboElevationLevel
             // 
             this.comboElevationLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -535,46 +640,46 @@
             "Never elevate",
             "Prompt for elevation",
             "Always elevate"});
-            this.comboElevationLevel.Location = new System.Drawing.Point(315, 8);
+            this.comboElevationLevel.Location = new System.Drawing.Point(315, 10);
             this.comboElevationLevel.Name = "comboElevationLevel";
             this.comboElevationLevel.Size = new System.Drawing.Size(157, 21);
             this.comboElevationLevel.TabIndex = 11;
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(255, 11);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(54, 13);
-            this.label22.TabIndex = 10;
-            this.label22.Text = "Elevation:";
             // 
             // checkEnableExperimentalFeatures
             // 
             this.checkEnableExperimentalFeatures.AutoSize = true;
             this.checkEnableExperimentalFeatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkEnableExperimentalFeatures.Location = new System.Drawing.Point(6, 30);
+            this.checkEnableExperimentalFeatures.Location = new System.Drawing.Point(11, 133);
             this.checkEnableExperimentalFeatures.Name = "checkEnableExperimentalFeatures";
-            this.checkEnableExperimentalFeatures.Size = new System.Drawing.Size(168, 18);
+            this.checkEnableExperimentalFeatures.Size = new System.Drawing.Size(171, 18);
             this.checkEnableExperimentalFeatures.TabIndex = 1;
-            this.checkEnableExperimentalFeatures.Text = "Enable experimental features";
+            this.checkEnableExperimentalFeatures.Text = "Enable experimental features.";
             this.checkEnableExperimentalFeatures.UseVisualStyleBackColor = true;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(255, 13);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(54, 13);
+            this.label22.TabIndex = 10;
+            this.label22.Text = "Elevation:";
             // 
             // checkHidePhConnections
             // 
             this.checkHidePhConnections.AutoSize = true;
             this.checkHidePhConnections.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHidePhConnections.Location = new System.Drawing.Point(6, 150);
+            this.checkHidePhConnections.Location = new System.Drawing.Point(11, 10);
             this.checkHidePhConnections.Name = "checkHidePhConnections";
-            this.checkHidePhConnections.Size = new System.Drawing.Size(235, 18);
+            this.checkHidePhConnections.Size = new System.Drawing.Size(238, 18);
             this.checkHidePhConnections.TabIndex = 7;
-            this.checkHidePhConnections.Text = "Hide Process Hacker network connections";
+            this.checkHidePhConnections.Text = "Hide Process Hacker network connections.";
             this.checkHidePhConnections.UseVisualStyleBackColor = true;
             // 
             // buttonChangeReplaceTaskManager
             // 
             this.buttonChangeReplaceTaskManager.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonChangeReplaceTaskManager.Location = new System.Drawing.Point(257, 75);
+            this.buttonChangeReplaceTaskManager.Location = new System.Drawing.Point(248, 55);
             this.buttonChangeReplaceTaskManager.Name = "buttonChangeReplaceTaskManager";
             this.buttonChangeReplaceTaskManager.Size = new System.Drawing.Size(89, 23);
             this.buttonChangeReplaceTaskManager.TabIndex = 4;
@@ -586,44 +691,44 @@
             // 
             this.checkReplaceTaskManager.AutoSize = true;
             this.checkReplaceTaskManager.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkReplaceTaskManager.Location = new System.Drawing.Point(6, 78);
+            this.checkReplaceTaskManager.Location = new System.Drawing.Point(11, 58);
             this.checkReplaceTaskManager.Name = "checkReplaceTaskManager";
-            this.checkReplaceTaskManager.Size = new System.Drawing.Size(245, 18);
+            this.checkReplaceTaskManager.Size = new System.Drawing.Size(248, 18);
             this.checkReplaceTaskManager.TabIndex = 3;
-            this.checkReplaceTaskManager.Text = "Replace Task Manager with Process Hacker";
+            this.checkReplaceTaskManager.Text = "Replace Task Manager with Process Hacker.";
             this.checkReplaceTaskManager.UseVisualStyleBackColor = true;
             // 
             // checkEnableKPH
             // 
             this.checkEnableKPH.AutoSize = true;
             this.checkEnableKPH.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkEnableKPH.Location = new System.Drawing.Point(6, 6);
+            this.checkEnableKPH.Location = new System.Drawing.Point(11, 109);
             this.checkEnableKPH.Name = "checkEnableKPH";
-            this.checkEnableKPH.Size = new System.Drawing.Size(155, 18);
+            this.checkEnableKPH.Size = new System.Drawing.Size(158, 18);
             this.checkEnableKPH.TabIndex = 0;
-            this.checkEnableKPH.Text = "Enable kernel-mode driver";
+            this.checkEnableKPH.Text = "Enable kernel-mode driver.";
             this.checkEnableKPH.UseVisualStyleBackColor = true;
             // 
             // checkHideHandlesWithNoName
             // 
             this.checkHideHandlesWithNoName.AutoSize = true;
             this.checkHideHandlesWithNoName.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideHandlesWithNoName.Location = new System.Drawing.Point(6, 126);
+            this.checkHideHandlesWithNoName.Location = new System.Drawing.Point(11, 157);
             this.checkHideHandlesWithNoName.Name = "checkHideHandlesWithNoName";
-            this.checkHideHandlesWithNoName.Size = new System.Drawing.Size(160, 18);
+            this.checkHideHandlesWithNoName.Size = new System.Drawing.Size(163, 18);
             this.checkHideHandlesWithNoName.TabIndex = 6;
-            this.checkHideHandlesWithNoName.Text = "Hide handles with no name";
+            this.checkHideHandlesWithNoName.Text = "Hide handles with no name.";
             this.checkHideHandlesWithNoName.UseVisualStyleBackColor = true;
             // 
             // checkVerifySignatures
             // 
             this.checkVerifySignatures.AutoSize = true;
             this.checkVerifySignatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 54);
+            this.checkVerifySignatures.Location = new System.Drawing.Point(11, 34);
             this.checkVerifySignatures.Name = "checkVerifySignatures";
-            this.checkVerifySignatures.Size = new System.Drawing.Size(254, 18);
+            this.checkVerifySignatures.Size = new System.Drawing.Size(257, 18);
             this.checkVerifySignatures.TabIndex = 2;
-            this.checkVerifySignatures.Text = "Verify signatures and perform additional checks";
+            this.checkVerifySignatures.Text = "Verify signatures and perform additional checks.";
             this.checkVerifySignatures.UseVisualStyleBackColor = true;
             // 
             // tabHighlighting
@@ -680,6 +785,33 @@
             this.buttonEnableAll.UseVisualStyleBackColor = true;
             this.buttonEnableAll.Click += new System.EventHandler(this.buttonEnableAll_Click);
             // 
+            // listHighlightingColors
+            // 
+            this.listHighlightingColors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHighlightingColors.CheckBoxes = true;
+            this.listHighlightingColors.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnDescription});
+            this.listHighlightingColors.DoubleClickChecks = false;
+            this.listHighlightingColors.FullRowSelect = true;
+            this.listHighlightingColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listHighlightingColors.HideSelection = false;
+            this.listHighlightingColors.Location = new System.Drawing.Point(6, 60);
+            this.listHighlightingColors.MultiSelect = false;
+            this.listHighlightingColors.Name = "listHighlightingColors";
+            this.listHighlightingColors.ShowItemToolTips = true;
+            this.listHighlightingColors.Size = new System.Drawing.Size(469, 196);
+            this.listHighlightingColors.TabIndex = 3;
+            this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
+            this.listHighlightingColors.View = System.Windows.Forms.View.Details;
+            this.listHighlightingColors.DoubleClick += new System.EventHandler(this.listHighlightingColors_DoubleClick);
+            // 
+            // columnDescription
+            // 
+            this.columnDescription.Text = "Description";
+            this.columnDescription.Width = 250;
+            // 
             // textHighlightingDuration
             // 
             this.textHighlightingDuration.Increment = new decimal(new int[] {
@@ -733,6 +865,22 @@
             this.label3.Size = new System.Drawing.Size(71, 13);
             this.label3.TabIndex = 7;
             this.label3.Text = "New Objects:";
+            // 
+            // colorRemovedProcesses
+            // 
+            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
+            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
+            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorRemovedProcesses.TabIndex = 2;
+            // 
+            // colorNewProcesses
+            // 
+            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
+            this.colorNewProcesses.Name = "colorNewProcesses";
+            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorNewProcesses.TabIndex = 1;
             // 
             // tabPlotting
             // 
@@ -850,6 +998,54 @@
             this.label17.TabIndex = 9;
             this.label17.Text = "CPU Kernel Time:";
             // 
+            // colorIORO
+            // 
+            this.colorIORO.Color = System.Drawing.Color.Transparent;
+            this.colorIORO.Location = new System.Drawing.Point(124, 163);
+            this.colorIORO.Name = "colorIORO";
+            this.colorIORO.Size = new System.Drawing.Size(40, 20);
+            this.colorIORO.TabIndex = 6;
+            // 
+            // colorIOW
+            // 
+            this.colorIOW.Color = System.Drawing.Color.Transparent;
+            this.colorIOW.Location = new System.Drawing.Point(124, 189);
+            this.colorIOW.Name = "colorIOW";
+            this.colorIOW.Size = new System.Drawing.Size(40, 20);
+            this.colorIOW.TabIndex = 7;
+            // 
+            // colorMemoryWS
+            // 
+            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
+            this.colorMemoryWS.Name = "colorMemoryWS";
+            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryWS.TabIndex = 5;
+            // 
+            // colorMemoryPB
+            // 
+            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
+            this.colorMemoryPB.Name = "colorMemoryPB";
+            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryPB.TabIndex = 4;
+            // 
+            // colorCPUUT
+            // 
+            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
+            this.colorCPUUT.Name = "colorCPUUT";
+            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUUT.TabIndex = 3;
+            // 
+            // colorCPUKT
+            // 
+            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
+            this.colorCPUKT.Name = "colorCPUKT";
+            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUKT.TabIndex = 2;
+            // 
             // tabSymbols
             // 
             this.tabSymbols.Controls.Add(this.checkUndecorate);
@@ -961,166 +1157,6 @@
             this.buttonReset.UseVisualStyleBackColor = true;
             this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
             // 
-            // UpdaterSettingsGroupBox
-            // 
-            this.UpdaterSettingsGroupBox.Controls.Add(this.checkUpdateAutomatically);
-            this.UpdaterSettingsGroupBox.Controls.Add(this.label5);
-            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateStable);
-            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateAlpha);
-            this.UpdaterSettingsGroupBox.Controls.Add(this.optUpdateBeta);
-            this.UpdaterSettingsGroupBox.Location = new System.Drawing.Point(6, 186);
-            this.UpdaterSettingsGroupBox.Name = "UpdaterSettingsGroupBox";
-            this.UpdaterSettingsGroupBox.Size = new System.Drawing.Size(466, 99);
-            this.UpdaterSettingsGroupBox.TabIndex = 31;
-            this.UpdaterSettingsGroupBox.TabStop = false;
-            this.UpdaterSettingsGroupBox.Text = "Updater Settings";
-            // 
-            // checkUpdateAutomatically
-            // 
-            this.checkUpdateAutomatically.AutoSize = true;
-            this.checkUpdateAutomatically.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkUpdateAutomatically.Location = new System.Drawing.Point(6, 23);
-            this.checkUpdateAutomatically.Name = "checkUpdateAutomatically";
-            this.checkUpdateAutomatically.Size = new System.Drawing.Size(186, 18);
-            this.checkUpdateAutomatically.TabIndex = 27;
-            this.checkUpdateAutomatically.Text = " Check for updates automatically";
-            this.checkUpdateAutomatically.UseVisualStyleBackColor = true;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(290, 23);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(56, 13);
-            this.label5.TabIndex = 24;
-            this.label5.Text = "Check for:";
-            // 
-            // optUpdateStable
-            // 
-            this.optUpdateStable.AutoSize = true;
-            this.optUpdateStable.Checked = true;
-            this.optUpdateStable.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateStable.Location = new System.Drawing.Point(352, 21);
-            this.optUpdateStable.Name = "optUpdateStable";
-            this.optUpdateStable.Size = new System.Drawing.Size(103, 18);
-            this.optUpdateStable.TabIndex = 21;
-            this.optUpdateStable.TabStop = true;
-            this.optUpdateStable.Text = "Stable releases";
-            this.optUpdateStable.UseVisualStyleBackColor = true;
-            // 
-            // optUpdateAlpha
-            // 
-            this.optUpdateAlpha.AutoSize = true;
-            this.optUpdateAlpha.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateAlpha.Location = new System.Drawing.Point(352, 69);
-            this.optUpdateAlpha.Name = "optUpdateAlpha";
-            this.optUpdateAlpha.Size = new System.Drawing.Size(100, 18);
-            this.optUpdateAlpha.TabIndex = 23;
-            this.optUpdateAlpha.Text = "Alpha releases";
-            this.optUpdateAlpha.UseVisualStyleBackColor = true;
-            // 
-            // optUpdateBeta
-            // 
-            this.optUpdateBeta.AutoSize = true;
-            this.optUpdateBeta.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateBeta.Location = new System.Drawing.Point(352, 45);
-            this.optUpdateBeta.Name = "optUpdateBeta";
-            this.optUpdateBeta.Size = new System.Drawing.Size(95, 18);
-            this.optUpdateBeta.TabIndex = 22;
-            this.optUpdateBeta.Text = "Beta releases";
-            this.optUpdateBeta.UseVisualStyleBackColor = true;
-            // 
-            // listHighlightingColors
-            // 
-            this.listHighlightingColors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listHighlightingColors.CheckBoxes = true;
-            this.listHighlightingColors.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnDescription});
-            this.listHighlightingColors.DoubleClickChecks = false;
-            this.listHighlightingColors.FullRowSelect = true;
-            this.listHighlightingColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.listHighlightingColors.HideSelection = false;
-            this.listHighlightingColors.Location = new System.Drawing.Point(6, 60);
-            this.listHighlightingColors.MultiSelect = false;
-            this.listHighlightingColors.Name = "listHighlightingColors";
-            this.listHighlightingColors.ShowItemToolTips = true;
-            this.listHighlightingColors.Size = new System.Drawing.Size(469, 196);
-            this.listHighlightingColors.TabIndex = 3;
-            this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
-            this.listHighlightingColors.View = System.Windows.Forms.View.Details;
-            this.listHighlightingColors.DoubleClick += new System.EventHandler(this.listHighlightingColors_DoubleClick);
-            // 
-            // columnDescription
-            // 
-            this.columnDescription.Text = "Description";
-            this.columnDescription.Width = 250;
-            // 
-            // colorRemovedProcesses
-            // 
-            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
-            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
-            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorRemovedProcesses.TabIndex = 2;
-            // 
-            // colorNewProcesses
-            // 
-            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorNewProcesses.Location = new System.Drawing.Point(127, 33);
-            this.colorNewProcesses.Name = "colorNewProcesses";
-            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorNewProcesses.TabIndex = 1;
-            // 
-            // colorIORO
-            // 
-            this.colorIORO.Color = System.Drawing.Color.Transparent;
-            this.colorIORO.Location = new System.Drawing.Point(124, 163);
-            this.colorIORO.Name = "colorIORO";
-            this.colorIORO.Size = new System.Drawing.Size(40, 20);
-            this.colorIORO.TabIndex = 6;
-            // 
-            // colorIOW
-            // 
-            this.colorIOW.Color = System.Drawing.Color.Transparent;
-            this.colorIOW.Location = new System.Drawing.Point(124, 189);
-            this.colorIOW.Name = "colorIOW";
-            this.colorIOW.Size = new System.Drawing.Size(40, 20);
-            this.colorIOW.TabIndex = 7;
-            // 
-            // colorMemoryWS
-            // 
-            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
-            this.colorMemoryWS.Name = "colorMemoryWS";
-            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryWS.TabIndex = 5;
-            // 
-            // colorMemoryPB
-            // 
-            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
-            this.colorMemoryPB.Name = "colorMemoryPB";
-            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryPB.TabIndex = 4;
-            // 
-            // colorCPUUT
-            // 
-            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
-            this.colorCPUUT.Name = "colorCPUUT";
-            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUUT.TabIndex = 3;
-            // 
-            // colorCPUKT
-            // 
-            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
-            this.colorCPUKT.Name = "colorCPUKT";
-            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUKT.TabIndex = 2;
-            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
@@ -1152,6 +1188,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).EndInit();
             this.tabAdvanced.ResumeLayout(false);
             this.tabAdvanced.PerformLayout();
+            this.UpdaterSettingsGroupBox.ResumeLayout(false);
+            this.UpdaterSettingsGroupBox.PerformLayout();
             this.tabHighlighting.ResumeLayout(false);
             this.tabHighlighting.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).EndInit();
@@ -1160,8 +1198,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.textStep)).EndInit();
             this.tabSymbols.ResumeLayout(false);
             this.tabSymbols.PerformLayout();
-            this.UpdaterSettingsGroupBox.ResumeLayout(false);
-            this.UpdaterSettingsGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1251,5 +1287,8 @@
         private System.Windows.Forms.RadioButton optUpdateStable;
         private System.Windows.Forms.RadioButton optUpdateAlpha;
         private System.Windows.Forms.RadioButton optUpdateBeta;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button button1;
     }
 }
