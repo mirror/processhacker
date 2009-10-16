@@ -116,7 +116,7 @@ namespace ProcessHacker
             set { this["AppUpdateAutomatic"] = value; }
         }
 
-        [SettingDefault("1")]
+        [SettingDefault("0")]
         public int AppUpdateLevel
         {
             get { return (int)this["AppUpdateLevel"]; }
@@ -266,7 +266,7 @@ namespace ProcessHacker
         }
 
         private Color? _colorWow64Processes;
-        [SettingDefault("DeepPink")]
+        [SettingDefault("RosyBrown")]
         public Color ColorWow64Processes
         {
             get { return _colorWow64Processes.HasValue ? _colorWow64Processes.Value : (_colorWow64Processes = (Color)this["ColorWow64Processes"]).Value; }
