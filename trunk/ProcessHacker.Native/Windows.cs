@@ -728,9 +728,6 @@ namespace ProcessHacker.Native
                 {
                     var service = data.ReadStruct<EnumServiceStatusProcess>(i);
 
-                    service.DisplayName = string.Intern(service.DisplayName);
-                    service.ServiceName = string.Intern(service.ServiceName);
-
                     dictionary.Add(service.ServiceName, service);
                 }
 
