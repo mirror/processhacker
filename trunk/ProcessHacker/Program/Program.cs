@@ -840,12 +840,11 @@ namespace ProcessHacker
 
             info.AppendLine("Process Hacker " + Application.ProductVersion);
             info.AppendLine("Process Hacker Build Time: " + Utils.GetAssemblyBuildDate(System.Reflection.Assembly.GetExecutingAssembly(), false));
-            info.AppendLine("Application Base: " + app.SetupInformation.ApplicationBase);
-            info.AppendLine("Configuration File: " + app.SetupInformation.ConfigurationFile);
             info.AppendLine("CLR Version: " + Environment.Version.ToString());
             info.AppendLine("OS Version: " + Environment.OSVersion.VersionString + " (" + OSVersion.BitsString + ")");
             info.AppendLine("Elevation: " + ElevationType.ToString());
             info.AppendLine("Working set: " + Utils.FormatSize(Environment.WorkingSet));
+            info.AppendLine("Settings file: " + Settings.Instance.SettingsFileName != null ? Settings.Instance.SettingsFileName : "(volatile)");
 
             if (KProcessHacker.Instance == null)
                 info.AppendLine("KProcessHacker: not running");

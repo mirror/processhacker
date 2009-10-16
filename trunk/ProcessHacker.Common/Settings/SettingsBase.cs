@@ -31,6 +31,7 @@ namespace ProcessHacker.Common.Settings
     public abstract class SettingsBase
     {
         private ISettingsStore _store;
+        private Dictionary<string, object> _settings = new Dictionary<string, object>();
         private Dictionary<string, object> _modifiedSettings = new Dictionary<string, object>();
         private Dictionary<string, string> _defaultsCache = new Dictionary<string, string>();
         private Dictionary<string, Type> _typeCache = new Dictionary<string, Type>();
@@ -125,7 +126,8 @@ namespace ProcessHacker.Common.Settings
 
         private object GetValue(string name)
         {
-            string value;
+            object value;
+            string settingValue;
             Type settingType;
 
             lock (_modifiedSettings)
@@ -134,24 +136,38 @@ namespace ProcessHacker.Common.Settings
                     return _modifiedSettings[name];
             }
 
-            value = _store.GetValue(name);
+            lock (_settings)
+            {
+                if (_settings.ContainsKey(name))
+                    return _settings[name];
+            }
 
-            if (value == null)
-                value = this.GetSettingDefault(name);
-            if (value == null)
-                value = "";
+            settingValue = _store.GetValue(name);
+
+            if (settingValue == null)
+                settingValue = this.GetSettingDefault(name);
+            if (settingValue == null)
+                settingValue = "";
 
             settingType = this.GetSettingType(name);
 
             try
             {
-                return this.ConvertFromString(value, settingType);
+                value = this.ConvertFromString(settingValue, settingType);
             }
             catch
             {
                 // The stored value must be invalid. Return the default value.
-                return this.ConvertFromString(this.GetSettingDefault(name), settingType);
+                value = this.ConvertFromString(this.GetSettingDefault(name), settingType);
             }
+
+            lock (_settings)
+            {
+                if (!_settings.ContainsKey(name))
+                    _settings.Add(name, value);
+            }
+
+            return value;
         }
 
         public virtual void Invalidate() { }
@@ -160,6 +176,8 @@ namespace ProcessHacker.Common.Settings
         {
             lock (_modifiedSettings)
                 _modifiedSettings.Clear();
+            lock (_settings)
+                _settings.Clear();
 
             this.Invalidate();
         }
@@ -168,6 +186,8 @@ namespace ProcessHacker.Common.Settings
         {
             lock (_modifiedSettings)
                 _modifiedSettings.Clear();
+            lock (_settings)
+                _settings.Clear();
 
             _store.Reset();
             this.Invalidate();
@@ -196,6 +216,12 @@ namespace ProcessHacker.Common.Settings
                     _modifiedSettings[name] = value;
                 else
                     _modifiedSettings.Add(name, value);
+            }
+
+            lock (_settings)
+            {
+                if (_settings.ContainsKey(name))
+                    _settings[name] = value;
             }
         }
     }
