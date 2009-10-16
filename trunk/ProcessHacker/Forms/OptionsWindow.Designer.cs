@@ -37,8 +37,6 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
-            this.textMaxSamples = new System.Windows.Forms.NumericUpDown();
-            this.label6 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.comboToolbarStyle = new System.Windows.Forms.ComboBox();
             this.checkFloatChildWindows = new System.Windows.Forms.CheckBox();
@@ -109,10 +107,11 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
             this.buttonReset = new System.Windows.Forms.Button();
+            this.textMaxSamples = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).BeginInit();
             this.tabAdvanced.SuspendLayout();
             this.tabHighlighting.SuspendLayout();
@@ -122,6 +121,7 @@
             this.tabSymbols.SuspendLayout();
             this.tabUpdates.SuspendLayout();
             this.UpdaterSettingsGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -232,8 +232,6 @@
             // 
             // tabGeneral
             // 
-            this.tabGeneral.Controls.Add(this.textMaxSamples);
-            this.tabGeneral.Controls.Add(this.label6);
             this.tabGeneral.Controls.Add(this.label20);
             this.tabGeneral.Controls.Add(this.comboToolbarStyle);
             this.tabGeneral.Controls.Add(this.checkFloatChildWindows);
@@ -261,42 +259,6 @@
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
-            // 
-            // textMaxSamples
-            // 
-            this.textMaxSamples.Increment = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Location = new System.Drawing.Point(320, 6);
-            this.textMaxSamples.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.textMaxSamples.Name = "textMaxSamples";
-            this.textMaxSamples.Size = new System.Drawing.Size(72, 20);
-            this.textMaxSamples.TabIndex = 20;
-            this.textMaxSamples.Value = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(208, 8);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(106, 13);
-            this.label6.TabIndex = 21;
-            this.label6.Text = "Max. Sample History:";
             // 
             // label20
             // 
@@ -472,6 +434,8 @@
             // 
             // tabAdvanced
             // 
+            this.tabAdvanced.Controls.Add(this.textMaxSamples);
+            this.tabAdvanced.Controls.Add(this.label6);
             this.tabAdvanced.Controls.Add(this.comboElevationLevel);
             this.tabAdvanced.Controls.Add(this.label22);
             this.tabAdvanced.Controls.Add(this.checkEnableExperimentalFeatures);
@@ -499,7 +463,7 @@
             "Never elevate",
             "Prompt for elevation",
             "Always elevate"});
-            this.comboElevationLevel.Location = new System.Drawing.Point(66, 174);
+            this.comboElevationLevel.Location = new System.Drawing.Point(66, 200);
             this.comboElevationLevel.Name = "comboElevationLevel";
             this.comboElevationLevel.Size = new System.Drawing.Size(194, 21);
             this.comboElevationLevel.TabIndex = 11;
@@ -507,7 +471,7 @@
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(6, 177);
+            this.label22.Location = new System.Drawing.Point(6, 203);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(54, 13);
             this.label22.TabIndex = 10;
@@ -1096,6 +1060,42 @@
             this.buttonReset.UseVisualStyleBackColor = true;
             this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
             // 
+            // textMaxSamples
+            // 
+            this.textMaxSamples.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Location = new System.Drawing.Point(118, 174);
+            this.textMaxSamples.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Name = "textMaxSamples";
+            this.textMaxSamples.Size = new System.Drawing.Size(72, 20);
+            this.textMaxSamples.TabIndex = 22;
+            this.textMaxSamples.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 176);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(106, 13);
+            this.label6.TabIndex = 23;
+            this.label6.Text = "Max. Sample History:";
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
@@ -1121,7 +1121,6 @@
             this.tabControl.ResumeLayout(false);
             this.tabGeneral.ResumeLayout(false);
             this.tabGeneral.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).EndInit();
             this.tabAdvanced.ResumeLayout(false);
             this.tabAdvanced.PerformLayout();
@@ -1136,6 +1135,7 @@
             this.tabUpdates.ResumeLayout(false);
             this.UpdaterSettingsGroupBox.ResumeLayout(false);
             this.UpdaterSettingsGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1220,8 +1220,8 @@
         private System.Windows.Forms.ComboBox comboElevationLevel;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.GroupBox UpdaterSettingsGroupBox;
+        private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.NumericUpDown textMaxSamples;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button buttonReset;
     }
 }
