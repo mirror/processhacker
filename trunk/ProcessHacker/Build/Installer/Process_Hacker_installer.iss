@@ -25,7 +25,7 @@
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 
-#define installer_build_number "39"
+#define installer_build_number "40"
 
 #define VerMajor
 #define VerMinor
@@ -272,6 +272,43 @@ begin
     if dvalue = 1 then
     Result := True;
   end;
+end;
+
+
+procedure URLLabelOnClick(Sender: TObject);
+var
+  ErrorCode: Integer;
+begin
+  ShellExec('open', 'http://processhacker.sourceforge.net/', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+end;
+
+
+procedure CreateURLLabel(ParentForm: TSetupForm; CancelButton: TNewButton);
+var
+  URLLabel: TNewStaticText;
+begin
+  URLLabel := TNewStaticText.Create(ParentForm);
+  URLLabel.Caption := 'Homepage';
+  URLLabel.Cursor := crHand;
+  URLLabel.OnClick := @URLLabelOnClick;
+  URLLabel.Parent := ParentForm;
+  { Alter Font *after* setting Parent so the correct defaults are inherited first }
+  URLLabel.Font.Style := URLLabel.Font.Style + [fsUnderline];
+  URLLabel.Font.Color := clBlue;
+  URLLabel.Top := CancelButton.Top + CancelButton.Height - URLLabel.Height - 2;
+  URLLabel.Left := ParentForm.ClientWidth - CancelButton.Left - CancelButton.Width;
+end;
+
+
+procedure InitializeWizard();
+begin
+  CreateURLLabel(WizardForm, WizardForm.CancelButton);
+end;
+
+
+procedure InitializeUninstallProgressForm();
+begin
+  CreateURLLabel(UninstallProgressForm, UninstallProgressForm.CancelButton);
 end;
 
 
