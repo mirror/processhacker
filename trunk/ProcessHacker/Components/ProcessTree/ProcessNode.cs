@@ -146,7 +146,11 @@ namespace ProcessHacker
         public TreePath RefreshTreePath()
         {
             ProcessNode currentNode = this;
-            Stack<ProcessNode> stack = new Stack<ProcessNode>();
+            //Stack<ProcessNode> stack = new Stack<ProcessNode>();
+
+            Dictionary<int, ProcessNode> stack = new Dictionary<int, ProcessNode>();
+            List<ProcessNode> items;
+            int count = 0;
 
             while (currentNode != null)
             {
@@ -159,11 +163,16 @@ namespace ProcessHacker
                     throw new InvalidOperationException("Process tree depth is greater than 1024.");
                 }
 
-                stack.Push(currentNode);
+                stack.Add(count, currentNode);
+                count += 1;
+                //stack.Push(currentNode);
                 currentNode = currentNode.Parent;
             }
 
-            _treePath = new TreePath(stack.ToArray());
+            items = new List<ProcessNode>(stack.Values);
+            _treePath = new TreePath(items.ToArray());
+
+            //_treePath = new TreePath(stack.ToArray());
 
             return _treePath;
         }
