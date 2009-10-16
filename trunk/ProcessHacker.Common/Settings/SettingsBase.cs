@@ -22,12 +22,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 using System.Reflection;
 
 namespace ProcessHacker.Common.Settings
 {
+    /// <summary>
+    /// Provides the base class used to support settings.
+    /// </summary>
     public abstract class SettingsBase
     {
         private ISettingsStore _store;
@@ -36,22 +38,40 @@ namespace ProcessHacker.Common.Settings
         private Dictionary<string, string> _defaultsCache = new Dictionary<string, string>();
         private Dictionary<string, Type> _typeCache = new Dictionary<string, Type>();
 
+        /// <summary>
+        /// Creates a settings class with the specified storage provider.
+        /// </summary>
+        /// <param name="store">The storage provider.</param>
         public SettingsBase(ISettingsStore store)
         {
             _store = store;
         }
 
+        /// <summary>
+        /// Gets or sets a setting.
+        /// </summary>
+        /// <param name="name">The name of the setting.</param>
+        /// <returns>The value of the setting.</returns>
         public object this[string name]
         {
             get { return this.GetValue(name); }
             set { this.SetValue(name, value); }
         }
 
+        /// <summary>
+        /// Gets the underlying storage for the settings class.
+        /// </summary>
         public ISettingsStore Store
         {
             get { return _store; }
         }
 
+        /// <summary>
+        /// Converts a string to an instance of another type.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
+        /// <param name="valueType">The type of the output value.</param>
+        /// <returns>The converted value.</returns>
         protected virtual object ConvertFromString(string value, Type valueType)
         {
             if (valueType.IsPrimitive)
@@ -69,6 +89,12 @@ namespace ProcessHacker.Common.Settings
             throw new InvalidOperationException("The setting '" + value + "' has an unsupported type.");
         }
 
+        /// <summary>
+        /// Converts an object to a string.
+        /// </summary>
+        /// <param name="value">The object to convert.</param>
+        /// <param name="valueType">The type of the input value.</param>
+        /// <returns>The string representation of the object.</returns>
         protected virtual string ConvertToString(object value, Type valueType)
         {
             if (valueType.IsPrimitive)
@@ -86,6 +112,11 @@ namespace ProcessHacker.Common.Settings
             throw new InvalidOperationException("The setting '" + value + "' has an unsupported type.");
         }
 
+        /// <summary>
+        /// Gets the default value of a setting.
+        /// </summary>
+        /// <param name="name">The name of the setting.</param>
+        /// <returns>A string representation of the setting's default value.</returns>
         private string GetSettingDefault(string name)
         {
             lock (_defaultsCache)
@@ -109,6 +140,11 @@ namespace ProcessHacker.Common.Settings
             }
         }
 
+        /// <summary>
+        /// Gets the type of a setting.
+        /// </summary>
+        /// <param name="name">The name of the setting.</param>
+        /// <returns>The type of the setting.</returns>
         private Type GetSettingType(string name)
         {
             lock (_typeCache)
@@ -124,6 +160,11 @@ namespace ProcessHacker.Common.Settings
             }
         }
 
+        /// <summary>
+        /// Gets the value of a setting.
+        /// </summary>
+        /// <param name="name">The name of the setting.</param>
+        /// <returns>The value of the setting.</returns>
         private object GetValue(string name)
         {
             object value;
@@ -170,8 +211,14 @@ namespace ProcessHacker.Common.Settings
             return value;
         }
 
+        /// <summary>
+        /// Causes all cached setting values to be invalidated.
+        /// </summary>
         public virtual void Invalidate() { }
 
+        /// <summary>
+        /// Discards any unsaved changes made to settings.
+        /// </summary>
         public void Reload()
         {
             lock (_modifiedSettings)
@@ -182,6 +229,9 @@ namespace ProcessHacker.Common.Settings
             this.Invalidate();
         }
 
+        /// <summary>
+        /// Resets all settings to their default values.
+        /// </summary>
         public void Reset()
         {
             lock (_modifiedSettings)
@@ -193,6 +243,9 @@ namespace ProcessHacker.Common.Settings
             this.Invalidate();
         }
 
+        /// <summary>
+        /// Saves settings to persistent storage.
+        /// </summary>
         public void Save()
         {
             lock (_modifiedSettings)
@@ -208,6 +261,11 @@ namespace ProcessHacker.Common.Settings
             _store.Flush();
         }
 
+        /// <summary>
+        /// Sets the value of a setting.
+        /// </summary>
+        /// <param name="name">The name of the setting.</param>
+        /// <param name="value">The new value of the setting.</param>
         private void SetValue(string name, object value)
         {
             lock (_modifiedSettings)

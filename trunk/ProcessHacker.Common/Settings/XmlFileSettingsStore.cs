@@ -28,6 +28,9 @@ using System.Xml;
 
 namespace ProcessHacker.Common.Settings
 {
+    /// <summary>
+    /// Provides an XML-based settings store.
+    /// </summary>
     public sealed class XmlFileSettingsStore : ISettingsStore
     {
         private const string _rootElementName = "settings";
@@ -39,17 +42,27 @@ namespace ProcessHacker.Common.Settings
         private XmlDocument _doc;
         private XmlNode _rootNode;
 
+        /// <summary>
+        /// Creates a new settings store from the specified file.
+        /// </summary>
+        /// <param name="fileName">The name of the settings file.</param>
         public XmlFileSettingsStore(string fileName)
         {
             _fileName = fileName;
             this.Initialize();
         }
 
+        /// <summary>
+        /// Gets the settings file name.
+        /// </summary>
         public string FileName
         {
             get { return _fileName; }
         }
 
+        /// <summary>
+        /// Flushes persistent storage.
+        /// </summary>
         public void Flush()
         {
             if (!string.IsNullOrEmpty(_fileName))
@@ -61,6 +74,11 @@ namespace ProcessHacker.Common.Settings
             }
         }
 
+        /// <summary>
+        /// Gets a setting value from persistent storage.
+        /// </summary>
+        /// <param name="name">The case-sensitive name of the setting.</param>
+        /// <returns>A string if a value was found for the setting, otherwise null.</returns>
         public string GetValue(string name)
         {
             lock (_docLock)
@@ -97,14 +115,13 @@ namespace ProcessHacker.Common.Settings
             doc.AppendChild(doc.CreateElement(_rootElementName));
         }
 
-        public void Reload()
-        {
-            lock (_docLock)
-            {
-                this.Initialize();
-            }
-        }
-
+        /// <summary>
+        /// Resets the persistent storage, deleting all stored values.
+        /// </summary>
+        /// <remarks>
+        /// This usually means deleting the settings file. A flush operation 
+        /// is also assumed to be performed.
+        /// </remarks>
         public void Reset()
         {
             lock (_docLock)
@@ -116,6 +133,15 @@ namespace ProcessHacker.Common.Settings
             }
         }
 
+        /// <summary>
+        /// Saves a setting value into persistent storage.
+        /// </summary>
+        /// <param name="name">The case-sensitive name of the setting.</param>
+        /// <param name="value">The new value of the setting.</param>
+        /// <remarks>
+        /// The <paramref name="value"/> string must not be null 
+        /// (but can be empty).
+        /// </remarks>
         public void SetValue(string name, string value)
         {
             lock (_docLock)

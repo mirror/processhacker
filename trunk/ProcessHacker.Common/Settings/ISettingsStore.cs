@@ -20,12 +20,11 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace ProcessHacker.Common.Settings
 {
+    /// <summary>
+    /// Provides an interface for saving settings to persistent storage.
+    /// </summary>
     public interface ISettingsStore
     {
         /// <summary>
@@ -54,6 +53,10 @@ namespace ProcessHacker.Common.Settings
         /// </summary>
         /// <param name="name">The case-sensitive name of the setting.</param>
         /// <param name="value">The new value of the setting.</param>
+        /// <remarks>
+        /// The <paramref name="value"/> string must not be null 
+        /// (but can be empty).
+        /// </remarks>
         void SetValue(string name, string value);
     }
 }

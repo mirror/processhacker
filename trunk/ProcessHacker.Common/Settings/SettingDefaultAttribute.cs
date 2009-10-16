@@ -21,21 +21,32 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ProcessHacker.Common.Settings
 {
+    /// <summary>
+    /// Specifies a default value for a setting.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class SettingDefaultAttribute : Attribute
     {
         private string _value;
 
+        /// <summary>
+        /// Initializes a new instance of the SettingDefaultAttribute class.
+        /// </summary>
+        /// <param name="value">
+        /// The default value of the setting specified as a string. 
+        /// This value must be convertible to the setting's type.
+        /// </param>
         public SettingDefaultAttribute(string value)
         {
             _value = value;
         }
 
+        /// <summary>
+        /// Gets the default value specified for the setting.
+        /// </summary>
         public string Value
         {
             get { return _value; }
