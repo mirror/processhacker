@@ -120,22 +120,25 @@ namespace ProcessHacker.Common.Settings
         {
             lock (_docLock)
             {
-                var nodes = _rootNode.SelectNodes(_settingElementName + "[@" + _nameAttributeName + "='" + name + "']");
-
-                if (nodes.Count != 0)
+                if (!string.IsNullOrEmpty(value))
                 {
-                    nodes[0].InnerText = value;
-                }
-                else
-                {
-                    var settingElement = _doc.CreateElement(_settingElementName);
-                    var nameAttribute = _doc.CreateAttribute(_nameAttributeName);
+                    var nodes = _rootNode.SelectNodes(_settingElementName + "[@" + _nameAttributeName + "='" + name + "']");
 
-                    nameAttribute.Value = name;
-                    settingElement.Attributes.Append(nameAttribute);
-                    settingElement.InnerText = value;
+                    if (nodes.Count != 0)
+                    {
+                        nodes[0].InnerText = value;
+                    }
+                    else
+                    {
+                        var settingElement = _doc.CreateElement(_settingElementName);
+                        var nameAttribute = _doc.CreateAttribute(_nameAttributeName);
 
-                    _rootNode.AppendChild(settingElement);
+                        nameAttribute.Value = name;
+                        settingElement.Attributes.Append(nameAttribute);
+                        settingElement.InnerText = value;
+
+                        _rootNode.AppendChild(settingElement);
+                    }
                 }
             }
         }
