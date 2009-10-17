@@ -86,6 +86,9 @@ namespace ProcessHacker.Native
 
             if (_parent != null)
                 _parent.Dereference(disposing);
+
+            _memory = IntPtr.Zero;
+            _size = 0;
         }
 
         protected virtual void Free()

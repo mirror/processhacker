@@ -152,6 +152,7 @@ namespace ProcessHacker.Native.Objects
         protected sealed override void DisposeObject(bool disposing)
         {
             this.Close();
+            _handle = IntPtr.Zero;
         }
 
         /// <summary>
