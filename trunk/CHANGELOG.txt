@@ -4,6 +4,7 @@ Process Hacker
  * NEW/IMPROVED:
    * #2873973 - "Columns window improvements"
    * New settings system - settings can now be saved anywhere
+   * Decreased memory and CPU usage
 
 1.6
  * NEW/IMPROVED:
