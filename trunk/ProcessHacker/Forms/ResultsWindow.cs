@@ -184,7 +184,7 @@ namespace ProcessHacker
                 _so.Searcher.SearchProgressChanged += new SearchProgressChanged(Searcher_SearchProgressChanged);
                 _so.Searcher.SearchError += new SearchError(SearchError);
 
-                _searchThread = new Thread(new ThreadStart(_so.Searcher.Search));
+                _searchThread = new Thread(new ThreadStart(_so.Searcher.Search), Utils.SixteenthStackSize);
 
                 _searchThread.Start();
             }

@@ -350,7 +350,7 @@ namespace ProcessHacker
                     SysInfoWindow = new SysInfoWindow();
 
                     Application.Run(SysInfoWindow);
-                });
+                }, Utils.SixteenthStackSize);
                 sysInfoThread.Start();
             }
             else
@@ -2727,7 +2727,7 @@ namespace ProcessHacker
                 {
                     Updater.Update(this, interactive);
                     this.Invoke(new MethodInvoker(() => checkForUpdatesMenuItem.Enabled = true));
-                }));
+                }), Utils.SixteenthStackSize);
             t.IsBackground = true;
             t.Start();
         }

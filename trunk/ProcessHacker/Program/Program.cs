@@ -1091,7 +1091,7 @@ namespace ProcessHacker
                         Application.Run(ed);
 
                     Program.MemoryEditorsThreads.Remove(id);
-                }));
+                }), Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
@@ -1141,7 +1141,7 @@ namespace ProcessHacker
                         Application.Run(rw);
 
                     Program.ResultsThreads.Remove(id);
-                }));
+                }), Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
@@ -1198,7 +1198,7 @@ namespace ProcessHacker
                         Application.Run(pw);
 
                     Program.PEThreads.Remove(path);
-                }));
+                }), Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
@@ -1254,7 +1254,7 @@ namespace ProcessHacker
                         Application.Run(pw);
 
                     Program.PThreads.Remove(process.Pid);
-                }));
+                }), Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();

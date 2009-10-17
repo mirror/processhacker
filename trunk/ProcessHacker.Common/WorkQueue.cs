@@ -358,7 +358,7 @@ namespace ProcessHacker.Common
         /// </summary>
         private void CreateWorkerThread()
         {
-            Thread workThread = new Thread(this.WorkerThreadStart);
+            Thread workThread = new Thread(this.WorkerThreadStart, Utils.SixteenthStackSize);
             workThread.IsBackground = true;
             workThread.Priority = ThreadPriority.Lowest;
             workThread.SetApartmentState(ApartmentState.STA);

@@ -42,6 +42,12 @@ namespace ProcessHacker.Common
 
         #region Constants
 
+        public const int OneStackSize = 1024 * 1024;
+        public const int HalfStackSize = OneStackSize / 2;
+        public const int QuarterStackSize = HalfStackSize / 2;
+        public const int EighthStackSize = QuarterStackSize / 2;
+        public const int SixteenthStackSize = EighthStackSize / 2;
+
         public static int[] Primes = 
         {
             3, 7, 11, 0x11, 0x17, 0x1d, 0x25, 0x2f, 0x3b, 0x47, 0x59, 0x6b, 0x83, 0xa3, 0xc5, 0xef, 

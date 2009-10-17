@@ -66,7 +66,7 @@ namespace ProcessHacker
 
             if (_ipAction == IpAction.Whois)
             {
-                t = new Thread(new ParameterizedThreadStart(Whois));
+                t = new Thread(new ParameterizedThreadStart(Whois), Utils.SixteenthStackSize);
                 labelInfo.Text = "Whois host infomation for address: " + _ipAddress.ToString();
                 labelStatus.Text = "Checking...";
                 listInfo.Columns.Add("Results");
@@ -74,7 +74,7 @@ namespace ProcessHacker
             }
             else if (_ipAction == IpAction.Tracert)
             {
-                t = new Thread(new ParameterizedThreadStart(Tracert));
+                t = new Thread(new ParameterizedThreadStart(Tracert), Utils.SixteenthStackSize);
                 labelStatus.Text = "Tracing route...";
                 listInfo.Columns.Add("Count");
                 listInfo.Columns.Add("Reply Time");
@@ -84,7 +84,7 @@ namespace ProcessHacker
             }
             else if (_ipAction == IpAction.Ping)
             {
-                t = new Thread(new ParameterizedThreadStart(Ping));
+                t = new Thread(new ParameterizedThreadStart(Ping), Utils.SixteenthStackSize);
                 labelStatus.Text = "Pinging...";
                 listInfo.Columns.Add("Results");
                 ColumnSettings.LoadSettings(Settings.Instance.IPInfoPingListViewColumns, listInfo);

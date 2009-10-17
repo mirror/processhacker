@@ -59,7 +59,7 @@ namespace ProcessHacker.FormHelper
                 isRunning = true;
             }
 
-            _asyncThread = new Thread(InternalStart);
+            _asyncThread = new Thread(InternalStart, ProcessHacker.Common.Utils.SixteenthStackSize);
             _asyncThread.Start();
         }
 
