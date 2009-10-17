@@ -169,7 +169,7 @@ namespace ProcessHacker
 
             ThreadPool.SetMinThreads(1, 1);
             ThreadPool.SetMaxThreads(2, 2);
-            WorkQueue.GlobalWorkQueue.MaxWorkerThreads = 3;
+            WorkQueue.GlobalWorkQueue.MaxWorkerThreads = 2;
 
             // Create or open the Process Hacker mutex, used only by the installer.
             try

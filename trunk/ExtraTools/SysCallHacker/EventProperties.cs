@@ -29,6 +29,7 @@ namespace SysCallHacker
             textSystemCall.Text = MainWindow.SysCallNames.ContainsKey(even.Event.CallNumber) ? MainWindow.SysCallNames[even.Event.CallNumber] : "(unknown)";
             textTime.Text = _event.Event.Time.ToString();
             textMode.Text = _event.Event.Mode == KProcessorMode.UserMode ? "User-mode" : "Kernel-mode";
+            textClientID.Text = "PID: " + _event.Event.ProcessId.ToString() + ", TID: " + _event.Event.ThreadId.ToString();
 
             for (int i = 0; i < _event.Event.Arguments.Length; i++)
             {
@@ -94,53 +95,59 @@ namespace SysCallHacker
                 listArguments.Items.Add(item);
             }
 
-            SymbolProvider.Options = SymbolOptions.DeferredLoads | SymbolOptions.UndName;
-
-            try
-            {
-                using (var phandle = new ProcessHandle(_event.Event.ProcessId, 
-                    ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+            WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
                 {
-                    _symbols = new SymbolProvider(phandle);
+                    SymbolProvider.Options = SymbolOptions.DeferredLoads | SymbolOptions.UndName;
 
-                    phandle.EnumModules((module) =>
-                        {
-                            _symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
-                            return true;
-                        });
-                    Windows.EnumKernelModules((module) =>
-                        {
-                            _symbols.LoadModule(module.FileName, module.BaseAddress);
-                            return true;
-                        });
-                    _symbols.PreloadModules = true;
-
-                    for (int i = 0; i < _event.Event.StackTrace.Length; i++)
+                    try
                     {
-                        var address = _event.Event.StackTrace[i];
-                        string fileName;
-                        IntPtr baseAddress;
+                        using (var phandle = new ProcessHandle(_event.Event.ProcessId,
+                            ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                        {
+                            _symbols = new SymbolProvider(phandle);
 
-                        fileName = _symbols.GetModuleFromAddress(address, out baseAddress);
+                            phandle.EnumModules((module) =>
+                                {
+                                    _symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
+                                    return true;
+                                });
+                            Windows.EnumKernelModules((module) =>
+                                {
+                                    _symbols.LoadModule(module.FileName, module.BaseAddress);
+                                    return true;
+                                });
+                            _symbols.PreloadModules = true;
 
-                        listStackTrace.Items.Add(new ListViewItem(new string[]
+                            for (int i = 0; i < _event.Event.StackTrace.Length; i++)
+                            {
+                                var address = _event.Event.StackTrace[i];
+                                string fileName;
+                                IntPtr baseAddress;
+
+                                fileName = _symbols.GetModuleFromAddress(address, out baseAddress);
+
+                                if (!this.IsHandleCreated)
+                                    return;
+
+                                listStackTrace.Items.Add(new ListViewItem(new string[]
                         {
                             "0x" + address.ToString("x"),
                             (new System.IO.FileInfo(fileName)).Name + "+0x" + address.Decrement(baseAddress).ToString("x")
                         }));
 
-                        WorkQueue.GlobalQueueWorkItemTag(new Action<int, IntPtr>((i_, address_) =>
-                            {
-                                string symbol = _symbols.GetSymbolFromAddress(address_.ToUInt64());
+                                WorkQueue.GlobalQueueWorkItemTag(new Action<int, IntPtr>((i_, address_) =>
+                                    {
+                                        string symbol = _symbols.GetSymbolFromAddress(address_.ToUInt64());
 
-                                if (this.IsHandleCreated)
-                                    this.BeginInvoke(new Action(() => listStackTrace.Items[i_].SubItems[1].Text = symbol));
-                            }), "resolve-symbol", i, address);
+                                        if (this.IsHandleCreated)
+                                            this.BeginInvoke(new Action(() => listStackTrace.Items[i_].SubItems[1].Text = symbol));
+                                    }), "resolve-symbol", i, address);
+                            }
+                        }
                     }
-                }
-            }
-            catch
-            { }
+                    catch
+                    { }
+                }), "load-symbols");
 
             listArguments.SetDoubleBuffered(true);
             listStackTrace.SetDoubleBuffered(true);

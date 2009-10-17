@@ -48,6 +48,8 @@
             this.columnAddress = new System.Windows.Forms.ColumnHeader();
             this.columnSymbol = new System.Windows.Forms.ColumnHeader();
             this.buttonClose = new System.Windows.Forms.Button();
+            this.labelClientID = new System.Windows.Forms.Label();
+            this.textClientID = new System.Windows.Forms.TextBox();
             this.tabControl.SuspendLayout();
             this.tabEvent.SuspendLayout();
             this.groupArguments.SuspendLayout();
@@ -136,6 +138,8 @@
             // 
             this.groupBasic.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBasic.Controls.Add(this.textClientID);
+            this.groupBasic.Controls.Add(this.labelClientID);
             this.groupBasic.Controls.Add(this.textSystemCall);
             this.groupBasic.Controls.Add(this.textMode);
             this.groupBasic.Controls.Add(this.textTime);
@@ -166,7 +170,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textMode.BackColor = System.Drawing.SystemColors.Window;
             this.textMode.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textMode.Location = new System.Drawing.Point(49, 57);
+            this.textMode.Location = new System.Drawing.Point(52, 57);
             this.textMode.Name = "textMode";
             this.textMode.ReadOnly = true;
             this.textMode.Size = new System.Drawing.Size(435, 13);
@@ -261,6 +265,27 @@
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
             // 
+            // labelClientID
+            // 
+            this.labelClientID.AutoSize = true;
+            this.labelClientID.Location = new System.Drawing.Point(6, 76);
+            this.labelClientID.Name = "labelClientID";
+            this.labelClientID.Size = new System.Drawing.Size(50, 13);
+            this.labelClientID.TabIndex = 5;
+            this.labelClientID.Text = "Client ID:";
+            // 
+            // textClientID
+            // 
+            this.textClientID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textClientID.BackColor = System.Drawing.SystemColors.Window;
+            this.textClientID.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textClientID.Location = new System.Drawing.Point(62, 76);
+            this.textClientID.Name = "textClientID";
+            this.textClientID.ReadOnly = true;
+            this.textClientID.Size = new System.Drawing.Size(428, 13);
+            this.textClientID.TabIndex = 6;
+            // 
             // EventProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -310,5 +335,7 @@
         private System.Windows.Forms.ColumnHeader columnValue;
         private System.Windows.Forms.ColumnHeader columnExtendedValue;
         private System.Windows.Forms.ColumnHeader columnType;
+        private System.Windows.Forms.TextBox textClientID;
+        private System.Windows.Forms.Label labelClientID;
     }
 }
