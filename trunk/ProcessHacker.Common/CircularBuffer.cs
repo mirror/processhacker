@@ -20,6 +20,11 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* If enabled, the sizes of circular buffers are limited to (and rounded up to) 
+ * powers of two, increasing performance.
+ */
+#define POWER_OF_TWO_SIZE
+
 using System;
 using System.Collections.Generic;
 
@@ -44,6 +49,9 @@ namespace ProcessHacker.Common
     public class CircularBuffer<T> : IList<T>
     {
         private int _size;
+#if POWER_OF_TWO_SIZE
+        private int _sizeMinusOne;
+#endif
         private int _count;
         private int _index;
         private T[] _data;
@@ -58,10 +66,24 @@ namespace ProcessHacker.Common
              * [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]
              *                                      ^ _index
              */
+
+#if POWER_OF_TWO_SIZE
+            _size = size.RoundUpTwo();
+            _sizeMinusOne = _size - 1;
+#else
             _size = size;
+#endif
+
+#if COUNT_UNIMPORTANT
+            // Size must be limited to 2^30-1 since we will always clear 
+            // the second highest bit in Add.
+            if (_size >= (1 << 30) - 1)
+                throw new ArgumentException("Size must be less than or equal to 2^30-1.");
+#endif
+
             _count = 0;
             _index = 0;
-            _data = new T[size];
+            _data = new T[_size];
         }
 
         /// <summary>
@@ -87,13 +109,23 @@ namespace ProcessHacker.Common
                  *      ^ (_index + index) mod _size = 11 mod 10 = 1
                  */
 
+#if POWER_OF_TWO_SIZE
+                // See the comment in Add for more details on power-of-two modulus.
+                return _data[(_index + index) & _sizeMinusOne];
+#else
                 // See the comment in Add for more details on modulus.
                 return _data[(((_index + index) % _size) + _size) % _size];
+#endif
             }
             set
             {
+#if POWER_OF_TWO_SIZE
+                // See the comment in Add for more details on power-of-two modulus.
+                _data[(_index + index) & _sizeMinusOne] = value;
+#else
                 // See the comment in Add for more details.
                 _data[(((_index + index) % _size) + _size) % _size] = value;
+#endif
             }
         }
 
@@ -103,6 +135,7 @@ namespace ProcessHacker.Common
         public int Count
         {
             get { return _count; }
+            private set { _count = value; }
         }
 
         /// <summary>
@@ -142,6 +175,13 @@ namespace ProcessHacker.Common
              *                                        = -1 mod 10 = 9
              */
 
+#if POWER_OF_TWO_SIZE
+            /* Power-of-two modulus can be performed quickly by ANDing the 
+             * value by the power-of-two minus one. This even works for 
+             * negative numbers.
+             */
+            _data[_index = ((_index - 1) & _sizeMinusOne)] = value;
+#else
             /* The C# modulus operator produces a result which has the 
              * same sign as the dividend. For circular array access,
              * we want the result to have the same sign as the divisor.
@@ -150,6 +190,7 @@ namespace ProcessHacker.Common
              * array.
              */
             _data[_index = (((_index - 1) % _size) + _size) % _size] = value;
+#endif
 
             if (_count < _size)
                 _count++;
@@ -161,13 +202,15 @@ namespace ProcessHacker.Common
         /// <param name="newSize">The new maximum buffer size.</param>
         public void Resize(int newSize)
         {
+            newSize = newSize.RoundUpTwo();
+
             // If we're not actually resizing the thing...
             if (newSize == _size)
                 return;
 
             T[] newArray = new T[newSize];
             int tailSize = (_size - _index) % _size;
-            int headSize = _count - tailSize;
+            int headSize = this.Count - tailSize;
 
             /* 
              * The tail contains the most recent data.
@@ -223,12 +266,13 @@ namespace ProcessHacker.Common
 
                 // The number of elements obviously can't be bigger than the 
                 // buffer size.
-                if (_count > newSize)
-                    _count = newSize;
+                if (this.Count > newSize)
+                    this.Count = newSize;
             }
 
             _data = newArray;
             _size = newSize;
+            _sizeMinusOne = _size - 1;
         }
 
         /// <summary>
@@ -286,7 +330,7 @@ namespace ProcessHacker.Common
         public void Clear()
         {
             // Just set the number of elements to zero.
-            _count = 0;
+            this.Count = 0;
         }
 
         /// <summary>
@@ -315,7 +359,7 @@ namespace ProcessHacker.Common
              * headSize = _count - tailSize = 7 - 4 = 3
              */
             int tailSize = _size - _index;
-            int headSize = _count - tailSize;
+            int headSize = this.Count - tailSize;
 
             // Copy the tail, then the head.
             Array.Copy(_data, _index, array, arrayIndex, tailSize);

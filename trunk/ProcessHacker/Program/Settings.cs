@@ -548,7 +548,7 @@ namespace ProcessHacker
         }
 
         private int _maxSamples;
-        [SettingDefault("600")]
+        [SettingDefault("512")]
         public int MaxSamples
         {
             get { return _maxSamples; }

@@ -1206,6 +1206,33 @@ namespace ProcessHacker.Common
             return newData;
         }
 
+        public static int RoundUpTwo(this int value)
+        {
+            value--;
+            value |= value >> 1;
+            value |= value >> 2;
+            value |= value >> 4;
+            value |= value >> 8;
+            value |= value >> 16;
+            value++;
+
+            return value;
+        }
+
+        public static long RoundUpTwo(this long value)
+        {
+            value--;
+            value |= value >> 1;
+            value |= value >> 2;
+            value |= value >> 4;
+            value |= value >> 8;
+            value |= value >> 16;
+            value |= value >> 32;
+            value++;
+
+            return value;
+        }
+
         /// <summary>
         /// Selects all of the specified items.
         /// </summary>

@@ -20,7 +20,12 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* If enabled, the object system will keep statistics. */
 #define ENABLE_STATISTICS
+
+/* If enabled, the finalizers on objects can be enabled and disabled. 
+ * If disabled, the finalizers on objects can only be disabled.
+ */
 //#define EXTENDED_FINALIZER
 
 using System;
