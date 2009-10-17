@@ -62,7 +62,7 @@ namespace ProcessHacker.FormHelper
 
         private void DoFilter(string strFilter)
         {
-            string lowerFilter = strFilter.ToLower();
+            string lowerFilter = strFilter.ToLowerInvariant();
 
             // Stop if cancel
             if (!CancelRequested)
@@ -102,7 +102,7 @@ namespace ProcessHacker.FormHelper
                         {
                             phandle.EnumModules((module) =>
                             {
-                                if (module.FileName.ToLower().Contains(lowerFilter))
+                                if (module.FileName.ToLowerInvariant().Contains(lowerFilter))
                                     this.CallDllMatchListView(process.Key, module);
                                 return true;
                             });
@@ -118,7 +118,7 @@ namespace ProcessHacker.FormHelper
 
                                 string name = phandle.GetMappedFileName(region.BaseAddress);
 
-                                if (name != null && name.ToLower().Contains(lowerFilter))
+                                if (name != null && name.ToLowerInvariant().Contains(lowerFilter))
                                     this.CallMappedFileMatchListView(process.Key, region.BaseAddress, name);
 
                                 return true;
@@ -181,7 +181,7 @@ namespace ProcessHacker.FormHelper
 
                 if (string.IsNullOrEmpty(info.BestName))
                     return;
-                if (!info.BestName.ToLower().Contains(lowerFilter))
+                if (!info.BestName.ToLowerInvariant().Contains(lowerFilter))
                     return;
 
                 CallHandleMatchListView(currhandle, info);

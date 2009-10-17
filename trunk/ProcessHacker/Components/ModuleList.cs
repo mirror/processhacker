@@ -175,7 +175,6 @@ namespace ProcessHacker.Components
                                 _mainModule = FileUtils.GetFileName(phandle.GetMainModule().FileName);
                         }
 
-                        _mainModule = _mainModule.ToLower();
                         SortedListViewComparer comparer = (SortedListViewComparer)
                             (listModules.ListViewItemSorter = new SortedListViewComparer(listModules)
                             {
@@ -279,7 +278,7 @@ namespace ProcessHacker.Components
             litem.Tag = item;
             litem.NormalColor = this.GetModuleColor(item);
 
-            if (item.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
+            if (item.FileName.Equals(_mainModule, StringComparison.OrdinalIgnoreCase))
                 litem.Font = new System.Drawing.Font(litem.Font, System.Drawing.FontStyle.Bold);
 
             lock (_needsAdd)
@@ -487,7 +486,7 @@ namespace ProcessHacker.Components
                     // If we didn't find the service name, use the driver base name.
                     if (serviceName == null)
                     {
-                        if (moduleItem.Name.ToLower().EndsWith(".sys"))
+                        if (moduleItem.Name.EndsWith(".sys", StringComparison.OrdinalIgnoreCase))
                             serviceName = moduleItem.Name.Remove(moduleItem.Name.Length - 4, 4);
                         else
                             serviceName = moduleItem.Name;
@@ -613,7 +612,7 @@ namespace ProcessHacker.Components
 
         public ModuleListComparer(string mainModule)
         {
-            _mainModule = mainModule.ToLower();
+            _mainModule = mainModule;
         }
 
         public int Compare(ListViewItem x, ListViewItem y, int column)
@@ -621,9 +620,9 @@ namespace ProcessHacker.Components
             ModuleItem mx = (ModuleItem)x.Tag;
             ModuleItem my = (ModuleItem)y.Tag;
 
-            if (mx.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
+            if (mx.FileName.Equals(_mainModule, StringComparison.OrdinalIgnoreCase))
                 return -1;
-            if (my.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
+            if (my.FileName.Equals(_mainModule, StringComparison.OrdinalIgnoreCase))
                 return 1;
 
             return 0;

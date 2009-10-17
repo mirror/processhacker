@@ -63,7 +63,7 @@ namespace ProcessHacker
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 FileInfo fi = new FileInfo(sfd.FileName);
-                string ext = fi.Extension.ToLower();
+                string ext = fi.Extension.ToLowerInvariant();
 
                 try
                 {

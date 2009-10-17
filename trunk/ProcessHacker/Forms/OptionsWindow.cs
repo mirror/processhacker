@@ -354,7 +354,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    if (!Array.Exists<string>(key.GetSubKeyNames(), s => s.Equals("taskmgr.exe", StringComparison.InvariantCultureIgnoreCase)))
+                    if (!Array.Exists<string>(key.GetSubKeyNames(), s => s.Equals("taskmgr.exe", StringComparison.OrdinalIgnoreCase)))
                         key.CreateSubKey("taskmgr.exe");
 
                     Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
@@ -379,8 +379,8 @@ namespace ProcessHacker
                     false
                     ))
                 {
-                    if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", "")).ToLower().Trim('"') ==
-                        ProcessHandle.Current.GetMainModule().FileName.ToLower())
+                    if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", "")).Trim('"').Equals(
+                        ProcessHandle.Current.GetMainModule().FileName, StringComparison.OrdinalIgnoreCase))
                     {
                         checkReplaceTaskManager.Checked = true;
                     }
@@ -439,7 +439,7 @@ namespace ProcessHacker
             Settings.Instance.StartHidden = checkStartHidden.Checked;
             Settings.Instance.EnableKPH = checkEnableKPH.Checked;
             Settings.Instance.EnableExperimentalFeatures = checkEnableExperimentalFeatures.Checked;
-            Settings.Instance.ImposterNames = textImposterNames.Text.ToLower();
+            Settings.Instance.ImposterNames = textImposterNames.Text.ToLowerInvariant();
             Settings.Instance.HideProcessHackerNetworkConnections = checkHidePhConnections.Checked;
             Settings.Instance.ElevationLevel = comboElevationLevel.SelectedIndex;
 
@@ -539,7 +539,7 @@ namespace ProcessHacker
                         {
                             // If we were replacing Task Manager and the user unchecked the box, 
                             // don't replace Task Manager anymore.
-                            if (_oldTaskMgrDebugger.ToLower().Trim('"') == fileName.ToLower())
+                            if (_oldTaskMgrDebugger.Trim('"').Equals(fileName, StringComparison.OrdinalIgnoreCase))
                             {
                                 key.DeleteValue("Debugger");
                                 _oldTaskMgrDebugger = "";

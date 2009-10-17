@@ -1830,7 +1830,7 @@ namespace ProcessHacker
                             {
                                 if (
                                     string.Equals(process.Name, "explorer.exe",
-                                    StringComparison.InvariantCultureIgnoreCase) &&
+                                    StringComparison.OrdinalIgnoreCase) &&
                                     process.ProcessItem.Username == Program.CurrentUsername)
                                 {
                                     treeProcesses.FindTreeNode(process).EnsureVisible2();

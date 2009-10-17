@@ -510,15 +510,15 @@ namespace ProcessHacker.Native
         {
             foreach (string value in Enum.GetNames(typeof(ObjectType)))
             {
-                if (string.Equals(value, typeName, StringComparison.InvariantCultureIgnoreCase))
+                if (value.Equals(typeName, StringComparison.OrdinalIgnoreCase))
                     return (ObjectType)Enum.Parse(typeof(ObjectType), value);
             }
 
-            if (string.Equals(typeName, "ALPC Port", StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(typeName, "ALPC Port", StringComparison.OrdinalIgnoreCase))
                 return ObjectType.AlpcPort;
-            if (string.Equals(typeName, "Port", StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(typeName, "Port", StringComparison.OrdinalIgnoreCase))
                 return ObjectType.AlpcPort;
-            if (string.Equals(typeName, "WaitablePort", StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(typeName, "WaitablePort", StringComparison.OrdinalIgnoreCase))
                 return ObjectType.AlpcPort;
 
             throw new NotSupportedException();

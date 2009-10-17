@@ -465,7 +465,7 @@ namespace ProcessHacker.Native.Objects
 
             foreach (var process in processes.Values)
             {
-                if (string.Equals(process.Name, processName, StringComparison.InvariantCultureIgnoreCase))
+                if (string.Equals(process.Name, processName, StringComparison.OrdinalIgnoreCase))
                 {
                     try
                     {
@@ -1633,9 +1633,9 @@ namespace ProcessHacker.Native.Objects
 
             string fileName = FileUtils.GetFileName(this.GetImageFileName());
 
-            if (fileName.ToLower().StartsWith(Environment.SystemDirectory.ToLower()))
+            if (fileName.StartsWith(Environment.SystemDirectory, StringComparison.OrdinalIgnoreCase))
             {
-                string baseName = fileName.Remove(0, Environment.SystemDirectory.Length).TrimStart('\\').ToLower();
+                string baseName = fileName.Remove(0, Environment.SystemDirectory.Length).TrimStart('\\').ToLowerInvariant();
 
                 switch (baseName)
                 {

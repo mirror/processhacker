@@ -161,7 +161,7 @@ namespace ProcessHacker
                 mailslotName = "ProcessHackerAssistant" + Utils.CreateRandomString(8);
                 binPath = "\"" + Application.StartupPath + "\\Assistant.exe\" " +
                     (omitUserAndType ? "" :
-                    ("-u \"" + comboUsername.Text + "\" -t " + comboType.SelectedItem.ToString().ToLower() + " ")) +
+                    ("-u \"" + comboUsername.Text + "\" -t " + comboType.SelectedItem.ToString().ToLowerInvariant() + " ")) +
                     (_pid != -1 ? ("-P " + _pid.ToString() + " ") : "") + "-p \"" +
                     textPassword.Text.Replace("\"", "\\\"") + "\" -s " + textSessionID.Text + " -c \"" +
                     textCmdLine.Text.Replace("\"", "\\\"") + "\" -E " + mailslotName;

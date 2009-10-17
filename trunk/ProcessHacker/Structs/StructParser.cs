@@ -53,7 +53,7 @@ namespace ProcessHacker.Structs
 
             foreach (string s in Enum.GetNames(typeof(FieldType)))
                 if (s != "Pointer")
-                    _typeDefs.Add(s.ToLower(), (FieldType)Enum.Parse(typeof(FieldType), s));
+                    _typeDefs.Add(s.ToLowerInvariant(), (FieldType)Enum.Parse(typeof(FieldType), s));
         }
 
         private FieldType GetType(string typeName)

@@ -100,7 +100,7 @@ namespace ProcessHacker.Common
                     {
                         if ((Environment.SystemDirectory + "\\" + s).Equals(
                             FileUtils.GetFileName(FileUtils.GetFileName(phandle.GetImageFileName())),
-                            StringComparison.InvariantCultureIgnoreCase))
+                            StringComparison.OrdinalIgnoreCase))
                         {
                             return true;
                         }

@@ -1040,7 +1040,7 @@ namespace ProcessHacker.Components
                     thandle.WalkStack(phandle, (stackFrame) =>
                         {
                             uint address = stackFrame.PcAddress.ToUInt32();
-                            string name = _provider.Symbols.GetSymbolFromAddress(address).ToLower();
+                            string name = _provider.Symbols.GetSymbolFromAddress(address).ToLowerInvariant();
 
                             if (name == null)
                             {

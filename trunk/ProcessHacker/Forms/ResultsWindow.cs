@@ -430,7 +430,7 @@ namespace ProcessHacker
                 item = new MenuItem("Contains (case-insensitive)...", new EventHandler(filterMenuItem_Clicked));
                 item.Tag = new Matcher(delegate(string s1, string s2)
                 {
-                    return s1.ToLower().Contains(s2.ToLower());
+                    return s1.ToUpperInvariant().Contains(s2.ToUpperInvariant());
                 });
                 columnMenu.MenuItems.Add(item);
 

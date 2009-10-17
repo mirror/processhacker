@@ -86,7 +86,7 @@ namespace ProcessHacker.Common
                 length -= 1;
             }
 
-            number = ReverseString(number).ToLower();
+            number = ReverseString(number).ToLowerInvariant();
 
             for (int i = 0; i < length; i++)
             {

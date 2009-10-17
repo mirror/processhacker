@@ -182,7 +182,7 @@ namespace ProcessHacker.Components
                         {
                             var privilege = privileges[i];
 
-                            ListViewItem item = listPrivileges.Items.Add(privilege.Name.ToLower(), privilege.Name, 0);
+                            ListViewItem item = listPrivileges.Items.Add(privilege.Name.ToLowerInvariant(), privilege.Name, 0);
 
                             item.BackColor = GetAttributeColor(privilege.Attributes);
                             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, GetAttributeString(privilege.Attributes)));

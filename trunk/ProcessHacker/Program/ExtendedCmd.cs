@@ -47,7 +47,7 @@ namespace ProcessHacker
             if (!args.ContainsKey("-type"))
                 throw new Exception("-type switch required.");
 
-            string type = args["-type"].ToLower();
+            string type = args["-type"].ToLowerInvariant();
 
             if (!args.ContainsKey("-obj"))
                 throw new Exception("-obj switch required.");
@@ -57,7 +57,7 @@ namespace ProcessHacker
             if (!args.ContainsKey("-action"))
                 throw new Exception("-action switch required.");
 
-            string action = args["-action"].ToLower();
+            string action = args["-action"].ToLowerInvariant();
 
             WindowFromHandle window = new WindowFromHandle(IntPtr.Zero);
 

@@ -586,7 +586,7 @@ namespace ProcessHacker
             }
 
             if (pArgs.ContainsKey(""))
-                if (pArgs[""].Replace("\"", "").Trim().ToLower().EndsWith("taskmgr.exe"))
+                if (pArgs[""].Replace("\"", "").Trim().EndsWith("taskmgr.exe", StringComparison.OrdinalIgnoreCase))
                     StartVisible = true;
 
             if (pArgs.ContainsKey("-m"))

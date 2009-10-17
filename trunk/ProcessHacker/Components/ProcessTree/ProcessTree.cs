@@ -277,7 +277,7 @@ namespace ProcessHacker
                 return Settings.Instance.ColorJobProcesses;
             else if (Settings.Instance.UseColorPackedProcesses &&
                 Settings.Instance.VerifySignatures &&
-                Program.ImposterNames.Contains(p.Name.ToLower()) &&
+                Program.ImposterNames.Contains(p.Name.ToLowerInvariant()) &&
                 p.VerifyResult != VerifyResult.Trusted &&
                 p.VerifyResult != VerifyResult.TrustedInstaller &&
                 p.VerifyResult != VerifyResult.Unknown &&

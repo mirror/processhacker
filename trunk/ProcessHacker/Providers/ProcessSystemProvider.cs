@@ -574,7 +574,7 @@ namespace ProcessHacker
                 {
                     if (fileName != null)
                     {
-                        string uniName = global::System.IO.Path.GetFullPath(fileName).ToLower();
+                        string uniName = global::System.IO.Path.GetFullPath(fileName).ToLowerInvariant();
 
                         // No lock needed; verify results are never removed, only added.
                         if (!forced && _fileResults.ContainsKey(uniName))

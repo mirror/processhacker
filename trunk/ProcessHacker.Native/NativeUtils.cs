@@ -2,6 +2,7 @@
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using System.Runtime.InteropServices;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native
 {
@@ -171,23 +172,21 @@ namespace ProcessHacker.Native
 
         public static string FormatNativeKeyName(string nativeKeyName)
         {
-            const string hklmString = "\\registry\\machine";
-            const string hkcrString = "\\registry\\machine\\software\\classes";
-            string hkcuString = "\\registry\\user\\" +
-                System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower();
-            string hkcucrString = "\\registry\\user\\" +
-                System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower() + "_classes";
-            const string hkuString = "\\registry\\user";
+            const string hklmString = @"\REGISTRY\MACHINE";
+            const string hkcrString = @"\REGISTRY\MACHINE\SOFTWARE\CLASSES";
+            string hkcuString = @"\REGISTRY\USER\" + Sid.CurrentUser.StringSid;
+            string hkcucrString = @"\REGISTRY\USER\" + Sid.CurrentUser.StringSid + "_Classes";
+            const string hkuString = @"\REGISTRY\USER";
 
-            if (nativeKeyName.ToLower().StartsWith(hkcrString))
+            if (nativeKeyName.StartsWith(hkcrString, StringComparison.OrdinalIgnoreCase))
                 return "HKCR" + nativeKeyName.Substring(hkcrString.Length);
-            else if (nativeKeyName.ToLower().StartsWith(hklmString))
+            else if (nativeKeyName.StartsWith(hklmString, StringComparison.OrdinalIgnoreCase))
                 return "HKLM" + nativeKeyName.Substring(hklmString.Length);
-            else if (nativeKeyName.ToLower().StartsWith(hkcucrString))
-                return "HKCU\\Software\\Classes" + nativeKeyName.Substring(hkcucrString.Length);
-            else if (nativeKeyName.ToLower().StartsWith(hkcuString))
+            else if (nativeKeyName.StartsWith(hkcucrString, StringComparison.OrdinalIgnoreCase))
+                return @"HKCU\Software\Classes" + nativeKeyName.Substring(hkcucrString.Length);
+            else if (nativeKeyName.StartsWith(hkcuString, StringComparison.OrdinalIgnoreCase))
                 return "HKCU" + nativeKeyName.Substring(hkcuString.Length);
-            else if (nativeKeyName.ToLower().StartsWith(hkuString))
+            else if (nativeKeyName.StartsWith(hkuString, StringComparison.OrdinalIgnoreCase))
                 return "HKU" + nativeKeyName.Substring(hkuString.Length);
             else
                 return nativeKeyName;
@@ -245,7 +244,7 @@ namespace ProcessHacker.Native
 
                     foreach (var obj in objects)
                     {
-                        if (obj.Name.Equals(lastPart, StringComparison.InvariantCultureIgnoreCase))
+                        if (obj.Name.Equals(lastPart, StringComparison.OrdinalIgnoreCase))
                             return true;
                     }
 

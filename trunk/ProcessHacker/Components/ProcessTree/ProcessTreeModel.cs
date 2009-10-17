@@ -201,7 +201,7 @@ namespace ProcessHacker
         {
             foreach (TreeColumn column in _tree.Tree.Columns)
                 if (column.SortOrder != SortOrder.None)
-                    return column.Header.ToLower();
+                    return column.Header.ToLowerInvariant();
 
             return "";
         }

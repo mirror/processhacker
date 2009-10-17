@@ -90,7 +90,7 @@ namespace ProcessHacker
 
                 if (pNode.ProcessItem.FileName != null &&
                     pNode.ProcessItem.FileName.Equals(Environment.SystemDirectory + "\\rundll32.exe",
-                    StringComparison.InvariantCultureIgnoreCase) &&
+                    StringComparison.OrdinalIgnoreCase) &&
                     pNode.ProcessItem.CmdLine != null)
                 {
                     try
@@ -118,7 +118,7 @@ namespace ProcessHacker
 
                 if (pNode.ProcessItem.FileName != null &&
                     pNode.ProcessItem.FileName.Equals(Environment.SystemDirectory + "\\dllhost.exe",
-                    StringComparison.InvariantCultureIgnoreCase) &&
+                    StringComparison.OrdinalIgnoreCase) &&
                     pNode.ProcessItem.CmdLine != null)
                 {
                     try
@@ -198,7 +198,7 @@ namespace ProcessHacker
                         else if (pNode.ProcessItem.VerifyResult != VerifyResult.NoSignature)
                             otherNotes += "\n    Signature present but invalid.";
 
-                        if (Program.ImposterNames.Contains(pNode.Name.ToLower()) &&
+                        if (Program.ImposterNames.Contains(pNode.Name.ToLowerInvariant()) &&
                             pNode.ProcessItem.VerifyResult != VerifyResult.Trusted &&
                             pNode.ProcessItem.VerifyResult != VerifyResult.TrustedInstaller &&
                             pNode.ProcessItem.VerifyResult != VerifyResult.Unknown)

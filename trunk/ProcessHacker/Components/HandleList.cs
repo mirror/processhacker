@@ -66,7 +66,7 @@ namespace ProcessHacker.Components
 
                 window.HandlePropertiesCallback += (control, name, typeName) =>
                     {
-                        switch (typeName.ToLower())
+                        switch (typeName.ToLowerInvariant())
                         {
                             // Objects with separate property windows:
                             case "file":
@@ -78,12 +78,12 @@ namespace ProcessHacker.Components
                                     Button b = new Button();
 
                                     b.FlatStyle = FlatStyle.System;
-                                    b.Text = "Properties...";
+                                    b.Text = "Properties";
                                     b.Click += (sender, e) =>
                                         {
                                             try
                                             {
-                                                switch (typeName.ToLower())
+                                                switch (typeName.ToLowerInvariant())
                                                 {
                                                     case "file":
                                                         {

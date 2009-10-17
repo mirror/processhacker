@@ -243,7 +243,7 @@ namespace ProcessHacker
                 sb.AppendFormat("{0:x2}", b);
             }
 
-            if (_updateItem.Hash.Equals(sb.ToString(), StringComparison.InvariantCultureIgnoreCase))
+            if (_updateItem.Hash.Equals(sb.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 labelProgress.Text = "Download completed and SHA1 verified successfully.";
                 buttonInstall.Select();

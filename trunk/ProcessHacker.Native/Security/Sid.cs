@@ -41,6 +41,23 @@ namespace ProcessHacker.Native.Security
         private static readonly byte[] _nonUniqueAuthority = { 0, 0, 0, 0, 0, 4 };
         private static readonly byte[] _ntAuthority = { 0, 0, 0, 0, 0, 5 };
         private static readonly byte[] _resourceManagerAuthority = { 0, 0, 0, 0, 0, 9 };
+        private static Sid _currentUser;
+
+        public static Sid CurrentUser
+        {
+            get
+            {
+                Sid currentUser = _currentUser;
+
+                if (currentUser == null)
+                {
+                    using (var thandle = TokenHandle.OpenCurrentPrimary(TokenAccess.Query))
+                        _currentUser = currentUser = thandle.GetUser();
+                }
+
+                return currentUser;
+            }
+        }
 
         public static Sid FromName(string name)
         {

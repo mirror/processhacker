@@ -132,7 +132,7 @@ namespace ProcessHacker.Native
             bool alreadyCanonicalized = false;
 
             // If the path starts with "\SystemRoot", we can replace it with C:\ (or whatever it is).
-            if (fileName.ToLower().StartsWith("\\systemroot"))
+            if (fileName.StartsWith("\\systemroot", StringComparison.OrdinalIgnoreCase))
             {
                 fileName = System.IO.Path.GetFullPath(Environment.SystemDirectory + "\\.." + fileName.Substring(11));
                 alreadyCanonicalized = true;
