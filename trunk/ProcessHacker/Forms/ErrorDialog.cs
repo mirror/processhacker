@@ -46,6 +46,9 @@ namespace ProcessHacker
 
             textException.AppendText(_exception.ToString());
 
+            if (_exception.InnerException != null)
+                textException.AppendText("\r\n\r\n" + _exception.InnerException.ToString());
+
             if (_isTerminating)
                 buttonContinue.Enabled = false;
 
