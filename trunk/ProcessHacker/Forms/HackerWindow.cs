@@ -3340,11 +3340,11 @@ namespace ProcessHacker
 
             if (OSVersion.HasExtendedTaskbar)
             {
-                // We need to call this here or we dont recieve the TaskbarButtonCreated WindowMessage
+                // We need to call this here or we don't receive the TaskbarButtonCreated message
                 Windows7Taskbar.AllowWindowMessagesThroughUipi();
                 Windows7Taskbar.AppId = "ProcessHacker";
                 Windows7Taskbar.ProcessAppId  = "ProcessHacker";
-                
+
                 thumbButtonManager = new ThumbButtonManager(this);
                 thumbButtonManager.TaskbarButtonCreated += new EventHandler(thumbButtonManager_TaskbarButtonCreated);
             }

@@ -102,34 +102,37 @@ namespace ProcessHacker.Native
             else
                 _windowsVersion = WindowsVersion.Unknown;
 
-            if (IsAboveOrEqual(WindowsVersion.XP))
+            if (_windowsVersion != WindowsVersion.Unknown)
             {
-                _hasThemes = true;
-            }
+                if (IsAboveOrEqual(WindowsVersion.XP))
+                {
+                    _hasThemes = true;
+                }
 
-            if (IsBelow(WindowsVersion.Vista))
-            {
-                _hasSetAccessToken = true;
-            }
+                if (IsBelow(WindowsVersion.Vista))
+                {
+                    _hasSetAccessToken = true;
+                }
 
-            if (IsAboveOrEqual(WindowsVersion.Vista))
-            {
-                _minProcessQueryInfoAccess = ProcessAccess.QueryLimitedInformation;
-                _minThreadQueryInfoAccess = ThreadAccess.QueryLimitedInformation;
-                _minThreadSetInfoAccess = ThreadAccess.SetLimitedInformation;
+                if (IsAboveOrEqual(WindowsVersion.Vista))
+                {
+                    _minProcessQueryInfoAccess = ProcessAccess.QueryLimitedInformation;
+                    _minThreadQueryInfoAccess = ThreadAccess.QueryLimitedInformation;
+                    _minThreadSetInfoAccess = ThreadAccess.SetLimitedInformation;
 
-                _hasCycleTime = true;
-                _hasProtectedProcesses = true;
-                _hasPsSuspendResumeProcess = true;
-                _hasQueryLimitedInformation = true;
-                _hasTaskDialogs = true;
-                _hasUac = true;
-                _hasWin32ImageFileName = true;
-            }
+                    _hasCycleTime = true;
+                    _hasProtectedProcesses = true;
+                    _hasPsSuspendResumeProcess = true;
+                    _hasQueryLimitedInformation = true;
+                    _hasTaskDialogs = true;
+                    _hasUac = true;
+                    _hasWin32ImageFileName = true;
+                }
 
-            if (IsAboveOrEqual(WindowsVersion.Seven))
-            {
-                _hasExtendedTaskbar = true;
+                if (IsAboveOrEqual(WindowsVersion.Seven))
+                {
+                    _hasExtendedTaskbar = true;
+                }
             }
         }
 
