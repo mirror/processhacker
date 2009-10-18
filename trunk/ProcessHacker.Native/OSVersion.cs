@@ -89,57 +89,52 @@ namespace ProcessHacker.Native
         static OSVersion()
         {
             System.Version version = Environment.OSVersion.Version;
-
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-                if (version.Major == 5 && version.Minor == 0)
-                    _windowsVersion = WindowsVersion.TwoThousand;
-                else if (version.Major == 5 && version.Minor == 1)
-                    _windowsVersion = WindowsVersion.XP;
-                else if (version.Major == 5 && version.Minor == 2)
-                    _windowsVersion = WindowsVersion.Server2003;
-                else if (version.Major == 6 && version.Minor == 0)
-                    _windowsVersion = WindowsVersion.Vista;
-                else if (version.Major == 6 && version.Minor == 1)
-                    _windowsVersion = WindowsVersion.Seven;
-                else
-                    _windowsVersion = WindowsVersion.Unknown;
-
-                if (_windowsVersion != WindowsVersion.Unknown)
-                {
-                    if (IsAboveOrEqual(WindowsVersion.XP))
-                    {
-                        _hasThemes = true;
-                    }
-
-                    if (IsBelow(WindowsVersion.Vista))
-                    {
-                        _hasSetAccessToken = true;
-                    }
-
-                    if (IsAboveOrEqual(WindowsVersion.Vista))
-                    {
-                        _minProcessQueryInfoAccess = ProcessAccess.QueryLimitedInformation;
-                        _minThreadQueryInfoAccess = ThreadAccess.QueryLimitedInformation;
-                        _minThreadSetInfoAccess = ThreadAccess.SetLimitedInformation;
-
-                        _hasCycleTime = true;
-                        _hasProtectedProcesses = true;
-                        _hasPsSuspendResumeProcess = true;
-                        _hasQueryLimitedInformation = true;
-                        _hasTaskDialogs = true;
-                        _hasUac = true;
-                        _hasWin32ImageFileName = true;
-                    }
-
-                    if (IsAboveOrEqual(WindowsVersion.Seven))
-                    {
-                        _hasExtendedTaskbar = true;
-                    }
-                }
-            }
+            
+            if (version.Major == 5 && version.Minor == 0)
+                _windowsVersion = WindowsVersion.TwoThousand;
+            else if (version.Major == 5 && version.Minor == 1)
+                _windowsVersion = WindowsVersion.XP;
+            else if (version.Major == 5 && version.Minor == 2)
+                _windowsVersion = WindowsVersion.Server2003;
+            else if (version.Major == 6 && version.Minor == 0)
+                _windowsVersion = WindowsVersion.Vista;
+            else if (version.Major == 6 && version.Minor == 1)
+                _windowsVersion = WindowsVersion.Seven;
             else
                 _windowsVersion = WindowsVersion.Unknown;
+
+            if (_windowsVersion != WindowsVersion.Unknown)
+            {
+                if (IsAboveOrEqual(WindowsVersion.XP))
+                {
+                    _hasThemes = true;
+                }
+
+                if (IsBelow(WindowsVersion.Vista))
+                {
+                    _hasSetAccessToken = true;
+                }
+
+                if (IsAboveOrEqual(WindowsVersion.Vista))
+                {
+                    _minProcessQueryInfoAccess = ProcessAccess.QueryLimitedInformation;
+                    _minThreadQueryInfoAccess = ThreadAccess.QueryLimitedInformation;
+                    _minThreadSetInfoAccess = ThreadAccess.SetLimitedInformation;
+
+                    _hasCycleTime = true;
+                    _hasProtectedProcesses = true;
+                    _hasPsSuspendResumeProcess = true;
+                    _hasQueryLimitedInformation = true;
+                    _hasTaskDialogs = true;
+                    _hasUac = true;
+                    _hasWin32ImageFileName = true;
+                }
+
+                if (IsAboveOrEqual(WindowsVersion.Seven))
+                {
+                    _hasExtendedTaskbar = true;
+                }
+            }
         }
 
         public static int Bits
