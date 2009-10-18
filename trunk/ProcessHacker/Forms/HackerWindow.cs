@@ -3233,8 +3233,11 @@ namespace ProcessHacker
             serviceP.Updated += serviceP_Updated;
             updateServicesMenuItem.Checked = true;
 
-            networkP.Interval = Settings.Instance.RefreshInterval;
-            listNetwork.Provider = networkP;
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.XP))
+            {
+                networkP.Interval = Settings.Instance.RefreshInterval;
+                listNetwork.Provider = networkP;
+            }
 
             treeProcesses.Tree.MouseDown += (sender, e) =>
                 {
