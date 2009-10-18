@@ -126,14 +126,12 @@ namespace ProcessHacker
             }
 
             // Check OS support.
-
             if (OSVersion.IsBelow(WindowsVersion.TwoThousand) || OSVersion.IsAbove(WindowsVersion.Seven))
             {
                 PhUtils.ShowWarning("Your operating system is not supported by Process Hacker.");
             }
-
 #if !DEBUG
-            // Setup exception handling at first opportunity to catch exceptions generatable anywhere.
+            // Setup exception handling at first opportunity.
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException, true);
