@@ -503,7 +503,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
-            if (present)
+            if (present && dacl != IntPtr.Zero)
                 this.SwapDacl(new Acl(Acl.FromPointer(dacl)));
             else
                 this.SwapDacl(null);
@@ -517,7 +517,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
-            if (present)
+            if (present && sacl != IntPtr.Zero)
                 this.SwapSacl(new Acl(Acl.FromPointer(sacl)));
             else
                 this.SwapSacl(null);

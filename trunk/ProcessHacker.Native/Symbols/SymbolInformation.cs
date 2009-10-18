@@ -35,7 +35,7 @@ namespace ProcessHacker.Native.Symbols
             this.Flags = si.Flags;
             this.Index = si.Index;
             this.ModuleBase = si.ModBase;
-            this.Name = Marshal.PtrToStringAnsi(symbolInfo.Increment(Win32.SymbolInfoNameOffset), si.NameLen);
+            this.Name = Marshal.PtrToStringAnsi(symbolInfo.Increment(SymbolInfo.NameOffset), si.NameLen);
             this.Size = symbolSize;
             this.Address = si.Address;
         }

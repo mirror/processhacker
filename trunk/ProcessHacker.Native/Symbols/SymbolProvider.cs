@@ -233,7 +233,13 @@ namespace ProcessHacker.Native.Symbols
             using (Win32.DbgHelpLock.AcquireContext())
             {
                 if (!Win32.SymGetLineFromAddr64(_handle, address, out displacement, out line))
-                    Win32.ThrowLastError();
+                {
+                    fileName = null;
+                    lineNumber = 0;
+                    lineDisplacement = 0;
+
+                    return;
+                }
 
                 fileName = line.FileName;
                 lineNumber = line.LineNumber;
@@ -423,7 +429,7 @@ namespace ProcessHacker.Native.Symbols
                 }
 
                 // If we have everything, return the full symbol name: module!symbol+offset.
-                string name = Marshal.PtrToStringAnsi(data.Memory.Increment(Win32.SymbolInfoNameOffset), info.NameLen);
+                string name = data.ReadAnsiString(SymbolInfo.NameOffset, info.NameLen);
 
                 level = SymbolResolveLevel.Function;
                 flags = info.Flags;

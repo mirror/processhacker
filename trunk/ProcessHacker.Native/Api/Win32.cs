@@ -69,7 +69,6 @@ namespace ProcessHacker.Native.Api
         public const uint ShgFiIcon = 0x100;
         public const uint ShgFiLargeIcon = 0x0;
         public const uint ShgFiSmallIcon = 0x1;
-        public static readonly int SymbolInfoNameOffset = Marshal.OffsetOf(typeof(SymbolInfo), "Name").ToInt32();
 
         #endregion    
 

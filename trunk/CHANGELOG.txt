@@ -7,6 +7,7 @@ Process Hacker
    * Decreased memory and CPU usage
  * FIXED:
    * #2880368 - "Highlight Option dialog does not show current colors"
+   * Fixed some crashes on 64-bit when viewing thread stacks
 
 1.6
  * NEW/IMPROVED:

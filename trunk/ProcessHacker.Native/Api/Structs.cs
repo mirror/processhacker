@@ -117,7 +117,7 @@ namespace ProcessHacker.Native.Api
     public struct ImagehlpLine64
     {
         public int SizeOfStruct;
-        public int Key;
+        public IntPtr Key;
         public int LineNumber;
         public string FileName;
         public long Address;
@@ -698,6 +698,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SymbolInfo
     {
+        public static readonly int NameOffset = Marshal.OffsetOf(typeof(SymbolInfo), "Name").ToInt32();
+
         public int SizeOfStruct;
         public int TypeIndex;
         public unsafe fixed long Reserved[2];
@@ -712,7 +714,7 @@ namespace ProcessHacker.Native.Api
         public int Tag;
         public int NameLen;
         public int MaxNameLen;
-        public char Name;
+        public byte Name;
     } 
 
     [StructLayout(LayoutKind.Sequential)]
