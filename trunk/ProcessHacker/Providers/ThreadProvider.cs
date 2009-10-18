@@ -84,6 +84,7 @@ namespace ProcessHacker
         private int _pid;
         private int _loading = 0;
         private MessageQueue _messageQueue = new MessageQueue();
+        private int _symbolsStartedLoading = 0;
         private EventWaitHandle _moduleLoadCompletedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
         private bool _waitedForLoad = false;
 
@@ -108,134 +109,31 @@ namespace ProcessHacker
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
             this.Disposed += ThreadProvider_Disposed;
 
+            // Try to get a good process handle we can use the same handle for stack walking.
             try
             {
-                // Try to get a good process handle we can use the same handle for stack walking.
+                _processAccess = ProcessAccess.QueryInformation | ProcessAccess.VmRead;
+                _processHandle = new ProcessHandle(_pid, _processAccess);
+            }
+            catch
+            {
                 try
                 {
-                    _processAccess = ProcessAccess.QueryInformation | ProcessAccess.VmRead;
-                    _processHandle = new ProcessHandle(_pid, _processAccess);
-                }
-                catch
-                {
-                    try
+                    if (KProcessHacker.Instance != null)
                     {
-                        if (KProcessHacker.Instance != null)
-                        {
-                            _processAccess = Program.MinProcessReadMemoryRights;
-                            _processHandle = new ProcessHandle(_pid, _processAccess);
-                        }
-                        else
-                        {
-                            _processAccess = Program.MinProcessQueryRights;
-                            _processHandle = new ProcessHandle(_pid, _processAccess);
-                        }
+                        _processAccess = Program.MinProcessReadMemoryRights;
+                        _processHandle = new ProcessHandle(_pid, _processAccess);
                     }
-                    catch (WindowsException ex)
+                    else
                     {
-                        Logging.Log(ex);
+                        _processAccess = Program.MinProcessQueryRights;
+                        _processHandle = new ProcessHandle(_pid, _processAccess);
                     }
                 }
-
-                // Start loading symbols; avoid the UI blocking on the dbghelp call lock.
-                _symbolsWorkQueue.QueueWorkItemTag(new Action(() =>
+                catch (WindowsException ex)
                 {
-                    try
-                    {
-                        // Needed (maybe) to display the EULA
-                        Win32.SymbolServerSetOptions(SymbolServerOption.Unattended, 0);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logging.Log(ex);
-                    }
-
-                    try
-                    {
-                        // Use the process handle if we have one, otherwise use the default ID generator.
-                        if (_processHandle != null)
-                            _symbols = new SymbolProvider(_processHandle);
-                        else
-                            _symbols = new SymbolProvider();
-
-                        SymbolProvider.Options = SymbolOptions.DeferredLoads |
-                            (Settings.Instance.DbgHelpUndecorate ? SymbolOptions.UndName : 0);
-
-                        if (Settings.Instance.DbgHelpSearchPath != "")
-                            _symbols.SearchPath = Settings.Instance.DbgHelpSearchPath;
-
-                        try
-                        {
-                            if (_pid != 4)
-                            {
-                                using (var phandle =
-                                    new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
-                                {
-                                    if (IntPtr.Size == 4 || !phandle.IsWow64())
-                                    {
-                                        // Load the process' modules.
-                                        try { _symbols.LoadProcessModules(phandle); }
-                                        catch { }
-                                    }
-                                    else
-                                    {
-                                        // Load the process' WOW64 modules.
-                                        try { _symbols.LoadProcessWow64Modules(_pid); }
-                                        catch { }
-                                    }
-
-                                    // If the process is CSRSS we should load kernel modules 
-                                    // due to the presence of kernel-mode threads.
-                                    if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
-                                        this.LoadKernelSymbols(true);
-                                }
-                            }
-                            else
-                            {
-                                this.LoadKernelSymbols(true);
-                            }
-                        }
-                        catch (WindowsException ex)
-                        {
-                            // Did we get Access Denied? At least load 
-                            // kernel32.dll and ntdll.dll.
-                            try
-                            {
-                                ProcessHandle.Current.EnumModules((module) =>
-                                {
-                                    if (module.BaseName == "kernel32.dll" || module.BaseName == "ntdll.dll")
-                                    {
-                                        _symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
-                                    }
-
-                                    return true;
-                                });
-                            }
-                            catch (Exception ex2)
-                            {
-                                Logging.Log(ex2);
-                            }
-
-                            Logging.Log(ex);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logging.Log(ex);
-                        }
-                    }
-                    finally
-                    {
-                        lock (_moduleLoadCompletedEvent)
-                        {
-                            if (!_moduleLoadCompletedEvent.SafeWaitHandle.IsClosed)
-                                _moduleLoadCompletedEvent.Set();
-                        }
-                    }
-                }), "symbols-load");
-            }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
+                    Logging.Log(ex);
+                }
             }
         }
 
@@ -266,6 +164,112 @@ namespace ProcessHacker
                     _kernelSymbolsLoaded = true;
                 }
             }
+        }
+
+        private void LoadSymbols()
+        {
+            // Ensure we only load symbols once.
+            if (Interlocked.CompareExchange(ref _symbolsStartedLoading, 1, 0) == 1)
+                return;
+
+            // Start loading symbols; avoid the UI blocking on the dbghelp call lock.
+            _symbolsWorkQueue.QueueWorkItemTag(new Action(() =>
+            {
+                try
+                {
+                    // Needed (maybe) to display the EULA
+                    Win32.SymbolServerSetOptions(SymbolServerOption.Unattended, 0);
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
+
+                try
+                {
+                    // Use the process handle if we have one, otherwise use the default ID generator.
+                    if (_processHandle != null)
+                        _symbols = new SymbolProvider(_processHandle);
+                    else
+                        _symbols = new SymbolProvider();
+
+                    SymbolProvider.Options = SymbolOptions.DeferredLoads |
+                        (Settings.Instance.DbgHelpUndecorate ? SymbolOptions.UndName : 0);
+
+                    if (Settings.Instance.DbgHelpSearchPath != "")
+                        _symbols.SearchPath = Settings.Instance.DbgHelpSearchPath;
+
+                    try
+                    {
+                        if (_pid != 4)
+                        {
+                            using (var phandle =
+                                new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                            {
+                                if (IntPtr.Size == 4 || !phandle.IsWow64())
+                                {
+                                    // Load the process' modules.
+                                    try { _symbols.LoadProcessModules(phandle); }
+                                    catch { }
+                                }
+                                else
+                                {
+                                    // Load the process' WOW64 modules.
+                                    try { _symbols.LoadProcessWow64Modules(_pid); }
+                                    catch { }
+                                }
+
+                                // If the process is CSRSS we should load kernel modules 
+                                // due to the presence of kernel-mode threads.
+                                if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
+                                    this.LoadKernelSymbols(true);
+                            }
+                        }
+                        else
+                        {
+                            this.LoadKernelSymbols(true);
+                        }
+                    }
+                    catch (WindowsException ex)
+                    {
+                        // Did we get Access Denied? At least load 
+                        // kernel32.dll and ntdll.dll.
+                        try
+                        {
+                            ProcessHandle.Current.EnumModules((module) =>
+                            {
+                                if (
+                                    module.BaseName.Equals("kernel32.dll", StringComparison.OrdinalIgnoreCase) ||
+                                    module.BaseName.Equals("ntdll.dll", StringComparison.OrdinalIgnoreCase)
+                                    )
+                                {
+                                    _symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
+                                }
+
+                                return true;
+                            });
+                        }
+                        catch (Exception ex2)
+                        {
+                            Logging.Log(ex2);
+                        }
+
+                        Logging.Log(ex);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
+                }
+                finally
+                {
+                    lock (_moduleLoadCompletedEvent)
+                    {
+                        if (!_moduleLoadCompletedEvent.SafeWaitHandle.IsClosed)
+                            _moduleLoadCompletedEvent.Set();
+                    }
+                }
+            }), "symbols-load");
         }
 
         private void ThreadProvider_Disposed(IProvider provider)
@@ -374,6 +378,9 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
+            // Load symbols if they are not already loaded.
+            this.LoadSymbols();
+
             var threads = Windows.GetProcessThreads(_pid);
             Dictionary<int, ThreadItem> newdictionary = new Dictionary<int, ThreadItem>(this.Dictionary);
 

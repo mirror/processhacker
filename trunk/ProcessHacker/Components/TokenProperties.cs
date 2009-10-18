@@ -94,15 +94,26 @@ namespace ProcessHacker.Components
                         textElevated.Text = "(" + ex.Message + ")";
                     }
 
-                    try
+                    // Determine if the token has a linked token.
+                    if (OSVersion.HasUac)
                     {
-                        TokenWithLinkedToken tokWLT = new TokenWithLinkedToken(thandle);
+                        try
+                        {
+                            TokenHandle linkedToken = thandle.GetLinkedToken();
 
-                        tokWLT.GetToken().Dispose();
+                            if (linkedToken != null)
+                                linkedToken.Dispose();
+                            else
+                                buttonLinkedToken.Visible = false;
+                        }
+                        catch
+                        {
+                            buttonLinkedToken.Visible = false;
+                        }
                     }
-                    catch
+                    else
                     {
-                       buttonLinkedToken.Visible = false;
+                        buttonLinkedToken.Visible = false;
                     }
 
                     try

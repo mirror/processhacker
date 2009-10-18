@@ -748,7 +748,6 @@ namespace ProcessHacker
         {
             this.UpdatePerformance();
             this.UpdateProcessorPerf();
-            //this.UpdateFrozenWindows();
 
             if (this.RunCount % 3 == 0)
                 FileUtils.RefreshFileNamePrefixes();
@@ -853,18 +852,6 @@ namespace ProcessHacker
                         Win32.DestroyIcon(item.Icon.Handle);
                     if (item.LargeIcon != null)
                         Win32.DestroyIcon(item.LargeIcon.Handle);
-
-                    // Remove process protection if needed.
-                    if (KProcessHacker.Instance != null)
-                    {
-                        try
-                        {
-                            using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
-                                KProcessHacker.Instance.ProtectRemove(phandle);
-                        }
-                        catch
-                        { }
-                    }
 
                     newdictionary.Remove(pid);
                 }

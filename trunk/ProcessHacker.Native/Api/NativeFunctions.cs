@@ -1508,6 +1508,24 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationToken(
+            [In] IntPtr TokenHandle,
+            [In] TokenInformationClass TokenInformationClass,
+            [Out] out int TokenInformation,
+            [In] int TokenInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationToken(
+            [In] IntPtr TokenHandle,
+            [In] TokenInformationClass TokenInformationClass,
+            [Out] out IntPtr TokenInformation,
+            [In] int TokenInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtQueryInformationTransaction(
             [In] IntPtr TransactionHandle,
             [In] TransactionInformationClass TransactionInformationClass,

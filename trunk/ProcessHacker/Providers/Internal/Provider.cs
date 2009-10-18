@@ -144,12 +144,6 @@ namespace ProcessHacker
             if (disposing)
                 Monitor.Enter(_busyLock);
 
-            //if (_thread != null)
-            //{
-            //    _thread.Abort();
-            //    _thread = null;
-            //}
-
             if (this.Disposed != null)
             {
                 try
@@ -292,15 +286,21 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        try
-                        {
-                            if (Error != null)
-                                Error(ex);
-                        }
-                        catch
-                        { }
-
                         Logging.Log(ex);
+
+                        if (Error != null)
+                        {
+                            try
+                            {
+                                Error(ex);
+                            }
+                            catch
+                            { }
+                        }
+                        else
+                        {
+                            throw ex;
+                        }
                     }
 
                     try

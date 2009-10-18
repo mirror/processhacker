@@ -16,7 +16,7 @@ namespace ProcessHacker
         public SharedThreadProvider(int interval)
         {
             _interval = interval;
-            _thread = new Thread(new ThreadStart(this.Update));
+            _thread = new Thread(new ThreadStart(this.Update), ProcessHacker.Common.Utils.QuarterStackSize);
             _thread.IsBackground = true;
             _thread.SetApartmentState(ApartmentState.STA);
             _thread.Start();

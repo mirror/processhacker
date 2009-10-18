@@ -370,13 +370,75 @@ namespace ProcessHacker.Native.Objects
 
         private int GetInformationInt32(TokenInformationClass infoClass)
         {
+            NtStatus status;
             int value;
-            int retLen;
 
-            if (!Win32.GetTokenInformation(this, infoClass, out value, sizeof(int), out retLen))
-                Win32.ThrowLastError();
+            value = this.GetInformationInt32(infoClass, out status);
+
+            if (status >= NtStatus.Error)
+                Win32.ThrowLastError(status);
 
             return value;
+        }
+
+        private int GetInformationInt32(TokenInformationClass infoClass, out NtStatus status)
+        {
+            int value;
+            int retLength;
+
+            status = Win32.NtQueryInformationToken(
+                this,
+                infoClass,
+                out value,
+                sizeof(int),
+                out retLength
+                );
+
+            return value;
+        }
+
+        private IntPtr GetInformationIntPtr(TokenInformationClass infoClass)
+        {
+            NtStatus status;
+            IntPtr value;
+
+            value = this.GetInformationIntPtr(infoClass, out status);
+
+            if (status >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return value;
+        }
+
+        private IntPtr GetInformationIntPtr(TokenInformationClass infoClass, out NtStatus status)
+        {
+            IntPtr value;
+            int retLength;
+
+            status = Win32.NtQueryInformationToken(
+                this,
+                infoClass,
+                out value,
+                IntPtr.Size,
+                out retLength
+                );
+
+            return value;
+        }
+
+        public TokenHandle GetLinkedToken()
+        {
+            NtStatus status;
+            IntPtr handle;
+
+            handle = this.GetInformationIntPtr(TokenInformationClass.TokenLinkedToken, out status);
+
+            if (status == NtStatus.NoSuchLogonSession)
+                return null;
+            if (status >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return new TokenHandle(handle, true);
         }
 
         /// <summary>
