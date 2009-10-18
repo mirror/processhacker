@@ -299,7 +299,7 @@ namespace ProcessHacker
                         }
                         else
                         {
-                            throw ex;
+                            throw new Exception("A provider updater threw an exception.", ex);
                         }
                     }
 
