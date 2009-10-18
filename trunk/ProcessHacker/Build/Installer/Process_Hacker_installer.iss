@@ -61,7 +61,7 @@ VersionInfoVersion={#= app_version}
 VersionInfoProductName=Process Hacker
 VersionInfoProductVersion={#= app_version}
 VersionInfoProductTextVersion={#= app_version}
-MinVersion=0,5.01.2600
+MinVersion=0,5.0.2195
 AppReadmeFile={app}\README.txt
 LicenseFile=..\..\..\LICENSE.txt
 InfoAfterFile=..\..\..\CHANGELOG.txt
@@ -112,7 +112,7 @@ Source: ..\..\bin\Release\base.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\CHANGELOG.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\Help.htm; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\LICENSE.txt; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\bin\Release\kprocesshacker.sys; DestDir: {app}; Flags: ignoreversion; Check: NOT Is64BitInstallMode()
+Source: ..\..\bin\Release\kprocesshacker.sys; DestDir: {app}; Flags: ignoreversion; Check: NOT Is64BitInstallMode(); MinVersion: 0,5.01.2600
 Source: ..\..\bin\Release\NProcessHacker.dll; DestDir: {app}; Flags: ignoreversion; Check: NOT Is64BitInstallMode()
 Source: ..\..\bin\Release\NProcessHacker64.dll; DestName: NProcessHacker.dll; DestDir: {app}; Flags: ignoreversion; Check: Is64BitInstallMode()
 Source: ..\..\bin\Release\ProcessHacker.exe; DestDir: {app}; Flags: ignoreversion
