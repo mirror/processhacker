@@ -34,6 +34,11 @@ namespace ProcessHacker.Native
     public enum WindowsVersion
     {
         /// <summary>
+        /// Windows 2000.
+        /// </summary>
+        Win2000 = 50,
+
+        /// <summary>
         /// Windows XP SP2, SP3.
         /// </summary>
         XP = 51,
@@ -56,7 +61,12 @@ namespace ProcessHacker.Native
         /// <summary>
         /// An unreleased version of Windows.
         /// </summary>
-        Unreleased = int.MaxValue
+        Unreleased = int.MaxValue,
+
+        /// <summary>
+        /// An unsupported version of Windows.
+        /// </summary>
+        Unsupported = int.MinValue
     }
 
     public static class OSVersion
@@ -83,16 +93,66 @@ namespace ProcessHacker.Native
         {
             System.Version version = Environment.OSVersion.Version;
 
-            if (version.Major == 5 && version.Minor == 1)
-                _windowsVersion = WindowsVersion.XP;
-            else if (version.Major == 5 && version.Minor == 2)
-                _windowsVersion = WindowsVersion.Server2003;
-            else if (version.Major == 6 && version.Minor == 0)
-                _windowsVersion = WindowsVersion.Vista;
-            else if (version.Major == 6 && version.Minor == 1)
-                _windowsVersion = WindowsVersion.Seven;
-            else if ((version.Major == 6 && version.Minor > 1) || version.Major > 6)
-                _windowsVersion = WindowsVersion.Unreleased;
+            switch (version.Major)
+            {
+                case 5:
+                    {
+                        switch (version.Minor)
+                        {
+                            case 0:
+                                _windowsVersion = WindowsVersion.Win2000;
+                                break;
+                            case 1:
+                                _windowsVersion = WindowsVersion.XP;
+                                break;
+                            case 2:
+                                _windowsVersion = WindowsVersion.Server2003;
+                                break;
+                            default:
+                                break; //Not detected, jump to version.Major default
+                        }
+                        break;
+                    }
+                case 6:
+                    {
+                        switch (version.Minor)
+                        {
+                            case 0:
+                                _windowsVersion = WindowsVersion.Vista;
+                                break;
+                            case 1:
+                                _windowsVersion = WindowsVersion.Seven;
+                                break;
+                            default:
+                                break; //Not detected, jump to version.Major default
+                        }
+                        break;
+                    }
+                default:
+                    if (version.Major > 6 || version.Minor > 1) //check if newer than latest Windows release
+                    {
+                        _windowsVersion = WindowsVersion.Unreleased;
+                        break;
+                    }
+                    else //OS version not detected and not newer than the newest Windows release
+                        _windowsVersion = WindowsVersion.Unsupported;
+                        break;
+            }
+
+            //if (version.Major == 5 && version.Minor == 0)
+            //    _windowsVersion = WindowsVersion.Win2000;
+            //else if (version.Major == 5 && version.Minor == 1)
+            //    _windowsVersion = WindowsVersion.XP;
+            //else if (version.Major == 5 && version.Minor == 2)
+            //    _windowsVersion = WindowsVersion.Server2003;
+            //else if (version.Major == 6 && version.Minor == 0)
+            //    _windowsVersion = WindowsVersion.Vista;
+            //else if (version.Major == 6 && version.Minor == 1)
+            //    _windowsVersion = WindowsVersion.Seven;
+            //else if ((version.Major == 6 && version.Minor > 1) || version.Major > 6)
+            //    _windowsVersion = WindowsVersion.Unreleased;
+            //else
+            //    _windowsVersion = WindowsVersion.Unsupported;
 
             if (IsBelow(WindowsVersion.Vista))
             {
