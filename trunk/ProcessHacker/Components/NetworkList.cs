@@ -251,10 +251,13 @@ namespace ProcessHacker.Components
                 {
                     this.BeginInvoke(new MethodInvoker(() =>
                     {
-                        lock (_needsAdd)
+                        lock (listNetwork)
                         {
-                            listNetwork.Items.AddRange(_needsAdd.ToArray());
-                            _needsAdd.Clear();
+                            lock (_needsAdd)
+                            {
+                                listNetwork.Items.AddRange(_needsAdd.ToArray());
+                                _needsAdd.Clear();
+                            }
                         }
                     }));
                 }
