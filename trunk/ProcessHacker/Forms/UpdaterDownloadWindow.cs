@@ -221,9 +221,9 @@ namespace ProcessHacker
                             {
                                 int value = (int)((double)totalBytesRead * 100 / size);
 
-                                if (value >= this.progressDownload.Minimum || value <= this.progressDownload.Maximum)
+                                if (value >= this.progressDownload.Minimum && value <= this.progressDownload.Maximum)
                                 {
-                                    this.progressDownload.Value = (int)((double)totalBytesRead * 100 / size);
+                                    this.progressDownload.Value = value;
                                 }
                             }));
                     }
