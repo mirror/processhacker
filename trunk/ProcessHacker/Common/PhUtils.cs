@@ -382,7 +382,11 @@ namespace ProcessHacker.Common
         /// <param name="theme">A name of a theme.</param>
         public static void SetTheme(this Control control, string theme)
         {
-            Win32.SetWindowTheme(control.Handle, theme, null);
+            // Don't set on XP, doesn't look better than without SetWindowTheme.
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+            {
+                Win32.SetWindowTheme(control.Handle, theme, null);
+            }
         }
 
         /// <summary>

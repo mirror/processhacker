@@ -119,25 +119,20 @@ namespace ProcessHacker
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //before parsing commandline arguments, check OS support.
-            if (OSVersion.IsBelow(WindowsVersion.Win2000))
-            {
-                PhUtils.ShowError("This Operating System is not supported!");
-                Environment.Exit(1);
-            }
-            else if (OSVersion.WindowsVersion == WindowsVersion.Unreleased)
-            {
-                PhUtils.ShowError("This Operating System is unreleased and not currently supported," + 
-                    "\nProcess Hacker support has not been tested so expect bugs and issues.");
-            }
-
             if (Environment.Version.Major < 2)
             {
                 PhUtils.ShowError("You must have .NET Framework 2.0 or higher to use Process Hacker.");
                 Environment.Exit(1);
             }
 
-#if !DEBUG            
+            // Check OS support.
+
+            if (OSVersion.IsBelow(WindowsVersion.TwoThousand) || OSVersion.IsAbove(WindowsVersion.Seven))
+            {
+                PhUtils.ShowWarning("Your operating system is not supported by Process Hacker.");
+            }
+
+#if !DEBUG
             // Setup exception handling at first opportunity to catch exceptions generatable anywhere.
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);

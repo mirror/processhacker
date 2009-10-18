@@ -43,9 +43,9 @@ namespace ProcessHacker.Components
             if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
             {
                 Win32.SendMessage(this.Handle, (WindowMessage)TVM_SETEXTENDEDSTYLE, 0, TVS_EX_FADEINOUTEXPANDOS);
-                HResult setThemeResult = Win32.SetWindowTheme(this.Handle, "explorer", null);
-                setThemeResult.ThrowIf();
+                ProcessHacker.Common.PhUtils.SetTheme(this, "explorer");
             }
+
             base.OnHandleCreated(e);
         }
     }

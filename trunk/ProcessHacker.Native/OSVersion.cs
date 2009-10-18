@@ -36,10 +36,10 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Windows 2000.
         /// </summary>
-        Win2000 = 50,
+        TwoThousand = 50,
 
         /// <summary>
-        /// Windows XP SP2, SP3.
+        /// Windows XP.
         /// </summary>
         XP = 51,
 
@@ -49,24 +49,19 @@ namespace ProcessHacker.Native
         Server2003 = 52,
 
         /// <summary>
-        /// Windows Vista SP0, SP1, SP2, Windows Server 2008.
+        /// Windows Vista, Windows Server 2008.
         /// </summary>
         Vista = 60,
 
         /// <summary>
-        /// Windows 7 SP0.
+        /// Windows 7, Windows Server 2008 R2.
         /// </summary>
         Seven = 61,
 
         /// <summary>
-        /// An unreleased version of Windows.
+        /// An unknown version of Windows.
         /// </summary>
-        Unreleased = int.MaxValue,
-
-        /// <summary>
-        /// An unsupported version of Windows.
-        /// </summary>
-        Unsupported = int.MinValue
+        Unknown = int.MaxValue
     }
 
     public static class OSVersion
@@ -86,6 +81,7 @@ namespace ProcessHacker.Native
         private static bool _hasQueryLimitedInformation = false;
         private static bool _hasSetAccessToken = false;
         private static bool _hasTaskDialogs = false;
+        private static bool _hasThemes = false;
         private static bool _hasUac = false;
         private static bool _hasWin32ImageFileName = false;
 
@@ -93,66 +89,23 @@ namespace ProcessHacker.Native
         {
             System.Version version = Environment.OSVersion.Version;
 
-            switch (version.Major)
-            {
-                case 5:
-                    {
-                        switch (version.Minor)
-                        {
-                            case 0:
-                                _windowsVersion = WindowsVersion.Win2000;
-                                break;
-                            case 1:
-                                _windowsVersion = WindowsVersion.XP;
-                                break;
-                            case 2:
-                                _windowsVersion = WindowsVersion.Server2003;
-                                break;
-                            default:
-                                break; //Not detected, jump to version.Major default
-                        }
-                        break;
-                    }
-                case 6:
-                    {
-                        switch (version.Minor)
-                        {
-                            case 0:
-                                _windowsVersion = WindowsVersion.Vista;
-                                break;
-                            case 1:
-                                _windowsVersion = WindowsVersion.Seven;
-                                break;
-                            default:
-                                break; //Not detected, jump to version.Major default
-                        }
-                        break;
-                    }
-                default:
-                    if (version.Major > 6 || version.Minor > 1) //check if newer than latest Windows release
-                    {
-                        _windowsVersion = WindowsVersion.Unreleased;
-                        break;
-                    }
-                    else //OS version not detected and not newer than the newest Windows release
-                        _windowsVersion = WindowsVersion.Unsupported;
-                        break;
-            }
+            if (version.Major == 5 && version.Minor == 0)
+                _windowsVersion = WindowsVersion.TwoThousand;
+            else if (version.Major == 5 && version.Minor == 1)
+                _windowsVersion = WindowsVersion.XP;
+            else if (version.Major == 5 && version.Minor == 2)
+                _windowsVersion = WindowsVersion.Server2003;
+            else if (version.Major == 6 && version.Minor == 0)
+                _windowsVersion = WindowsVersion.Vista;
+            else if (version.Major == 6 && version.Minor == 1)
+                _windowsVersion = WindowsVersion.Seven;
+            else
+                _windowsVersion = WindowsVersion.Unknown;
 
-            //if (version.Major == 5 && version.Minor == 0)
-            //    _windowsVersion = WindowsVersion.Win2000;
-            //else if (version.Major == 5 && version.Minor == 1)
-            //    _windowsVersion = WindowsVersion.XP;
-            //else if (version.Major == 5 && version.Minor == 2)
-            //    _windowsVersion = WindowsVersion.Server2003;
-            //else if (version.Major == 6 && version.Minor == 0)
-            //    _windowsVersion = WindowsVersion.Vista;
-            //else if (version.Major == 6 && version.Minor == 1)
-            //    _windowsVersion = WindowsVersion.Seven;
-            //else if ((version.Major == 6 && version.Minor > 1) || version.Major > 6)
-            //    _windowsVersion = WindowsVersion.Unreleased;
-            //else
-            //    _windowsVersion = WindowsVersion.Unsupported;
+            if (IsAboveOrEqual(WindowsVersion.XP))
+            {
+                _hasThemes = true;
+            }
 
             if (IsBelow(WindowsVersion.Vista))
             {
@@ -248,6 +201,11 @@ namespace ProcessHacker.Native
         public static bool HasTaskDialogs
         {
             get { return _hasTaskDialogs; }
+        }
+
+        public static bool HasThemes
+        {
+            get { return _hasThemes; }
         }
 
         public static bool HasUac
