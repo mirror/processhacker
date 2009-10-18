@@ -61,7 +61,7 @@ namespace ProcessHacker.Native
         /// <summary>
         /// An unknown version of Windows.
         /// </summary>
-        Unknown = int.MaxValue
+        Unknown = int.MinValue
     }
 
     public static class OSVersion
