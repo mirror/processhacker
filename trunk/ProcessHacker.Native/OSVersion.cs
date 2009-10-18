@@ -68,8 +68,8 @@ namespace ProcessHacker.Native
     {
         private static int _bits = IntPtr.Size * 8;
         private static OSArch _arch = IntPtr.Size == 4 ? OSArch.I386 : OSArch.Amd64;
-        private static WindowsVersion _windowsVersion;
         private static string _versionString;
+        private static WindowsVersion _windowsVersion;
 
         private static ProcessAccess _minProcessQueryInfoAccess = ProcessAccess.QueryInformation;
         private static ThreadAccess _minThreadQueryInfoAccess = ThreadAccess.QueryInformation;
@@ -89,7 +89,7 @@ namespace ProcessHacker.Native
         static OSVersion()
         {
             System.Version version = Environment.OSVersion.Version;
-            
+
             if (version.Major == 5 && version.Minor == 0)
                 _windowsVersion = WindowsVersion.TwoThousand;
             else if (version.Major == 5 && version.Minor == 1)
@@ -135,6 +135,8 @@ namespace ProcessHacker.Native
                     _hasExtendedTaskbar = true;
                 }
             }
+
+            _versionString = Environment.OSVersion.VersionString;
         }
 
         public static int Bits
@@ -147,14 +149,14 @@ namespace ProcessHacker.Native
             get { return _bits.ToString() + "-" + "bit"; }
         }
 
-        public static string VersionString
-        {
-            get { return !string.IsNullOrEmpty(_versionString) ? _versionString : _versionString = Environment.OSVersion.VersionString; }
-        }
-
         public static OSArch Architecture
         {
             get { return _arch; }
+        }
+
+        public static string VersionString
+        {
+            get { return _versionString; }
         }
 
         public static WindowsVersion WindowsVersion
