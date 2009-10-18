@@ -26,7 +26,6 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
@@ -55,8 +54,8 @@ namespace ProcessHacker.Components
         private const int LVM_HitTest = LVM_First + 18;                                    // Determines which list-view item, if any, is at a specified position.
         private const int LVM_SetGroupInfo = LVM_First + 147;                      // ListView messages Setinfo on Group
         private const int LVM_SetExtendedListViewStyle = LVM_First + 54;  // Sets extended styles in list-view controls.
-        
-        private const int LVN_First = -100;                                                          
+
+        private const int LVN_First = -100;
         private const int LVN_LinkClick = (LVN_First - 84);                              // Notifies a list-view control's parent window that a link has been clicked on.
         private const int WM_LButtonUp = 0x202;                                             // Sent when the user releases the left mouse button while the cursor is in the client area of a window.
         private const int NM_DBLClk = -3;                                                          // Sent when the user double-clicks an item with the left mouse button.
@@ -69,7 +68,7 @@ namespace ProcessHacker.Components
 
         private delegate void CallBackSetGroupState(ListViewGroup lvGroup, ListViewGroupState lvState, string task);
         private delegate void CallbackSetGroupString(ListViewGroup lvGroup, string value);
-      
+
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref LVGroup lParam);
 
@@ -179,8 +178,38 @@ namespace ProcessHacker.Components
             }
         }
 
+        private unsafe void OnWmReflectNotify(ref Message m)
+        {
+            NMHDR* hdr = (NMHDR*)m.LParam;
+
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista) && hdr->code == LVN_LinkClick)
+            {
+                NMLVLINK link = (NMLVLINK)Marshal.PtrToStructure(m.LParam, typeof(NMLVLINK));
+
+                this.OnGroupLinkClicked(this.FindGroup(link.SubItemIndex));
+            }
+            else if (hdr->code == NM_DBLClk)
+            {
+                if (!_doubleClickChecks && this.CheckBoxes)
+                {
+                    _doubleClickCheckHackActive = true;
+                }
+            }
+        }
+
         protected override void WndProc(ref Message m)
         {
+            // OptionsWindow has a problem on XP where the BackColor of all ListViewItems 
+            // appears White. Here's what I've found so far:
+            // 
+            // * Commenting out the unsafe block fixes it.
+            // * Surrounding the switch block with a try-catch block where the catch 
+            //   block includes MessageBox.Show(ex.ToString()) fixes it.
+            // * Replacing the unsafe block with a function like OnWmReflectNotify 
+            //   fixes it.
+            // 
+            // Conclusion: What The Fuck?
+
             switch (m.Msg)
             {
                 case LVM_HitTest:
@@ -195,26 +224,7 @@ namespace ProcessHacker.Components
                     }
                     break;
                 case (int)WindowMessage.Reflect + (int)WindowMessage.Notify:
-                    unsafe
-                    {
-                        NMHDR* hdr = (NMHDR*)m.LParam;
-
-                        if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista) && hdr->code == LVN_LinkClick)
-                        {
-                            NMLVLINK link = (NMLVLINK)Marshal.PtrToStructure(m.LParam, typeof(NMLVLINK));
-
-                            this.OnGroupLinkClicked(this.FindGroup(link.SubItemIndex));
-
-                            return;
-                        }
-                        else if (hdr->code == NM_DBLClk)
-                        {
-                            if (!_doubleClickChecks && this.CheckBoxes)
-                            {
-                                _doubleClickCheckHackActive = true;
-                            }
-                        }
-                    }
+                    this.OnWmReflectNotify(ref m);
                     break;
                 case WM_LButtonUp:  //handle LButtonUp event and allow groups to be collapsed
                     {
@@ -222,9 +232,9 @@ namespace ProcessHacker.Components
                         break;
                     }
 
-                   //todo: mouse flicker bug:  http://blogs.msdn.com/oldnewthing/archive/2006/11/21/1115695.aspx
+                //todo: mouse flicker bug:  http://blogs.msdn.com/oldnewthing/archive/2006/11/21/1115695.aspx
             }
-            
+
             base.WndProc(ref m);
         }
 
@@ -509,5 +519,4 @@ namespace ProcessHacker.Components
         /// </summary>
         SubSetLinkFocused = 128,
     }
-
 }

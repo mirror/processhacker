@@ -5,6 +5,8 @@ Process Hacker
    * #2873973 - "Columns window improvements"
    * New settings system - settings can now be saved anywhere
    * Decreased memory and CPU usage
+ * FIXED:
+   * #2880368 - "Highlight Option dialog does not show current colors"
 
 1.6
  * NEW/IMPROVED:
