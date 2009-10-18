@@ -15,6 +15,7 @@ namespace ProcessHacker.Components
     /// <summary>
     /// Class to hold native code interop declarations.
     /// </summary>
+    [System.Security.SuppressUnmanagedCodeSecurity]
     internal static partial class UnsafeNativeMethods
     {
         /// <summary>
@@ -315,13 +316,11 @@ namespace ProcessHacker.Components
             /// <summary>
             /// Parent window handle.
             /// </summary>
-            [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")] // Managed code owns actual resource. Passed to native in syncronous call. No lifetime issues.
             public IntPtr hwndParent;
 
             /// <summary>
             /// Module instance handle for resources.
             /// </summary>
-            [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")] // Managed code owns actual resource. Passed to native in syncronous call. No lifetime issues.
             public IntPtr hInstance;
 
             /// <summary>
@@ -343,7 +342,6 @@ namespace ProcessHacker.Components
             /// <summary>
             /// The Main icon. Overloaded member. Can be string, a handle, a special value or a resource ID.
             /// </summary>
-            [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")] // Managed code owns actual resource. Passed to native in syncronous call. No lifetime issues.
             public IntPtr MainIcon;
 
             /// <summary>
@@ -366,7 +364,6 @@ namespace ProcessHacker.Components
             /// <summary>
             /// Array of custom buttons.
             /// </summary>
-            [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")] // Managed code owns actual resource. Passed to native in syncronous call. No lifetime issues.
             public IntPtr pButtons;
 
             /// <summary>
@@ -382,7 +379,6 @@ namespace ProcessHacker.Components
             /// <summary>
             /// Array of radio buttons.
             /// </summary>
-            [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")] // Managed code owns actual resource. Passed to native in syncronous call. No lifetime issues.
             public IntPtr pRadioButtons;
 
             /// <summary>
@@ -417,7 +413,6 @@ namespace ProcessHacker.Components
             /// <summary>
             /// Icon for the footer. An overloaded member link MainIcon.
             /// </summary>
-            [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")] // Managed code owns actual resource. Passed to native in syncronous call. No lifetime issues.
             public IntPtr FooterIcon;
 
             /// <summary>
@@ -434,13 +429,13 @@ namespace ProcessHacker.Components
             /// <summary>
             /// Data that will be passed to the call back.
             /// </summary>
-            [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")] // Managed code owns actual resource. Passed to native in syncronous call. No lifetime issues.
             public IntPtr lpCallbackData;
 
             /// <summary>
-            /// Width of the Task Dialog's area in DLU's.
+            /// Width of the Task Dialog's client area in DLU's.
+            /// If 0, Task Dialog will calculate the ideal width.
             /// </summary>
-            public uint cxWidth;                                // width of the Task Dialog's client area in DLU's. If 0, Task Dialog will calculate the ideal width.
+            public uint cxWidth;                                 
         }
     }
 }

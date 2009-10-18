@@ -24,7 +24,6 @@ namespace ProcessHacker.Components
         /// <summary>
         /// The Task Dialog's window handle.
         /// </summary>
-        [SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")] // We don't own the window.
         private IntPtr handle;
 
         /// <summary>
@@ -43,6 +42,7 @@ namespace ProcessHacker.Components
 
         /// <summary>
         /// The Task Dialog's window handle.
+        /// We don't own this window.
         /// </summary>
         public IntPtr Handle
         {

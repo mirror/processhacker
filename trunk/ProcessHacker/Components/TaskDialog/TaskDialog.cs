@@ -69,7 +69,6 @@ namespace ProcessHacker.Components
     /// <summary>
     /// The System icons the TaskDialog supports.
     /// </summary>
-    [SuppressMessage("Microsoft.Design", "CA1028:EnumStorageShouldBeInt32")] // Type comes from CommCtrl.h
     public enum TaskDialogIcon : uint
     {
         /// <summary>
@@ -243,7 +242,6 @@ namespace ProcessHacker.Components
     /// <summary>
     /// Progress bar state.
     /// </summary>
-    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")] // Comes from CommCtrl.h PBST_* values which don't have a zero.
     public enum ProgressBarState
     {
         /// <summary>
@@ -265,7 +263,6 @@ namespace ProcessHacker.Components
     /// <summary>
     /// A custom button for the TaskDialog.
     /// </summary>
-    [SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")] // Would be unused code as not required for usage.
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
     public struct TaskDialogButton
     {
@@ -550,8 +547,6 @@ namespace ProcessHacker.Components
         /// common buttons; OK, Yes, No, Retry and Cancel, and Buttons when you want different text
         /// on the push buttons.
         /// </summary>
-        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")] // Style of use is like single value. Array is of value types.
-        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")] // Returns a reference, not a copy.
         public TaskDialogButton[] Buttons
         {
             get
@@ -573,8 +568,6 @@ namespace ProcessHacker.Components
         /// <summary>
         /// Specifies the radio buttons to display in the dialog.
         /// </summary>
-        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")] // Style of use is like single value. Array is of value types.
-        [SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")] // Returns a reference, not a copy.
         public TaskDialogButton[] RadioButtons
         {
             get
