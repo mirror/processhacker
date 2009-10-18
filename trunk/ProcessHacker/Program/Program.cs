@@ -882,7 +882,7 @@ namespace ProcessHacker
             AppDomain app = System.AppDomain.CurrentDomain;
 
             info.AppendLine("Process Hacker " + Application.ProductVersion);
-            info.AppendLine("Process Hacker Build Time: " + Utils.GetAssemblyBuildDate(System.Reflection.Assembly.GetExecutingAssembly(), false));
+            info.AppendLine("Process Hacker Build Time: " + Utils.GetAssemblyBuildDate(System.Reflection.Assembly.GetExecutingAssembly(), false).ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
             info.AppendLine("CLR Version: " + Environment.Version.ToString());
             info.AppendLine("OS Version: " + Environment.OSVersion.VersionString + " (" + OSVersion.BitsString + ")");
             info.AppendLine("Elevation: " + ElevationType.ToString());
@@ -1010,14 +1010,14 @@ namespace ProcessHacker
 
                 DateTime fileCreatedInfo = System.IO.File.GetCreationTime(module.FileName);
                 info.AppendLine(
-                    "Created: " + fileCreatedInfo.ToLongDateString() + " " + 
-                    fileCreatedInfo.ToLongTimeString()
+                    "Created: " + fileCreatedInfo.ToLongDateString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo) + " " +
+                    fileCreatedInfo.ToLongTimeString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo)
                     );
 
                 DateTime fileModifiedInfo = System.IO.File.GetLastWriteTime(module.FileName);
                 info.AppendLine(
-                    "Modified: " + fileModifiedInfo.ToLongDateString() + " " +
-                    fileModifiedInfo.ToLongTimeString()
+                    "Modified: " + fileModifiedInfo.ToLongDateString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo) + " " +
+                    fileModifiedInfo.ToLongTimeString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo)
                     );
 
                 info.AppendLine("Version: " + System.Diagnostics.FileVersionInfo.GetVersionInfo(module.FileName).FileVersion);
