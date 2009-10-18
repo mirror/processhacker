@@ -464,32 +464,6 @@ namespace ProcessHacker.Components
         }
 
         /// <summary>
-        /// Returns true if the current operating system supports TaskDialog. If false TaskDialog.Show should not
-        /// be called as the results are undefined but often results in a crash.
-        /// </summary>
-        public static bool IsAvailableOnThisOS
-        {
-            get
-            {
-                OperatingSystem os = Environment.OSVersion;
-                if (os.Platform != PlatformID.Win32NT)
-                {
-                    return false;
-                }
-
-                return (os.Version.CompareTo(TaskDialog.RequiredOSVersion) >= 0);
-            }
-        }
-
-        /// <summary>
-        /// The minimum Windows version needed to support TaskDialog.
-        /// </summary>
-        public static Version RequiredOSVersion
-        {
-            get { return new Version(6, 0, 5243); }
-        }
-
-        /// <summary>
         /// The string to be used for the dialog box title. If this parameter is NULL, the filename of the executable program is used.
         /// </summary>
         public string WindowTitle

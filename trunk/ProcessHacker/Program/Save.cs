@@ -106,7 +106,7 @@ namespace ProcessHacker
             StringBuilder sb = new StringBuilder();
 
             sb.AppendLine("Process Hacker version " + Application.ProductVersion);
-            sb.AppendLine(Environment.OSVersion.ToString() + " (" + OSVersion.BitsString + ")");
+            sb.AppendLine(OSVersion.VersionString + " (" + OSVersion.BitsString + ")");
 
             return sb.ToString();
         }

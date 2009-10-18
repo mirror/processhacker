@@ -890,7 +890,7 @@ namespace ProcessHacker
             info.AppendLine("Process Hacker " + Application.ProductVersion);
             info.AppendLine("Process Hacker Build Time: " + Utils.GetAssemblyBuildDate(System.Reflection.Assembly.GetExecutingAssembly(), false).ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));
             info.AppendLine("CLR Version: " + Environment.Version.ToString());
-            info.AppendLine("OS Version: " + Environment.OSVersion.VersionString + " (" + OSVersion.BitsString + ")");
+            info.AppendLine("OS Version: " + OSVersion.VersionString + " (" + OSVersion.BitsString + ")");
             info.AppendLine("Elevation: " + ElevationType.ToString());
             info.AppendLine("Working set: " + Utils.FormatSize(Environment.WorkingSet));
 

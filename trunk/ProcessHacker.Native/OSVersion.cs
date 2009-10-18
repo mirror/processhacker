@@ -69,6 +69,7 @@ namespace ProcessHacker.Native
         private static int _bits = IntPtr.Size * 8;
         private static OSArch _arch = IntPtr.Size == 4 ? OSArch.I386 : OSArch.Amd64;
         private static WindowsVersion _windowsVersion;
+        private static string _versionString;
 
         private static ProcessAccess _minProcessQueryInfoAccess = ProcessAccess.QueryInformation;
         private static ThreadAccess _minThreadQueryInfoAccess = ThreadAccess.QueryInformation;
@@ -144,6 +145,11 @@ namespace ProcessHacker.Native
         public static string BitsString
         {
             get { return _bits.ToString() + "-" + "bit"; }
+        }
+
+        public static string VersionString
+        {
+            get { return !string.IsNullOrEmpty(_versionString) ? _versionString : _versionString = Environment.OSVersion.VersionString; }
         }
 
         public static OSArch Architecture
