@@ -37,7 +37,9 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.label19 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
+            this.comboProcessStyle = new System.Windows.Forms.ComboBox();
             this.comboToolbarStyle = new System.Windows.Forms.ComboBox();
             this.checkFloatChildWindows = new System.Windows.Forms.CheckBox();
             this.checkScrollDownProcessTree = new System.Windows.Forms.CheckBox();
@@ -103,13 +105,11 @@
             this.checkUpdateAutomatically = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.optUpdateStable = new System.Windows.Forms.RadioButton();
-            this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
             this.optUpdateBeta = new System.Windows.Forms.RadioButton();
+            this.optUpdateAlpha = new System.Windows.Forms.RadioButton();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
             this.buttonReset = new System.Windows.Forms.Button();
-            this.label19 = new System.Windows.Forms.Label();
-            this.comboProcessStyle = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -262,6 +262,15 @@
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
             // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 167);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(111, 13);
+            this.label19.TabIndex = 20;
+            this.label19.Text = "Process Display Style:";
+            // 
             // label20
             // 
             this.label20.AutoSize = true;
@@ -270,6 +279,19 @@
             this.label20.Size = new System.Drawing.Size(109, 13);
             this.label20.TabIndex = 19;
             this.label20.Text = "Toolbar Display Style:";
+            // 
+            // comboProcessStyle
+            // 
+            this.comboProcessStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboProcessStyle.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.comboProcessStyle.FormattingEnabled = true;
+            this.comboProcessStyle.Items.AddRange(new object[] {
+            "Show Selective Nodes",
+            "Show All Process Nodes"});
+            this.comboProcessStyle.Location = new System.Drawing.Point(134, 164);
+            this.comboProcessStyle.Name = "comboProcessStyle";
+            this.comboProcessStyle.Size = new System.Drawing.Size(135, 21);
+            this.comboProcessStyle.TabIndex = 18;
             // 
             // comboToolbarStyle
             // 
@@ -607,7 +629,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(481, 308);
+            this.tabHighlighting.Size = new System.Drawing.Size(481, 333);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -616,7 +638,7 @@
             // 
             this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 284);
+            this.label11.Location = new System.Drawing.Point(6, 309);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(165, 13);
             this.label11.TabIndex = 9;
@@ -626,7 +648,7 @@
             // 
             this.buttonDisableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDisableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDisableAll.Location = new System.Drawing.Point(400, 279);
+            this.buttonDisableAll.Location = new System.Drawing.Point(400, 304);
             this.buttonDisableAll.Name = "buttonDisableAll";
             this.buttonDisableAll.Size = new System.Drawing.Size(75, 23);
             this.buttonDisableAll.TabIndex = 5;
@@ -638,7 +660,7 @@
             // 
             this.buttonEnableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonEnableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonEnableAll.Location = new System.Drawing.Point(319, 279);
+            this.buttonEnableAll.Location = new System.Drawing.Point(319, 304);
             this.buttonEnableAll.Name = "buttonEnableAll";
             this.buttonEnableAll.Size = new System.Drawing.Size(75, 23);
             this.buttonEnableAll.TabIndex = 4;
@@ -662,7 +684,7 @@
             this.listHighlightingColors.MultiSelect = false;
             this.listHighlightingColors.Name = "listHighlightingColors";
             this.listHighlightingColors.ShowItemToolTips = true;
-            this.listHighlightingColors.Size = new System.Drawing.Size(469, 213);
+            this.listHighlightingColors.Size = new System.Drawing.Size(469, 238);
             this.listHighlightingColors.TabIndex = 3;
             this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
             this.listHighlightingColors.View = System.Windows.Forms.View.Details;
@@ -1030,17 +1052,6 @@
             this.optUpdateStable.Text = "Stable releases";
             this.optUpdateStable.UseVisualStyleBackColor = true;
             // 
-            // optUpdateAlpha
-            // 
-            this.optUpdateAlpha.AutoSize = true;
-            this.optUpdateAlpha.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.optUpdateAlpha.Location = new System.Drawing.Point(68, 78);
-            this.optUpdateAlpha.Name = "optUpdateAlpha";
-            this.optUpdateAlpha.Size = new System.Drawing.Size(100, 18);
-            this.optUpdateAlpha.TabIndex = 23;
-            this.optUpdateAlpha.Text = "Alpha releases";
-            this.optUpdateAlpha.UseVisualStyleBackColor = true;
-            // 
             // optUpdateBeta
             // 
             this.optUpdateBeta.AutoSize = true;
@@ -1051,6 +1062,17 @@
             this.optUpdateBeta.TabIndex = 22;
             this.optUpdateBeta.Text = "Beta releases";
             this.optUpdateBeta.UseVisualStyleBackColor = true;
+            // 
+            // optUpdateAlpha
+            // 
+            this.optUpdateAlpha.AutoSize = true;
+            this.optUpdateAlpha.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.optUpdateAlpha.Location = new System.Drawing.Point(68, 78);
+            this.optUpdateAlpha.Name = "optUpdateAlpha";
+            this.optUpdateAlpha.Size = new System.Drawing.Size(100, 18);
+            this.optUpdateAlpha.TabIndex = 23;
+            this.optUpdateAlpha.Text = "Alpha releases";
+            this.optUpdateAlpha.UseVisualStyleBackColor = true;
             // 
             // buttonCancel
             // 
@@ -1087,28 +1109,6 @@
             this.buttonReset.Text = "Reset";
             this.buttonReset.UseVisualStyleBackColor = true;
             this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(6, 167);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(111, 13);
-            this.label19.TabIndex = 20;
-            this.label19.Text = "Process Display Style:";
-            // 
-            // comboProcessStyle
-            // 
-            this.comboProcessStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboProcessStyle.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.comboProcessStyle.FormattingEnabled = true;
-            this.comboProcessStyle.Items.AddRange(new object[] {
-            "Show Selective Nodes",
-            "Show All Process Nodes"});
-            this.comboProcessStyle.Location = new System.Drawing.Point(134, 164);
-            this.comboProcessStyle.Name = "comboProcessStyle";
-            this.comboProcessStyle.Size = new System.Drawing.Size(135, 21);
-            this.comboProcessStyle.TabIndex = 18;
             // 
             // OptionsWindow
             // 

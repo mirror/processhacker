@@ -73,11 +73,6 @@ namespace ProcessHacker.Components
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref LVGroup lParam);
 
-        public ExtendedListView()
-        {
-            this.DoubleBuffered = true;
-        }
-
         public bool DoubleClickChecks
         {
             get { return _doubleClickChecks; }
@@ -200,26 +195,26 @@ namespace ProcessHacker.Components
                     }
                     break;
                 case (int)WindowMessage.Reflect + (int)WindowMessage.Notify:
-                        unsafe
+                    unsafe
+                    {
+                        NMHDR* hdr = (NMHDR*)m.LParam;
+
+                        if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista) && hdr->code == LVN_LinkClick)
                         {
-                            NMHDR* hdr = (NMHDR*)m.LParam;
+                            NMLVLINK link = (NMLVLINK)Marshal.PtrToStructure(m.LParam, typeof(NMLVLINK));
 
-                            if (hdr->code == LVN_LinkClick)
+                            this.OnGroupLinkClicked(this.FindGroup(link.SubItemIndex));
+
+                            return;
+                        }
+                        else if (hdr->code == NM_DBLClk)
+                        {
+                            if (!_doubleClickChecks && this.CheckBoxes)
                             {
-                                NMLVLINK link = (NMLVLINK)Marshal.PtrToStructure(m.LParam, typeof(NMLVLINK));
-
-                                this.OnGroupLinkClicked(this.FindGroup(link.SubItemIndex));
-
-                                return;
-                            }
-                            else if (hdr->code == NM_DBLClk)
-                            {
-                                if (!_doubleClickChecks && this.CheckBoxes)
-                                {
-                                    _doubleClickCheckHackActive = true;
-                                }
+                                _doubleClickCheckHackActive = true;
                             }
                         }
+                    }
                     break;
                 case WM_LButtonUp:  //handle LButtonUp event and allow groups to be collapsed
                     {

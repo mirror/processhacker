@@ -318,14 +318,9 @@ namespace ProcessHacker
             textHighlightingDuration.Value = Settings.Instance.HighlightingDuration;
             colorNewProcesses.Color = Settings.Instance.ColorNew;
             colorRemovedProcesses.Color = Settings.Instance.ColorRemoved;
-           
+
             foreach (ListViewItem item in listHighlightingColors.Items)
             {
-                //
-                //
-                // settings lookup method is untested
-                //
-                //
                 Color c = (Color)Settings.Instance[item.Name];
                 bool use = (bool)Settings.Instance["Use" + item.Name];
 

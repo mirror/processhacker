@@ -67,6 +67,8 @@ namespace ProcessHacker.Common
         /// </summary>
         public static int UnitSpecifier = 4;
 
+        private static PropertyInfo _doubleBufferedProperty;
+
         /// <summary>
         /// Flattens an array of arrays into a single array.
         /// </summary>
@@ -1268,10 +1270,15 @@ namespace ProcessHacker.Common
         /// <param name="value">The new setting.</param>
         public static void SetDoubleBuffered(this Control c, Type t, bool value)
         {
-            PropertyInfo property = t.GetProperty("DoubleBuffered",
-               BindingFlags.NonPublic | BindingFlags.Instance);
+            PropertyInfo doubleBufferedProperty = _doubleBufferedProperty;
 
-            property.SetValue(c, value, null);
+            if (doubleBufferedProperty == null)
+            {
+                _doubleBufferedProperty = doubleBufferedProperty = t.GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+            }
+
+            doubleBufferedProperty.SetValue(c, value, null);
         }
 
         /// <summary>
