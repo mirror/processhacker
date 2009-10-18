@@ -558,7 +558,7 @@ namespace ProcessHacker
                 Program.ImposterNames.Add(s.Trim());
 
             Program.HackerWindow.ApplyIconVisibilities();
-            Program.HackerWindow.LoadFixMenuItems();
+            Program.HackerWindow.LoadFixOSSpecific();
             Program.ProcessProvider.Interval = Settings.Instance.RefreshInterval;
             Program.ServiceProvider.Interval = Settings.Instance.RefreshInterval;
             Program.NetworkProvider.Interval = Settings.Instance.RefreshInterval;

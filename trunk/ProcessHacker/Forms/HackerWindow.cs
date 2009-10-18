@@ -3063,7 +3063,7 @@ namespace ProcessHacker
             treeProcesses.RefreshItems();
         }
 
-        public void LoadFixMenuItems()
+        public void LoadFixOSSpecific()
         {
             if (!System.IO.File.Exists(Application.StartupPath + "\\Assistant.exe"))
             {
@@ -3085,6 +3085,9 @@ namespace ProcessHacker
 
             if (OSVersion.IsBelow(WindowsVersion.Vista))
                 analyzeWaitChainProcessMenuItem.Visible = false;
+
+            if (OSVersion.IsBelow(WindowsVersion.XP))
+                tabControl.TabPages.Remove(tabNetwork);
         }
 
         private void LoadFixNProcessHacker()
@@ -3437,7 +3440,7 @@ namespace ProcessHacker
                 //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
 
                 this.CreateShutdownMenuItems();
-                this.LoadFixMenuItems();
+                this.LoadFixOSSpecific();
                 this.LoadUac();
                 this.LoadAddShortcuts();
                 this.LoadFixNProcessHacker();
