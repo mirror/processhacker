@@ -108,8 +108,8 @@ namespace ProcessHacker
             qc.Add("priority", "5"); //Bug Report Priority, 1 = Low (Blue) 5 = default (Green)
             //summary must be completly unique to prevent duplicate submission errors.
             qc.Add("summary", Uri.EscapeDataString(_exception.Message)
-                + " - " + DateTime.Now.ToString("F")
-                + " - " + DateTime.Now.Ticks.ToString("x")); 
+                + " - " + DateTime.Now.ToString("F", System.Globalization.DateTimeFormatInfo.InvariantInfo)
+                + " - " + DateTime.Now.Ticks.ToString("x", System.Globalization.DateTimeFormatInfo.InvariantInfo)); 
             qc.Add("details", Uri.EscapeDataString(textException.Text));
             //qc.Add("input_file", FileName);
             //qc.Add("file_description", "Error-Report");
