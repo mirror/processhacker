@@ -41,7 +41,7 @@ namespace ProcessHacker.Components
         }
 
         /// <summary>
-        /// The Task Dialog's window handle.
+        /// The Task Dialog's handle.
         /// We don't own this window.
         /// </summary>
         public IntPtr Handle
@@ -49,16 +49,21 @@ namespace ProcessHacker.Components
             get { return this.handle; }
         }
 
-        //// Not supported. Task Dialog Spec does not indicate what this is for.
-        ////public void NavigatePage()
-        ////{
-        ////    // TDM_NAVIGATE_PAGE                   = WM_USER+101,
-        ////    UnsafeNativeMethods.SendMessage(
-        ////        this.windowHandle,
-        ////        (uint)UnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_NAVIGATE_PAGE,
-        ////        IntPtr.Zero,
-        ////        //a UnsafeNativeMethods.TASKDIALOGCONFIG value);
-        ////}
+        /// <summary>
+        /// Refreshes the contents of the Task Dialog. 
+        /// Clients may send this message to the task dialog to 
+        /// dynamically change the task dialog contents at run time.
+        /// </summary>
+        public void NavigatePage()
+        { 
+            //TODO: complete TaskDialog Navigate Page
+            //IntPtr* p = (IntPtr*)UnsafeNativeMethods.TASKDIALOGCONFIG();
+            //UnsafeNativeMethods.SendMessage(
+            //    this.Handle,
+            //    (uint)UnsafeNativeMethods.TASKDIALOG_MESSAGES.TDM_NAVIGATE_PAGE,
+            //    IntPtr.Zero,
+            //    config); 
+        }
 
         /// <summary>
         /// Simulate the action of a button click in the TaskDialog. This can be a DialogResult value 

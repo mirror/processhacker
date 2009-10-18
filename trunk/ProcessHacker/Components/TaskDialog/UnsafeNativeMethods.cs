@@ -242,7 +242,12 @@ namespace ProcessHacker.Components
             /// <summary>
             /// Refreshes the icon of the task dialog.
             /// </summary>
-            TDM_UPDATE_ICON = WM_USER + 116  // wParam = icon element (TASKDIALOG_ICON_ELEMENTS), lParam = new icon (hIcon if TDF_USE_HICON_* was set, PCWSTR otherwise)
+            TDM_UPDATE_ICON = WM_USER + 116,  // wParam = icon element (TASKDIALOG_ICON_ELEMENTS), lParam = new icon (hIcon if TDF_USE_HICON_* was set, PCWSTR otherwise)
+       
+            /// <summary>
+            /// Refreshes the contents of the Task Dialog.
+            /// </summary>
+            TDM_NAVIGATE_PAGE = WM_USER+101
         }
 
         ///// <summary>
