@@ -286,8 +286,6 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
-
                         if (Error != null)
                         {
                             try
@@ -299,7 +297,7 @@ namespace ProcessHacker
                         }
                         else
                         {
-                            throw new Exception("A provider updater threw an exception.", ex);
+                            Logging.Log(Logging.Importance.Error, ex.ToString());
                         }
                     }
 
