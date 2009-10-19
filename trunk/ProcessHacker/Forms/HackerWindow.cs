@@ -71,22 +71,6 @@ namespace ProcessHacker
         /// it directly because it belongs to another thread.
         /// </summary>
         public SysInfoWindow SysInfoWindow;
-        // The three main providers. They should be accessed using 
-        // Program.ProcessProvider, ServiceProvider and NetworkProvider, 
-        // rsepectively. However, these three variables are remnants of 
-        // the old PH.
-        /// <summary>
-        /// The processes/system provider.
-        /// </summary>
-        public ProcessSystemProvider processP;
-        /// <summary>
-        /// The services provider.
-        /// </summary>
-        ServiceProvider serviceP;
-        /// <summary>
-        /// The network connections provider.
-        /// </summary>
-        NetworkProvider networkP;
 
         /// <summary>
         /// The UAC shield bitmap. Used for the various menu items which 
@@ -426,23 +410,23 @@ namespace ProcessHacker
 
         private void updateNowMenuItem_Click(object sender, EventArgs e)
         {
-            if (processP.RunCount > 1)
-                processP.RunOnce();
+            if (Program.ProcessProvider.RunCount > 1)
+                Program.ProcessProvider.RunOnce();
 
-            if (serviceP.RunCount > 1)
-                serviceP.RunOnce();
+            if (Program.ServiceProvider.RunCount > 1)
+                Program.ServiceProvider.RunOnce();
         }
 
         private void updateProcessesMenuItem_Click(object sender, EventArgs e)
         {
             updateProcessesMenuItem.Checked = !updateProcessesMenuItem.Checked;
-            processP.Enabled = updateProcessesMenuItem.Checked;
+            Program.ProcessProvider.Enabled = updateProcessesMenuItem.Checked;
         }
 
         private void updateServicesMenuItem_Click(object sender, EventArgs e)
         {
             updateServicesMenuItem.Checked = !updateServicesMenuItem.Checked;
-            serviceP.Enabled = updateServicesMenuItem.Checked;
+            Program.ServiceProvider.Enabled = updateServicesMenuItem.Checked;
         }
 
         private void hiddenProcessesMenuItem_Click(object sender, EventArgs e)
@@ -744,7 +728,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        networkP.Dictionary[item.Name].Connection.CloseTcpConnection();
+                        Program.NetworkProvider.Dictionary[item.Name].Connection.CloseTcpConnection();
                     }
                     catch
                     {
@@ -797,7 +781,7 @@ namespace ProcessHacker
             // HACK: To be fixed later - we need some sort of locking for the process provider
             try
             {
-                foreach (var process in processP.Dictionary.Values)
+                foreach (var process in Program.ProcessProvider.Dictionary.Values)
                 {
                     if (process.Pid > 0)
                     {
@@ -875,7 +859,7 @@ namespace ProcessHacker
                         {
                             ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
-                            ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[item.Pid],
+                            ProcessWindow pForm = Program.GetProcessWindow(Program.ProcessProvider.Dictionary[item.Pid],
                                 new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                             {
                                 f.Show();
@@ -1060,7 +1044,7 @@ namespace ProcessHacker
                 {
                     if (
                         OSVersion.IsBelowOrEqual(WindowsVersion.XP) &&
-                        processP.Dictionary[processSelectedPid].SessionId != Program.CurrentSessionId
+                        Program.ProcessProvider.Dictionary[processSelectedPid].SessionId != Program.CurrentSessionId
                         )
                         injectDllProcessMenuItem.Enabled = false;
                     else
@@ -1396,7 +1380,7 @@ namespace ProcessHacker
 
             sfd.Filter = "Dump Files (*.dmp)|*.dmp|All Files (*.*)|*.*";
             sfd.FileName =
-                processP.Dictionary[processSelectedPid].Name +
+                Program.ProcessProvider.Dictionary[processSelectedPid].Name +
                 "_" +
                 DateTime.Now.ToString("yyMMdd") +
                 ".dmp";
@@ -1508,7 +1492,7 @@ namespace ProcessHacker
         {
             TerminatorWindow w = new TerminatorWindow(processSelectedPid);
 
-            w.Text = "Terminator - " + processP.Dictionary[processSelectedPid].Name +
+            w.Text = "Terminator - " + Program.ProcessProvider.Dictionary[processSelectedPid].Name +
                 " (PID " + processSelectedPid.ToString() + ")";
             w.ShowDialog();
         }
@@ -1519,7 +1503,7 @@ namespace ProcessHacker
         {
             try
             {
-                Settings.Instance.RunAsCommand = processP.Dictionary[processSelectedPid].FileName;
+                Settings.Instance.RunAsCommand = Program.ProcessProvider.Dictionary[processSelectedPid].FileName;
 
                 RunWindow run = new RunWindow();
                 run.ShowDialog();
@@ -1747,7 +1731,7 @@ namespace ProcessHacker
         {
             try
             {
-                processP.QueueProcessQuery(processSelectedPid);
+                Program.ProcessProvider.QueueProcessQuery(processSelectedPid);
             }
             catch (Exception ex)
             {
@@ -1808,14 +1792,14 @@ namespace ProcessHacker
 
         private void processP_Updated()
         {
-            processP.DictionaryAdded += processP_DictionaryAdded;
-            processP.DictionaryRemoved += processP_DictionaryRemoved;
-            processP.Updated -= processP_Updated;
+            Program.ProcessProvider.DictionaryAdded += processP_DictionaryAdded;
+            Program.ProcessProvider.DictionaryRemoved += processP_DictionaryRemoved;
+            Program.ProcessProvider.Updated -= processP_Updated;
 
             try { ProcessHandle.Current.SetPriorityClass(ProcessPriorityClass.High); }
             catch { }
 
-            if (processP.RunCount >= 1)
+            if (Program.ProcessProvider.RunCount >= 1)
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
                     treeProcesses.Tree.EndCompleteUpdate();
@@ -1844,7 +1828,7 @@ namespace ProcessHacker
                     }
 
                     treeProcesses.Invalidate();
-                    processP.RunOnceAsync();
+                    Program.ProcessProvider.RunOnceAsync();
                     this.Cursor = Cursors.Default;
                     this.UpdateCommon();
                 }));
@@ -1863,8 +1847,8 @@ namespace ProcessHacker
             // Check if we need to inspect a process at startup.
             if (stage == 0x1 && Program.InspectPid != -1 && pid == Program.InspectPid)
             {
-                processP.ProcessQueryReceived -= processP_FileProcessingReceived;
-                ProcessActions.ShowProperties(this, pid, processP.Dictionary[pid].Name);
+                Program.ProcessProvider.ProcessQueryReceived -= processP_FileProcessingReceived;
+                ProcessActions.ShowProperties(this, pid, Program.ProcessProvider.Dictionary[pid].Name);
             }
         }
 
@@ -1873,11 +1857,11 @@ namespace ProcessHacker
             ProcessItem parent = null;
             string parentText = "";
 
-            if (item.HasParent && processP.Dictionary.ContainsKey(item.ParentPid))
+            if (item.HasParent && Program.ProcessProvider.Dictionary.ContainsKey(item.ParentPid))
             {
                 try
                 {
-                    parent = processP.Dictionary[item.ParentPid];
+                    parent = Program.ProcessProvider.Dictionary[item.ParentPid];
 
                     parentText += " started by " + parent.Name + " (PID " + parent.Pid.ToString() + ")";
                 }
@@ -1917,12 +1901,12 @@ namespace ProcessHacker
 
             HighlightingContext.StateHighlighting = true;
 
-            serviceP.DictionaryAdded += serviceP_DictionaryAdded;
-            serviceP.DictionaryModified += serviceP_DictionaryModified;
-            serviceP.DictionaryRemoved += serviceP_DictionaryRemoved;
-            serviceP.Updated -= serviceP_Updated;
+            Program.ServiceProvider.DictionaryAdded += serviceP_DictionaryAdded;
+            Program.ServiceProvider.DictionaryModified += serviceP_DictionaryModified;
+            Program.ServiceProvider.DictionaryRemoved += serviceP_DictionaryRemoved;
+            Program.ServiceProvider.Updated -= serviceP_Updated;
 
-            if (processP.RunCount >= 1)
+            if (Program.ProcessProvider.RunCount >= 1)
                 this.BeginInvoke(new MethodInvoker(UpdateCommon));
         }
 
@@ -2080,7 +2064,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    ServiceItem item = serviceP.Dictionary[listServices.SelectedItems[0].Name];
+                    ServiceItem item = Program.ServiceProvider.Dictionary[listServices.SelectedItems[0].Name];
 
                     if (item.Status.ServiceStatusProcess.ProcessID != 0)
                     {
@@ -2154,7 +2138,7 @@ namespace ProcessHacker
         private void goToProcessServiceMenuItem_Click(object sender, EventArgs e)
         {
             this.SelectProcess(
-                serviceP.Dictionary[listServices.SelectedItems[0].Name].
+                Program.ServiceProvider.Dictionary[listServices.SelectedItems[0].Name].
                 Status.ServiceStatusProcess.ProcessID);
         }
 
@@ -2221,15 +2205,15 @@ namespace ProcessHacker
         {
             if (tabControl.SelectedTab == tabNetwork)
             {
-                if (processP.RunCount == 0)
-                    processP.Wait();
+                if (Program.ProcessProvider.RunCount == 0)
+                    Program.ProcessProvider.Wait();
 
-                networkP.Enabled = true;
-                networkP.RunOnceAsync();
+                Program.NetworkProvider.Enabled = true;
+                Program.NetworkProvider.RunOnceAsync();
             }
             else
             {
-                networkP.Enabled = false;
+                Program.NetworkProvider.Enabled = false;
             }
         }
 
@@ -2837,15 +2821,15 @@ namespace ProcessHacker
 
         private void UpdateStatusInfo()
         {
-            if (processP.RunCount >= 1)
-                statusGeneral.Text = string.Format("{0} processes", processP.Dictionary.Count - 2);
+            if (Program.ProcessProvider.RunCount >= 1)
+                statusGeneral.Text = string.Format("{0} processes", Program.ProcessProvider.Dictionary.Count - 2);
             else
                 statusGeneral.Text = "Loading...";
 
-            statusCPU.Text = "CPU: " + (processP.CurrentCpuUsage * 100).ToString("N2") + "%";
+            statusCPU.Text = "CPU: " + (Program.ProcessProvider.CurrentCpuUsage * 100).ToString("N2") + "%";
             statusMemory.Text = "Phys. Memory: " +
-                ((float)(processP.System.NumberOfPhysicalPages - processP.Performance.AvailablePages) * 100 /
-                processP.System.NumberOfPhysicalPages).ToString("N2") + "%";
+                ((float)(Program.ProcessProvider.System.NumberOfPhysicalPages - Program.ProcessProvider.Performance.AvailablePages) * 100 /
+                Program.ProcessProvider.System.NumberOfPhysicalPages).ToString("N2") + "%";
         }
 
         #endregion
@@ -3209,34 +3193,34 @@ namespace ProcessHacker
             listServices.ContextMenu = menuService;
             listNetwork.ContextMenu = menuNetwork;
 
-            processP.Interval = Settings.Instance.RefreshInterval;
-            treeProcesses.Provider = processP;
+            Program.ProcessProvider.Interval = Settings.Instance.RefreshInterval;
+            treeProcesses.Provider = Program.ProcessProvider;
             treeProcesses.Tree.BeginUpdate();
             treeProcesses.Tree.BeginCompleteUpdate();
             this.Cursor = Cursors.WaitCursor;
-            processP.Updated += processP_Updated;
-            processP.Updated += processP_InfoUpdater;
-            if (Program.InspectPid != -1) processP.ProcessQueryReceived += processP_FileProcessingReceived;
-            processP.RunOnceAsync();
-            processP.Enabled = true;
+            Program.ProcessProvider.Updated += processP_Updated;
+            Program.ProcessProvider.Updated += processP_InfoUpdater;
+            if (Program.InspectPid != -1) Program.ProcessProvider.ProcessQueryReceived += processP_FileProcessingReceived;
+            Program.ProcessProvider.RunOnceAsync();
+            Program.ProcessProvider.Enabled = true;
             updateProcessesMenuItem.Checked = true;
 
             HighlightingContext.HighlightingDuration = Settings.Instance.HighlightingDuration;
             HighlightingContext.StateHighlighting = false;
 
             listServices.List.BeginUpdate();
-            serviceP.Interval = Settings.Instance.RefreshInterval;
-            listServices.Provider = serviceP;
-            serviceP.DictionaryAdded += serviceP_DictionaryAdded_Process;
-            serviceP.DictionaryModified += serviceP_DictionaryModified_Process;
-            serviceP.DictionaryRemoved += serviceP_DictionaryRemoved_Process;
-            serviceP.Updated += serviceP_Updated;
+            Program.ServiceProvider.Interval = Settings.Instance.RefreshInterval;
+            listServices.Provider = Program.ServiceProvider;
+            Program.ServiceProvider.DictionaryAdded += serviceP_DictionaryAdded_Process;
+            Program.ServiceProvider.DictionaryModified += serviceP_DictionaryModified_Process;
+            Program.ServiceProvider.DictionaryRemoved += serviceP_DictionaryRemoved_Process;
+            Program.ServiceProvider.Updated += serviceP_Updated;
             updateServicesMenuItem.Checked = true;
 
             if (OSVersion.IsAboveOrEqual(WindowsVersion.XP))
             {
-                networkP.Interval = Settings.Instance.RefreshInterval;
-                listNetwork.Provider = networkP;
+                Program.NetworkProvider.Interval = Settings.Instance.RefreshInterval;
+                listNetwork.Provider = Program.NetworkProvider;
             }
 
             treeProcesses.Tree.MouseDown += (sender, e) =>
@@ -3333,10 +3317,6 @@ namespace ProcessHacker
 
         public HackerWindow()
         {
-            processP = Program.ProcessProvider;
-            serviceP = Program.ServiceProvider;
-            networkP = Program.NetworkProvider;
-
             InitializeComponent();
 
             // Force the handle to be created
@@ -3376,9 +3356,10 @@ namespace ProcessHacker
 
             vistaMenu.DelaySetImageCalls = false;
             vistaMenu.PerformPendingSetImageCalls();
-            serviceP.RunOnceAsync();
-            serviceP.Enabled = true;
-
+           
+            Program.ServiceProvider.Enabled = true;
+            Program.ServiceProvider.RunOnceAsync();
+            
             _dontCalculate = false;
         }
 
@@ -3455,7 +3436,7 @@ namespace ProcessHacker
                 var targetThreadButton = new TargetWindowButton();
                 targetThreadButton.TargetWindowFound += (pid, tid) =>
                     {
-                        Program.GetProcessWindow(processP.Dictionary[pid], (f) =>
+                        Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], (f) =>
                             {
                                 Program.FocusWindow(f);
                                 f.SelectThread(tid);

@@ -174,7 +174,7 @@ namespace ProcessHacker
         {
             try
             {
-                ProcessWindow pForm = Program.GetProcessWindow(Program.HackerWindow.processP.Dictionary[processPid],
+                ProcessWindow pForm = Program.GetProcessWindow(Program.ProcessProvider.Dictionary[processPid],
                     new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                     {
                         Settings.Instance.ProcessWindowSelectedTab = "tabThreads";
