@@ -48,10 +48,10 @@ namespace ProcessHacker
 
         public void Add(ProcessItem item)
         {
-            ProcessNode itemNode = new ProcessNode(item);
-           
             if (!_processes.ContainsKey(item.Pid))
             {
+                ProcessNode itemNode = new ProcessNode(item);
+           
                 // Add the process to the list of all processes.
                 _processes.Add(item.Pid, itemNode);
 

@@ -280,7 +280,7 @@ namespace ProcessHacker
             SharedWaiter = new ProcessHacker.Native.Threading.Waiter();
 
             HackerWindow = new HackerWindow();
-            Application.Run(HackerWindow);
+            Application.Run();
         }
 
         private static void ShowCommandLineUsage()
