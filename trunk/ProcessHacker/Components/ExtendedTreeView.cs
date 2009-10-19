@@ -28,7 +28,7 @@ using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Components
 {
-    public class VistaTreeView : System.Windows.Forms.TreeView
+    public class ExtendedTreeView : System.Windows.Forms.TreeView
     {
         //http://www.danielmoth.com/Blog/2007/01/treeviewvista.html
         //http://www.danielmoth.com/Blog/2006/12/tvsexautohscroll.html

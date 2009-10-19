@@ -20,6 +20,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  * 
+ * References: 
+ *  http://blogs.msdn.com/hippietim/archive/2006/03/27/562256.aspx
+ *  http://msdn.microsoft.com/en-us/library/bb774769(VS.85).aspx
+ *  http://msdn.microsoft.com/en-us/library/ms229669.aspx
+ *  http://msdn.microsoft.com/en-us/magazine/dvdarchive/cc163384.aspx      
  */
 
 using System;
@@ -50,6 +55,8 @@ namespace ProcessHacker.Components
 
     public class ExtendedListView : ListView
     {
+        #region Control Variables
+
         private const int LVM_First = 0x1000;                                                     // ListView messages
         private const int LVM_HitTest = LVM_First + 18;                                    // Determines which list-view item, if any, is at a specified position.
         private const int LVM_SetGroupInfo = LVM_First + 147;                      // ListView messages Setinfo on Group
@@ -59,8 +66,7 @@ namespace ProcessHacker.Components
         private const int LVN_LinkClick = (LVN_First - 84);                              // Notifies a list-view control's parent window that a link has been clicked on.
         private const int WM_LButtonUp = 0x202;                                             // Sent when the user releases the left mouse button while the cursor is in the client area of a window.
         private const int NM_DBLClk = -3;                                                          // Sent when the user double-clicks an item with the left mouse button.
-
-        // http://blogs.msdn.com/hippietim/archive/2006/03/27/562256.aspx
+                
         private bool _doubleClickChecks = true;
         private bool _doubleClickCheckHackActive = false;
 
@@ -69,8 +75,15 @@ namespace ProcessHacker.Components
         private delegate void CallBackSetGroupState(ListViewGroup lvGroup, ListViewGroupState lvState, string task);
         private delegate void CallbackSetGroupString(ListViewGroup lvGroup, string value);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref LVGroup lParam);
+        #endregion
+
+        public ExtendedListView()
+        {
+            this.DoubleBuffered = true;
+            //Enable the OnNotifyMessage event so we get a chance to filter out 
+            // Windows messages before they get to the form's WndProc.
+            this.SetStyle(ControlStyles.EnableNotifyMessage, true);
+        }
 
         public bool DoubleClickChecks
         {
@@ -178,6 +191,8 @@ namespace ProcessHacker.Components
             }
         }
 
+        #region Message Handlers
+
         private unsafe void OnWmReflectNotify(ref Message m)
         {
             NMHDR* hdr = (NMHDR*)m.LParam;
@@ -194,6 +209,15 @@ namespace ProcessHacker.Components
                 {
                     _doubleClickCheckHackActive = true;
                 }
+            }
+        }
+
+        protected override void OnNotifyMessage(Message m)
+        {
+            //Filter out the WM_ERASEBKGND message
+            if (m.Msg != 0x14)
+            {
+                base.OnNotifyMessage(m);
             }
         }
 
@@ -238,7 +262,12 @@ namespace ProcessHacker.Components
             base.WndProc(ref m);
         }
 
-        //http://msdn.microsoft.com/en-us/library/bb774769(VS.85).aspx
+        #endregion
+
+        #region Native Signatures
+
+        #region Structures
+
         /// <summary>
         /// Used to set and retrieve groups.
         /// </summary>
@@ -372,9 +401,7 @@ namespace ProcessHacker.Components
             /// </summary>
             public uint CchSubsetTitle;
         }
-
-        //http://msdn.microsoft.com/en-us/library/ms229669.aspx
-        //http://msdn.microsoft.com/en-us/magazine/dvdarchive/cc163384.aspx       
+ 
         /// <summary>
         /// WM_NOTIFY notificaiton message header.
         /// </summary>
@@ -457,6 +484,13 @@ namespace ProcessHacker.Components
             /// </summary>
             public int SubItemIndex;
         }
+
+        #endregion
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref LVGroup lParam);
+        
+        #endregion
     }
 
     [Flags]
