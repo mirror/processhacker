@@ -3333,7 +3333,6 @@ namespace ProcessHacker
 
         public HackerWindow()
         {
-            Program.HackerWindow = this;
             processP = Program.ProcessProvider;
             serviceP = Program.ServiceProvider;
             networkP = Program.NetworkProvider;
