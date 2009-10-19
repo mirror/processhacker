@@ -232,18 +232,14 @@ namespace TaskbarLib
         /// <param name="description">The overlay icon description.</param>
         public static void SetTaskbarOverlayIcon(Icon icon, string description)
         {
-            HResult result = TaskbarList.SetOverlayIcon(
+            TaskbarList.SetOverlayIcon(
                 Program.HackerWindowHandle, icon == null ? IntPtr.Zero : icon.Handle, description);
-           
-            result.ThrowIf();
         }
 
         public static void SetTaskbarOverlayIcon(this Form form, Icon icon, string description)
         {
-            HResult result = TaskbarList.SetOverlayIcon(
+            TaskbarList.SetOverlayIcon(
                 form.Handle, icon == null ? IntPtr.Zero : icon.Handle, description);
-
-            result.ThrowIf();
         }
 
         #endregion
