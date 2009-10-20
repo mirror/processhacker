@@ -85,8 +85,11 @@ namespace ProcessHacker
                 }
             }
 
-            foreach (var serviceName in toRemove)
-                Dictionary.Remove(serviceName);
+            if (toRemove != null)
+            {
+                foreach (var serviceName in toRemove)
+                    Dictionary.Remove(serviceName);
+            }
 
             // check for new services
             foreach (string s in newdictionary.Keys)
