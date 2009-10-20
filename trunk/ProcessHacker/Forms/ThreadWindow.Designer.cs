@@ -57,7 +57,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.fileModule.Location = new System.Drawing.Point(63, 347);
             this.fileModule.Name = "fileModule";
-            this.fileModule.ReadOnly = false;
+            this.fileModule.ReadOnly = true;
             this.fileModule.Size = new System.Drawing.Size(243, 24);
             this.fileModule.TabIndex = 9;
             // 
