@@ -26,6 +26,8 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native
 {
@@ -105,9 +107,9 @@ namespace ProcessHacker.Native
             try
             {
                 if (Win32.SHGetFileInfo(fileName, 0, out shinfo,
-                      (uint)Marshal.SizeOf(shinfo),
-                       Win32.ShgFiIcon |
-                       (large ? Win32.ShgFiLargeIcon : Win32.ShgFiSmallIcon)) == 0)
+                    (uint)Marshal.SizeOf(shinfo),
+                    Win32.ShgFiIcon |
+                    (large ? Win32.ShgFiLargeIcon : Win32.ShgFiSmallIcon)) == 0)
                 {
                     return null;
                 }
@@ -168,6 +170,19 @@ namespace ProcessHacker.Native
                 fileName = System.IO.Path.GetFullPath(fileName);
 
             return fileName;
+        }
+
+        public static string GetPathForDosDrive(char driveLetter)
+        {
+            driveLetter = char.ToUpperInvariant(driveLetter);
+
+            if (driveLetter < 'A' || driveLetter > 'Z')
+                throw new ArgumentException("The drive letter must be from A to Z.");
+
+            using (var shandle = new SymbolicLinkHandle(@"\??\" + driveLetter + ":", SymbolicLinkAccess.Query))
+            {
+                return shandle.GetTarget();
+            }
         }
 
         public static void RefreshFileNamePrefixes()
