@@ -71,6 +71,9 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
+            if (_processHandle == null)
+                return;
+
             var modules = new Dictionary<IntPtr, ProcessModule>();
 
             try

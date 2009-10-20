@@ -71,6 +71,9 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
+            if (_processHandle == null)
+                return;
+
             var handles = Windows.GetHandles();
             var processHandles = new Dictionary<short, SystemHandleEntry>();
             var newdictionary = new Dictionary<short, HandleItem>(this.Dictionary);

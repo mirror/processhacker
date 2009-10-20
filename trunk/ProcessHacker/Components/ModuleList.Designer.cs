@@ -19,12 +19,7 @@
             }
 
             _highlightingContext.Dispose();
-
-            if (this.Provider != null)
-            {
-                this.Provider.Dispose();
-                this.Provider = null;
-            }
+            this.Provider = null;
 
             base.Dispose(disposing);
         }

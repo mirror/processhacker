@@ -48,53 +48,50 @@ namespace ProcessHacker
 
         public void Add(ProcessItem item)
         {
-            if (!_processes.ContainsKey(item.Pid))
+            ProcessNode itemNode = new ProcessNode(item);
+
+            // Add the process to the list of all processes.
+            _processes.Add(item.Pid, itemNode);
+
+            // Find the process' parent and add the process to it if we found it.
+            if (item.HasParent && _processes.ContainsKey(item.ParentPid))
             {
-                ProcessNode itemNode = new ProcessNode(item);
-           
-                // Add the process to the list of all processes.
-                _processes.Add(item.Pid, itemNode);
+                ProcessNode parent = _processes[item.ParentPid];
 
-                // Find the process' parent and add the process to it if we found it.
-                if (item.HasParent && _processes.ContainsKey(item.ParentPid))
-                {
-                    ProcessNode parent = _processes[item.ParentPid];
-
-                    parent.Children.Add(itemNode);
-                    itemNode.Parent = parent;
-                }
-                else
-                {
-                    // The process doesn't have a parent, so add it to the root nodes.
-                    _roots.Add(itemNode);
-                }
-
-                itemNode.RefreshTreePath();
-
-                // Find this process' children and fix them up.
-
-                // We need to create a copy of the array because we may need 
-                // to modify the roots list.
-                ProcessNode[] roots = _roots.ToArray();
-
-                foreach (ProcessNode node in roots)
-                {
-                    // Notice that we don't replace a node's parent if it 
-                    // already has one. This is to break potential cyclic 
-                    // references.
-                    if (node.Parent == null && node.ProcessItem.HasParent && node.PPid == item.Pid)
-                    {
-                        // Remove the node from the root list and add it to our 
-                        // process' child list.
-                        _roots.Remove(node);
-                        itemNode.Children.Add(node);
-                        node.Parent = itemNode;
-                        node.RefreshTreePathRecursive();
-                    }
-                }
-
-                this.StructureChanged(this, new TreePathEventArgs(new TreePath()));
+                parent.Children.Add(itemNode);
+                itemNode.Parent = parent;
             }
+            else
+            {
+                // The process doesn't have a parent, so add it to the root nodes.
+                _roots.Add(itemNode);
+            }
+
+            itemNode.RefreshTreePath();
+
+            // Find this process' children and fix them up.
+
+            // We need to create a copy of the array because we may need 
+            // to modify the roots list.
+            ProcessNode[] roots = _roots.ToArray();
+
+            foreach (ProcessNode node in roots)
+            {
+                // Notice that we don't replace a node's parent if it 
+                // already has one. This is to break potential cyclic 
+                // references.
+                if (node.Parent == null && node.ProcessItem.HasParent && node.PPid == item.Pid)
+                {
+                    // Remove the node from the root list and add it to our 
+                    // process' child list.
+                    _roots.Remove(node);
+                    itemNode.Children.Add(node);
+                    node.Parent = itemNode;
+                    node.RefreshTreePathRecursive();
+                }
+            }
+
+            this.StructureChanged(this, new TreePathEventArgs(new TreePath()));
         }
 
         public void Modify(ProcessItem oldItem, ProcessItem newItem)

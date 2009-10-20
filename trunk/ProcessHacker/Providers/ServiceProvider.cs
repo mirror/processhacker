@@ -67,6 +67,8 @@ namespace ProcessHacker
         {
             var newdictionary = Windows.GetServices();
 
+            List<string> toRemove = null;
+
             // check for removed services
             foreach (string s in Dictionary.Keys)
             {
@@ -75,9 +77,16 @@ namespace ProcessHacker
                     ServiceItem service = Dictionary[s];
 
                     this.OnDictionaryRemoved(service);
-                    Dictionary.Remove(s);
+
+                    if (toRemove == null)
+                        toRemove = new List<string>();
+
+                    toRemove.Add(s);
                 }
             }
+
+            foreach (var serviceName in toRemove)
+                Dictionary.Remove(serviceName);
 
             // check for new services
             foreach (string s in newdictionary.Keys)

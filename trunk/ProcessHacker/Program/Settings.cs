@@ -11,14 +11,19 @@ namespace ProcessHacker
 {
     public class Settings : SettingsBase
     {
-        private static Settings _instance;
-        private static XmlFileSettingsStore _store;
+        // Create instance, before the user creates a new store.
+        private static Settings _instance = new Settings();
+        private static ISettingsStore _store;
 
         public static Settings Instance
         {
             get { return _instance; }
             set { _instance = value; }
         }
+
+        private Settings()
+            : base(_store = new VolatileSettingsStore())
+        { }
 
         public Settings(string fileName)
             : base(_store = new XmlFileSettingsStore(fileName))
@@ -28,7 +33,7 @@ namespace ProcessHacker
 
         public string SettingsFileName
         {
-            get { return _store.FileName; }
+            get { return (_store as XmlFileSettingsStore).FileName; }
         }
 
         public override void Invalidate()
@@ -330,7 +335,7 @@ namespace ProcessHacker
             set { this["DeletedServices"] = _deletedServices = value; }
         }
 
-        private int _elevationLevel;
+        private int _elevationLevel = 1;
         [SettingDefault("1")]
         public int ElevationLevel
         {
@@ -468,7 +473,7 @@ namespace ProcessHacker
             set { this["HideWhenMinimized"] = _hideWhenMinimized = value; }
         }
 
-        private int _highlightingDuration;
+        private int _highlightingDuration = 1000;
         [SettingDefault("1000")]
         public int HighlightingDuration
         {
@@ -476,7 +481,7 @@ namespace ProcessHacker
             set { this["HighlightingDuration"] = _highlightingDuration = value; }
         }
 
-        private int _iconMenuProcessCount;
+        private int _iconMenuProcessCount = 10;
         [SettingDefault("10")]
         public int IconMenuProcessCount
         {
@@ -547,7 +552,7 @@ namespace ProcessHacker
             set { this["LogWindowSize"] = value; }
         }
 
-        private int _maxSamples;
+        private int _maxSamples = 512;
         [SettingDefault("512")]
         public int MaxSamples
         {
@@ -711,7 +716,7 @@ namespace ProcessHacker
             set { this["PlotterMemoryWSColor"] = _plotterMemoryWSColor = value; }
         }
 
-        private int _plotterStep;
+        private int _plotterStep = 2;
         [SettingDefault("2")]
         public int PlotterStep
         {
@@ -768,7 +773,7 @@ namespace ProcessHacker
             set { this["PromptBoxText"] = value; }
         }
 
-        private int _refreshInterval;
+        private int _refreshInterval = 1000;
         [SettingDefault("1000")]
         public int RefreshInterval
         {
@@ -839,7 +844,7 @@ namespace ProcessHacker
             set { this["ServiceMiniListColumns"] = value; }
         }
 
-        private bool _showAccountDomains;
+        private bool _showAccountDomains = false;
         [SettingDefault("False")]
         public bool ShowAccountDomains
         {
@@ -942,7 +947,7 @@ namespace ProcessHacker
             set { this["ToolStripDisplayStyle"] = value; }
         }
 
-        private int _unitSpecifier;
+        private int _unitSpecifier = 6;
         [SettingDefault("6")]
         public int UnitSpecifier
         {
@@ -1078,7 +1083,7 @@ namespace ProcessHacker
             set { this["VerifySignatures"] = _verifySignatures = value; }
         }
 
-        private bool _warnDangerous;
+        private bool _warnDangerous = true;
         [SettingDefault("True")]
         public bool WarnDangerous
         {
