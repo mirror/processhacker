@@ -1412,7 +1412,7 @@ namespace ProcessHacker
                     {
                         // Use a task dialog to display a fancy progress bar.
                         TaskDialog td = new TaskDialog();
-                        Thread t = new Thread(dumpProcess);
+                        Thread t = new Thread(dumpProcess, Utils.SixteenthStackSize);
 
                         td.AllowDialogCancellation = false;
                         td.Buttons = new TaskDialogButton[] { new TaskDialogButton((int)DialogResult.OK, "Close") };

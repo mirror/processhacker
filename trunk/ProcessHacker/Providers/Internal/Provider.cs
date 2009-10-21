@@ -202,7 +202,7 @@ namespace ProcessHacker
 
                 if (_enabled && _createThread && _thread == null)
                 {
-                    _thread = new Thread(new ThreadStart(Update));
+                    _thread = new Thread(new ThreadStart(Update), Utils.SixteenthStackSize);
                     _thread.IsBackground = true;
                     _thread.SetApartmentState(ApartmentState.STA);
                     _thread.Start();

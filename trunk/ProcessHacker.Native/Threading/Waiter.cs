@@ -52,7 +52,7 @@ namespace ProcessHacker.Native.Threading
                 _owner = owner;
 
                 // Create the waiter thread.
-                _thread = new Thread(this.WaiterThreadStart);
+                _thread = new Thread(this.WaiterThreadStart, ProcessHacker.Common.Utils.SixteenthStackSize);
                 _thread.IsBackground = true;
                 _thread.SetApartmentState(ApartmentState.STA);
                 _thread.Start();

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
+using System.Threading;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using System.Threading;
 using ProcessHacker.Native.Threading;
-using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.SsLogging
 {
@@ -326,7 +325,7 @@ namespace ProcessHacker.Native.SsLogging
                     _terminating = false;
 
                     // Create the buffer worker thread.
-                    _bufferWorkerThread = new Thread(this.BufferWorkerThreadStart);
+                    _bufferWorkerThread = new Thread(this.BufferWorkerThreadStart, Utils.SixteenthStackSize);
                     _bufferWorkerThread.IsBackground = true;
                     _bufferWorkerThread.Start();
                     // Wait for the thread to initialize.

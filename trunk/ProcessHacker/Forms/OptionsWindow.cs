@@ -645,7 +645,7 @@ namespace ProcessHacker
                             buttonApply.Enabled = false;
                             buttonOK.Select();
                         }));
-                });
+                }, Utils.SixteenthStackSize);
 
             t.Start();
         }
