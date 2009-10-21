@@ -358,12 +358,12 @@ namespace ProcessHacker.Native
                         new AccessEntry("Read", TmAccess.GenericRead, true, false),
                         new AccessEntry("Write", TmAccess.GenericWrite, true, false),
                         new AccessEntry("Execute", TmAccess.GenericExecute, true, false),
-                        new AccessEntry("Query information", TmAccess.QueryInformation, true, false),
-                        new AccessEntry("Set information", TmAccess.SetInformation, true, false),
-                        new AccessEntry("Recover", TmAccess.Recover, true, false),
-                        new AccessEntry("Rename", TmAccess.Rename, true, false),
-                        new AccessEntry("Create resource manager", TmAccess.CreateRm, true, false),
-                        new AccessEntry("Bind transactions", TmAccess.BindTransaction, true, false)
+                        new AccessEntry("Query information", TmAccess.QueryInformation, false, true),
+                        new AccessEntry("Set information", TmAccess.SetInformation, false, true),
+                        new AccessEntry("Recover", TmAccess.Recover, false, true),
+                        new AccessEntry("Rename", TmAccess.Rename, false, true),
+                        new AccessEntry("Create resource manager", TmAccess.CreateRm, false, true),
+                        new AccessEntry("Bind transactions", TmAccess.BindTransaction, false, true)
                     };
                     break;
                 case ObjectType.TmTx:
