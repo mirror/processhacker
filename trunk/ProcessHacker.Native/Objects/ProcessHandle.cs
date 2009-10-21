@@ -1686,17 +1686,37 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A filename.</returns>
         public string GetMappedFileName(IntPtr address)
         {
-            StringBuilder sb = new StringBuilder(0x400);
-            int length = Win32.GetMappedFileName(this, address, sb, sb.Capacity);
+            NtStatus status;
+            IntPtr retLength;
 
-            if (length > 0)
+            using (var data = new MemoryAlloc(20))
             {
-                string fileName = sb.ToString(0, length);
+                if ((status = Win32.NtQueryVirtualMemory(
+                    this,
+                    address,
+                    MemoryInformationClass.MemoryMappedFilenameInformation,
+                    data,
+                    data.Size.ToIntPtr(),
+                    out retLength
+                    )) == NtStatus.BufferOverflow)
+                {
+                    data.Resize(retLength.ToInt32());
 
-                return FileUtils.GetFileName(fileName, true);
+                    status = Win32.NtQueryVirtualMemory(
+                        this,
+                        address,
+                        MemoryInformationClass.MemoryMappedFilenameInformation,
+                        data,
+                        data.Size.ToIntPtr(),
+                        out retLength
+                        );
+                }
+
+                if (status >= NtStatus.Error)
+                    return null;
+
+                return FileUtils.GetFileName(data.ReadStruct<UnicodeString>().Read());
             }
-
-            return null;
         }
 
         /// <summary>
