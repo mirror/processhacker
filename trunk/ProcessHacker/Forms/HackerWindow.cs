@@ -403,9 +403,6 @@ namespace ProcessHacker
         {
             toolbarMenuItem.Checked = !toolbarMenuItem.Checked;
             toolStrip.Visible = toolbarMenuItem.Checked;
-
-            Settings.Instance.ToolbarVisible = toolStrip.Visible;
-            Settings.Instance.Save();
         }
 
         private void updateNowMenuItem_Click(object sender, EventArgs e)
@@ -2525,7 +2522,6 @@ namespace ProcessHacker
         private void LoadOtherSettings()
         {
             Utils.UnitSpecifier = Settings.Instance.UnitSpecifier;
-
             PromptBox.LastValue = Settings.Instance.PromptBoxText;
             toolbarMenuItem.Checked = toolStrip.Visible = Settings.Instance.ToolbarVisible;
 
@@ -2651,7 +2647,7 @@ namespace ProcessHacker
             Settings.Instance.AlwaysOnTop = this.TopMost;
             Settings.Instance.WindowState = this.WindowState == FormWindowState.Minimized ?
                 FormWindowState.Normal : this.WindowState;
-            Settings.Instance.ToolbarVisible = toolStrip.Visible;
+            Settings.Instance.ToolbarVisible = toolbarMenuItem.Checked;
 
             Settings.Instance.PromptBoxText = PromptBox.LastValue;
 
@@ -3020,14 +3016,11 @@ namespace ProcessHacker
 
         private void HackerWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.WindowsShutDown)
-            {
-                this.Exit();
-                return;
-            }
-
-            if (this.GetIconsVisibleCount() > 0 &&
-                Settings.Instance.HideWhenClosed)
+            if (
+                e.CloseReason != CloseReason.WindowsShutDown &&
+                this.GetIconsVisibleCount() > 0 &&
+                Settings.Instance.HideWhenClosed
+                )
             {
                 e.Cancel = true;
                 showHideMenuItem_Click(sender, null);
