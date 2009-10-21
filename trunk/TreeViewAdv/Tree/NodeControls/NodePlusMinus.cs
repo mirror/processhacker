@@ -1,3 +1,7 @@
+/*
+ * Modified by wj32.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -88,9 +92,18 @@ namespace Aga.Controls.Tree.NodeControls
                     else
                         renderer = _closedRenderer;
 
-                    renderer.DrawBackground(context.Graphics, new Rectangle(r.X, r.Y + dy, ImageSize, ImageSize));
+                    try
+                    {
+                        renderer.DrawBackground(context.Graphics, new Rectangle(r.X, r.Y + dy, ImageSize, ImageSize));
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // Fucking retarded VisualStyleRenderer throws exceptions.
+                        _useVisualStyles = false;
+                    }
                 }
-                else
+
+                if (!_useVisualStyles)
                 {
                     Image img;
 
