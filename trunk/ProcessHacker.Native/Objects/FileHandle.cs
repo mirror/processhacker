@@ -289,7 +289,8 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
-        public AsyncIoContext BeginFsControl(
+        public void BeginFsControl(
+            AsyncIoContext asyncContext,
             int controlCode,
             byte[] inBuffer,
             int inBufferOffset,
@@ -299,14 +300,13 @@ namespace ProcessHacker.Native.Objects
             int outBufferLength
             )
         {
-            AsyncIoContext asyncContext;
             PinnedObject<byte[]> pinnedInBuffer = null;
             PinnedObject<byte[]> pinnedOutBuffer = null;
 
             Utils.ValidateBuffer(inBuffer, inBufferOffset, inBufferLength, true);
             Utils.ValidateBuffer(outBuffer, outBufferOffset, outBufferLength, true);
 
-            asyncContext = new AsyncIoContext(this);
+            asyncContext.NotifyPreBegin();
 
             if (inBuffer != null)
             {
@@ -328,13 +328,11 @@ namespace ProcessHacker.Native.Objects
                 pinnedOutBuffer != null ? pinnedOutBuffer.Address.Increment(outBufferOffset) : IntPtr.Zero,
                 outBufferLength
                 );
-
-            return asyncContext;
         }
 
-        public AsyncIoContext BeginFsControl(int controlCode, MemoryRegion inBuffer, MemoryRegion outBuffer)
+        public void BeginFsControl(AsyncIoContext asyncContext, int controlCode, MemoryRegion inBuffer, MemoryRegion outBuffer)
         {
-            AsyncIoContext asyncContext = new AsyncIoContext(this);
+            asyncContext.NotifyPreBegin();
 
             asyncContext.KeepAlive(inBuffer);
             asyncContext.KeepAlive(outBuffer);
@@ -346,8 +344,6 @@ namespace ProcessHacker.Native.Objects
                 outBuffer ?? IntPtr.Zero,
                 outBuffer != null ? outBuffer.Size : 0
                 );
-
-            return asyncContext;
         }
 
         protected void BeginFsControl(
@@ -363,9 +359,9 @@ namespace ProcessHacker.Native.Objects
 
             status = Win32.NtFsControlFile(
                 this,
-                asyncContext.EventHandle,
+                asyncContext.EventHandle ?? IntPtr.Zero,
                 null,
-                IntPtr.Zero,
+                asyncContext.Context,
                 asyncContext.StatusMemory,
                 controlCode,
                 inBuffer,
@@ -384,7 +380,8 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        public AsyncIoContext BeginIoControl(
+        public void BeginIoControl(
+            AsyncIoContext asyncContext,
             int controlCode,
             byte[] inBuffer,
             int inBufferOffset,
@@ -394,14 +391,13 @@ namespace ProcessHacker.Native.Objects
             int outBufferLength
             )
         {
-            AsyncIoContext asyncContext;
             PinnedObject<byte[]> pinnedInBuffer = null;
             PinnedObject<byte[]> pinnedOutBuffer = null;
 
             Utils.ValidateBuffer(inBuffer, inBufferOffset, inBufferLength, true);
             Utils.ValidateBuffer(outBuffer, outBufferOffset, outBufferLength, true);
 
-            asyncContext = new AsyncIoContext(this);
+            asyncContext.NotifyPreBegin();
 
             if (inBuffer != null)
             {
@@ -423,13 +419,11 @@ namespace ProcessHacker.Native.Objects
                 pinnedOutBuffer != null ? pinnedOutBuffer.Address.Increment(outBufferOffset) : IntPtr.Zero,
                 outBufferLength
                 );
-
-            return asyncContext;
         }
 
-        public AsyncIoContext BeginIoControl(int controlCode, MemoryRegion inBuffer, MemoryRegion outBuffer)
+        public void BeginIoControl(AsyncIoContext asyncContext, int controlCode, MemoryRegion inBuffer, MemoryRegion outBuffer)
         {
-            AsyncIoContext asyncContext = new AsyncIoContext(this);
+            asyncContext.NotifyPreBegin();
 
             asyncContext.KeepAlive(inBuffer);
             asyncContext.KeepAlive(outBuffer);
@@ -441,8 +435,6 @@ namespace ProcessHacker.Native.Objects
                 outBuffer ?? IntPtr.Zero,
                 outBuffer != null ? outBuffer.Size : 0
                 );
-
-            return asyncContext;
         }
 
         protected void BeginIoControl(
@@ -458,9 +450,9 @@ namespace ProcessHacker.Native.Objects
 
             status = Win32.NtDeviceIoControlFile(
                 this,
-                asyncContext.EventHandle,
+                asyncContext.EventHandle ?? IntPtr.Zero,
                 null,
-                IntPtr.Zero,
+                asyncContext.Context,
                 asyncContext.StatusMemory,
                 controlCode,
                 inBuffer,
@@ -479,26 +471,27 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        public AsyncIoContext BeginLock(long offset, long length)
+        public void BeginLock(AsyncIoContext asyncContext, long offset, long length)
         {
-            return this.BeginLock(offset, length, false);
+            this.BeginLock(asyncContext, offset, length, false);
         }
 
-        public AsyncIoContext BeginLock(long offset, long length, bool wait)
+        public void BeginLock(AsyncIoContext asyncContext, long offset, long length, bool wait)
         {
-            return this.BeginLock(offset, length, wait, true);
+            this.BeginLock(asyncContext, offset, length, wait, true);
         }
 
-        public AsyncIoContext BeginLock(long offset, long length, bool wait, bool exclusive)
+        public void BeginLock(AsyncIoContext asyncContext, long offset, long length, bool wait, bool exclusive)
         {
             NtStatus status;
-            AsyncIoContext asyncContext = new AsyncIoContext(this);
+
+            asyncContext.NotifyPreBegin();
 
             status = Win32.NtLockFile(
                 this,
-                asyncContext.EventHandle,
+                asyncContext.EventHandle ?? IntPtr.Zero,
                 null,
-                IntPtr.Zero,
+                asyncContext.Context,
                 asyncContext.StatusMemory,
                 ref offset,
                 ref length,
@@ -515,40 +508,32 @@ namespace ProcessHacker.Native.Objects
                 asyncContext.CompletedSynchronously = true;
                 asyncContext.Status = status;
             }
-
-            return asyncContext;
         }
 
-        public AsyncIoContext BeginRead(byte[] buffer)
+        public void BeginRead(AsyncIoContext asyncContext, byte[] buffer)
         {
-            return this.BeginRead(buffer, 0, buffer.Length);
+            this.BeginRead(asyncContext, buffer, 0, buffer.Length);
         }
 
-        public AsyncIoContext BeginRead(byte[] buffer, int offset, int length)
+        public void BeginRead(AsyncIoContext asyncContext, byte[] buffer, int offset, int length)
         {
-            AsyncIoContext asyncContext;
             PinnedObject<byte[]> pinnedBuffer;
 
             Utils.ValidateBuffer(buffer, offset, length);
+            asyncContext.NotifyPreBegin();
 
             // Pin the buffer because the I/O system may be writing to it after 
             // this call returns.
             pinnedBuffer = new PinnedObject<byte[]>(buffer);
-            asyncContext = new AsyncIoContext(this);
             asyncContext.KeepAlive(pinnedBuffer);
             this.BeginRead(asyncContext, pinnedBuffer.Address.Increment(offset), length);
-
-            return asyncContext;
         }
 
-        public AsyncIoContext BeginRead(MemoryRegion buffer)
+        public void BeginRead(AsyncIoContext asyncContext, MemoryRegion buffer)
         {
-            AsyncIoContext asyncContext = new AsyncIoContext(this);
-
+            asyncContext.NotifyPreBegin();
             asyncContext.KeepAlive(buffer);
             this.BeginRead(asyncContext, buffer, buffer.Size);
-
-            return asyncContext;
         }
 
         protected void BeginRead(AsyncIoContext asyncContext, IntPtr buffer, int length)
@@ -557,9 +542,9 @@ namespace ProcessHacker.Native.Objects
 
             status = Win32.NtReadFile(
                 this,
-                asyncContext.EventHandle,
+                asyncContext.EventHandle ?? IntPtr.Zero,
                 null,
-                IntPtr.Zero,
+                asyncContext.Context,
                 asyncContext.StatusMemory,
                 buffer,
                 length,
@@ -577,34 +562,28 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        public AsyncIoContext BeginWrite(byte[] buffer)
+        public void BeginWrite(AsyncIoContext asyncContext, byte[] buffer)
         {
-            return this.BeginWrite(buffer, 0, buffer.Length);
+            this.BeginWrite(asyncContext, buffer, 0, buffer.Length);
         }
 
-        public AsyncIoContext BeginWrite(byte[] buffer, int offset, int length)
+        public void BeginWrite(AsyncIoContext asyncContext, byte[] buffer, int offset, int length)
         {
-            AsyncIoContext asyncContext;
             PinnedObject<byte[]> pinnedBuffer;
 
             Utils.ValidateBuffer(buffer, offset, length);
+            asyncContext.NotifyPreBegin();
 
             pinnedBuffer = new PinnedObject<byte[]>(buffer);
-            asyncContext = new AsyncIoContext(this);
             asyncContext.KeepAlive(pinnedBuffer);
             this.BeginWrite(asyncContext, pinnedBuffer.Address.Increment(offset), length);
-
-            return asyncContext;
         }
 
-        public AsyncIoContext BeginWrite(MemoryRegion buffer)
+        public void BeginWrite(AsyncIoContext asyncContext, MemoryRegion buffer)
         {
-            AsyncIoContext asyncContext = new AsyncIoContext(this);
-
+            asyncContext.NotifyPreBegin();
             asyncContext.KeepAlive(buffer);
             this.BeginWrite(asyncContext, buffer, buffer.Size);
-
-            return asyncContext;
         }
 
         protected void BeginWrite(AsyncIoContext asyncContext, IntPtr buffer, int length)
@@ -613,9 +592,9 @@ namespace ProcessHacker.Native.Objects
 
             status = Win32.NtWriteFile(
                 this,
-                asyncContext.EventHandle,
+                asyncContext.EventHandle ?? IntPtr.Zero,
                 null,
-                IntPtr.Zero,
+                asyncContext.Context,
                 asyncContext.StatusMemory,
                 buffer,
                 length,
@@ -1383,6 +1362,16 @@ namespace ProcessHacker.Native.Objects
                 );
         }
 
+        public void SetIoCompletion(AsyncIoCompletionPort asyncCompletionPort)
+        {
+            this.SetIoCompletion(asyncCompletionPort.Handle);
+        }
+
+        public void SetIoCompletion(IoCompletionHandle ioCompletionHandle)
+        {
+            this.SetIoCompletion(ioCompletionHandle, IntPtr.Zero);
+        }
+
         public void SetIoCompletion(IoCompletionHandle ioCompletionHandle, IntPtr keyContext)
         {
             FileCompletionInformation info = new FileCompletionInformation();
@@ -1526,11 +1515,68 @@ namespace ProcessHacker.Native.Objects
         }
     }
 
+    public enum AsyncIoMethod
+    {
+        Event,
+        IoCompletion
+    }
+
     public enum PositionOrigin
     {
         Start,
         Current,
         End
+    }
+
+    public sealed class AsyncIoCompletionPort : IDisposable
+    {
+        private IoCompletionHandle _ioCompletionHandle;
+
+        public AsyncIoCompletionPort()
+            : this(0)
+        { }
+
+        public AsyncIoCompletionPort(int count)
+        {
+            _ioCompletionHandle = IoCompletionHandle.Create(IoCompletionAccess.All, count);
+        }
+
+        public void Dispose()
+        {
+            _ioCompletionHandle.Dispose();
+        }
+
+        internal IoCompletionHandle Handle
+        {
+            get { return _ioCompletionHandle; }
+        }
+
+        public AsyncIoContext Remove()
+        {
+            return this.Remove(long.MinValue, false);
+        }
+
+        public AsyncIoContext Remove(long timeout, bool relative)
+        {
+            AsyncIoContext asyncContext;
+            IntPtr keyContext;
+            IntPtr apcContext;
+
+            _ioCompletionHandle.Remove(out keyContext, out apcContext, relative ? -timeout : timeout, false);
+
+            asyncContext = AsyncIoContext.GetAsyncIoContext(apcContext);
+            asyncContext.NotifyEnd();
+
+            return asyncContext;
+        }
+
+        public void Set(AsyncIoContext asyncContext, NtStatus ioStatus, IntPtr ioInformation)
+        {
+            if (asyncContext.Method != AsyncIoMethod.IoCompletion)
+                throw new InvalidOperationException("The asynchronous I/O context is not I/O-completion-port-based.");
+
+            _ioCompletionHandle.Set(IntPtr.Zero, asyncContext.Context, ioStatus, ioInformation);
+        }
     }
 
     public sealed class AsyncIoContext : BaseObject, ISynchronizable
@@ -1587,29 +1633,44 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        private EventHandle _eventHandle;
-        private FileHandle _fileHandle;
+        public static AsyncIoContext GetAsyncIoContext(IntPtr context)
+        {
+            return GCHandle.FromIntPtr(context).Target as AsyncIoContext;
+        }
+
+        private IntPtr _context = IntPtr.Zero;
+        private EventHandle _eventHandle = null;
         private UnmanagedIsb _isb;
         private bool _completedSynchronously = false;
         private bool _started = false;
 
-        private List<BaseObject> _keepAliveList = new List<BaseObject>();
+        private List<BaseObject> _keepAliveList = null;
         private object _tag;
 
-        public AsyncIoContext(FileHandle fileHandle)
+        public AsyncIoContext()
+            : this(AsyncIoMethod.Event)
+        { }
+
+        public AsyncIoContext(AsyncIoMethod method)
         {
-            _eventHandle = EventHandle.Create(EventAccess.All, EventType.NotificationEvent, false);
-            _fileHandle = fileHandle;
             _isb = new UnmanagedIsb();
             _isb.Status = NtStatus.Pending;
 
-            _fileHandle.Reference();
+            if (method == AsyncIoMethod.Event)
+            {
+                _eventHandle = EventHandle.Create(EventAccess.All, EventType.NotificationEvent, false);
+            }
+            else
+            {
+                _context = GCHandle.ToIntPtr(GCHandle.Alloc(this, GCHandleType.Normal));
+            }
         }
 
         protected override void DisposeObject(bool disposing)
         {
             if (_started && !this.Completed)
             {
+                // Can't dispose, since the ISB memory is still in use.
                 throw new InvalidOperationException(
                     "An attempt was made to dispose an asynchronous I/O context object " +
                     "before the I/O operation has finished."
@@ -1620,8 +1681,6 @@ namespace ProcessHacker.Native.Objects
 
             if (_eventHandle != null)
                 _eventHandle.Dispose();
-            if (_fileHandle != null)
-                _fileHandle.Dereference();
             if (_isb != null)
                 _isb.Dispose();
         }
@@ -1633,10 +1692,7 @@ namespace ProcessHacker.Native.Objects
 
         public bool Completed
         {
-            get
-            {
-                return _isb.Status != NtStatus.Pending;
-            }
+            get { return _isb.Status != NtStatus.Pending; }
         }
 
         public bool CompletedSynchronously
@@ -1645,23 +1701,30 @@ namespace ProcessHacker.Native.Objects
             internal set
             {
                 _completedSynchronously = value;
-                _eventHandle.Set();
+
+                if (_completedSynchronously && _eventHandle != null)
+                    _eventHandle.Set();
             }
         }
 
-        internal EventHandle EventHandle
+        public IntPtr Context
         {
-            get { return _eventHandle; }
+            get { return _context; }
         }
 
-        public FileHandle FileHandle
+        public EventHandle EventHandle
         {
-            get { return _fileHandle; }
+            get { return _eventHandle; }
         }
 
         public int Information
         {
             get { return _isb.Information.ToInt32(); }
+        }
+
+        public AsyncIoMethod Method
+        {
+            get { return _eventHandle != null ? AsyncIoMethod.Event : AsyncIoMethod.IoCompletion; }
         }
 
         public bool Started
@@ -1687,7 +1750,7 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        internal IntPtr StatusMemory
+        public IntPtr StatusMemory
         {
             get { return _isb; }
         }
@@ -1698,38 +1761,49 @@ namespace ProcessHacker.Native.Objects
             set { _tag = value; }
         }
 
-        public void Cancel()
-        {
-            if (!_started)
-                return;
-
-            _fileHandle.CancelIo();
-            this.Wait();
-            this.NotifyEnd();
-        }
-
         private void ClearKeepAlive()
         {
-            foreach (var obj in _keepAliveList)
-                obj.Dereference();
+            if (_keepAliveList != null)
+            {
+                foreach (var obj in _keepAliveList)
+                    obj.Dereference();
 
-            _keepAliveList.Clear();
+                _keepAliveList.Clear();
+            }
         }
 
-        internal void KeepAlive(BaseObject obj)
+        public void KeepAlive(BaseObject obj)
         {
+            if (_keepAliveList == null)
+                _keepAliveList = new List<BaseObject>();
+
             _keepAliveList.Add(obj);
             obj.Reference();
         }
 
-        internal void NotifyBegin()
+        public void NotifyBegin()
         {
             _started = true;
         }
 
-        internal void NotifyEnd()
+        public void NotifyPreBegin()
+        {
+            if (_started)
+            {
+                throw new InvalidOperationException(
+                    "The asynchronous I/O context object is already associated with an operation."
+                    );
+            }
+        }
+
+        public void NotifyEnd()
         {
             this.ClearKeepAlive();
+
+            if (_context != IntPtr.Zero)
+            {
+                GCHandle.FromIntPtr(_context).Free();
+            }
         }
 
         #region ISynchronizable Members
@@ -1742,16 +1816,25 @@ namespace ProcessHacker.Native.Objects
 
         public NtStatus Wait()
         {
+            if (this.Method != AsyncIoMethod.Event)
+                throw new InvalidOperationException("The asynchronous I/O context object is not event-based.");
+
             return _eventHandle.Wait();
         }
 
         public NtStatus Wait(bool alertable)
         {
+            if (this.Method != AsyncIoMethod.Event)
+                throw new InvalidOperationException("The asynchronous I/O context object is not event-based.");
+
             return _eventHandle.Wait(alertable);
         }
 
         public NtStatus Wait(bool alertable, long timeout)
         {
+            if (this.Method != AsyncIoMethod.Event)
+                throw new InvalidOperationException("The asynchronous I/O context object is not event-based.");
+
             return _eventHandle.Wait(alertable, timeout);
         }
 

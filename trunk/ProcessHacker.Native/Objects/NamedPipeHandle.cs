@@ -58,7 +58,7 @@ namespace ProcessHacker.Native.Objects
                 null,
                 FileShareMode.ReadWrite,
                 FileCreationDisposition.OpenIf,
-                0,
+                FileCreateOptions.NonDirectoryFile,
                 type,
                 type,
                 PipeCompletionMode.Queue,
@@ -73,7 +73,7 @@ namespace ProcessHacker.Native.Objects
             FileAccess access,
             string fileName,
             ObjectFlags objectFlags,
-            FileHandle rootDirectory,
+            NativeHandle rootDirectory,
             FileShareMode shareMode,
             FileCreationDisposition creationDisposition,
             FileCreateOptions createOptions,
@@ -200,7 +200,7 @@ namespace ProcessHacker.Native.Objects
         public NamedPipeHandle(
             string fileName,
             ObjectFlags objectFlags,
-            FileHandle rootDirectory,
+            NativeHandle rootDirectory,
             FileShareMode shareMode,
             FileCreateOptions openOptions,
             FileAccess access
@@ -208,12 +208,13 @@ namespace ProcessHacker.Native.Objects
             : base(fileName, objectFlags, rootDirectory, shareMode, openOptions, access)
         { }
 
-        public AsyncIoContext BeginListen()
+        public void BeginListen(AsyncIoContext asyncContext)
         {
-            return this.BeginFsControl(FsCtlListen, null, null);
+            this.BeginFsControl(asyncContext, FsCtlListen, null, null);
         }
 
-        public AsyncIoContext BeginTransceive(
+        public void BeginTransceive(
+            AsyncIoContext asyncContext,
             byte[] inBuffer,
             int inBufferOffset,
             int inBufferLength,
@@ -222,7 +223,8 @@ namespace ProcessHacker.Native.Objects
             int outBufferLength
             )
         {
-            return this.BeginFsControl(
+            this.BeginFsControl(
+                asyncContext,
                 FsCtlTransceive,
                 inBuffer,
                 inBufferOffset,
@@ -233,9 +235,9 @@ namespace ProcessHacker.Native.Objects
                 );
         }
 
-        public AsyncIoContext BeginTransceive(MemoryRegion inBuffer, MemoryRegion outBuffer)
+        public void BeginTransceive(AsyncIoContext asyncContext, MemoryRegion inBuffer, MemoryRegion outBuffer)
         {
-            return this.BeginFsControl(FsCtlTransceive, inBuffer, outBuffer);
+            this.BeginFsControl(asyncContext, FsCtlTransceive, inBuffer, outBuffer);
         }
 
         public bool EndListen(AsyncIoContext asyncContext)

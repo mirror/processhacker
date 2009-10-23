@@ -49,7 +49,7 @@ namespace ProcessHacker.Native.Objects
             FileAccess access,
             string fileName,
             ObjectFlags objectFlags,
-            FileHandle rootDirectory,
+            NativeHandle rootDirectory,
             int quota,
             int maxMessageSize,
             long readTimeout,
@@ -102,7 +102,7 @@ namespace ProcessHacker.Native.Objects
         public MailslotHandle(
             string fileName,
             ObjectFlags objectFlags,
-            FileHandle rootDirectory,
+            NativeHandle rootDirectory,
             FileShareMode shareMode,
             FileCreateOptions openOptions,
             FileAccess access
