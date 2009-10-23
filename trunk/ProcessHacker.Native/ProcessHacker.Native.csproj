@@ -67,6 +67,7 @@
     <Compile Include="Image\ImageExports.cs" />
     <Compile Include="Image\MappedImage.cs" />
     <Compile Include="Io\BeepDevice.cs" />
+    <Compile Include="Io\DiskDevice.cs" />
     <Compile Include="Io\StorageDevice.cs" />
     <Compile Include="Memory\AlignedMemoryAlloc.cs" />
     <Compile Include="NativeBitmap.cs" />

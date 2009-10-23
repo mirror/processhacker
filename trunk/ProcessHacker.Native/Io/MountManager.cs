@@ -34,6 +34,7 @@ namespace ProcessHacker.Native.Io
     public static class MountManager
     {
         // Input for IoCtlCreatePoint
+        [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrCreatePointInput
         {
             public ushort SymbolicLinkNameOffset;
@@ -43,6 +44,7 @@ namespace ProcessHacker.Native.Io
         }
 
         // Input for IoCtlDeletePoints, IoCtlQueryPoints and IoCtlDeletePointsDbOnly
+        [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrMountPoint
         {
             public int SymbolicLinkNameOffset;
@@ -54,6 +56,7 @@ namespace ProcessHacker.Native.Io
         }
 
         // Output for IoCtlDeletePoints, IoCtlQueryPoints and IoCtlDeletePointsDbOnly
+        [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrMountPoints
         {
             public static int MountPointsOffset =
@@ -65,6 +68,7 @@ namespace ProcessHacker.Native.Io
         }
 
         // Input for IoCtlNextDriveLetter
+        [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrDriveLetterTarget
         {
             public static int DeviceNameOffset =
@@ -75,6 +79,7 @@ namespace ProcessHacker.Native.Io
         }
 
         // Output for IoCtlNextDriveLetter
+        [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrDriveLetterInformation
         {
             [MarshalAs(UnmanagedType.I1)]
@@ -84,6 +89,7 @@ namespace ProcessHacker.Native.Io
         }
 
         // Input for IoCtlVolumeMountPointCreated and IoCtlVolumeMountPointDeleted
+        [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrVolumeMountPoint
         {
             public ushort SourceVolumeNameOffset;
@@ -93,6 +99,7 @@ namespace ProcessHacker.Native.Io
         }
 
         // Input, output for IoCtlChangeNotify
+        [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrChangeNotifyInfo
         {
             public int EpicNumber;
@@ -100,6 +107,7 @@ namespace ProcessHacker.Native.Io
 
         // Input for IoCtlKeepLinksWhenOffline, IoCtlVolumeArrivalNotification,
         // IoCtlQueryDosVolumePath, IoCtlQueryDosVolumePaths
+        [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrTargetName
         {
             public static int DeviceNameOffset =
@@ -110,6 +118,7 @@ namespace ProcessHacker.Native.Io
         }
 
         // Output for IoCtlQueryDosVolumePath, IoCtlQueryDosVolumePaths
+        [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrVolumePaths
         {
             public static int MultiSzOffset =
@@ -120,6 +129,7 @@ namespace ProcessHacker.Native.Io
         }
 
         // Output for IoCtlQueryDeviceName
+        [StructLayout(LayoutKind.Sequential)]
         public struct MountDevName
         {
             public static int NameOffset =

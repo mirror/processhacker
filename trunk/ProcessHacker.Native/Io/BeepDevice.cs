@@ -10,6 +10,7 @@ namespace ProcessHacker.Native.Io
 {
     public static class BeepDevice
     {
+        [StructLayout(LayoutKind.Sequential)]
         public struct BeepSetParameters
         {
             public int Frequency;
@@ -30,12 +31,12 @@ namespace ProcessHacker.Native.Io
                 p.Frequency = frequency;
                 p.Duration = duration;
 
-                using (var fhandle = OpenBeep(FileAccess.GenericRead))
+                using (var fhandle = OpenBeepDevice(FileAccess.GenericRead))
                     fhandle.IoControl(IoCtlSet, &p, Marshal.SizeOf(typeof(BeepSetParameters)), null, 0);
             }
         }
 
-        private static FileHandle OpenBeep(FileAccess access)
+        private static FileHandle OpenBeepDevice(FileAccess access)
         {
             return new FileHandle(
                 Win32.BeepDeviceName,
