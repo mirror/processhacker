@@ -29,6 +29,28 @@ namespace ProcessHacker.Native.Objects
 {
     public class TransactionHandle : NativeHandle<TransactionAccess>
     {
+        public struct CurrentTransactionContext : IDisposable
+        {
+            private TransactionHandle _oldHandle;
+            private bool _disposed;
+
+            internal CurrentTransactionContext(TransactionHandle handle)
+            {
+                _oldHandle = GetCurrent();
+                SetCurrent(handle);
+                _disposed = false;
+            }
+
+            public void Dispose()
+            {
+                if (!_disposed)
+                {
+                    SetCurrent(_oldHandle);
+                    _disposed = true;
+                }
+            }
+        }
+
         public static TransactionHandle Create(
             TransactionAccess access,
             TmHandle tmHandle,
@@ -116,7 +138,12 @@ namespace ProcessHacker.Native.Objects
 
         public static void SetCurrent(TransactionHandle transactionHandle)
         {
-            Win32.RtlSetCurrentTransaction(transactionHandle);
+            Win32.RtlSetCurrentTransaction(transactionHandle ?? IntPtr.Zero);
+        }
+
+        public static CurrentTransactionContext SetCurrentContext(TransactionHandle transactionHandle)
+        {
+            return new CurrentTransactionContext(transactionHandle);
         }
 
         private TransactionHandle(IntPtr handle, bool owned)
