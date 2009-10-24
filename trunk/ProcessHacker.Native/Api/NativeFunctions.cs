@@ -3768,6 +3768,19 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Transactions
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlGetCurrentTransaction();
+
+        [DllImport("ntdll.dll")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RtlSetCurrentTransaction(
+            [In] IntPtr TransactionHandle
+            );
+
+        #endregion
+
         #region WOW64
 
         [DllImport("ntdll.dll")]

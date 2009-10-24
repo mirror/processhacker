@@ -45,6 +45,12 @@ namespace ProcessHacker.Native.Objects
             return new DesktopHandle(handle, false);
         }
 
+        public static void SetCurrent(DesktopHandle desktopHandle)
+        {
+            if (!Win32.SetThreadDesktop(desktopHandle))
+                Win32.ThrowLastError();
+        }
+
         public DesktopHandle(string name, bool allowOtherAccountHook, DesktopAccess access)
         {
             this.Handle = Win32.OpenDesktop(name, allowOtherAccountHook ? 1 : 0, false, access);
@@ -60,12 +66,6 @@ namespace ProcessHacker.Native.Objects
         protected override void Close()
         {
             Win32.CloseDesktop(this);
-        }
-
-        public void SetCurrent()
-        {
-            if (!Win32.SetThreadDesktop(this))
-                Win32.ThrowLastError();
         }
 
         public void Switch()

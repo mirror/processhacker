@@ -40,6 +40,12 @@ namespace ProcessHacker.Native.Objects
             return new WindowStationHandle(handle, false);
         }
 
+        public static void SetCurrent(WindowStationHandle windowStationHandle)
+        {
+            if (!Win32.SetProcessWindowStation(windowStationHandle))
+                Win32.ThrowLastError();
+        }
+
         public WindowStationHandle(string name, WindowStationAccess access)
         {
             this.Handle = Win32.OpenWindowStation(name, false, access);
@@ -55,12 +61,6 @@ namespace ProcessHacker.Native.Objects
         protected override void Close()
         {
             Win32.CloseWindowStation(this);
-        }
-
-        public void SetCurrent()
-        {
-            if (!Win32.SetProcessWindowStation(this))
-                Win32.ThrowLastError();
         }
     }
 }

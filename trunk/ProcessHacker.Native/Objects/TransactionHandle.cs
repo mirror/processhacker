@@ -31,6 +31,27 @@ namespace ProcessHacker.Native.Objects
     {
         public static TransactionHandle Create(
             TransactionAccess access,
+            TmHandle tmHandle,
+            TransactionOptions createOptions,
+            long timeout,
+            string description
+            )
+        {
+            return Create(
+                access,
+                null,
+                0,
+                null,
+                Guid.Empty,
+                tmHandle,
+                createOptions,
+                timeout,
+                description
+                );
+        }
+
+        public static TransactionHandle Create(
+            TransactionAccess access,
             string name,
             ObjectFlags objectFlags,
             DirectoryHandle rootDirectory,
@@ -44,6 +65,9 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
+
+            if (unitOfWorkGuid == Guid.Empty)
+                unitOfWorkGuid = Guid.NewGuid();
 
             try
             {
@@ -76,6 +100,23 @@ namespace ProcessHacker.Native.Objects
             }
 
             return new TransactionHandle(handle, true);
+        }
+
+        public static TransactionHandle GetCurrent()
+        {
+            IntPtr handle;
+
+            handle = Win32.RtlGetCurrentTransaction();
+
+            if (handle != IntPtr.Zero)
+                return new TransactionHandle(handle, false);
+            else
+                return null;
+        }
+
+        public static void SetCurrent(TransactionHandle transactionHandle)
+        {
+            Win32.RtlSetCurrentTransaction(transactionHandle);
         }
 
         private TransactionHandle(IntPtr handle, bool owned)

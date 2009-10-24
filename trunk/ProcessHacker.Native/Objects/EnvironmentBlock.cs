@@ -22,6 +22,20 @@ namespace ProcessHacker.Native.Objects
             return GetCurrent().GetVariable(name);
         }
 
+        public static EnvironmentBlock SetCurrent(EnvironmentBlock environmentBlock)
+        {
+            NtStatus status;
+            IntPtr previousEnvironment;
+
+            if ((status = Win32.RtlSetCurrentEnvironment(
+                environmentBlock,
+                out previousEnvironment
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return new EnvironmentBlock(previousEnvironment);
+        }
+
         public static void SetCurrentVariable(string name, string value)
         {
             NtStatus status;
@@ -146,20 +160,6 @@ namespace ProcessHacker.Native.Objects
             {
                 nameStr.Dispose();
             }
-        }
-
-        public EnvironmentBlock SetCurrent()
-        {
-            NtStatus status;
-            IntPtr previousEnvironment;
-
-            if ((status = Win32.RtlSetCurrentEnvironment(
-                this,
-                out previousEnvironment
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
-
-            return new EnvironmentBlock(previousEnvironment);
         }
 
         public void SetVariable(string name, string value)
