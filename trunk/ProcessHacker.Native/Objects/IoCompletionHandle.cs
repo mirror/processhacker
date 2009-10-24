@@ -92,22 +92,21 @@ namespace ProcessHacker.Native.Objects
             : this(name, 0, null, access)
         { }
 
-        public IoStatusBlock Remove(out IntPtr keyContext, out IntPtr apcContext, long timeout)
+        public bool Remove(out IoStatusBlock isb, out IntPtr keyContext, out IntPtr apcContext, long timeout)
         {
-            return this.Remove(out keyContext, out apcContext, timeout, true);
+            return this.Remove(out isb, out keyContext, out apcContext, timeout, true);
         }
 
-        public IoStatusBlock Remove(out IntPtr keyContext, out IntPtr apcContext, long timeout, bool relative)
+        public bool Remove(out IoStatusBlock isb, out IntPtr keyContext, out IntPtr apcContext, long timeout, bool relative)
         {
             NtStatus status;
-            IoStatusBlock ioStatus;
             long realTimeout = relative ? -timeout : timeout;
 
             if ((status = Win32.NtRemoveIoCompletion(
-                this, out keyContext, out apcContext, out ioStatus, ref realTimeout)) >= NtStatus.Error)
+                this, out keyContext, out apcContext, out isb, ref realTimeout)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
-            return ioStatus;
+            return status != NtStatus.Timeout;
         }
 
         public void Set(IntPtr keyContext, IntPtr apcContext, NtStatus ioStatus, IntPtr ioInformation)

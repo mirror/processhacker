@@ -1551,7 +1551,7 @@ namespace ProcessHacker.Native.Api
         FullDuplex = 2
     }
 
-    public enum PipeState : uint
+    public enum PipeState : int
     {
         Disconnected = 1,
         Listening = 2,

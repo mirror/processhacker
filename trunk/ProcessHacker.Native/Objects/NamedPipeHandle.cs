@@ -47,7 +47,10 @@ namespace ProcessHacker.Native.Objects
             FileAccess access,
             string fileName,
             PipeType type,
+            FileCreateOptions createOptions,
             int maximumInstances,
+            int inboundQuota,
+            int outboundQuota,
             long defaultTimeout
             )
         {
@@ -58,13 +61,13 @@ namespace ProcessHacker.Native.Objects
                 null,
                 FileShareMode.ReadWrite,
                 FileCreationDisposition.OpenIf,
-                FileCreateOptions.NonDirectoryFile,
+                createOptions,
                 type,
                 type,
                 PipeCompletionMode.Queue,
                 maximumInstances,
-                0,
-                0,
+                inboundQuota,
+                outboundQuota,
                 defaultTimeout
                 );
         }
@@ -90,6 +93,10 @@ namespace ProcessHacker.Native.Objects
             ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
             IoStatusBlock isb;
             IntPtr handle;
+
+            // If a timeout wasn't specified, use a default value.
+            if (defaultTimeout == 0)
+                defaultTimeout = -50 * Win32.TimeMsTo100Ns; // 50 milliseconds
 
             try
             {
