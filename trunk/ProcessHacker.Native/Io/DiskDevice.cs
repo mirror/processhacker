@@ -28,6 +28,22 @@ namespace ProcessHacker.Native.Io
             public bool IsPowerProtected;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct PartitionInformation
+        {
+            public long StartingOffset;
+            public long PartitionLength;
+            public int HiddenSectors;
+            public int PartitionNumber;
+            public PartitionType PartitionType;
+            [MarshalAs(UnmanagedType.I1)]
+            public bool BootIndicator;
+            [MarshalAs(UnmanagedType.I1)]
+            public bool RecognizedPartition;
+            [MarshalAs(UnmanagedType.I1)]
+            public bool RewritePartition;
+        }
+
         public static int IoCtlGetCacheSetting = Win32.CtlCode(DeviceType.Disk, 0x0038, DeviceControlMethod.Buffered, DeviceControlAccess.Read);
         public static int IoCtlSetCacheSetting = Win32.CtlCode(DeviceType.Disk, 0x0039, DeviceControlMethod.Buffered, DeviceControlAccess.Read | DeviceControlAccess.Write);
 
