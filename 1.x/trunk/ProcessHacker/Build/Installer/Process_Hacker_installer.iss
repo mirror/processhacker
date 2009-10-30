@@ -94,6 +94,7 @@ ArchitecturesInstallIn64BitMode=x64
 [Languages]
 ; Installer's languages
 Name: en; MessagesFile: compiler:Default.isl
+Name: de; MessagesFile: compiler:Languages\German.isl
 Name: gr; MessagesFile: Languages\Greek.isl
 
 

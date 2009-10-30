@@ -47,6 +47,33 @@ en.sm_HelpFile=Process Hacker's Help
 en.sm_ReadmeFile=ReadMe
 en.sm_com_ReadmeFile=Process Hacker's ReadMe
 
+;German
+de.msg_SetupIsRunningWarning=Der Process Hacker Setup lδuft bereits!
+de.msg_AskToDownNET=Process Hacker braucht das .NET Framework 2.0. Please laden und installieren Sie das .NET Framework und starten dann Setup nochmal. %n%nWollen Sie das .NET Framework 2.0 jetzt laden?
+de.msg_DeleteLogSettings=Wollen Sie zusδtzlich die Process Hacker Logs und Einstellungen lφschen? %nWenn Sie Process Hacker erneut installieren brauchen Sie nichts zu lφschen.
+de.msg_OptimizingPerformance=Leistung verbessern...
+de.msg_servicemanager=Der Service Manager ist nicht verfόgbar
+de.msg_servicemanager2=Nur NT basierte Systeme unterstόtzen Services
+de.tsk_AllUsers=Fόr alle Benutzer
+de.tsk_CreateKPHService=KProcessHacker als Service installieren
+de.tsk_CurrentUser=Nur fόr den aktuellen Benutzer
+de.tsk_DeleteKPHService=KProcessHacker Service lφschen
+de.tsk_Other=Andere Aufgaben:
+de.tsk_RemoveStartup=Process Hacker aus dem Windows Startup entfernen
+de.tsk_ResetSettings=Process Hacker Einstellungen zurόcksetzen
+de.tsk_RestoreTaskmgr=Windows Task Manager wieder benutzen
+de.tsk_SetDefaultTaskmgr=Process Hacker als Standard Task Manager fόr Windows benutzen
+de.tsk_StartupDescr=Process Hacker starten beim Windows Start
+de.tsk_StartupDescrMin=Verkleinert in der Taskleiste
+de.tsk_Startup=Start Optionen:
+de.run_VisitWebsite=Process Hacker Website besuchen
+de.sm_Changelog=Δnderungsliste
+de.sm_com_Changelog=Process Hacker Δnderungsliste
+de.sm_Help=Hilfe und Support
+de.sm_HelpFile=Process Hacker Hilfe
+de.sm_ReadmeFile=LiesMich
+de.sm_com_ReadmeFile=Process Hacker LiesMich
+
 ;Greek
 gr.msg_SetupIsRunningWarning=Η εγκατάσταση του Process Hacker τρέχει ήδη!
 gr.msg_AskToDownNET=Το Process Hacker χρειάζεται το .NET Framework 2.0. Παρακαλώ κατεβάστε και εγκαταστήσετε το .NET Framework και τρέξτε την εγκατάσταση πάλι. %n%nΘέλετε να κατεβάσετε το .NET Framework 2.0 τώρα;
