@@ -1206,13 +1206,13 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 // x86/WOW64 stack walk.
-                if (IntPtr.Size == 4 || (IntPtr.Size == 8 && architecture == OSArch.I386))
+                if (OSVersion.Architecture == OSArch.I386 || (OSVersion.Architecture == OSArch.Amd64 && architecture == OSArch.I386))
                 {
                     Context context = new Context();
 
                     context.ContextFlags = ContextFlags.All;
 
-                    if (IntPtr.Size == 4)
+                    if (OSVersion.Architecture == OSArch.I386)
                     {
                         // Get the context.
                         this.GetContext(ref context);
@@ -1261,7 +1261,7 @@ namespace ProcessHacker.Native.Objects
                     }
                 }
                 // x64 stack walk.
-                else if (IntPtr.Size == 8)
+                else if (OSVersion.Architecture == OSArch.Amd64)
                 {
                     ContextAmd64 context = new ContextAmd64();
 

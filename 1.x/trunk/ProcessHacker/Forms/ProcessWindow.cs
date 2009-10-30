@@ -480,7 +480,7 @@ namespace ProcessHacker
             }
 
             // Update WOW64 info.
-            if (IntPtr.Size == 4)
+            if (OSVersion.Architecture == OSArch.I386)
             {
                 // 32-bit. Hide the labels.
                 labelProcessType.Visible = false;

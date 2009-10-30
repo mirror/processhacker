@@ -206,7 +206,7 @@ namespace ProcessHacker
                             using (var phandle =
                                 new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                             {
-                                if (IntPtr.Size == 4 || !phandle.IsWow64())
+                                if (OSVersion.Architecture == OSArch.I386 || !phandle.IsWow64())
                                 {
                                     // Load the process' modules.
                                     try { _symbols.LoadProcessModules(phandle); }

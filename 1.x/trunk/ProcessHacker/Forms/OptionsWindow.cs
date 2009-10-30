@@ -190,7 +190,7 @@ namespace ProcessHacker
                 "processes with the name of a system process.");
 
             // WOW64, 64-bit only.
-            if (IntPtr.Size == 8)
+            if (OSVersion.Architecture == OSArch.Amd64)
             {
                 AddToList("ColorWow64Processes", "32-bit Processes",
                     "Processes running under WOW64, i.e. 32-bit.");

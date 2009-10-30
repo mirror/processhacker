@@ -577,7 +577,7 @@ namespace ProcessHacker.Components
 
                         if (exitStatus == NtStatus.DllNotFound)
                         {
-                            if (IntPtr.Size == 8)
+                            if (OSVersion.Architecture == OSArch.Amd64)
                             {
                                 PhUtils.ShowError("Unable to find the module to unload. This may be caused " +
                                     "by an attempt to unload a mapped file or a 32-bit module.");

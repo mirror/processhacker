@@ -835,7 +835,7 @@ namespace ProcessHacker.Native
             // method to read the time atomically. On 64-bit, 
             // we can simply read the time.
 
-            if (IntPtr.Size == 4)
+            if (OSVersion.Architecture == OSArch.I386)
             {
                 localTime.QuadPart = 0;
 

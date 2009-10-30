@@ -2579,7 +2579,7 @@ namespace ProcessHacker
                 {
                     string defaultDbghelp = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
                         "\\Debugging Tools for Windows (" +
-                        (IntPtr.Size == 4 ? "x86" : "x64") +
+                        (OSVersion.Architecture == OSArch.I386 ? "x86" : "x64") +
                         ")\\dbghelp.dll";
 
                     if (System.IO.File.Exists(defaultDbghelp))
@@ -3080,7 +3080,7 @@ namespace ProcessHacker
 
                 // If we're on 32-bit and NPH32 exists, rename NPH to NPH64 and 
                 // NPH32 to NPH.
-                if (IntPtr.Size == 4)
+                if (OSVersion.Architecture == OSArch.I386)
                 {
                     if (nph32Exists)
                     {
@@ -3092,7 +3092,7 @@ namespace ProcessHacker
                 }
                 // If we're on 64-bit and NPH64 exists, rename NPH to NPH32 and 
                 // NPH64 to NPH.
-                else if (IntPtr.Size == 8)
+                else if (OSVersion.Architecture == OSArch.Amd64)
                 {
                     if (nph64Exists)
                     {

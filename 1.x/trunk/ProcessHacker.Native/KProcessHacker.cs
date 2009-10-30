@@ -144,7 +144,7 @@ namespace ProcessHacker.Native
         {
             _deviceName = deviceName;
 
-            if (IntPtr.Size != 4)
+            if (OSVersion.Architecture != OSArch.I386)
                 throw new NotSupportedException("KProcessHacker does not support 64-bit Windows.");
 
             try

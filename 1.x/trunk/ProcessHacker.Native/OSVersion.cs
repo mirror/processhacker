@@ -25,10 +25,11 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native
 {
-    public enum OSArch
+    public enum OSArch : int
     {
-        I386,
-        Amd64
+        Unknown = 0,
+        I386 = 4,
+        Amd64 = 8
     }
 
     public enum WindowsVersion

@@ -225,7 +225,7 @@ namespace ProcessHacker
             {
                 if (
                     // Only load KPH if we're on 32-bit and it's enabled.
-                    IntPtr.Size == 4 &&
+                    OSVersion.Architecture == OSArch.I386 &&
                     Settings.Instance.EnableKPH &&
                     !NoKph &&
                     // Don't load KPH if we're going to install/uninstall it.

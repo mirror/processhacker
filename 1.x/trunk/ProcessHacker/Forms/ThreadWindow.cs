@@ -189,7 +189,7 @@ namespace ProcessHacker
 
                     _thandle.WalkStack(_phandle, this.WalkStackCallback);
 
-                    if (IntPtr.Size == 8 && _phandle.IsWow64())
+                    if (OSVersion.Architecture == OSArch.Amd64 && _phandle.IsWow64())
                     {
                         _thandle.WalkStack(_phandle, this.WalkStackCallback, OSArch.I386);
                     }

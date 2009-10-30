@@ -367,7 +367,7 @@ namespace ProcessHacker
                     { }
 
                     // Is the process running under WOW64?
-                    if (IntPtr.Size == 8)
+                    if (OSVersion.Architecture == OSArch.Amd64)
                     {
                         try
                         {

@@ -61,7 +61,7 @@ namespace ProcessHacker.Components
 
             // On x64, the first four arguments are passed in registers, 
             // which means Analyze won't work properly.
-            if (IntPtr.Size != 4)
+            if (OSVersion.Architecture != OSArch.I386)
             {
                 analyzeWaitMenuItem.Visible = false;
                 analyzeMenuItem.Visible = false;

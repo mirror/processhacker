@@ -1230,7 +1230,7 @@ namespace ProcessHacker.Native.Objects
 
             // If we're on 64-bit and the process isn't under 
             // WOW64, it must be under permanent DEP.
-            if (IntPtr.Size == 8)
+            if (OSVersion.Architecture == OSArch.Amd64)
             {
                 if (!this.IsWow64())
                     return DepStatus.Enabled | DepStatus.Permanent;

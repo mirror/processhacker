@@ -76,7 +76,7 @@ namespace ProcessHacker
                 { }
             }
 
-            if (_processHandle != null && IntPtr.Size == 8)
+            if (_processHandle != null && OSVersion.Architecture == OSArch.Amd64)
             {
                 try
                 {
