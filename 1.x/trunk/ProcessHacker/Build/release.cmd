@@ -30,7 +30,7 @@ SET RequiredDLLs="Aga.Controls.dll" "ProcessHacker.Common.dll"^
  "ProcessHacker.Native.dll"
 
 REM Create a temporary directory for the merged files
-MD tmp >NUL 2>&1
+MD "tmp" >NUL 2>&1
 
 REM Merge DLLs with "Assistant.exe"
 %ILMergePath% /t:exe /out:"tmp\Assistant.exe" "Assistant.exe"^
@@ -44,13 +44,13 @@ REM Delete the existing EXEs and PDBs
 DEL ProcessHacker.exe Assistant.exe *.pdb >NUL 2>&1
 
 REM Copy the merged files (2 EXEs and 2 PDBs) back into this directory
-MOVE tmp\* .\ >NUL 2>&1
+MOVE "tmp\*" .\ >NUL 2>&1
 
 DEL/f/a %RequiredDLLs% "ProcessHacker.Common.xml"^
  "ProcessHacker.Native.xml" >NUL 2>&1
 
 REM Delete the temporary directory
-RD tmp >NUL 2>&1
+RD "tmp" >NUL 2>&1
 
 REM Detect if we are running on 64bit WIN and use Wow6432Node, set the path
 REM of Inno Setup accordingly and compile installer
@@ -96,3 +96,4 @@ ENDLOCAL && GOTO :EOF
 
 :Sub
 SET InnoSetupPath=%*
+GOTO :EOF
