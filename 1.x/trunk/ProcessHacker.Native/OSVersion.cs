@@ -27,9 +27,9 @@ namespace ProcessHacker.Native
 {
     public enum OSArch : int
     {
-        Unknown = 0,
-        I386 = 4,
-        Amd64 = 8
+        Unknown,
+        I386,
+        Amd64
     }
 
     public enum WindowsVersion
