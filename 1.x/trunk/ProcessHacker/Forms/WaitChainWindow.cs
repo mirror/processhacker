@@ -16,15 +16,13 @@ namespace ProcessHacker
 {
     public partial class WaitChainWindow : Form
     {
-        int processPid;
-        string processName;
-
-        TreeNode threadNode; //static reference to Nodes
+        private int processPid;
+        private string processName;
 
         public WaitChainWindow(string procName, int procPid)
         {
-            this.SetPhParent();
             InitializeComponent();
+            this.SetPhParent();
             this.AddEscapeToClose();
             this.SetTopMost();
 
@@ -57,7 +55,7 @@ namespace ProcessHacker
 
             textDescription.AppendText(string.Format("Process: {0}, PID: {1}", processName, processPid));
 
-            threadNode = threadTree.Nodes.Add(string.Format("Process: {0}, PID: {1}", processName, processPid));
+            threadTree.Nodes.Add(string.Format("Process: {0}, PID: {1}", processName, processPid));
            
             foreach (var thread in threads)
             {
@@ -72,8 +70,7 @@ namespace ProcessHacker
                 }
                 else //This happens when running without admin rights.
                 {
-                    threadNode.Nodes.Add(string.Format("TID:{0} Unable to retrieve wait chains for this thread without Admin rights", currThreadId));
-                    threadNode.ExpandAll();
+                    threadTree.Nodes.Add(string.Format("TID:{0} Unable to retrieve wait chains for this thread without Admin rights", currThreadId));
                 }
             }
         }
@@ -97,71 +94,38 @@ namespace ProcessHacker
 
                 if (WaitChainNativeMethods.WCT_OBJECT_TYPE.Thread == node.ObjectType)
                 {
-                    var processes = Windows.GetProcesses();
-                    String procName = processes.ContainsKey(node.ProcessId) ? processes[node.ProcessId].Name : "???";
+                    String procName = Windows.GetProcesses().ContainsKey(node.ProcessId) ? Windows.GetProcesses()[node.ProcessId].Name : "???";
 
-                    switch (node.ObjectStatus)
+                    sb.Append(string.Format(" PID: {0} {1} TID: {2}", node.ProcessId, procName, node.ThreadId));
+
+                    //Is this a block on a thread from another process?
+                    if ((i > 0) && (startingPID != node.ProcessId))
                     {
-                        case WaitChainNativeMethods.WCT_OBJECT_STATUS.PidOnly:
-                        case WaitChainNativeMethods.WCT_OBJECT_STATUS.PidOnlyRpcss:
-                            sb.Append(string.Format(" PID: {0} {1}", node.ProcessId, procName));
-                            break;
-                        default:
-                            {
-                                sb.Append(string.Format(" TID: {0}", node.ThreadId));
+                        // Yes, so show the PID and name.
+                        sb.Append(string.Format(" PID:{0} {1} TID:{2}", node.ProcessId, procName, node.ThreadId));
+                    }
 
-                                //Is this a block on a thread from another process?
-                                if ((i > 0) && (startingPID != node.ProcessId))
-                                {
-                                    // Yes, so show the PID and name.
-                                    sb.Append(string.Format(" PID:{0} {1}", node.ProcessId, procName));
-                                }
+                    if (allData)
+                    {
+                        sb.Append(string.Format(" Status: {0} Wait: {1} CS: {2:N0}", node.ObjectStatus, node.WaitTime, node.ContextSwitches));
+                    }
 
-                                if (allData)
-                                {
-                                    sb.Append(string.Format(" Status: {0} Wait: {1} CS: {2:N0}", node.ObjectStatus, node.WaitTime, node.ContextSwitches));
-                                }
-                                else if (node.ObjectStatus != WaitChainNativeMethods.WCT_OBJECT_STATUS.Blocked)
-                                {
-                                    sb.Append(string.Format(" Status: {0}", node.ObjectStatus));
-                                }
-                                break;
-                            }
+                    if (node.ObjectStatus != WaitChainNativeMethods.WCT_OBJECT_STATUS.Blocked)
+                    {
+                        sb.Append(string.Format(" Status: {0}", node.ObjectStatus));
                     }
                 }
                 else
                 {
-                    switch (node.ObjectType)
+                    sb.Append(string.Format(" {0} Status: {1}", node.ObjectType, node.ObjectStatus));
+
+                    String name = node.ObjectName();
+                    if (!String.IsNullOrEmpty(name))
                     {
-                        case WaitChainNativeMethods.WCT_OBJECT_TYPE.CriticalSection:
-                        case WaitChainNativeMethods.WCT_OBJECT_TYPE.SendMessage:
-                        case WaitChainNativeMethods.WCT_OBJECT_TYPE.Mutex:
-                        case WaitChainNativeMethods.WCT_OBJECT_TYPE.Alpc:
-                        case WaitChainNativeMethods.WCT_OBJECT_TYPE.COM:
-                        case WaitChainNativeMethods.WCT_OBJECT_TYPE.ThreadWait:
-                        case WaitChainNativeMethods.WCT_OBJECT_TYPE.ProcessWait:
-                        case WaitChainNativeMethods.WCT_OBJECT_TYPE.COMActivation:
-                        case WaitChainNativeMethods.WCT_OBJECT_TYPE.Unknown:
-                            {
-                                sb.Append(string.Format(" {0} Status: {1}", node.ObjectType, node.ObjectStatus));
-
-                                String name = node.ObjectName();
-
-                                if (!String.IsNullOrEmpty(name))
-                                {
-                                    sb.Append(string.Format(" Name: {0}", name));
-                                }
-                            }
-                            break;
-                        default:
-                            {
-                                sb.Append(string.Format(" UNKNOWN Object Type Enum: {0}", node.ObjectType.ToString()));
-                                break;
-                            }
+                        sb.Append(string.Format(" Name: {0}", name));
                     }
                 }
-                threadNode.Nodes.Add(sb.ToString());
-                threadNode.ExpandAll();
+                threadTree.Nodes.Add(sb.ToString());
             }
         }
 
