@@ -16,10 +16,10 @@ namespace ProcessHacker
 {
     public partial class WaitChainWindow : Form
     {
-        private int processPid;
-        private string processName;
+        private Int32 processPid;
+        private String processName;
 
-        public WaitChainWindow(string procName, int procPid)
+        public WaitChainWindow(String procName, Int32 procPid)
         {
             InitializeComponent();
             this.SetPhParent();
@@ -43,24 +43,24 @@ namespace ProcessHacker
             }
         }
 
-        private void ShowProcessWaitChains(WaitChainTraversal wct, bool showAllData)
+        private void ShowProcessWaitChains(WaitChainTraversal wct, Boolean showAllData)
         {
             var threads = Windows.GetProcessThreads(processPid);
 
             if (threads == null)
             {
-                PhUtils.ShowWarning(string.Format("The process ID {0} does not exist", processPid));
+                HackerEvent.Log.Error(true, false, string.Format("The process ID {0} does not exist", processPid));
                 this.Close();
             }
 
-            textDescription.AppendText(string.Format("Process: {0}, PID: {1}", processName, processPid));
+            textDescription.AppendText(String.Format("Process: {0}, PID: {1}", processName, processPid));
 
-            threadTree.Nodes.Add(string.Format("Process: {0}, PID: {1}", processName, processPid));
+            threadTree.Nodes.Add(String.Format("Process: {0}, PID: {1}", processName, processPid));
            
             foreach (var thread in threads)
             {
                 //Get the wait chains for this thread.
-                int currThreadId = thread.Key;
+                Int32 currThreadId = thread.Key;
                 
                 WaitData data = wct.GetThreadWaitChain(currThreadId);
 
@@ -70,7 +70,7 @@ namespace ProcessHacker
                 }
                 else //This happens when running without admin rights.
                 {
-                    threadTree.Nodes.Add(string.Format("TID:{0} Unable to retrieve wait chains for this thread without Admin rights", currThreadId));
+                    threadTree.Nodes.Add(String.Format("TID:{0} Unable to retrieve wait chains for this thread without Admin rights", currThreadId));
                 }
             }
         }
@@ -80,7 +80,7 @@ namespace ProcessHacker
             // Save the process id value for the first item as this is the 
             // process that owns the thread. we'll use this to check for 
             // items used by other threads, from other processes later.
-            int startingPID = data.Nodes[0].ProcessId;
+            Int32 startingPID = data.Nodes[0].ProcessId;
             StringBuilder sb = new StringBuilder();
 
             if (data.IsDeadlock)
@@ -88,41 +88,41 @@ namespace ProcessHacker
                 sb.Append("DEADLOCKED: ");
             }
 
-            for (int i = 0; i < data.NodeCount; i++)
+            for (Int32 i = 0; i < data.NodeCount; i++)
             {
                 WaitChainNativeMethods.WAITCHAIN_NODE_INFO node = data.Nodes[i];
 
-                if (WaitChainNativeMethods.WCT_OBJECT_TYPE.Thread == node.ObjectType)
+                if (node.ObjectType == WaitChainNativeMethods.WCT_OBJECT_TYPE.Thread)
                 {
                     String procName = Windows.GetProcesses().ContainsKey(node.ProcessId) ? Windows.GetProcesses()[node.ProcessId].Name : "???";
 
-                    sb.Append(string.Format(" PID: {0} {1} TID: {2}", node.ProcessId, procName, node.ThreadId));
+                    sb.Append(String.Format(" PID: {0} {1} TID: {2}", node.ProcessId, procName, node.ThreadId));
 
                     //Is this a block on a thread from another process?
                     if ((i > 0) && (startingPID != node.ProcessId))
                     {
                         // Yes, so show the PID and name.
-                        sb.Append(string.Format(" PID:{0} {1} TID:{2}", node.ProcessId, procName, node.ThreadId));
+                        sb.Append(String.Format(" PID:{0} {1} TID:{2}", node.ProcessId, procName, node.ThreadId));
                     }
 
                     if (allData)
                     {
-                        sb.Append(string.Format(" Status: {0} Wait: {1} CS: {2:N0}", node.ObjectStatus, node.WaitTime, node.ContextSwitches));
+                        sb.Append(String.Format(" Status: {0} Wait: {1} CS: {2:N0}", node.ObjectStatus, node.WaitTime, node.ContextSwitches));
                     }
 
                     if (node.ObjectStatus != WaitChainNativeMethods.WCT_OBJECT_STATUS.Blocked)
                     {
-                        sb.Append(string.Format(" Status: {0}", node.ObjectStatus));
+                        sb.Append(String.Format(" Status: {0}", node.ObjectStatus));
                     }
                 }
                 else
                 {
-                    sb.Append(string.Format(" {0} Status: {1}", node.ObjectType, node.ObjectStatus));
+                    sb.Append(String.Format(" {0} Status: {1}", node.ObjectType, node.ObjectStatus));
 
                     String name = node.ObjectName();
                     if (!String.IsNullOrEmpty(name))
                     {
-                        sb.Append(string.Format(" Name: {0}", name));
+                        sb.Append(String.Format(" Name: {0}", name));
                     }
                 }
                 threadTree.Nodes.Add(sb.ToString());
@@ -148,7 +148,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to inspect the process", ex);
+               ex.LogEx(true, true, "Unable to inspect the process");
             }
         }
     }
@@ -162,9 +162,9 @@ namespace ProcessHacker
         private static SafeModuleHandle oleModule;
 
         // Max. number of nodes in the wait chain
-        public const int WCT_MAX_NODE_COUNT = 16;
+        public const Int32 WCT_MAX_NODE_COUNT = 16;
         // Max. length of a named object.
-        private const int WCT_OBJNAME_LENGTH = 128;
+        private const Int32 WCT_OBJNAME_LENGTH = 128;
 
         public static SafeWaitChainHandle OpenThreadWaitChainSession()
         {
@@ -186,7 +186,7 @@ namespace ProcessHacker
             return (wctHandle);
         }
 
-        public static bool GetThreadWaitChain(SafeWaitChainHandle chainHandle, int threadId, ref int NodeCount, WAITCHAIN_NODE_INFO[] NodeInfoArray, out int IsCycle)
+        public static Boolean GetThreadWaitChain(SafeWaitChainHandle chainHandle, Int32 threadId, ref Int32 NodeCount, WAITCHAIN_NODE_INFO[] NodeInfoArray, out Int32 IsCycle)
         {
             return RealGetThreadWaitChain(chainHandle, IntPtr.Zero, WCT_FLAGS.All, threadId, ref NodeCount, NodeInfoArray, out IsCycle);
         }
@@ -222,21 +222,21 @@ namespace ProcessHacker
             [FieldOffset(0x8)]
             private fixed ushort RealObjectName[WCT_OBJNAME_LENGTH];
             [FieldOffset(0x108)]
-            public int TimeOutLowPart;
+            public Int32 TimeOutLowPart;
             [FieldOffset(0x10C)]
-            public int TimeOutHiPart;
+            public Int32 TimeOutHiPart;
             [FieldOffset(0x110)]
-            public int Alertable;
+            public Int32 Alertable;
 
             // The thread union.
             [FieldOffset(0x8)]
-            public int ProcessId;
+            public Int32 ProcessId;
             [FieldOffset(0xC)]
-            public int ThreadId;
+            public Int32 ThreadId;
             [FieldOffset(0x10)]
-            public int WaitTime;
+            public Int32 WaitTime;
             [FieldOffset(0x14)]
-            public int ContextSwitches;
+            public Int32 ContextSwitches;
 
             //TODO: fix this... fixes old VS05 bug thats now non-existent
             //Does the work to get the ObjectName field.
@@ -244,8 +244,7 @@ namespace ProcessHacker
             {
                 fixed (WAITCHAIN_NODE_INFO* p = &this)
                 {
-                    string str = (p->RealObjectName[0] != '\0') ? new string((char*)p->RealObjectName) : string.Empty;
-                    return str;
+                    return (p->RealObjectName[0] != '\0') ? new String((Char*)p->RealObjectName) : String.Empty;
                 }
             }
         }
@@ -263,7 +262,7 @@ namespace ProcessHacker
             Thread,
             COMActivation,
             Unknown,
-        } ;
+        }
 
         [Flags]
         public enum WCT_OBJECT_STATUS
@@ -278,7 +277,7 @@ namespace ProcessHacker
             Abandoned,               // Dispatcher object status
             Unknown,                 // All objects
             Error,                   // All objects
-        } ;
+        }
 
         [Flags]
         public enum WCT_FLAGS
@@ -289,28 +288,28 @@ namespace ProcessHacker
             All = Flag | COM | Proc
         }
 
-        [DllImport("advapi32.dll", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Unicode, EntryPoint = "CloseThreadWaitChainSession")]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode, EntryPoint = "CloseThreadWaitChainSession")]
         private static extern void RealCloseThreadWaitChainSession(IntPtr wctHandle);
 
         [DllImport("advapi32.dll", EntryPoint = "OpenThreadWaitChainSession")]
-        private static extern SafeWaitChainHandle RealOpenThreadWaitChainSession(int flags, IntPtr callback);
+        private static extern SafeWaitChainHandle RealOpenThreadWaitChainSession(Int32 flags, IntPtr callback);
 
-        [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true)]
         private static extern void RegisterWaitChainCOMCallback(IntPtr callStateCallback, IntPtr activationStateCallback);
 
         [DllImport("advapi32.dll", EntryPoint = "GetThreadWaitChain")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool RealGetThreadWaitChain(SafeWaitChainHandle WctHandle, IntPtr Context, WCT_FLAGS Flags, int ThreadId, ref int NodeCount, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] [In, Out] WAITCHAIN_NODE_INFO[] NodeInfoArray, out int IsCycle);
+        private static extern Boolean RealGetThreadWaitChain(SafeWaitChainHandle WctHandle, IntPtr Context, WCT_FLAGS Flags, Int32 ThreadId, ref Int32 NodeCount, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] [In, Out] WAITCHAIN_NODE_INFO[] NodeInfoArray, out Int32 IsCycle);
 
         [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Unicode)]
         internal static extern SafeModuleHandle LoadLibraryW(String lpFileName);
 
-        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+        [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool FreeLibrary(IntPtr hModule);
+        internal static extern Boolean FreeLibrary(IntPtr hModule);
 
         [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true, CharSet = CharSet.Ansi)]
-        internal static extern IntPtr GetProcAddress(SafeModuleHandle hModule, string lpProcName);
+        internal static extern IntPtr GetProcAddress(SafeModuleHandle hModule, String lpProcName);
     }
 
     public class SafeModuleHandle : SafeHandleZeroOrMinusOneIsInvalid
@@ -333,7 +332,7 @@ namespace ProcessHacker
         {
         }
 
-        protected override bool ReleaseHandle()
+        protected override Boolean ReleaseHandle()
         {
             WaitChainNativeMethods.CloseThreadWaitChainSession(this.handle);
             return (true);
@@ -343,10 +342,10 @@ namespace ProcessHacker
     public sealed class WaitData
     {
         private WaitChainNativeMethods.WAITCHAIN_NODE_INFO[] data;
-        private bool isDeadlock;
-        private int nodeCount;
+        private Boolean isDeadlock;
+        private Int32 nodeCount;
 
-        public WaitData(WaitChainNativeMethods.WAITCHAIN_NODE_INFO[] data, int nodeCount, bool isDeadlock)
+        public WaitData(WaitChainNativeMethods.WAITCHAIN_NODE_INFO[] data, Int32 nodeCount, Boolean isDeadlock)
         {
             this.data = data;
             this.nodeCount = nodeCount;
@@ -361,7 +360,7 @@ namespace ProcessHacker
             }
         }
 
-        public int NodeCount
+        public Int32 NodeCount
         {
             get
             {
@@ -369,7 +368,7 @@ namespace ProcessHacker
             }
         }
 
-        public bool IsDeadlock
+        public Boolean IsDeadlock
         {
             get
             {
@@ -387,7 +386,7 @@ namespace ProcessHacker
             waitChainHandle = WaitChainNativeMethods.OpenThreadWaitChainSession();
         }
 
-        public WaitData GetThreadWaitChain(int threadId)
+        public WaitData GetThreadWaitChain(Int32 threadId)
         {
             WaitChainNativeMethods.WAITCHAIN_NODE_INFO[] data = new WaitChainNativeMethods.WAITCHAIN_NODE_INFO[WaitChainNativeMethods.WCT_MAX_NODE_COUNT];
             int isDeadlock = 0;
@@ -397,7 +396,7 @@ namespace ProcessHacker
 
             if (WaitChainNativeMethods.GetThreadWaitChain(waitChainHandle, threadId, ref nodeCount, data, out isDeadlock))
             {
-                retData = new WaitData(data, (int)nodeCount, isDeadlock == 1);
+                retData = new WaitData(data, (Int32)nodeCount, isDeadlock == 1);
             }
 
             return (retData);

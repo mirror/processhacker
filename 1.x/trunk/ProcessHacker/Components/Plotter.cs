@@ -75,7 +75,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                Logging.Log(ex);
+                ex.LogEx(false, true, "Unable to render Plotter Graphics");
             }
         }
 
@@ -246,7 +246,7 @@ namespace ProcessHacker.Components
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
+                        ex.LogEx(false, true, "Unable to get/show the Plotter ToolTip");
                     }
                 }
                 else

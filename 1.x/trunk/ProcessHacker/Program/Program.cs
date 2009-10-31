@@ -121,14 +121,14 @@ namespace ProcessHacker
 
             if (Environment.Version.Major < 2)
             {
-                PhUtils.ShowError("You must have .NET Framework 2.0 or higher to use Process Hacker.");
+                HackerEvent.Log.Error(true, false, "You must have .NET Framework 2.0 or higher to use Process Hacker.");
                 Environment.Exit(1);
             }
 
             // Check OS support.
             if (OSVersion.IsBelow(WindowsVersion.TwoThousand) || OSVersion.IsAbove(WindowsVersion.Seven))
             {
-                PhUtils.ShowWarning("Your operating system is not supported by Process Hacker.");
+                HackerEvent.Log.Warn(true, true, "Your operating system is not supported by Process Hacker.");
             }
 #if !DEBUG
             // Setup exception handling at first opportunity.
@@ -136,6 +136,13 @@ namespace ProcessHacker
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException, true);
 #endif
+            HackerEvent.Log.Info(false, true, Application.ProductName + " " + Application.ProductVersion + " started");
+            HackerEvent.Log.Info(false, true, "Windows "
+            + OSVersion.WindowsVersion.ToString() + " Version "
+            + Environment.OSVersion.Version.ToString()
+            + " (" + OSVersion.BitsString + ")");
+
+
             try
             {
                 pArgs = ParseArgs(args);
@@ -162,9 +169,12 @@ namespace ProcessHacker
 
             try
             {
-                if (pArgs.ContainsKey("-nokph"))
+                if (pArgs.ContainsKey("-nokph"))  
+                {
                     NoKph = true;
-                if (Settings.Instance.AllowOnlyOneInstance && 
+                    Settings.Instance.EnableKPH = false;  
+                }
+                if (Settings.Instance.AllowOnlyOneInstance &&
                     !(pArgs.ContainsKey("-e") || pArgs.ContainsKey("-o") ||
                     pArgs.ContainsKey("-pw") || pArgs.ContainsKey("-pt"))
                     )
@@ -184,7 +194,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                Logging.Log(ex);
+                ex.LogEx(false, false, "GlobalMutex Exception");
             }
 
             try
@@ -218,7 +228,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                Logging.Log(ex);
+                ex.LogEx(false, true, "Unable to SetPrivilege/GetElevationType");
             }
 
             try
@@ -232,9 +242,17 @@ namespace ProcessHacker
                     !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph")
                     )
                     KProcessHacker.Instance = new KProcessHacker("KProcessHacker");
+                else
+                {
+                    Settings.Instance.EnableKPH = false;
+                    HackerEvent.Log.Warn(false, true, "KProcessHacker disabled.");
+                }
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Settings.Instance.EnableKPH = false;
+                ex.LogEx(false, true, "Unable to load KProcessHacker");
+            }
 
             MinProcessQueryRights = OSVersion.MinProcessQueryInfoAccess;
             MinThreadQueryRights = OSVersion.MinThreadQueryInfoAccess;
@@ -252,7 +270,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                Logging.Log(ex);
+                ex.LogEx(false, false, "Unable to GetCurrent username");
             }
 
             try
@@ -263,7 +281,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                Logging.Log(ex);
+                ex.LogEx(false, false, "Unable to get CurrentProcessId/SessionId");
             }
 
             if (ProcessCommandLine(pArgs))
@@ -285,7 +303,7 @@ namespace ProcessHacker
 
         private static void ShowCommandLineUsage()
         {
-            PhUtils.ShowInformation(
+            HackerEvent.Log.Info(true, false,
                 "Option: \tUsage:\n" +
                 "-a\tAggressive mode.\n" +
                 "-elevate\tStarts Process Hacker elevated.\n" +
@@ -342,7 +360,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowException("Unable to create the settings directory", ex);
+                    ex.LogEx(true, true, "Unable to create the settings directory");
                     success = false;
                 }
 
@@ -366,7 +384,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowException("Unable to parse the settings file name", ex);
+                    ex.LogEx(true, false, "Unable to parse the settings file name");
                     Environment.Exit(1);
                 }
             }
@@ -388,6 +406,7 @@ namespace ProcessHacker
                 {
                     TaskDialog td = new TaskDialog();
 
+                    td.PositionRelativeToWindow = true;
                     td.MainIcon = TaskDialogIcon.Warning;
                     td.MainInstruction = "The settings file is corrupt";
                     td.WindowTitle = "Process Hacker";
@@ -421,7 +440,7 @@ namespace ProcessHacker
                     try { System.IO.File.Delete(settingsFileName); }
                     catch (Exception ex)
                     {
-                        PhUtils.ShowException("Unable to delete the settings file", ex);
+                        ex.LogEx(true, true, "Unable to delete the settings file");
                         Environment.Exit(1);
                     }
 
@@ -448,7 +467,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowException("Unable to complete the operation", ex);
+                    ex.LogEx(true, true, "Unable to complete the operation");
                 }
 
                 return true;
@@ -529,7 +548,7 @@ namespace ProcessHacker
 
                 if (!ProcessProvider.Dictionary.ContainsKey(pid))
                 {
-                    PhUtils.ShowError("The process (PID " + pid.ToString() + ") does not exist.");
+                    HackerEvent.Log.Error(true, false, "The process (PID " + pid.ToString() + ") does not exist.");
                     Environment.Exit(0);
                     return true;
                 }
@@ -558,7 +577,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowException("Unable to show token properties", ex);
+                    ex.LogEx(true, true, "Unable to show token properties");
                 }
 
                 return true;
@@ -792,7 +811,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to start the process", ex);
+                ex.LogEx(true, true, "Unable to start the process");
             }
         }
 
@@ -1045,10 +1064,7 @@ namespace ProcessHacker
 
         private static void UnhandledException(Exception ex, bool terminating)
         {
-            Logging.Log(Logging.Importance.Critical, ex.ToString());
-
             ErrorDialog ed = new ErrorDialog(ex, terminating);
-
             ed.ShowDialog();
         }
 
@@ -1293,114 +1309,5 @@ namespace ProcessHacker
                 a += a * (a + b);
         }
 
-        public static void FocusWindow(Form f)
-        {
-            if (f.InvokeRequired)
-            {
-                f.BeginInvoke(new MethodInvoker(delegate { Program.FocusWindow(f); }));
-
-                return;
-            }
-
-            f.Visible = true; // just in case it's hidden right now   
-
-            if (f.WindowState == FormWindowState.Minimized)
-                f.WindowState = FormWindowState.Normal;
-
-            f.Activate();
-        }
-
-        public static void UpdateWindowMenu(Menu windowMenuItem, Form f)
-        {
-            WeakReference<Form> fRef = new WeakReference<Form>(f);
-
-            windowMenuItem.MenuItems.DisposeAndClear();
-
-            MenuItem item;
-
-            item = new MenuItem("&Always On Top");
-            item.Tag = fRef;
-            item.Click += new EventHandler(windowAlwaysOnTopItemClicked);
-            item.Checked = f.TopMost;
-            windowMenuItem.MenuItems.Add(item);
-
-            item = new MenuItem("&Close");
-            item.Tag = fRef;
-            item.Click += new EventHandler(windowCloseItemClicked);
-            windowMenuItem.MenuItems.Add(item);
-        }
-
-        public static void AddEscapeToClose(this Form f)
-        {
-            f.KeyPreview = true;
-            f.KeyDown += (sender, e) =>
-            {
-                if (e.KeyCode == Keys.Escape)
-                {
-                    f.Close();
-                    e.Handled = true;
-                }
-            };
-        }
-
-        public static void SetTopMost(this Form f)
-        {
-            if (HackerWindowTopMost)
-                f.TopMost = true;
-        }
-
-        /// <summary>
-        /// Floats the window on top of the main Process Hacker window.
-        /// </summary>
-        /// <param name="f">The form to float.</param>
-        /// <remarks>
-        /// Always call this method before calling InitializeComponent in order for the 
-        /// parent to be restored properly.
-        /// </remarks>
-        public static void SetPhParent(this Form f)
-        {
-            f.SetPhParent(true);
-        }
-
-        public static void SetPhParent(this Form f, bool hideInTaskbar)
-        {
-            if (Settings.Instance.FloatChildWindows)
-            {
-                if (hideInTaskbar)
-                    f.ShowInTaskbar = false;
-
-                IntPtr oldParent = Win32.SetWindowLongPtr(f.Handle, GetWindowLongOffset.HwndParent, Program.HackerWindowHandle);
-
-                f.FormClosing += (sender, e) => Win32.SetWindowLongPtr(f.Handle, GetWindowLongOffset.HwndParent, oldParent);
-            }
-        }
-
-        private static void windowAlwaysOnTopItemClicked(object sender, EventArgs e)
-        {
-            Form f = ((WeakReference<Form>)((MenuItem)sender).Tag).Target;
-
-            if (f == null)
-                return;
-
-            f.Invoke(new MethodInvoker(delegate
-                {
-                    f.TopMost = !f.TopMost;
-
-                    if (f == HackerWindow)
-                        HackerWindowTopMost = f.TopMost;
-                }));
-
-            UpdateWindowMenu(((MenuItem)sender).Parent, f);
-        }
-
-        private static void windowCloseItemClicked(object sender, EventArgs e)
-        {
-            Form f = ((WeakReference<Form>)((MenuItem)sender).Tag).Target;
-
-            if (f == null)
-                return;
-
-            f.Invoke(new MethodInvoker(delegate { f.Close(); }));
-        }
     }
 }

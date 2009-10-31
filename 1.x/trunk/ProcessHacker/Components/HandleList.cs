@@ -103,11 +103,11 @@ namespace ProcessHacker.Components
                                                         {
                                                             try
                                                             {
-                                                                PhUtils.OpenKeyInRegedit(Form.ActiveForm, name);
+                                                                PhUtils.OpenKeyInRegedit(PhUtils.GetFWindow(), name);
                                                             }
                                                             catch (Exception ex)
                                                             {
-                                                                PhUtils.ShowException("Unable to open the Registry Editor", ex);
+                                                                ex.LogEx(true, true, "Unable to open the Registry Editor");
                                                             }
                                                         }
                                                         break;
@@ -134,15 +134,16 @@ namespace ProcessHacker.Components
                                                                 pid = ProcessHandle.FromHandle(dupHandle).GetProcessId();
                                                             }
 
-                                                            Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],
-                                                                (f) => Program.FocusWindow(f));
+                                                            Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],                                                                  
+                                                                (f) => f.FocusWindow());
+
                                                         }
                                                         break;
                                                 }
                                             }
                                             catch (Exception ex)
                                             {
-                                                PhUtils.ShowException("Unable to show object properties", ex);
+                                                ex.LogEx(true, true, "Unable to show object properties");
                                             }
                                         };
 
@@ -224,7 +225,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to show handle properties", ex);
+                ex.LogEx(true, true, "Unable to show handle properties");
             }
         }
 
@@ -575,7 +576,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to set handle attributes", ex);
+                ex.LogEx(true, true, "Unable to set handle attributes");
             }
         }
 
@@ -596,7 +597,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to set handle attributes", ex);
+                ex.LogEx(true, true, "Unable to set handle attributes");
             }
         }
 
@@ -613,7 +614,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to show handle properties", ex);
+                ex.LogEx(true, true, "Unable to show handle properties");
             }
         }
     }

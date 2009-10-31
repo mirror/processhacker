@@ -35,19 +35,19 @@ namespace ProcessHacker
     {
         private Exception _exception;
         private string _trackerItem;
-        private bool _isTerminating;
 
         public ErrorDialog(Exception ex, bool terminating)
         {
             InitializeComponent();
 
             _exception = ex;
-            _isTerminating = terminating;
+            
+            ex.LogEx(false, true, ex.Message);
 
             textException.AppendText(_exception.ToString());
 
-            if (_isTerminating)
-                buttonContinue.Enabled = false;
+            if (terminating)
+                buttonContinue.Text = "Restart";
 
             textException.AppendText("\r\n\r\nDIAGNOSTIC INFORMATION\r\n" + Program.GetDiagnosticInformation());
         }
@@ -62,7 +62,13 @@ namespace ProcessHacker
 
         private void buttonContinue_Click(object sender, EventArgs e)
         {
-            this.Close();
+            if (buttonContinue.Text.Length == 7) //Restart
+            {
+                Program.TryStart(ProcessHacker.Native.Objects.ProcessHandle.Current.GetMainModule().FileName);
+                Environment.Exit(1);
+            }
+            else
+                this.Close();
         }
 
         private void buttonQuit_Click(object sender, EventArgs e)
@@ -79,10 +85,8 @@ namespace ProcessHacker
                 if (ProcessHacker.Native.KProcessHacker.Instance != null)
                     ProcessHacker.Native.KProcessHacker.Instance.Close();
             }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
-            }
+            catch (Exception)
+            { }
 
             Win32.ExitProcess(1);
         }
@@ -126,24 +130,21 @@ namespace ProcessHacker
 
         private void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            if (!_isTerminating)
-                buttonContinue.Enabled = true;
+            buttonContinue.Enabled = true;
             buttonQuit.Enabled = true;
 
             if (e.Error != null || this.GetTitle(e.Result).Contains("ERROR"))
             {
                 buttonSubmitReport.Enabled = true;
+                statusLinkLabel.Visible = false;
 
                 if (e.Error != null)
                 {
-                    if (e.Error.InnerException != null)
-                        PhUtils.ShowError("Unable to submit the error report: " + e.Error.InnerException.Message);
-                    else
-                        PhUtils.ShowError("Unable to submit the error report: " + e.Error.Message);
+                    e.Error.LogEx(true, true, "Unable to submit the error report");
                 }
                 else
                 {
-                    PhUtils.ShowError("Unable to submit the error report: " + this.GetTitle(e.Result));
+                   HackerEvent.Log.Error(true, true, "Unable to submit the error report: " + this.GetTitle(e.Result));
                 }
             }
             else

@@ -23,7 +23,7 @@
 
 using System;
 
-namespace ProcessHackerRestartRecovery
+namespace ProcessHacker
 {
     /// <summary>
     /// Defines methods and properties for recovery settings, and specifies options for an application that attempts

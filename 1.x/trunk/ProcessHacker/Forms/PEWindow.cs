@@ -56,7 +56,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to load the specified file", ex);
+                ex.LogEx(true, true, "Unable to load the specified file");
 
                 this.Close();
             }
@@ -346,16 +346,16 @@ namespace ProcessHacker
 
                 if (fileName != null)
                 {
-                    Program.GetPEWindow(fileName, (f) => Program.FocusWindow(f));
+                    Program.GetPEWindow(fileName, (f) => f.FocusWindow());
                 }
                 else
                 {
-                    PhUtils.ShowError("Unable to find the DLL.");
+                    HackerEvent.Log.Error(true, false, "Unable to find the DLL.");
                 }
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to inspect the DLL", ex);
+                ex.LogEx(true, true, "Unable to inspect the DLL");
             }
             finally
             {

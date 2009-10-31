@@ -18,6 +18,7 @@ namespace ProcessHacker.UI.Actions
             if (OSVersion.HasTaskDialogs)
             {
                 TaskDialog td = new TaskDialog();
+                td.PositionRelativeToWindow = true;
 
                 td.WindowTitle = "Process Hacker";
                 td.MainInstruction = "Do you want to " + action + " " + name + "?";
@@ -66,6 +67,7 @@ namespace ProcessHacker.UI.Actions
                     else
                     {
                         TaskDialog td = new TaskDialog();
+                        td.PositionRelativeToWindow = true;
 
                         td.WindowTitle = "Process Hacker";
                         td.MainIcon = TaskDialogIcon.Warning;
@@ -103,7 +105,7 @@ namespace ProcessHacker.UI.Actions
                 }
                 else
                 {
-                    PhUtils.ShowException("Unable to " + actionName + " the session", ex);
+                    ex.LogEx(true, true, "Unable to " + actionName + " the session");
                 }
             }
         }

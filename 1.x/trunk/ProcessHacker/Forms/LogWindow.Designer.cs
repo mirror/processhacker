@@ -38,6 +38,7 @@
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonClear = new System.Windows.Forms.Button();
             this.checkAutoscroll = new System.Windows.Forms.CheckBox();
+            this.columnType = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // listLog
@@ -46,6 +47,7 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.listLog.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnType,
             this.columnTime,
             this.columnMessage});
             this.listLog.FullRowSelect = true;
@@ -139,6 +141,11 @@
             this.checkAutoscroll.Text = "Auto-scroll";
             this.checkAutoscroll.UseVisualStyleBackColor = true;
             // 
+            // columnType
+            // 
+            this.columnType.Text = "Type";
+            this.columnType.Width = 85;
+            // 
             // LogWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -171,5 +178,6 @@
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.Button buttonClear;
         private System.Windows.Forms.CheckBox checkAutoscroll;
+        private System.Windows.Forms.ColumnHeader columnType;
     }
 }

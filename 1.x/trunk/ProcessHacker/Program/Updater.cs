@@ -95,28 +95,18 @@ namespace ProcessHacker
             }
         }
 
-        public static void Update(Form form, bool interactive)
+        public static void Update(bool interactive)
         {
-            if (!PhUtils.IsInternetConnected())
-            {
-                if (interactive)
-                    PhUtils.ShowError("Unable to connect to the internet.");
-                else
-                    Program.HackerWindow.QueueMessage("Unable to connect to the internet.");
-            }
-
             XmlDocument xDoc = new XmlDocument();
 
             try
-            {
-                xDoc.Load(Settings.Instance.AppUpdateUrl);
-            }
+            { xDoc.Load(Settings.Instance.AppUpdateUrl); }
             catch (Exception ex)
             {
                 if (interactive)
-                    PhUtils.ShowException("Unable to download update information", ex);
+                    ex.LogEx(true, true, "Unable to download update information");
                 else
-                    Program.HackerWindow.QueueMessage("Unable to download update information: " + ex.Message);
+                    ex.LogEx(false, true, "Unable to download update information");
 
                 return;
             }
@@ -137,23 +127,23 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    Logging.Log(ex);
+                    ex.LogEx(false, true, "XmlUpdateItem nodes error");
                 }
             }
 
-            PromptWithUpdate(form, bestUpdate, currentVersion, interactive);
+            PromptWithUpdate(bestUpdate, currentVersion, interactive);
         }
 
-        private static void PromptWithUpdate(Form form, UpdateItem bestUpdate, UpdateItem currentVersion, bool interactive)
+        private static void PromptWithUpdate(UpdateItem bestUpdate, UpdateItem currentVersion, bool interactive)
         {
-            if (form.InvokeRequired)
-            {
-                form.BeginInvoke(new MethodInvoker(() => PromptWithUpdate(form, bestUpdate, currentVersion, interactive)));
-                return;
-            }
-
             if (bestUpdate != currentVersion)
             {
+                HackerEvent.Log.Info(false, true, 
+                    "Process Hacker update available \r\n\r\n" + 
+                    "Your Version: " + currentVersion.Version.ToString() + 
+                    "\nServer Version: " + bestUpdate.Version.ToString() + 
+                    "\n\n" + "\n" + bestUpdate.Message);
+
                 DialogResult dialogResult;
 
                 if (OSVersion.HasTaskDialogs)
@@ -172,12 +162,12 @@ namespace ProcessHacker
                         new TaskDialogButton((int)DialogResult.No, "Cancel"),
                     };
 
-                    dialogResult = (DialogResult)td.Show(form);
+                    dialogResult = (DialogResult)td.Show(PhUtils.GetFWindow());
                 }
                 else
                 {
                     dialogResult = MessageBox.Show(
-                        form,
+                        PhUtils.GetFWindow(),
                         "Your Version: " + currentVersion.Version.ToString() +
                         "\nServer Version: " + bestUpdate.Version.ToString() + "\n\n" + bestUpdate.Message +
                         "\n\nDo you want to download the update now?",
@@ -187,7 +177,7 @@ namespace ProcessHacker
 
                 if (dialogResult == DialogResult.Yes)
                 {
-                    DownloadUpdate(form, bestUpdate);
+                    DownloadUpdate(bestUpdate);
                 }
 
             }
@@ -204,12 +194,12 @@ namespace ProcessHacker
                     td.WindowTitle = "No updates available";
                     td.MainIcon = TaskDialogIcon.SecuritySuccess;
                     td.CommonButtons = TaskDialogCommonButtons.Ok;
-                    td.Show(form);
+                    td.Show(PhUtils.GetFWindow());
                 }
                 else
                 {
                     MessageBox.Show(
-                        form,
+                        PhUtils.GetFWindow(),
                         "Process Hacker is up-to-date.",
                         "No updates available", MessageBoxButtons.OK, MessageBoxIcon.Information
                         );
@@ -217,15 +207,9 @@ namespace ProcessHacker
             }
         }
 
-        private static void DownloadUpdate(Form form, UpdateItem updateItem)
+        private static void DownloadUpdate(UpdateItem updateItem)
         {
-            if (form.InvokeRequired)  
-            {
-                form.BeginInvoke(new MethodInvoker(() => DownloadUpdate(form, updateItem)));
-                return;
-            }
-
-            new UpdaterDownloadWindow(updateItem).ShowDialog(form);
+            new UpdaterDownloadWindow(updateItem).ShowDialog(Program.HackerWindow);
         }
 
         private static DateTime? AssemblyBuildDate = null;

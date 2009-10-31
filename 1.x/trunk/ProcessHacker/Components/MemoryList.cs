@@ -365,15 +365,7 @@ namespace ProcessHacker.Components
                 {
                     lock (listMemory)
                     {
-                        // FIXME
-                        try
-                        {
-                            listMemory.Items[item.Address.ToString()].Remove();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logging.Log(ex);
-                        }
+                        listMemory.Items.RemoveByKey(item.Address.ToString());
                     }
                 }));
         }
@@ -480,7 +472,7 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowException("Unable to dump the selected memory regions", ex);
+                    ex.LogEx(true, true, "Unable to dump the selected memory regions");
                 }
             }
         }
@@ -502,8 +494,7 @@ namespace ProcessHacker.Components
                 }
                 catch
                 {
-                    PhUtils.ShowError("You have entered an invalid address.");
-
+                    HackerEvent.Log.Error(true, false, "You have entered an invalid address.");
                     return;
                 }
 
@@ -536,7 +527,7 @@ namespace ProcessHacker.Components
 
                 if (!found)
                 {
-                    PhUtils.ShowError("Unable to find the memory address.");
+                    HackerEvent.Log.Error(true, false, "Unable to find the memory address.");
                     return;
                 }
 
@@ -571,7 +562,7 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowException("Unable to free the memory region", ex);
+                    ex.LogEx(true, true, "Unable to free the memory region");
                 }
             }
         }
@@ -597,7 +588,7 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowException("Unable to decommit the memory region", ex);
+                    ex.LogEx(true, true, "Unable to decommit the memory region");
                 }
             }
         }

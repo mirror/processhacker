@@ -114,6 +114,17 @@ namespace ProcessHacker
             set { this["AlwaysOnTop"] = value; }
         }
 
+#if DEBUG
+        [SettingDefault("4")] // default debugging/stacktrace
+#else
+        [SettingDefault("1")] // default info/warn messages
+#endif
+        public EventType AppLogLevel
+        {
+            get { return (EventType)this["AppLogLevel"]; }
+            set { this["AppLogLevel"] = value; }
+        }
+
         [SettingDefault("True")]
         public bool AppUpdateAutomatic
         {

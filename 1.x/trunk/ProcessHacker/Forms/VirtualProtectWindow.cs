@@ -80,7 +80,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        PhUtils.ShowException("Unable to set memory protection", ex);
+                        ex.LogEx(true, true, "Unable to set memory protection");
                         return;
                     }
                 }
@@ -89,7 +89,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to set memory protection", ex);
+                ex.LogEx(true, true, "Unable to set memory protection");
             }
         }
 

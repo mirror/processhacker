@@ -92,7 +92,7 @@ namespace ProcessHacker
                 depStatus = DepStatus.Enabled | DepStatus.AtlThunkEmulationDisabled;
             else
             {
-                PhUtils.ShowError("Invalid value.");
+                HackerEvent.Log.Error(true, false, "Invalid value.");
                 return;
             }
 
@@ -109,7 +109,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to set the DEP status", ex);
+                ex.LogEx(true, true, "Unable to set the DEP status");
             }
         }
 
@@ -133,7 +133,7 @@ namespace ProcessHacker
                 flags = DepFlags.Enable | DepFlags.DisableAtlThunkEmulation;
             else
             {
-                PhUtils.ShowError("Invalid value.");
+                HackerEvent.Log.Error(true, false, "Invalid value.");
                 return;
             }
 
@@ -166,7 +166,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to set the DEP status", ex);
+                ex.LogEx(true, true, "Unable to set the DEP status");
             }
         }
 

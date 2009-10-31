@@ -94,7 +94,7 @@ namespace ProcessHacker
         {
             if (_pid != 4 && _processHandle == null)
             {
-                Logging.Log(Logging.Importance.Warning, "ModuleProvider: Process Handle is null, exiting...");
+                HackerEvent.Log.Debug("ModuleProvider: Process Handle is null, exiting...");
                 return;
             }
 

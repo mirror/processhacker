@@ -26,7 +26,7 @@ using ProcessHacker.Native.Api;
 using System.Security;
 using System;
 
-namespace ProcessHackerRestartRecovery
+namespace ProcessHacker
 {
     [SuppressUnmanagedCodeSecurity]
     internal static class AppRestartRecoveryNativeMethods

@@ -73,7 +73,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to download Process Hacker", ex);
+                ex.LogEx(true, true, "Unable to download Process Hacker");
                 this.Close();
             }
         }
@@ -138,7 +138,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    Logging.Log(ex);
+                    ex.LogEx(false, true, "Unable to parse Ohloh html");
                 }
             }
 
@@ -155,7 +155,7 @@ namespace ProcessHacker
 
                 if (webException != null && webException.Status != WebExceptionStatus.RequestCanceled)
                 {
-                    PhUtils.ShowException("Unable to download the update", webException);
+                    webException.LogEx(true, true, "Unable to download the update");
                 }
             }
         }
@@ -301,7 +301,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowException("Unable to start the installer", ex);
+                    ex.LogEx(true, true, "Unable to start the installer");
                 }
             }
 
@@ -318,7 +318,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    Logging.Log(ex);
+                    ex.LogEx(false, true, "Unable to Re-open the mutex");
                 }
             }
         }

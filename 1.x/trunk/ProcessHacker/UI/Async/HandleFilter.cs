@@ -127,7 +127,7 @@ namespace ProcessHacker.FormHelper
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
+                        ex.LogEx(false, true, "Unable to filter handles");
                     }
                 }
 

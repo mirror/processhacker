@@ -163,7 +163,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to show handle statistics", ex);
+                ex.LogEx(true, true, "Unable to show handle statistics");
             }
         }
     }

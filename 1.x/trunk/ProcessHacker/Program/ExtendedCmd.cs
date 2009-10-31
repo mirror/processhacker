@@ -166,12 +166,8 @@ namespace ProcessHacker
                                             }
                                             catch (Exception ex)
                                             {
-                                                DialogResult result = MessageBox.Show(window,
-                                                    "Could not terminate thread with ID " + tid + ":\n\n" +
-                                                    ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                                                if (result == DialogResult.Cancel)
-                                                    return;
+                                                ex.LogEx(true, true, "Could not terminate thread with ID " + tid);
+                                                return;
                                             }
                                         }
                                         break;
@@ -185,12 +181,8 @@ namespace ProcessHacker
                                             }
                                             catch (Exception ex)
                                             {
-                                                DialogResult result = MessageBox.Show(window,
-                                                    "Could not suspend thread with ID " + tid + ":\n\n" +
-                                                    ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                                                if (result == DialogResult.Cancel)
-                                                    return;
+                                                ex.LogEx(true, true, "Could not suspend thread with ID " + tid); 
+                                                return;
                                             }
                                         }
                                         break;
@@ -204,12 +196,8 @@ namespace ProcessHacker
                                             }
                                             catch (Exception ex)
                                             {
-                                                DialogResult result = MessageBox.Show(window,
-                                                    "Could not resume thread with ID " + tid + ":\n\n" +
-                                                    ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                                                if (result == DialogResult.Cancel)
-                                                    return;
+                                                ex.LogEx(true, true, "Could not resume thread with ID " + tid); 
+                                                return;
                                             }
                                         }
                                         break;

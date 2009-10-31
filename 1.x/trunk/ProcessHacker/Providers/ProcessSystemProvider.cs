@@ -330,11 +330,14 @@ namespace ProcessHacker
             fpResult.Pid = pid;
             fpResult.Stage = 0x1;
 
-            if (fileName == null)
+            try
+            {
                 fileName = this.GetFileName(pid);
-
-            if (fileName == null)
-                Logging.Log(Logging.Importance.Warning, "Could not get file name for PID " + pid.ToString());
+            }
+            catch (Exception ex) //TODO TODO TODO!
+            {
+                ex.LogEx(false, true, "Could not get file name for PID " + pid.ToString());
+            }
 
             fpResult.FileName = fileName;
 
@@ -405,7 +408,7 @@ namespace ProcessHacker
                         }
                         catch (Exception ex)
                         {
-                            Logging.Log(ex);
+                            ex.LogEx(false, true, "Unable to JobObjectAccess.Query");
                             fpResult.IsInJob = false;
                             fpResult.IsInSignificantJob = false;
                         }
@@ -616,7 +619,9 @@ namespace ProcessHacker
 
         private string GetFileName(int pid)
         {
-            string fileName = null;
+            string fileName = string.Empty;
+
+            Exception eX = null;
 
             if (pid != 4)
             {
@@ -647,8 +652,8 @@ namespace ProcessHacker
                         }
                     }
                 }
-                catch
-                { }
+                catch (WindowsException ex)
+                { eX = ex; }
 
                 if (fileName == null || fileName.StartsWith("\\Device\\"))
                 {
@@ -687,6 +692,11 @@ namespace ProcessHacker
                 }
                 catch
                 { }
+            }
+   
+            if (string.IsNullOrEmpty(fileName))
+            {
+                throw eX;
             }
 
             return fileName;
@@ -737,7 +747,7 @@ namespace ProcessHacker
             }
             else
             {
-                Logging.Log(Logging.Importance.Warning, "Unknown stage " + result.Stage.ToString("x"));
+                HackerEvent.Log.Debug("Unknown stage: " + result.Stage.ToString("x"));
             }
 
             if (this.ProcessQueryReceived != null)
@@ -769,7 +779,7 @@ namespace ProcessHacker
 
             if (sysKernelTime + sysUserTime + otherTime == 0)
             {
-                Logging.Log(Logging.Importance.Warning, "Total systimes are 0, returning!");
+                HackerEvent.Log.Error(false, true, "Total systimes are 0 returning!");
                 return;
             }
 

@@ -351,7 +351,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to search for the module", ex);
+                ex.LogEx(true, true, "Unable to search for the module");
             }
         }
 
@@ -378,7 +378,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to show the file", ex);
+                ex.LogEx(true, true, "Unable to show the file");
             }
         }
 
@@ -403,14 +403,14 @@ namespace ProcessHacker.Components
                             }
                             catch (Exception ex)
                             {
-                                Logging.Log(ex);
+                                ex.LogEx(false, true, "Unable to invoke the PEWindow Action");
                             }
                         }
                     }));
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to inspect the module", ex);
+                ex.LogEx(true, true, "Unable to inspect the module");
             }
         }
 
@@ -534,7 +534,7 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Unable to unload the driver. Make sure Process Hacker " +
+                    MessageBox.Show(this, "Unable to unload the driver. Make sure Process Hacker " +
                         "is running with administrative privileges. Error:\n\n" +
                         ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -579,12 +579,14 @@ namespace ProcessHacker.Components
                         {
                             if (OSVersion.Architecture == OSArch.Amd64)
                             {
-                                PhUtils.ShowError("Unable to find the module to unload. This may be caused " +
+                                HackerEvent.Log.Error(true, false, 
+                                    "Unable to find the module to unload. This may be caused " +                              
                                     "by an attempt to unload a mapped file or a 32-bit module.");
                             }
                             else
                             {
-                                PhUtils.ShowError("Unable to find the module to unload. This may be caused " +
+                                HackerEvent.Log.Error(true, false, 
+                                    "Unable to find the module to unload. This may be caused " +
                                     "by an attempt to unload a mapped file.");
                             }
                         }
@@ -600,7 +602,7 @@ namespace ProcessHacker.Components
                 }
                 catch (Exception ex)
                 {
-                    PhUtils.ShowException("Unable to unload the module", ex);
+                    ex.LogEx(true, true, "Unable to unload the module");
                 }
             }
         }

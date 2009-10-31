@@ -215,7 +215,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to start the program", ex);
+                ex.LogEx(true, true, "Unable to start the program");
             }
 
             this.Cursor = Cursors.Default;

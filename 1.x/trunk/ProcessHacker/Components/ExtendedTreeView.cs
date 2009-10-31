@@ -19,6 +19,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  * 
+ *  http://www.danielmoth.com/Blog/2007/01/treeviewvista.html
+ *  http://www.danielmoth.com/Blog/2006/12/tvsexautohscroll.html
+ * 
  */
 
 using System;
@@ -30,9 +33,6 @@ namespace ProcessHacker.Components
 {
     public class ExtendedTreeView : System.Windows.Forms.TreeView
     {
-        //http://www.danielmoth.com/Blog/2007/01/treeviewvista.html
-        //http://www.danielmoth.com/Blog/2006/12/tvsexautohscroll.html
-
         private const int TV_FIRST = 0x1100;
         private const int TVM_SETEXTENDEDSTYLE = TV_FIRST + 44;
         private const int TVS_EX_AUTOHSCROLL = 0x0020; //autoscroll horizontaly
@@ -43,7 +43,7 @@ namespace ProcessHacker.Components
             if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
             {
                 Win32.SendMessage(this.Handle, (WindowMessage)TVM_SETEXTENDEDSTYLE, 0, TVS_EX_FADEINOUTEXPANDOS);
-                ProcessHacker.Common.PhUtils.SetTheme(this, "explorer");
+                FormExtensions.SetTheme(this, "explorer");
             }
 
             base.OnHandleCreated(e);

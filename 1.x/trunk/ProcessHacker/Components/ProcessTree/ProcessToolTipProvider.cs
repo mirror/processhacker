@@ -110,7 +110,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
+                        ex.LogEx(false, true, "ProcessToolTipProvider - Unable to get TargetFile info");
                     }
                 }
 
@@ -138,7 +138,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
+                        ex.LogEx(false, true, "ProcessToolTipProvider - Unable to get dllhost info");
                     }
                 }
 
@@ -169,7 +169,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    Logging.Log(ex);
+                    ex.LogEx(false, true, "ProcessToolTipProvider - Unable to get services info");
                 }
 
                 string otherNotes = "";
@@ -221,14 +221,14 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    Logging.Log(ex);
+                    ex.LogEx(false, true, "ProcessToolTipProvider - Unable to get OtherNotes info");
                 }
 
                 return (cmdText + fileText + otherNotes + runDllText + dllhostText + servicesText).Trim(' ', '\n', '\r');
             }
             catch (Exception ex)
             {
-                Logging.Log(ex);
+                ex.LogEx(false, true, "ProcessToolTipProvider - Unable to get ProcessItem info");
             }
 
             return string.Empty;

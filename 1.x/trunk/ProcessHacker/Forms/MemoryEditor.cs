@@ -108,7 +108,7 @@ namespace ProcessHacker
 
         private void MemoryEditor_Load(object sender, EventArgs e)
         {
-            Program.UpdateWindowMenu(windowMenuItem, this);
+            this.UpdateWindowMenu(windowMenuItem);
 
             this.Size = Settings.Instance.MemoryWindowSize;
             this.SetPhParent(false);
@@ -278,7 +278,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to read process memory", ex);
+                ex.LogEx(true, true, "Unable to read process memory");
             }
         }
 
@@ -290,7 +290,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                PhUtils.ShowException("Unable to write to process memory", ex);
+                ex.LogEx(true, true, "Unable to write to process memory");
             }
         }
 

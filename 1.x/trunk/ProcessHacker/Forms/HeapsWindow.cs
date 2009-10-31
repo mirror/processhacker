@@ -183,7 +183,7 @@ namespace ProcessHacker
             }
             catch (WindowsException ex)
             {
-                PhUtils.ShowException("Unable to destroy the heap", ex);
+                ex.LogEx(true, true, "Unable to destroy the heap");
             }
         }
 
