@@ -951,6 +951,10 @@
     <None Include="Resources\active_search.png" />
     <None Include="Resources\inactive_search.png" />
     <None Include="Resources\money.png" />
+    <None Include="Resources\database.png" />
+    <None Include="Resources\database_delete.png" />
+    <None Include="Resources\database_error.png" />
+    <None Include="Resources\exclamation.png" />
     <Content Include="SharpDevelop\LICENSE.txt" />
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />

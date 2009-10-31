@@ -38,10 +38,22 @@ namespace ProcessHacker
             this.AddEscapeToClose();
             this.SetTopMost();
 
+            ColumnSettings.LoadSettings(Settings.Instance.LogWindowListViewColumns, listLog);
+
             listLog.SetDoubleBuffered(true);
             listLog.SetTheme("explorer");
             listLog.ContextMenu = listLog.GetCopyMenu(listLog_RetrieveVirtualItem);
             listLog.AddShortcuts(listLog_RetrieveVirtualItem);
+
+            ImageList imglist = new ImageList();
+            imglist.ColorDepth = ColorDepth.Depth32Bit;
+            imglist.Images.Add("Information", Properties.Resources.information);
+            imglist.Images.Add("Warning", Properties.Resources.database_ex);
+            imglist.Images.Add("Error", Properties.Resources.database_ex);
+            imglist.Images.Add("Exception", Properties.Resources.database_error);
+            imglist.Images.Add("Debug", Properties.Resources.database_debug);
+            listLog.SmallImageList = imglist;
+
             listLog.VirtualMode = true;
             listLog.VirtualListSize = HackerEvent.Log.Count;
 
@@ -56,7 +68,9 @@ namespace ProcessHacker
 
             this.Size = Settings.Instance.LogWindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(
-                Settings.Instance.LogWindowLocation, this.Size), this).Location;
+                Settings.Instance.LogWindowLocation, this.Size), this).Location; 
+            this.Icon = Icon.FromHandle(Properties.Resources.page_white_text.GetHicon());
+
             checkAutoscroll.Checked = Settings.Instance.LogWindowAutoScroll;
         }
 

@@ -549,6 +549,13 @@ namespace ProcessHacker
             set { this["LogWindowAutoScroll"] = value; }
         }
 
+        [SettingDefault("0,22|1,130|2,330")]
+        public string LogWindowListViewColumns
+        {
+            get { return (string)this["LogWindowListViewColumns"]; }
+            set { this["LogWindowListViewColumns"] = value; }
+        }
+
         [SettingDefault("300, 300")]
         public Point LogWindowLocation
         {
@@ -556,7 +563,7 @@ namespace ProcessHacker
             set { this["LogWindowLocation"] = value; }
         }
 
-        [SettingDefault("595, 508")]
+        [SettingDefault("540, 510")]
         public Size LogWindowSize
         {
             get { return (Size)this["LogWindowSize"]; }
