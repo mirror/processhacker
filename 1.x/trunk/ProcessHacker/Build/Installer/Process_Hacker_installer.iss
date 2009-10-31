@@ -38,7 +38,6 @@
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 
 
-; From now on you'll probably won't have to change anything, so be careful
 [Setup]
 AppID=Process_Hacker
 AppCopyright=Copyright © 2008-2009, Process Hacker Team. Licensed under the GNU GPL, v3.
@@ -72,20 +71,20 @@ WizardImageFile=Icons\ProcessHackerLarge.bmp
 WizardSmallImageFile=Icons\ProcessHackerSmall.bmp
 OutputDir=.
 OutputBaseFilename=processhacker-{#= simple_app_version}-setup
-AllowNoIcons=True
+AllowNoIcons=yes
 Compression=lzma/ultra64
-SolidCompression=True
+SolidCompression=yes
 InternalCompressLevel=ultra64
-EnableDirDoesntExistWarning=False
-DirExistsWarning=No
-ShowTasksTreeLines=True
-AlwaysShowDirOnReadyPage=True
-AlwaysShowGroupOnReadyPage=True
-WizardImageStretch=False
-PrivilegesRequired=Admin
-ShowLanguageDialog=Auto
-DisableDirPage=Auto
-DisableProgramGroupPage=Auto
+EnableDirDoesntExistWarning=no
+DirExistsWarning=no
+ShowTasksTreeLines=yes
+AlwaysShowDirOnReadyPage=yes
+AlwaysShowGroupOnReadyPage=yes
+WizardImageStretch=no
+PrivilegesRequired=admin
+ShowLanguageDialog=auto
+DisableDirPage=auto
+DisableProgramGroupPage=auto
 LanguageDetectionMethod=uilanguage
 AppMutex=Global\ProcessHackerMutex
 ArchitecturesInstallIn64BitMode=x64
@@ -380,28 +379,24 @@ var
 begin
   // Create a mutex for the installer and if it's already running then expose a message and stop installation
   if CheckForMutexes(installer_mutex_name) then begin
-  if not WizardSilent() then
-    MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarning}'), mbCriticalError, MB_OK);
-    Result := False;
-  end
-  else begin
+    if not WizardSilent() then
+      MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarning}'), mbCriticalError, MB_OK);
+    exit;
+  end;
   CreateMutex(installer_mutex_name);
 
   NetFrameWorkInstalled := RegKeyExists(HKLM,'SOFTWARE\Microsoft\.NETFramework\policy\v2.0');
   if NetFrameWorkInstalled then begin
     Result := True;
-    end
-    else begin
-      Result1 := MsgBox(ExpandConstant('{cm:msg_AskToDownNET}'), mbCriticalError, MB_YESNO or MB_DEFBUTTON1) = IDYES;
-    if Result1 = False then begin
-      Result := False;
-      end
-      else begin
-      Result := False;
-      ShellExec('open', 'http://download.microsoft.com/download/5/6/7/567758a3-759e-473e-bf8f-52154438565a/dotnetfx.exe',
-      '','',SW_SHOWNORMAL,ewNoWait,ErrorCode);
+  end else begin
+    Result1 := MsgBox(ExpandConstant('{cm:msg_AskToDownNET}'), mbCriticalError, MB_YESNO or MB_DEFBUTTON1) = IDYES;
+      if Result1 = False then begin
+        Result := False;
+      end else begin
+        Result := False;
+        ShellExec('open', 'http://download.microsoft.com/download/5/6/7/567758a3-759e-473e-bf8f-52154438565a/dotnetfx.exe',
+        '','',SW_SHOWNORMAL,ewNoWait,ErrorCode);
       end;
-    end;
   end;
 end;
 
@@ -412,12 +407,9 @@ begin
   if CheckForMutexes(installer_mutex_name) then begin
     if not WizardSilent() then
       MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarning}'), mbCriticalError, MB_OK);
-      Result := False;
-    end
-    else begin
-    CreateMutex(installer_mutex_name);
-
-    StopService('KProcessHacker');
-    RemoveService('KProcessHacker');
-  end;
+      exit;
+   end;
+   CreateMutex(installer_mutex_name);
+   StopService('KProcessHacker');
+   RemoveService('KProcessHacker');
 end;
