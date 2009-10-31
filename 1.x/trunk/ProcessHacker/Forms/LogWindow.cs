@@ -48,9 +48,9 @@ namespace ProcessHacker
             ImageList imglist = new ImageList();
             imglist.ColorDepth = ColorDepth.Depth32Bit;
             imglist.Images.Add("Information", Properties.Resources.information);
-            imglist.Images.Add("Warning", Properties.Resources.database_ex);
-            imglist.Images.Add("Error", Properties.Resources.database_ex);
-            imglist.Images.Add("Exception", Properties.Resources.database_error);
+            imglist.Images.Add("Warning", Properties.Resources.database_warn);
+            imglist.Images.Add("Error", Properties.Resources.database_warn);
+            imglist.Images.Add("Exception", Properties.Resources.database_ex);
             imglist.Images.Add("Debug", Properties.Resources.database_debug);
             listLog.SmallImageList = imglist;
 

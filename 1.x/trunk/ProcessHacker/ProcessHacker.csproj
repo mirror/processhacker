@@ -955,6 +955,9 @@
     <None Include="Resources\database_delete.png" />
     <None Include="Resources\database_error.png" />
     <None Include="Resources\exclamation.png" />
+    <None Include="Resources\database_debug.png" />
+    <None Include="Resources\database_ex.png" />
+    <None Include="Resources\database_warn.png" />
     <Content Include="SharpDevelop\LICENSE.txt" />
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />

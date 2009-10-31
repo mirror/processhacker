@@ -235,13 +235,6 @@ namespace ProcessHacker.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap database_delete {
-            get {
-                object obj = ResourceManager.GetObject("database_delete", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap database_error {
             get {
                 object obj = ResourceManager.GetObject("database_error", resourceCulture);
@@ -252,6 +245,13 @@ namespace ProcessHacker.Properties {
         internal static System.Drawing.Bitmap database_ex {
             get {
                 object obj = ResourceManager.GetObject("database_ex", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap database_warn {
+            get {
+                object obj = ResourceManager.GetObject("database_warn", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
