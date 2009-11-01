@@ -230,7 +230,7 @@ namespace ProcessHacker
             }
             catch
             {
-                HackerEvent.Log.Error(true, false, "The entered value is not valid.");
+                PhUtils.ShowError("The entered value is not valid.");
                 textUpdateInterval.Select();
             }
         }
@@ -243,7 +243,7 @@ namespace ProcessHacker
             }
             catch
             {
-                HackerEvent.Log.Error(true, false, "The entered value is not valid.");
+                PhUtils.ShowError("The entered value is not valid.");
                 textIconMenuProcesses.Select();
             }
         }
@@ -274,16 +274,6 @@ namespace ProcessHacker
             checkFloatChildWindows.Checked = Settings.Instance.FloatChildWindows;
             checkHidePhConnections.Checked = Settings.Instance.HideProcessHackerNetworkConnections;
 
-            //If its 64bit, disable KPH checkbox
-            if (OSVersion.Architecture == OSArch.Amd64)
-            {
-                checkEnableKPH.Enabled = false;
-            }
-            else
-            {
-                checkEnableKPH.Checked = Settings.Instance.EnableKPH;
-            }
-
             if (OSVersion.HasUac)
             {
                 comboElevationLevel.SelectedIndex = Settings.Instance.ElevationLevel;
@@ -300,12 +290,14 @@ namespace ProcessHacker
                 case 0:
                     comboToolbarStyle.SelectedIndex = 0;
                     break;
-                default:
                 case 1:
                     comboToolbarStyle.SelectedIndex = 1;
                     break;
                 case 2:
                     comboToolbarStyle.SelectedIndex = 2;
+                    break;
+                default:
+                    comboToolbarStyle.SelectedIndex = 1;
                     break;
             }
 
@@ -314,8 +306,10 @@ namespace ProcessHacker
                 case 0:
                     comboProcessStyle.SelectedIndex = 0;
                     break;
-                default:
                 case 1:
+                    comboProcessStyle.SelectedIndex = 1;
+                    break;
+                default:
                     comboProcessStyle.SelectedIndex = 1;
                     break;
             }
@@ -421,52 +415,10 @@ namespace ProcessHacker
                     optUpdateAlpha.Checked = true;
                     break;
             }
-
-            switch (Settings.Instance.AppLogLevel)
-            {
-                default:
-                case EventType.Information:
-                case EventType.Warning:
-                    //comboBox1.SelectedIndex = 0;
-                    break;
-                case EventType.Error:
-                case EventType.Exception:
-                    //comboBox1.SelectedIndex = 1;
-                    break;
-                case EventType.Debug:
-                    //comboBox1.SelectedIndex = 2;
-                    break;
-            }
         }
 
         private void SaveSettings()
         {
-            bool result = false;
-
-            if (checkVerifySignatures.Checked != Settings.Instance.VerifySignatures)
-            {
-                result = true;
-                Settings.Instance.VerifySignatures = checkVerifySignatures.Checked;
-            }
-
-            if (checkEnableKPH.Checked != Settings.Instance.EnableKPH)
-            {
-                result = true;
-                Settings.Instance.EnableKPH = checkEnableKPH.Checked;
-            }
-
-            if (checkEnableExperimentalFeatures.Checked != Settings.Instance.EnableExperimentalFeatures)
-            {
-                result = true;
-                Settings.Instance.EnableExperimentalFeatures = checkEnableExperimentalFeatures.Checked;
-            }
-
-            if (_oldDbghelp != textDbghelpPath.Text)
-                result = true;
-
-            if (result)
-                HackerEvent.Log.Info(true, true, "One or more options you have changed require a restart of Process Hacker.");
-
             Settings.Instance.Font = _font;
             Settings.Instance.SearchEngine = textSearchEngine.Text;
             Settings.Instance.WarnDangerous = checkWarnDangerous.Checked;
@@ -475,10 +427,13 @@ namespace ProcessHacker
             Settings.Instance.HideWhenClosed = checkHideWhenClosed.Checked;
             Settings.Instance.AllowOnlyOneInstance = checkAllowOnlyOneInstance.Checked;
             Settings.Instance.UnitSpecifier = Array.IndexOf(Utils.SizeUnitNames, comboSizeUnits.SelectedItem);
+            Settings.Instance.VerifySignatures = checkVerifySignatures.Checked;
             Settings.Instance.HideHandlesWithNoName = checkHideHandlesWithNoName.Checked;
             Settings.Instance.ScrollDownProcessTree = checkScrollDownProcessTree.Checked;
             Settings.Instance.FloatChildWindows = checkFloatChildWindows.Checked;
             Settings.Instance.StartHidden = checkStartHidden.Checked;
+            Settings.Instance.EnableKPH = checkEnableKPH.Checked;
+            Settings.Instance.EnableExperimentalFeatures = checkEnableExperimentalFeatures.Checked;
             Settings.Instance.ImposterNames = textImposterNames.Text.ToLowerInvariant();
             Settings.Instance.HideProcessHackerNetworkConnections = checkHidePhConnections.Checked;
             Settings.Instance.ElevationLevel = comboElevationLevel.SelectedIndex;
@@ -527,7 +482,6 @@ namespace ProcessHacker
 
             switch (comboToolbarStyle.SelectedIndex)
             {
-                default:
                 case 0:
                     Settings.Instance.ToolStripDisplayStyle = 0;
                     break;
@@ -537,6 +491,9 @@ namespace ProcessHacker
                 case 2:
                     Settings.Instance.ToolStripDisplayStyle = 2;
                     break;
+                default:
+                    Settings.Instance.ToolStripDisplayStyle = 0;
+                    break;
             }
 
             switch (comboProcessStyle.SelectedIndex)
@@ -544,26 +501,13 @@ namespace ProcessHacker
                 case 0:
                     Settings.Instance.ProcessTreeStyle = 0;
                     break;
-                default:
                 case 1:
                     Settings.Instance.ProcessTreeStyle = 1;
                     break;
+                default:
+                    Settings.Instance.ProcessTreeStyle = 1;
+                    break;
             }
-     
-            //TODO TODO TODO!
-            //switch (comboBox1.SelectedIndex)
-            //{
-            //    default: //because we only show three options, we show events <= AppLogLevel
-            //    case 0:
-            //        Settings.Instance.AppLogLevel = EventType.Warning;
-            //         break;
-            //    case 1:
-            //        Settings.Instance.AppLogLevel = EventType.Exception;
-            //        break;
-            //    case 2:
-            //        Settings.Instance.AppLogLevel = EventType.Debug;
-            //        break;
-            // }
 
             Settings.Instance.Save();
             // We manually set settings, so we must invalidate.
@@ -600,7 +544,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(true, true, "Unable to replace Task Manager with Process Hacker");
+                    PhUtils.ShowException("Unable to replace Task Manager with Process Hacker", ex);
                 }
             }
         }
@@ -634,6 +578,9 @@ namespace ProcessHacker
 
             Program.HackerWindow.ProcessTree.RefreshItems();
             Program.ApplyFont(Settings.Instance.Font);
+
+            if (_oldDbghelp != textDbghelpPath.Text)
+                PhUtils.ShowInformation("One or more options you have changed require a restart of Process Hacker.");
         }
 
         private void buttonOK_Click(object sender, EventArgs e)

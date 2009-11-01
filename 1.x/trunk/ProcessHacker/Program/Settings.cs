@@ -114,17 +114,6 @@ namespace ProcessHacker
             set { this["AlwaysOnTop"] = value; }
         }
 
-#if DEBUG
-        [SettingDefault("4")] // default debugging/stacktrace
-#else
-        [SettingDefault("1")] // default info/warn messages
-#endif
-        public EventType AppLogLevel
-        {
-            get { return (EventType)this["AppLogLevel"]; }
-            set { this["AppLogLevel"] = value; }
-        }
-
         [SettingDefault("True")]
         public bool AppUpdateAutomatic
         {
@@ -549,13 +538,6 @@ namespace ProcessHacker
             set { this["LogWindowAutoScroll"] = value; }
         }
 
-        [SettingDefault("0,22|1,130|2,330")]
-        public string LogWindowListViewColumns
-        {
-            get { return (string)this["LogWindowListViewColumns"]; }
-            set { this["LogWindowListViewColumns"] = value; }
-        }
-
         [SettingDefault("300, 300")]
         public Point LogWindowLocation
         {
@@ -563,7 +545,7 @@ namespace ProcessHacker
             set { this["LogWindowLocation"] = value; }
         }
 
-        [SettingDefault("540, 510")]
+        [SettingDefault("595, 508")]
         public Size LogWindowSize
         {
             get { return (Size)this["LogWindowSize"]; }

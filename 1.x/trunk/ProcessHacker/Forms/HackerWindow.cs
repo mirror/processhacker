@@ -43,6 +43,11 @@ namespace ProcessHacker
 {
     public partial class HackerWindow : Form
     {
+        public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
+
+        private ThumbButtonManager thumbButtonManager;
+        //private JumpListManager jumpListManager; //Reserved for future use
+
         private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
 
         // This entire file is a big monolithic mess.
@@ -125,17 +130,33 @@ namespace ProcessHacker
         int processSelectedPid = -1;
 
         /// <summary>
+        /// The PH log, with events such as process creation/termination and various 
+        /// service events.
+        /// </summary>
+        List<KeyValuePair<DateTime, string>> _log = new List<KeyValuePair<DateTime, string>>();
+
+        /// <summary>
         /// windowhandle owned by the currently selected process. 
         /// Only populated when the user right-clicks exactly one process.
         /// </summary>
         WindowHandle windowHandle = WindowHandle.Zero;
 
-        private ThumbButtonManager thumbButtonManager;
-        //private JumpListManager jumpListManager; //Reserved for future use
-
         #endregion
 
         #region Properties
+
+        // The following two properties were used by the Window menu system. 
+        // Not very useful, but still needed for now.
+
+        public MenuItem WindowMenuItem
+        {
+            get { return windowMenuItem; }
+        }
+
+        public wyDay.Controls.VistaMenu VistaMenu
+        {
+            get { return vistaMenu; }
+        }
 
         // Mostly used by Save.cs.
         public ProcessTree ProcessTree
@@ -148,6 +169,18 @@ namespace ProcessHacker
             get { return processSelectedPid; }
         }
 
+        // The two properties below aren't used at all.
+
+        public ListView ServiceList
+        {
+            get { return listServices.List; }
+        }
+
+        public ListView NetworkList
+        {
+            get { return listNetwork.List; }
+        }
+
         /// <summary>
         /// Provides a list of service names hosted by a process.
         /// </summary>
@@ -155,6 +188,20 @@ namespace ProcessHacker
         {
             get { return processServices; }
         }
+
+        /// <summary>
+        /// The PH log.
+        /// </summary>
+        public IList<KeyValuePair<DateTime, string>> Log
+        {
+            get { return _log; }
+        }
+
+        #endregion
+
+        #region Events
+
+        public event LogUpdatedEventHandler LogUpdated;
 
         #endregion
 
@@ -257,7 +304,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        ex.LogEx(false, false, "Unable to launch GetPEWindow");
+                        Logging.Log(ex);
                     }
                 }));
             }
@@ -274,7 +321,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to load structs");
+                PhUtils.ShowException("Unable to load structs", ex);
             }
         }
 
@@ -435,11 +482,11 @@ namespace ProcessHacker
                             break;
                     }
 
-                    HackerEvent.Log.Info(true, false, "The file \"" + ofd.FileName + "\" " + message + ".");
+                    PhUtils.ShowInformation("The file \"" + ofd.FileName + "\" " + message + ".");
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(true, true, "Unable to verify the file");
+                    PhUtils.ShowException("Unable to verify the file", ex);
                 }
             }
         }
@@ -552,7 +599,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to list closeNetwork MenuItems");
+                Logging.Log(ex);
             }
 
             try
@@ -583,7 +630,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to find valid IP for selected address");
+                Logging.Log(ex);
             }
         }
 
@@ -600,16 +647,22 @@ namespace ProcessHacker
             if (listNetwork.SelectedItems.Count != 1)
                 return;
 
-            foreach (ListViewItem item in listNetwork.SelectedItems)
+            if (PhUtils.IsInternetConnected())
             {
-                var remote = ((NetworkItem)item.Tag).Connection.Remote;
 
-                if (remote != null)
+                foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
-                    IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Whois);
-                    iw.ShowDialog(this);
+                    var remote = ((NetworkItem)item.Tag).Connection.Remote;
+
+                    if (remote != null)
+                    {
+                        IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Whois);
+                        iw.ShowDialog(this);
+                    }
                 }
             }
+            else
+                PhUtils.ShowError("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void tracertNetworkMenuItem_Click(object sender, EventArgs e)
@@ -617,33 +670,42 @@ namespace ProcessHacker
             if (listNetwork.SelectedItems.Count != 1)
                 return;
 
-            foreach (ListViewItem item in listNetwork.SelectedItems)
+            if (PhUtils.IsInternetConnected())
             {
-                var remote = ((NetworkItem)item.Tag).Connection.Remote;
-
-                if (remote != null)
+                foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
-                    IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Tracert);
-                    iw.ShowDialog(this);
+                    var remote = ((NetworkItem)item.Tag).Connection.Remote;
+
+                    if (remote != null)
+                    {
+                        IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Tracert);
+                        iw.ShowDialog(this);
+                    }
                 }
             }
+            else
+                PhUtils.ShowError("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void pingNetworkMenuItem_Click(object sender, EventArgs e)
         {
             if (listNetwork.SelectedItems.Count != 1)
                 return;
-
-            foreach (ListViewItem item in listNetwork.SelectedItems)
+            if (PhUtils.IsInternetConnected())
             {
-                var remote = ((NetworkItem)item.Tag).Connection.Remote;
-
-                if (remote != null)
+                foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
-                    IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Ping);
-                    iw.ShowDialog(this);
+                    var remote = ((NetworkItem)item.Tag).Connection.Remote;
+
+                    if (remote != null)
+                    {
+                        IPInfoWindow iw = new IPInfoWindow(remote.Address, IpAction.Ping);
+                        iw.ShowDialog(this);
+                    }
                 }
             }
+            else
+                PhUtils.ShowError("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void closeNetworkMenuItem_Click(object sender, EventArgs e)
@@ -669,7 +731,7 @@ namespace ProcessHacker
                     {
                         allGood = false;
 
-                        if (MessageBox.Show(this, "Could not close the TCP connection. " +
+                        if (MessageBox.Show("Could not close the TCP connection. " +
                             "Make sure Process Hacker is running with administrative privileges.", "Process Hacker",
                             MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
                             return;
@@ -678,7 +740,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, false, "Failed to close Selected Network Items");
+                Logging.Log(ex);
             }
 
             if (allGood)
@@ -803,7 +865,7 @@ namespace ProcessHacker
                         }
                         catch (Exception ex)
                         {
-                            ex.LogEx(true, true, "Unable to inspect the process");
+                            PhUtils.ShowException("Unable to inspect the process", ex);
                         }
                     });
                     propertiesItem.Text = "Properties";
@@ -987,7 +1049,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(false, true, "Enable/disable DLL injection Error");
+                    Logging.Log(ex);
                 }
 
                 // Disable Terminate Process Tree if the selected process doesn't 
@@ -1003,7 +1065,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(false, false, "treeProcesses.SelectedTreeNodes Error");
+                    Logging.Log(ex);
                 }
 
                 // Find the process' window (if any).
@@ -1211,7 +1273,7 @@ namespace ProcessHacker
                         }
                         catch (Exception ex)
                         {
-                            ex.LogEx(true, true, "Unable to terminate the process");
+                            PhUtils.ShowException("Unable to terminate the process", ex);
                             return;
                         }
 
@@ -1231,13 +1293,13 @@ namespace ProcessHacker
                         }
                         catch (Exception ex)
                         {
-                            ex.LogEx(true, true, "Unable to start the command '" + cmdLine + "'");
+                            PhUtils.ShowException("Unable to start the command '" + cmdLine + "'", ex);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(true, true, "Unable to restart the process");
+                    PhUtils.ShowException("Unable to restart the process", ex);
                 }
             }
         }
@@ -1282,7 +1344,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to set process virtualization");
+                PhUtils.ShowException("Unable to set process virtualization", ex);
             }
         }
 
@@ -1305,7 +1367,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to show ProcessAffinity window");
+                Logging.Log(ex);
             }
         }
 
@@ -1409,12 +1471,12 @@ namespace ProcessHacker
                         dumpProcess();
 
                         if (exception != null)
-                            exception.LogEx(true, true, "Unable to create the dump file");
+                            PhUtils.ShowException("Unable to create the dump file", exception);
                     }
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(true, true, "Unable to create the dump file");
+                    PhUtils.ShowException("Unable to create the dump file", ex);
                 }
                 finally
                 {
@@ -1445,7 +1507,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to launchAsUserProcess");
+                Logging.Log(ex);
             }
         }
 
@@ -1459,7 +1521,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to launchAsThisUser");
+                Logging.Log(ex);
             }
         }
 
@@ -1480,9 +1542,9 @@ namespace ProcessHacker
             catch (WindowsException ex)
             {
                 if (ex.Status == NtStatus.PortNotSet)
-                    HackerEvent.Log.Info(true, false, "The process is not being debugged.");
+                    PhUtils.ShowInformation("The process is not being debugged.");
                 else
-                    ex.LogEx(true, true, "Unable to detach the process");
+                    PhUtils.ShowException("Unable to detach the process", ex);
             }
         }
 
@@ -1515,7 +1577,7 @@ namespace ProcessHacker
             }
             catch (WindowsException ex)
             {
-                ex.LogEx(true, true, "Unable to get heap information");
+                PhUtils.ShowException("Unable to get heap information", ex);
             }
         }
 
@@ -1537,7 +1599,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(true, true, "Unable to inject the DLL");
+                    PhUtils.ShowException("Unable to inject the DLL", ex);
                 }
             }
         }
@@ -1562,7 +1624,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(true, true, "Unable to set the process token");
+                    PhUtils.ShowException("Unable to set the process token", ex);
                 }
             }
         }
@@ -1670,7 +1732,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to reanalyze process");
+                Logging.Log(ex);
             }
         }
 
@@ -1685,22 +1747,27 @@ namespace ProcessHacker
             if (treeProcesses.SelectedNodes.Count != 1)
                 return;
 
-            if (string.IsNullOrEmpty(treeProcesses.SelectedNodes[0].FileName))
+            if (PhUtils.IsInternetConnected())
             {
-                HackerEvent.Log.Warn(true, false, "Unable to upload because the process' file location could not be determined.");
-                return;
+                if (string.IsNullOrEmpty(treeProcesses.SelectedNodes[0].FileName))
+                {
+                    PhUtils.ShowWarning("Unable to upload because the process' file location could not be determined.");
+                    return;
+                }
+
+                VirusTotalUploaderWindow vt = new VirusTotalUploaderWindow(
+                     treeProcesses.SelectedNodes[0].Name,
+                     treeProcesses.SelectedNodes[0].FileName
+                     );
+
+                int Y = this.Top + (this.Height - vt.Height) / 2;
+                int X = this.Left + (this.Width - vt.Width) / 2;
+
+                vt.Location = new Point(X, Y);
+                vt.Show();
             }
-
-            VirusTotalUploaderWindow vt = new VirusTotalUploaderWindow(
-                 treeProcesses.SelectedNodes[0].Name,
-                 treeProcesses.SelectedNodes[0].FileName
-                 );
-
-            int Y = this.Top + (this.Height - vt.Height) / 2;
-            int X = this.Left + (this.Width - vt.Width) / 2;
-
-            vt.Location = new Point(X, Y);
-            vt.Show();
+            else
+                PhUtils.ShowError("An Internet session could not be established. Please verify connectivity.");
         }
 
         private void analyzeWaitChainProcessMenuItem_Click(object sender, EventArgs e)
@@ -1797,11 +1864,11 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(false, true, "Unable to get Process ParentText");
+                    Logging.Log(ex);
                 }
             }
 
-            HackerEvent.Log.Info(false, true, "New Process: " + item.Name + " (PID " + item.Pid.ToString() + ")" + parentText);
+            this.QueueMessage("New Process: " + item.Name + " (PID " + item.Pid.ToString() + ")" + parentText);
 
             if (NPMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "New Process",
@@ -1812,7 +1879,7 @@ namespace ProcessHacker
 
         public void processP_DictionaryRemoved(ProcessItem item)
         {
-            HackerEvent.Log.Info(false, true, "Terminated Process: " + item.Name + " (PID " + item.Pid.ToString() + ")");
+            this.QueueMessage("Terminated Process: " + item.Name + " (PID " + item.Pid.ToString() + ")");
 
             if (processServices.ContainsKey(item.Pid))
                 processServices.Remove(item.Pid);
@@ -1842,7 +1909,7 @@ namespace ProcessHacker
 
         public void serviceP_DictionaryAdded(ServiceItem item)
         {
-            HackerEvent.Log.Info(false, true, "New Service: " + item.Status.ServiceName +
+            this.QueueMessage("New Service: " + item.Status.ServiceName +
                 " (" + item.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                 ((item.Status.DisplayName != "") ?
                 " (" + item.Status.DisplayName + ")" :
@@ -1874,7 +1941,7 @@ namespace ProcessHacker
                 oldState == ServiceState.StartPending) &&
                 newState == ServiceState.Running)
             {
-                HackerEvent.Log.Info(false, true, "Service Started: " + newItem.Status.ServiceName +
+                this.QueueMessage("Service Started: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                     ((newItem.Status.DisplayName != "") ?
                     " (" + newItem.Status.DisplayName + ")" :
@@ -1888,7 +1955,7 @@ namespace ProcessHacker
 
             if (oldState == ServiceState.Running &&
                 newState == ServiceState.Paused)
-                HackerEvent.Log.Info(false, true, "Service Paused: " + newItem.Status.ServiceName +
+                this.QueueMessage("Service Paused: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                     ((newItem.Status.DisplayName != "") ?
                     " (" + newItem.Status.DisplayName + ")" :
@@ -1897,7 +1964,7 @@ namespace ProcessHacker
             if (oldState == ServiceState.Running &&
                 newState == ServiceState.Stopped)
             {
-                HackerEvent.Log.Info(false, true, "Service Stopped: " + newItem.Status.ServiceName +
+                this.QueueMessage("Service Stopped: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                     ((newItem.Status.DisplayName != "") ?
                     " (" + newItem.Status.DisplayName + ")" :
@@ -1940,7 +2007,7 @@ namespace ProcessHacker
 
         public void serviceP_DictionaryRemoved(ServiceItem item)
         {
-            HackerEvent.Log.Info(false, true, "Deleted Service: " + item.Status.ServiceName +
+            this.QueueMessage("Deleted Service: " + item.Status.ServiceName +
                 " (" + item.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                 ((item.Status.DisplayName != "") ?
                 " (" + item.Status.DisplayName + ")" :
@@ -2327,6 +2394,14 @@ namespace ProcessHacker
             listNetwork.List.Font = f;
         }
 
+        public void ClearLog()
+        {
+            _log.Clear();
+
+            if (this.LogUpdated != null)
+                this.LogUpdated(null);
+        }
+
         private void CreateShutdownMenuItems()
         {
             AddMenuItemDelegate addMenuItem = (string text, EventHandler onClick) =>
@@ -2432,7 +2507,7 @@ namespace ProcessHacker
 
         private void LoadWindowSettings()
         {
-            this.TopMost = Settings.Instance.AlwaysOnTop;
+            this.TopMost = Program.HackerWindowTopMost = Settings.Instance.AlwaysOnTop;
 
             this.Size = Settings.Instance.WindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(
@@ -2491,22 +2566,7 @@ namespace ProcessHacker
 
             HistoryManager.GlobalMaxCount = Settings.Instance.MaxSamples;
             ProcessHacker.Components.Plotter.GlobalMoveStep = Settings.Instance.PlotterStep;
-          
-            if (Settings.Instance.ProcessTreeStyle == 0)
-            {
-                foreach (ProcessNode node in treeProcesses.Nodes.Values)
-                    if (node.Name == "System" || node.Name == "services.exe")
-                        treeProcesses.FindTreeNode(node).Collapse();
-            }
-            else if (Settings.Instance.ProcessTreeStyle == 1)
-            {
-                foreach (ProcessNode node in treeProcesses.Nodes.Values)
-                    treeProcesses.FindTreeNode(node).Expand();
-            }
-        }
 
-        private void FirstRunSettings()
-        {
             // Set up symbols...
 
             // If this is the first time Process Hacker is being run, try to 
@@ -2528,7 +2588,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "FirstRun Exception");
+                Logging.Log(ex);
             }
 
             // If we couldn't load dbghelp.dll from the user's location, load the default one 
@@ -2540,24 +2600,40 @@ namespace ProcessHacker
             try
             {
                 ProcessHandle.Current.EnumModules((module) =>
-                {
-                    if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
                     {
-                        // Load symsrv.dll from the same directory as dbghelp.dll.
+                        if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
+                        {
+                            // Load symsrv.dll from the same directory as dbghelp.dll.
 
-                        Loader.LoadDll(System.IO.Path.GetDirectoryName(module.FileName) + "\\symsrv.dll");
+                            Loader.LoadDll(System.IO.Path.GetDirectoryName(module.FileName) + "\\symsrv.dll");
 
-                        return false;
-                    }
+                            return false;
+                        }
 
-                    return true;
-                }, ModulesFilterFlag.All);
+                        return true;
+                    });
             }
             catch
             { }
 
             // Set the first run setting here.
             Settings.Instance.FirstRun = false;
+        }
+
+        public void QueueMessage(string message)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new MethodInvoker(() => this.QueueMessage(message)));
+                return;
+            }
+
+            var value = new KeyValuePair<DateTime, string>(DateTime.Now, message);
+
+            _log.Add(value);
+
+            if (this.LogUpdated != null)
+                this.LogUpdated(value);
         }
 
         private void SaveSettings()
@@ -2592,7 +2668,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to save settings");
+                PhUtils.ShowException("Unable to save settings", ex);
             }
         }
 
@@ -2619,7 +2695,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to find tree node");
+                Logging.Log(ex);
             }
         }
 
@@ -2629,7 +2705,7 @@ namespace ProcessHacker
 
             Thread t = new Thread(new ThreadStart(() =>
                 {
-                    Updater.Update(interactive);
+                    Updater.Update(this, interactive);
                     this.Invoke(new MethodInvoker(() => checkForUpdatesMenuItem.Enabled = true));
                 }), Utils.SixteenthStackSize);
             t.IsBackground = true;
@@ -2703,7 +2779,7 @@ namespace ProcessHacker
                                 }
                                 catch (Exception ex)
                                 {
-                                    ex.LogEx(true, true, "Unable to send the message");
+                                    PhUtils.ShowException("Unable to send the message", ex);
                                     return false;
                                 }
                             };
@@ -2711,7 +2787,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        ex.LogEx(true, true, "Unable to show the message window");
+                        PhUtils.ShowException("Unable to show the message window", ex);
                     }
                 };
                 userMenuItem.MenuItems.Add(currentMenuItem);
@@ -2729,7 +2805,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        ex.LogEx(true, true, "Unable to show session properties");
+                        PhUtils.ShowException("Unable to show session properties", ex);
                     }
                 };
                 userMenuItem.MenuItems.Add(currentMenuItem);
@@ -2765,7 +2841,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to set process priority");
+                PhUtils.ShowException("Unable to set process priority", ex);
             }
         }
 
@@ -2887,7 +2963,7 @@ namespace ProcessHacker
                             }
                             catch (Exception ex)
                             {
-                                ex.LogEx(false, true, "Recieved bad WtsSessionChange message");
+                                Logging.Log(ex);
                             }
                         }
                     }
@@ -3029,7 +3105,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "LoadFixNProcessHacker Exception");
+                Logging.Log(ex);
             }
         }
 
@@ -3207,7 +3283,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        ex.LogEx(false, true, "Error loading structure definitions");
+                        QueueMessage("Error loading structure definitions: " + ex.Message);
                     }
                 }), "load-structs");
         }
@@ -3252,8 +3328,9 @@ namespace ProcessHacker
             }
 
             this.AddEscapeToClose();
+
+            Logging.Logged += this.QueueMessage;
             this.LoadWindowSettings();
-            this.FirstRunSettings();
             this.LoadOtherSettings();
             this.LoadControls();
             this.LoadNotificationIcons();
@@ -3281,7 +3358,7 @@ namespace ProcessHacker
 
         private void HackerWindow_Load(object sender, EventArgs e)
         {
-            this.UpdateWindowMenu(windowMenuItem);
+            Program.UpdateWindowMenu(windowMenuItem, this);
             this.ApplyFont(Settings.Instance.Font);
             this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
         }
@@ -3335,8 +3412,8 @@ namespace ProcessHacker
             {
                 isFirstPaint = false;
     
-                ApplicationRestartRecoveryManager.RegisterForRestart();
-                //ApplicationRestartRecoveryManager.RegisterForRecovery();
+                ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
+                //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
 
                 this.CreateShutdownMenuItems();
                 this.LoadFixOSSpecific();
@@ -3354,7 +3431,7 @@ namespace ProcessHacker
                     {
                         Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], (f) =>
                             {
-                                f.FocusWindow();
+                                Program.FocusWindow(f);
                                 f.SelectThread(tid);
                             });
                     };
@@ -3364,9 +3441,9 @@ namespace ProcessHacker
                 toolStrip.Items.Add(targetThreadButton);
 
                 try { TerminalServerHandle.RegisterNotificationsCurrent(this, true); }
-                catch (Exception ex) { ex.LogEx(false, true, "Unable to register TerminalServerHandle.Notifications"); }
+                catch (Exception ex) { Logging.Log(ex); }
                 try { this.UpdateSessions(); }
-                catch (Exception ex) { ex.LogEx(false, true, "Unable to register TerminalServerHandle.Notifications"); }
+                catch (Exception ex) { Logging.Log(ex); }
 
                 try { Win32.SetProcessShutdownParameters(0x100, 0); }
                 catch { }

@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.listLog = new System.Windows.Forms.ListView();
-            this.columnType = new System.Windows.Forms.ColumnHeader();
             this.columnTime = new System.Windows.Forms.ColumnHeader();
             this.columnMessage = new System.Windows.Forms.ColumnHeader();
             this.buttonClose = new System.Windows.Forms.Button();
@@ -47,7 +46,6 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.listLog.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnType,
             this.columnTime,
             this.columnMessage});
             this.listLog.FullRowSelect = true;
@@ -55,18 +53,13 @@
             this.listLog.Location = new System.Drawing.Point(12, 12);
             this.listLog.Name = "listLog";
             this.listLog.ShowItemToolTips = true;
-            this.listLog.Size = new System.Drawing.Size(500, 419);
+            this.listLog.Size = new System.Drawing.Size(555, 419);
             this.listLog.TabIndex = 0;
             this.listLog.UseCompatibleStateImageBehavior = false;
             this.listLog.View = System.Windows.Forms.View.Details;
             this.listLog.VirtualMode = true;
             this.listLog.DoubleClick += new System.EventHandler(this.listLog_DoubleClick);
             this.listLog.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listLog_RetrieveVirtualItem);
-            // 
-            // columnType
-            // 
-            this.columnType.Text = "Type";
-            this.columnType.Width = 22;
             // 
             // columnTime
             // 
@@ -76,13 +69,13 @@
             // columnMessage
             // 
             this.columnMessage.Text = "Message";
-            this.columnMessage.Width = 330;
+            this.columnMessage.Width = 400;
             // 
             // buttonClose
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(437, 437);
+            this.buttonClose.Location = new System.Drawing.Point(492, 437);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 5;
@@ -100,7 +93,7 @@
             // 
             this.buttonCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCopy.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCopy.Location = new System.Drawing.Point(356, 437);
+            this.buttonCopy.Location = new System.Drawing.Point(411, 437);
             this.buttonCopy.Name = "buttonCopy";
             this.buttonCopy.Size = new System.Drawing.Size(75, 23);
             this.buttonCopy.TabIndex = 4;
@@ -112,7 +105,7 @@
             // 
             this.buttonSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSave.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonSave.Location = new System.Drawing.Point(275, 437);
+            this.buttonSave.Location = new System.Drawing.Point(330, 437);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(75, 23);
             this.buttonSave.TabIndex = 3;
@@ -150,7 +143,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(524, 472);
+            this.ClientSize = new System.Drawing.Size(579, 472);
             this.Controls.Add(this.checkAutoscroll);
             this.Controls.Add(this.buttonClear);
             this.Controls.Add(this.buttonSave);
@@ -158,6 +151,7 @@
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.listLog);
             this.Name = "LogWindow";
+            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Log";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogWindow_FormClosing);
@@ -177,6 +171,5 @@
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.Button buttonClear;
         private System.Windows.Forms.CheckBox checkAutoscroll;
-        private System.Windows.Forms.ColumnHeader columnType;
     }
 }

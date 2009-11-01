@@ -105,7 +105,7 @@ namespace ProcessHacker.FormHelper
                                 if (module.FileName.ToLowerInvariant().Contains(lowerFilter))
                                     this.CallDllMatchListView(process.Key, module);
                                 return true;
-                            }, ModulesFilterFlag.All);
+                            });
                         }
 
                         using (var phandle = new ProcessHandle(process.Key,
@@ -127,7 +127,7 @@ namespace ProcessHacker.FormHelper
                     }
                     catch (Exception ex)
                     {
-                        ex.LogEx(false, true, "Unable to filter handles");
+                        Logging.Log(ex);
                     }
                 }
 

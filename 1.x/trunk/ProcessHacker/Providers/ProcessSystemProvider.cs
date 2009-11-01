@@ -330,14 +330,11 @@ namespace ProcessHacker
             fpResult.Pid = pid;
             fpResult.Stage = 0x1;
 
-            try
-            {
+            if (fileName == null)
                 fileName = this.GetFileName(pid);
-            }
-            catch (Exception ex) //TODO TODO TODO!
-            {
-                ex.LogEx(false, true, "Could not get file name for PID " + pid.ToString());
-            }
+
+            if (fileName == null)
+                Logging.Log(Logging.Importance.Warning, "Could not get file name for PID " + pid.ToString());
 
             fpResult.FileName = fileName;
 
@@ -408,7 +405,7 @@ namespace ProcessHacker
                         }
                         catch (Exception ex)
                         {
-                            ex.LogEx(false, true, "Unable to JobObjectAccess.Query");
+                            Logging.Log(ex);
                             fpResult.IsInJob = false;
                             fpResult.IsInSignificantJob = false;
                         }
@@ -490,21 +487,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    var publish = new Debugger.Core.Wrappers.CorPub.ICorPublish();
-                    Debugger.Core.Wrappers.CorPub.ICorPublishProcess process = null;
-
-                    try
-                    {
-                        process = publish.GetProcess(pid);
-                        fpResult.IsDotNet = process.IsManaged;
-                    }
-                    finally
-                    {
-                        if (process != null)
-                        {
-                            Debugger.Wrappers.ResourceManager.ReleaseCOMObject(process, process.GetType());
-                        }
-                    }
+                    fpResult.IsDotNet = PhUtils.IsDotNetProcess(pid);
                 }
                 catch
                 { }
@@ -619,9 +602,7 @@ namespace ProcessHacker
 
         private string GetFileName(int pid)
         {
-            string fileName = string.Empty;
-
-            Exception eX = null;
+            string fileName = null;
 
             if (pid != 4)
             {
@@ -652,8 +633,8 @@ namespace ProcessHacker
                         }
                     }
                 }
-                catch (WindowsException ex)
-                { eX = ex; }
+                catch
+                { }
 
                 if (fileName == null || fileName.StartsWith("\\Device\\"))
                 {
@@ -692,11 +673,6 @@ namespace ProcessHacker
                 }
                 catch
                 { }
-            }
-   
-            if (string.IsNullOrEmpty(fileName))
-            {
-                throw eX;
             }
 
             return fileName;
@@ -747,7 +723,7 @@ namespace ProcessHacker
             }
             else
             {
-                HackerEvent.Log.Debug("Unknown stage: " + result.Stage.ToString("x"));
+                Logging.Log(Logging.Importance.Warning, "Unknown stage " + result.Stage.ToString("x"));
             }
 
             if (this.ProcessQueryReceived != null)
@@ -779,7 +755,7 @@ namespace ProcessHacker
 
             if (sysKernelTime + sysUserTime + otherTime == 0)
             {
-                HackerEvent.Log.Error(false, true, "Total systimes are 0 returning!");
+                Logging.Log(Logging.Importance.Warning, "Total systimes are 0, returning!");
                 return;
             }
 

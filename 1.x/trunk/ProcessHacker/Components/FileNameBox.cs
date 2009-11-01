@@ -67,7 +67,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to show properties for the file");
+                PhUtils.ShowException("Unable to show properties for the file", ex);
             }
         }
 
@@ -79,7 +79,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to show the file");
+                PhUtils.ShowException("Unable to show the file", ex);
             }
         }
 

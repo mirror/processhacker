@@ -28,7 +28,7 @@ using System.Diagnostics;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
-namespace ProcessHacker
+namespace ProcessHackerRestartRecovery
 {
     /// <summary>
     /// Provides access to the Application Restart and Recovery

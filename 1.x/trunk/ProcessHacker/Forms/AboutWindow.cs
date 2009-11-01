@@ -61,7 +61,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to view the changelog");
+                PhUtils.ShowException("Unable to view the changelog", ex);
             }
         }
 

@@ -85,7 +85,10 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    HackerEvent.Log.Warn(true, false, "The selected file doesn't exist or couldnt be found!");
+                    MessageBox.Show(
+                       this, "The selected file doesn't exist or couldnt be found!",
+                       "System Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation
+                       );
                 }
 
                 this.Close();
@@ -105,7 +108,10 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    HackerEvent.Log.Warn(true, false, "This file is larger than 20MB and is above the VirusTotal size limit!");
+                     MessageBox.Show(
+                        this, "This file is larger than 20MB and is above the VirusTotal size limit!",
+                        "VirusTotal Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation
+                        );
                 }
 
                 this.Close();
@@ -158,8 +164,8 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to contact VirusTotal");
- 
+                PhUtils.ShowException("Unable to contact VirusTotal", ex);
+
                 if (this.IsHandleCreated)
                     this.BeginInvoke(new MethodInvoker(this.Close));
             }
@@ -273,7 +279,8 @@ namespace ProcessHacker
                 {
                     if (ex.Status != WebExceptionStatus.RequestCanceled)
                     {
-                        ex.LogEx(true, true, "Unable to upload the file");
+                        PhUtils.ShowException("Unable to upload the file", ex);
+                        Logging.Log(ex);
 
                         if (this.IsHandleCreated)
                             this.BeginInvoke(new MethodInvoker(this.Close));
@@ -328,7 +335,7 @@ namespace ProcessHacker
             {
                 if (webException.Status != WebExceptionStatus.RequestCanceled)
                 {
-                    webException.LogEx(true, true, "Unable to upload the file");
+                    PhUtils.ShowException("Unable to upload the file", webException);
                     this.Close();
                 }
             }

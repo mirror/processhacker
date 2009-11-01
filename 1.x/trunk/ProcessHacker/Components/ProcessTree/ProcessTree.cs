@@ -331,16 +331,6 @@ namespace ProcessHacker
 
                         node.BackColor = this.GetProcessColor(item);
                         node.ExpandAll();
-
-                        if (Settings.Instance.ProcessTreeStyle == 0 && OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
-                        {
-                            if (item.Name == "System" || item.Name == "services.exe")
-                                node.IsExpanded = false;
-                            else //we must expand the node
-                                node.IsExpanded = true;
-                        }
-                        else //we must expand the node 
-                            node.IsExpanded = true;
                     }
                 }
             }));
@@ -387,7 +377,7 @@ namespace ProcessHacker
                                 }
                                 catch (Exception ex)
                                 {
-                                    ex.LogEx(false, true, "Unable to remove ProcessItem from ProcessTree");
+                                    Logging.Log(ex);
                                 }
                             }));
                         //}
@@ -423,7 +413,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        ex.LogEx(false, true, "Unable to refresh process items");
+                        Logging.Log(ex);
                     }
                 }
             }

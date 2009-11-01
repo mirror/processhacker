@@ -100,7 +100,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to open the process");
+                PhUtils.ShowException("Unable to open the process", ex);
 
                 this.Close();
 
@@ -129,7 +129,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to open the thread");
+                PhUtils.ShowException("Unable to open the thread", ex);
 
                 this.Close();
 
@@ -202,7 +202,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to WalkCallStack");
+                Logging.Log(ex);
             }
             finally
             {
@@ -233,13 +233,13 @@ namespace ProcessHacker
                     }
                     catch (Exception ex2)
                     {
-                        ex2.LogEx(false, true, "Unable to WalkKernelStack");
+                        Logging.Log(ex2);
                     }
                 }
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to WalkKernelStack");
+                Logging.Log(ex);
             }
         }
 
@@ -288,12 +288,12 @@ namespace ProcessHacker
                 }
                 catch (Exception ex2)
                 {
-                    ex2.LogEx(false, true, "Unable to WalkStackCallback");
+                    Logging.Log(ex2);
                 }
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to WalkStackCallback");
+                Logging.Log(ex);
 
                 ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
                             Utils.FormatAddress(address),

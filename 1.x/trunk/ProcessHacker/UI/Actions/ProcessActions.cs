@@ -93,7 +93,6 @@ namespace ProcessHacker.UI.Actions
             if (OSVersion.HasTaskDialogs)
             {
                 TaskDialog td = new TaskDialog();
-                td.PositionRelativeToWindow = true;
 
                 td.WindowTitle = "Process Hacker";
                 td.MainInstruction = "Do you want to " + action + " " + name + "?";
@@ -209,7 +208,6 @@ namespace ProcessHacker.UI.Actions
                         return ElevationAction.Elevate;
 
                     TaskDialog td = new TaskDialog();
-                    td.PositionRelativeToWindow = true;
 
                     td.WindowTitle = "Process Hacker";
                     td.MainIcon = TaskDialogIcon.Warning;
@@ -338,18 +336,18 @@ namespace ProcessHacker.UI.Actions
                     ProcessWindow pForm = Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],
                         new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                         {
-                            f.FocusWindow();
+                            Program.FocusWindow(f);
                         }));
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(true, true, "Unable to inspect the process");
+                    PhUtils.ShowException("Unable to inspect the process", ex);
                     return false;
                 }
             }
             else
             {
-                HackerEvent.Log.Error(true, false, "Unable to inspect the process because it does not exist.");
+                PhUtils.ShowError("Unable to inspect the process because it does not exist.");
             }
 
             return true;
@@ -440,8 +438,10 @@ namespace ProcessHacker.UI.Actions
             {
                 good = false;
 
-                ex.LogEx(true, true, 
-                    "Unable to terminate the process \"" + processes[pid].Name + "\" with PID " + pid.ToString());
+                PhUtils.ShowException(
+                    "Unable to terminate the process \"" + processes[pid].Name + "\" with PID " + pid.ToString(),
+                    ex
+                    );
             }
 
             return good;

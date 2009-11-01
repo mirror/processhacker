@@ -110,7 +110,7 @@ namespace ProcessHacker
                 Utils.FitRectangle(new Rectangle(location, this.Size), this).Location;
 
             // Update the Window menu.
-            this.UpdateWindowMenu(windowMenuItem);
+            Program.UpdateWindowMenu(windowMenuItem, this);
 
             SymbolProviderExtensions.ShowWarning(this, false);
         }
@@ -323,7 +323,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to InitializeProviders");
+                Logging.Log(ex);
             }
 
             this.UpdateEnvironmentVariables();
@@ -1043,7 +1043,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to change process protection");
+                PhUtils.ShowException("Unable to change process protection", ex);
             }
         }
 
@@ -1074,7 +1074,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to inspect the PEB");
+                PhUtils.ShowException("Unable to inspect the PEB", ex);
             }
         }
 
@@ -1088,13 +1088,13 @@ namespace ProcessHacker
                     Program.ProcessProvider.Dictionary[_processItem.ParentPid].Name
                     );
             }
-            catch (KeyNotFoundException exx)
+            catch (KeyNotFoundException)
             {
-                exx.LogEx(true, true, "The process could not be found.");
+                PhUtils.ShowError("The process could not be found.");
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to inspect the parent process");
+                PhUtils.ShowException("Unable to inspect the parent process", ex);
             }
         }
 
@@ -1118,7 +1118,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to edit permissions");
+                PhUtils.ShowException("Unable to edit permissions", ex);
             }
         }
 
@@ -1189,7 +1189,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to inspect the image file");
+                PhUtils.ShowException("Unable to inspect the image file", ex);
             }
         }
 

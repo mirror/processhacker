@@ -407,7 +407,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to change service configuration");
+                PhUtils.ShowException("Unable to change service configuration", ex);
             }
         }
 
@@ -440,7 +440,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to show dependents for the service");
+                PhUtils.ShowException("Unable to show dependents for the service", ex);
             }
         }
 
@@ -463,7 +463,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to show dependencies of the service");
+                PhUtils.ShowException("Unable to show dependencies of the service", ex);
             }
         }
 
@@ -488,7 +488,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to edit security");
+                PhUtils.ShowException("Unable to edit security", ex);
             }
         }
     }

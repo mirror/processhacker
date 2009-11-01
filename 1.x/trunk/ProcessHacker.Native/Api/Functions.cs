@@ -1095,7 +1095,7 @@ namespace ProcessHacker.Native.Api
             [Out] IntPtr[] ModuleHandles,
             [In] int Size,
             [Out] out int RequiredSize,
-            [In] ModulesFilterFlag dwFilterFlag
+            [In] ModuleFilterFlags dwFilterFlag
             );
 
         [DllImport("psapi.dll", CharSet = CharSet.Unicode)]

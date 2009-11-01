@@ -38,12 +38,10 @@ namespace ProcessHacker
 
             textValues.Text = values;
             textValues.Select(0, 0);
-
-            textValues.Font = Settings.Instance.Font;
         }
 
         private void InformationBox_Load(object sender, EventArgs e)
-        {        
+        {
             // doesn't work???
             textValues.Select();
             textValues.ScrollToCaret();

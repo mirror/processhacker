@@ -132,7 +132,7 @@ namespace ProcessHacker
                 }
                 catch (WindowsException ex)
                 {
-                    ex.LogEx(false, true, "Unable to obtain process handle for stack walking");
+                    Logging.Log(ex);
                 }
             }
         }
@@ -177,12 +177,12 @@ namespace ProcessHacker
             {
                 try
                 {
-                    // TODO: display the EULA!
+                    // Needed (maybe) to display the EULA
                     Win32.SymbolServerSetOptions(SymbolServerOption.Unattended, 0);
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(false, true, "Unable to set SymbolServerOption.Unattended");
+                    Logging.Log(ex);
                 }
 
                 try
@@ -247,18 +247,18 @@ namespace ProcessHacker
                                 }
 
                                 return true;
-                            }, ModulesFilterFlag.All);
+                            });
                         }
                         catch (Exception ex2)
                         {
-                            ex2.LogEx(false, true, "Unable to ProcessHandle.EnumModules");
+                            Logging.Log(ex2);
                         }
 
-                        ex.LogEx(false, true, "Unable to query ProcessHandle MinProcessQueryRights MinProcessReadMemoryRights");
+                        Logging.Log(ex);
                     }
                     catch (Exception ex)
                     {
-                        ex.LogEx(false, true, "Unable to query ProcessHandle");
+                        Logging.Log(ex);
                     }
                 }
                 finally

@@ -151,7 +151,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        ex.LogEx(false, true, "Unable to expand TreeViewAdv ProcessNode children");
+                        Logging.Log(ex);
                     }
                 }
             }

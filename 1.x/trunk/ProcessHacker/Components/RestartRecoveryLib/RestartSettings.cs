@@ -23,7 +23,7 @@
 
 using System;
 
-namespace ProcessHacker
+namespace ProcessHackerRestartRecovery
 {
     /// <summary>
     /// Specifies the options for an application to be automatically restarted by Windows Error Reporting. 

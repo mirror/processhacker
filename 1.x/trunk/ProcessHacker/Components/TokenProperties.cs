@@ -416,7 +416,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to edit security");
+                PhUtils.ShowException("Unable to edit security", ex);
             }
         }
     }

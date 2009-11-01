@@ -38,40 +38,41 @@ namespace ProcessHacker
             this.AddEscapeToClose();
             this.SetTopMost();
 
-            ColumnSettings.LoadSettings(Settings.Instance.LogWindowListViewColumns, listLog);
-
             listLog.SetDoubleBuffered(true);
             listLog.SetTheme("explorer");
             listLog.ContextMenu = listLog.GetCopyMenu(listLog_RetrieveVirtualItem);
             listLog.AddShortcuts(listLog_RetrieveVirtualItem);
 
-            ImageList imglist = new ImageList();
-            imglist.ColorDepth = ColorDepth.Depth32Bit;
-            imglist.Images.Add("Information", Properties.Resources.information);
-            imglist.Images.Add("Warning", Properties.Resources.database_warn);
-            imglist.Images.Add("Error", Properties.Resources.database_warn);
-            imglist.Images.Add("Exception", Properties.Resources.database_ex);
-            imglist.Images.Add("Debug", Properties.Resources.database_debug);
-            listLog.SmallImageList = imglist;
-
-            listLog.VirtualMode = true;
-            listLog.VirtualListSize = HackerEvent.Log.Count;
-
-            HackerEvent.HackerLogUpdated += new HackerLogUpdatedHandler(
-                delegate
-                {
-                    listLog.VirtualListSize = HackerEvent.Log.Count;
-                });
+            this.UpdateLog();
 
             if (listLog.SelectedIndices.Count == 0 && listLog.VirtualListSize > 0)
                 listLog.EnsureVisible(listLog.VirtualListSize - 1);
 
+            Program.HackerWindow.LogUpdated += new HackerWindow.LogUpdatedEventHandler(HackerWindow_LogUpdated);
+
             this.Size = Settings.Instance.LogWindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(
-                Settings.Instance.LogWindowLocation, this.Size), this).Location; 
-            this.Icon = Icon.FromHandle(Properties.Resources.page_white_text.GetHicon());
-
+                Settings.Instance.LogWindowLocation, this.Size), this).Location;
             checkAutoscroll.Checked = Settings.Instance.LogWindowAutoScroll;
+        }
+
+        private void HackerWindow_LogUpdated(KeyValuePair<DateTime, string>? value)
+        {
+            this.UpdateLog();
+        }
+
+        private void UpdateLog()
+        {
+            // HACK. Not my fault though, .NET wants to throw an exception when 
+            // I set VirtualListSize and the window is minimized...
+            try
+            {
+                listLog.VirtualListSize = Program.HackerWindow.Log.Count;
+            }
+            catch
+            {
+                // Do not put Logging.Log(ex) because this will cause a recursive call.
+            }
         }
 
         private void LogWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -83,7 +84,9 @@ namespace ProcessHacker
             }
 
             Settings.Instance.LogWindowAutoScroll = checkAutoscroll.Checked;
-                    }
+            
+            Program.HackerWindow.LogUpdated -= new HackerWindow.LogUpdatedEventHandler(HackerWindow_LogUpdated);
+        }
 
         private void buttonClose_Click(object sender, EventArgs e)
         {
@@ -92,35 +95,11 @@ namespace ProcessHacker
 
         private void listLog_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            ListViewItem litem = new ListViewItem();
-            EventType mType = HackerEvent.Log[e.ItemIndex].Key;
-
-            litem.Text = mType.ToString();
-            litem.SubItems.Add(HackerEvent.Log[e.ItemIndex].Value.Key.ToString());
-            // Hack, Fix XP Listview displaying \r\n as chinese symbols by spliting the string 
-            litem.SubItems.Add(HackerEvent.Log[e.ItemIndex].Value.Value.ToString().Split('\r')[0].ToString());
-
-            switch (mType)
+            e.Item = new ListViewItem(new string[]
             {
-                case EventType.Information:
-                    litem.ImageIndex = 0;
-                    break;
-                case EventType.Warning:
-                    litem.ImageIndex = 1;
-                    break;
-                case EventType.Error:
-                    litem.ImageIndex = 2;
-                    break;
-                case EventType.Exception:
-                    litem.ImageIndex = 3;
-                    break;
-                default:
-                case EventType.Debug:
-                    litem.ImageIndex = 4;
-                    break;
-            }
-
-            e.Item = litem;
+                Program.HackerWindow.Log[e.ItemIndex].Key.ToString(),
+                Program.HackerWindow.Log[e.ItemIndex].Value
+            });
         }
 
         private void timerScroll_Tick(object sender, EventArgs e)
@@ -155,9 +134,9 @@ namespace ProcessHacker
             {
                 StringBuilder sb = new StringBuilder();
 
-                foreach (var value in HackerEvent.Log)
+                foreach (var value in Program.HackerWindow.Log)
                 {
-                    sb.AppendLine(value.ToString());
+                    sb.AppendLine(value.Key.ToString() + ": " + value.Value);
                 }
 
                 try
@@ -166,21 +145,19 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(true, true, "Unable to save the log");
+                    PhUtils.ShowException("Unable to save the log", ex);
                 }
             }
         }
 
         private void buttonClear_Click(object sender, EventArgs e)
         {
-            HackerEvent.Log.Clear();
+            Program.HackerWindow.ClearLog();
         }
 
         private void listLog_DoubleClick(object sender, EventArgs e)
         {
-            InformationBox info = new InformationBox(
-                  HackerEvent.Log[listLog.SelectedIndices[0]].Value.Value.ToString()
-                  );
+            InformationBox info = new InformationBox(Program.HackerWindow.Log[listLog.SelectedIndices[0]].Value);
 
             info.ShowDialog();
         }

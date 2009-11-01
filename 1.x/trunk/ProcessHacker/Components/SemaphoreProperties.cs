@@ -42,7 +42,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to acquire the semaphore");
+                PhUtils.ShowException("Unable to acquire the semaphore", ex);
             }
         }
 
@@ -56,7 +56,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to release the semaphore");
+                PhUtils.ShowException("Unable to release the semaphore", ex);
             }
         }
     }

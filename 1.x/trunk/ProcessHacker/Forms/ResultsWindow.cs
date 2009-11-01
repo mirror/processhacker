@@ -37,11 +37,6 @@ namespace ProcessHacker
     {
         private delegate bool Matcher(string s1, string s2);
 
-        /// <summary>
-        /// The Results Window ID Generator
-        /// </summary>
-        public static IdGenerator ResultsIds = new IdGenerator() { Sort = true };
-
         private int _pid;
         private SearchOptions _so;
         private Thread _searchThread;
@@ -81,7 +76,7 @@ namespace ProcessHacker
 
         private void ResultsWindow_Load(object sender, EventArgs e)
         {
-            this.UpdateWindowMenu(windowMenuItem);
+            Program.UpdateWindowMenu(windowMenuItem, this);
 
             listResults.ContextMenu = listResults.GetCopyMenu(listResults_RetrieveVirtualItem);
 
@@ -199,7 +194,7 @@ namespace ProcessHacker
         {
             this.Invoke(new MethodInvoker(delegate
             {
-                HackerEvent.Log.Error(true, true, "Unable to search memory: " + message);
+                PhUtils.ShowError("Unable to search memory: " + message);
                 _searchThread = null;
                 Searcher_SearchFinished();
             }));
@@ -543,7 +538,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to filter the search results");
+                PhUtils.ShowException("Unable to filter the search results", ex);
             }
         }
 

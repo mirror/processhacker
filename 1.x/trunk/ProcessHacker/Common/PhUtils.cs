@@ -43,6 +43,46 @@ namespace ProcessHacker.Common
         };
 
         /// <summary>
+        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ListView.
+        /// </summary>
+        /// <param name="lv">The ListView to modify.</param>
+        public static void AddShortcuts(this ListView lv)
+        {
+            lv.AddShortcuts(null);
+        }
+
+        /// <summary>
+        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ListView.
+        /// </summary>
+        /// <param name="lv">The ListView to modify.</param>
+        /// <param name="retrieveVirtualItem">A virtual item handler, if any.</param>
+        public static void AddShortcuts(this ListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
+        {
+            lv.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A)
+                    {
+                        if (retrieveVirtualItem != null)
+                        {
+                            for (int i = 0; i < lv.VirtualListSize; i++)
+                                if (!lv.SelectedIndices.Contains(i))
+                                    lv.SelectedIndices.Add(i);
+                        }
+                        else
+                        {
+                            lv.Items.SelectAll();
+                        }
+                    }
+
+                    if (e.Control && e.KeyCode == Keys.C)
+                    {
+                        GenericViewMenu.ListViewCopy(lv, -1, retrieveVirtualItem);
+                    }
+                };
+        }
+
+        /// <summary>
         /// Gets whether the specified process is a system process.
         /// </summary>
         /// <param name="pid">The PID of a process to check.</param>
@@ -81,7 +121,7 @@ namespace ProcessHacker.Common
         /// </param>
         /// <param name="ex">The exception to use.</param>
         /// <returns>A formatted error message.</returns>
-        public static string FormatException(string operation, Exception ex)
+        private static string FormatException(string operation, Exception ex)
         {
             if (!string.IsNullOrEmpty(operation))
                 return operation + ": " + ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : "");
@@ -161,6 +201,34 @@ namespace ProcessHacker.Common
             return integrity;
         }
 
+        public static bool IsDotNetProcess(int pid)
+        {
+            var publish = new Debugger.Core.Wrappers.CorPub.ICorPublish();
+            Debugger.Core.Wrappers.CorPub.ICorPublishProcess process = null;
+
+            try
+            {
+                process = publish.GetProcess(pid);
+
+                if (process == null)
+                    return false;
+
+                return process.IsManaged;
+            }
+            finally
+            {
+                if (process != null)
+                {
+                    Debugger.Wrappers.ResourceManager.ReleaseCOMObject(process, process.GetType());
+                }
+            }
+        }
+
+        public static bool IsEmpty(this IPEndPoint endPoint)
+        {
+            return endPoint.Address.GetAddressBytes().IsEmpty() && endPoint.Port == 0;
+        }
+
         public static void IsNetworkError(string url)
         {
             if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
@@ -200,17 +268,33 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Fast method of checking a connection to the Internet can be established.
+        /// </summary>
+        /// <returns>True if connected</returns>
+        public static bool IsInternetConnected()
+        {
+            try
+            {
+                System.Net.IPHostEntry entry = System.Net.Dns.GetHostEntry("www.msftncsi.com");
+                return true;
+               
+                //http://www.msftncsi.com/ncsi.txt 
+                //Vista/Win7 Internet Connectivity test address, 
+                //Every Vista/Win7 machine uses this for checking Internet Connectivity.
+                //Probably the most reliable internet address...
+                //More Info: http://technet.microsoft.com/en-us/library/cc766017%28WS.10%29.aspx
+            }
+            catch
+            { return false; }
+        }
+
+        /// <summary>
         /// Reliable but slower method of checking if a connection to the Internet can be established.
         /// </summary>
         /// <returns>True if connected</returns>
         public static bool IsInternetConnectedSlow()
         {
             return Win32.InternetCheckConnection("http://www.msftncsi.com", 1, 0);
-
-            //http://www.msftncsi.com/ncsi.txt 
-            // Vista/Win7 Internet Connectivity test address, 
-            // Probably the most reliable internet address...
-            //More Info: http://technet.microsoft.com/en-us/library/cc766017%28WS.10%29.aspx
         }
 
         /// <summary>
@@ -285,6 +369,16 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Selects all of the specified nodes.
+        /// </summary>
+        /// <param name="items">The nodes.</param>
+        public static void SelectAll(this IEnumerable<TreeNodeAdv> nodes)
+        {
+            foreach (TreeNodeAdv node in nodes)
+                node.IsSelected = true;
+        }
+
+        /// <summary>
         /// Controls whether the UAC shield icon is displayed on the specified button.
         /// </summary>
         /// <param name="button">The button to modify.</param>
@@ -293,6 +387,29 @@ namespace ProcessHacker.Common
         {
             Win32.SendMessage(button.Handle,
                 WindowMessage.BcmSetShield, 0, show ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Controls whether the UAC shield icon is displayed on the button.
+        /// </summary>
+        /// <param name="visible">Whether the shield icon is visible.</param>
+        public static void SetShieldIcon(this Button button, bool visible)
+        {
+            SetShieldIconInternal(button, visible);
+        }
+
+        /// <summary>
+        /// Sets the theme of a control.
+        /// </summary>
+        /// <param name="control">The control to modify.</param>
+        /// <param name="theme">A name of a theme.</param>
+        public static void SetTheme(this Control control, string theme)
+        {
+            // Don't set on XP, doesn't look better than without SetWindowTheme.
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+            {
+                Win32.SetWindowTheme(control.Handle, theme, null);
+            }
         }
 
         /// <summary>
@@ -349,11 +466,11 @@ namespace ProcessHacker.Common
                 };
                 td.DefaultButton = (int)DialogResult.No;
 
-                return td.Show(GetFWindow()) == (int)DialogResult.Yes;
+                return td.Show(Form.ActiveForm) == (int)DialogResult.Yes;
             }
             else
             {
-                return MessageBox.Show(GetFWindow(), 
+                return MessageBox.Show(
                     message + " Are you sure you want to " + action + "?",
                     "Process Hacker",
                     MessageBoxButtons.YesNo,
@@ -384,12 +501,52 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// TaskDialog + Messagebox method for obtaining Window Handle, replaces "Form.ActiveForm" threading issues.
+        /// Displays an error message to the user.
         /// </summary>
-        /// <returns>Always return a new Handle</returns>
-        public static IWin32Window GetFWindow()
+        /// <param name="message">The message to show.</param>
+        public static void ShowError(string message)
         {
-            return new WindowFromHandle(Win32.GetForegroundWindow());
+            MessageBox.Show(Form.ActiveForm, message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        /// <summary>
+        /// Notifies the user of an error.
+        /// </summary>
+        /// <param name="operation">
+        /// The operation being performed, e.g. "Unable to X"
+        /// </param>
+        /// <param name="ex">The exception to notify the user of.</param>
+        public static void ShowException(string operation, Exception ex)
+        {
+#if !DEBUG
+            MessageBox.Show(Form.ActiveForm, FormatException(operation, ex), "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+#else
+            MessageBox.Show(
+                Form.ActiveForm,
+                operation + "\n\n" + ex.ToString(),
+                "Process Hacker",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+                );
+#endif
+        }
+
+        /// <summary>
+        /// Displays information to the user.
+        /// </summary>
+        /// <param name="message">The message to show.</param>
+        public static void ShowInformation(string message)
+        {
+            MessageBox.Show(Form.ActiveForm, message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Displays a warning to the user.
+        /// </summary>
+        /// <param name="message">The message to show.</param>
+        public static void ShowWarning(string message)
+        {
+            MessageBox.Show(Form.ActiveForm, message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

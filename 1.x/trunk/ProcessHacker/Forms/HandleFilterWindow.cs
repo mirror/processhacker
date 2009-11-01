@@ -262,7 +262,7 @@ namespace ProcessHacker
             }
             else
             {
-                HackerEvent.Log.Error(true, false, "The process does not exist.");
+                PhUtils.ShowError("The process does not exist.");
             }
         }
 
@@ -284,7 +284,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to show handle properties");
+                PhUtils.ShowException("Unable to show handle properties", ex);
             }
         }
 

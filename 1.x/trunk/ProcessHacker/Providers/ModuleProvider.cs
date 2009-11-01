@@ -94,7 +94,7 @@ namespace ProcessHacker
         {
             if (_pid != 4 && _processHandle == null)
             {
-                HackerEvent.Log.Debug("ModuleProvider: Process Handle is null, exiting...");
+                Logging.Log(Logging.Importance.Warning, "ModuleProvider: Process Handle is null, exiting...");
                 return;
             }
 
@@ -103,41 +103,47 @@ namespace ProcessHacker
 
             if (_pid != 4)
             {
-                _processHandle.EnumModules((module) =>     
-                {       
-                    if (!modules.ContainsKey(module.BaseAddress)) 
-                        modules.Add(module.BaseAddress, module);
-                    
-                    return true;   
-                }, ModulesFilterFlag.All);
-
-                using (DebugBuffer buffer = new DebugBuffer())
+                // Is this a WOW64 process? If it is, get the 32-bit modules.
+                if (!_isWow64)
                 {
-                    buffer.Query(_pid, RtlQueryProcessDebugFlags.Modules32);
-
-                    var processModules = buffer.GetModules();
-
-                    foreach (var m in processModules)
-                    {
-                        // Most of the time we will get a duplicate entry - 
-                        // the main executable image. Guard against that.
-                        if (!modules.ContainsKey(m.BaseAddress))
+                    _processHandle.EnumModules((module) =>
                         {
-                            modules.Add(
-                                m.BaseAddress,
-                                new ProcessModule(
+                            if (!modules.ContainsKey(module.BaseAddress))
+                                modules.Add(module.BaseAddress, module);
+
+                            return true;
+                        });
+                }
+                else
+                {
+                    using (DebugBuffer buffer = new DebugBuffer())
+                    {
+                        buffer.Query(_pid, RtlQueryProcessDebugFlags.Modules32);
+
+                        var processModules = buffer.GetModules();
+
+                        foreach (var m in processModules)
+                        {
+                            // Most of the time we will get a duplicate entry - 
+                            // the main executable image. Guard against that.
+                            if (!modules.ContainsKey(m.BaseAddress))
+                            {
+                                modules.Add(
                                     m.BaseAddress,
-                                    m.Size,
-                                    IntPtr.Zero,
-                                    m.Flags,
-                                    System.IO.Path.GetFileName(m.FileName),
-                                    m.FileName
-                                    )
-                                );
+                                    new ProcessModule(
+                                        m.BaseAddress,
+                                        m.Size,
+                                        IntPtr.Zero,
+                                        m.Flags,
+                                        System.IO.Path.GetFileName(m.FileName),
+                                        m.FileName
+                                        )
+                                    );
+                            }
                         }
                     }
                 }
-                
+
                 // add mapped files
                 _processHandle.EnumMemory((info) =>
                 {

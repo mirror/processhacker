@@ -68,7 +68,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to view the struct");
+                PhUtils.ShowException("Unable to view the struct", ex);
                 this.Error = true;
             }
         }

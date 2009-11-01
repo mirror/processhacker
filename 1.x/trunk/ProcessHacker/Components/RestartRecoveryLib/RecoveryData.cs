@@ -24,7 +24,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace ProcessHacker
+namespace ProcessHackerRestartRecovery
 {
     /// <summary>
     /// The Delegate that represents the callback method invoked by the system when an application has registered for application recovery. 

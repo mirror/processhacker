@@ -25,7 +25,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to set the high event");
+                PhUtils.ShowException("Unable to set the high event", ex);
             }
         }
 
@@ -37,7 +37,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to set the low event");
+                PhUtils.ShowException("Unable to set the low event", ex);
             }
         }
     }

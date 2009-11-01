@@ -196,7 +196,6 @@ namespace ProcessHacker.Components
             if (OSVersion.HasTaskDialogs)
             {
                 TaskDialog td = new TaskDialog();
-                td.PositionRelativeToWindow = true;
 
                 td.WindowTitle = "Process Hacker";
                 td.MainIcon = TaskDialogIcon.Warning;
@@ -215,7 +214,7 @@ namespace ProcessHacker.Components
             }
             else
             {
-                if (MessageBox.Show(this, "Are you sure you want to terminate the job? This action will " +
+                if (MessageBox.Show("Are you sure you want to terminate the job? This action will " +
                     "terminate all processes associated with the job.", "Process Hacker",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
                     return;
@@ -228,7 +227,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to terminate the job");
+                PhUtils.ShowException("Unable to terminate the job", ex);
             }
         }
     }

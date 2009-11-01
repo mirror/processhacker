@@ -476,7 +476,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to set the priority of the thread");
+                PhUtils.ShowException("Unable to set the priority of the thread", ex);
             }
         }
 
@@ -609,10 +609,10 @@ namespace ProcessHacker.Components
                 KProcessHacker.Instance == null
                 )
             {
-                HackerEvent.Log.Error(true, true, 
-                    "Process Hacker cannot view system thread stacks without KProcessHacker. " +       
-                    "Make sure Process Hacker has administrative privileges and KProcessHacker " +         
-                    "supports your operating system."               
+                PhUtils.ShowError(
+                    "Process Hacker cannot view system thread stacks without KProcessHacker. " + 
+                    "Make sure Process Hacker has administrative privileges and KProcessHacker " + 
+                    "supports your operating system."
                     );
 
                 return;
@@ -665,7 +665,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(false, true, "Unable to InspectThread ProcessAccess");
+                Logging.Log(ex);
             }
         }
 
@@ -699,7 +699,7 @@ namespace ProcessHacker.Components
                     }
                     catch (Exception ex)
                     {
-                        ex.LogEx(true, true, "Unable to terminate the thread " + tid.ToString());
+                        PhUtils.ShowException("Unable to terminate the thread " + tid.ToString(), ex);
                     }
                 }
 
@@ -909,11 +909,7 @@ namespace ProcessHacker.Components
         {
             if (!Program.Structs.ContainsKey("TEB"))
             {
-                HackerEvent.Log.Error(true, true, 
-                    "The struct 'TEB' has not been loaded." + 
-                    " Make sure structs.txt was loaded successfully."
-                    );
-
+                PhUtils.ShowError("The struct 'TEB' has not been loaded. Make sure structs.txt was loaded successfully.");
                 return;
             }
 
@@ -934,14 +930,14 @@ namespace ProcessHacker.Components
                             }
                             catch (Exception ex)
                             {
-                                ex.LogEx(true, true, "Unable to Invoke StructWindow");
+                                Logging.Log(ex);
                             }
                         }));
                 }
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to inspect the TEB of the thread");
+                PhUtils.ShowException("Unable to inspect the TEB of the thread", ex);
             }
         }
 
@@ -961,7 +957,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to edit security");
+                PhUtils.ShowException("Unable to edit security", ex);
             }
         }
 
@@ -983,7 +979,7 @@ namespace ProcessHacker.Components
             { }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to view the thread token");
+                PhUtils.ShowException("Unable to view the thread token", ex);
             }
         }
 
@@ -1310,12 +1306,12 @@ namespace ProcessHacker.Components
                 }
                 else
                 {
-                    HackerEvent.Log.Info(true, false, "The thread does not appear to be waiting.");
+                    PhUtils.ShowInformation("The thread does not appear to be waiting.");
                 }
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to analyze the thread");
+                PhUtils.ShowException("Unable to analyze the thread", ex);
             }
         }
 

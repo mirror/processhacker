@@ -285,7 +285,7 @@ namespace ProcessHacker
                     }
                     catch (WindowsException ex)
                     {
-                        ex.LogEx(true, true, "Unable to get the CSR handle list");
+                        PhUtils.ShowException("Unable to get the CSR handle list", ex);
                         return;
                     }
 
@@ -335,7 +335,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to get the list of CSR processes");
+                PhUtils.ShowException("Unable to get the list of CSR processes", ex);
                 return new List<ProcessHandle>();
             }
 
@@ -454,7 +454,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        ex.LogEx(true, true, "Unable to terminate " + item.SubItems[0].Text);
+                        PhUtils.ShowException("Unable to terminate " + item.SubItems[0].Text, ex);
                     }
                 }
 
@@ -502,7 +502,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(true, true, "Unable to save the scan results");
+                    PhUtils.ShowException("Unable to save the scan results", ex);
                 }
             }
         }

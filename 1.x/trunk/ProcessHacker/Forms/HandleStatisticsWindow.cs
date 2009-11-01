@@ -54,7 +54,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        ex.LogEx(false, true, "Unable to get Handle info");
+                        Logging.Log(ex);
                         info = new ObjectInformation() { TypeName = "(unknown)" };
                     }
 

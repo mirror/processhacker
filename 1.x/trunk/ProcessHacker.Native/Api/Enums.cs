@@ -212,15 +212,6 @@ namespace ProcessHacker.Native.Api
         Moveable = 0x00000004
     }
 
-    [Flags]
-    public enum ModulesFilterFlag : int
-    {
-        Default = 0x0,
-        x32Bit = 0x01,
-        x64Bit = 0x02,
-        All = 0x03
-    }
-
     public enum LogonFlags : uint
     {
         LogonWithProfile = 1,
@@ -308,7 +299,16 @@ namespace ProcessHacker.Native.Api
         WithThreadInfo = 0x00001000,
         WithCodeSegs = 0x00002000,
         WithoutAuxiliaryState = 0x00004000,
-        WithFullAuxiliaryState = 0x00008000 
+        WithFullAuxiliaryState = 0x00008000
+    }
+
+    [Flags]
+    public enum ModuleFilterFlags : int
+    {
+        Default = 0x0,
+        x32Bit = 0x01,
+        x64Bit = 0x02,
+        All = 0x03
     }
 
     public enum PeekMessageFlags : int

@@ -45,7 +45,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                ex.LogEx(true, true, "Unable to cancel the timer");
+                PhUtils.ShowException("Unable to cancel the timer", ex);
             }
         }
 

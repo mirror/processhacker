@@ -136,8 +136,8 @@ namespace ProcessHacker
         }
 
         protected override void DisposeObject(bool disposing)
-        {
-            HackerEvent.Log.Debug("Provider (" + this.Name + "): disposing (" + disposing.ToString() + ")");
+        {   
+            Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): disposing (" + disposing.ToString() + ")");
 
             _disposing = true;
 
@@ -152,14 +152,14 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(false, true, "Unable to dispose Provider object");
+                    Logging.Log(ex);
                 }
             }
 
             if (disposing)
                 Monitor.Exit(_busyLock);
 
-            HackerEvent.Log.Debug("Provider (" + this.Name + "): finished disposing (" + disposing.ToString() + ")");
+            Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): finished disposing (" + disposing.ToString() + ")");
         }
 
         public string Name
@@ -263,7 +263,7 @@ namespace ProcessHacker
                 // Bail out if we are disposing
                 if (_disposing)
                 {
-                    HackerEvent.Log.Debug("Provider (" + _name + "): RunOnce: currently disposing");
+                    Logging.Log(Logging.Importance.Warning, "Provider (" + _name + "): RunOnce: currently disposing");
                     return;
                 }
 
@@ -297,7 +297,7 @@ namespace ProcessHacker
                         }
                         else
                         {
-                            ex.LogEx(false, true, "Unable to update the provider");
+                            Logging.Log(Logging.Importance.Error, ex.ToString());
                         }
                     }
 
@@ -375,7 +375,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    ex.LogEx(false, true, "Unable to callEvent delegate");
+                    Logging.Log(ex);
                 }
             }
         }
