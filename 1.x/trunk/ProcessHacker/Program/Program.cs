@@ -792,6 +792,16 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
+                if (command.StartsWith("http://"))
+                {
+                    if (ex is System.ComponentModel.Win32Exception)
+                    {
+                        // Ignore file not found errors when opening web pages.
+                        if ((ex as System.ComponentModel.Win32Exception).NativeErrorCode == 2)
+                            return;
+                    }
+                }
+
                 PhUtils.ShowException("Unable to start the process", ex);
             }
         }
