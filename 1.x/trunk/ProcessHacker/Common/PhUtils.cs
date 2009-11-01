@@ -170,7 +170,13 @@ namespace ProcessHacker.Common
 
         public static IWin32Window GetForegroundWindow()
         {
-            return WindowHandle.GetForegroundWindow();
+            var window = WindowHandle.GetForegroundWindow();
+
+            // Make sure the foreground window belongs to us.
+            if (window.GetClientId().ProcessId == ProcessHandle.GetCurrentId())
+                return window;
+            else
+                return new WindowFromHandle(Program.HackerWindowHandle);
         }
 
         public static string GetIntegrity(this TokenHandle tokenHandle, out int integrityLevel)
