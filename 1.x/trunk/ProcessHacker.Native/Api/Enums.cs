@@ -212,6 +212,15 @@ namespace ProcessHacker.Native.Api
         Moveable = 0x00000004
     }
 
+    [Flags]
+    public enum ModulesFilterFlag : int
+    {
+        Default = 0x0,
+        x32Bit = 0x01,
+        x64Bit = 0x02,
+        All = 0x03
+    }
+
     public enum LogonFlags : uint
     {
         LogonWithProfile = 1,

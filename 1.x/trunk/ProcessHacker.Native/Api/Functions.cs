@@ -1079,13 +1079,23 @@ namespace ProcessHacker.Native.Api
             [In] int ProcessId
             );
 
-        [DllImport("psapi.dll")]
+        [DllImport("psapi.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EnumProcessModules(
             [In] IntPtr ProcessHandle, 
             [Out] IntPtr[] ModuleHandles, 
             [In] int Size, 
             [Out] out int RequiredSize
+            );
+        
+        [DllImport("psapi.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool EnumProcessModulesEx(
+            [In] IntPtr ProcessHandle,
+            [Out] IntPtr[] ModuleHandles,
+            [In] int Size,
+            [Out] out int RequiredSize,
+            [In] ModulesFilterFlag dwFilterFlag
             );
 
         [DllImport("psapi.dll", CharSet = CharSet.Unicode)]
