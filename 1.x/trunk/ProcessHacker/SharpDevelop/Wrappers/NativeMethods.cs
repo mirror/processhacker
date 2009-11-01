@@ -18,8 +18,8 @@ namespace Debugger.Interop
 		[DllImport("kernel32.dll")]
         public static extern bool CloseHandle(IntPtr handle);
 
-        [DllImport("mscoree.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
-        public static extern Debugger.Interop.CorDebug.ICorDebug CreateDebuggingInterfaceFromVersion(int debuggerVersion, string debuggeeVersion);
+        //[DllImport("mscoree.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
+        //public static extern Debugger.Interop.CorDebug.ICorDebug CreateDebuggingInterfaceFromVersion(int debuggerVersion, string debuggeeVersion);
 
         [DllImport("mscoree.dll", CharSet = CharSet.Unicode)]
         public static extern int GetCORVersion([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder szName, Int32 cchBuffer, out Int32 dwLength);
