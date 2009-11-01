@@ -168,6 +168,11 @@ namespace ProcessHacker.Common
                 return Color.White;
         }
 
+        public static IWin32Window GetForegroundWindow()
+        {
+            return WindowHandle.GetForegroundWindow();
+        }
+
         public static string GetIntegrity(this TokenHandle tokenHandle, out int integrityLevel)
         {
             var groups = tokenHandle.GetGroups();
@@ -466,7 +471,7 @@ namespace ProcessHacker.Common
                 };
                 td.DefaultButton = (int)DialogResult.No;
 
-                return td.Show(Form.ActiveForm) == (int)DialogResult.Yes;
+                return td.Show(PhUtils.GetForegroundWindow()) == (int)DialogResult.Yes;
             }
             else
             {
@@ -506,7 +511,7 @@ namespace ProcessHacker.Common
         /// <param name="message">The message to show.</param>
         public static void ShowError(string message)
         {
-            MessageBox.Show(Form.ActiveForm, message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(PhUtils.GetForegroundWindow(), message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         /// <summary>
@@ -519,10 +524,10 @@ namespace ProcessHacker.Common
         public static void ShowException(string operation, Exception ex)
         {
 #if !DEBUG
-            MessageBox.Show(Form.ActiveForm, FormatException(operation, ex), "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(PhUtils.GetForegroundWindow(), FormatException(operation, ex), "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
 #else
             MessageBox.Show(
-                Form.ActiveForm,
+                PhUtils.GetForegroundWindow(),
                 operation + "\n\n" + ex.ToString(),
                 "Process Hacker",
                 MessageBoxButtons.OK,
@@ -537,7 +542,7 @@ namespace ProcessHacker.Common
         /// <param name="message">The message to show.</param>
         public static void ShowInformation(string message)
         {
-            MessageBox.Show(Form.ActiveForm, message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(PhUtils.GetForegroundWindow(), message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         /// <summary>
@@ -546,7 +551,7 @@ namespace ProcessHacker.Common
         /// <param name="message">The message to show.</param>
         public static void ShowWarning(string message)
         {
-            MessageBox.Show(Form.ActiveForm, message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(PhUtils.GetForegroundWindow(), message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

@@ -35,19 +35,17 @@ namespace ProcessHacker
     {
         private Exception _exception;
         private string _trackerItem;
-        private bool _isTerminating;
 
         public ErrorDialog(Exception ex, bool terminating)
         {
             InitializeComponent();
 
             _exception = ex;
-            _isTerminating = terminating;
 
             textException.AppendText(_exception.ToString());
 
-            if (_isTerminating)
-                buttonContinue.Enabled = false;
+            if (terminating)
+                buttonContinue.Text = "Restart";
 
             textException.AppendText("\r\n\r\nDIAGNOSTIC INFORMATION\r\n" + Program.GetDiagnosticInformation());
         }
@@ -62,7 +60,15 @@ namespace ProcessHacker
 
         private void buttonContinue_Click(object sender, EventArgs e)
         {
-            this.Close();
+            if (buttonContinue.Text == "Continue")
+            {
+                Program.TryStart(Application.ExecutablePath);
+                Win32.ExitProcess(1);
+            }
+            else
+            {
+                this.Close();
+            }
         }
 
         private void buttonQuit_Click(object sender, EventArgs e)
@@ -126,13 +132,13 @@ namespace ProcessHacker
 
         private void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            if (!_isTerminating)
-                buttonContinue.Enabled = true;
+            buttonContinue.Enabled = true;
             buttonQuit.Enabled = true;
 
             if (e.Error != null || this.GetTitle(e.Result).Contains("ERROR"))
             {
                 buttonSubmitReport.Enabled = true;
+                statusLinkLabel.Visible = false;
 
                 if (e.Error != null)
                 {

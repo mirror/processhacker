@@ -37,9 +37,7 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
-            this.label19 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
-            this.comboProcessStyle = new System.Windows.Forms.ComboBox();
             this.comboToolbarStyle = new System.Windows.Forms.ComboBox();
             this.checkFloatChildWindows = new System.Windows.Forms.CheckBox();
             this.checkScrollDownProcessTree = new System.Windows.Forms.CheckBox();
@@ -165,7 +163,7 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonOK.Location = new System.Drawing.Point(264, 377);
+            this.buttonOK.Location = new System.Drawing.Point(264, 350);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 1;
@@ -177,7 +175,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(211, 268);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(211, 246);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 12;
@@ -227,14 +225,12 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(489, 359);
+            this.tabControl.Size = new System.Drawing.Size(489, 332);
             this.tabControl.TabIndex = 0;
             // 
             // tabGeneral
             // 
-            this.tabGeneral.Controls.Add(this.label19);
             this.tabGeneral.Controls.Add(this.label20);
-            this.tabGeneral.Controls.Add(this.comboProcessStyle);
             this.tabGeneral.Controls.Add(this.comboToolbarStyle);
             this.tabGeneral.Controls.Add(this.checkFloatChildWindows);
             this.tabGeneral.Controls.Add(this.checkScrollDownProcessTree);
@@ -257,19 +253,10 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(481, 333);
+            this.tabGeneral.Size = new System.Drawing.Size(481, 306);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(6, 167);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(111, 13);
-            this.label19.TabIndex = 20;
-            this.label19.Text = "Process Display Style:";
             // 
             // label20
             // 
@@ -279,19 +266,6 @@
             this.label20.Size = new System.Drawing.Size(109, 13);
             this.label20.TabIndex = 19;
             this.label20.Text = "Toolbar Display Style:";
-            // 
-            // comboProcessStyle
-            // 
-            this.comboProcessStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboProcessStyle.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.comboProcessStyle.FormattingEnabled = true;
-            this.comboProcessStyle.Items.AddRange(new object[] {
-            "Show Selective Nodes",
-            "Show All Process Nodes"});
-            this.comboProcessStyle.Location = new System.Drawing.Point(134, 164);
-            this.comboProcessStyle.Name = "comboProcessStyle";
-            this.comboProcessStyle.Size = new System.Drawing.Size(135, 21);
-            this.comboProcessStyle.TabIndex = 18;
             // 
             // comboToolbarStyle
             // 
@@ -311,7 +285,7 @@
             // 
             this.checkFloatChildWindows.AutoSize = true;
             this.checkFloatChildWindows.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkFloatChildWindows.Location = new System.Drawing.Point(211, 221);
+            this.checkFloatChildWindows.Location = new System.Drawing.Point(211, 199);
             this.checkFloatChildWindows.Name = "checkFloatChildWindows";
             this.checkFloatChildWindows.Size = new System.Drawing.Size(124, 18);
             this.checkFloatChildWindows.TabIndex = 10;
@@ -322,7 +296,7 @@
             // 
             this.checkScrollDownProcessTree.AutoSize = true;
             this.checkScrollDownProcessTree.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkScrollDownProcessTree.Location = new System.Drawing.Point(211, 244);
+            this.checkScrollDownProcessTree.Location = new System.Drawing.Point(211, 222);
             this.checkScrollDownProcessTree.Name = "checkScrollDownProcessTree";
             this.checkScrollDownProcessTree.Size = new System.Drawing.Size(213, 18);
             this.checkScrollDownProcessTree.TabIndex = 11;
@@ -333,7 +307,7 @@
             // 
             this.checkAllowOnlyOneInstance.AutoSize = true;
             this.checkAllowOnlyOneInstance.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(6, 292);
+            this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(6, 270);
             this.checkAllowOnlyOneInstance.Name = "checkAllowOnlyOneInstance";
             this.checkAllowOnlyOneInstance.Size = new System.Drawing.Size(143, 18);
             this.checkAllowOnlyOneInstance.TabIndex = 9;
@@ -343,7 +317,7 @@
             // buttonFont
             // 
             this.buttonFont.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonFont.Location = new System.Drawing.Point(6, 191);
+            this.buttonFont.Location = new System.Drawing.Point(6, 169);
             this.buttonFont.Name = "buttonFont";
             this.buttonFont.Size = new System.Drawing.Size(75, 23);
             this.buttonFont.TabIndex = 5;
@@ -400,7 +374,7 @@
             // 
             this.checkStartHidden.AutoSize = true;
             this.checkStartHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkStartHidden.Location = new System.Drawing.Point(6, 268);
+            this.checkStartHidden.Location = new System.Drawing.Point(6, 246);
             this.checkStartHidden.Name = "checkStartHidden";
             this.checkStartHidden.Size = new System.Drawing.Size(89, 18);
             this.checkStartHidden.TabIndex = 8;
@@ -411,7 +385,7 @@
             // 
             this.checkHideWhenClosed.AutoSize = true;
             this.checkHideWhenClosed.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenClosed.Location = new System.Drawing.Point(6, 244);
+            this.checkHideWhenClosed.Location = new System.Drawing.Point(6, 222);
             this.checkHideWhenClosed.Name = "checkHideWhenClosed";
             this.checkHideWhenClosed.Size = new System.Drawing.Size(117, 18);
             this.checkHideWhenClosed.TabIndex = 7;
@@ -422,7 +396,7 @@
             // 
             this.checkHideWhenMinimized.AutoSize = true;
             this.checkHideWhenMinimized.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenMinimized.Location = new System.Drawing.Point(6, 220);
+            this.checkHideWhenMinimized.Location = new System.Drawing.Point(6, 198);
             this.checkHideWhenMinimized.Name = "checkHideWhenMinimized";
             this.checkHideWhenMinimized.Size = new System.Drawing.Size(131, 18);
             this.checkHideWhenMinimized.TabIndex = 6;
@@ -1078,7 +1052,7 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCancel.Location = new System.Drawing.Point(345, 377);
+            this.buttonCancel.Location = new System.Drawing.Point(345, 350);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 2;
@@ -1091,7 +1065,7 @@
             this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonApply.Enabled = false;
             this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonApply.Location = new System.Drawing.Point(426, 377);
+            this.buttonApply.Location = new System.Drawing.Point(426, 350);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(75, 23);
             this.buttonApply.TabIndex = 3;
@@ -1102,7 +1076,7 @@
             // buttonReset
             // 
             this.buttonReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonReset.Location = new System.Drawing.Point(12, 377);
+            this.buttonReset.Location = new System.Drawing.Point(12, 350);
             this.buttonReset.Name = "buttonReset";
             this.buttonReset.Size = new System.Drawing.Size(75, 23);
             this.buttonReset.TabIndex = 4;
@@ -1115,7 +1089,7 @@
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(513, 412);
+            this.ClientSize = new System.Drawing.Size(513, 385);
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.buttonCancel);
@@ -1235,7 +1209,5 @@
         private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.NumericUpDown textMaxSamples;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.ComboBox comboProcessStyle;
     }
 }

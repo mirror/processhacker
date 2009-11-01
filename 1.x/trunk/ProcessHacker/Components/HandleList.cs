@@ -103,7 +103,7 @@ namespace ProcessHacker.Components
                                                         {
                                                             try
                                                             {
-                                                                PhUtils.OpenKeyInRegedit(Form.ActiveForm, name);
+                                                                PhUtils.OpenKeyInRegedit(PhUtils.GetForegroundWindow(), name);
                                                             }
                                                             catch (Exception ex)
                                                             {

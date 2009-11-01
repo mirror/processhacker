@@ -267,6 +267,7 @@ namespace ProcessHacker
             checkAllowOnlyOneInstance.Checked = Settings.Instance.AllowOnlyOneInstance;
             checkVerifySignatures.Checked = Settings.Instance.VerifySignatures;
             checkHideHandlesWithNoName.Checked = Settings.Instance.HideHandlesWithNoName;
+            checkEnableKPH.Enabled = OSVersion.Architecture == OSArch.I386;
             checkEnableKPH.Checked = Settings.Instance.EnableKPH;
             checkEnableExperimentalFeatures.Checked = Settings.Instance.EnableExperimentalFeatures;
             checkStartHidden.Checked = Settings.Instance.StartHidden;
@@ -298,19 +299,6 @@ namespace ProcessHacker
                     break;
                 default:
                     comboToolbarStyle.SelectedIndex = 1;
-                    break;
-            }
-
-            switch (Settings.Instance.ProcessTreeStyle)
-            {
-                case 0:
-                    comboProcessStyle.SelectedIndex = 0;
-                    break;
-                case 1:
-                    comboProcessStyle.SelectedIndex = 1;
-                    break;
-                default:
-                    comboProcessStyle.SelectedIndex = 1;
                     break;
             }
 
@@ -419,6 +407,17 @@ namespace ProcessHacker
 
         private void SaveSettings()
         {
+            bool restartRequired = false;
+
+            if (checkVerifySignatures.Checked != Settings.Instance.VerifySignatures)
+                restartRequired = true;
+            if (checkEnableKPH.Checked != Settings.Instance.EnableKPH)
+                restartRequired = true;
+            if (checkEnableExperimentalFeatures.Checked != Settings.Instance.EnableExperimentalFeatures)
+                restartRequired = true;
+            if (textDbghelpPath.Text != _oldDbghelp)
+                restartRequired = true;
+
             Settings.Instance.Font = _font;
             Settings.Instance.SearchEngine = textSearchEngine.Text;
             Settings.Instance.WarnDangerous = checkWarnDangerous.Checked;
@@ -461,7 +460,7 @@ namespace ProcessHacker
             Settings.Instance.PlotterIOROColor = colorIORO.Color;
             Settings.Instance.PlotterIOWColor = colorIOW.Color;
 
-            Settings.Instance.DbgHelpPath = textDbghelpPath.Text;
+            Settings.Instance.DbgHelpPath = _oldDbghelp = textDbghelpPath.Text;
             Settings.Instance.DbgHelpSearchPath = textSearchPath.Text;
             Settings.Instance.DbgHelpUndecorate = checkUndecorate.Checked;
 
@@ -493,19 +492,6 @@ namespace ProcessHacker
                     break;
                 default:
                     Settings.Instance.ToolStripDisplayStyle = 0;
-                    break;
-            }
-
-            switch (comboProcessStyle.SelectedIndex)
-            {
-                case 0:
-                    Settings.Instance.ProcessTreeStyle = 0;
-                    break;
-                case 1:
-                    Settings.Instance.ProcessTreeStyle = 1;
-                    break;
-                default:
-                    Settings.Instance.ProcessTreeStyle = 1;
                     break;
             }
 
@@ -547,6 +533,9 @@ namespace ProcessHacker
                     PhUtils.ShowException("Unable to replace Task Manager with Process Hacker", ex);
                 }
             }
+
+            if (restartRequired)
+                PhUtils.ShowInformation("One or more settings you have changed require a restart of Process Hacker.");
         }
 
         private void ApplySettings()
@@ -578,9 +567,6 @@ namespace ProcessHacker
 
             Program.HackerWindow.ProcessTree.RefreshItems();
             Program.ApplyFont(Settings.Instance.Font);
-
-            if (_oldDbghelp != textDbghelpPath.Text)
-                PhUtils.ShowInformation("One or more options you have changed require a restart of Process Hacker.");
         }
 
         private void buttonOK_Click(object sender, EventArgs e)

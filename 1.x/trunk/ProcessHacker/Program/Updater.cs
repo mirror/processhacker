@@ -97,14 +97,6 @@ namespace ProcessHacker
 
         public static void Update(Form form, bool interactive)
         {
-            if (!PhUtils.IsInternetConnected())
-            {
-                if (interactive)
-                    PhUtils.ShowError("Unable to connect to the internet.");
-                else
-                    Program.HackerWindow.QueueMessage("Unable to connect to the internet.");
-            }
-
             XmlDocument xDoc = new XmlDocument();
 
             try

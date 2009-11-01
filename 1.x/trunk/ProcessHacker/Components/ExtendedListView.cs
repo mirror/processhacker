@@ -154,40 +154,36 @@ namespace ProcessHacker.Components
                 int gIndex = lvGroup.ListView.Groups.IndexOf(lvGroup);
                 LVGroup group = new LVGroup();
                 group.CbSize = Marshal.SizeOf(group);
-                group.Mask =
-                    ListViewGroupMask.Task |
-                    ListViewGroupMask.State |
-                    ListViewGroupMask.Align;
 
-                IntPtr taskString = Marshal.StringToHGlobalAuto(task);
-
-                try
+                if (!string.IsNullOrEmpty(task))
                 {
-                    if (task.Length > 1)
-                    {
-                        group.Task = taskString;
-                        group.CchTask = task.Length;
-                    }
+                    group.Mask =
+                        ListViewGroupMask.Task |
+                        ListViewGroupMask.State |
+                        ListViewGroupMask.Align;
 
-                    group.GroupState = grpState;
-
-                    if (GrpId != null)
-                    {
-                        group.GroupId = GrpId.Value;
-                        SendMessage(base.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
-                    }
-                    else
-                    {
-                        group.GroupId = gIndex;
-                        SendMessage(base.Handle, LVM_SetGroupInfo, gIndex, ref group);
-                    }
-
-                    lvGroup.ListView.Refresh();
+                    group.Task = task;
+                    group.CchTask = task.Length;
                 }
-                finally
+                else
                 {
-                    Marshal.FreeHGlobal(taskString);
+                    group.Mask = ListViewGroupMask.State;
                 }
+
+                group.GroupState = grpState;
+
+                if (GrpId != null)
+                {
+                    group.GroupId = GrpId.Value;
+                    SendMessage(base.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
+                }
+                else
+                {
+                    group.GroupId = gIndex;
+                    SendMessage(base.Handle, LVM_SetGroupInfo, gIndex, ref group);
+                }
+
+                lvGroup.ListView.Refresh();
             }
         }
 
@@ -299,7 +295,7 @@ namespace ProcessHacker.Components
             /// Pointer to a null-terminated string that contains the footer text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the footer text.
             /// </summary>
             //[MarshalAs(UnmanagedType.LPWStr)]
-            public IntPtr pszFooter;
+            public string pszFooter;
 
             /// <summary>
             /// Size in TCHARs of the buffer pointed to by the pszFooter member. If the structure is not receiving information about a group, this member is ignored.
@@ -330,7 +326,7 @@ namespace ProcessHacker.Components
             /// Windows Vista. Pointer to a null-terminated string that contains the subtitle text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the subtitle text. This element is drawn under the header text.
             /// </summary>
             //[MarshalAs(UnmanagedType.LPWStr)]
-            public IntPtr PszSubtitle;
+            public string PszSubtitle;
 
             /// <summary>
             /// Windows Vista. Size, in TCHARs, of the buffer pointed to by the pszSubtitle member. If the structure is not receiving information about a group, this member is ignored.
@@ -341,7 +337,7 @@ namespace ProcessHacker.Components
             /// Windows Vista. Pointer to a null-terminated string that contains the text for a task link when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the task text. This item is drawn right-aligned opposite the header text. When clicked by the user, the task link generates an LVN_LINKCLICK notification.
             /// </summary>
             //[MarshalAs(UnmanagedType.LPWStr)]
-            public IntPtr Task;
+            public string Task;
 
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszTask member. If the structure is not receiving information about a group, this member is ignored.
@@ -352,7 +348,7 @@ namespace ProcessHacker.Components
             /// Windows Vista. Pointer to a null-terminated string that contains the top description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the top description text. This item is drawn opposite the title image when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
             /// </summary>
             //[MarshalAs(UnmanagedType.LPWStr)]
-            public IntPtr DescriptionTop;
+            public string DescriptionTop;
 
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionTop member. If the structure is not receiving information about a group, this member is ignored.
@@ -363,7 +359,7 @@ namespace ProcessHacker.Components
             /// Windows Vista. Pointer to a null-terminated string that contains the bottom description text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the bottom description text. This item is drawn under the top description text when there is a title image, no extended image, and uAlign==LVGA_HEADER_CENTER.
             /// </summary>
             //[MarshalAs(UnmanagedType.LPWStr)]
-            public IntPtr DescriptionBottom;
+            public string DescriptionBottom;
 
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszDescriptionBottom member. If the structure is not receiving information about a group, this member is ignored.
@@ -394,7 +390,7 @@ namespace ProcessHacker.Components
             /// Windows Vista. NULL if group is not a subset. Pointer to a null-terminated string that contains the subset title text when item information is being set. If group information is being retrieved, this member specifies the address of the buffer that receives the subset title text.
             /// </summary>
             //[MarshalAs(UnmanagedType.LPWStr)]
-            public IntPtr PszSubsetTitle;
+            public string PszSubsetTitle;
 
             /// <summary>
             /// Windows Vista. Size in TCHARs of the buffer pointed to by the pszSubsetTitle member. If the structure is not receiving information about a group, this member is ignored.

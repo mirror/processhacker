@@ -8,7 +8,7 @@ namespace ProcessHacker.Native.Objects
 {
     public delegate bool EnumerateWindowsDelegate(WindowHandle windowHandle);
 
-    public struct WindowHandle : IEquatable<WindowHandle>, IEquatable<IntPtr>
+    public struct WindowHandle : IEquatable<WindowHandle>, IEquatable<IntPtr>, System.Windows.Forms.IWin32Window
     {
         private static WindowHandle _zero = new WindowHandle(IntPtr.Zero);
 

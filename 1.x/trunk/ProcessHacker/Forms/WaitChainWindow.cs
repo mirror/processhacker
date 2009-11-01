@@ -92,7 +92,7 @@ namespace ProcessHacker
             {
                 WaitChainNativeMethods.WAITCHAIN_NODE_INFO node = data.Nodes[i];
 
-                if (WaitChainNativeMethods.WCT_OBJECT_TYPE.Thread == node.ObjectType)
+                if (node.ObjectType == WaitChainNativeMethods.WCT_OBJECT_TYPE.Thread)
                 {
                     String procName = Windows.GetProcesses().ContainsKey(node.ProcessId) ? Windows.GetProcesses()[node.ProcessId].Name : "???";
 
@@ -244,8 +244,7 @@ namespace ProcessHacker
             {
                 fixed (WAITCHAIN_NODE_INFO* p = &this)
                 {
-                    string str = (p->RealObjectName[0] != '\0') ? new string((char*)p->RealObjectName) : string.Empty;
-                    return str;
+                    return (p->RealObjectName[0] != '\0') ? new string((char*)p->RealObjectName) : string.Empty;
                 }
             }
         }

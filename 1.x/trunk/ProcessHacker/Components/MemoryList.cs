@@ -368,7 +368,7 @@ namespace ProcessHacker.Components
                         // FIXME
                         try
                         {
-                            listMemory.Items[item.Address.ToString()].Remove();
+                            listMemory.Items.RemoveByKey(item.Address.ToString());
                         }
                         catch (Exception ex)
                         {
