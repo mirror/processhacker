@@ -161,8 +161,8 @@ Type: files; Name: {app}\psvince.dll
 Type: files; Name: {app}\Homepage.url
 Type: files; Name: {app}\kprocesshacker.sys; Check: Is64BitInstallMode()
 
-Type: files; Name: {userdesktop}\Process Hacker.lnk; Check: NOT IsTaskSelected('desktopicon\user')
-Type: files; Name: {commondesktop}\Process Hacker.lnk; Check: NOT IsTaskSelected('desktopicon\common')
+Type: files; Name: {userdesktop}\Process Hacker.lnk; Tasks: NOT desktopicon\user
+Type: files; Name: {commondesktop}\Process Hacker.lnk; Tasks: NOT desktopicon\common
 
 ; Remove other languages' shortcuts in Start Menu
 Type: files; Name: {group}\Process Hacker's Readme file.lnk
@@ -342,13 +342,13 @@ begin
   // based on whether these files exist only
   if CurUninstallStep = usUninstall then begin
   if FileExists(ExpandConstant('{userappdata}\Process Hacker\settings.xml'))
-  or fileExists(ExpandConstant('{app}\Process Hacker Log.txt'))
-  or fileExists(ExpandConstant('{userdocs}\Process Hacker.txt'))
-  or fileExists(ExpandConstant('{userdocs}\Process Hacker.log'))
-  or fileExists(ExpandConstant('{userdocs}\Process Hacker.csv'))
-  or fileExists(ExpandConstant('{userdocs}\Process Hacker Log.txt'))
-  or fileExists(ExpandConstant('{userdocs}\CSR Processes.txt'))
-  or fileExists(ExpandConstant('{app}\scratchpad.txt'))then begin
+  OR fileExists(ExpandConstant('{app}\Process Hacker Log.txt'))
+  OR fileExists(ExpandConstant('{userdocs}\Process Hacker.txt'))
+  OR fileExists(ExpandConstant('{userdocs}\Process Hacker.log'))
+  OR fileExists(ExpandConstant('{userdocs}\Process Hacker.csv'))
+  OR fileExists(ExpandConstant('{userdocs}\Process Hacker Log.txt'))
+  OR fileExists(ExpandConstant('{userdocs}\CSR Processes.txt'))
+  OR fileExists(ExpandConstant('{app}\scratchpad.txt'))then begin
     if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'),
      mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
       DeleteFile(ExpandConstant('{userappdata}\Process Hacker\settings.xml'));
