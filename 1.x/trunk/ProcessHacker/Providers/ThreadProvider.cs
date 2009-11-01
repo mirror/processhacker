@@ -247,7 +247,7 @@ namespace ProcessHacker
                                 }
 
                                 return true;
-                            });
+                            }, ModulesFilterFlag.All);
                         }
                         catch (Exception ex2)
                         {

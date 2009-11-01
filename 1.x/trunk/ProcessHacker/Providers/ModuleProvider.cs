@@ -103,47 +103,41 @@ namespace ProcessHacker
 
             if (_pid != 4)
             {
-                // Is this a WOW64 process? If it is, get the 32-bit modules.
-                if (!_isWow64)
-                {
-                    _processHandle.EnumModules((module) =>
-                        {
-                            if (!modules.ContainsKey(module.BaseAddress))
-                                modules.Add(module.BaseAddress, module);
+                _processHandle.EnumModules((module) =>     
+                {       
+                    if (!modules.ContainsKey(module.BaseAddress)) 
+                        modules.Add(module.BaseAddress, module);
+                    
+                    return true;   
+                }, ModulesFilterFlag.All);
 
-                            return true;
-                        });
-                }
-                else
+                using (DebugBuffer buffer = new DebugBuffer())
                 {
-                    using (DebugBuffer buffer = new DebugBuffer())
+                    buffer.Query(_pid, RtlQueryProcessDebugFlags.Modules32);
+
+                    var processModules = buffer.GetModules();
+
+                    foreach (var m in processModules)
                     {
-                        buffer.Query(_pid, RtlQueryProcessDebugFlags.Modules32);
-
-                        var processModules = buffer.GetModules();
-
-                        foreach (var m in processModules)
+                        // Most of the time we will get a duplicate entry - 
+                        // the main executable image. Guard against that.
+                        if (!modules.ContainsKey(m.BaseAddress))
                         {
-                            // Most of the time we will get a duplicate entry - 
-                            // the main executable image. Guard against that.
-                            if (!modules.ContainsKey(m.BaseAddress))
-                            {
-                                modules.Add(
+                            modules.Add(
+                                m.BaseAddress,
+                                new ProcessModule(
                                     m.BaseAddress,
-                                    new ProcessModule(
-                                        m.BaseAddress,
-                                        m.Size,
-                                        IntPtr.Zero,
-                                        m.Flags,
-                                        System.IO.Path.GetFileName(m.FileName),
-                                        m.FileName
-                                        )
-                                    );
-                            }
+                                    m.Size,
+                                    IntPtr.Zero,
+                                    m.Flags,
+                                    System.IO.Path.GetFileName(m.FileName),
+                                    m.FileName
+                                    )
+                                );
                         }
                     }
                 }
-
+                
                 // add mapped files
                 _processHandle.EnumMemory((info) =>
                 {

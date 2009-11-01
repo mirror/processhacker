@@ -2551,7 +2551,7 @@ namespace ProcessHacker
                     }
 
                     return true;
-                });
+                }, ModulesFilterFlag.All);
             }
             catch
             { }

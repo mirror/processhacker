@@ -927,24 +927,24 @@ namespace ProcessHacker.Native.Objects
         /// Enumerates the modules loaded by the process.
         /// </summary>
         /// <param name="enumModulesCallback">The callback for the enumeration.</param>
-        public void EnumModules(EnumModulesDelegate enumModulesCallback)
+        public void EnumModules(EnumModulesDelegate enumModulesCallback, ModulesFilterFlag flag)
         {
-            this.EnumModulesNative(enumModulesCallback);
+            this.EnumModulesApi(enumModulesCallback, flag);
         }
 
         /// <summary>
         /// Enumerates the modules loaded by the process using PSAPI.
         /// </summary>
         /// <param name="enumModulesCallback">The callback for the enumeration.</param>
-        private void EnumModulesApi(EnumModulesDelegate enumModulesCallback)
+        private void EnumModulesApi(EnumModulesDelegate enumModulesCallback, ModulesFilterFlag flag)
         {
             IntPtr[] moduleHandles;
             int requiredSize;
 
-            Win32.EnumProcessModules(this, null, 0, out requiredSize);
+            Win32.EnumProcessModulesEx(this, null, 0, out requiredSize, flag);
             moduleHandles = new IntPtr[requiredSize / 4];
 
-            if (!Win32.EnumProcessModules(this, moduleHandles, requiredSize, out requiredSize))
+            if (!Win32.EnumProcessModulesEx(this, moduleHandles, requiredSize, out requiredSize, flag))
                 Win32.ThrowLastError();
 
             for (int i = 0; i < moduleHandles.Length; i++)
@@ -1674,7 +1674,7 @@ namespace ProcessHacker.Native.Objects
             {
                 mainModule = module;
                 return false;
-            });
+            }, ModulesFilterFlag.All);
 
             return mainModule;
         }
@@ -1754,7 +1754,7 @@ namespace ProcessHacker.Native.Objects
             {
                 modules.Add(module);
                 return true;
-            });
+            }, ModulesFilterFlag.All);
 
             return modules.ToArray();
         }
