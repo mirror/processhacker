@@ -487,9 +487,6 @@ namespace ProcessHacker.Components
 
         private void readWriteAddressMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            if (listMemory.Items.Count == 0)
-                return;
-
             PromptBox prompt = new PromptBox();
 
             if (prompt.ShowDialog() == DialogResult.OK)
@@ -521,9 +518,9 @@ namespace ProcessHacker.Components
 
                 foreach (MemoryItem item in items)
                 {
-                    if (item.Address.CompareTo(address) > 0)
+                    if (item.Address.CompareTo(address) >= 0)
                     {
-                        MemoryItem regionItem = items[i - 1];
+                        MemoryItem regionItem = items[i];
 
                         listMemory.Items[regionItem.Address.ToString()].Selected = true;
                         listMemory.Items[regionItem.Address.ToString()].EnsureVisible();
