@@ -67,7 +67,7 @@
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonCancel.Location = new System.Drawing.Point(299, 38);
             this.buttonCancel.Name = "buttonCancel";
@@ -87,6 +87,7 @@
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.textValue);
             this.Controls.Add(this.labelValue);
+            this.MinimumSize = new System.Drawing.Size(402, 109);
             this.Name = "PromptBox";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
