@@ -487,6 +487,9 @@ namespace ProcessHacker.Components
 
         private void readWriteAddressMemoryMenuItem_Click(object sender, EventArgs e)
         {
+            if (listMemory.Items.Count == 0)
+                return;
+
             PromptBox prompt = new PromptBox();
 
             if (prompt.ShowDialog() == DialogResult.OK)

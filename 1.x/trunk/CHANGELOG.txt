@@ -11,6 +11,7 @@ Process Hacker
    * #2881084 - "System.ArgumentOutOfRangeException"
    * #2881951 - "Invalid cursor handle."
    * #2891748 - "Prompt box resize behaviour"
+   * #2891754 - "Exception in read/write memory if memory list is empty"
    * #2891760 - ""Select All" menu in memory tab not working"
    * Fixed some crashes on 64-bit when viewing thread stacks
    * Remaining network list bugs
