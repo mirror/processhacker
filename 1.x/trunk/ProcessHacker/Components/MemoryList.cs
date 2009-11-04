@@ -518,10 +518,20 @@ namespace ProcessHacker.Components
 
                 foreach (MemoryItem item in items)
                 {
-                    if (item.Address.CompareTo(address) >= 0)
-                    {
-                        MemoryItem regionItem = items[i];
+                    MemoryItem regionItem = null;
 
+                    if (item.Address.CompareTo(address) > 0)
+                    {
+                        if (i > 0)
+                            regionItem = items[i - 1];
+                    }
+                    else if (item.Address.CompareTo(address) == 0)
+                    {
+                        regionItem = items[i];
+                    }
+
+                    if (regionItem != null && address.CompareTo(regionItem.Address) >= 0)
+                    {
                         listMemory.Items[regionItem.Address.ToString()].Selected = true;
                         listMemory.Items[regionItem.Address.ToString()].EnsureVisible();
                         regionAddress = regionItem.Address;
