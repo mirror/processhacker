@@ -1257,9 +1257,16 @@ namespace ProcessHacker.Common
         /// <param name="items">The ListView to process.</param>
         public static void SelectAll(this ListView items)
         {
-            for (int i = 0; i < items.VirtualListSize; i++)
-                if (!items.SelectedIndices.Contains(i))
-                    items.SelectedIndices.Add(i);
+            if (items.VirtualMode)
+            {
+                for (int i = 0; i < items.VirtualListSize; i++)
+                    if (!items.SelectedIndices.Contains(i))
+                        items.SelectedIndices.Add(i);
+            }
+            else
+            {
+                SelectAll(items.Items);
+            }
         }
 
         /// <summary>

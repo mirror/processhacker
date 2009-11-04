@@ -547,7 +547,7 @@ namespace ProcessHacker.Components
 
         private void selectAllMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            Utils.SelectAll(listMemory);
+            Utils.SelectAll(listMemory.Items);
         }
 
         private void freeMenuItem_Click(object sender, EventArgs e)

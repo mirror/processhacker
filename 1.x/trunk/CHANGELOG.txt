@@ -10,6 +10,7 @@ Process Hacker
    * #2880368 - "Highlight Option dialog does not show current colors"
    * #2881084 - "System.ArgumentOutOfRangeException"
    * #2881951 - "Invalid cursor handle."
+   * #2891760 - ""Select All" menu in memory tab not working"
    * Fixed some crashes on 64-bit when viewing thread stacks
    * Remaining network list bugs
 
