@@ -374,8 +374,6 @@ function InitializeSetup(): Boolean;
 // Check if .NET Framework 2.0 is installed and if not offer to download it
 var
   ErrorCode: Integer;
-  NetFrameWorkInstalled : Boolean;
-  Result1 : Boolean;
 begin
   // Create a mutex for the installer and if it's already running then expose a message and stop installation
   if CheckForMutexes(installer_mutex_name) then begin
@@ -385,18 +383,20 @@ begin
   end;
   CreateMutex(installer_mutex_name);
 
-  NetFrameWorkInstalled := RegKeyExists(HKLM,'SOFTWARE\Microsoft\.NETFramework\policy\v2.0');
-  if NetFrameWorkInstalled then begin
+  try
+    ExpandConstant('{dotnet20}');
     Result := True;
-  end else begin
-    Result1 := MsgBox(ExpandConstant('{cm:msg_AskToDownNET}'), mbCriticalError, MB_YESNO or MB_DEFBUTTON1) = IDYES;
-      if Result1 = False then begin
-        Result := False;
-      end else begin
-        Result := False;
-        ShellExec('open', 'http://download.microsoft.com/download/5/6/7/567758a3-759e-473e-bf8f-52154438565a/dotnetfx.exe',
-        '','',SW_SHOWNORMAL,ewNoWait,ErrorCode);
-      end;
+  except
+    begin
+      if not WizardSilent() then
+        if MsgBox(ExpandConstant('{cm:msg_AskToDownNET}'), mbCriticalError, MB_YESNO or MB_DEFBUTTON1) = IDYES then begin
+          Result := False;
+          ShellExec('open', 'http://download.microsoft.com/download/5/6/7/567758a3-759e-473e-bf8f-52154438565a/dotnetfx.exe',
+          '','',SW_SHOWNORMAL,ewNoWait,ErrorCode);
+        end else begin
+          Result := False;
+        end;
+    end;
   end;
 end;
 
