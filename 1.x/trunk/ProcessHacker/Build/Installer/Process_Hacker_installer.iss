@@ -293,8 +293,7 @@ begin
 end;
 
 
-// Bypass Inno Setup UsePreviousTasks directive only for the "reset_settings",
-// "uninstall_pg" and "startup_task" tasks
+// Bypass Inno Setup UsePreviousTasks directive only for the "reset_settings" task
 procedure UncheckTask();
 var
   i: Integer;
