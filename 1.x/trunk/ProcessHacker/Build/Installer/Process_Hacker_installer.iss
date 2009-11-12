@@ -225,6 +225,9 @@ Name: {sd}\ProgramData\wj32; Type: dirifempty; MinVersion: 0,6.0.6001
 
 
 [Code]
+var
+  SetResetTask: Boolean;
+
 // Create a mutex for the installer
 const installer_mutex_name = 'process_hacker_setup_mutex';
 
@@ -275,6 +278,35 @@ begin
 end;
 
 
+procedure CleanUpFiles();
+begin
+  DeleteFile(ExpandConstant('{userappdata}\Process Hacker\settings.xml'));
+  RemoveDir(ExpandConstant('{userappdata}\Process Hacker\'));
+  DeleteFile(ExpandConstant('{app}\Process Hacker.txt'));
+  DeleteFile(ExpandConstant('{app}\Process Hacker.log'));
+  DeleteFile(ExpandConstant('{app}\Process Hacker.csv'));
+  DeleteFile(ExpandConstant('{app}\Process Hacker Log.txt'));
+  DeleteFile(ExpandConstant('{app}\CSR Processes.txt'));
+  DeleteFile(ExpandConstant('{userdocs}\Process Hacker Log.txt'));
+  DeleteFile(ExpandConstant('{userdocs}\CSR Processes.txt'));
+  DeleteFile(ExpandConstant('{app}\scratchpad.txt'));
+end;
+
+
+// Bypass Inno Setup UsePreviousTasks directive only for the "reset_settings",
+// "uninstall_pg" and "startup_task" tasks
+procedure UncheckTask();
+var
+  i: Integer;
+begin
+  i := WizardForm.TasksList.Items.IndexOf(ExpandConstant('{cm:tsk_ResetSettings}'));
+
+  if(i <> -1) then begin
+    WizardForm.TasksList.Checked[i] := False;
+  end;
+end;
+
+
 procedure URLLabelOnClick(Sender: TObject);
 var
   ErrorCode: Integer;
@@ -314,25 +346,34 @@ end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
- case CurStep of ssInstall:
+  case CurStep of ssInstall:
   begin
-   if IsServiceRunning('KProcessHacker') then begin
-    StopService('KProcessHacker');
-   end;
-   if IsTaskSelected('delete_KPH_service') then begin
-    RemoveService('KProcessHacker');
-   end;
+    if IsServiceRunning('KProcessHacker') then begin
+      StopService('KProcessHacker');
+    end;
+    if IsTaskSelected('delete_KPH_service') then begin
+      RemoveService('KProcessHacker');
+    end;
   end;
- ssPostInstall:
+  ssPostInstall:
   begin
-   if (KPHServiceCheck AND NOT IsTaskSelected('delete_KPH_service') OR (IsTaskSelected('create_KPH_service'))) then begin
-    StopService('KProcessHacker');
-    RemoveService('KProcessHacker');
-    InstallService(ExpandConstant('{app}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_SYSTEM_START);
-    StartService('KProcessHacker');
-   end;
+    if (KPHServiceCheck AND NOT IsTaskSelected('delete_KPH_service') OR (IsTaskSelected('create_KPH_service'))) then begin
+      StopService('KProcessHacker');
+      RemoveService('KProcessHacker');
+      InstallService(ExpandConstant('{app}\kprocesshacker.sys'),'KProcessHacker','KProcessHacker','KProcessHacker driver',SERVICE_KERNEL_DRIVER,SERVICE_SYSTEM_START);
+      StartService('KProcessHacker');
+    end;
   end;
  end;
+end;
+
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  if not SetResetTask and (CurPageID = wpSelectTasks) then begin
+    UncheckTask();
+    SetResetTask := True;
+  end;
 end;
 
 
@@ -351,17 +392,8 @@ begin
   OR fileExists(ExpandConstant('{app}\scratchpad.txt'))then begin
     if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'),
      mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
-      DeleteFile(ExpandConstant('{userappdata}\Process Hacker\settings.xml'));
-      DelTree(ExpandConstant('{userappdata}\Process Hacker\'), True, False, False);
-      DeleteFile(ExpandConstant('{app}\Process Hacker.txt'));
-      DeleteFile(ExpandConstant('{app}\Process Hacker.log'));
-      DeleteFile(ExpandConstant('{app}\Process Hacker.csv'));
-      DeleteFile(ExpandConstant('{app}\Process Hacker Log.txt'));
-      DeleteFile(ExpandConstant('{app}\CSR Processes.txt'));
-      DeleteFile(ExpandConstant('{userdocs}\Process Hacker Log.txt'));
-      DeleteFile(ExpandConstant('{userdocs}\CSR Processes.txt'));
-      DeleteFile(ExpandConstant('{app}\scratchpad.txt'));
-      end;
+       CleanUpFiles;
+     end;
       //Always delete older settings folder
       DelTree(ExpandConstant('{localappdata}\wj32\'), True, True, True);
     end;
