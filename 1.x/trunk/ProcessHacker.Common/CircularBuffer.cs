@@ -74,13 +74,6 @@ namespace ProcessHacker.Common
             _size = size;
 #endif
 
-#if COUNT_UNIMPORTANT
-            // Size must be limited to 2^30-1 since we will always clear 
-            // the second highest bit in Add.
-            if (_size >= (1 << 30) - 1)
-                throw new ArgumentException("Size must be less than or equal to 2^30-1.");
-#endif
-
             _count = 0;
             _index = 0;
             _data = new T[_size];
