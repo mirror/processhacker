@@ -18,7 +18,7 @@
 ;* along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
 
 
-; Inno Setup v5.3.5
+; Inno Setup v5.3.6
 ;
 ; Requirements:
 ; *Inno Setup QuickStart Pack:
@@ -225,10 +225,10 @@ Name: {sd}\ProgramData\wj32; Type: dirifempty; MinVersion: 0,6.0.6001
 
 
 [Code]
+// Global variables and constants
 var
   SetResetTask: Boolean;
 
-// Create a mutex for the installer
 const installer_mutex_name = 'process_hacker_setup_mutex';
 
 
@@ -401,8 +401,6 @@ end;
 
 
 function InitializeSetup(): Boolean;
-
-// Check if .NET Framework 2.0 is installed and if not offer to download it
 var
   ErrorCode: Integer;
 begin
@@ -414,6 +412,7 @@ begin
   end;
   CreateMutex(installer_mutex_name);
 
+  // Check if .NET Framework 2.0 is installed and if not offer to download it
   try
     ExpandConstant('{dotnet20}');
     Result := True;
