@@ -186,8 +186,17 @@ namespace ProcessHacker.Native.Threading
 
                     if (doWait)
                     {
-                        // Wait for the objects, (almost) forever.
-                        waitStatus = NativeHandle.WaitAny(waitObjects, true, long.MinValue, false);
+                        try
+                        {
+                            // Wait for the objects, (almost) forever.
+                            waitStatus = NativeHandle.WaitAny(waitObjects, true, long.MinValue, false);
+                        }
+                        catch (WindowsException)
+                        {
+                            // We probably got Access denied on one of the objects. 
+                            // We can't do anything about this, so just wait forever.
+                            waitStatus = ThreadHandle.Sleep(true, long.MinValue, false);
+                        }
                     }
                     else
                     {

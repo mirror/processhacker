@@ -1,5 +1,9 @@
 Process Hacker
 
+1.8
+ * NEW/IMPROVED:
+ * FIXED:
+
 1.7
  * NEW/IMPROVED:
    * #2873973 - "Columns window improvements"
