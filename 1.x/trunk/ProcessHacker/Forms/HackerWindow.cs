@@ -3067,6 +3067,7 @@ namespace ProcessHacker
                 tabControl.TabPages.Remove(tabNetwork);
 
             networkInfomationMenuItem.Visible = false; // not ready
+            analyzeWaitChainProcessMenuItem.Visible = false; // not ready
         }
 
         private void LoadFixNProcessHacker()
