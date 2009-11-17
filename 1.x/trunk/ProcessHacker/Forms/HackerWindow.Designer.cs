@@ -47,6 +47,11 @@
             this.detachFromDebuggerProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.heapsProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.injectDllProcessMenuItem = new System.Windows.Forms.MenuItem();
+            this.ioPriorityThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.ioPriority0ThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.ioPriority1ThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.ioPriority2ThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.ioPriority3ThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.protectionProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.setTokenProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.VirusTotalMenuItem = new System.Windows.Forms.MenuItem();
@@ -294,6 +299,7 @@
             this.detachFromDebuggerProcessMenuItem,
             this.heapsProcessMenuItem,
             this.injectDllProcessMenuItem,
+            this.ioPriorityThreadMenuItem,
             this.protectionProcessMenuItem,
             this.setTokenProcessMenuItem,
             this.VirusTotalMenuItem});
@@ -323,21 +329,55 @@
             this.injectDllProcessMenuItem.Text = "Inject DLL...";
             this.injectDllProcessMenuItem.Click += new System.EventHandler(this.injectDllProcessMenuItem_Click);
             // 
+            // ioPriorityThreadMenuItem
+            // 
+            this.ioPriorityThreadMenuItem.Index = 4;
+            this.ioPriorityThreadMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.ioPriority0ThreadMenuItem,
+            this.ioPriority1ThreadMenuItem,
+            this.ioPriority2ThreadMenuItem,
+            this.ioPriority3ThreadMenuItem});
+            this.ioPriorityThreadMenuItem.Text = "I/O Priority";
+            // 
+            // ioPriority0ThreadMenuItem
+            // 
+            this.ioPriority0ThreadMenuItem.Index = 0;
+            this.ioPriority0ThreadMenuItem.Text = "0";
+            this.ioPriority0ThreadMenuItem.Click += new System.EventHandler(this.ioPriority0ThreadMenuItem_Click);
+            // 
+            // ioPriority1ThreadMenuItem
+            // 
+            this.ioPriority1ThreadMenuItem.Index = 1;
+            this.ioPriority1ThreadMenuItem.Text = "1";
+            this.ioPriority1ThreadMenuItem.Click += new System.EventHandler(this.ioPriority1ThreadMenuItem_Click);
+            // 
+            // ioPriority2ThreadMenuItem
+            // 
+            this.ioPriority2ThreadMenuItem.Index = 2;
+            this.ioPriority2ThreadMenuItem.Text = "2";
+            this.ioPriority2ThreadMenuItem.Click += new System.EventHandler(this.ioPriority2ThreadMenuItem_Click);
+            // 
+            // ioPriority3ThreadMenuItem
+            // 
+            this.ioPriority3ThreadMenuItem.Index = 3;
+            this.ioPriority3ThreadMenuItem.Text = "3";
+            this.ioPriority3ThreadMenuItem.Click += new System.EventHandler(this.ioPriority3ThreadMenuItem_Click);
+            // 
             // protectionProcessMenuItem
             // 
-            this.protectionProcessMenuItem.Index = 4;
+            this.protectionProcessMenuItem.Index = 5;
             this.protectionProcessMenuItem.Text = "Protection";
             this.protectionProcessMenuItem.Click += new System.EventHandler(this.protectionProcessMenuItem_Click);
             // 
             // setTokenProcessMenuItem
             // 
-            this.setTokenProcessMenuItem.Index = 5;
+            this.setTokenProcessMenuItem.Index = 6;
             this.setTokenProcessMenuItem.Text = "Set Token...";
             this.setTokenProcessMenuItem.Click += new System.EventHandler(this.setTokenProcessMenuItem_Click);
             // 
             // VirusTotalMenuItem
             // 
-            this.VirusTotalMenuItem.Index = 6;
+            this.VirusTotalMenuItem.Index = 7;
             this.VirusTotalMenuItem.Text = "Upload to VirusTotal";
             this.VirusTotalMenuItem.Click += new System.EventHandler(this.virusTotalMenuItem_Click);
             // 
@@ -1494,6 +1534,11 @@
         private System.Windows.Forms.MenuItem networkInfomationMenuItem;
         private System.Windows.Forms.MenuItem analyzeWaitChainProcessMenuItem;
         private System.Windows.Forms.MenuItem donateMenuItem;
+        private System.Windows.Forms.MenuItem ioPriorityThreadMenuItem;
+        private System.Windows.Forms.MenuItem ioPriority0ThreadMenuItem;
+        private System.Windows.Forms.MenuItem ioPriority1ThreadMenuItem;
+        private System.Windows.Forms.MenuItem ioPriority2ThreadMenuItem;
+        private System.Windows.Forms.MenuItem ioPriority3ThreadMenuItem;
     }
 }
 

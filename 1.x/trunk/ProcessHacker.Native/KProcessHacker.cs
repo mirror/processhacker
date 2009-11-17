@@ -105,7 +105,11 @@ namespace ProcessHacker.Native
             SsAddPreviousModeRule,
             SsAddNumberRule,
             SsEnableClientEntry,
-            KphOpenNamedObject
+            KphOpenNamedObject,
+            KphQueryInformationProcess,
+            KphQueryInformationThread,
+            KphSetInformationProcess,
+            KphSetInformationThread,
         }
 
         [Flags]
@@ -610,6 +614,60 @@ namespace ProcessHacker.Native
             }
         }
 
+        public void KphQueryInformationProcess(
+            ProcessHandle processHandle,
+            ProcessInformationClass processInformationClass,
+            IntPtr processInformation,
+            int processInformationLength,
+            out int returnLength
+            )
+        {
+            byte* inData = stackalloc byte[0x14];
+            int returnLengthLocal;
+
+            *(int*)inData = processHandle;
+            *(int*)(inData + 0x4) = (int)processInformationClass;
+            *(int*)(inData + 0x8) = processInformation.ToInt32();
+            *(int*)(inData + 0xc) = processInformationLength;
+            *(int*)(inData + 0x10) = (int)&returnLengthLocal;
+
+            try
+            {
+                _fileHandle.IoControl(CtlCode(Control.KphQueryInformationProcess), inData, 0x14, null, 0);
+            }
+            finally
+            {
+                returnLength = returnLengthLocal;
+            }
+        }
+
+        public void KphQueryInformationThread(
+            ThreadHandle threadHandle,
+            ThreadInformationClass threadInformationClass,
+            IntPtr threadInformation,
+            int threadInformationLength,
+            out int returnLength
+            )
+        {
+            byte* inData = stackalloc byte[0x14];
+            int returnLengthLocal;
+
+            *(int*)inData = threadHandle;
+            *(int*)(inData + 0x4) = (int)threadInformationClass;
+            *(int*)(inData + 0x8) = threadInformation.ToInt32();
+            *(int*)(inData + 0xc) = threadInformationLength;
+            *(int*)(inData + 0x10) = (int)&returnLengthLocal;
+
+            try
+            {
+                _fileHandle.IoControl(CtlCode(Control.KphQueryInformationThread), inData, 0x14, null, 0);
+            }
+            finally
+            {
+                returnLength = returnLengthLocal;
+            }
+        }
+
         public void KphQueryProcessHandles(ProcessHandle processHandle, IntPtr buffer, int bufferLength, out int returnLength)
         {
             byte* inData = stackalloc byte[0x10];
@@ -719,6 +777,40 @@ namespace ProcessHacker.Native
             *(int*)(inData + 4) = grantedAccess;
 
             _fileHandle.IoControl(CtlCode(Control.KphSetHandleGrantedAccess), inData, 8, null, 0);
+        }
+
+        public void KphSetInformationProcess(
+            ProcessHandle processHandle,
+            ProcessInformationClass processInformationClass,
+            IntPtr processInformation,
+            int processInformationLength
+            )
+        {
+            byte* inData = stackalloc byte[0x10];
+
+            *(int*)inData = processHandle;
+            *(int*)(inData + 0x4) = (int)processInformationClass;
+            *(int*)(inData + 0x8) = processInformation.ToInt32();
+            *(int*)(inData + 0xc) = processInformationLength;
+
+            _fileHandle.IoControl(CtlCode(Control.KphSetInformationProcess), inData, 0x10, null, 0);
+        }
+
+        public void KphSetInformationThread(
+            ThreadHandle threadHandle,
+            ThreadInformationClass threadInformationClass,
+            IntPtr threadInformation,
+            int threadInformationLength
+            )
+        {
+            byte* inData = stackalloc byte[0x10];
+
+            *(int*)inData = threadHandle;
+            *(int*)(inData + 0x4) = (int)threadInformationClass;
+            *(int*)(inData + 0x8) = threadInformation.ToInt32();
+            *(int*)(inData + 0xc) = threadInformationLength;
+
+            _fileHandle.IoControl(CtlCode(Control.KphSetInformationThread), inData, 0x10, null, 0);
         }
 
         public void KphSuspendProcess(ProcessHandle processHandle)

@@ -1530,15 +1530,35 @@ namespace ProcessHacker.Native.Objects
         /// <returns>An int.</returns>
         private int GetInformationInt32(ProcessInformationClass infoClass)
         {
-            NtStatus status;
-            int value;
-            int retLength;
+            if (
+                KProcessHacker.Instance != null &&
+                infoClass == ProcessInformationClass.ProcessIoPriority
+                )
+            {
+                unsafe
+                {
+                    int value;
+                    int retLength;
 
-            if ((status = Win32.NtQueryInformationProcess(
-                this, infoClass, out value, sizeof(int), out retLength)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                    KProcessHacker.Instance.KphQueryInformationProcess(
+                        this, infoClass, new IntPtr(&value), sizeof(int), out retLength
+                        );
 
-            return value;
+                    return value;
+                }
+            }
+            else
+            {
+                NtStatus status;
+                int value;
+                int retLength;
+
+                if ((status = Win32.NtQueryInformationProcess(
+                    this, infoClass, out value, sizeof(int), out retLength)) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                return value;
+            }
         }
 
         /// <summary>
@@ -2394,11 +2414,31 @@ namespace ProcessHacker.Native.Objects
         /// <param name="value">The value to set.</param>
         private void SetInformationInt32(ProcessInformationClass infoClass, int value)
         {
-            NtStatus status;
+            if (
+                KProcessHacker.Instance != null &&
+                infoClass == ProcessInformationClass.ProcessIoPriority
+                )
+            {
+                unsafe
+                {
+                    KProcessHacker.Instance.KphSetInformationProcess(
+                        this, infoClass, new IntPtr(&value), sizeof(int)
+                        );
+                }
+            }
+            else
+            {
+                NtStatus status;
 
-            if ((status = Win32.NtSetInformationProcess(
-                this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                if ((status = Win32.NtSetInformationProcess(
+                    this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+        }
+
+        public void SetIoPriority(int ioPriority)
+        {
+            this.SetInformationInt32(ProcessInformationClass.ProcessIoPriority, ioPriority);
         }
 
         /// <summary>
@@ -2448,6 +2488,11 @@ namespace ProcessHacker.Native.Objects
                 currentLink = currentEntry->InLoadOrderLinks.Flink;
                 i++;
             }
+        }
+
+        public void SetPagePriority(int pagePriority)
+        {
+            this.SetInformationInt32(ProcessInformationClass.ProcessPagePriority, pagePriority);
         }
 
         /// <summary>

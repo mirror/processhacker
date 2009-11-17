@@ -2,6 +2,7 @@ Process Hacker
 
 1.8
  * NEW/IMPROVED:
+   * Ability to set I/O priority for processes and threads
  * FIXED:
 
 1.7

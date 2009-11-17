@@ -967,7 +967,7 @@ namespace ProcessHacker
                 suspendMenuItem.Text = "&Suspend Process";
                 resumeMenuItem.Text = "&Resume Process";
 
-                // Check the appropriate priority level menu item.
+                // Clear the priority menu items.
                 realTimeMenuItem.Checked = false;
                 highMenuItem.Checked = false;
                 aboveNormalMenuItem.Checked = false;
@@ -975,42 +975,77 @@ namespace ProcessHacker
                 belowNormalMenuItem.Checked = false;
                 idleMenuItem.Checked = false;
 
+                // Clear the I/O priority menu items.
+                ioPriorityThreadMenuItem.Enabled = true;
+                ioPriority0ThreadMenuItem.Checked = false;
+                ioPriority1ThreadMenuItem.Checked = false;
+                ioPriority2ThreadMenuItem.Checked = false;
+                ioPriority3ThreadMenuItem.Checked = false;
+
                 try
                 {
                     using (var phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
                     {
-                        switch (phandle.GetPriorityClass())
+                        try
                         {
-                            case ProcessPriorityClass.RealTime:
-                                realTimeMenuItem.Checked = true;
-                                break;
+                            switch (phandle.GetPriorityClass())
+                            {
+                                case ProcessPriorityClass.RealTime:
+                                    realTimeMenuItem.Checked = true;
+                                    break;
+                                case ProcessPriorityClass.High:
+                                    highMenuItem.Checked = true;
+                                    break;
+                                case ProcessPriorityClass.AboveNormal:
+                                    aboveNormalMenuItem.Checked = true;
+                                    break;
+                                case ProcessPriorityClass.Normal:
+                                    normalMenuItem.Checked = true;
+                                    break;
+                                case ProcessPriorityClass.BelowNormal:
+                                    belowNormalMenuItem.Checked = true;
+                                    break;
+                                case ProcessPriorityClass.Idle:
+                                    idleMenuItem.Checked = true;
+                                    break;
+                            }
+                        }
+                        catch
+                        {
+                            priorityMenuItem.Enabled = false;
+                        }
 
-                            case ProcessPriorityClass.High:
-                                highMenuItem.Checked = true;
-                                break;
-
-                            case ProcessPriorityClass.AboveNormal:
-                                aboveNormalMenuItem.Checked = true;
-                                break;
-
-                            case ProcessPriorityClass.Normal:
-                                normalMenuItem.Checked = true;
-                                break;
-
-                            case ProcessPriorityClass.BelowNormal:
-                                belowNormalMenuItem.Checked = true;
-                                break;
-
-                            case ProcessPriorityClass.Idle:
-                                idleMenuItem.Checked = true;
-                                break;
+                        try
+                        {
+                            if (OSVersion.HasIoPriority)
+                            {
+                                switch (phandle.GetIoPriority())
+                                {
+                                    case 0:
+                                        ioPriority0ThreadMenuItem.Checked = true;
+                                        break;
+                                    case 1:
+                                        ioPriority1ThreadMenuItem.Checked = true;
+                                        break;
+                                    case 2:
+                                        ioPriority2ThreadMenuItem.Checked = true;
+                                        break;
+                                    case 3:
+                                        ioPriority3ThreadMenuItem.Checked = true;
+                                        break;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            ioPriorityThreadMenuItem.Enabled = false;
                         }
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    priorityMenuItem.Text = "(" + ex.Message + ")";
                     priorityMenuItem.Enabled = false;
+                    ioPriorityThreadMenuItem.Enabled = false;
                 }
 
                 // Check the virtualization menu item.
@@ -1603,6 +1638,30 @@ namespace ProcessHacker
                 }
             }
         }
+
+        #region I/O Priority
+
+        private void ioPriority0ThreadMenuItem_Click(object sender, EventArgs e)
+        {
+            SetProcessIoPriority(0);
+        }
+
+        private void ioPriority1ThreadMenuItem_Click(object sender, EventArgs e)
+        {
+            SetProcessIoPriority(1);
+        }
+
+        private void ioPriority2ThreadMenuItem_Click(object sender, EventArgs e)
+        {
+            SetProcessIoPriority(2);
+        }
+
+        private void ioPriority3ThreadMenuItem_Click(object sender, EventArgs e)
+        {
+            SetProcessIoPriority(3);
+        }
+
+        #endregion
 
         private void protectionProcessMenuItem_Click(object sender, EventArgs e)
         {
@@ -2845,6 +2904,19 @@ namespace ProcessHacker
             }
         }
 
+        private void SetProcessIoPriority(int ioPriority)
+        {
+            try
+            {
+                using (var phandle = new ProcessHandle(processSelectedPid, ProcessAccess.SetInformation))
+                    phandle.SetIoPriority(ioPriority);
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to set process I/O priority", ex);
+            }
+        }
+
         #endregion
 
         #region Notification Icons
@@ -3065,6 +3137,9 @@ namespace ProcessHacker
 
             if (OSVersion.IsBelow(WindowsVersion.XP))
                 tabControl.TabPages.Remove(tabNetwork);
+
+            if (!OSVersion.HasIoPriority)
+                ioPriorityThreadMenuItem.Visible = false;
 
             networkInfomationMenuItem.Visible = false; // not ready
             analyzeWaitChainProcessMenuItem.Visible = false; // not ready

@@ -78,6 +78,8 @@ namespace ProcessHacker.Native
 
         private static bool _hasCycleTime = false;
         private static bool _hasExtendedTaskbar = false;
+        private static bool _hasIoPriority = false;
+        private static bool _hasPagePriority = false;
         private static bool _hasProtectedProcesses = false;
         private static bool _hasPsSuspendResumeProcess = false;
         private static bool _hasQueryLimitedInformation = false;
@@ -123,6 +125,8 @@ namespace ProcessHacker.Native
                     _minThreadSetInfoAccess = ThreadAccess.SetLimitedInformation;
 
                     _hasCycleTime = true;
+                    _hasIoPriority = true;
+                    _hasPagePriority = true;
                     _hasProtectedProcesses = true;
                     _hasPsSuspendResumeProcess = true;
                     _hasQueryLimitedInformation = true;
@@ -188,6 +192,16 @@ namespace ProcessHacker.Native
         public static bool HasExtendedTaskbar
         {
             get { return _hasExtendedTaskbar; }
+        }
+
+        public static bool HasIoPriority
+        {
+            get { return _hasIoPriority; }
+        }
+
+        public static bool HasPagePriority
+        {
+            get { return _hasPagePriority; }
         }
 
         public static bool HasProtectedProcesses

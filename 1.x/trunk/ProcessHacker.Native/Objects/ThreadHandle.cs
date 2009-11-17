@@ -648,15 +648,35 @@ namespace ProcessHacker.Native.Objects
 
         private int GetInformationInt32(ThreadInformationClass infoClass)
         {
-            NtStatus status;
-            int value;
-            int retLength;
+            if (
+                KProcessHacker.Instance != null &&
+                infoClass == ThreadInformationClass.ThreadIoPriority
+                )
+            {
+                unsafe
+                {
+                    int value;
+                    int retLength;
 
-            if ((status = Win32.NtQueryInformationThread(
-                this, infoClass, out value, sizeof(int), out retLength)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                    KProcessHacker.Instance.KphQueryInformationThread(
+                        this, infoClass, new IntPtr(&value), sizeof(int), out retLength
+                        );
 
-            return value;
+                    return value;
+                }
+            }
+            else
+            {
+                NtStatus status;
+                int value;
+                int retLength;
+
+                if ((status = Win32.NtQueryInformationThread(
+                    this, infoClass, out value, sizeof(int), out retLength)) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                return value;
+            }
         }
 
         private IntPtr GetInformationIntPtr(ThreadInformationClass infoClass)
@@ -1021,11 +1041,26 @@ namespace ProcessHacker.Native.Objects
 
         private void SetInformationInt32(ThreadInformationClass infoClass, int value)
         {
-            NtStatus status;
+            if (
+                KProcessHacker.Instance != null &&
+                infoClass == ThreadInformationClass.ThreadIoPriority
+                )
+            {
+                unsafe
+                {
+                    KProcessHacker.Instance.KphSetInformationThread(
+                        this, infoClass, new IntPtr(&value), sizeof(int)
+                        );
+                }
+            }
+            else
+            {
+                NtStatus status;
 
-            if ((status = Win32.NtSetInformationThread(
-                this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                if ((status = Win32.NtSetInformationThread(
+                    this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
         }
 
         private void SetInformationIntPtr(ThreadInformationClass infoClass, IntPtr value)
@@ -1035,6 +1070,16 @@ namespace ProcessHacker.Native.Objects
             if ((status = Win32.NtSetInformationThread(
                 this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+        }
+
+        public void SetIoPriority(int ioPriority)
+        {
+            this.SetInformationInt32(ThreadInformationClass.ThreadIoPriority, ioPriority);
+        }
+
+        public void SetPagePriority(int pagePriority)
+        {
+            this.SetInformationInt32(ThreadInformationClass.ThreadPagePriority, pagePriority);
         }
 
         /// <summary>

@@ -1635,6 +1635,10 @@ namespace ProcessHacker.Native.Api
         ProcessImageFileMapping,
         ProcessAffinityUpdateMode,
         ProcessMemoryAllocationMode,
+        ProcessGroupInformation,
+        ProcessTokenVirtualizationEnabled,
+        ProcessConsoleHostProcess,
+        ProcessWindowInformation, // 50
         MaxProcessInfoClass
     }
 
@@ -2038,6 +2042,12 @@ namespace ProcessHacker.Native.Api
         ThreadActualBasePriority,
         ThreadTebInformation,
         ThreadCSwitchMon,
+        ThreadCSwitchPmu,
+        ThreadWow64Context,
+        ThreadGroupInformation, // 30
+        ThreadUmsInformation,
+        ThreadCounterProfiling,
+        ThreadIdealProcessorEx,
         MaxThreadInfoClass
     }
 

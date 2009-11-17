@@ -599,6 +599,16 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "SsAddNumberRule";
         case KPH_SSENABLECLIENTENTRY:
             return "SsEnableClientEntry";
+        case KPH_OPENNAMEDOBJECT:
+            return "KphOpenNamedObject";
+        case KPH_QUERYINFORMATIONPROCESS:
+            return "KphQueryInformationProcess";
+        case KPH_QUERYINFORMATIONTHREAD:
+            return "KphQueryInformationThread";
+        case KPH_SETINFORMATIONPROCESS:
+            return "KphSetInformationProcess";
+        case KPH_SETINFORMATIONTHREAD:
+            return "KphSetInformationThread";
         default:
             return "Unknown";
     }
@@ -2324,6 +2334,200 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 NULL,
                 UserMode
                 );
+        }
+        break;
+        
+        case KPH_QUERYINFORMATIONPROCESS:
+        {
+            struct
+            {
+                HANDLE ProcessHandle;
+                PROCESSINFOCLASS ProcessInformationClass;
+                PVOID ProcessInformation;
+                ULONG ProcessInformationLength;
+                PULONG ReturnLength;
+            } *args = dataBuffer;
+            
+            CHECK_IN_LENGTH;
+            
+            if (
+                args->ProcessInformationClass != ProcessIoPriority
+                )
+            {
+                status = STATUS_INVALID_PARAMETER;
+                goto IoControlEnd;
+            }
+            
+            __try
+            {
+                ProbeForWrite(args->ProcessInformation, args->ProcessInformationLength, 1);
+                
+                if (args->ReturnLength)
+                    ProbeForWrite(args->ReturnLength, sizeof(ULONG), 1);
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+                goto IoControlEnd;
+            }
+            
+            __try
+            {
+                status = ZwQueryInformationProcess(
+                    args->ProcessHandle,
+                    args->ProcessInformationClass,
+                    args->ProcessInformation,
+                    args->ProcessInformationLength,
+                    args->ReturnLength
+                    );
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+            }
+        }
+        break;
+        
+        case KPH_QUERYINFORMATIONTHREAD:
+        {
+            struct
+            {
+                HANDLE ThreadHandle;
+                THREADINFOCLASS ThreadInformationClass;
+                PVOID ThreadInformation;
+                ULONG ThreadInformationLength;
+                PULONG ReturnLength;
+            } *args = dataBuffer;
+            
+            CHECK_IN_LENGTH;
+            
+            if (
+                args->ThreadInformationClass != ThreadIoPriority
+                )
+            {
+                status = STATUS_INVALID_PARAMETER;
+                goto IoControlEnd;
+            }
+            
+            __try
+            {
+                ProbeForWrite(args->ThreadInformation, args->ThreadInformationLength, 1);
+                
+                if (args->ReturnLength)
+                    ProbeForWrite(args->ReturnLength, sizeof(ULONG), 1);
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+                goto IoControlEnd;
+            }
+            
+            __try
+            {
+                status = ZwQueryInformationThread(
+                    args->ThreadHandle,
+                    args->ThreadInformationClass,
+                    args->ThreadInformation,
+                    args->ThreadInformationLength,
+                    args->ReturnLength
+                    );
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+            }
+        }
+        break;
+        
+        case KPH_SETINFORMATIONPROCESS:
+        {
+            struct
+            {
+                HANDLE ProcessHandle;
+                PROCESSINFOCLASS ProcessInformationClass;
+                PVOID ProcessInformation;
+                ULONG ProcessInformationLength;
+            } *args = dataBuffer;
+            
+            CHECK_IN_LENGTH;
+            
+            if (
+                args->ProcessInformationClass != ProcessIoPriority
+                )
+            {
+                status = STATUS_INVALID_PARAMETER;
+                goto IoControlEnd;
+            }
+            
+            __try
+            {
+                ProbeForRead(args->ProcessInformation, args->ProcessInformationLength, 1);
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+                goto IoControlEnd;
+            }
+            
+            __try
+            {
+                status = ZwSetInformationProcess(
+                    args->ProcessHandle,
+                    args->ProcessInformationClass,
+                    args->ProcessInformation,
+                    args->ProcessInformationLength
+                    );
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+            }
+        }
+        break;
+        
+        case KPH_SETINFORMATIONTHREAD:
+        {
+            struct
+            {
+                HANDLE ThreadHandle;
+                THREADINFOCLASS ThreadInformationClass;
+                PVOID ThreadInformation;
+                ULONG ThreadInformationLength;
+            } *args = dataBuffer;
+            
+            CHECK_IN_LENGTH;
+            
+            if (
+                args->ThreadInformationClass != ThreadIoPriority
+                )
+            {
+                status = STATUS_INVALID_PARAMETER;
+                goto IoControlEnd;
+            }
+            
+            __try
+            {
+                ProbeForRead(args->ThreadInformation, args->ThreadInformationLength, 1);
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+                goto IoControlEnd;
+            }
+            
+            __try
+            {
+                status = ZwSetInformationThread(
+                    args->ThreadHandle,
+                    args->ThreadInformationClass,
+                    args->ThreadInformation,
+                    args->ThreadInformationLength
+                    );
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+            }
         }
         break;
         

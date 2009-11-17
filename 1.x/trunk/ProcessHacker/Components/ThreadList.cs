@@ -59,6 +59,9 @@ namespace ProcessHacker.Components
             if (OSVersion.HasCycleTime)
                 listThreads.Columns[1].Text = "Cycles Delta";
 
+            // Hide the I/O Priority menu item on XP and below.
+            ioPriorityThreadMenuItem.Visible = OSVersion.HasIoPriority;
+
             // On x64, the first four arguments are passed in registers, 
             // which means Analyze won't work properly.
             if (OSVersion.Architecture != OSArch.I386)
@@ -480,6 +483,21 @@ namespace ProcessHacker.Components
             }
         }
 
+        private void SetThreadIoPriority(int ioPriority)
+        {
+            try
+            {
+                int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
+
+                using (var thandle = new ThreadHandle(tid, OSVersion.MinThreadSetInfoAccess))
+                    thandle.SetIoPriority(ioPriority);
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowException("Unable to set the I/O priority of the thread", ex);
+            }
+        }
+
         private void listThreads_DoubleClick(object sender, EventArgs e)
         {
             inspectThreadMenuItem_Click(null, null);
@@ -497,6 +515,12 @@ namespace ProcessHacker.Components
             {
                 menuThread.EnableAll();
 
+                terminateThreadMenuItem.Text = "&Terminate Thread";
+                forceTerminateThreadMenuItem.Text = "Force Terminate Thread";
+                suspendThreadMenuItem.Text = "&Suspend Thread";
+                resumeThreadMenuItem.Text = "&Resume Thread";
+                priorityThreadMenuItem.Text = "&Priority";
+
                 timeCriticalThreadMenuItem.Checked = false;
                 highestThreadMenuItem.Checked = false;
                 aboveNormalThreadMenuItem.Checked = false;
@@ -504,11 +528,11 @@ namespace ProcessHacker.Components
                 belowNormalThreadMenuItem.Checked = false;
                 lowestThreadMenuItem.Checked = false;
                 idleThreadMenuItem.Checked = false;
-                terminateThreadMenuItem.Text = "&Terminate Thread";
-                forceTerminateThreadMenuItem.Text = "Force Terminate Thread";
-                suspendThreadMenuItem.Text = "&Suspend Thread";
-                resumeThreadMenuItem.Text = "&Resume Thread";
-                priorityThreadMenuItem.Text = "&Priority";
+
+                ioPriority0ThreadMenuItem.Checked = false;
+                ioPriority1ThreadMenuItem.Checked = false;
+                ioPriority2ThreadMenuItem.Checked = false;
+                ioPriority3ThreadMenuItem.Checked = false;
 
                 try
                 {
@@ -516,44 +540,69 @@ namespace ProcessHacker.Components
                         int.Parse(listThreads.SelectedItems[0].SubItems[0].Text), 
                         Program.MinThreadQueryRights))
                     {
-                        switch (thandle.GetBasePriorityWin32())
+                        try
                         {
-                            case ThreadPriorityLevel.TimeCritical:
-                                timeCriticalThreadMenuItem.Checked = true;
-                                break;
+                            switch (thandle.GetBasePriorityWin32())
+                            {
+                                case ThreadPriorityLevel.TimeCritical:
+                                    timeCriticalThreadMenuItem.Checked = true;
+                                    break;
+                                case ThreadPriorityLevel.Highest:
+                                    highestThreadMenuItem.Checked = true;
+                                    break;
+                                case ThreadPriorityLevel.AboveNormal:
+                                    aboveNormalThreadMenuItem.Checked = true;
+                                    break;
+                                case ThreadPriorityLevel.Normal:
+                                    normalThreadMenuItem.Checked = true;
+                                    break;
+                                case ThreadPriorityLevel.BelowNormal:
+                                    belowNormalThreadMenuItem.Checked = true;
+                                    break;
+                                case ThreadPriorityLevel.Lowest:
+                                    lowestThreadMenuItem.Checked = true;
+                                    break;
+                                case ThreadPriorityLevel.Idle:
+                                    idleThreadMenuItem.Checked = true;
+                                    break;
+                            }
+                        }
+                        catch
+                        {
+                            priorityThreadMenuItem.Enabled = false;
+                        }
 
-                            case ThreadPriorityLevel.Highest:
-                                highestThreadMenuItem.Checked = true;
-                                break;
-
-                            case ThreadPriorityLevel.AboveNormal:
-                                aboveNormalThreadMenuItem.Checked = true;
-                                break;
-
-                            case ThreadPriorityLevel.Normal:
-                                normalThreadMenuItem.Checked = true;
-                                break;
-
-                            case ThreadPriorityLevel.BelowNormal:
-                                belowNormalThreadMenuItem.Checked = true;
-                                break;
-
-                            case ThreadPriorityLevel.Lowest:
-                                lowestThreadMenuItem.Checked = true;
-                                break;
-
-                            case ThreadPriorityLevel.Idle:
-                                idleThreadMenuItem.Checked = true;
-                                break;
+                        try
+                        {
+                            if (OSVersion.HasIoPriority)
+                            {
+                                switch (thandle.GetIoPriority())
+                                {
+                                    case 0:
+                                        ioPriority0ThreadMenuItem.Checked = true;
+                                        break;
+                                    case 1:
+                                        ioPriority1ThreadMenuItem.Checked = true;
+                                        break;
+                                    case 2:
+                                        ioPriority2ThreadMenuItem.Checked = true;
+                                        break;
+                                    case 3:
+                                        ioPriority3ThreadMenuItem.Checked = true;
+                                        break;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            ioPriorityThreadMenuItem.Enabled = false;
                         }
                     }
-
-                    priorityThreadMenuItem.Enabled = true;
                 }
                 catch (Exception ex)
                 {
-                    priorityThreadMenuItem.Text = "(" + ex.Message + ")";
                     priorityThreadMenuItem.Enabled = false;
+                    ioPriorityThreadMenuItem.Enabled = false;
                 }
 
                 try
@@ -1352,6 +1401,30 @@ namespace ProcessHacker.Components
         private void idleThreadMenuItem_Click(object sender, EventArgs e)
         {
             SetThreadPriority(ThreadPriorityLevel.Idle);
+        }
+
+        #endregion
+
+        #region I/O Priority
+
+        private void ioPriority0ThreadMenuItem_Click(object sender, EventArgs e)
+        {
+            SetThreadIoPriority(0);
+        }
+
+        private void ioPriority1ThreadMenuItem_Click(object sender, EventArgs e)
+        {
+            SetThreadIoPriority(1);
+        }
+
+        private void ioPriority2ThreadMenuItem_Click(object sender, EventArgs e)
+        {
+            SetThreadIoPriority(2);
+        }
+
+        private void ioPriority3ThreadMenuItem_Click(object sender, EventArgs e)
+        {
+            SetThreadIoPriority(3);
         }
 
         #endregion

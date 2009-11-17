@@ -46,6 +46,7 @@
             this.resumeThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem4 = new System.Windows.Forms.MenuItem();
             this.inspectTEBMenuItem = new System.Windows.Forms.MenuItem();
+            this.permissionsThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.tokenThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.analyzeMenuItem = new System.Windows.Forms.MenuItem();
             this.analyzeWaitMenuItem = new System.Windows.Forms.MenuItem();
@@ -57,6 +58,11 @@
             this.belowNormalThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.lowestThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.idleThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.ioPriorityThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.ioPriority0ThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.ioPriority1ThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.ioPriority2ThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.ioPriority3ThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
             this.copyThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.selectAllThreadMenuItem = new System.Windows.Forms.MenuItem();
@@ -80,7 +86,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.fileModule = new ProcessHacker.Components.FileNameBox();
-            this.permissionsThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.tableInformation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
@@ -142,6 +147,7 @@
             this.tokenThreadMenuItem,
             this.analyzeMenuItem,
             this.priorityThreadMenuItem,
+            this.ioPriorityThreadMenuItem,
             this.menuItem9,
             this.copyThreadMenuItem,
             this.selectAllThreadMenuItem});
@@ -192,6 +198,12 @@
             this.inspectTEBMenuItem.Index = 6;
             this.inspectTEBMenuItem.Text = "Inspect TEB";
             this.inspectTEBMenuItem.Click += new System.EventHandler(this.inspectTEBMenuItem_Click);
+            // 
+            // permissionsThreadMenuItem
+            // 
+            this.permissionsThreadMenuItem.Index = 7;
+            this.permissionsThreadMenuItem.Text = "Permissions";
+            this.permissionsThreadMenuItem.Click += new System.EventHandler(this.permissionsThreadMenuItem_Click);
             // 
             // tokenThreadMenuItem
             // 
@@ -275,20 +287,54 @@
             this.idleThreadMenuItem.Text = "Idle";
             this.idleThreadMenuItem.Click += new System.EventHandler(this.idleThreadMenuItem_Click);
             // 
+            // ioPriorityThreadMenuItem
+            // 
+            this.ioPriorityThreadMenuItem.Index = 11;
+            this.ioPriorityThreadMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.ioPriority0ThreadMenuItem,
+            this.ioPriority1ThreadMenuItem,
+            this.ioPriority2ThreadMenuItem,
+            this.ioPriority3ThreadMenuItem});
+            this.ioPriorityThreadMenuItem.Text = "I/O Priority";
+            // 
+            // ioPriority0ThreadMenuItem
+            // 
+            this.ioPriority0ThreadMenuItem.Index = 0;
+            this.ioPriority0ThreadMenuItem.Text = "0";
+            this.ioPriority0ThreadMenuItem.Click += new System.EventHandler(this.ioPriority0ThreadMenuItem_Click);
+            // 
+            // ioPriority1ThreadMenuItem
+            // 
+            this.ioPriority1ThreadMenuItem.Index = 1;
+            this.ioPriority1ThreadMenuItem.Text = "1";
+            this.ioPriority1ThreadMenuItem.Click += new System.EventHandler(this.ioPriority1ThreadMenuItem_Click);
+            // 
+            // ioPriority2ThreadMenuItem
+            // 
+            this.ioPriority2ThreadMenuItem.Index = 2;
+            this.ioPriority2ThreadMenuItem.Text = "2";
+            this.ioPriority2ThreadMenuItem.Click += new System.EventHandler(this.ioPriority2ThreadMenuItem_Click);
+            // 
+            // ioPriority3ThreadMenuItem
+            // 
+            this.ioPriority3ThreadMenuItem.Index = 3;
+            this.ioPriority3ThreadMenuItem.Text = "3";
+            this.ioPriority3ThreadMenuItem.Click += new System.EventHandler(this.ioPriority3ThreadMenuItem_Click);
+            // 
             // menuItem9
             // 
-            this.menuItem9.Index = 11;
+            this.menuItem9.Index = 12;
             this.menuItem9.Text = "-";
             // 
             // copyThreadMenuItem
             // 
             this.vistaMenu.SetImage(this.copyThreadMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyThreadMenuItem.Index = 12;
+            this.copyThreadMenuItem.Index = 13;
             this.copyThreadMenuItem.Text = "C&opy";
             // 
             // selectAllThreadMenuItem
             // 
-            this.selectAllThreadMenuItem.Index = 13;
+            this.selectAllThreadMenuItem.Index = 14;
             this.selectAllThreadMenuItem.Text = "Select &All";
             this.selectAllThreadMenuItem.Click += new System.EventHandler(this.selectAllThreadMenuItem_Click);
             // 
@@ -513,12 +559,6 @@
             this.fileModule.Size = new System.Drawing.Size(368, 24);
             this.fileModule.TabIndex = 6;
             // 
-            // permissionsThreadMenuItem
-            // 
-            this.permissionsThreadMenuItem.Index = 7;
-            this.permissionsThreadMenuItem.Text = "Permissions";
-            this.permissionsThreadMenuItem.Click += new System.EventHandler(this.permissionsThreadMenuItem_Click);
-            // 
             // ThreadList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -588,5 +628,10 @@
         private System.Windows.Forms.MenuItem forceTerminateThreadMenuItem;
         private System.Windows.Forms.MenuItem tokenThreadMenuItem;
         private System.Windows.Forms.MenuItem permissionsThreadMenuItem;
+        private System.Windows.Forms.MenuItem ioPriorityThreadMenuItem;
+        private System.Windows.Forms.MenuItem ioPriority0ThreadMenuItem;
+        private System.Windows.Forms.MenuItem ioPriority1ThreadMenuItem;
+        private System.Windows.Forms.MenuItem ioPriority2ThreadMenuItem;
+        private System.Windows.Forms.MenuItem ioPriority3ThreadMenuItem;
     }
 }
