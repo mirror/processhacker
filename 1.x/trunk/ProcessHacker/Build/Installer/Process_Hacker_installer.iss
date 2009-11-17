@@ -395,6 +395,7 @@ begin
      end;
       //Always delete older settings folder
       DelTree(ExpandConstant('{localappdata}\wj32\'), True, True, True);
+      RemoveDir(ExpandConstant('{app}'));
     end;
   end;
 end;
