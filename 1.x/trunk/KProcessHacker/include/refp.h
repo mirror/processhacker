@@ -31,7 +31,7 @@
 
 #define KphObjectToObjectHeader(Object) ((PKPH_OBJECT_HEADER)CONTAINING_RECORD((PCHAR)(Object), KPH_OBJECT_HEADER, Body))
 #define KphObjectHeaderToObject(ObjectHeader) (&((PKPH_OBJECT_HEADER)(ObjectHeader))->Body)
-#define KphpAddObjectHeaderSize(Size) ((Size) + sizeof(KPH_OBJECT_HEADER) - sizeof(QUAD))
+#define KphpAddObjectHeaderSize(Size) ((Size) + FIELD_OFFSET(KPH_OBJECT_HEADER, Body))
 
 typedef struct _KPH_OBJECT_HEADER *PKPH_OBJECT_HEADER;
 typedef struct _KPH_OBJECT_TYPE *PKPH_OBJECT_TYPE;
