@@ -33,6 +33,11 @@ namespace ProcessHacker.Native.Symbols
     {
         public static void ShowWarning(IWin32Window window, bool force)
         {
+            // The message is too clumsy to display with a standard 
+            // message box.
+            if (!OSVersion.HasTaskDialogs)
+                return;
+
             if (Settings.Instance.DbgHelpWarningShown && !force)
                 return;
 
@@ -49,59 +54,52 @@ namespace ProcessHacker.Native.Symbols
                             if (!force)
                                 Settings.Instance.DbgHelpWarningShown = true;
 
-                            if (OSVersion.HasTaskDialogs)
+                            TaskDialog td = new TaskDialog();
+                            bool verificationChecked;
+
+                            td.CommonButtons = TaskDialogCommonButtons.Ok;
+                            td.WindowTitle = "Process Hacker";
+                            td.MainIcon = TaskDialogIcon.Warning;
+                            td.MainInstruction = "Microsoft Symbol Server not supported";
+                            td.Content =
+                                "Process Hacker is not configured correctly to obtain debugging symbols. " +
+                                "If you do not require proper symbol support, you may ignore this warning.";
+                            td.ExpandedByDefault = false;
+                            td.ExpandedControlText = "More information";
+                            td.ExpandedInformation =
+                                "To ensure you have the latest version of dbghelp.dll, download " +
+                                "<a href=\"dbghelp\">Debugging " +
+                                "Tools for Windows</a> and configure Process Hacker to " +
+                                "use its version of dbghelp.dll. If you have the latest version of dbghelp.dll, " +
+                                "ensure that symsrv.dll resides in the same directory as dbghelp.dll.";
+                            td.EnableHyperlinks = true;
+                            td.Callback = (taskDialog, args, callbackData) =>
                             {
-                                TaskDialog td = new TaskDialog();
-                                bool verificationChecked;
-
-                                td.CommonButtons = TaskDialogCommonButtons.Ok;
-                                td.WindowTitle = "Process Hacker";
-                                td.MainIcon = TaskDialogIcon.Warning;
-                                td.MainInstruction = "Microsoft Symbol Server not supported";
-                                td.Content = "The Microsoft Symbol Server is not supported by your version of dbghelp.dll " +
-                                    "or could not be loaded. " +
-                                    "To ensure you have the latest version of dbghelp.dll, download " +
-                                    "<a href=\"dbghelp\">Debugging " +
-                                    "Tools for Windows</a> and configure Process Hacker to " +
-                                    "use its version of dbghelp.dll. If you have the latest version of dbghelp.dll, " +
-                                    "ensure that symsrv.dll resides in the same directory as dbghelp.dll.";
-                                td.EnableHyperlinks = true;
-                                td.Callback = (taskDialog, args, callbackData) =>
+                                if (args.Notification == TaskDialogNotification.HyperlinkClicked)
                                 {
-                                    if (args.Notification == TaskDialogNotification.HyperlinkClicked)
+                                    try
                                     {
-                                        try
-                                        {
-                                            System.Diagnostics.Process.Start(
-                                                "http://www.microsoft.com/whdc/devtools/debugging/default.mspx");
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            MessageBox.Show("Could not open the hyperlink: " + ex.ToString(),
-                                                "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                        }
-
-                                        return true;
+                                        System.Diagnostics.Process.Start(
+                                            "http://www.microsoft.com/whdc/devtools/debugging/default.mspx");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show("Could not open the hyperlink: " + ex.ToString(),
+                                            "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
 
-                                    return false;
-                                };
-                                td.VerificationText = force ? null : "Do not display this warning again";
-                                td.VerificationFlagChecked = true;
+                                    return true;
+                                }
 
-                                td.Show(window, out verificationChecked);
+                                return false;
+                            };
+                            td.VerificationText = force ? null : "Do not display this warning again";
+                            td.VerificationFlagChecked = true;
 
-                                if (!force)
-                                    Settings.Instance.DbgHelpWarningShown = verificationChecked;
-                            }
-                            else
-                            {
-                                MessageBox.Show(window, "The Microsoft Symbol Server is not supported by your version of dbghelp.dll " +
-                                    "or could not be loaded. To ensure you have the latest version of dbghelp.dll, download " +
-                                    "Debugging Tools for Windows and configure Process Hacker to use its version of dbghelp.dll. " +
-                                    "If you have the latest version of dbghelp.dll, ensure that symsrv.dll resides in the same " +
-                                    "directory as dbghelp.dll.", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                            }
+                            td.Show(window, out verificationChecked);
+
+                            if (!force)
+                                Settings.Instance.DbgHelpWarningShown = verificationChecked;
                         }
 
                         break;
