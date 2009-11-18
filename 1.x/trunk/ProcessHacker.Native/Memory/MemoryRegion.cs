@@ -196,7 +196,10 @@ namespace ProcessHacker.Native
         /// <returns>The integer.</returns>
         public int ReadInt32(int offset, int index)
         {
-            return Marshal.ReadInt32(_memory, offset + index * sizeof(int));
+            unsafe
+            {
+                return ((int*)((byte*)_memory + offset))[index];
+            }
         }
 
         public IntPtr ReadIntPtr(int offset)
@@ -206,7 +209,10 @@ namespace ProcessHacker.Native
 
         public IntPtr ReadIntPtr(int offset, int index)
         {
-            return Marshal.ReadIntPtr(_memory, offset + index * IntPtr.Size);
+            unsafe
+            {
+                return ((IntPtr*)((byte*)_memory + offset))[index];
+            }
         }
 
         public void ReadMemory(IntPtr buffer, int destOffset, int srcOffset, int length)
@@ -236,7 +242,10 @@ namespace ProcessHacker.Native
         /// <returns>The integer.</returns>
         public uint ReadUInt32(int offset, int index)
         {
-            return (uint)this.ReadInt32(offset, index);
+            unsafe
+            {
+                return ((uint*)((byte*)_memory + offset))[index];
+            }
         }
 
         /// <summary>
@@ -295,7 +304,10 @@ namespace ProcessHacker.Native
         /// <param name="b">The value of the byte.</param>
         public void WriteByte(int offset, byte b)
         {
-            Marshal.WriteByte(this, offset, b);
+            unsafe
+            {
+                *((byte*)_memory + offset) = b;
+            }
         }
 
         public void WriteBytes(int offset, byte[] b)
@@ -305,17 +317,26 @@ namespace ProcessHacker.Native
 
         public void WriteInt16(int offset, short i)
         {
-            Marshal.WriteInt16(this, offset, i);
+            unsafe
+            {
+                *(short*)((byte*)_memory + offset) = i;
+            }
         }
 
         public void WriteInt32(int offset, int i)
         {
-            Marshal.WriteInt32(this, offset, i);
+            unsafe
+            {
+                *(int*)((byte*)_memory + offset) = i;
+            }
         }
 
         public void WriteIntPtr(int offset, IntPtr i)
         {
-            Marshal.WriteIntPtr(this, offset, i);
+            unsafe
+            {
+                *(IntPtr*)((byte*)_memory + offset) = i;
+            }
         }
 
         public void WriteMemory(int destOffset, IntPtr buffer, int srcOffset, int length)
