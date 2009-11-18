@@ -381,6 +381,8 @@ begin
   // When uninstalling ask user to delete Process Hacker's logs and settings
   // based on whether these files exist only
   if CurUninstallStep = usUninstall then begin
+    StopService('KProcessHacker');
+    RemoveService('KProcessHacker');
   if FileExists(ExpandConstant('{userappdata}\Process Hacker\settings.xml'))
   OR fileExists(ExpandConstant('{app}\Process Hacker Log.txt'))
   OR fileExists(ExpandConstant('{userdocs}\Process Hacker.txt'))
@@ -441,6 +443,4 @@ begin
       exit;
    end;
    CreateMutex(installer_mutex_name);
-   StopService('KProcessHacker');
-   RemoveService('KProcessHacker');
 end;
