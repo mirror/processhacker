@@ -106,7 +106,6 @@ namespace ProcessHacker
                     }
                 }));
 
-            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
             this.Disposed += ThreadProvider_Disposed;
 
             // Try to get a good process handle we can use the same handle for stack walking.
@@ -376,7 +375,7 @@ namespace ProcessHacker
             }
         }
 
-        private void UpdateOnce()
+        protected override void UpdateOnce()
         {
             // Load symbols if they are not already loaded.
             this.LoadSymbols();

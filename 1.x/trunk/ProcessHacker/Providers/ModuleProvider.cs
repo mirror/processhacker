@@ -86,11 +86,10 @@ namespace ProcessHacker
                 { }
             }
 
-            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
             this.Disposed += (provider) => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
-        private void UpdateOnce()
+        protected override void UpdateOnce()
         {
             if (_pid != 4 && _processHandle == null)
             {

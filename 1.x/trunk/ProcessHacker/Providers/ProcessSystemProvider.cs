@@ -212,7 +212,6 @@ namespace ProcessHacker
             : base()
         {
             this.Name = this.GetType().Name;
-            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
 
             // Add the file processing results listener.
             _messageQueue.AddListener(
@@ -730,7 +729,7 @@ namespace ProcessHacker
                 this.ProcessQueryReceived(result.Stage, result.Pid);
         }
 
-        private void UpdateOnce()
+        protected override void UpdateOnce()
         {
             this.UpdatePerformance();
             this.UpdateProcessorPerf();

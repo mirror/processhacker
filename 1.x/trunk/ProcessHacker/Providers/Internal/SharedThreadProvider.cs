@@ -86,7 +86,6 @@ namespace ProcessHacker
         public void Add(IProvider provider)
         {
             provider.CreateThread = false;
-            provider.Disposed += provider_Disposed;
 
             lock (_providers)
                 _providers.Add(provider);
@@ -98,13 +97,6 @@ namespace ProcessHacker
                 _providers.Remove(provider);
 
             provider.CreateThread = true;
-            provider.Disposed -= provider_Disposed;
-        }
-
-        private void provider_Disposed(IProvider provider)
-        {
-            if (_providers.Contains(provider))
-                this.Remove(provider);
         }
 
         private void Update()

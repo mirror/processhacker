@@ -62,11 +62,6 @@ namespace ProcessHacker
         /// <param name="ex">The raised exception.</param>
         public delegate void ProviderError(Exception ex);
 
-        /// <summary>
-        /// Occurs when the provider needs to update the dictionary (after waiting the duration of the interval).
-        /// </summary>
-        protected event ProviderUpdateOnce ProviderUpdate;
-
         public new event Action<IProvider> Disposed;
 
         public event ProviderUpdateOnce BeforeUpdate;
@@ -269,7 +264,6 @@ namespace ProcessHacker
 
                 _busy = true;
 
-                if (ProviderUpdate != null)
                 {
                     try
                     {
@@ -281,7 +275,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        ProviderUpdate();
+                        this.UpdateOnce();
                         _runCount++;
                     }
                     catch (Exception ex)
@@ -394,5 +388,8 @@ namespace ProcessHacker
         {
             this.CallEvent(this.DictionaryRemoved, item);
         }
+
+        protected virtual void UpdateOnce()
+        { }
     }
 }

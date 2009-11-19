@@ -47,7 +47,6 @@ namespace ProcessHacker
             : base(StringComparer.InvariantCultureIgnoreCase) // Windows is case-insensitive with services
         {
             this.Name = this.GetType().Name;
-            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
         }
 
         public void UpdateServiceConfig(string name, QueryServiceConfig config)
@@ -63,7 +62,7 @@ namespace ProcessHacker
             this.OnDictionaryModified(item, Dictionary[name]);
         }
 
-        private void UpdateOnce()
+        protected override void UpdateOnce()
         {
             var newdictionary = Windows.GetServices();
 

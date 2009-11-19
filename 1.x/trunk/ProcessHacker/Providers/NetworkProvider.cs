@@ -66,7 +66,6 @@ namespace ProcessHacker
             : base()
         {
             this.Name = this.GetType().Name;
-            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
 
             _messageQueue.AddListener(
                 new MessageQueueListener<AddressResolveMessage>((message) =>
@@ -85,7 +84,7 @@ namespace ProcessHacker
                 }));
         }
 
-        private void UpdateOnce()
+        protected override void UpdateOnce()
         {
             var networkDict = Windows.GetNetworkConnections();
             var preKeyDict = new Dictionary<string, KeyValuePair<int, NetworkConnection>>();
