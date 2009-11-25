@@ -50,7 +50,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtCreateMutant(out handle, access, ref oa, initialOwner)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -78,7 +78,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtOpenMutant(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -100,7 +100,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtQueryMutant(this, MutantInformationClass.MutantBasicInformation,
                 out mbi, Marshal.SizeOf(typeof(MutantBasicInformation)), out retLength)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return mbi;
         }
@@ -113,7 +113,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtQueryMutant(this, MutantInformationClass.MutantOwnerInformation,
                 out moi, Marshal.SizeOf(typeof(MutantOwnerInformation)), out retLength)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return moi;
         }
@@ -124,7 +124,7 @@ namespace ProcessHacker.Native.Objects
             int previousCount;
 
             if ((status = Win32.NtReleaseMutant(this, out previousCount)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return previousCount;
         }

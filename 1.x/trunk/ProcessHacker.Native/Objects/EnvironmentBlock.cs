@@ -31,7 +31,7 @@ namespace ProcessHacker.Native.Objects
                 environmentBlock,
                 out previousEnvironment
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return new EnvironmentBlock(previousEnvironment);
         }
@@ -55,7 +55,7 @@ namespace ProcessHacker.Native.Objects
                         ref nameStr,
                         ref valueStr
                         )) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
                 }
                 finally
                 {
@@ -83,7 +83,7 @@ namespace ProcessHacker.Native.Objects
                 cloneCurrent,
                 out _environment
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public EnvironmentBlock(IntPtr environment)
@@ -151,7 +151,7 @@ namespace ProcessHacker.Native.Objects
                     }
 
                     if (status >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
 
                     return valueStr.Read();
                 }
@@ -182,7 +182,7 @@ namespace ProcessHacker.Native.Objects
                         ref nameStr,
                         ref valueStr
                         )) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
                 }
                 finally
                 {

@@ -54,7 +54,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtCreateTimer(out handle, access, ref oa, type)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -84,7 +84,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtOpenTimer(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -108,7 +108,7 @@ namespace ProcessHacker.Native.Objects
             bool currentState;
 
             if ((status = Win32.NtCancelTimer(this, out currentState)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return currentState;
         }
@@ -124,7 +124,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtQueryTimer(this, TimerInformationClass.TimerBasicInformation,
                 out tbi, Marshal.SizeOf(typeof(TimerBasicInformation)), out retLength)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return tbi;
         }
@@ -222,7 +222,7 @@ namespace ProcessHacker.Native.Objects
                 period,
                 out previousState
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return previousState;
         }

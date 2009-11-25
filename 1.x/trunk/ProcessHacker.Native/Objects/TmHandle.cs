@@ -56,7 +56,7 @@ namespace ProcessHacker.Native.Objects
                         createOptions,
                         0
                         )) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
                 }
                 finally
                 {
@@ -96,7 +96,7 @@ namespace ProcessHacker.Native.Objects
                     IntPtr.Zero,
                     0
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -119,7 +119,7 @@ namespace ProcessHacker.Native.Objects
                 Marshal.SizeOf(typeof(TmBasicInformation)),
                 out retLength
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return basicInfo;
         }
@@ -137,7 +137,7 @@ namespace ProcessHacker.Native.Objects
                 Marshal.SizeOf(typeof(TmRecoveryInformation)),
                 out retLength
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return recoveryInfo.LastRecoveredLsn;
         }
@@ -172,7 +172,7 @@ namespace ProcessHacker.Native.Objects
                 }
 
                 if (status >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 TmLogPathInformation logPathInfo = data.ReadStruct<TmLogPathInformation>();
 
@@ -193,7 +193,7 @@ namespace ProcessHacker.Native.Objects
                 Marshal.SizeOf(typeof(TmLogInformation)),
                 out retLength
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return logInfo.LogIdentity;
         }
@@ -203,7 +203,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtRecoverTransactionManager(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void Rollforward(long virtualClock)
@@ -214,7 +214,7 @@ namespace ProcessHacker.Native.Objects
                 this,
                 ref virtualClock
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
     }
 }

@@ -104,7 +104,7 @@ namespace ProcessHacker.Native.Objects
                 alertable,
                 ref realTimeout
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return status;
         }
@@ -206,7 +206,7 @@ namespace ProcessHacker.Native.Objects
             Win32HandleFlags flags;
 
             if (!Win32.GetHandleInformation(this, out flags))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return flags;
         }
@@ -238,7 +238,7 @@ namespace ProcessHacker.Native.Objects
                 {
                     if ((status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectNameInformation,
                         oniMem, oniMem.Size, out retLength)) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
 
                     var oni = oniMem.ReadStruct<ObjectNameInformation>();
 
@@ -247,7 +247,7 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
             }
 
             return null;
@@ -271,7 +271,7 @@ namespace ProcessHacker.Native.Objects
                 {
                     if ((status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectTypeInformation,
                         otiMem, otiMem.Size, out retLength)) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
 
                     var oni = otiMem.ReadStruct<ObjectTypeInformation>();
 
@@ -280,7 +280,7 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
             }
 
             return null;
@@ -315,7 +315,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtMakePermanentObject(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtMakeTemporaryObject(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -348,7 +348,7 @@ namespace ProcessHacker.Native.Objects
         public virtual void SetHandleFlags(Win32HandleFlags mask, Win32HandleFlags flags)
         {
             if (!Win32.SetHandleInformation(this, mask, flags))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         /// <summary>
@@ -410,7 +410,7 @@ namespace ProcessHacker.Native.Objects
                 alertable,
                 ref timeout
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return status;
         }
@@ -521,7 +521,7 @@ namespace ProcessHacker.Native.Objects
                 alertable,
                 ref realTimeout
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return status;
         }

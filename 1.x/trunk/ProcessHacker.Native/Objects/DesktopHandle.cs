@@ -40,7 +40,7 @@ namespace ProcessHacker.Native.Objects
             IntPtr handle = Win32.GetThreadDesktop(threadId);
 
             if (handle == IntPtr.Zero)
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return new DesktopHandle(handle, false);
         }
@@ -48,7 +48,7 @@ namespace ProcessHacker.Native.Objects
         public static void SetCurrent(DesktopHandle desktopHandle)
         {
             if (!Win32.SetThreadDesktop(desktopHandle))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         public DesktopHandle(string name, bool allowOtherAccountHook, DesktopAccess access)
@@ -56,7 +56,7 @@ namespace ProcessHacker.Native.Objects
             this.Handle = Win32.OpenDesktop(name, allowOtherAccountHook ? 1 : 0, false, access);
 
             if (this.Handle == IntPtr.Zero)
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         private DesktopHandle(IntPtr handle, bool owned)
@@ -71,7 +71,7 @@ namespace ProcessHacker.Native.Objects
         public void Switch()
         {
             if (!Win32.SwitchDesktop(this))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
     }
 }

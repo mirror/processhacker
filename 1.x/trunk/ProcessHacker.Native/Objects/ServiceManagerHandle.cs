@@ -42,7 +42,7 @@ namespace ProcessHacker.Native.Objects
             if (this.Handle == IntPtr.Zero)
             {
                 this.MarkAsInvalid();
-                Win32.ThrowLastError();
+                Win32.Throw();
             }
         }
 
@@ -69,7 +69,7 @@ namespace ProcessHacker.Native.Objects
             if ((service = Win32.CreateService(this, name, displayName, ServiceAccess.All,
                 type, startType, errorControl, binaryPath, group,
                 IntPtr.Zero, IntPtr.Zero, accountName, password)) == IntPtr.Zero)
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return new ServiceHandle(service, true);
         }

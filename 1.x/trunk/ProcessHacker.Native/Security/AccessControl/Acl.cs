@@ -148,7 +148,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 accessMask,
                 sid
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void AddAccessAllowed(int accessMask, Sid sid, AceFlags flags)
@@ -162,7 +162,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 accessMask,
                 sid
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void AddAccessDenied(int accessMask, Sid sid)
@@ -175,7 +175,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 accessMask,
                 sid
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void AddAccessDenied(int accessMask, Sid sid, AceFlags flags)
@@ -189,7 +189,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 accessMask,
                 sid
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void AddAuditAccess(int accessMask, Sid sid, bool auditSuccess, bool auditFailure)
@@ -204,7 +204,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 auditSuccess,
                 auditFailure
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void AddAuditAccess(int accessMask, Sid sid, bool auditSuccess, bool auditFailure, AceFlags flags)
@@ -220,7 +220,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 auditSuccess,
                 auditFailure
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void AddCompound(AceType type, int accessMask, Sid serverSid, Sid clientSid)
@@ -235,7 +235,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 serverSid,
                 clientSid
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void AddRange(int index, IEnumerable<Ace> aceList)
@@ -269,7 +269,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                     aceListMemory,
                     totalSize
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
         }
 
@@ -279,7 +279,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             IntPtr ace;
 
             if ((status = Win32.RtlGetAce(this, index, out ace)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return Ace.GetAce(ace);
         }
@@ -306,7 +306,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 Marshal.SizeOf(typeof(AclSizeInformation)),
                 AclInformationClass.AclSizeInformation
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return sizeInfo;
         }
@@ -316,7 +316,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             NtStatus status;
 
             if ((status = Win32.RtlDeleteAce(this, index)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
     }
 }

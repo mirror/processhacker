@@ -116,7 +116,7 @@ namespace ProcessHacker.Native.Objects
                     outboundQuota,
                     ref defaultTimeout
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -181,7 +181,7 @@ namespace ProcessHacker.Native.Objects
                         return false;
 
                     if (status >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
 
                     return true;
                 }
@@ -256,7 +256,7 @@ namespace ProcessHacker.Native.Objects
                 return true;
 
             if (asyncContext.StatusBlock.Status >= NtStatus.Error)
-                Win32.ThrowLastError(asyncContext.StatusBlock.Status);
+                Win32.Throw(asyncContext.StatusBlock.Status);
 
             return false;
         }
@@ -302,7 +302,7 @@ namespace ProcessHacker.Native.Objects
                 return true;
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return false;
         }
@@ -380,7 +380,7 @@ namespace ProcessHacker.Native.Objects
                     status = NtStatus.Success;
 
                 if (status >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 FilePipePeekBuffer info = data.ReadStruct<FilePipePeekBuffer>();
                 int bytesRead;

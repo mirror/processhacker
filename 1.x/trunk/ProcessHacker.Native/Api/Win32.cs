@@ -91,22 +91,22 @@ namespace ProcessHacker.Native.Api
         /// <summary>
         /// Throws a WindowsException with the last error that occurred.
         /// </summary>
-        public static void ThrowLastError()
+        public static void Throw()
         {
-            ThrowLastError(GetLastErrorCode());
+            Throw(GetLastErrorCode());
         }
 
-        public static void ThrowLastError(NtStatus status)
+        public static void Throw(NtStatus status)
         {
             throw new WindowsException(status);
         }
 
-        public static void ThrowLastError(int error)
+        public static void Throw(int error)
         {
-            ThrowLastError((Win32Error)error);
+            Throw((Win32Error)error);
         }
 
-        public static void ThrowLastError(Win32Error error)
+        public static void Throw(Win32Error error)
         {
             throw new WindowsException(error);
         }
@@ -172,7 +172,7 @@ namespace ProcessHacker.Native.Api
                     desiredAccess,
                     handleAttributes,
                     options)) >= NtStatus.Error)
-                    ThrowLastError(status);
+                    Throw(status);
             }
         }
 
@@ -187,7 +187,7 @@ namespace ProcessHacker.Native.Api
             try
             {
                 if (!ProcessIdToSessionId(ProcessId, out sessionId))
-                    ThrowLastError();
+                    Throw();
             }
             catch
             {

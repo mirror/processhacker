@@ -372,7 +372,7 @@ namespace ProcessHacker.Components
                         if (!Win32.ChangeServiceConfig(shandle.Handle,
                             type, startType, errorControl,
                             binaryPath, loadOrderGroup, IntPtr.Zero, null, userAccount, password, null))
-                            Win32.ThrowLastError();
+                            Win32.Throw();
                     }
                 }
                 else

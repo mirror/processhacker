@@ -212,7 +212,7 @@ namespace ProcessHacker.Native.Debugging
                 flags,
                 _buffer
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace ProcessHacker.Native.Debugging
             NtStatus status;
 
             if ((status = Win32.RtlQueryProcessBackTraceInformation(_buffer)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace ProcessHacker.Native.Debugging
             NtStatus status;
 
             if ((status = Win32.RtlQueryProcessHeapInformation(_buffer)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace ProcessHacker.Native.Debugging
             NtStatus status;
 
             if ((status = Win32.RtlQueryProcessLockInformation(_buffer)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         //public void QueryModules()

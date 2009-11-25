@@ -51,7 +51,7 @@ namespace ProcessHacker.Native
             {
                 if ((status = Win32.NtDuplicateObject(
                     process, handle, ProcessHandle.Current, out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
-                    Win32.ThrowLastError();
+                    Win32.Throw();
 
                 objectHandle = new GenericHandle(objectHandleI);
             }
@@ -72,7 +72,7 @@ namespace ProcessHacker.Native
                     }
 
                     if (status >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
 
                     return data.ReadStruct<ObjectBasicInformation>();
                 }
@@ -193,7 +193,7 @@ namespace ProcessHacker.Native
 
                 if ((status = Win32.NtDuplicateObject(
                     process, handle, ProcessHandle.Current, out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 objectHandle = new GenericHandle(objectHandleI);
             }
@@ -358,7 +358,7 @@ namespace ProcessHacker.Native
                                     new NativeHandle<ProcessAccess>(process, handle, OSVersion.MinProcessQueryInfoAccess))
                                 {
                                     if ((processId = Win32.GetProcessId(processHandle)) == 0)
-                                        Win32.ThrowLastError();
+                                        Win32.Throw();
                                 }
                             }
 

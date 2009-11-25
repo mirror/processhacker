@@ -75,7 +75,7 @@ namespace ProcessHacker.Native.Objects
                     ref initialTeb,
                     createSuspended
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -127,7 +127,7 @@ namespace ProcessHacker.Native.Objects
                 out threadHandle,
                 out clientId
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return new ThreadHandle(threadHandle, true);
         }
@@ -231,7 +231,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtRegisterThreadTerminatePort(portHandle)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -280,7 +280,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtTestAlert()) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return status;
         }
@@ -334,7 +334,7 @@ namespace ProcessHacker.Native.Objects
             if (this.Handle == IntPtr.Zero)
             {
                 this.MarkAsInvalid();
-                Win32.ThrowLastError();
+                Win32.Throw();
             }
         }
 
@@ -360,7 +360,7 @@ namespace ProcessHacker.Native.Objects
                         ref oa,
                         IntPtr.Zero
                         )) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
                 }
                 else
                 {
@@ -370,7 +370,7 @@ namespace ProcessHacker.Native.Objects
                         ref oa,
                         ref clientId
                         )) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
                 }
             }
             finally
@@ -393,7 +393,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtAlertThread(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -405,7 +405,7 @@ namespace ProcessHacker.Native.Objects
             int suspendCount;
 
             if ((status = Win32.NtAlertResumeThread(this, out suspendCount)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return suspendCount;
         }
@@ -506,7 +506,7 @@ namespace ProcessHacker.Native.Objects
             int priority = Win32.GetThreadPriority(this);
 
             if (priority == 0x7fffffff)
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return (ThreadPriorityLevel)priority;
         }
@@ -523,7 +523,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtQueryInformationThread(this, ThreadInformationClass.ThreadBasicInformation,
                 ref basicInfo, Marshal.SizeOf(basicInfo), out retLen)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return basicInfo;
         }
@@ -558,7 +558,7 @@ namespace ProcessHacker.Native.Objects
                 NtStatus status;
 
                 if ((status = Win32.NtGetContextThread(this, ref context)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
         }
 
@@ -591,7 +591,7 @@ namespace ProcessHacker.Native.Objects
                 data.WriteStruct<ContextAmd64>(context);
 
                 if ((status = Win32.NtGetContextThread(this, data)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 context = data.ReadStruct<ContextAmd64>();
             }
@@ -607,7 +607,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.RtlWow64GetThreadContext(this, ref context)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -618,7 +618,7 @@ namespace ProcessHacker.Native.Objects
             ulong cycles;
 
             if (!Win32.QueryThreadCycleTime(this, out cycles))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return cycles;
         }
@@ -632,7 +632,7 @@ namespace ProcessHacker.Native.Objects
             int exitCode;
 
             if (!Win32.GetExitCodeThread(this, out exitCode))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return exitCode;
         }
@@ -673,7 +673,7 @@ namespace ProcessHacker.Native.Objects
 
                 if ((status = Win32.NtQueryInformationThread(
                     this, infoClass, out value, sizeof(int), out retLength)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 return value;
             }
@@ -687,7 +687,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtQueryInformationThread(
                 this, infoClass, out value, IntPtr.Size, out retLength)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return value;
         }
@@ -724,7 +724,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtQueryInformationThread(
                 this, ThreadInformationClass.ThreadLastSystemCall, data, sizeof(int) * 2, out retLength)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             firstArgument = data[0];
 
@@ -813,7 +813,7 @@ namespace ProcessHacker.Native.Objects
                 new SecurityQualityOfService(impersonationLevel, false, false);
 
             if ((status = Win32.NtImpersonateThread(this, clientThreadHandle, ref securityQos)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -824,7 +824,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtImpersonateAnonymousToken(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -876,7 +876,7 @@ namespace ProcessHacker.Native.Objects
         public void QueueApc(IntPtr address, IntPtr parameter)
         {
             if (!Win32.QueueUserAPC(address, this, parameter))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         /// <summary>
@@ -888,7 +888,7 @@ namespace ProcessHacker.Native.Objects
         public void QueueApc(ApcRoutine action, IntPtr parameter)
         {
             if (!Win32.QueueUserAPC(action, this, parameter))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         /// <summary>
@@ -909,7 +909,7 @@ namespace ProcessHacker.Native.Objects
                 param2,
                 param3
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void RemoteCall(IntPtr address, IntPtr[] arguments)
@@ -943,7 +943,7 @@ namespace ProcessHacker.Native.Objects
                 false,
                 alreadySuspended
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -955,7 +955,7 @@ namespace ProcessHacker.Native.Objects
             int suspendCount;
 
             if ((status = Win32.NtResumeThread(this, out suspendCount)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return suspendCount;
         }
@@ -976,7 +976,7 @@ namespace ProcessHacker.Native.Objects
         public void SetBasePriorityWin32(ThreadPriorityLevel basePriority)
         {
             if (!Win32.SetThreadPriority(this, (int)basePriority))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         /// <summary>
@@ -994,7 +994,7 @@ namespace ProcessHacker.Native.Objects
                 NtStatus status;
 
                 if ((status = Win32.NtSetContextThread(this, ref context)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
         }
 
@@ -1013,7 +1013,7 @@ namespace ProcessHacker.Native.Objects
                 data.WriteStruct<ContextAmd64>(context);
 
                 if ((status = Win32.NtSetContextThread(this, data)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
         }
 
@@ -1027,7 +1027,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.RtlWow64SetThreadContext(this, ref context)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }   
 
         /// <summary>
@@ -1059,7 +1059,7 @@ namespace ProcessHacker.Native.Objects
 
                 if ((status = Win32.NtSetInformationThread(
                     this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
         }
 
@@ -1069,7 +1069,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtSetInformationThread(
                 this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void SetIoPriority(int ioPriority)
@@ -1121,7 +1121,7 @@ namespace ProcessHacker.Native.Objects
             int suspendCount;
 
             if ((status = Win32.NtSuspendThread(this, out suspendCount)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return suspendCount;
         }
@@ -1157,7 +1157,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtTerminateThread(this, exitStatus)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>

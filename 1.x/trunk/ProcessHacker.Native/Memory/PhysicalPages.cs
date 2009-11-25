@@ -68,7 +68,7 @@ namespace ProcessHacker.Native.Memory
             _pfnArray = new IntPtr[_count];
 
             if (!Win32.AllocateUserPhysicalPages(processHandle, ref pageCount, _pfnArray))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             if (pageCount.ToInt32() != _count)
                 throw new Exception("Could not allocate all pages.");
@@ -84,7 +84,7 @@ namespace ProcessHacker.Native.Memory
             _processHandle.Dereference();
 
             if (!Win32.FreeUserPhysicalPages(_processHandle, ref freedPages, _pfnArray))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             if (freedPages.ToInt32() != _count)
                 throw new Exception("Could not free all pages.");
@@ -111,7 +111,7 @@ namespace ProcessHacker.Native.Memory
                 new IntPtr(_count),
                 _pfnArray
                 ))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return new PhysicalPagesMapping(this, allocAddress);
         }
@@ -124,7 +124,7 @@ namespace ProcessHacker.Native.Memory
                  new IntPtr(_count),
                  null
                  ))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             ProcessHandle.Current.FreeMemory(address, 0, false);
         }

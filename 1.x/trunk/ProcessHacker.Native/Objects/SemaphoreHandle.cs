@@ -49,7 +49,7 @@ namespace ProcessHacker.Native.Objects
             {
                 if ((status = Win32.NtCreateSemaphore(out handle, access, ref oa,
                     initialCount, maximumCount)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -77,7 +77,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtOpenSemaphore(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -99,7 +99,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtQuerySemaphore(this, SemaphoreInformationClass.SemaphoreBasicInformation,
                 out sbi, Marshal.SizeOf(typeof(SemaphoreBasicInformation)), out retLength)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return sbi;
         }
@@ -115,7 +115,7 @@ namespace ProcessHacker.Native.Objects
             int previousCount;
 
             if ((status = Win32.NtReleaseSemaphore(this, count, out previousCount)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return previousCount;
         }

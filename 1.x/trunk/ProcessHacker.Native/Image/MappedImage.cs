@@ -144,7 +144,7 @@ namespace ProcessHacker.Native.Image
             int checksum;
 
             if (Win32.CheckSumMappedFile(_view, _size, out oldChecksum, out checksum) == IntPtr.Zero)
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return checksum;
         }

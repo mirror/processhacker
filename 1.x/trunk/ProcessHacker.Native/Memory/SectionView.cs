@@ -43,7 +43,7 @@ namespace ProcessHacker.Native
             NtStatus status;
 
             if ((status = Win32.NtUnmapViewOfSection(ProcessHandle.Current, this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>

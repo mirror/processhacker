@@ -63,7 +63,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtCreateEventPair(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -100,7 +100,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtOpenEventPair(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -122,7 +122,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtSetHighEventPair(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtSetHighWaitLowEventPair(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return status;
         }
@@ -146,7 +146,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtSetLowEventPair(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtSetLowWaitHighEventPair(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return status;
         }
@@ -170,7 +170,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtWaitHighEventPair(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return status;
         }
@@ -183,7 +183,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtWaitLowEventPair(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return status;
         }

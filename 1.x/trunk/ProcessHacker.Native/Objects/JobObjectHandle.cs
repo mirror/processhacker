@@ -56,7 +56,7 @@ namespace ProcessHacker.Native.Objects
                     access,
                     ref oa
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -118,7 +118,7 @@ namespace ProcessHacker.Native.Objects
                     access,
                     ref oa
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -141,7 +141,7 @@ namespace ProcessHacker.Native.Objects
             if (this.Handle == IntPtr.Zero)
             {
                 this.MarkAsInvalid();
-                Win32.ThrowLastError(NtStatus.ProcessNotInJob);
+                Win32.Throw(NtStatus.ProcessNotInJob);
             }
         }
 
@@ -157,7 +157,7 @@ namespace ProcessHacker.Native.Objects
                     data.Resize(retLength);
 
                     if (!Win32.QueryInformationJobObject(this, informationClass, data, data.Size, out retLength))
-                        Win32.ThrowLastError();
+                        Win32.Throw();
                 }
 
                 return data.ReadStruct<T>();
@@ -191,7 +191,7 @@ namespace ProcessHacker.Native.Objects
             {
                 if (!Win32.QueryInformationJobObject(this, JobObjectInformationClass.JobObjectBasicProcessIdList,
                     data, data.Size, out retLength))
-                    Win32.ThrowLastError();
+                    Win32.Throw();
 
                 JobObjectBasicProcessIdList listInfo = data.ReadStruct<JobObjectBasicProcessIdList>();
 
@@ -211,7 +211,7 @@ namespace ProcessHacker.Native.Objects
 
             if (!Win32.QueryInformationJobObject(this, JobObjectInformationClass.JobObjectBasicUIRestrictions,
                 out uiRestrictions, 4, out retLength))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return uiRestrictions;
         }
@@ -229,7 +229,7 @@ namespace ProcessHacker.Native.Objects
         public void Terminate(int exitCode)
         {
             if (!Win32.TerminateJobObject(this, exitCode))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
     }
 }

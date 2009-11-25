@@ -104,7 +104,7 @@ namespace ProcessHacker.Native.Objects
                 if (this.Handle == IntPtr.Zero)
                 {
                     this.MarkAsInvalid();
-                    Win32.ThrowLastError();
+                    Win32.Throw();
                 }
             }
         }
@@ -118,7 +118,7 @@ namespace ProcessHacker.Native.Objects
             ServiceStatus status = new ServiceStatus();
 
             if (!Win32.ControlService(this, control, out status))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace ProcessHacker.Native.Objects
         public void Delete()
         {
             if (!Win32.DeleteService(this))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace ProcessHacker.Native.Objects
             using (MemoryAlloc data = new MemoryAlloc(requiredSize))
             {
                 if (!Win32.QueryServiceConfig(this, data, data.Size, out requiredSize))
-                    Win32.ThrowLastError();
+                    Win32.Throw();
 
                 return data.ReadStruct<QueryServiceConfig>();
             }
@@ -161,7 +161,7 @@ namespace ProcessHacker.Native.Objects
             using (MemoryAlloc data = new MemoryAlloc(retLen))
             {
                 if (!Win32.QueryServiceConfig2(this, ServiceInfoLevel.Description, data, retLen, out retLen))
-                    Win32.ThrowLastError();
+                    Win32.Throw();
 
                 return data.ReadStruct<ServiceDescription>().Description;
             }
@@ -182,7 +182,7 @@ namespace ProcessHacker.Native.Objects
             int retLen;
 
             if (!Win32.QueryServiceStatusEx(this, 0, out status, Marshal.SizeOf(typeof(ServiceStatusProcess)), out retLen))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return status;
         }
@@ -198,7 +198,7 @@ namespace ProcessHacker.Native.Objects
         public void Start()
         {
             if (!Win32.StartService(this, 0, null))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
     }
 

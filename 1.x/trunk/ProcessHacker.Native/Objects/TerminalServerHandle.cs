@@ -61,7 +61,7 @@ namespace ProcessHacker.Native.Objects
                 window.Handle,
                 allSessions ? WtsNotificationFlags.AllSessions : WtsNotificationFlags.ThisSession
                 ))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace ProcessHacker.Native.Objects
         public static void UnregisterNotificationsCurrent(IWin32Window window)
         {
             if (!Win32.WTSUnRegisterSessionNotification(window.Handle))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         private string _systemName;
@@ -90,7 +90,7 @@ namespace ProcessHacker.Native.Objects
             _systemName = serverName;
 
             if (this.Handle == IntPtr.Zero)
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         protected override void Close()
@@ -118,7 +118,7 @@ namespace ProcessHacker.Native.Objects
             TerminalServerProcess[] processes;
 
             if (!Win32.WTSEnumerateProcesses(this, 0, 1, out dataPtr, out count))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             using (var data = new WtsMemoryAlloc(dataPtr))
             {
@@ -160,7 +160,7 @@ namespace ProcessHacker.Native.Objects
             TerminalServerSession[] sessions;
 
             if (!Win32.WTSEnumerateSessions(this, 0, 1, out dataPtr, out count))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             using (var data = new WtsMemoryAlloc(dataPtr))
             {
@@ -193,7 +193,7 @@ namespace ProcessHacker.Native.Objects
                 window.Handle,
                 allSessions ? WtsNotificationFlags.AllSessions : WtsNotificationFlags.ThisSession
                 ))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace ProcessHacker.Native.Objects
         public void Shutdown(WtsShutdownFlags flag)
         {
             if (!Win32.WTSShutdownSystem(this, flag))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace ProcessHacker.Native.Objects
         public void TerminateProcess(int pid, int exitCode)
         {
             if (!Win32.WTSTerminateProcess(this, pid, exitCode))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         /// <summary>
@@ -224,7 +224,7 @@ namespace ProcessHacker.Native.Objects
         public void UnregisterNotifications(IWin32Window window)
         {
             if (!Win32.WTSUnRegisterSessionNotificationEx(this, window.Handle))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
     }
 
@@ -293,7 +293,7 @@ namespace ProcessHacker.Native.Objects
 
                     if (!Win32.WTSQuerySessionInformation(
                         _serverHandle, _sessionId, WtsInformationClass.ConnectState, out dataPtr, out length))
-                        Win32.ThrowLastError();
+                        Win32.Throw();
 
                     using (var data = new WtsMemoryAlloc(dataPtr))
                         _state = (WtsConnectStateClass)data.ReadInt32(0);
@@ -384,7 +384,7 @@ namespace ProcessHacker.Native.Objects
 
                     if (!Win32.WTSQuerySessionInformation(
                         _serverHandle, _sessionId, WtsInformationClass.ClientAddress, out dataPtr, out length))
-                        Win32.ThrowLastError();
+                        Win32.Throw();
 
                     if (dataPtr != IntPtr.Zero)
                     {
@@ -416,7 +416,7 @@ namespace ProcessHacker.Native.Objects
 
                     if (!Win32.WTSQuerySessionInformation(
                         _serverHandle, _sessionId, WtsInformationClass.ClientDisplay, out dataPtr, out length))
-                        Win32.ThrowLastError();
+                        Win32.Throw();
 
                     if (dataPtr != IntPtr.Zero)
                     {
@@ -437,7 +437,7 @@ namespace ProcessHacker.Native.Objects
         public void Disconnect(bool synchronous)
         {
             if (!Win32.WTSDisconnectSession(_serverHandle, _sessionId, synchronous))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         public string GetInformationString(WtsInformationClass infoClass)
@@ -446,7 +446,7 @@ namespace ProcessHacker.Native.Objects
             int length;
 
             if (!Win32.WTSQuerySessionInformation(_serverHandle, _sessionId, infoClass, out data, out length))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             if (data == IntPtr.Zero)
                 return null;
@@ -463,7 +463,7 @@ namespace ProcessHacker.Native.Objects
         public void Logoff(bool synchronous)
         {
             if (!Win32.WTSLogoffSession(_serverHandle, _sessionId, synchronous))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         public DialogResult SendMessage(string title, string message)
@@ -506,7 +506,7 @@ namespace ProcessHacker.Native.Objects
                 out response,
                 synchronous
                 ))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return response;
         }

@@ -11,7 +11,7 @@ namespace ProcessHacker.Native
         public ImpersonationContext(TokenHandle token)
         {
             if (!Win32.ImpersonateLoggedOnUser(token))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
 
         public void Dispose()

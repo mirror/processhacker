@@ -57,7 +57,7 @@ namespace ProcessHacker.Native.Objects
                     notificationMask,
                     enlistmentKey
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -98,7 +98,7 @@ namespace ProcessHacker.Native.Objects
                     ref guid,
                     ref oa
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -113,7 +113,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtCommitEnlistment(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void CommitComplete(long virtualClock)
@@ -121,7 +121,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtCommitComplete(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public EnlistmentBasicInformation GetBasicInformation()
@@ -137,7 +137,7 @@ namespace ProcessHacker.Native.Objects
                 Marshal.SizeOf(typeof(EnlistmentBasicInformation)),
                 out retLength
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return basicInfo;
         }
@@ -147,7 +147,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtPrepareEnlistment(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void PrepareComplete(long virtualClock)
@@ -155,7 +155,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtPrepareComplete(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void PrePrepare(long virtualClock)
@@ -163,7 +163,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtPrePrepareEnlistment(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void PrePrepareComplete(long virtualClock)
@@ -171,7 +171,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtPrePrepareComplete(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void ReadOnly(long virtualClock)
@@ -179,7 +179,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtReadOnlyEnlistment(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void Recover(IntPtr enlistmentKey)
@@ -187,7 +187,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtRecoverEnlistment(this, enlistmentKey)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void RejectSinglePhase(long virtualClock)
@@ -195,7 +195,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtSinglePhaseReject(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void Rollback(long virtualClock)
@@ -203,7 +203,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtRollbackEnlistment(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void RollbackComplete(long virtualClock)
@@ -211,7 +211,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtRollbackComplete(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
     }
 }

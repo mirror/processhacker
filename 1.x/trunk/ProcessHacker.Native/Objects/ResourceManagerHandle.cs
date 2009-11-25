@@ -58,7 +58,7 @@ namespace ProcessHacker.Native.Objects
                         createOptions,
                         ref descriptionStr
                         )) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
                 }
                 finally
                 {
@@ -104,7 +104,7 @@ namespace ProcessHacker.Native.Objects
                     ref guid,
                     ref oa
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -146,7 +146,7 @@ namespace ProcessHacker.Native.Objects
             if (status >= NtStatus.Error)
             {
                 data.Dispose();
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
             }
 
             return data;
@@ -178,7 +178,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtRecoverResourceManager(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
     }
 }

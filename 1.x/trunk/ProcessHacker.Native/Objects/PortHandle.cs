@@ -67,7 +67,7 @@ namespace ProcessHacker.Native.Objects
                     maxMessageLength,
                     maxPoolUsage
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -115,7 +115,7 @@ namespace ProcessHacker.Native.Objects
                     maxMessageLength,
                     maxPoolUsage
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -144,7 +144,7 @@ namespace ProcessHacker.Native.Objects
                     IntPtr.Zero,
                     IntPtr.Zero
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 if (!NativeHandle.IsInvalid(portHandle))
                     return new PortComHandle(portHandle, true);
@@ -158,7 +158,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtCompleteConnectPort(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public PortMessage Listen()
@@ -168,7 +168,7 @@ namespace ProcessHacker.Native.Objects
             using (var buffer = PortMessage.AllocateBuffer())
             {
                 if ((status = Win32.NtListenPort(this, buffer)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 return new PortMessage(buffer);
             }

@@ -53,7 +53,7 @@ namespace ProcessHacker.Native.Symbols
                 using (Win32.DbgHelpLock.AcquireContext())
                 {
                     if (!Win32.SymInitialize(_handle, null, false))
-                        Win32.ThrowLastError();
+                        Win32.Throw();
                 }
             }
 
@@ -65,7 +65,7 @@ namespace ProcessHacker.Native.Symbols
                 using (Win32.DbgHelpLock.AcquireContext())
                 {
                     if (!Win32.SymInitialize(_handle, null, false))
-                        Win32.ThrowLastError();
+                        Win32.Throw();
                 }
 
                 _processHandle.Reference();
@@ -201,7 +201,7 @@ namespace ProcessHacker.Native.Symbols
                         enumDelegate(new SymbolInformation(symbolInfo, symbolSize)),
                     IntPtr.Zero
                     ))
-                    Win32.ThrowLastError();
+                    Win32.Throw();
             }
         }
 
@@ -456,7 +456,7 @@ namespace ProcessHacker.Native.Symbols
                 using (Win32.DbgHelpLock.AcquireContext())
                 {
                     if (!Win32.SymFromName(_handle, symbolName, data))
-                        Win32.ThrowLastError();
+                        Win32.Throw();
                 }
 
                 return new SymbolInformation(data, 0);
@@ -485,7 +485,7 @@ namespace ProcessHacker.Native.Symbols
                 if (Win32.SymLoadModule64(_handle, IntPtr.Zero, fileName, null, baseAddress, size) == 0)
                 {
                     if (Marshal.GetLastWin32Error() != 0)
-                        Win32.ThrowLastError();
+                        Win32.Throw();
                 }
             }
 
@@ -511,7 +511,7 @@ namespace ProcessHacker.Native.Symbols
             using (Win32.DbgHelpLock.AcquireContext())
             {
                 if (!Win32.SymUnloadModule64(_handle, baseAddress))
-                    Win32.ThrowLastError();
+                    Win32.Throw();
             }
 
             lock (_modules)

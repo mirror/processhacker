@@ -43,7 +43,7 @@ namespace ProcessHacker.Native.Objects
                 access,
                 out handle
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return new LsaAccountHandle(handle, true);
         }
@@ -69,7 +69,7 @@ namespace ProcessHacker.Native.Objects
                 access,
                 out handle
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             this.Handle = handle;
         }
@@ -84,7 +84,7 @@ namespace ProcessHacker.Native.Objects
                     this,
                     privilegeSetMemory
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
         }
 
@@ -97,7 +97,7 @@ namespace ProcessHacker.Native.Objects
                 this,
                 out privileges
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             using (var privilegesAlloc = new LsaMemoryAlloc(privileges))
             {
@@ -114,7 +114,7 @@ namespace ProcessHacker.Native.Objects
                 this,
                 out quotas
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return quotas;
         }
@@ -128,7 +128,7 @@ namespace ProcessHacker.Native.Objects
                 this,
                 out access
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return access;
         }
@@ -142,7 +142,7 @@ namespace ProcessHacker.Native.Objects
                 true,
                 IntPtr.Zero
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         private void RemovePrivileges(PrivilegeSet privileges)
@@ -156,7 +156,7 @@ namespace ProcessHacker.Native.Objects
                     false,
                     privilegeSetMemory
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
         }
 
@@ -168,7 +168,7 @@ namespace ProcessHacker.Native.Objects
                 this,
                 ref quotas
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void SetSystemAccess(SecuritySystemAccess access)
@@ -179,7 +179,7 @@ namespace ProcessHacker.Native.Objects
                 this,
                 access
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
     }
 }

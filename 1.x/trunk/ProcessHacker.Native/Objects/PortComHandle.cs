@@ -49,7 +49,7 @@ namespace ProcessHacker.Native.Objects
                     IntPtr.Zero,
                     IntPtr.Zero
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -70,7 +70,7 @@ namespace ProcessHacker.Native.Objects
             using (var messageMemory = message.ToMemory())
             {
                 if ((status = Win32.NtReplyPort(this, messageMemory)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 message.SetHeader(messageMemory);
             }
@@ -101,7 +101,7 @@ namespace ProcessHacker.Native.Objects
                         messageMemory ?? IntPtr.Zero,
                         buffer
                         )) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
 
                     if (message != null)
                         message.SetHeader(messageMemory);
@@ -126,7 +126,7 @@ namespace ProcessHacker.Native.Objects
                     this,
                     messageMemory
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 return new PortMessage(messageMemory);
             }
@@ -139,7 +139,7 @@ namespace ProcessHacker.Native.Objects
             using (var messageMemory = message.ToMemory())
             {
                 if ((status = Win32.NtRequestPort(this, messageMemory)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 message.SetHeader(messageMemory);
             }
@@ -157,7 +157,7 @@ namespace ProcessHacker.Native.Objects
                     messageMemory,
                     buffer
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 message.SetHeader(messageMemory);
 

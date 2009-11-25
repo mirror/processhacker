@@ -100,7 +100,7 @@ namespace ProcessHacker.Native.Objects
                         sectionAttributes,
                         fileHandle ?? IntPtr.Zero
                         )) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
                 }
                 else
                 {
@@ -113,7 +113,7 @@ namespace ProcessHacker.Native.Objects
                         sectionAttributes,
                         fileHandle ?? IntPtr.Zero
                         )) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
                 }
             }
             finally
@@ -142,7 +142,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtOpenSection(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -161,7 +161,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtExtendSection(this, ref newSize)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return newSize;
         }
@@ -174,7 +174,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtQuerySection(this, SectionInformationClass.SectionBasicInformation,
                 out sbi, new IntPtr(Marshal.SizeOf(typeof(SectionBasicInformation))), out retLength)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return sbi;
         }
@@ -187,7 +187,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtQuerySection(this, SectionInformationClass.SectionImageInformation,
                 out sii, new IntPtr(Marshal.SizeOf(typeof(SectionImageInformation))), out retLength)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return sii;
         }
@@ -249,7 +249,7 @@ namespace ProcessHacker.Native.Objects
                 allocationType,
                 protection
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return new SectionView(baseAddress, viewSize);
         }

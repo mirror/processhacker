@@ -40,7 +40,7 @@ namespace ProcessHacker.Native.Objects
             handle = Win32.CreatePrivateNamespace(IntPtr.Zero, boundaryDescriptor.Descriptor, aliasPrefix);
 
             if (handle == IntPtr.Zero)
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return new PrivateNamespaceHandle(handle, true);
         }
@@ -58,7 +58,7 @@ namespace ProcessHacker.Native.Objects
             if (this.Handle == IntPtr.Zero)
             {
                 this.MarkAsInvalid();
-                Win32.ThrowLastError();
+                Win32.Throw();
             }
         }
 
@@ -88,7 +88,7 @@ namespace ProcessHacker.Native.Objects
             if (_descriptor == IntPtr.Zero)
             {
                 this.DisableOwnership(false);
-                Win32.ThrowLastError();
+                Win32.Throw();
             }
 
             if (sids != null)
@@ -111,7 +111,7 @@ namespace ProcessHacker.Native.Objects
         public void Add(Sid sid)
         {
             if (!Win32.AddSIDToBoundaryDescriptor(ref _descriptor, sid))
-                Win32.ThrowLastError();
+                Win32.Throw();
         }
     }
 }

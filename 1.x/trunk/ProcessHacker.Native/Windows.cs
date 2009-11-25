@@ -165,7 +165,7 @@ namespace ProcessHacker.Native
             }
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             RtlProcessModules modules = _kernelModulesBuffer.ReadStruct<RtlProcessModules>();
 
@@ -201,7 +201,7 @@ namespace ProcessHacker.Native
                 Marshal.SizeOf(typeof(SystemBasicInformation)),
                 out retLength
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return sbi;
         }
@@ -241,7 +241,7 @@ namespace ProcessHacker.Native
             }
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             // The structure of the buffer is the handle count plus an array of SYSTEM_HANDLE_INFORMATION 
             // structures.
@@ -316,7 +316,7 @@ namespace ProcessHacker.Native
                 ref logonId,
                 out logonSessionData
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             using (var logonSessionDataAlloc = new LsaMemoryAlloc(logonSessionData, true))
             {
@@ -348,7 +348,7 @@ namespace ProcessHacker.Native
                 out logonSessionCount,
                 out logonSessionList
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             Luid[] logonSessions = new Luid[logonSessionCount];
 
@@ -378,7 +378,7 @@ namespace ProcessHacker.Native
             using (var mem = new MemoryAlloc(length))
             {
                 if (Win32.GetExtendedTcpTable(mem, ref length, false, AiFamily.INet, TcpTableClass.OwnerPidAll, 0) != 0)
-                    Win32.ThrowLastError();
+                    Win32.Throw();
 
                 int count = mem.ReadInt32(0);
 
@@ -408,7 +408,7 @@ namespace ProcessHacker.Native
             using (var mem = new MemoryAlloc(length))
             {
                 if (Win32.GetExtendedUdpTable(mem, ref length, false, AiFamily.INet, UdpTableClass.OwnerPid, 0) != 0)
-                    Win32.ThrowLastError();
+                    Win32.Throw();
 
                 int count = mem.ReadInt32(0);
 
@@ -519,7 +519,7 @@ namespace ProcessHacker.Native
                 }
 
                 if (status >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 pagefiles = new List<SystemPagefile>(2);
 
@@ -583,7 +583,7 @@ namespace ProcessHacker.Native
                     )) >= NtStatus.Error)
                 {
                     if (attempts > 3)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
 
                     data.Resize(retLength);
                 }
@@ -650,7 +650,7 @@ namespace ProcessHacker.Native
                     data.Size, out retLength)) >= NtStatus.Error)
                 {
                     if (attempts > 3)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
 
                     data.Resize(retLength);
                 }
@@ -719,7 +719,7 @@ namespace ProcessHacker.Native
                         ServiceQueryState.All, data,
                         data.Size, out requiredSize, out servicesReturned,
                         ref resume, null))
-                        Win32.ThrowLastError();
+                        Win32.Throw();
                 }
 
                 var dictionary = new Dictionary<string, EnumServiceStatusProcess>(servicesReturned);
@@ -771,7 +771,7 @@ namespace ProcessHacker.Native
                 );
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return timeOfDay;
         }
@@ -801,7 +801,7 @@ namespace ProcessHacker.Native
                 NtStatus status;
 
                 if ((status = Win32.NtLoadDriver(ref str)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -874,7 +874,7 @@ namespace ProcessHacker.Native
                 NtStatus status;
 
                 if ((status = Win32.NtUnloadDriver(ref str)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -920,7 +920,7 @@ namespace ProcessHacker.Native
             int result = Win32.SetTcpEntry(ref row);
 
             if (result != 0)
-                Win32.ThrowLastError(result);
+                Win32.Throw(result);
         }
     }
 

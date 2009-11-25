@@ -49,7 +49,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.LsaDelete(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public override SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
@@ -62,7 +62,7 @@ namespace ProcessHacker.Native.Objects
                 securityInformation,
                 out securityDescriptor
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return new SecurityDescriptor(new LsaMemoryAlloc(securityDescriptor));
         }
@@ -76,7 +76,7 @@ namespace ProcessHacker.Native.Objects
                 securityInformation,
                 securityDescriptor
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
     }
 }

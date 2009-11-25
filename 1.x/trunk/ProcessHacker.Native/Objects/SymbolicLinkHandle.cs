@@ -47,7 +47,7 @@ namespace ProcessHacker.Native.Objects
                 {
                     if ((status = Win32.NtCreateSymbolicLinkObject(out handle, access,
                         ref oa, ref linkTargetString)) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
                 }
                 finally
                 {
@@ -75,7 +75,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtOpenSymbolicLinkObject(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -109,7 +109,7 @@ namespace ProcessHacker.Native.Objects
                 }
 
                 if ((status = Win32.NtQuerySymbolicLinkObject(this, ref str, out retLength)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 return str.Read();
             }

@@ -37,7 +37,7 @@ namespace ProcessHacker.Native
             IntPtr block;
 
             if ((status = Win32.RtlAllocateFromPeb(size, out block)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             this.Memory = block;
             this.Size = size;
@@ -48,7 +48,7 @@ namespace ProcessHacker.Native
             NtStatus status;
 
             if ((status = Win32.RtlFreeToPeb(this, this.Size)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

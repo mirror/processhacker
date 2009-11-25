@@ -77,7 +77,7 @@ namespace ProcessHacker.Native.Objects
                     createOptions,
                     out creationDisposition
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -108,7 +108,7 @@ namespace ProcessHacker.Native.Objects
                     access,
                     ref oa
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -123,7 +123,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtDeleteKey(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void DeleteValue(string name)
@@ -134,7 +134,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtDeleteValueKey(this, ref nameStr)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {

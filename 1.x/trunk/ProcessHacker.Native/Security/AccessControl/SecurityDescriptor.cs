@@ -67,7 +67,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 }
 
                 if (status >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 return new SecurityDescriptor(data);
             }
@@ -92,7 +92,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 out dummy, out dummy, out dummy, out dummy,
                 out securityDescriptor
                 )) != 0)
-                Win32.ThrowLastError(result);
+                Win32.Throw(result);
 
             return new SecurityDescriptor(new LocalMemoryAlloc(securityDescriptor));
         }
@@ -112,7 +112,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 securityInformation,
                 securityDescriptor
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 dacl,
                 sacl
                 )) != 0)
-                Win32.ThrowLastError(result);
+                Win32.Throw(result);
         }
 
         public static implicit operator IntPtr(SecurityDescriptor securityDescriptor)
@@ -179,7 +179,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 _memory.Dispose();
                 _memory = null;
                 this.DisableOwnership(false);
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
             }
 
             _memory.Reference();
@@ -243,7 +243,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                     out control,
                     out revision
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 return control;
             }
@@ -256,7 +256,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                     value,
                     value
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
         }
 
@@ -276,7 +276,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                     value ?? IntPtr.Zero,
                     false
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 this.SwapDacl(value);
             }
@@ -316,7 +316,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                     value,
                     false
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 this.SwapGroup(value);
             }
@@ -372,7 +372,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                     value,
                     false
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 this.SwapOwner(value);
             }
@@ -413,7 +413,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                     value ?? IntPtr.Zero,
                     false
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 this.SwapSacl(value);
             }
@@ -474,7 +474,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 out grantedAccess,
                 out accessStatus
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return accessStatus;
         }
@@ -501,7 +501,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 out dacl,
                 out defaulted
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             if (present && dacl != IntPtr.Zero)
                 this.SwapDacl(new Acl(Acl.FromPointer(dacl)));
@@ -515,7 +515,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 out sacl,
                 out defaulted
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             if (present && sacl != IntPtr.Zero)
                 this.SwapSacl(new Acl(Acl.FromPointer(sacl)));
@@ -528,7 +528,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 out group,
                 out defaulted
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             if (group != IntPtr.Zero)
                 this.SwapGroup(new Sid(group));
@@ -541,7 +541,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 out owner,
                 out defaulted
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             if (owner != IntPtr.Zero)
                 this.SwapOwner(new Sid(owner));
@@ -590,7 +590,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 }
 
                 if (status >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 return new SecurityDescriptor(data);
             }

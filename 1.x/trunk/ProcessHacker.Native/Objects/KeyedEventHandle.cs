@@ -49,7 +49,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtCreateKeyedEvent(out handle, access, ref oa, 0)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -76,7 +76,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtOpenKeyedEvent(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -120,7 +120,7 @@ namespace ProcessHacker.Native.Objects
                 alertable,
                 ref realTimeout
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return status;
         }
@@ -159,7 +159,7 @@ namespace ProcessHacker.Native.Objects
                 alertable,
                 ref realTimeout
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return status;
         }

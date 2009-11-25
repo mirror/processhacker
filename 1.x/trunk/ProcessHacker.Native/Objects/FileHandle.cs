@@ -146,7 +146,7 @@ namespace ProcessHacker.Native.Objects
                     IntPtr.Zero,
                     0
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 ioStatus = (FileIoStatus)isb.Information.ToInt32();
             }
@@ -176,7 +176,7 @@ namespace ProcessHacker.Native.Objects
             handle = Win32.CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, IntPtr.Zero);
 
             if (handle == NativeHandle.MinusOne)
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return new FileHandle(handle, true);
         }
@@ -189,7 +189,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtDeleteFile(ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -279,7 +279,7 @@ namespace ProcessHacker.Native.Objects
                     shareMode,
                     openOptions
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -628,7 +628,7 @@ namespace ProcessHacker.Native.Objects
             IoStatusBlock isb;
 
             if ((status = Win32.NtCancelIoFile(this, out isb)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return isb;
         }
@@ -655,7 +655,7 @@ namespace ProcessHacker.Native.Objects
             asyncContext.NotifyEnd();
 
             if (asyncContext.Status >= NtStatus.Error)
-                Win32.ThrowLastError(asyncContext.Status);
+                Win32.Throw(asyncContext.Status);
 
             return asyncContext.StatusBlock.Information.ToInt32();
         }
@@ -694,7 +694,7 @@ namespace ProcessHacker.Native.Objects
                 return false;
 
             if (asyncContext.Status >= NtStatus.Error)
-                Win32.ThrowLastError(asyncContext.Status);
+                Win32.Throw(asyncContext.Status);
 
             return true;
         }
@@ -773,7 +773,7 @@ namespace ProcessHacker.Native.Objects
 
                     // Handle any errors.
                     if (status >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
 
                     // Read the list of files we got in this batch.
 
@@ -862,7 +862,7 @@ namespace ProcessHacker.Native.Objects
             }
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -941,7 +941,7 @@ namespace ProcessHacker.Native.Objects
             status = this.FsControl(controlCode, inBuffer, inBufferLength, outBuffer, outBufferLength, out returnLength);
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return returnLength;
         }
@@ -1097,7 +1097,7 @@ namespace ProcessHacker.Native.Objects
                     data.Size,
                     FsInformationClass.FileFsAttributeInformation
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 FileFsAttributeInformation info = data.ReadStruct<FileFsAttributeInformation>();
 
@@ -1126,7 +1126,7 @@ namespace ProcessHacker.Native.Objects
                     data.Size,
                     FsInformationClass.FileFsVolumeInformation
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 FileFsVolumeInformation info = data.ReadStruct<FileFsVolumeInformation>();
 
@@ -1232,7 +1232,7 @@ namespace ProcessHacker.Native.Objects
             status = this.IoControl(controlCode, inBuffer, inBufferLength, outBuffer, outBufferLength, out returnLength);
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return returnLength;
         }
@@ -1341,7 +1341,7 @@ namespace ProcessHacker.Native.Objects
                 return false;
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return true;
         }
@@ -1361,7 +1361,7 @@ namespace ProcessHacker.Native.Objects
                     data.Size,
                     infoClass
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 return data.ReadStruct<T>();
             }
@@ -1396,7 +1396,7 @@ namespace ProcessHacker.Native.Objects
             if (status >= NtStatus.Error)
             {
                 data.Dispose();
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
             }
 
             return data;
@@ -1536,7 +1536,7 @@ namespace ProcessHacker.Native.Objects
             }
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return isb.Information.ToInt32();
         }
@@ -1643,7 +1643,7 @@ namespace ProcessHacker.Native.Objects
                     data.Size,
                     infoClass
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
         }
 
@@ -1666,7 +1666,7 @@ namespace ProcessHacker.Native.Objects
                 );
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -1789,7 +1789,7 @@ namespace ProcessHacker.Native.Objects
             }
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return isb.Information.ToInt32();
         }

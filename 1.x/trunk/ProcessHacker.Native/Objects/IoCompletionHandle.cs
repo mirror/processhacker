@@ -55,7 +55,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtCreateIoCompletion(out handle, access, ref oa, count)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -78,7 +78,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtOpenIoCompletion(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -104,7 +104,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtRemoveIoCompletion(
                 this, out keyContext, out apcContext, out isb, ref realTimeout)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return status != NtStatus.Timeout;
         }
@@ -115,7 +115,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtSetIoCompletion(
                 this, keyContext, apcContext, ioStatus, ioInformation)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
     }
 }

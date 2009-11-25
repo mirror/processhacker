@@ -76,7 +76,7 @@ namespace ProcessHacker.Native.Security
                 int memorySize = memory.Size;
 
                 if (!Win32.CreateWellKnownSid(sidType, IntPtr.Zero, memory, ref memorySize))
-                    Win32.ThrowLastError();
+                    Win32.Throw();
 
                 return new Sid(memory);
             }
@@ -163,7 +163,7 @@ namespace ProcessHacker.Native.Security
             IntPtr sidMemory;
 
             if (!Win32.ConvertStringSidToSid(stringSid, out sidMemory))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             _memory = new LocalMemoryAlloc(sidMemory, true);
             _hasAttributes = false;
@@ -220,7 +220,7 @@ namespace ProcessHacker.Native.Security
             _memory = new MemoryAlloc(Win32.RtlLengthSid(sid));
 
             if ((status = Win32.RtlCopySid(_memory.Size, _memory, sid)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             _hasAttributes = hasAttributes;
             _attributes = attributes;
@@ -335,7 +335,7 @@ namespace ProcessHacker.Native.Security
             bool equal;
 
             if (!Win32.EqualDomainSid(this, obj, out equal))
-                Win32.ThrowLastError();
+                Win32.Throw();
 
             return equal;
         }
@@ -408,7 +408,7 @@ namespace ProcessHacker.Native.Security
             UnicodeString str = new UnicodeString();
 
             if ((status = Win32.RtlConvertSidToUnicodeString(ref str, this, true)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             using (str)
                 return str.Read();

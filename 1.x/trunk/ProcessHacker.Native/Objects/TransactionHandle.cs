@@ -109,7 +109,7 @@ namespace ProcessHacker.Native.Objects
                         ref timeout,
                         ref descriptionStr
                         )) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
                 }
                 finally
                 {
@@ -172,7 +172,7 @@ namespace ProcessHacker.Native.Objects
                     ref unitOfWorkGuid,
                     tmHandle ?? IntPtr.Zero
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -192,7 +192,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtCommitTransaction(this, wait)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public TransactionBasicInformation GetBasicInformation()
@@ -208,7 +208,7 @@ namespace ProcessHacker.Native.Objects
                 Marshal.SizeOf(typeof(TransactionBasicInformation)),
                 out retLength
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return basicInfo;
         }
@@ -258,7 +258,7 @@ namespace ProcessHacker.Native.Objects
             if (status >= NtStatus.Error)
             {
                 data.Dispose();
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
             }
 
             return data;
@@ -275,7 +275,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtRollbackTransaction(this, wait)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
     }
 }

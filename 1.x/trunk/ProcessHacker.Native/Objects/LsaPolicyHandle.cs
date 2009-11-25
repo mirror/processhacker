@@ -100,7 +100,7 @@ namespace ProcessHacker.Native.Objects
                     access,
                     out handle
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -135,7 +135,7 @@ namespace ProcessHacker.Native.Objects
                 if (status == NtStatus.NoMoreEntries)
                     break;
                 if (status >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 using (var bufferAlloc = new LsaMemoryAlloc(buffer))
                 {
@@ -172,7 +172,7 @@ namespace ProcessHacker.Native.Objects
                     out buffer,
                     out count
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -216,7 +216,7 @@ namespace ProcessHacker.Native.Objects
                 if (status == NtStatus.NoMoreEntries)
                     break;
                 if (status >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 using (var bufferAlloc = new LsaMemoryAlloc(buffer))
                 {
@@ -320,7 +320,7 @@ namespace ProcessHacker.Native.Objects
                     return null;
                 }
 
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
             }
 
             using (var referencedDomainsAlloc = new LsaMemoryAlloc(referencedDomains))
@@ -376,7 +376,7 @@ namespace ProcessHacker.Native.Objects
                     out displayName,
                     out language
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -399,7 +399,7 @@ namespace ProcessHacker.Native.Objects
                 ref value,
                 out name
                 )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             using (var nameAlloc = new LsaMemoryAlloc(name))
             {
@@ -422,7 +422,7 @@ namespace ProcessHacker.Native.Objects
                     ref nameStr,
                     out luid
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -480,7 +480,7 @@ namespace ProcessHacker.Native.Objects
                         return null;
                     }
 
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
                 }
             }
             finally

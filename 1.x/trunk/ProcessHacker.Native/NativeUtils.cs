@@ -83,7 +83,7 @@ namespace ProcessHacker.Native
                     );
 
                 if (status >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 try
                 {

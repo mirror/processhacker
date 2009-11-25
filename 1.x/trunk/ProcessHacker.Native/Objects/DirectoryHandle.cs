@@ -63,7 +63,7 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 if ((status = Win32.NtCreateDirectoryObject(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -99,7 +99,7 @@ namespace ProcessHacker.Native.Objects
                 else
                 {
                     if ((status = Win32.NtOpenDirectoryObject(out handle, access, ref oa)) >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
                 }
             }
             finally
@@ -137,13 +137,13 @@ namespace ProcessHacker.Native.Objects
                             break;
 
                         if (data.Size > 16 * 1024 * 1024)
-                            Win32.ThrowLastError(status);
+                            Win32.Throw(status);
 
                         data.Resize(data.Size * 2);
                     }
 
                     if (status >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
+                        Win32.Throw(status);
 
                     int i = 0;
 

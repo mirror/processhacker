@@ -145,7 +145,7 @@ namespace ProcessHacker.Native.Api
             UnicodeString unicodeStr = new UnicodeString();
 
             if ((status = Win32.RtlAnsiStringToUnicodeString(ref unicodeStr, ref this, true)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return unicodeStr;
         }
@@ -1470,7 +1470,7 @@ namespace ProcessHacker.Native.Api
             Luid luid;
 
             if ((status = Win32.NtAllocateLocallyUniqueId(out luid)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return luid;
         }
@@ -3040,7 +3040,7 @@ namespace ProcessHacker.Native.Api
                 RtlDuplicateUnicodeStringFlags.AllocateNullString |
                 RtlDuplicateUnicodeStringFlags.NullTerminate,
                 ref this, out newString)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return newString;
         }
@@ -3067,7 +3067,7 @@ namespace ProcessHacker.Native.Api
 
             if ((status = Win32.RtlHashUnicodeString(ref this,
                 caseInsensitive, algorithm, out hash)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return hash;
         }
@@ -3124,7 +3124,7 @@ namespace ProcessHacker.Native.Api
             AnsiString ansiStr = new AnsiString();
 
             if ((status = Win32.RtlUnicodeStringToAnsiString(ref ansiStr, ref this, true)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return ansiStr;
         }
@@ -3140,7 +3140,7 @@ namespace ProcessHacker.Native.Api
             AnsiString ansiStr = new AnsiString();
 
             if ((status = Win32.RtlUpcaseUnicodeStringToAnsiString(ref ansiStr, ref this, true)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return ansiStr;
         }

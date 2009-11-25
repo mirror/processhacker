@@ -54,7 +54,7 @@ namespace ProcessHacker.Native.Objects
                     ref oa,
                     flags
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {
@@ -91,7 +91,7 @@ namespace ProcessHacker.Native.Objects
                 ref cid,
                 continueStatus
                 )) > NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void SetFlags(DebugObjectFlags flags)
@@ -108,7 +108,7 @@ namespace ProcessHacker.Native.Objects
                     sizeof(DebugObjectFlags),
                     out retLength
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
         }
 

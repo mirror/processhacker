@@ -73,7 +73,7 @@ namespace ProcessHacker.Native.Objects
                     maxMessageSize,
                     ref readTimeout
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
             }
             finally
             {

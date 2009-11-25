@@ -703,7 +703,7 @@ namespace ProcessHacker.Native
             status = KphReadVirtualMemorySafe(processHandle, baseAddress, buffer, length, out bytesRead);
 
             if (status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public NtStatus KphReadVirtualMemorySafe(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)

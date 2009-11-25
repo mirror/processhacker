@@ -60,7 +60,7 @@ namespace ProcessHacker.Native.Objects
                     profileSource,
                     affinity
                     )) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                    Win32.Throw(status);
 
                 return new ProfileHandle(handle, true, rangeBase, rangeSize, realBucketSize, buffer);
             }
@@ -72,7 +72,7 @@ namespace ProcessHacker.Native.Objects
             int interval;
 
             if ((status = Win32.NtQueryIntervalProfile(profileSource, out interval)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
 
             return interval;
         }
@@ -82,7 +82,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtSetIntervalProfile(interval, profileSource)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         private IntPtr _rangeBase;
@@ -127,7 +127,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtStartProfile(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
 
         public void Stop()
@@ -135,7 +135,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
 
             if ((status = Win32.NtStopProfile(this)) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.Throw(status);
         }
     }
 }
