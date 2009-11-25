@@ -402,7 +402,7 @@ namespace ProcessHacker
         private void toolbarMenuItem_Click(object sender, EventArgs e)
         {
             toolbarMenuItem.Checked = !toolbarMenuItem.Checked;
-            toolStrip.Visible = toolbarMenuItem.Checked;
+            Settings.Instance.ToolbarVisible = toolStrip.Visible = toolbarMenuItem.Checked;
         }
 
         private void updateNowMenuItem_Click(object sender, EventArgs e)
@@ -2706,7 +2706,6 @@ namespace ProcessHacker
             Settings.Instance.AlwaysOnTop = this.TopMost;
             Settings.Instance.WindowState = this.WindowState == FormWindowState.Minimized ?
                 FormWindowState.Normal : this.WindowState;
-            Settings.Instance.ToolbarVisible = toolbarMenuItem.Checked;
 
             Settings.Instance.PromptBoxText = PromptBox.LastValue;
 

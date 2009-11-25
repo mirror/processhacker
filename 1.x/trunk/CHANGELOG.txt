@@ -5,6 +5,7 @@ Process Hacker
    * Ability to set I/O priority for processes and threads
    * Small performance improvements
  * FIXED:
+   * #2902988 - "Toolbar not shown after saving options"
 
 1.7
  * NEW/IMPROVED:
