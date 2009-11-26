@@ -7,9 +7,7 @@
 
 include "base.txt";
 
-typedef int handle;
-typedef int NTSTATUS; /* no enum support *yet* */
-typedef pvoid ppvoid;
+typedef int NTSTATUS; /* no enum support yet */
 
 /* A counted UTF-16 string. Same as LSA_UNICODE_STRING. */
 struct UNICODE_STRING
@@ -145,10 +143,14 @@ struct PEB
     /* +0xb4 */ ulong ImageSubSystem;
     ulong ImageSubSystemMajorVersion;
     ulong ImageSubSystemMinorVersion;
-    ulong ImageProcessAffinityMask;
+    ulong_ptr ImageProcessAffinityMask;
+#if _X86_
     ulong GdiHandleBuffer[0x22];
-    ulong PostProcessInitRoutine;
-    ulong TlsExpansionBitmap;
+#else
+	ulong GdiHandleBuffer[0x3c];
+#endif
+    pvoid PostProcessInitRoutine;
+    pvoid TlsExpansionBitmap;
     byte TlsExpansionBitmapBits[0x80];
     ulong SessionId;
     large_integer AppCompatFlags;
@@ -160,7 +162,7 @@ struct PEB
     pvoid ProcessAssemblyStorageMap;
     pvoid SystemDefaultActivationContextData;
     pvoid SystemAssemblyStorageMap;
-    ulong MinimumStackCommit;
+    size_t MinimumStackCommit;
 }
 
 struct NT_TIB
@@ -169,7 +171,7 @@ struct NT_TIB
     pvoid StackBase;
     pvoid StackLimit;
     pvoid SubSystemTib;
-    ulong FiberData_Version_Union;
+    pvoid FiberData_Version_Union;
     pvoid ArbitraryUserPointer;
     pvoid Self; /* NT_TIB* */
 }
@@ -194,19 +196,23 @@ struct TEB
     pvoid SystemReserved1[0x36];
     pvoid Spare1;
     ulong ExceptionCode;
+#ifdef _X86_
     ulong SpareBytes1[0x28];
+#else
+    ulong SpareBytes1[0x1c];
+#endif
     pvoid SystemReserved2[0xa];
     ulong GdiRgn;
     ulong GdiPen;
     ulong GdiBrush;
     CLIENT_ID RealClientId;
-    pvoid GdiCachedProcessHandle;
+    handle GdiCachedProcessHandle;
     ulong GdiClientPID;
     ulong GdiClientTID;
     pvoid GdiThreadLocaleInfo;
-    pvoid UserReserved[5];
+    ulong_ptr UserReserved[5];
     pvoid GlDispatchTable[0x118];
-    ulong GlReserved1[0x1a];
+    ulong_ptr GlReserved1[0x1a];
     pvoid GlReserved2;
     pvoid GlSectionInfo;
     pvoid GlSection;

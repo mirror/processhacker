@@ -116,6 +116,7 @@ namespace ProcessHacker.Structs
             {
                 FieldValue elementValue;
 
+                readSize = offset.Increment(readSize).Align(field.Alignment).Decrement(offset).ToInt32();
                 readSize += this.ReadOnce(field, offset.Increment(readSize), out elementValue);
                 elementValue.Name = "[" + i.ToString() + "]";
 
@@ -308,17 +309,20 @@ namespace ProcessHacker.Structs
             {
                 FieldValue value;
 
-                // resolve pointer
+                // Perform alignment.
+                localOffset = Offset.Increment(localOffset).Align(field.Alignment).Decrement(Offset).ToInt32();
+
+                // Resolve pointer, if needed.
                 if (field.IsPointer)
                 {
-                    int pointingTo = Utils.ToInt32(IOProvider.ReadBytes(Offset.Increment(localOffset), 4), Utils.Endianness.Little);
+                    IntPtr pointingTo = IOProvider.ReadBytes(Offset.Increment(localOffset), IntPtr.Size).ToIntPtr();
 
-                    localOffset += 4;
+                    localOffset += IntPtr.Size;
 
-                    if (pointingTo == 0)
+                    if (pointingTo == IntPtr.Zero)
                         value = new FieldValue() { Name = field.Name, FieldType = field.RawType, Value = null };
                     else
-                        Read(field, new IntPtr(pointingTo), out value);
+                        Read(field, pointingTo, out value);
 
                     value.PointerValue = pointingTo;
                 }

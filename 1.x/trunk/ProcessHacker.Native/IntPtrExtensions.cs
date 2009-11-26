@@ -28,6 +28,11 @@ namespace ProcessHacker.Native
 {
     public static class IntPtrExtensions
     {
+        public static IntPtr Align(this IntPtr ptr, int alignment)
+        {
+            return ptr.Increment(alignment - 1).And((alignment - 1).ToIntPtr().Not());
+        }
+
         public static IntPtr And(this IntPtr ptr, int value)
         {
             if (IntPtr.Size == sizeof(Int32))

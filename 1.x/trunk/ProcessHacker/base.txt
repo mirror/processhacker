@@ -37,3 +37,26 @@ typedef stringutf16 wstring;
 typedef wstr* lpcwstr; /* "Long Pointer To Const Wide-Character String" */
 typedef wstr* lpctstr; /* most apps are in Unicode, so assume TCHAR = WCHAR */
 typedef str* lpcstr; /* ANSI */
+
+typedef pvoid handle;
+typedef pvoid ppvoid;
+
+#if _X86_
+
+typedef int32 int_ptr;
+typedef uint32 uint_ptr;
+typedef int32 long_ptr;
+typedef uint32 ulong_ptr;
+
+typedef int32 size_t;
+
+#else
+
+typedef int64 int_ptr;
+typedef uint64 uint_ptr;
+typedef int64 long_ptr;
+typedef uint64 ulong_ptr;
+
+typedef int64 size_t;
+
+#endif

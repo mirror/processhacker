@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ProcessHacker.Common;
+using ProcessHacker.Native;
 
 namespace ProcessHacker.Structs
 {
@@ -40,6 +41,7 @@ namespace ProcessHacker.Structs
         private string _fileName = "";
         private int _lineNumber = 1;
         private Dictionary<string, FieldType> _typeDefs = new Dictionary<string, FieldType>();
+        private Dictionary<string, object> _defines = new Dictionary<string, object>();
         private bool _eatResult = false;
 
         public Dictionary<string, StructDef> Structs
@@ -51,9 +53,16 @@ namespace ProcessHacker.Structs
         {
             _structs = structs;
 
+            // Core types
             foreach (string s in Enum.GetNames(typeof(FieldType)))
                 if (s != "Pointer")
                     _typeDefs.Add(s.ToLowerInvariant(), (FieldType)Enum.Parse(typeof(FieldType), s));
+
+            // Core defines
+            if (OSVersion.Architecture == OSArch.I386)
+                _defines.Add("_X86_", null);
+            else if (OSVersion.Architecture == OSArch.Amd64)
+                _defines.Add("_AMD64_", null);
         }
 
         private FieldType GetType(string typeName)
@@ -69,6 +78,63 @@ namespace ProcessHacker.Structs
             return (type & FieldType.Pointer) != 0;
         }
 
+        private string Preprocess(string text)
+        {
+            List<string> lines = new List<string>(text.Split('\n'));
+            Stack<bool> includeStack = new Stack<bool>();
+            bool include = true;
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string line = lines[i].Trim(' ', '\t', '\r');
+
+                if (line.StartsWith("#if"))
+                {
+                    string conditionText = line.Remove(0, "#if".Length).Trim(' ', '\t', '\r');
+
+                    includeStack.Push(include);
+                    include = _defines.ContainsKey(conditionText);
+                }
+                else if (line.StartsWith("#elseif"))
+                {
+                    if (!include)
+                    {
+                        string conditionText = line.Remove(0, "#elseif".Length).Trim(' ', '\t', '\r');
+
+                        include = _defines.ContainsKey(conditionText);
+                    }
+                    else
+                    {
+                        include = false;
+                    }
+                }
+                else if (line.StartsWith("#else"))
+                {
+                    include = !include;
+                }
+                else if (line.StartsWith("#define"))
+                {
+                    string conditionText = line.Remove(0, "#define".Length).Trim(' ', '\t', '\r');
+
+                    if (!_defines.ContainsKey(conditionText))
+                    {
+                        _defines.Add(conditionText, null);
+                    }
+                }
+                else if (line.StartsWith("#endif"))
+                {
+                    include = includeStack.Pop();
+                }
+
+                if (!include || line.StartsWith("#"))
+                {
+                    lines[i] = "";
+                }
+            }
+
+            return string.Join("\n", lines.ToArray());
+        }
+
         public void Parse(string fileName)
         {
             List<StructDef> defs = new List<StructDef>();
@@ -77,6 +143,8 @@ namespace ProcessHacker.Structs
 
             _lineNumber = 1;
             _fileName = fileName;
+
+            text = Preprocess(text);
 
             while (true)
             {

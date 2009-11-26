@@ -38,6 +38,83 @@ namespace ProcessHacker.Structs
             _type = type;
         }
 
+        /// <summary>
+        /// Gets the alignment of the field, in bytes.
+        /// </summary>
+        public int Alignment
+        {
+            get
+            {
+                if (this.IsPointer)
+                {
+                    return IntPtr.Size;
+                }
+                else
+                {
+                    switch (_type)
+                    {
+                        case FieldType.Bool32:
+                            return 4;
+                            break;
+                        case FieldType.Bool8:
+                            return 1;
+                            break;
+                        case FieldType.CharASCII:
+                            return 1;
+                            break;
+                        case FieldType.CharUTF16:
+                            return 2; // UCS-2 
+                            break;
+                        case FieldType.Double:
+                            return 8;
+                            break;
+                        case FieldType.Int16:
+                            return 2;
+                            break;
+                        case FieldType.Int32:
+                            return 4;
+                            break;
+                        case FieldType.Int64:
+                            return 8;
+                            break;
+                        case FieldType.Int8:
+                            return 1;
+                            break;
+                        case FieldType.PVoid:
+                            return IntPtr.Size;
+                            break;
+                        case FieldType.Single:
+                            return 2;
+                            break;
+                        case FieldType.StringASCII:
+                            return 1;
+                            break;
+                        case FieldType.StringUTF16:
+                            return 2;
+                            break;
+                        case FieldType.Struct:
+                            return IntPtr.Size;
+                            break;
+                        case FieldType.UInt16:
+                            return 2;
+                            break;
+                        case FieldType.UInt32:
+                            return 4;
+                            break;
+                        case FieldType.UInt64:
+                            return 8;
+                            break;
+                        case FieldType.UInt8:
+                            return 1;
+                            break;
+                        default:
+                            return 1;
+                            break;
+                    }
+                }
+            }
+        }
+
         public bool IsArray
         {
             get { return (_type & FieldType.Array) != 0; }
@@ -57,7 +134,7 @@ namespace ProcessHacker.Structs
             {
                 if (this.IsPointer)
                 {
-                    return 4; // 32-bit only
+                    return IntPtr.Size;
                 }
                 else
                 {
@@ -93,7 +170,7 @@ namespace ProcessHacker.Structs
                             size = 1;
                             break;
                         case FieldType.PVoid:
-                            size = 4;
+                            size = IntPtr.Size;
                             break;
                         case FieldType.Single:
                             size = 4;

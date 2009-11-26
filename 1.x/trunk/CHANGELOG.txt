@@ -4,6 +4,8 @@ Process Hacker
  * NEW/IMPROVED:
    * Ability to set I/O priority for processes and threads
    * No more separate Assistant.exe executable required
+   * Added proper x64 support to structs reader
+   * Added basic preprocessor to structs reader
    * Small performance improvements
  * FIXED:
    * #2902988 - "Toolbar not shown after saving options"

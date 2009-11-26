@@ -70,6 +70,19 @@ namespace ProcessHacker.Common
         private static PropertyInfo _doubleBufferedProperty;
 
         /// <summary>
+        /// Aligns a number to the specified power-of-two alignment value.
+        /// </summary>
+        /// <param name="value">The number to align.</param>
+        /// <param name="alignment">A power-of-two alignment value.</param>
+        /// <returns>
+        /// The nearest multiple of the alignment greater than or equal to the number.
+        /// </returns>
+        public static int Align(int value, int alignment)
+        {
+            return (value + alignment + 1) & ~(alignment - 1);
+        }
+
+        /// <summary>
         /// Flattens an array of arrays into a single array.
         /// </summary>
         /// <typeparam name="T">The type of each element in the arrays.</typeparam>

@@ -20,7 +20,7 @@ namespace ProcessHacker.Native
             _realMemory = MemoryAlloc.PrivateHeap.Allocate(0, size + alignment - 1);
 
             // aligned memory = (memory + alignment - 1) & ~(alignment - 1)
-            this.Memory = _realMemory.Increment(alignment - 1).And((alignment - 1).ToIntPtr().Not());
+            this.Memory = _realMemory.Align(alignment);
             this.Size = size;
         }
 
