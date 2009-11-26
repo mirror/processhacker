@@ -440,6 +440,13 @@ namespace ProcessHacker
 
         private static bool ProcessCommandLine(Dictionary<string, string> pArgs)
         {
+            if (pArgs.ContainsKey("-assistant"))
+            {
+                Assistant.Main(pArgs);
+
+                return true;
+            }
+
             if (pArgs.ContainsKey("-e"))
             {
                 try

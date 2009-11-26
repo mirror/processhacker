@@ -23,16 +23,19 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using ProcessHacker.Common;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.Native.Security.AccessControl;
 
-namespace Assistant
+namespace ProcessHacker
 {
-    static class Program
+    public static class Assistant
     {
-        static void SetDesktopWinStaAccess()
+        private static Dictionary<string, string> args;
+
+        public static void SetDesktopWinStaAccess()
         {
             using (var wsHandle = new WindowStationHandle("WinSta0", (WindowStationAccess)StandardRights.WriteDac))
                 wsHandle.SetSecurity(SecurityInformation.Dacl, new SecurityDescriptor());
@@ -42,42 +45,7 @@ namespace Assistant
                 dhandle.SetSecurity(SecurityInformation.Dacl, new SecurityDescriptor());
         }
 
-        static Dictionary<string, string> ParseArgs(string[] args)
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-            string argPending = null;
-
-            foreach (string s in args)
-            {
-                if (s.StartsWith("-"))
-                {
-                    if (dict.ContainsKey(s))
-                        throw new Exception("Option already specified.");
-
-                    dict.Add(s, "");
-                    argPending = s;
-                }
-                else
-                {
-                    if (argPending != null)
-                    {
-                        dict[argPending] = s;
-                        argPending = null;
-                    }
-                    else
-                    {
-                        if (dict.ContainsKey(""))
-                            throw new Exception("Input file already specified.");
-
-                        dict.Add("", s);
-                    }
-                }
-            }
-
-            return dict;
-        }
-
-        static void PrintUsage()
+        private static void PrintUsage()
         {
             Console.Write("Process Hacker Assistant\nCopyright (c) 2008 wj32. Licensed under the GNU GPL v3.\n\nUsage:\n" +
                 "\tassistant [-w] [-k] [-P pid] [-u username] [-p password] [-t logontype] [-s sessionid] [-d dir] " + 
@@ -110,7 +78,7 @@ namespace Assistant
                 "and finally delete it:\n\tsc.exe delete PHAssistant\n");
         }
 
-        static void Exit(int exitCode)
+        private static void Exit(int exitCode)
         {
             if (args.ContainsKey("-k"))
                 System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
@@ -130,14 +98,12 @@ namespace Assistant
             Environment.Exit(exitCode);
         }
 
-        static void Exit()
+        private static void Exit()
         {
             Exit(0);
         }
 
-        static Dictionary<string, string> args;
-
-        static bool EnablePrivilege(string name)
+        private static bool EnablePrivilege(string name)
         {
             try
             {
@@ -150,16 +116,16 @@ namespace Assistant
             }
         }
 
-        static void Main()
+        public static void Main(Dictionary<string, string> pArgs)
         {
+            args = pArgs;
+
             EnablePrivilege("SeAssignPrimaryTokenPrivilege");
             EnablePrivilege("SeBackupPrivilege");
             EnablePrivilege("SeRestorePrivilege");
 
             try
             {
-                args = ParseArgs(Environment.GetCommandLineArgs());
-
                 bool bad = false;
 
                 if (!args.ContainsKey("-w"))
@@ -204,7 +170,7 @@ namespace Assistant
                 }
             }
 
-            IntPtr token = IntPtr.Zero;
+            TokenHandle token = null;
             string domain = null;
             string username = "";
 
@@ -242,10 +208,19 @@ namespace Assistant
                     }
                 }
 
-                if (!Win32.LogonUser(username, domain, args.ContainsKey("-p") ? args["-p"] : "", type,
-                    LogonProvider.Default, out token))
+                try
                 {
-                    Console.WriteLine("Error: Could not logon as user: " + Win32.GetLastErrorMessage());
+                    token = TokenHandle.Logon(
+                        username,
+                        domain,
+                        args.ContainsKey("-p") ? args["-p"] : "",
+                        type,
+                        LogonProvider.Default
+                        );
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: Could not logon as user: " + ex.Message);
                     Exit(Marshal.GetLastWin32Error());
                 }
             }
@@ -263,37 +238,47 @@ namespace Assistant
                     Console.WriteLine("Error: Invalid PID.");
                 }
 
-                IntPtr handle = IntPtr.Zero;
-
                 try
                 {
-                    handle = System.Diagnostics.Process.GetProcessById(pid).Handle;
+                    using (var phandle = new ProcessHandle(pid, OSVersion.MinProcessQueryInfoAccess))
+                    {
+                        try
+                        {
+                            token = phandle.GetToken(TokenAccess.All);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error: Could not open process token: " + ex.Message);
+                            Exit(Marshal.GetLastWin32Error());
+                        }
+                    }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Error: Could not open process.");
-                }
-
-
-                if (!Win32.OpenProcessToken(handle, TokenAccess.All, out token))
-                {
-                    Console.WriteLine("Error: Could not open process token: " + Win32.GetLastErrorMessage());
+                    Console.WriteLine("Error: Could not open process: " + ex.Message);
                     Exit(Marshal.GetLastWin32Error());
                 }
 
-                if (Environment.OSVersion.Version.Major != 5)
+                // Need to duplicate the token if we're going to set the session ID.
+                if (args.ContainsKey("-s"))
                 {
-                    IntPtr dupToken;
-
-                    if (!Win32.DuplicateTokenEx(token, TokenAccess.All, IntPtr.Zero, SecurityImpersonationLevel.SecurityImpersonation,
-                        TokenType.Primary, out dupToken))
+                    try
                     {
-                        Console.WriteLine("Error: Could not duplicate own token: " + Win32.GetLastErrorMessage());
+                        TokenHandle dupToken;
+
+                        dupToken = token.Duplicate(
+                            TokenAccess.All,
+                            SecurityImpersonationLevel.SecurityImpersonation,
+                            TokenType.Primary
+                            );
+                        token.Dispose();
+                        token = dupToken;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: Could not duplicate own token: " + ex.Message);
                         Exit(Marshal.GetLastWin32Error());
                     }
-
-                    Win32.CloseHandle(token);
-                    token = dupToken;
                 }
             }
 
@@ -301,9 +286,13 @@ namespace Assistant
             {
                 int sessionId = int.Parse(args["-s"]);
 
-                if (!Win32.SetTokenInformation(token, TokenInformationClass.TokenSessionId, ref sessionId, 4))
+                try
                 {
-                    Console.WriteLine("Error: Could not set token session Id: " + Win32.GetLastErrorMessage());
+                    token.SetSessionId(sessionId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: Could not set token session ID: " + ex.Message);
                 }
             }
 
@@ -311,29 +300,45 @@ namespace Assistant
             {
                 if (!args.ContainsKey("-e"))
                 {
-                    StartupInfo info = new StartupInfo();
-                    ProcessInformation pinfo = new ProcessInformation();
-                    IntPtr environment;
+                    EnvironmentBlock environment;
+                    StartupInfo startupInfo = new StartupInfo();
+                    ProcessHandle processHandle;
+                    ThreadHandle threadHandle;
+                    ClientId clientId;
 
-                    Win32.CreateEnvironmentBlock(out environment, token, false);
+                    environment = new EnvironmentBlock(token);
+                    startupInfo.Desktop = "WinSta0\\Default";
 
-                    info.Size = Marshal.SizeOf(info);
-                    info.Desktop = "WinSta0\\Default";
-
-                    if (!Win32.CreateProcessAsUser(token,
-                        args.ContainsKey("-f") ? args["-f"] : null,
-                        args.ContainsKey("-c") ? args["-c"] : null,
-                        IntPtr.Zero, IntPtr.Zero, false, ProcessCreationFlags.CreateUnicodeEnvironment, environment,
-                        args.ContainsKey("-d") ? args["-d"] : null,
-                        ref info, out pinfo))
+                    try
                     {
-                        Console.WriteLine("Error: Could not create process: " + Win32.GetLastErrorMessage());
+                        processHandle = ProcessHandle.CreateWin32(
+                            token,
+                            args.ContainsKey("-f") ? args["-f"] : null,
+                            args.ContainsKey("-c") ? args["-c"] : null,
+                            false,
+                            ProcessCreationFlags.CreateUnicodeEnvironment,
+                            environment,
+                            args.ContainsKey("-d") ? args["-d"] : null,
+                            startupInfo,
+                            out clientId,
+                            out threadHandle
+                            );
+                        processHandle.Dispose();
+                        threadHandle.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: Could not create process: " + ex.Message);
                         Exit(Marshal.GetLastWin32Error());
                     }
-
-                    Win32.CloseHandle(token);
+                    finally
+                    {
+                        environment.Destroy();
+                    }
                 }
             }
+
+            token.Dispose();
 
             Exit();
         }

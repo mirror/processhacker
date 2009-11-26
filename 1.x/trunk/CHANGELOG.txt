@@ -3,6 +3,7 @@ Process Hacker
 1.8
  * NEW/IMPROVED:
    * Ability to set I/O priority for processes and threads
+   * No more separate Assistant.exe executable required
    * Small performance improvements
  * FIXED:
    * #2902988 - "Toolbar not shown after saving options"

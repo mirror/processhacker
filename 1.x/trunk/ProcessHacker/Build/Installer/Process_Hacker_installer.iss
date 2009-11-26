@@ -107,7 +107,6 @@ BeveledLabel=Process Hacker v{#= simple_app_version} by wj32                    
 
 
 [Files]
-Source: ..\..\bin\Release\Assistant.exe; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\base.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\CHANGELOG.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\Help.htm; DestDir: {app}; Flags: ignoreversion

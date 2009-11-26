@@ -599,7 +599,7 @@ namespace ProcessHacker.Components
                         }
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     priorityThreadMenuItem.Enabled = false;
                     ioPriorityThreadMenuItem.Enabled = false;

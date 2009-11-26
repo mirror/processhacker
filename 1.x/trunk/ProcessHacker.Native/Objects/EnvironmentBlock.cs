@@ -86,6 +86,12 @@ namespace ProcessHacker.Native.Objects
                 Win32.Throw(status);
         }
 
+        public EnvironmentBlock(TokenHandle tokenHandle)
+        {
+            if (!Win32.CreateEnvironmentBlock(out _environment, tokenHandle, false))
+                Win32.Throw();
+        }
+
         public EnvironmentBlock(IntPtr environment)
         {
             _environment = environment;

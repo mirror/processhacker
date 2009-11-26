@@ -273,5 +273,10 @@ namespace ProcessHacker.Native
         {
             return (int)_windowsVersion < (int)version;
         }
+
+        public static bool IsEqualTo(WindowsVersion version)
+        {
+            return _windowsVersion == version;
+        }
     }
 }

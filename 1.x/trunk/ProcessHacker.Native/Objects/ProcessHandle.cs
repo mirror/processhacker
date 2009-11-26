@@ -364,6 +364,8 @@ namespace ProcessHacker.Native.Objects
         {
             ProcessInformation processInformation;
 
+            startupInfo.Size = Marshal.SizeOf(typeof(StartupInfo));
+
             if (!Win32.CreateProcess(
                 applicationName,
                 commandLine,
@@ -398,6 +400,8 @@ namespace ProcessHacker.Native.Objects
             )
         {
             ProcessInformation processInformation;
+
+            startupInfo.Size = Marshal.SizeOf(typeof(StartupInfo));
 
             if (!Win32.CreateProcessAsUser(
                 tokenHandle,

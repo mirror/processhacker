@@ -3113,12 +3113,6 @@ namespace ProcessHacker
 
         public void LoadFixOSSpecific()
         {
-            if (!System.IO.File.Exists(Application.StartupPath + "\\Assistant.exe"))
-            {
-                runAsServiceMenuItem.Enabled = false;
-                runAsProcessMenuItem.Visible = false;
-            }
-
             if (KProcessHacker.Instance == null)
                 hiddenProcessesMenuItem.Visible = false;
 

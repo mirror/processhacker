@@ -29,21 +29,17 @@ IF NOT EXIST %ILMergePath% (FOR %%a IN (ILMerge.exe) DO IF %%~$PATH:a' NEQ ' (
 SET RequiredDLLs="Aga.Controls.dll" "ProcessHacker.Common.dll"^
  "ProcessHacker.Native.dll"
 
-REM Create a temporary directory for the merged files
+REM Create a temporary directory for the merged file(s)
 MD "tmp" >NUL 2>&1
-
-REM Merge DLLs with "Assistant.exe"
-%ILMergePath% /t:exe /out:"tmp\Assistant.exe" "Assistant.exe"^
- %RequiredDLLs% && ECHO:DLLs merged successfully with Assistant.exe!
 
 REM Merge DLLs with "ProcessHacker.exe" using ILMerge
 %ILMergePath% /t:winexe /out:"tmp\ProcessHacker.exe" "ProcessHacker.exe"^
  %RequiredDLLs% && ECHO:DLLs merged successfully with ProcessHacker.exe!
 
 REM Delete the existing EXEs and PDBs
-DEL ProcessHacker.exe Assistant.exe *.pdb >NUL 2>&1
+DEL ProcessHacker.exe *.pdb >NUL 2>&1
 
-REM Copy the merged files (2 EXEs and 2 PDBs) back into this directory
+REM Copy the merged file(s) back into this directory
 MOVE "tmp\*" .\ >NUL 2>&1
 
 DEL/f/a %RequiredDLLs% "ProcessHacker.Common.xml"^
@@ -72,7 +68,7 @@ IF DEFINED InnoSetupPath ("%InnoSetupPath%\iscc.exe" /Q /O"..\..\bin\Release"^
 
 REM ZIP the files
 IF NOT DEFINED N_ (START "" /B /WAIT "..\..\Build\7za\7za.exe" a -tzip -mx=9^
- "processhacker-bin.zip" "Assistant.exe" "base.txt" "CHANGELOG.txt"^
+ "processhacker-bin.zip" "base.txt" "CHANGELOG.txt"^
  "Help.htm" "kprocesshacker.sys" "LICENSE.txt" "NProcessHacker.dll"^
  "NProcessHacker64.dll" "ProcessHacker.exe" "README.txt" "structs.txt"^
  >NUL&&(

@@ -138,13 +138,7 @@ namespace ProcessHacker
 
             try
             {
-                System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo();
-
-                info.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                info.FileName = Application.StartupPath + "\\Assistant.exe";
-                info.Arguments = "-w";
-
-                System.Diagnostics.Process.Start(info);
+                Assistant.SetDesktopWinStaAccess();
             }
             catch
             { }
@@ -159,7 +153,7 @@ namespace ProcessHacker
                     omitUserAndType = true;
 
                 mailslotName = "ProcessHackerAssistant" + Utils.CreateRandomString(8);
-                binPath = "\"" + Application.StartupPath + "\\Assistant.exe\" " +
+                binPath = "\"" + Application.ExecutablePath + "\" -assistant " +
                     (omitUserAndType ? "" :
                     ("-u \"" + comboUsername.Text + "\" -t " + comboType.SelectedItem.ToString().ToLowerInvariant() + " ")) +
                     (_pid != -1 ? ("-P " + _pid.ToString() + " ") : "") + "-p \"" +
