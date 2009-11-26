@@ -114,7 +114,7 @@ namespace ProcessHacker
             set { this["AlwaysOnTop"] = value; }
         }
 
-        [SettingDefault("True")]
+        [SettingDefault("False")]
         public bool AppUpdateAutomatic
         {
             get { return (bool)this["AppUpdateAutomatic"]; }
