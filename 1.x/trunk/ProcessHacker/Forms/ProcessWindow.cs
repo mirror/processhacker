@@ -979,31 +979,26 @@ namespace ProcessHacker
             _selectTid = tid;
 
             WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
-                {
-                    _loadFinishedEvent.Wait();
-                    _threadP.Updated += SelectThread_threadP_Updated;
-                    _threadP.RunOnce();
-                }), "select-thread");
+            {
+                _loadFinishedEvent.Wait();
+                listThreads.ThreadItemsAdded += SelectThread_listThreads_ThreadItemsAdded;
+                _threadP.RunOnce();
+            }), "select-thread");
         }
 
-        void SelectThread_threadP_Updated()
+        private void SelectThread_listThreads_ThreadItemsAdded()
         {
-            _threadP.Updated -= SelectThread_threadP_Updated;
+            listThreads.ThreadItemsAdded -= SelectThread_listThreads_ThreadItemsAdded;
 
-            if (this.IsHandleCreated)
+            tabControl.SelectedTab = tabThreads;
+
+            var litem = listThreads.Items[_selectTid.ToString()];
+
+            if (litem != null)
             {
-                this.BeginInvoke(new MethodInvoker(() =>
-                {
-                    tabControl.SelectedTab = tabThreads;
-                    var litem = listThreads.Items[_selectTid.ToString()];
-
-                    if (litem != null)
-                    {
-                        Program.HackerWindow.DeselectAll(listThreads.List);
-                        litem.Selected = true;
-                        litem.EnsureVisible();
-                    }
-                }));
+                Program.HackerWindow.DeselectAll(listThreads.List);
+                litem.Selected = true;
+                litem.EnsureVisible();
             }
         }
 

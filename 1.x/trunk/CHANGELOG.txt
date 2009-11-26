@@ -9,6 +9,7 @@ Process Hacker
    * Small performance improvements
  * FIXED:
    * #2902988 - "Toolbar not shown after saving options"
+   * Find window and select thread sometimes not working
 
 1.7
  * NEW/IMPROVED:

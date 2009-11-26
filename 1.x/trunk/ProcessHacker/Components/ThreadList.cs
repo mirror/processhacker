@@ -49,6 +49,7 @@ namespace ProcessHacker.Components
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
         public event EventHandler SelectedIndexChanged;
+        public event MethodInvoker ThreadItemsAdded;
         private int _pid;
 
         public ThreadList()
@@ -342,6 +343,9 @@ namespace ProcessHacker.Components
                             listThreads.Items.AddRange(_needsAdd.ToArray());
                             _needsAdd.Clear();
                         }
+
+                        if (this.ThreadItemsAdded != null)
+                            this.ThreadItemsAdded();
                     }));
                 }
             }
