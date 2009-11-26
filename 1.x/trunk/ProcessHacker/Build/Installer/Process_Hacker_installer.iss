@@ -154,6 +154,7 @@ Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker; Fil
 
 [InstallDelete]
 ; Remove files from the install folder which are not needed anymore
+Type: files; Name: {app}\Assistant.exe
 Type: files; Name: {app}\ProcessHacker.exe.config
 Type: files; Name: {app}\HACKING.txt
 Type: files; Name: {app}\psvince.dll
