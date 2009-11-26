@@ -384,6 +384,42 @@ namespace ProcessHacker.Native.Objects
             return new ProcessHandle(processInformation.ProcessHandle, true);
         }
 
+        public static ProcessHandle CreateWin32(
+            TokenHandle tokenHandle,
+            string applicationName,
+            string commandLine,
+            bool inheritHandles,
+            ProcessCreationFlags creationFlags,
+            EnvironmentBlock environment,
+            string currentDirectory,
+            StartupInfo startupInfo,
+            out ClientId clientId,
+            out ThreadHandle threadHandle
+            )
+        {
+            ProcessInformation processInformation;
+
+            if (!Win32.CreateProcessAsUser(
+                tokenHandle,
+                applicationName,
+                commandLine,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                inheritHandles,
+                creationFlags,
+                environment,
+                currentDirectory,
+                ref startupInfo,
+                out processInformation
+                ))
+                Win32.Throw();
+
+            clientId = new ClientId(processInformation.ProcessId, processInformation.ThreadId);
+            threadHandle = new ThreadHandle(processInformation.ThreadHandle, true);
+
+            return new ProcessHandle(processInformation.ProcessHandle, true);
+        }
+
         /// <summary>
         /// Creates a process handle using an existing handle. 
         /// The handle will not be closed automatically.

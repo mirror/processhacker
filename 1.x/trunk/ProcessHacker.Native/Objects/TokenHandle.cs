@@ -609,6 +609,19 @@ namespace ProcessHacker.Native.Objects
             return this.GetInformationInt32(TokenInformationClass.TokenVirtualizationEnabled) != 0;
         }
 
+        private void SetInformationInt32(TokenInformationClass infoClass, int value)
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtSetInformationToken(
+                this,
+                infoClass,
+                ref value,
+                sizeof(int)
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+        }
+
         /// <summary>
         /// Sets a privilege's attributes.
         /// </summary>
@@ -624,6 +637,25 @@ namespace ProcessHacker.Native.Objects
         {
             if (!this.TrySetPrivilege(privilegeLuid, attributes))
                 Win32.Throw();
+        }
+
+        public void SetSessionId(int sessionId)
+        {
+            this.SetInformationInt32(TokenInformationClass.TokenSessionId, sessionId);
+        }
+
+        /// <summary>
+        /// Sets whether virtualization is enabled.
+        /// </summary>
+        /// <param name="enabled">Whether virtualization is enabled.</param>
+        public void SetVirtualizationEnabled(bool enabled)
+        {
+            int value = enabled ? 1 : 0;
+
+            if (!Win32.SetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled, ref value, 4))
+            {
+                Win32.Throw();
+            }
         }
 
         /// <summary>
@@ -656,20 +688,6 @@ namespace ProcessHacker.Native.Objects
                 return false;
 
             return true;
-        }
-
-        /// <summary>
-        /// Sets whether virtualization is enabled.
-        /// </summary>
-        /// <param name="enabled">Whether virtualization is enabled.</param>
-        public void SetVirtualizationEnabled(bool enabled)
-        {
-            int value = enabled ? 1 : 0;
-
-            if (!Win32.SetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled, ref value, 4))
-            {
-                Win32.Throw();
-            }
         }
     }
 }

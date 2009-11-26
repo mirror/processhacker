@@ -2111,6 +2111,14 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetInformationToken(
+            [In] IntPtr TokenHandle,
+            [In] TokenInformationClass TokenInformationClass,
+            [In] ref int TokenInformation,
+            [In] int TokenInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtSetIntervalProfile(
             [In] int Interval,
             [In] KProfileSource Source
