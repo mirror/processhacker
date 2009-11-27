@@ -58,6 +58,9 @@ namespace ProcessHacker.Native
             Job,
             Key,
             KeyedEvent,
+            LsaAccount,
+            LsaPolicy,
+            LsaSecret,
             Mutant,
             Process,
             Profile,
@@ -203,6 +206,52 @@ namespace ProcessHacker.Native
                         new AccessEntry("Full control", KeyedEventAccess.All, true, true),
                         new AccessEntry("Wait", KeyedEventAccess.Wait, true, true),
                         new AccessEntry("Wake", KeyedEventAccess.Wake, true, true)
+                    };
+                    break;
+                case ObjectType.LsaAccount:
+                    entries = new AccessEntry[]
+                    {
+                        new AccessEntry("Full control", LsaAccountAccess.All, true, true),
+                        new AccessEntry("Read", LsaAccountAccess.GenericRead, true, false),
+                        new AccessEntry("Write", LsaAccountAccess.GenericWrite, true, false),
+                        new AccessEntry("Execute", LsaAccountAccess.GenericExecute, true, false),
+                        new AccessEntry("View", LsaAccountAccess.View, false, true),
+                        new AccessEntry("Adjust privileges", LsaAccountAccess.AdjustPrivileges, false, true),
+                        new AccessEntry("Adjust quotas", LsaAccountAccess.AdjustQuotas, false, true),
+                        new AccessEntry("Adjust system access", LsaAccountAccess.AdjustSystemAccess, false, true)
+                    };
+                    break;
+                case ObjectType.LsaPolicy:
+                    entries = new AccessEntry[]
+                    {
+                        new AccessEntry("Full control", LsaPolicyAccess.All, true, true),
+                        new AccessEntry("Read", LsaPolicyAccess.GenericRead, true, false),
+                        new AccessEntry("Write", LsaPolicyAccess.GenericWrite, true, false),
+                        new AccessEntry("Execute", LsaPolicyAccess.GenericExecute, true, false),
+                        new AccessEntry("View local information", LsaPolicyAccess.ViewLocalInformation, false, true),
+                        new AccessEntry("View audit information", LsaPolicyAccess.ViewAuditInformation, false, true),
+                        new AccessEntry("Get private information", LsaPolicyAccess.GetPrivateInformation, false, true),
+                        new AccessEntry("Trust admin", LsaPolicyAccess.TrustAdmin, false, true),
+                        new AccessEntry("Create account", LsaPolicyAccess.CreateAccount, false, true),
+                        new AccessEntry("Create secret", LsaPolicyAccess.CreateSecret, false, true),
+                        new AccessEntry("Create privilege", LsaPolicyAccess.CreatePrivilege, false, true),
+                        new AccessEntry("Set default quota limits", LsaPolicyAccess.SetDefaultQuotaLimits, false, true),
+                        new AccessEntry("Set audit requirements", LsaPolicyAccess.SetAuditRequirements, false, true),
+                        new AccessEntry("Audit log admin", LsaPolicyAccess.AuditLogAdmin, false, true),
+                        new AccessEntry("Server admin", LsaPolicyAccess.ServerAdmin, false, true),
+                        new AccessEntry("Lookup names", LsaPolicyAccess.LookupNames, false, true),
+                        new AccessEntry("Notification", LsaPolicyAccess.Notification, false, true)
+                    };
+                    break;
+                case ObjectType.LsaSecret:
+                    entries = new AccessEntry[]
+                    {
+                        new AccessEntry("Full control", LsaSecretAccess.All, true, true),
+                        new AccessEntry("Read", LsaSecretAccess.GenericRead, true, false),
+                        new AccessEntry("Write", LsaSecretAccess.GenericWrite, true, false),
+                        new AccessEntry("Execute", LsaSecretAccess.GenericExecute, true, false),
+                        new AccessEntry("Query value", LsaSecretAccess.QueryValue, false, true),
+                        new AccessEntry("Set value", LsaSecretAccess.SetValue, false, true)
                     };
                     break;
                 case ObjectType.Mutant:
@@ -469,6 +518,12 @@ namespace ProcessHacker.Native
                     return typeof(KeyAccess);
                 case ObjectType.KeyedEvent:
                     return typeof(KeyedEventAccess);
+                case ObjectType.LsaAccount:
+                    return typeof(LsaAccountAccess);
+                case ObjectType.LsaPolicy:
+                    return typeof(LsaPolicyAccess);
+                case ObjectType.LsaSecret:
+                    return typeof(LsaSecretAccess);
                 case ObjectType.Mutant:
                     return typeof(MutantAccess);
                 case ObjectType.Process:

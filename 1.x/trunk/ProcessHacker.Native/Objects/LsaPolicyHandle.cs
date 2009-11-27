@@ -110,6 +110,28 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
+        public void DeletePrivateData(string name)
+        {
+            NtStatus status;
+            UnicodeString nameStr;
+
+            nameStr = new UnicodeString(name);
+
+            try
+            {
+                if ((status = Win32.LsaStorePrivateData(
+                    this,
+                    ref nameStr,
+                    IntPtr.Zero
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
+            }
+            finally
+            {
+                nameStr.Dispose();
+            }
+        }
+
         /// <summary>
         /// Enumerates the accounts in the policy. This requires 
         /// ViewLocalInformation access.
@@ -516,6 +538,57 @@ namespace ProcessHacker.Native.Objects
                 }
 
                 return new Sid(translatedSid.Sid);
+            }
+        }
+
+        public string RetrievePrivateData(string name)
+        {
+            NtStatus status;
+            UnicodeString nameStr;
+            IntPtr privateData;
+
+            nameStr = new UnicodeString(name);
+
+            try
+            {
+                if ((status = Win32.LsaRetrievePrivateData(
+                    this,
+                    ref nameStr,
+                    out privateData
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
+            }
+            finally
+            {
+                nameStr.Dispose();
+            }
+
+            using (var privateDataAlloc = new LsaMemoryAlloc(privateData))
+                return privateDataAlloc.ReadStruct<UnicodeString>().Read();
+        }
+
+        public void StorePrivateData(string name, string privateData)
+        {
+            NtStatus status;
+            UnicodeString nameStr;
+            UnicodeString privateDataStr;
+
+            nameStr = new UnicodeString(name);
+            privateDataStr = new UnicodeString(privateData);
+
+            try
+            {
+                if ((status = Win32.LsaStorePrivateData(
+                    this,
+                    ref nameStr,
+                    ref privateDataStr
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
+            }
+            finally
+            {
+                nameStr.Dispose();
+                privateDataStr.Dispose();
             }
         }
     }

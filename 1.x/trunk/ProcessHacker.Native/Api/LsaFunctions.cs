@@ -492,6 +492,13 @@ namespace ProcessHacker.Native.Api
             [In] [Optional] ref UnicodeString PrivateData
             );
 
+        [DllImport("advapi32.dll")]
+        public static extern NtStatus LsaStorePrivateData(
+            [In] IntPtr PolicyHandle,
+            [In] ref UnicodeString KeyName,
+            [In] [Optional] IntPtr PrivateData
+            );
+
         [DllImport("secur32.dll")]
         public static extern NtStatus LsaUnregisterPolicyChangeNotification(
             [In] PolicyNotificationInformationClass InformationClass,

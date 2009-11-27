@@ -145,7 +145,7 @@ namespace ProcessHacker.Native.Objects
                 Win32.Throw(status);
         }
 
-        private void RemovePrivileges(PrivilegeSet privileges)
+        public void RemovePrivileges(PrivilegeSet privileges)
         {
             NtStatus status;
 
