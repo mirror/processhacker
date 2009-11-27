@@ -1,6 +1,6 @@
 @ECHO OFF
 REM Original script by wj32.
-REM Modifications and additions by XhmikosR and Yzöwl.
+REM Modifications and additions by XhmikosR and Yzfwl.
 SETLOCAL
 SET outd=%~p1
 PUSHD %outd%
@@ -18,7 +18,7 @@ COPY "..\..\..\NProcessHacker\x64\Release\NProcessHacker.dll"^
 
 REM Clear older files present in "Release" folder
 DEL/f/a "ProcessHacker.exe.config" "processhacker-*-setup.exe"^
- "Assistant.dll" "processhacker-*.zip" >NUL 2>&1
+ "Assistant.dll" "Assistant.exe" "processhacker-*.zip" >NUL 2>&1
 
 REM Check if ILMerge is present in the default installation location or in PATH
 SET ILMergePath="%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe"
@@ -37,7 +37,7 @@ REM Merge DLLs with "ProcessHacker.exe" using ILMerge
  %RequiredDLLs% && ECHO:DLLs merged successfully with ProcessHacker.exe!
 
 REM Delete the existing EXEs and PDBs
-DEL ProcessHacker.exe *.pdb >NUL 2>&1
+DEL/f/a "ProcessHacker.exe" "*.pdb" >NUL 2>&1
 
 REM Copy the merged file(s) back into this directory
 MOVE "tmp\*" .\ >NUL 2>&1
@@ -46,7 +46,7 @@ DEL/f/a %RequiredDLLs% "ProcessHacker.Common.xml"^
  "ProcessHacker.Native.xml" >NUL 2>&1
 
 REM Delete the temporary directory
-RD "tmp" >NUL 2>&1
+RD /Q "tmp" >NUL 2>&1
 
 REM Detect if we are running on 64bit WIN and use Wow6432Node, set the path
 REM of Inno Setup accordingly and compile installer
@@ -68,8 +68,8 @@ IF DEFINED InnoSetupPath ("%InnoSetupPath%\iscc.exe" /Q /O"..\..\bin\Release"^
 
 REM ZIP the files
 IF NOT DEFINED N_ (START "" /B /WAIT "..\..\Build\7za\7za.exe" a -tzip -mx=9^
- "processhacker-bin.zip" "base.txt" "CHANGELOG.txt"^
- "Help.htm" "kprocesshacker.sys" "LICENSE.txt" "NProcessHacker.dll"^
+ "processhacker-bin.zip" "base.txt" "CHANGELOG.txt" "Help.htm"^
+ "kprocesshacker.sys" "LICENSE.txt" "NProcessHacker.dll"^
  "NProcessHacker64.dll" "ProcessHacker.exe" "README.txt" "structs.txt"^
  >NUL&&(
 	ECHO:ZIP created successfully!))
@@ -78,8 +78,8 @@ IF NOT DEFINED N_ (START "" /B /WAIT "..\..\Build\7za\7za.exe" a -tzip -mx=9^
 :CLEANUP
 REM Copy some PDBs over
 FOR %%a IN (
-    "KProcessHacker\i386\kprocesshacker.pdb" 
-    "NProcessHacker\Release\NProcessHacker.pdb"
+	"KProcessHacker\i386\kprocesshacker.pdb" ^
+	"NProcessHacker\Release\NProcessHacker.pdb"
 	) DO COPY "..\..\..\%%a" >NUL
 
 REM Make a PDB zip
