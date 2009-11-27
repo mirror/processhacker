@@ -64,7 +64,7 @@ namespace ProcessHacker.Common
         {
             /*
              * [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]
-             *                                      ^ _index
+             *  ^ _index
              */
 
 #if POWER_OF_TWO_SIZE
