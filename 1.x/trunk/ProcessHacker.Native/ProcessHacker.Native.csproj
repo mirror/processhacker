@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\SamDefinitions.cs" />
     <Compile Include="Api\SamFunctions.cs" />
     <Compile Include="Api\SamStructs.cs" />
     <Compile Include="Api\HResult.cs" />
