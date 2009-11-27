@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8A448157-E1A7-4DDF-954E-287F1117832B}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -50,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\SamFunctions.cs" />
+    <Compile Include="Api\SamStructs.cs" />
     <Compile Include="Api\HResult.cs" />
     <Compile Include="Api\LsaEnums.cs" />
     <Compile Include="Api\LsaStructs.cs" />
@@ -61,6 +63,7 @@
     <Compile Include="Api\NativeStructs.cs">
     </Compile>
     <Compile Include="Api\NtStatus.cs" />
+    <Compile Include="Api\SamEnums.cs" />
     <Compile Include="Api\Win32Error.cs" />
     <Compile Include="Image\ImageImports.cs" />
     <Compile Include="Image\ImageDirectoryEntry.cs" />
@@ -70,6 +73,7 @@
     <Compile Include="Io\DiskDevice.cs" />
     <Compile Include="Io\StorageDevice.cs" />
     <Compile Include="Memory\AlignedMemoryAlloc.cs" />
+    <Compile Include="Memory\SamMemoryAlloc.cs" />
     <Compile Include="NativeBitmap.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Debugging\DebugBuffer.cs" />
@@ -111,6 +115,9 @@
     <Compile Include="Security\AccessControl\Ace.cs" />
     <Compile Include="Security\AccessControl\Acl.cs" />
     <Compile Include="Security\AccessControl\KnownAce.cs" />
+    <Compile Include="Security\SamUserAccess.cs" />
+    <Compile Include="Security\SamGroupAccess.cs" />
+    <Compile Include="Security\SamDomainAccess.cs" />
     <Compile Include="Security\FltPortAccess.cs" />
     <Compile Include="Security\LsaSecretAccess.cs" />
     <Compile Include="Security\LsaTrustedAccess.cs" />
@@ -120,6 +127,7 @@
     <Compile Include="Security\IoCompletionAccess.cs" />
     <Compile Include="Security\KeyAccess.cs" />
     <Compile Include="Security\PrivilegeSet.cs" />
+    <Compile Include="Security\SamServerAccess.cs" />
     <Compile Include="Security\Sid.cs" />
     <Compile Include="Security\Privilege.cs" />
     <Compile Include="Security\TmAccess.cs" />
