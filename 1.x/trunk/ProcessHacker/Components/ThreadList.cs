@@ -1000,8 +1000,7 @@ namespace ProcessHacker.Components
             {
                 SecurityEditor.EditSecurity(
                     this,
-                    SecurityEditor.GetSecurable(
-                        NativeTypeFactory.ObjectType.Thread,
+                    SecurityEditor.GetSecurableWrapper(
                         (access) => new ThreadHandle(int.Parse(listThreads.SelectedItems[0].Text), (ThreadAccess)access)
                         ),
                     "Thread " + listThreads.SelectedItems[0].Text,

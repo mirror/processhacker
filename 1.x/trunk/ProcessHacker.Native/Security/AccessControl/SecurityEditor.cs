@@ -32,12 +32,39 @@ namespace ProcessHacker.Native.Security.AccessControl
 {
     public class SecurityEditor : IDisposable, ISecurityInformation
     {
-        private class GenericSecurableObject : ISecurable
+        private class SecurableObjectWrapper : ISecurable
+        {
+            private Func<StandardRights, NativeHandle> _openMethod;
+
+            public SecurableObjectWrapper(Func<StandardRights, NativeHandle> openMethod)
+            {
+                _openMethod = openMethod;
+            }
+
+            public SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
+            {
+                using (var handle = _openMethod(StandardRights.ReadControl))
+                    return handle.GetSecurity(securityInformation);
+            }
+
+            public void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
+            {
+                using (var handle = _openMethod(
+                    ((securityInformation & SecurityInformation.Dacl) != 0 ? StandardRights.WriteDac : 0) |
+                    ((securityInformation & SecurityInformation.Owner) != 0 ? StandardRights.WriteOwner : 0)
+                    ))
+                {
+                    handle.SetSecurity(securityInformation, securityDescriptor);
+                }
+            }
+        }
+
+        private class SeSecurableObjectWrapper : ISecurable
         {
             private SeObjectType _objectType;
             private Func<StandardRights, NativeHandle> _openMethod;
 
-            public GenericSecurableObject(SeObjectType objectType, Func<StandardRights, NativeHandle> openMethod)
+            public SeSecurableObjectWrapper(SeObjectType objectType, Func<StandardRights, NativeHandle> openMethod)
             {
                 _objectType = objectType;
                 _openMethod = openMethod;
@@ -45,23 +72,18 @@ namespace ProcessHacker.Native.Security.AccessControl
 
             public SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
             {
-                using (var dupHandle = _openMethod(StandardRights.ReadControl))
-                    return SecurityDescriptor.GetSecurity(dupHandle, _objectType, securityInformation); 
+                using (var handle = _openMethod(StandardRights.ReadControl))
+                    return SecurityDescriptor.GetSecurity(handle, _objectType, securityInformation); 
             }
 
             public void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
             {
-                using (var dupHandle = _openMethod(
+                using (var handle = _openMethod(
                     ((securityInformation & SecurityInformation.Dacl) != 0 ? StandardRights.WriteDac : 0) |
                     ((securityInformation & SecurityInformation.Owner) != 0 ? StandardRights.WriteOwner : 0)
                     ))
                 {
-                    SecurityDescriptor.SetSecurity(
-                        dupHandle,
-                        _objectType,
-                        securityInformation,
-                        securityDescriptor
-                        );
+                    SecurityDescriptor.SetSecurity(handle, _objectType, securityInformation, securityDescriptor);
                 }
             }
         }
@@ -72,14 +94,24 @@ namespace ProcessHacker.Native.Security.AccessControl
                 Win32.EditSecurity(owner != null ? owner.Handle : IntPtr.Zero, osi);
         }
 
-        public static ISecurable GetSecurable(NativeTypeFactory.ObjectType objectType, IntPtr handle)
+        public static ISecurable GetSecurableWrapper(IntPtr handle)
         {
-            return GetSecurable(objectType, (access) => new NativeHandle<StandardRights>(handle, access));
+            return GetSecurableWrapper((access) => new NativeHandle<StandardRights>(handle, access));
         }
 
-        public static ISecurable GetSecurable(NativeTypeFactory.ObjectType objectType, Func<StandardRights, NativeHandle> openMethod)
+        public static ISecurable GetSecurableWrapper(SeObjectType objectType, IntPtr handle)
         {
-            return new GenericSecurableObject(NativeTypeFactory.GetSeObjectType(objectType), openMethod);
+            return GetSecurableWrapper(objectType, (access) => new NativeHandle<StandardRights>(handle, access));
+        }
+
+        public static ISecurable GetSecurableWrapper(Func<StandardRights, NativeHandle> openMethod)
+        {
+            return new SecurableObjectWrapper(openMethod);
+        }
+
+        public static ISecurable GetSecurableWrapper(SeObjectType objectType, Func<StandardRights, NativeHandle> openMethod)
+        {
+            return new SeSecurableObjectWrapper(objectType, openMethod);
         }
 
         private bool _disposed = false;

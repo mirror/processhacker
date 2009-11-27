@@ -407,9 +407,7 @@ namespace ProcessHacker.Components
             {
                 SecurityEditor.EditSecurity(
                     this,
-                    SecurityEditor.GetSecurable(
-                        NativeTypeFactory.ObjectType.Token,
-                        (access) => _object.GetToken((TokenAccess)access)),
+                    SecurityEditor.GetSecurableWrapper((access) => _object.GetToken((TokenAccess)access)),
                     "Token",
                     NativeTypeFactory.GetAccessEntries(NativeTypeFactory.ObjectType.Token)
                     );

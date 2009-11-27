@@ -88,6 +88,24 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
+        public string Query()
+        {
+            string currentValue;
+            string oldValue;
+
+            this.Query(out currentValue, out oldValue);
+
+            return currentValue;
+        }
+
+        public void Query(out string currentValue, out string oldValue)
+        {
+            DateTime currentValueSetTime;
+            DateTime oldValueSetTime;
+
+            this.Query(out currentValue, out currentValueSetTime, out oldValue, out oldValueSetTime);
+        }
+
         public void Query(
             out string currentValue,
             out DateTime currentValueSetTime,
@@ -117,6 +135,36 @@ namespace ProcessHacker.Native.Objects
                 currentValueSetTime = DateTime.FromFileTime(currentValueSetTimeLong);
                 oldValue = oldValueStrAlloc.ReadStruct<UnicodeString>().Read();
                 oldValueSetTime = DateTime.FromFileTime(oldValueSetTimeLong);
+            }
+        }
+
+        public void Set(string currentValue)
+        {
+            this.Set(currentValue, null);
+        }
+
+        public void Set(string currentValue, string oldValue)
+        {
+            NtStatus status;
+            UnicodeString currentValueStr;
+            UnicodeString oldValueStr;
+
+            currentValueStr = new UnicodeString(currentValue);
+            oldValueStr = new UnicodeString(oldValue);
+
+            try
+            {
+                if ((status = Win32.LsaSetSecret(
+                    this,
+                    ref currentValueStr,
+                    ref oldValueStr
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
+            }
+            finally
+            {
+                currentValueStr.Dispose();
+                oldValueStr.Dispose();
             }
         }
     }

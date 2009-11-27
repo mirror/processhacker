@@ -33,10 +33,10 @@ using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Security.AccessControl;
 using ProcessHacker.Native.Symbols;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
-using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker
 {
@@ -1104,9 +1104,7 @@ namespace ProcessHacker
             {
                 SecurityEditor.EditSecurity(
                     this,
-                    SecurityEditor.GetSecurable(
-                        NativeTypeFactory.ObjectType.Process,
-                        (access) => new ProcessHandle(_pid, (ProcessAccess)access)),
+                    SecurityEditor.GetSecurableWrapper((access) => new ProcessHandle(_pid, (ProcessAccess)access)),
                     _processItem.Name,
                     NativeTypeFactory.GetAccessEntries(NativeTypeFactory.ObjectType.Process)
                     );
