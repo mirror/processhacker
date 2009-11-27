@@ -115,6 +115,7 @@
     <Compile Include="Security\AccessControl\Ace.cs" />
     <Compile Include="Security\AccessControl\Acl.cs" />
     <Compile Include="Security\AccessControl\KnownAce.cs" />
+    <Compile Include="Security\SamAliasAccess.cs" />
     <Compile Include="Security\SamUserAccess.cs" />
     <Compile Include="Security\SamGroupAccess.cs" />
     <Compile Include="Security\SamDomainAccess.cs" />

@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
@@ -34,8 +35,40 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("samlib.dll")]
+        public static extern NtStatus SamConnect(
+            [In] ref UnicodeString ServerName,
+            [Out] out IntPtr ServerHandle,
+            [In] SamServerAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("samlib.dll")]
+        public static extern NtStatus SamEnumerateDomainsInSamServer(
+            [In] IntPtr ServerHandle,
+            ref int EnumerationContext,
+            [Out] out IntPtr Buffer, // SamSidEnumeration**
+            [In] int PreferredMaximumLength,
+            [Out] out int CountReturned
+            );
+
+        [DllImport("samlib.dll")]
         public static extern NtStatus SamFreeMemory(
             [In] IntPtr Buffer
+            );
+
+        [DllImport("samlib.dll")]
+        public static extern NtStatus SamLookupDomainInSamServer(
+            [In] IntPtr ServerHandle,
+            [In] ref UnicodeString Name,
+            [Out] out IntPtr DomainId // Sid**
+            );
+
+        [DllImport("samlib.dll")]
+        public static extern NtStatus SamOpenDomain(
+            [In] IntPtr ServerHandle,
+            [In] SamDomainAccess DesiredAccess,
+            [In] IntPtr DomainId, // Sid*
+            [Out] out IntPtr DomainHandle
             );
 
         [DllImport("samlib.dll")]
@@ -50,6 +83,11 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr ObjectHandle,
             [In] SecurityInformation SecurityInformation,
             [In] IntPtr SecurityDescriptor // SecurityDescriptor*
+            );
+
+        [DllImport("samlib.dll")]
+        public static extern NtStatus SamShutdownSamServer(
+            [In] IntPtr ServerHandle
             );
     }
 }

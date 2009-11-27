@@ -22,9 +22,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Api
 {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SamRidEnumeration
+    {
+        public int RelativeId;
+        public UnicodeString Name;
+    }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SamSidEnumeration
+    {
+        public IntPtr Sid; // Sid*
+        public UnicodeString Name;
+    }
 }
