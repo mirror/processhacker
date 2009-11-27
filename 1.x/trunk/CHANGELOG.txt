@@ -7,6 +7,7 @@ Process Hacker
    * Added proper x64 support to structs reader
    * Added basic preprocessor to structs reader
    * Small performance improvements
+   * Editing object SACLs is now possible with KProcessHacker
  * FIXED:
    * #2902988 - "Toolbar not shown after saving options"
    * Find window and select thread sometimes not working

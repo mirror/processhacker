@@ -43,7 +43,10 @@ namespace ProcessHacker.Native.Security.AccessControl
 
             public SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
             {
-                using (var handle = _openMethod(StandardRights.ReadControl))
+                using (var handle = _openMethod(
+                    StandardRights.ReadControl |
+                    ((securityInformation & SecurityInformation.Sacl) != 0 ? StandardRights.AccessSystemSecurity : 0)
+                    ))
                     return handle.GetSecurity(securityInformation);
             }
 
@@ -51,7 +54,8 @@ namespace ProcessHacker.Native.Security.AccessControl
             {
                 using (var handle = _openMethod(
                     ((securityInformation & SecurityInformation.Dacl) != 0 ? StandardRights.WriteDac : 0) |
-                    ((securityInformation & SecurityInformation.Owner) != 0 ? StandardRights.WriteOwner : 0)
+                    ((securityInformation & SecurityInformation.Owner) != 0 ? StandardRights.WriteOwner : 0) |
+                    ((securityInformation & SecurityInformation.Sacl) != 0 ? StandardRights.AccessSystemSecurity : 0)
                     ))
                 {
                     handle.SetSecurity(securityInformation, securityDescriptor);
@@ -72,7 +76,10 @@ namespace ProcessHacker.Native.Security.AccessControl
 
             public SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
             {
-                using (var handle = _openMethod(StandardRights.ReadControl))
+                using (var handle = _openMethod(
+                    StandardRights.ReadControl |
+                    ((securityInformation & SecurityInformation.Sacl) != 0 ? StandardRights.AccessSystemSecurity : 0)
+                    ))
                     return SecurityDescriptor.GetSecurity(handle, _objectType, securityInformation); 
             }
 
@@ -80,7 +87,8 @@ namespace ProcessHacker.Native.Security.AccessControl
             {
                 using (var handle = _openMethod(
                     ((securityInformation & SecurityInformation.Dacl) != 0 ? StandardRights.WriteDac : 0) |
-                    ((securityInformation & SecurityInformation.Owner) != 0 ? StandardRights.WriteOwner : 0)
+                    ((securityInformation & SecurityInformation.Owner) != 0 ? StandardRights.WriteOwner : 0) |
+                    ((securityInformation & SecurityInformation.Sacl) != 0 ? StandardRights.AccessSystemSecurity : 0)
                     ))
                 {
                     SecurityDescriptor.SetSecurity(handle, _objectType, securityInformation, securityDescriptor);
