@@ -211,6 +211,32 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
+        public int[] GetAliasMembership(Sid sid)
+        {
+            NtStatus status;
+            IntPtr aliases;
+            int count;
+
+            if ((status = Win32.SamGetAliasMembership(
+                this,
+                1,
+                new IntPtr[] { sid },
+                out count,
+                out aliases
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            if (aliases != null)
+            {
+                using (var aliasesAlloc = new SamMemoryAlloc(aliases))
+                    return aliasesAlloc.ReadInt32Array(0, count);
+            }
+            else
+            {
+                return new int[0];
+            }
+        }
+
         private SamMemoryAlloc GetInformation(DomainInformationClass infoClass)
         {
             NtStatus status;
@@ -224,6 +250,22 @@ namespace ProcessHacker.Native.Objects
                 Win32.Throw(status);
 
             return new SamMemoryAlloc(buffer);
+        }
+
+        public Sid GetSid(int relativeId)
+        {
+            NtStatus status;
+            IntPtr sid;
+
+            if ((status = Win32.SamRidToSid(
+                this,
+                relativeId,
+                out sid
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            using (var sidAlloc = new SamMemoryAlloc(sid))
+                return new Sid(sidAlloc);
         }
 
         public string LookupId(int relativeId)
