@@ -30,7 +30,9 @@ namespace ProcessHacker.Native.Api
     {
         AliasGeneralInformation = 1,
         AliasNameInformation,
-        AliasAdminCommentInformation
+        AliasAdminCommentInformation,
+        AliasReplicationInformation,
+        AliasExtendedInformation
     }
 
     public enum DomainInformationClass : int
@@ -50,6 +52,18 @@ namespace ProcessHacker.Native.Api
         DomainModifiedInformation2
     }
 
+    [Flags]
+    public enum DomainPasswordProperties : int
+    {
+        PasswordComplex = 0x1,
+        PasswordNoAnonChange = 0x2,
+        PasswordNoClearChange = 0x4,
+        LockoutAdmins = 0x8,
+        PasswordStoreCleartext = 0x10,
+        RefusePasswordChange = 0x20,
+        NoLmOwfChange = 0x40
+    }
+
     public enum DomainServerEnableState : int
     {
         Enabled = 1,
@@ -67,7 +81,8 @@ namespace ProcessHacker.Native.Api
         GroupGeneralInformation = 1,
         GroupNameInformation,
         GroupAttributeInformation,
-        GroupAdminCommentInformation
+        GroupAdminCommentInformation,
+        GroupReplicationInformation
     }
 
     public enum SamAccountType : int
@@ -77,6 +92,7 @@ namespace ProcessHacker.Native.Api
         Alias
     }
 
+    [Flags]
     public enum UserAccountFlags : uint
     {
         Disabled = 0x1,
@@ -90,10 +106,31 @@ namespace ProcessHacker.Native.Api
         ServerTrustAccount = 0x100,
         DontExpirePassword = 0x200,
         AccountAutoLocked = 0x400,
+        EncryptedTextPasswordAllowed = 0x800,
+        SmartcardRequired = 0x1000,
+        TrustedForDelegation = 0x2000,
+        NotDelegated = 0x4000,
+        UseDesKeyOnly = 0x8000,
+        DontRequirePreauth = 0x10000,
+        PasswordExpired = 0x20000,
+        TrustedToAuthenticateForDelegation = 0x40000,
+        NoAuthDataRequired = 0x80000,
+        PartialSecretsAccount = 0x100000,
+        UseAesKeys = 0x200000,
 
         MachineAccountMask = InterdomainTrustAccount | WorkstationTrustAccount |
             ServerTrustAccount,
-        AccountTypeMask = TempDuplicateAccount | NormalAccount | MachineAccountMask
+        AccountTypeMask = TempDuplicateAccount | NormalAccount | MachineAccountMask,
+        ComputedAccountControlBits = AccountAutoLocked | PasswordExpired
+    }
+
+    [Flags]
+    public enum UserExtendedWhichFields : uint
+    {
+        UserTile = 0x1000,
+        PasswordHint = 0x2000,
+        DontShowInLogonUi = 0x4000,
+        ShellAdminObjectProperties = 0x8000
     }
 
     public enum UserInformationClass : int
@@ -121,9 +158,15 @@ namespace ProcessHacker.Native.Api
         UserAllInformation,
         UserInternal3Information,
         UserInternal4Information,
-        UserInternal5Information
+        UserInternal5Information,
+        UserInternal4InformationNew,
+        UserInternal5InformationNew,
+        UserInternal6Information,
+        UserExtendedInformation,
+        UserLogonUIInformation
     }
 
+    [Flags]
     public enum UserWhichFields : uint
     {
         Username = 0x1,

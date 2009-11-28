@@ -206,6 +206,31 @@ namespace ProcessHacker.Native.Objects
                 return data.ReadStruct<UserAccountNameInformation>().UserName.Read();
         }
 
+        public string GetPasswordHint()
+        {
+            using (var data = this.GetInformation(UserInformationClass.UserExtendedInformation))
+                return data.ReadStruct<UserExtendedInformation>().PasswordHint.Read();
+        }
+
+        public void SetFullName(string fullName)
+        {
+            unsafe
+            {
+                UserFullNameInformation info = new UserFullNameInformation();
+
+                info.FullName = new UnicodeString(fullName);
+
+                try
+                {
+                    this.SetInformation(UserInformationClass.UserFullNameInformation, new IntPtr(&info));
+                }
+                finally
+                {
+                    info.FullName.Dispose();
+                }
+            }
+        }
+
         private void SetInformation(UserInformationClass infoClass, IntPtr buffer)
         {
             NtStatus status;
@@ -234,6 +259,26 @@ namespace ProcessHacker.Native.Objects
                 finally
                 {
                     info.Password.Dispose();
+                }
+            }
+        }
+
+        public void SetPasswordHint(string passwordHint)
+        {
+            unsafe
+            {
+                UserExtendedInformation info = new UserExtendedInformation();
+
+                info.ExtendedWhichFields = UserExtendedWhichFields.PasswordHint;
+                info.PasswordHint = new UnicodeString(passwordHint);
+
+                try
+                {
+                    this.SetInformation(UserInformationClass.UserExtendedInformation, new IntPtr(&info));
+                }
+                finally
+                {
+                    info.PasswordHint.Dispose();
                 }
             }
         }

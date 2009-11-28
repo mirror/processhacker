@@ -70,6 +70,16 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct DomainPasswordInformation
+    {
+        public ushort MinPasswordLength;
+        public ushort PasswordHistoryLength;
+        public DomainPasswordProperties PasswordProperties;
+        public long MaxPasswordAge;
+        public long MinPasswordAge;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct GroupAdmInformation
     {
         public UnicodeString AdminComment;
@@ -102,6 +112,13 @@ namespace ProcessHacker.Native.Api
     {
         public ushort UnitsPerWeek;
         public IntPtr LogonHoursBitmap; // byte* (RTL bitmap, buffer)
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SamByteArray32K
+    {
+        public int Size;
+        public IntPtr Data; // byte*
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -180,6 +197,17 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct UserExtendedInformation
+    {
+        public UserExtendedWhichFields ExtendedWhichFields;
+        public SamByteArray32K UserTile;
+        public UnicodeString PasswordHint;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool DontShowInLogonUI;
+        public SamByteArray32K ShellAdminObjectProperties;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct UserFullNameInformation
     {
         public UnicodeString FullName;
@@ -193,6 +221,15 @@ namespace ProcessHacker.Native.Api
         public int PrimaryGroupId;
         public UnicodeString AdminComment;
         public UnicodeString UserComment;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct UserLogonUiInformation
+    {
+        [MarshalAs(UnmanagedType.I1)]
+        public bool PasswordIsBlank;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool AccountIsDisabled;
     }
 
     [StructLayout(LayoutKind.Sequential)]

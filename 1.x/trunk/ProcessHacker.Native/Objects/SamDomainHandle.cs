@@ -252,6 +252,22 @@ namespace ProcessHacker.Native.Objects
             return new SamMemoryAlloc(buffer);
         }
 
+        public DomainPasswordPolicy GetPasswordPolicy()
+        {
+            using (var data = this.GetInformation(DomainInformationClass.DomainPasswordInformation))
+            {
+                var info = data.ReadStruct<DomainPasswordInformation>();
+
+                return new DomainPasswordPolicy(
+                    info.MinPasswordLength,
+                    info.PasswordHistoryLength,
+                    info.PasswordProperties,
+                    new TimeSpan(-info.MaxPasswordAge),
+                    new TimeSpan(-info.MinPasswordAge)
+                    );
+            }
+        }
+
         public Sid GetSid(int relativeId)
         {
             NtStatus status;
@@ -379,5 +395,51 @@ namespace ProcessHacker.Native.Objects
                 )) >= NtStatus.Error)
                 Win32.Throw(status);
         }
+
+        public void SetPasswordPolicy(DomainPasswordPolicy policy)
+        {
+            unsafe
+            {
+                DomainPasswordInformation info = new DomainPasswordInformation();
+
+                info.MinPasswordLength = policy.MinPasswordLength;
+                info.PasswordHistoryLength = policy.PasswordHistoryLength;
+                info.PasswordProperties = policy.PasswordProperties;
+                info.MaxPasswordAge = -policy.MaxPasswordAge.Ticks;
+                info.MinPasswordAge = -policy.MinPasswordAge.Ticks;
+
+                this.SetInformation(DomainInformationClass.DomainPasswordInformation, new IntPtr(&info));
+            }
+        }
+    }
+
+    public class DomainPasswordPolicy
+    {
+        private ushort _minPasswordLength;
+        private ushort _passwordHistoryLength;
+        private DomainPasswordProperties _passwordProperties;
+        private TimeSpan _maxPasswordAge;
+        private TimeSpan _minPasswordAge;
+
+        public DomainPasswordPolicy(
+            ushort minPasswordLength,
+            ushort passwordHistoryLength,
+            DomainPasswordProperties passwordProperties,
+            TimeSpan maxPasswordAge,
+            TimeSpan minPasswordAge
+            )
+        {
+            _minPasswordLength = minPasswordLength;
+            _passwordHistoryLength = passwordHistoryLength;
+            _passwordProperties = passwordProperties;
+            _maxPasswordAge = maxPasswordAge;
+            _minPasswordAge = minPasswordAge;
+        }
+
+        public ushort MinPasswordLength { get { return _minPasswordLength; } set { _minPasswordLength = value; } }
+        public ushort PasswordHistoryLength { get { return _passwordHistoryLength; } set { _passwordHistoryLength = value; } }
+        public DomainPasswordProperties PasswordProperties { get { return _passwordProperties; } set { _passwordProperties = value; } }
+        public TimeSpan MaxPasswordAge { get { return _maxPasswordAge; } set { _maxPasswordAge = value; } }
+        public TimeSpan MinPasswordAge { get { return _minPasswordAge; } set { _minPasswordAge = value; } }
     }
 }
