@@ -321,6 +321,13 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("samlib.dll")]
+        public static extern NtStatus SamRidToSid(
+            [In] IntPtr DomainHandle,
+            [In] int RelativeId,
+            [Out] out IntPtr Sid // Sid**
+            );
+
+        [DllImport("samlib.dll")]
         public static extern NtStatus SamSetInformationAlias(
             [In] IntPtr AliasHandle,
             [In] AliasInformationClass AliasInformationClass,

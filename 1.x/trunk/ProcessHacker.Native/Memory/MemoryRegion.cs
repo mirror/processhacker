@@ -202,6 +202,15 @@ namespace ProcessHacker.Native
             }
         }
 
+        public int[] ReadInt32Array(int offset, int count)
+        {
+            int[] array = new int[count];
+
+            Marshal.Copy(_memory.Increment(offset), array, 0, count);
+
+            return array;
+        }
+
         public IntPtr ReadIntPtr(int offset)
         {
             return this.ReadIntPtr(offset, 0);
