@@ -64,6 +64,11 @@ namespace ProcessHacker.Native
             Mutant,
             Process,
             Profile,
+            SamAlias,
+            SamDomain,
+            SamGroup,
+            SamServer,
+            SamUser,
             Section,
             Semaphore,
             Service,
@@ -293,6 +298,89 @@ namespace ProcessHacker.Native
                     {
                         new AccessEntry("Full control", ProfileAccess.All, true, true),
                         new AccessEntry("Control", ProfileAccess.Control, true, true)
+                    };
+                    break;
+                case ObjectType.SamAlias:
+                    entries = new AccessEntry[]
+                    {
+                        new AccessEntry("Full control", SamAliasAccess.All, true, true),
+                        new AccessEntry("Read", SamAliasAccess.GenericRead, true, false),
+                        new AccessEntry("Write", SamAliasAccess.GenericWrite, true, false),
+                        new AccessEntry("Execute", SamAliasAccess.GenericExecute, true, false),
+                        new AccessEntry("Add member", SamAliasAccess.AddMember, false, true),
+                        new AccessEntry("Remove member", SamAliasAccess.RemoveMember, false, true),
+                        new AccessEntry("List members", SamAliasAccess.ListMembers, false, true),
+                        new AccessEntry("Read information", SamAliasAccess.ReadInformation, false, true),
+                        new AccessEntry("Write account", SamAliasAccess.WriteAccount, false, true)
+                    };
+                    break;
+                case ObjectType.SamDomain:
+                    entries = new AccessEntry[]
+                    {
+                        new AccessEntry("Full control", SamDomainAccess.All, true, true),
+                        new AccessEntry("Read", SamDomainAccess.GenericRead, true, false),
+                        new AccessEntry("Write", SamDomainAccess.GenericWrite, true, false),
+                        new AccessEntry("Execute", SamDomainAccess.GenericExecute, true, false),
+                        new AccessEntry("Read password parameters", SamDomainAccess.ReadPasswordParameters, false, true),
+                        new AccessEntry("Write password parameters", SamDomainAccess.WritePasswordParameters, false, true),
+                        new AccessEntry("Read other parameters", SamDomainAccess.ReadOtherParameters, false, true),
+                        new AccessEntry("Write other parameters", SamDomainAccess.WriteOtherParameters, false, true),
+                        new AccessEntry("Create user", SamDomainAccess.CreateUser, false, true),
+                        new AccessEntry("Create group", SamDomainAccess.CreateGroup, false, true),
+                        new AccessEntry("Create alias", SamDomainAccess.CreateAlias, false, true),
+                        new AccessEntry("Get alias membership", SamDomainAccess.GetAliasMembership, false, true),
+                        new AccessEntry("List accounts", SamDomainAccess.ListAccounts, false, true),
+                        new AccessEntry("Lookup", SamDomainAccess.Lookup, false, true),
+                        new AccessEntry("Administer server", SamDomainAccess.AdministerServer, false, true)
+                    };
+                    break;
+                case ObjectType.SamGroup:
+                    entries = new AccessEntry[]
+                    {
+                        new AccessEntry("Full control", SamGroupAccess.All, true, true),
+                        new AccessEntry("Read", SamGroupAccess.GenericRead, true, false),
+                        new AccessEntry("Write", SamGroupAccess.GenericWrite, true, false),
+                        new AccessEntry("Execute", SamGroupAccess.GenericExecute, true, false),
+                        new AccessEntry("Add member", SamGroupAccess.AddMember, false, true),
+                        new AccessEntry("Remove member", SamGroupAccess.RemoveMember, false, true),
+                        new AccessEntry("List members", SamGroupAccess.ListMembers, false, true),
+                        new AccessEntry("Read information", SamGroupAccess.ReadInformation, false, true),
+                        new AccessEntry("Write account", SamGroupAccess.WriteAccount, false, true)
+                    };
+                    break;
+                case ObjectType.SamServer:
+                    entries = new AccessEntry[]
+                    {
+                        new AccessEntry("Full control", SamServerAccess.All, true, true),
+                        new AccessEntry("Read", SamServerAccess.GenericRead, true, false),
+                        new AccessEntry("Write", SamServerAccess.GenericWrite, true, false),
+                        new AccessEntry("Execute", SamServerAccess.GenericExecute, true, false),
+                        new AccessEntry("Connect", SamServerAccess.Connect, false, true),
+                        new AccessEntry("Shutdown", SamServerAccess.Shutdown, false, true),
+                        new AccessEntry("Initialize", SamServerAccess.Initialize, false, true),
+                        new AccessEntry("Create domain", SamServerAccess.CreateDomain, false, true),
+                        new AccessEntry("Enumerate domains", SamServerAccess.EnumerateDomains, false, true),
+                        new AccessEntry("Lookup domain", SamServerAccess.LookupDomain, false, true)
+                    };
+                    break;
+                case ObjectType.SamUser:
+                    entries = new AccessEntry[]
+                    {
+                        new AccessEntry("Full control", SamUserAccess.All, true, true),
+                        new AccessEntry("Read", SamUserAccess.GenericRead, true, false),
+                        new AccessEntry("Write", SamUserAccess.GenericWrite, true, false),
+                        new AccessEntry("Execute", SamUserAccess.GenericExecute, true, false),
+                        new AccessEntry("Read general", SamUserAccess.ReadGeneral, false, true),
+                        new AccessEntry("Read preferences", SamUserAccess.ReadPreferences, false, true),
+                        new AccessEntry("Write preferences", SamUserAccess.WritePreferences, false, true),
+                        new AccessEntry("Read logon", SamUserAccess.ReadLogon, false, true),
+                        new AccessEntry("Read account", SamUserAccess.ReadAccount, false, true),
+                        new AccessEntry("Write account", SamUserAccess.WriteAccount, false, true),
+                        new AccessEntry("Change password", SamUserAccess.ChangePassword, false, true),
+                        new AccessEntry("Force password change", SamUserAccess.ForcePasswordChange, false, true),
+                        new AccessEntry("List groups", SamUserAccess.ListGroups, false, true),
+                        new AccessEntry("Read group information", SamUserAccess.ReadGroupInformation, false, true),
+                        new AccessEntry("Write group information", SamUserAccess.WriteGroupInformation, false, true)
                     };
                     break;
                 case ObjectType.Section:
@@ -530,6 +618,16 @@ namespace ProcessHacker.Native
                     return typeof(ProcessAccess);
                 case ObjectType.Profile:
                     return typeof(ProfileAccess);
+                case ObjectType.SamAlias:
+                    return typeof(SamAliasAccess);
+                case ObjectType.SamDomain:
+                    return typeof(SamDomainAccess);
+                case ObjectType.SamGroup:
+                    return typeof(SamGroupAccess);
+                case ObjectType.SamServer:
+                    return typeof(SamServerAccess);
+                case ObjectType.SamUser:
+                    return typeof(SamUserAccess);
                 case ObjectType.Section:
                     return typeof(SectionAccess);
                 case ObjectType.Semaphore:
