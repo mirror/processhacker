@@ -42,6 +42,72 @@ namespace ProcessHacker.Native.Api
 {
     public static partial class Win32
     {
+        #region Credentials
+
+        [DllImport("credui.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool CredPackAuthenticationBuffer(
+            [In] CredPackFlags Flags,
+            [In] string UserName,
+            [In] string Password,
+            [In] IntPtr PackedCredentials,
+            ref int PackedCredentialsSize
+            );
+
+        [DllImport("credui.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool CredUnPackAuthenticationBuffer(
+            [In] CredPackFlags Flags,
+            [In] IntPtr AuthBuffer,
+            [In] int AuthBufferSize,
+            [In] IntPtr UserName,
+            ref int UserNameSize,
+            [In] IntPtr DomainName,
+            ref int DomainNameSize,
+            [In] IntPtr Password,
+            ref int PasswordSize
+            );
+
+        [DllImport("credui.dll", CharSet = CharSet.Unicode)]
+        public static extern Win32Error CredUIPromptForCredentials(
+            [In] [Optional] ref CredUiInfo UiInfo,
+            [In] string TargetName,
+            [In] IntPtr Reserved,
+            [In] [Optional] Win32Error AuthError,
+            [In] IntPtr UserName,
+            [In] int UserNameMaxChars,
+            [In] IntPtr Password,
+            [In] int PasswordMaxChars,
+            [MarshalAs(UnmanagedType.Bool)]
+            ref bool Save,
+            [In] CredUiFlags Flags
+            );
+
+        [DllImport("credui.dll", CharSet = CharSet.Unicode)]
+        public static extern Win32Error CredUIPromptForWindowsCredentials(
+            [In] [Optional] ref CredUiInfo UiInfo,
+            [In] [Optional] Win32Error AuthError,
+            ref int AuthPackage,
+            [In] [Optional] IntPtr InAuthBuffer,
+            [In] int InAuthBufferSize,
+            [Out] out IntPtr OutAuthBuffer,
+            [Out] out int OutAuthBufferSize,
+            [MarshalAs(UnmanagedType.Bool)]
+            ref bool Save,
+            [In] CredUiWinFlags Flags
+            );
+
+        [DllImport("secur32.dll")]
+        public static extern int EnumerateSecurityPackages(
+            [Out] out int Packages,
+            [Out] out IntPtr PackageInfo
+            );
+
+        [DllImport("secur32.dll")]
+        public static extern int FreeContextBuffer(
+            [In] IntPtr ContextBuffer
+            );
+
+        #endregion
+
         #region Cryptography
 
         [DllImport("wintrust.dll", SetLastError = true)]

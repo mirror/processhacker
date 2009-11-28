@@ -89,7 +89,8 @@ namespace ProcessHacker.Native.Api
         TooManySemRequests = 0x67,
         InvalidAtInterruptTime = 0x68,
         SemOwnerDied = 0x69,
-        SemUserLimit = 0x6a
+        SemUserLimit = 0x6a,
+        Cancelled = 0x4c7
     }
 
     public static class Win32ErrorExtensions

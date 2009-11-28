@@ -124,6 +124,7 @@
     <Compile Include="Security\AccessControl\Ace.cs" />
     <Compile Include="Security\AccessControl\Acl.cs" />
     <Compile Include="Security\AccessControl\KnownAce.cs" />
+    <Compile Include="Security\Authentication\Credentials.cs" />
     <Compile Include="Security\Authentication\IAuthenticationPackage.cs" />
     <Compile Include="Security\Authentication\Msv1_0_InteractivePackage.cs" />
     <Compile Include="Security\SamAliasAccess.cs" />

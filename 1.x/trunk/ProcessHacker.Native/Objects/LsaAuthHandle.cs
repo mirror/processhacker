@@ -120,7 +120,7 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                using (var logonData = package.GetLogonData())
+                using (var logonData = package.GetAuthData())
                 {
                     if ((status = Win32.LsaLogonUser(
                         this,

@@ -125,8 +125,7 @@ namespace ProcessHacker.Native
                 WintrustFileInfo fileInfo = new WintrustFileInfo();
 
                 strMem.WriteUnicodeString(0, fileName);
-                strMem.WriteByte(fileName.Length * 2, 0);
-                strMem.WriteByte(fileName.Length * 2 + 1, 0);
+                strMem.WriteInt16(fileName.Length * 2, 0);
 
                 fileInfo.Size = Marshal.SizeOf(fileInfo);
                 fileInfo.FilePath = strMem;

@@ -18,7 +18,7 @@ namespace ProcessHacker.Native.Security.Authentication
         /// package.
         /// </summary>
         /// <returns>A memory region containing the information.</returns>
-        MemoryRegion GetLogonData();
+        MemoryRegion GetAuthData();
 
         /// <summary>
         /// Parses a buffer and returns profile-related information 
@@ -27,5 +27,11 @@ namespace ProcessHacker.Native.Security.Authentication
         /// <param name="buffer">A buffer containing profile information.</param>
         /// <returns>A package-specific object containing profile information.</returns>
         object GetProfileData(MemoryRegion buffer);
+
+        /// <summary>
+        /// Populates the appropriate class fields from authentication information.
+        /// </summary>
+        /// <returns>A memory region containing the information.</returns>
+        void ReadAuthData(MemoryRegion buffer);
     }
 }

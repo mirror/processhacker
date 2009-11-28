@@ -52,6 +52,16 @@ namespace ProcessHacker.Native.Api
         public string CatalogFile;
     }
 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct CredUiInfo
+    {
+        public int Size;
+        public IntPtr Parent;
+        public string MessageText;
+        public string CaptionText;
+        public IntPtr Banner;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct EnumServiceStatus
     {
@@ -550,6 +560,17 @@ namespace ProcessHacker.Native.Api
     {
         public ScActionType Type;
         public int Delay;
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct SecPkgInfo
+    {
+        public int Capabilities;
+        public ushort Version;
+        public ushort RpcId;
+        public int MaxToken;
+        public string Name;
+        public string Comment;
     }
 
     [StructLayout(LayoutKind.Sequential)]

@@ -84,6 +84,49 @@ namespace ProcessHacker.Native.Api
         NonZeroLPtr = LMemFixed
     }
 
+    [Flags]
+    public enum CredPackFlags : uint
+    {
+        ProtectedCredentials = 0x1,
+        WowBuffer = 0x2,
+        GenericCredentials = 0x4
+    }
+
+    [Flags]
+    public enum CredUiFlags : uint
+    {
+        IncorrectPassword = 0x1,
+        DoNotPersist = 0x2,
+        RequestAdministrator = 0x4,
+        ExcludeCertificates = 0x8,
+        RequireCertificate = 0x10,
+        ShowSaveCheckBox = 0x40,
+        AlwaysShowUi = 0x80,
+        RequireSmartcard = 0x100,
+        PasswordOnlyOk = 0x200,
+        ValidateUsername = 0x400,
+        CompleteUsername = 0x800,
+        Persist = 0x1000,
+        ServerCredential = 0x4000,
+        ExpectConfirmation = 0x20000,
+        GenericCredentials = 0x40000,
+        UsernameTargetCredentials = 0x80000,
+        KeepUsername = 0x100000
+    }
+
+    [Flags]
+    public enum CredUiWinFlags : uint
+    {
+        Generic = 0x1,
+        CheckBox = 0x2,
+        AuthPackageOnly = 0x10,
+        InCredOnly = 0x20,
+        EnumerateAdmins = 0x100,
+        EnumerateCurrentUser = 0x200,
+        SecurePrompt = 0x1000,
+        Pack32Wow = 0x10000000
+    }
+
     public enum DepFlags : uint
     {
         Disable = 0x00000000,
