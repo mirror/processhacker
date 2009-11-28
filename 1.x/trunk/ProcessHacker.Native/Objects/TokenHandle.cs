@@ -35,6 +35,11 @@ namespace ProcessHacker.Native.Objects
     {
         private static readonly TokenSource _phTokenSource = new TokenSource("PROCHACK", Luid.Allocate());
 
+        public static TokenSource PhTokenSource
+        {
+            get { return _phTokenSource; }
+        }
+
         public static TokenHandle Create(
             TokenAccess access,
             TokenType tokenType,

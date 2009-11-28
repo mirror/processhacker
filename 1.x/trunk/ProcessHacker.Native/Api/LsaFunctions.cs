@@ -224,6 +224,24 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("secur32.dll")]
+        public static extern NtStatus LsaLogonUser(
+            [In] IntPtr LsaHandle,
+            [In] ref AnsiString OriginName,
+            [In] SecurityLogonType LogonType,
+            [In] int AuthenticationPackage,
+            [In] IntPtr AuthenticationInformation,
+            [In] int AuthenticationInformationLength,
+            [In] [Optional] IntPtr LocalGroups, // TokenGroups*
+            [In] ref TokenSource SourceContext,
+            [Out] out IntPtr ProfileBuffer,
+            [Out] out int ProfileBufferLength,
+            [Out] out Luid LogonId,
+            [Out] out IntPtr Token,
+            [Out] out QuotaLimits Quotas,
+            [Out] out NtStatus SubStatus
+            );
+
+        [DllImport("secur32.dll")]
         public static extern NtStatus LsaLookupAuthenticationPackage(
             [In] IntPtr LsaHandle,
             [In] ref AnsiString PackageName,

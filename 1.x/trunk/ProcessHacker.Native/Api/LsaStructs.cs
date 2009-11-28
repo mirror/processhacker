@@ -67,6 +67,36 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct Msv1_0_InteractiveLogon
+    {
+        public Msv1_0_LogonSubmitType MessageType;
+        public UnicodeString LogonDomainName;
+        public UnicodeString UserName;
+        public UnicodeString Password;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Msv1_0_InteractiveProfile
+    {
+        public Msv1_0_ProfileBufferType MessageType;
+        public ushort LogonCount;
+        public ushort BadPasswordCount;
+        public long LogonTime;
+        public long LogoffTime;
+        public long KickOffTime;
+        public long PasswordLastSet;
+        public long PasswordCanChange;
+        public long PasswordMustChange;
+        public UnicodeString LogonScript;
+        public UnicodeString HomeDirectory;
+        public UnicodeString FullName;
+        public UnicodeString ProfilePath;
+        public UnicodeString HomeDirectoryDrive;
+        public UnicodeString LogonServer;
+        public int UserFlags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct PolicyPrivilegeDefinition
     {
         public UnicodeString Name;

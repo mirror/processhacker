@@ -36,6 +36,24 @@ namespace ProcessHacker.Native.Api
         LogFull = 0x8
     }
 
+    public enum Msv1_0_LogonSubmitType
+    {
+        Interactive = 2,
+        Lm20,
+        Network,
+        SubAuth,
+        WorkstationUnlock = 7,
+        S4ULogon = 12,
+        VirtualLogon = 82
+    }
+
+    public enum Msv1_0_ProfileBufferType
+    {
+        Interactive = 2,
+        Lm20,
+        SmartCard
+    }
+
     public enum PolicyDomainInformationClass
     {
         PolicyDomainEfsInformation = 2,

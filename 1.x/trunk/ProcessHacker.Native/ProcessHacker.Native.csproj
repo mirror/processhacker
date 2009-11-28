@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\LsaDefinitions.cs" />
     <Compile Include="Api\SamDefinitions.cs" />
     <Compile Include="Api\SamFunctions.cs" />
     <Compile Include="Api\SamStructs.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Memory\VirtualMemoryAlloc.cs" />
     <Compile Include="NativeUtils.cs" />
     <Compile Include="NProcessHacker.cs" />
+    <Compile Include="Objects\LsaAuthHandle.cs" />
     <Compile Include="Objects\SamAliasHandle.cs" />
     <Compile Include="Objects\SamUserHandle.cs" />
     <Compile Include="Objects\SamGroupHandle.cs" />
@@ -122,6 +124,8 @@
     <Compile Include="Security\AccessControl\Ace.cs" />
     <Compile Include="Security\AccessControl\Acl.cs" />
     <Compile Include="Security\AccessControl\KnownAce.cs" />
+    <Compile Include="Security\Authentication\IAuthenticationPackage.cs" />
+    <Compile Include="Security\Authentication\Msv1_0_InteractivePackage.cs" />
     <Compile Include="Security\SamAliasAccess.cs" />
     <Compile Include="Security\SamUserAccess.cs" />
     <Compile Include="Security\SamGroupAccess.cs" />
