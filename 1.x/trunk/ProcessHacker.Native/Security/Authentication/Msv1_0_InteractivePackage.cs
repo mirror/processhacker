@@ -11,6 +11,9 @@ namespace ProcessHacker.Native.Security.Authentication
         private string _userName;
         private string _password;
 
+        public Msv1_0_InteractivePackage()
+        { }
+
         public Msv1_0_InteractivePackage(Sid sid)
             : this(sid, null)
         { }

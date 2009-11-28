@@ -77,6 +77,11 @@ namespace ProcessHacker.Native.Objects
             Win32.LsaDeregisterLogonProcess(this);
         }
 
+        public TokenHandle LogonUser(SecurityLogonType logonType, IAuthenticationPackage package)
+        {
+            return this.LogonUser("PH.N", logonType, package);
+        }
+
         public TokenHandle LogonUser(string originName, SecurityLogonType logonType, IAuthenticationPackage package)
         {
             object profileData;
