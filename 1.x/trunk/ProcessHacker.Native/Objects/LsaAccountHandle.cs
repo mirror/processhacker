@@ -74,6 +74,11 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
+        public void AddPrivilege(Privilege privilege)
+        {
+            this.AddPrivileges(new PrivilegeSet { privilege });
+        }
+
         public void AddPrivileges(PrivilegeSet privileges)
         {
             NtStatus status;
@@ -131,6 +136,11 @@ namespace ProcessHacker.Native.Objects
                 Win32.Throw(status);
 
             return access;
+        }
+
+        public void RemovePrivilege(Privilege privilege)
+        {
+            this.RemovePrivileges(new PrivilegeSet { privilege });
         }
 
         public void RemovePrivileges()
