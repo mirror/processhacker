@@ -263,10 +263,6 @@ NTSTATUS KphOpenNamedObject(
     
     __try
     {
-        /* Verify parameters. */
-        if (!ObjectAttributes->ObjectName)
-            return STATUS_INVALID_PARAMETER;
-        
         /* Copy the object attributes structure. */
         memcpy(&objectAttributes, ObjectAttributes, sizeof(OBJECT_ATTRIBUTES));
     }
@@ -275,9 +271,19 @@ NTSTATUS KphOpenNamedObject(
         return GetExceptionCode();
     }
     
+    /* Verify parameters. */
+    if (!objectAttributes.ObjectName)
+        return STATUS_INVALID_PARAMETER;
+    
+    /* Make sure the root directory handle isn't a kernel handle if 
+     * we're from user-mode.
+     */
+    if (AccessMode != KernelMode && IsKernelHandle(objectAttributes.RootDirectory))
+        return STATUS_INVALID_PARAMETER;
+    
     /* Capture the ObjectName string. */
     status = KphCaptureUnicodeString(
-        ObjectAttributes->ObjectName,
+        objectAttributes.ObjectName,
         &capturedObjectName
         );
     

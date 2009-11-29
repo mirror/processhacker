@@ -37,6 +37,8 @@
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnType = new System.Windows.Forms.ColumnHeader();
             this.columnData = new System.Windows.Forms.ColumnHeader();
+            this.menuObject = new System.Windows.Forms.ContextMenu();
+            this.permissionsMenuItem = new System.Windows.Forms.MenuItem();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -132,6 +134,17 @@
             this.columnData.Text = "Data";
             this.columnData.Width = 200;
             // 
+            // menuObject
+            // 
+            this.menuObject.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.permissionsMenuItem});
+            // 
+            // permissionsMenuItem
+            // 
+            this.permissionsMenuItem.Index = 0;
+            this.permissionsMenuItem.Text = "Permissions";
+            this.permissionsMenuItem.Click += new System.EventHandler(this.permissionsMenuItem_Click);
+            // 
             // ObjectsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -157,6 +170,8 @@
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnType;
         private System.Windows.Forms.ColumnHeader columnData;
+        private System.Windows.Forms.ContextMenu menuObject;
+        private System.Windows.Forms.MenuItem permissionsMenuItem;
 
     }
 }

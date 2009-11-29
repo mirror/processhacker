@@ -496,15 +496,16 @@ namespace ProcessHacker.Native
             return driverHandle;
         }
 
-        public int KphOpenNamedObject(ObjectAttributes objectAttributes)
+        public int KphOpenNamedObject(int access, ObjectAttributes objectAttributes)
         {
-            byte* inData = stackalloc byte[8];
+            byte* inData = stackalloc byte[0xc];
             int handle;
 
             *(int*)inData = (int)&handle;
-            *(int*)(inData + 4) = (int)&objectAttributes;
+            *(int*)(inData + 4) = access;
+            *(int*)(inData + 8) = (int)&objectAttributes;
 
-            _fileHandle.IoControl(CtlCode(Control.KphOpenNamedObject), inData, 8, null, 0);
+            _fileHandle.IoControl(CtlCode(Control.KphOpenNamedObject), inData, 0xc, null, 0);
 
             return handle;
         }

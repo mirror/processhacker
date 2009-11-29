@@ -72,6 +72,7 @@ namespace ProcessHacker.Native
             Section,
             Semaphore,
             Service,
+            Session,
             SymbolicLink,
             Thread,
             Timer,

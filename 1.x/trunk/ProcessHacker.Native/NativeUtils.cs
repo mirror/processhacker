@@ -256,5 +256,19 @@ namespace ProcessHacker.Native
                 return false;
             }
         }
+
+        public static NativeHandle OpenObject(int access, string name, ObjectFlags objectFlags, NativeHandle rootDirectory)
+        {
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+
+            try
+            {
+                return new NativeHandle(KProcessHacker.Instance.KphOpenNamedObject(access, oa).ToIntPtr(), true);
+            }
+            finally
+            {
+                oa.Dispose();
+            }
+        }
     }
 }

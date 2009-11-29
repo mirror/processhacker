@@ -2322,6 +2322,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             struct
             {
                 PHANDLE Handle;
+                ACCESS_MASK DesiredAccess;
                 POBJECT_ATTRIBUTES ObjectAttributes;
             } *args = dataBuffer;
             
@@ -2329,7 +2330,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             status = KphOpenNamedObject(
                 args->Handle,
-                0,
+                args->DesiredAccess,
                 args->ObjectAttributes,
                 NULL,
                 UserMode

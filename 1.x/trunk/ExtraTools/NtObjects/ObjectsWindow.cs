@@ -8,6 +8,7 @@ using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace NtObjects
 {
@@ -24,6 +25,15 @@ namespace NtObjects
         public ObjectsWindow()
         {
             InitializeComponent();
+
+            listObjects.ContextMenu = menuObject;
+
+            try
+            {
+                KProcessHacker.Instance = new KProcessHacker();
+            }
+            catch
+            { }
 
             try
             {
@@ -169,6 +179,25 @@ namespace NtObjects
                     treeDirectories.SelectedNode.Nodes[listObjects.SelectedItems[0].SubItems[0].Text];
                 this.ChangeDirectory();
             }
+        }
+
+        private void permissionsMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listObjects.SelectedItems.Count != 1)
+                return;
+
+            string objectName = this.NormalizePath(
+                treeDirectories.SelectedNode.FullPath + "\\" + listObjects.SelectedItems[0].Text
+                );
+
+            SecurityEditor.EditSecurity(
+                this,
+                SecurityEditor.GetSecurableWrapper((access) => NativeUtils.OpenObject((int)access, objectName, 0, null)),
+                objectName,
+                NativeTypeFactory.GetAccessEntries(NativeTypeFactory.GetObjectType(
+                listObjects.SelectedItems[0].SubItems[1].Text
+                ))
+                );
         }
     }
 }
