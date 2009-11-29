@@ -707,5 +707,10 @@ namespace ProcessHacker
         {
             get { return _pitem.VerifyResult == VerifyResult.Trusted ? "Verified" : ""; }
         }
+
+        public string VerifiedSigner
+        {
+            get { return _pitem.VerifyResult == VerifyResult.Trusted ? _pitem.VerifySignerName : ""; }
+        }
     }
 }

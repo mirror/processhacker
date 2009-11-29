@@ -106,6 +106,8 @@
             this.nodeKernelCpuTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeUserCpuTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeVerificationStatus = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeVerifiedSigner = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.columnVerifiedSigner = new Aga.Controls.Tree.TreeColumn();
             this.SuspendLayout();
             // 
             // treeProcesses
@@ -150,6 +152,7 @@
             this.treeProcesses.Columns.Add(this.columnUserCpuTime);
             this.treeProcesses.Columns.Add(this.columnKernelCpuTime);
             this.treeProcesses.Columns.Add(this.columnVerificationStatus);
+            this.treeProcesses.Columns.Add(this.columnVerifiedSigner);
             this.treeProcesses.DefaultToolTipProvider = null;
             this.treeProcesses.DisplayDraggingNodes = true;
             this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -198,6 +201,7 @@
             this.treeProcesses.NodeControls.Add(this.nodeKernelCpuTime);
             this.treeProcesses.NodeControls.Add(this.nodeUserCpuTime);
             this.treeProcesses.NodeControls.Add(this.nodeVerificationStatus);
+            this.treeProcesses.NodeControls.Add(this.nodeVerifiedSigner);
             this.treeProcesses.SelectedNode = null;
             this.treeProcesses.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
             this.treeProcesses.ShowNodeToolTips = true;
@@ -939,6 +943,24 @@
             this.nodeVerificationStatus.ParentColumn = this.columnVerificationStatus;
             this.nodeVerificationStatus.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
+            // nodeVerifiedSigner
+            // 
+            this.nodeVerifiedSigner.DataPropertyName = "VerifiedSigner";
+            this.nodeVerifiedSigner.EditEnabled = false;
+            this.nodeVerifiedSigner.IncrementalSearchEnabled = true;
+            this.nodeVerifiedSigner.LeftMargin = 3;
+            this.nodeVerifiedSigner.ParentColumn = this.columnVerifiedSigner;
+            this.nodeVerifiedSigner.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // columnVerifiedSigner
+            // 
+            this.columnVerifiedSigner.Header = "Verified Signer";
+            this.columnVerifiedSigner.IsVisible = false;
+            this.columnVerifiedSigner.Sortable = true;
+            this.columnVerifiedSigner.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnVerifiedSigner.TooltipText = null;
+            this.columnVerifiedSigner.Width = 140;
+            // 
             // ProcessTree
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1031,5 +1053,7 @@
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeRelativeStartTime;
         private Aga.Controls.Tree.TreeColumn columnVerificationStatus;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeVerificationStatus;
+        private Aga.Controls.Tree.TreeColumn columnVerifiedSigner;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeVerifiedSigner;
     }
 }

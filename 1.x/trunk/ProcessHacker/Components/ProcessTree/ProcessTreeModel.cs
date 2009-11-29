@@ -338,6 +338,8 @@ namespace ProcessHacker
                                     n2.ProcessItem.Process.UserTime), sortO);
                             case "verification status":
                                 return ModifySort(n1.VerificationStatus.CompareTo(n2.VerificationStatus), sortO);
+                            case "verified signer":
+                                return ModifySort(n1.VerifiedSigner.CompareTo(n2.VerifiedSigner), sortO);
                             default:
                                 return 0;
                         }
