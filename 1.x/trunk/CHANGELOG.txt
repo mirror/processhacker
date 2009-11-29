@@ -4,6 +4,8 @@ Process Hacker
  * NEW/IMPROVED:
    * Ability to set I/O priority for processes and threads
    * No more separate Assistant.exe executable required
+   * Signature verification now works on x64
+   * Now shows signer names
    * Added proper x64 support to structs reader
    * Added basic preprocessor to structs reader
    * Small performance improvements

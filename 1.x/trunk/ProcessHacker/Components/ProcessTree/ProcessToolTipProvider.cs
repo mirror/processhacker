@@ -186,21 +186,29 @@ namespace ProcessHacker
                     if (pNode.ProcessItem.FileName != null)
                     {
                         if (pNode.ProcessItem.VerifyResult == VerifyResult.Trusted)
-                            otherNotes += "\n    Signature present and verified.";
-                        else if (pNode.ProcessItem.VerifyResult == VerifyResult.TrustedInstaller)
-                            otherNotes += "\n    Verified Windows component.";
+                        {
+                            if (!string.IsNullOrEmpty(pNode.ProcessItem.VerifySignerName))
+                                otherNotes += "\n    Signer: " + pNode.ProcessItem.VerifySignerName;
+                            else
+                                otherNotes += "\n    Signed.";
+                        }
                         else if (pNode.ProcessItem.VerifyResult == VerifyResult.Unknown &&
                             !Settings.Instance.VerifySignatures)
+                        {
                             otherNotes += "";
+                        }
                         else if (pNode.ProcessItem.VerifyResult == VerifyResult.Unknown &&
                             Settings.Instance.VerifySignatures)
-                            otherNotes += "\n    File has not been processed yet. Please wait...";
+                        {
+                            otherNotes += "\n    File has not been processed yet. Please wait..."; 
+                        }
                         else if (pNode.ProcessItem.VerifyResult != VerifyResult.NoSignature)
-                            otherNotes += "\n    Signature present but invalid.";
+                        {
+                            otherNotes += "\n    Signature invalid.";
+                        }
 
                         if (Program.ImposterNames.Contains(pNode.Name.ToLowerInvariant()) &&
                             pNode.ProcessItem.VerifyResult != VerifyResult.Trusted &&
-                            pNode.ProcessItem.VerifyResult != VerifyResult.TrustedInstaller &&
                             pNode.ProcessItem.VerifyResult != VerifyResult.Unknown)
                             otherNotes += "\n    Process is using the name of a known process but its signature could not be verified.";
                     }

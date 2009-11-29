@@ -1028,7 +1028,7 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
-    public enum WtProvFlags : int
+    public enum WtdProvFlags : int
     {
         RevocationCheckNone = 0x10,
         RevocationCheckEndCert = 0x20,
@@ -1040,13 +1040,13 @@ namespace ProcessHacker.Native.Api
         CacheOnlyUrlRetrieval = 0x1000
     }
 
-    public enum WtRevocationChecks : int
+    public enum WtdRevocationChecks : int
     {
         None = 0,
         WholeChain = 1
     }
 
-    public enum WtStateAction
+    public enum WtdStateAction
     {
         Ignore = 0,
         Verify = 1,

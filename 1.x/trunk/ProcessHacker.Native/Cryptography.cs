@@ -37,7 +37,6 @@ namespace ProcessHacker.Native
         Unknown = 0,
         NoSignature,
         Trusted,
-        TrustedInstaller,
         Expired,
         Revoked,
         Distrust,
@@ -61,15 +60,15 @@ namespace ProcessHacker.Native
         public static readonly System.Guid WintrustActionTrustProviderTest = 
             new Guid("{573e31f8-ddba-11d0-8ccb-00c04fc295ee}");
 
-        public static string GetFileSubjectValue(string fileName, string keyName)
+        private static string GetX500Value(string subject, string keyName)
         {
-            X509Certificate cert = X509Certificate.CreateFromSignedFile(fileName);
-            Tokenizer t = new Tokenizer(cert.Subject);
+            Tokenizer t = new Tokenizer(subject);
 
             // Use the "tokenizer" to get the Common Name (CN).
             while (true)
             {
                 t.EatWhitespace();
+
                 string key = t.EatId();
 
                 if (string.IsNullOrEmpty(key))
@@ -95,7 +94,101 @@ namespace ProcessHacker.Native
 
                 if (key == keyName)
                     return value;
+
+                string comma = t.EatSymbol();
+
+                if (comma != ",")
+                    return null;
             }
+        }
+
+        private static string GetSignerNameFromStateData(IntPtr stateData)
+        {
+            // Well, here's a shitload of indirection for you...
+
+            // 1. State data -> Provider data
+
+            IntPtr provData = Win32.WTHelperProvDataFromStateData(stateData);
+
+            if (provData == IntPtr.Zero)
+                return null;
+
+            // 2. Provider data -> Provider signer
+
+            IntPtr signerInfo = Win32.WTHelperGetProvSignerFromChain(provData, 0, false, 0);
+
+            if (signerInfo == IntPtr.Zero)
+                return null;
+
+            CryptProviderSgnr sngr = (CryptProviderSgnr)Marshal.PtrToStructure(signerInfo, typeof(CryptProviderSgnr));
+
+            if (sngr.CertChain == IntPtr.Zero)
+                return null;
+            if (sngr.CertChainCount == 0)
+                return null;
+
+            // 3. Provider signer -> Provider cert
+
+            CryptProviderCert cert = (CryptProviderCert)Marshal.PtrToStructure(sngr.CertChain, typeof(CryptProviderCert));
+
+            if (cert.Cert == IntPtr.Zero)
+                return null;
+
+            // 4. Provider cert -> Cert context
+
+            CertContext context = (CertContext)Marshal.PtrToStructure(cert.Cert, typeof(CertContext));
+
+            if (context.CertInfo != IntPtr.Zero)
+            {
+                // 5. Cert context -> Cert info
+
+                CertInfo certInfo = (CertInfo)Marshal.PtrToStructure(context.CertInfo, typeof(CertInfo));
+
+                unsafe
+                {
+                    using (var buffer = new MemoryAlloc(0x200))
+                    {
+                        int length;
+
+                        // 6. Cert info subject -> Subject X.500 string
+
+                        length = Win32.CertNameToStr(
+                            1,
+                            new IntPtr(&certInfo.Subject),
+                            3,
+                            buffer,
+                            buffer.Size / 2
+                            );
+
+                        if (length > buffer.Size / 2)
+                        {
+                            buffer.Resize(length * 2);
+
+                            length = Win32.CertNameToStr(
+                                1,
+                                new IntPtr(&certInfo.Subject),
+                                3,
+                                buffer,
+                                buffer.Size / 2
+                                );
+                        }
+
+                        string name = buffer.ReadUnicodeString(0);
+                        string value;
+
+                        // 7. Subject X.500 string -> CN or OU value
+
+                        value = GetX500Value(name, "CN");
+
+                        if (value == null)
+                            value = GetX500Value(name, "OU");
+
+                        return value;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public static VerifyResult StatusToVerifyResult(uint status)
@@ -118,6 +211,13 @@ namespace ProcessHacker.Native
 
         public static VerifyResult VerifyFile(string fileName)
         {
+            string signerName;
+
+            return VerifyFile(fileName, out signerName);
+        }
+
+        public static VerifyResult VerifyFile(string fileName, out string signerName)
+        {
             VerifyResult result = VerifyResult.NoSignature;
 
             using (MemoryAlloc strMem = new MemoryAlloc(fileName.Length * 2 + 2))
@@ -132,103 +232,134 @@ namespace ProcessHacker.Native
 
                 WintrustData trustData = new WintrustData();
 
-                trustData.Size = 12 * 4;
+                trustData.Size = Marshal.SizeOf(typeof(WintrustData));
                 trustData.UIChoice = 2; // WTD_UI_NONE
                 trustData.UnionChoice = 1; // WTD_CHOICE_FILE
-                trustData.RevocationChecks = WtRevocationChecks.None;
-                trustData.ProvFlags = WtProvFlags.Safer;
+                trustData.RevocationChecks = WtdRevocationChecks.None;
+                trustData.ProvFlags = WtdProvFlags.Safer;
+                trustData.StateAction = WtdStateAction.Verify;
 
                 if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
-                    trustData.ProvFlags |= WtProvFlags.CacheOnlyUrlRetrieval;
+                    trustData.ProvFlags |= WtdProvFlags.CacheOnlyUrlRetrieval;
 
                 using (MemoryAlloc mem = new MemoryAlloc(fileInfo.Size))
                 {
-                    Marshal.StructureToPtr(fileInfo, mem, false);
+                    mem.WriteStruct<WintrustFileInfo>(fileInfo);
                     trustData.UnionData = mem;
 
                     uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, ref trustData);
 
                     result = StatusToVerifyResult(winTrustResult);
+
+                    try
+                    {
+                        if (result != VerifyResult.NoSignature)
+                        {
+                            signerName = GetSignerNameFromStateData(trustData.StateData);
+
+                            return result;
+                        }
+                    }
+                    finally
+                    {
+                        // Close the state data.
+                        trustData.StateAction = WtdStateAction.Close;
+                        Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, ref trustData);
+                    }
                 }
             }
 
-            if (result == VerifyResult.NoSignature)
+            signerName = null;
+
+            using (FileHandle sourceFile = FileHandle.CreateWin32(fileName, FileAccess.GenericRead, FileShareMode.Read,
+                FileCreationDispositionWin32.OpenExisting))
             {
-                using (FileHandle sourceFile = FileHandle.CreateWin32(fileName, FileAccess.GenericRead, FileShareMode.Read,
-                    FileCreationDispositionWin32.OpenExisting))
+                byte[] hash = new byte[256];
+                int hashLength = 256;
+
+                if (!Win32.CryptCATAdminCalcHashFromFileHandle(sourceFile, ref hashLength, hash, 0))
                 {
-                    byte[] hash = new byte[256];
-                    int hashLength = 256;
+                    hash = new byte[hashLength];
 
                     if (!Win32.CryptCATAdminCalcHashFromFileHandle(sourceFile, ref hashLength, hash, 0))
-                    {
-                        hash = new byte[hashLength];
-
-                        if (!Win32.CryptCATAdminCalcHashFromFileHandle(sourceFile, ref hashLength, hash, 0))
-                            return VerifyResult.NoSignature;
-                    }
-
-                    StringBuilder memberTag = new StringBuilder(hashLength * 2);
-
-                    for (int i = 0; i < hashLength; i++)
-                        memberTag.Append(hash[i].ToString("X2"));
-
-                    IntPtr catAdmin;
-
-                    if (!Win32.CryptCATAdminAcquireContext(out catAdmin, DriverActionVerify, 0))
                         return VerifyResult.NoSignature;
+                }
 
-                    IntPtr catInfo = Win32.CryptCATAdminEnumCatalogFromHash(catAdmin, hash, hashLength, 0, IntPtr.Zero);
+                StringBuilder memberTag = new StringBuilder(hashLength * 2);
 
-                    if (catInfo == IntPtr.Zero)
+                for (int i = 0; i < hashLength; i++)
+                    memberTag.Append(hash[i].ToString("X2"));
+
+                IntPtr catAdmin;
+
+                if (!Win32.CryptCATAdminAcquireContext(out catAdmin, DriverActionVerify, 0))
+                    return VerifyResult.NoSignature;
+
+                IntPtr catInfo = Win32.CryptCATAdminEnumCatalogFromHash(catAdmin, hash, hashLength, 0, IntPtr.Zero);
+
+                if (catInfo == IntPtr.Zero)
+                {
+                    Win32.CryptCATAdminReleaseContext(catAdmin, 0);
+                    return VerifyResult.NoSignature;
+                }
+
+                CatalogInfo ci;
+
+                if (!Win32.CryptCATCatalogInfoFromContext(catInfo, out ci, 0))
+                {
+                    Win32.CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
+                    Win32.CryptCATAdminReleaseContext(catAdmin, 0);
+                    return VerifyResult.NoSignature;
+                }
+
+                WintrustCatalogInfo wci = new WintrustCatalogInfo();
+
+                wci.Size = Marshal.SizeOf(wci);
+                wci.CatalogFilePath = ci.CatalogFile;
+                wci.MemberFilePath = fileName;
+                wci.MemberTag = memberTag.ToString();
+
+                WintrustData trustData = new WintrustData();
+
+                trustData.Size = Marshal.SizeOf(typeof(WintrustData));
+                trustData.UIChoice = 1;
+                trustData.UnionChoice = 2;
+                trustData.RevocationChecks = WtdRevocationChecks.None;
+                trustData.StateAction = WtdStateAction.Verify;
+
+                if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                    trustData.ProvFlags = WtdProvFlags.CacheOnlyUrlRetrieval;
+
+                using (MemoryAlloc mem = new MemoryAlloc(wci.Size))
+                {
+                    mem.WriteStruct<WintrustCatalogInfo>(wci);
+
+                    try
                     {
-                        Win32.CryptCATAdminReleaseContext(catAdmin, 0);
-                        return VerifyResult.NoSignature;
+                        trustData.UnionData = mem;
+
+                        uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, ref trustData);
+
+                        result = StatusToVerifyResult(winTrustResult);
+
+                        if (result != VerifyResult.NoSignature)
+                        {
+                            signerName = GetSignerNameFromStateData(trustData.StateData);
+                        }
                     }
-
-                    CatalogInfo ci;
-
-                    if (!Win32.CryptCATCatalogInfoFromContext(catInfo, out ci, 0))
+                    finally
                     {
-                        Win32.CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
-                        Win32.CryptCATAdminReleaseContext(catAdmin, 0);
-                        return VerifyResult.NoSignature;
-                    }
-
-                    WintrustCatalogInfo wci = new WintrustCatalogInfo();
-
-                    wci.Size = Marshal.SizeOf(wci);
-                    wci.CatalogFilePath = ci.CatalogFile;
-                    wci.MemberFilePath = fileName;
-                    wci.MemberTag = memberTag.ToString();
-
-                    WintrustData trustData = new WintrustData();
-
-                    trustData.Size = 12 * 4;
-                    trustData.UIChoice = 1;
-                    trustData.UnionChoice = 2;
-                    trustData.RevocationChecks = WtRevocationChecks.None;
-
-                    if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
-                        trustData.ProvFlags = WtProvFlags.CacheOnlyUrlRetrieval;
-
-                    using (MemoryAlloc mem = new MemoryAlloc(wci.Size))
-                    {
-                        Marshal.StructureToPtr(wci, mem, false);
-
                         try
                         {
-                            trustData.UnionData = mem;
-
-                            uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, ref trustData);
-
-                            result = StatusToVerifyResult(winTrustResult);
+                            // Close the state data.
+                            trustData.StateAction = WtdStateAction.Close;
+                            Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, ref trustData);
                         }
                         finally
                         {
                             Win32.CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
                             Win32.CryptCATAdminReleaseContext(catAdmin, 0);
-                            Marshal.DestroyStructure(mem, typeof(WintrustCatalogInfo));
+                            mem.DestroyStruct<WintrustCatalogInfo>();
                         }
                     }
                 }

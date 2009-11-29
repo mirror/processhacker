@@ -158,7 +158,7 @@ namespace ProcessHacker.Common
         {
             StringBuilder sb = new StringBuilder();
 
-            while (_text[_i] != c && _i < _text.Length)
+            while (_i < _text.Length && _text[_i] != c)
             {
                 sb.Append(_text[_i]);
                 _i++;

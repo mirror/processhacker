@@ -52,6 +52,43 @@ namespace ProcessHacker.Native.Api
         public string CatalogFile;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CertContext
+    {
+        public int CertEncodingType;
+        public IntPtr CertEncoded;
+        public int CertEncodedSize;
+        public IntPtr CertInfo; // CertInfo*
+        public IntPtr CertStore;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CertInfo
+    {
+        public int Version;
+        public CryptoApiBlob SerialNumber;
+        public CryptAlgorithmIdentifier SignatureAlgorithm;
+        public CryptoApiBlob Issuer;
+        public Filetime NotBefore;
+        public Filetime NotAfter;
+        public CryptoApiBlob Subject;
+
+        // More...
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CMsgSignerInfo
+    {
+        public int Version;
+        public CryptoApiBlob Issuer;
+        public CryptoApiBlob SerialNumber;
+        public CryptAlgorithmIdentifier HashAlgorithm;
+        public CryptAlgorithmIdentifier HashEncryptionAlgorithm;
+        public CryptoApiBlob EncryptedHash;
+        public CryptAttributes AuthAttrs;
+        public CryptAttributes UnauthAttrs;
+    }
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct CredUiInfo
     {
@@ -60,6 +97,62 @@ namespace ProcessHacker.Native.Api
         public string MessageText;
         public string CaptionText;
         public IntPtr Banner;
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct CryptAlgorithmIdentifier
+    {
+        public string ObjId;
+        public CryptoApiBlob Parameters;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CryptAttributes
+    {
+        public int Count;
+        public IntPtr Attributes; // CryptAttribute*
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CryptoApiBlob
+    {
+        public int Size;
+        public IntPtr Data;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CryptProviderCert
+    {
+        public int Size;
+        public IntPtr Cert;
+        public bool Commercial;
+        public bool TrustedRoot;
+        public bool SelfSigned;
+        public bool TestCert;
+        public int RevokedReason;
+        public int Confidence;
+        public int Error;
+        public IntPtr TrustListContext; // CtlContext*
+        public bool TrustListSignerCert;
+        public IntPtr CtlContext; // CtlContext*
+        public int CtlError;
+        public bool IsCyclic;
+        public IntPtr ChainElement; // CertChainElement*
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CryptProviderSgnr
+    {
+        public int Size;
+        public Filetime VerifyAsOf;
+        public int CertChainCount;
+        public IntPtr CertChain; // CryptProviderCert*
+        public int SignerType;
+        public IntPtr Signer; // CMsgSignerInfo*
+        public int Error;
+        public int CounterSignersCount;
+        public IntPtr CounterSigners; // CryptProviderSgnr*
+        public IntPtr ChainContext;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -86,6 +179,13 @@ namespace ProcessHacker.Native.Api
 
         [MarshalAs(UnmanagedType.Struct)]
         public ServiceStatusProcess ServiceStatusProcess;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Filetime
+    {
+        public int LowDateTime;
+        public int HighDateTime;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -803,13 +903,13 @@ namespace ProcessHacker.Native.Api
         public IntPtr PolicyCallbackData;
         public IntPtr SIPClientData;
         public int UIChoice;
-        public WtRevocationChecks RevocationChecks;
+        public WtdRevocationChecks RevocationChecks;
         public int UnionChoice;
         public IntPtr UnionData;
-        public int StateAction;
+        public WtdStateAction StateAction;
         public IntPtr StateData;
         public IntPtr URLReference;
-        public WtProvFlags ProvFlags;
+        public WtdProvFlags ProvFlags;
         public int UIContext;
     }
 

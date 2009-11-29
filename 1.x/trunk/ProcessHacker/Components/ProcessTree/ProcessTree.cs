@@ -279,14 +279,12 @@ namespace ProcessHacker
                 Settings.Instance.VerifySignatures &&
                 Program.ImposterNames.Contains(p.Name.ToLowerInvariant()) &&
                 p.VerifyResult != VerifyResult.Trusted &&
-                p.VerifyResult != VerifyResult.TrustedInstaller &&
                 p.VerifyResult != VerifyResult.Unknown &&
                 p.FileName != null)
                 return Settings.Instance.ColorPackedProcesses;
             else if (Settings.Instance.UseColorPackedProcesses &&
                 Settings.Instance.VerifySignatures &&
                 p.VerifyResult != VerifyResult.Trusted &&
-                p.VerifyResult != VerifyResult.TrustedInstaller &&
                 p.VerifyResult != VerifyResult.NoSignature &&
                 p.VerifyResult != VerifyResult.Unknown)
                 return Settings.Instance.ColorPackedProcesses;

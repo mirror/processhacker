@@ -117,6 +117,24 @@ namespace ProcessHacker.Native
             protected set { _size = value; }
         }
 
+        public void DestroyStruct<T>()
+        {
+            this.DestroyStruct<T>(0);
+        }
+
+        public void DestroyStruct<T>(int index)
+        {
+            this.DestroyStruct<T>(0, index);
+        }
+
+        public void DestroyStruct<T>(int offset, int index)
+        {
+            Marshal.DestroyStructure(
+                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index),
+                typeof(T)
+                );
+        }
+
         public void Fill(int offset, int length, byte value)
         {
             ProcessHacker.Native.Api.Win32.RtlFillMemory(
@@ -293,7 +311,9 @@ namespace ProcessHacker.Native
             where T : struct
         {
             return (T)Marshal.PtrToStructure(
-                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index), typeof(T));
+                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index),
+                typeof(T)
+                );
         }
 
         public string ReadUnicodeString(int offset)
@@ -372,8 +392,11 @@ namespace ProcessHacker.Native
         public void WriteStruct<T>(int offset, int index, T s)
             where T : struct
         {
-            Marshal.StructureToPtr(s,
-                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index), false);
+            Marshal.StructureToPtr(
+                s,
+                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index),
+                false
+                );
         }
 
         /// <summary>

@@ -110,12 +110,21 @@ namespace ProcessHacker.Native.Api
 
         #region Cryptography
 
+        [DllImport("crypt32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int CertNameToStr(
+            [In] int CertEncodingType,
+            [In] IntPtr Name, // CertNameBlob*
+            [In] int Type,
+            [In] IntPtr Buffer,
+            [In] int Size
+            );
+
         [DllImport("wintrust.dll", SetLastError = true)]
         public static extern bool CryptCATCatalogInfoFromContext(
             [In] IntPtr CatInfoHandle,
             [Out] out CatalogInfo CatInfo,
             [In] int Flags
-        );
+            );
 
         [DllImport("wintrust.dll", SetLastError = true)]
         public static extern IntPtr CryptCATAdminEnumCatalogFromHash(
@@ -124,14 +133,14 @@ namespace ProcessHacker.Native.Api
             [In] int HashSize,
             [In] int Flags,
             [In] IntPtr PrevCatInfoHandle
-        );
+            );
 
         [DllImport("wintrust.dll", SetLastError = true)]
         public static extern bool CryptCATAdminAcquireContext(
             [Out] out IntPtr CatAdminHandle,
             [In] [MarshalAs(UnmanagedType.LPStruct)] Guid Subsystem,
             [In] int Flags
-        );
+            );
 
         [DllImport("wintrust.dll", SetLastError = true)]
         public static extern bool CryptCATAdminCalcHashFromFileHandle(
@@ -139,27 +148,40 @@ namespace ProcessHacker.Native.Api
             ref int HashSize,
             [In] byte[] Hash,
             [In] int Flags
-        );
+            );
 
         [DllImport("wintrust.dll", SetLastError = true)]
         public static extern bool CryptCATAdminReleaseContext(
             [In] IntPtr CatAdminHandle,
             [In] int Flags
-        );
+            );
 
         [DllImport("wintrust.dll", SetLastError = true)]
         public static extern bool CryptCATAdminReleaseCatalogContext(
             [In] IntPtr CatAdminHandle, 
             [In] IntPtr CatInfoHandle,
             [In] int Flags
-        );
+            );
 
         [DllImport("wintrust.dll", SetLastError = true)]
         public static extern uint WinVerifyTrust(
              [In] IntPtr hWnd,
              [In] [MarshalAs(UnmanagedType.LPStruct)] Guid ActionId,
              [In] ref WintrustData WintrustData
-        );
+            );
+
+        [DllImport("wintrust.dll", SetLastError = true)]
+        public static extern IntPtr WTHelperGetProvSignerFromChain(
+            [In] IntPtr ProvData, // CryptProviderData*
+            [In] int SignerIndex,
+            [In] bool CounterSigner,
+            [In] int CounterSignerIndex
+            );
+
+        [DllImport("wintrust.dll", SetLastError = true)]
+        public static extern IntPtr WTHelperProvDataFromStateData(
+            [In] IntPtr StateData
+            );
 
         #endregion
 

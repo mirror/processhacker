@@ -570,7 +570,7 @@ namespace ProcessHacker
                         {
                             try
                             {
-                                fpResult.VerifyResult = Cryptography.VerifyFile(fileName);
+                                fpResult.VerifyResult = Cryptography.VerifyFile(fileName, out fpResult.VerifySignerName);
                             }
                             catch
                             {
@@ -582,9 +582,6 @@ namespace ProcessHacker
                             else
                                 _fileResults[uniName] = fpResult.VerifyResult;
                         }
-
-                        //if (fpResult.VerifyResult != VerifyResult.NoSignature)
-                        //    fpResult.VerifySignerName = Cryptography.GetFileSubjectValue(fileName, "CN");
                     }
                 }
             }

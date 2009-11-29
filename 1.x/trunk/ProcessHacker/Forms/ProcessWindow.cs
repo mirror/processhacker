@@ -453,12 +453,13 @@ namespace ProcessHacker
 
                 var verifyResult = _processItem.VerifyResult;
 
+                if (verifyResult == VerifyResult.Trusted && !string.IsNullOrEmpty(_processItem.VerifySignerName))
+                    textFileCompany.Text = _processItem.VerifySignerName;
+
                 if (verifyResult == VerifyResult.Unknown)
                     textFileCompany.Text += "";
                 else if (verifyResult == VerifyResult.Trusted)
                     textFileCompany.Text += " (verified)";
-                else if (verifyResult == VerifyResult.TrustedInstaller)
-                    textFileCompany.Text += " (verified, Windows component)";
                 else if (verifyResult == VerifyResult.NoSignature)
                     textFileCompany.Text += " (not verified, no signature)";
                 else if (verifyResult == VerifyResult.Distrust)
