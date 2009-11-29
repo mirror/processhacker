@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using ProcessHacker.Common.Threading;
 
 namespace ProcessHacker.Common
 {
@@ -41,9 +42,7 @@ namespace ProcessHacker.Common
             private Delegate _work;
             private object[] _args;
             private bool _enabled = true;
-            private bool _completed = false;
-            private object _completedEventLock = new object();
-            private ManualResetEvent _completedEvent;
+            private FastEvent _completedEvent = new FastEvent(false);
             private object _result;
             private Exception _exception;
 
@@ -91,7 +90,7 @@ namespace ProcessHacker.Common
             /// </summary>
             public bool Completed
             {
-                get { return _completed; }
+                get { return _completedEvent.Value; }
             }
 
             /// <summary>
@@ -150,13 +149,7 @@ namespace ProcessHacker.Common
                     _exception = ex;
                 }
 
-                _completed = true;
-
-                lock (_completedEventLock)
-                {
-                    if (_completedEvent != null)
-                        _completedEvent.Set();
-                }
+                _completedEvent.Set();
             }
 
             /// <summary>
@@ -178,16 +171,7 @@ namespace ProcessHacker.Common
             /// </returns>
             public bool WaitOne(int timeout)
             {
-                lock (_completedEventLock)
-                {
-                    if (_completed)
-                        return true;
-
-                    if (_completedEvent == null)
-                        _completedEvent = new ManualResetEvent(false);
-                }
-
-                return _completedEvent.WaitOne(timeout, false);
+                return _completedEvent.Wait(timeout);
             }
         }
 

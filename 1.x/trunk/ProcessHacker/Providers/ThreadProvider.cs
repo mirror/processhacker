@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Threading;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Messaging;
+using ProcessHacker.Common.Threading;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -85,7 +86,7 @@ namespace ProcessHacker
         private int _loading = 0;
         private MessageQueue _messageQueue = new MessageQueue();
         private int _symbolsStartedLoading = 0;
-        private EventWaitHandle _moduleLoadCompletedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
+        private FastEvent _moduleLoadCompletedEvent = new FastEvent(false);
         private bool _waitedForLoad = false;
 
         public ThreadProvider(int pid)
@@ -262,11 +263,7 @@ namespace ProcessHacker
                 }
                 finally
                 {
-                    lock (_moduleLoadCompletedEvent)
-                    {
-                        if (!_moduleLoadCompletedEvent.SafeWaitHandle.IsClosed)
-                            _moduleLoadCompletedEvent.Set();
-                    }
+                    _moduleLoadCompletedEvent.Set();
                 }
             }), "symbols-load");
         }
@@ -278,9 +275,6 @@ namespace ProcessHacker
             if (_processHandle != null)
                 _processHandle.Dispose();
             _symbols = null;
-
-            lock (_moduleLoadCompletedEvent)
-                _moduleLoadCompletedEvent.Close();
 
             foreach (int tid in this.Dictionary.Keys)
             {
@@ -297,15 +291,7 @@ namespace ProcessHacker
 
             result.Tid = tid;
 
-            if (!_moduleLoadCompletedEvent.SafeWaitHandle.IsClosed)
-            {
-                try
-                {
-                    _moduleLoadCompletedEvent.WaitOne();
-                }
-                catch
-                { }
-            }
+            _moduleLoadCompletedEvent.Wait();
 
             if (_symbols == null)
                 return;
@@ -479,17 +465,12 @@ namespace ProcessHacker
                         }
                     }
 
-                    if (!_waitedForLoad)
+                    if (_moduleLoadCompletedEvent.Wait(0))
                     {
-                        _waitedForLoad = true;
-
                         try
                         {
-                            if (_moduleLoadCompletedEvent.WaitOne(0, false))
-                            {
-                                item.StartAddress = this.GetThreadBasicStartAddress(
-                                    item.StartAddressI.ToUInt64(), out item.StartAddressLevel);
-                            }
+                            item.StartAddress = this.GetThreadBasicStartAddress(
+                                item.StartAddressI.ToUInt64(), out item.StartAddressLevel);
                         }
                         catch
                         { }
@@ -550,7 +531,7 @@ namespace ProcessHacker
 
                     if (newitem.StartAddressLevel == SymbolResolveLevel.Address)
                     {
-                        if (_moduleLoadCompletedEvent.WaitOne(0, false))
+                        if (_moduleLoadCompletedEvent.Wait(0))
                         {
                             newitem.StartAddress = this.GetThreadBasicStartAddress(
                                 newitem.StartAddressI.ToUInt64(), out newitem.StartAddressLevel);

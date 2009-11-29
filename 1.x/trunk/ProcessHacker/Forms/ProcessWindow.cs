@@ -43,8 +43,6 @@ namespace ProcessHacker
     public partial class ProcessWindow : Form
     {
         private bool _isFirstPaint = true;
-        private ProcessHacker.Native.Threading.Event _loadFinishedEvent = 
-            new ProcessHacker.Native.Threading.Event();
         private ProcessItem _processItem;
         private int _pid;
         private ProcessHandle _processHandle;
@@ -59,6 +57,8 @@ namespace ProcessHacker
         private TokenProperties _tokenProps;
         private JobProperties _jobProps;
         private ServiceProperties _serviceProps;
+
+        private ProcessHacker.Common.Threading.ActionSync _selectThreadRun;
 
         public ProcessWindow(ProcessItem process)
         {
@@ -84,6 +84,8 @@ namespace ProcessHacker
             this.FixTabs();
 
             _dontCalculate = false;
+
+            _selectThreadRun = new ProcessHacker.Common.Threading.ActionSync(this.SelectThreadInternal, 2);
         }
 
         private void ProcessWindow_Load(object sender, EventArgs e)
@@ -333,7 +335,7 @@ namespace ProcessHacker
 
             this.ResumeLayout();
 
-            _loadFinishedEvent.Set();
+            _selectThreadRun.Increment();
         }
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -352,8 +354,6 @@ namespace ProcessHacker
             }
 
             this.Visible = false;
-
-            _loadFinishedEvent.Dispose();
 
             if (_pid >= 0)
             {
@@ -972,25 +972,31 @@ namespace ProcessHacker
             indicatorIO.TextValue = ioROString;
         }
 
-        // Start: HACK HACK HACK HACK
+        #region Select Thread Code
+
         private int _selectTid;
 
         public void SelectThread(int tid)
         {
             _selectTid = tid;
-
-            WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
-            {
-                _loadFinishedEvent.Wait();
-                listThreads.ThreadItemsAdded += SelectThread_listThreads_ThreadItemsAdded;
-                _threadP.RunOnce();
-            }), "select-thread");
+            _selectThreadRun.IncrementMultiple();
         }
 
-        private void SelectThread_listThreads_ThreadItemsAdded()
+        private void SelectThreadInternal()
         {
-            listThreads.ThreadItemsAdded -= SelectThread_listThreads_ThreadItemsAdded;
+            if (_threadP.RunCount == 0)
+            {
+                listThreads.ThreadItemsAdded += SelectThread_listThreads_ThreadItemsAdded;
+                _threadP.RunOnce();
+            }
+            else
+            {
+                this.SelectThreadInListView();
+            }
+        }
 
+        private void SelectThreadInListView()
+        {
             tabControl.SelectedTab = tabThreads;
 
             var litem = listThreads.Items[_selectTid.ToString()];
@@ -1003,7 +1009,13 @@ namespace ProcessHacker
             }
         }
 
-        // End: HACK HACK HACK HACK
+        private void SelectThread_listThreads_ThreadItemsAdded()
+        {
+            listThreads.ThreadItemsAdded -= SelectThread_listThreads_ThreadItemsAdded;
+            this.SelectThreadInListView();
+        }
+
+        #endregion
 
         #region Buttons
 

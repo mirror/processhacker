@@ -85,6 +85,7 @@
     <Compile Include="Settings\ISettingsStore.cs" />
     <Compile Include="Settings\VolatileSettingsStore.cs" />
     <Compile Include="Settings\XmlFileSettingsStore.cs" />
+    <Compile Include="Threading\FastEvent.cs" />
     <Compile Include="Threading\FastMutex.cs" />
     <Compile Include="Objects\DelayedReleasePool.cs" />
     <Compile Include="DeltaManager.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Messaging\MessageQueue.cs" />
     <Compile Include="Threading\FastQueue.cs" />
     <Compile Include="Threading\RundownProtection.cs" />
+    <Compile Include="Threading\ActionSync.cs" />
     <Compile Include="Threading\SemaphorePair.cs" />
     <Compile Include="Threading\SpinLock.cs" />
     <Compile Include="Threading\FastStack.cs" />

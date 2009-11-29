@@ -22,7 +22,8 @@
 
 using System.Collections.Generic;
 using System.Threading;
-using ProcessHacker.Common.Objects;
+using ProcessHacker.Common.Objects;  
+using ProcessHacker.Common.Threading;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -43,7 +44,7 @@ namespace ProcessHacker.Native.Threading
             private Waiter _owner;
             private bool _terminating = false;
             private Thread _thread;
-            private bool _threadInitialized = false;
+            private FastEvent _threadInitializedEvent = new FastEvent(false);
             private ThreadHandle _threadHandle;
             private List<ISynchronizable> _waitObjects = new List<ISynchronizable>();
 
@@ -58,18 +59,14 @@ namespace ProcessHacker.Native.Threading
                 _thread.Start();
 
                 // Wait for the thread to initialize.
-                lock (_thread)
-                {
-                    if (!_threadInitialized)
-                        Monitor.Wait(_thread);
-                }
+                _threadInitializedEvent.Wait();
             }
 
             protected override void DisposeObject(bool disposing)
             {
                 lock (_thread)
                 {
-                    if (_threadInitialized)
+                    if (_threadInitializedEvent.Value)
                     {
                         // Terminate the waiter thread.
                         this.Terminate();
@@ -157,11 +154,7 @@ namespace ProcessHacker.Native.Threading
                 _threadHandle = ThreadHandle.OpenCurrent(ThreadAccess.Alert);
 
                 // Signal that the thread has been initialized.
-                lock (_thread)
-                {
-                    _threadInitialized = true;
-                    Monitor.PulseAll(_thread);
-                }
+                _threadInitializedEvent.Set();
 
                 while (!_terminating)
                 {
