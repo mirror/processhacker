@@ -87,7 +87,6 @@ namespace ProcessHacker
         private MessageQueue _messageQueue = new MessageQueue();
         private int _symbolsStartedLoading = 0;
         private FastEvent _moduleLoadCompletedEvent = new FastEvent(false);
-        private bool _waitedForLoad = false;
 
         public ThreadProvider(int pid)
             : base()

@@ -317,23 +317,6 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Executes code as soon as no updater is running.
-        /// </summary>
-        public void InterlockedExecute(Delegate action, params object[] args)
-        {
-            this.InterlockedExecute(action, -1, args);
-        }
-
-        /// <summary>
-        /// Executes code as soon as no updater is running.
-        /// </summary>
-        public void InterlockedExecute(Delegate action, int timeout, params object[] args)
-        {
-            lock (_busyLock)
-                action.DynamicInvoke(args);
-        }
-
-        /// <summary>
         /// Waits for the current update process to finish. If an update process is not currently 
         /// running, this function returns immediately.
         /// </summary>
