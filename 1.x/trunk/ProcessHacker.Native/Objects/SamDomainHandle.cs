@@ -226,7 +226,7 @@ namespace ProcessHacker.Native.Objects
                 )) >= NtStatus.Error)
                 Win32.Throw(status);
 
-            if (aliases != null)
+            if (aliases != IntPtr.Zero)
             {
                 using (var aliasesAlloc = new SamMemoryAlloc(aliases))
                     return aliasesAlloc.ReadInt32Array(0, count);
