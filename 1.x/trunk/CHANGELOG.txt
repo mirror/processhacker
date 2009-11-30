@@ -8,6 +8,7 @@ Process Hacker
    * Now shows signer names (plus a Verified Signer column)
    * Added proper x64 support to structs reader
    * Added basic preprocessor to structs reader
+   * WOW64 modules now appear in Handle/DLL searches
    * Small performance improvements
    * Editing object SACLs is now possible with KProcessHacker
  * FIXED:

@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Debugging;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
@@ -97,6 +98,7 @@ namespace ProcessHacker.FormHelper
                 {
                     try
                     {
+                        // Modules
                         using (var phandle = new ProcessHandle(process.Key,
                             Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                         {
@@ -108,6 +110,7 @@ namespace ProcessHacker.FormHelper
                             });
                         }
 
+                        // Memory
                         using (var phandle = new ProcessHandle(process.Key,
                             ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
                         {
@@ -123,6 +126,22 @@ namespace ProcessHacker.FormHelper
 
                                 return true;
                             });
+                        }
+
+                        // WOW64 Modules
+                        if (OSVersion.Architecture == OSArch.Amd64)
+                        {
+                            using (DebugBuffer buffer = new DebugBuffer())
+                            {
+                                buffer.Query(process.Key, RtlQueryProcessDebugFlags.Modules32);
+
+                                buffer.EnumModules((module) =>
+                                    {
+                                        if (module.FileName.ToLowerInvariant().Contains(lowerFilter))
+                                            this.CallDllMatchListView(process.Key, module);
+                                        return true;
+                                    });
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -205,7 +224,7 @@ namespace ProcessHacker.FormHelper
             OnMatchListView(item);
         }
 
-        private void CallDllMatchListView(int pid, ProcessModule module)
+        private void CallDllMatchListView(int pid, ILoadedModule module)
         {
             ListViewItem item = new ListViewItem();
             item.Name = pid.ToString() + " " + module.BaseAddress.ToString();
