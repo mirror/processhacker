@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+ * Process Hacker - 
+ *   rundown protection
+ * 
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Threading;
 
 namespace ProcessHacker.Common.Threading
@@ -6,11 +28,23 @@ namespace ProcessHacker.Common.Threading
     /// <summary>
     /// Provides methods for managing object/resource destruction.
     /// </summary>
-    public sealed class RundownProtection
+    public struct RundownProtection
     {
-        private object _rundownLock = new object();
-        private volatile bool _rundownActive = false;
-        private int _refCount = 0;
+        private const int RundownActive = 0x1;
+        private const int RundownCountIncrement = 0x2;
+
+        private int _value;
+        private FastEvent _wakeEvent;
+
+        /// <summary>
+        /// Initializes a rundown protection structure.
+        /// </summary>
+        /// <param name="value">The initial usage count.</param>
+        public RundownProtection(int value)
+        {
+            _value = RundownCountIncrement * value;
+            _wakeEvent = new FastEvent(false);
+        }
 
         /// <summary>
         /// Attempts to acquire rundown protection.
@@ -18,23 +52,50 @@ namespace ProcessHacker.Common.Threading
         /// <returns>Whether rundown protection was acquired.</returns>
         public bool Acquire()
         {
-            Thread.BeginCriticalRegion();
+            int value;
 
-            try
+            while (true)
             {
-                lock (_rundownLock)
-                {
-                    if (_rundownActive)
-                        return false;
+                value = _value;
 
-                    Interlocked.Increment(ref _refCount);
+                // Has the rundown already started?
+                if ((value & RundownActive) != 0)
+                    return false;
 
+                // Attempt to increment the usage count.
+                if (Interlocked.CompareExchange(
+                    ref _value,
+                    value + RundownCountIncrement,
+                    value
+                    ) == value)
                     return true;
-                }
             }
-            finally
+        }
+
+        /// <summary>
+        /// Attempts to acquire rundown protection.
+        /// </summary>
+        /// <param name="count">The usage count to add.</param>
+        /// <returns>Whether rundown protection was acquired.</returns>
+        public bool Acquire(int count)
+        {
+            int value;
+
+            while (true)
             {
-                Thread.EndCriticalRegion();
+                value = _value;
+
+                // Has the rundown already started?
+                if ((value & RundownActive) != 0)
+                    return false;
+
+                // Attempt to increase the usage count.
+                if (Interlocked.CompareExchange(
+                    ref _value,
+                    value + RundownCountIncrement * count,
+                    value
+                    ) == value)
+                    return true;
             }
         }
 
@@ -43,28 +104,75 @@ namespace ProcessHacker.Common.Threading
         /// </summary>
         public void Release()
         {
-            Thread.BeginCriticalRegion();
+            int value;
 
-            try
+            while (true)
             {
-                lock (_rundownLock)
+                value = _value;
+
+                // Has the rundown already started?
+                if ((value & RundownActive) != 0)
                 {
-                    int newRefCount = Interlocked.Decrement(ref _refCount);
+                    int newValue;
 
-                    if (newRefCount < 0)
-                        throw new InvalidOperationException("Reference count cannot be negative.");
+                    newValue = Interlocked.Add(ref _value, -RundownCountIncrement);
 
-                    if (_rundownActive)
+                    // Are we the last out? Set the event if that's the case.
+                    if (newValue == RundownActive)
                     {
-                        // If we are the last out, release all waiters.
-                        if (newRefCount == 0)
-                            Monitor.PulseAll(_rundownLock);
+                        _wakeEvent.Set();
                     }
+
+                    return;
+                }
+                else
+                {
+                    if (Interlocked.CompareExchange(
+                        ref _value,
+                        value - RundownCountIncrement,
+                        value
+                        ) == value)
+                        return;
                 }
             }
-            finally
+        }
+
+        /// <summary>
+        /// Releases rundown protection.
+        /// </summary>
+        /// <param name="count">The usage count to subtract.</param>
+        public void Release(int count)
+        {
+            int value;
+
+            while (true)
             {
-                Thread.EndCriticalRegion();
+                value = _value;
+
+                // Has the rundown already started?
+                if ((value & RundownActive) != 0)
+                {
+                    int newValue;
+
+                    newValue = Interlocked.Add(ref _value, -RundownCountIncrement * count);
+
+                    // Are we the last out? Set the event if that's the case.
+                    if (newValue == RundownActive)
+                    {
+                        _wakeEvent.Set();
+                    }
+
+                    return;
+                }
+                else
+                {
+                    if (Interlocked.CompareExchange(
+                        ref _value,
+                        value - RundownCountIncrement * count,
+                        value
+                        ) == value)
+                        return;
+                }
             }
         }
 
@@ -74,28 +182,44 @@ namespace ProcessHacker.Common.Threading
         /// </summary>
         public void Wait()
         {
-            this.Wait(-1);
+            this.Wait(Timeout.Infinite);
         }
 
         /// <summary>
         /// Waits for all references to be released while disallowing 
         /// attempts to acquire rundown protection.
         /// </summary>
-        /// <param name="timeout">The timeout, in milliseconds.</param>
+        /// <param name="millisecondsTimeout">The timeout, in milliseconds.</param>
         /// <returns>Whether all references were released.</returns>
-        public bool Wait(int timeout)
+        public bool Wait(int millisecondsTimeout)
         {
-            lock (_rundownLock)
+            int value;
+
+            // Fast path. Just in case there are no users, we can go ahead 
+            // and set the active flag and exit. Or if someone has already 
+            // initiated the rundown, exit as well.
+            value = Interlocked.CompareExchange(ref _value, RundownActive, 0);
+
+            if (value == 0 || value == RundownActive)
+                return true;
+
+            while (true)
             {
-                _rundownActive = true;
+                value = _value;
 
-                // If there are no references, we can exit.
-                if (Thread.VolatileRead(ref _refCount) == 0)
-                    return true;
-
-                // Otherwise, wait for the release signal.
-                return Monitor.Wait(_rundownLock, timeout);
+                if (Interlocked.CompareExchange(
+                    ref _value,
+                    value | RundownActive,
+                    value
+                    ) == value)
+                    break;
             }
+
+            // Wait for the event, but only if we had users.
+            if ((value & ~RundownActive) != 0)
+                return _wakeEvent.Wait(millisecondsTimeout);
+            else
+                return true;
         }
     }
 }
