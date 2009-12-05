@@ -136,6 +136,110 @@ typedef enum _KPHSS_SEQUENCE_MODE
 #define TAG_CAPTURE_TEMP_BUFFER ('tChP')
 #define CAPTURE_HANDLE_BUFFER_SIZE 0x400
 #define CAPTURE_UNICODE_STRING_MAX_SIZE 0x400
+#define CAPTURE_BYTES_MAX_SIZE 0x400
+
+/* Functions */
+
+VOID NTAPI KphpSsClientEntryDeleteProcedure(
+    __in PVOID Object,
+    __in ULONG Flags
+    );
+
+VOID NTAPI KphpSsRuleSetEntryDeleteProcedure(
+    __in PVOID Object,
+    __in ULONG Flags
+    );
+
+NTSTATUS KphpSsAddRule(
+    __out PKPHSS_RULE_ENTRY *RuleEntry,
+    __in PKPHSS_RULESET_ENTRY RuleSetEntry,
+    __in KPHSS_FILTER_TYPE FilterType,
+    __in KPHSS_RULE_TYPE RuleType
+    );
+
+NTSTATUS KphpSsCreateEventBlock(
+    __out PKPHSS_EVENT_BLOCK *EventBlock,
+    __in PKTHREAD Thread,
+    __in ULONG Number,
+    __in ULONG *Arguments,
+    __in ULONG NumberOfArguments
+    );
+
+VOID KphpSsFreeEventBlock(
+    __in PKPHSS_EVENT_BLOCK EventBlock
+    );
+
+NTSTATUS KphpSsCaptureSimpleArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in PVOID Argument,
+    __in KPHSS_ARGUMENT_TYPE Type,
+    __in KPROCESSOR_MODE PreviousMode
+    );
+
+NTSTATUS KphpSsCaptureHandleArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in HANDLE Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    );
+
+NTSTATUS KphpSsCaptureUnicodeStringArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in PUNICODE_STRING Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    );
+
+NTSTATUS KphpSsCaptureObjectAttributesArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in POBJECT_ATTRIBUTES Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    );
+
+NTSTATUS KphpSsCaptureClientIdArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in PCLIENT_ID Argument,
+    __in KPROCESSOR_MODE PreviousMode
+    );
+
+NTSTATUS KphpSsCaptureBytesArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in PVOID Argument,
+    __in ULONG Length,
+    __in KPROCESSOR_MODE PreviousMode
+    );
+
+NTSTATUS KphpSsCreateArgumentBlock(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in ULONG Number,
+    __in ULONG Argument,
+    __in ULONG Index,
+    __in_opt KPHSS_ARGUMENT_TYPE Type,
+    __in_opt PVOID Context
+    );
+
+PKPHSS_ARGUMENT_BLOCK KphpSsAllocateArgumentBlock(
+    __in ULONG InnerSize,
+    __in KPHSS_ARGUMENT_TYPE Type
+    );
+
+VOID KphpSsFreeArgumentBlock(
+    __in PKPHSS_ARGUMENT_BLOCK ArgumentBlock
+    );
+
+NTSTATUS KphpSsWriteBlock(
+    __in PKPHSS_CLIENT_ENTRY ClientEntry,
+    __in_opt PKPHSS_BLOCK_HEADER Block,
+    __in KPHSS_SEQUENCE_MODE SequenceMode
+    );
+
+VOID NTAPI KphpSsLogSystemServiceCall(
+    __in ULONG Number,
+    __in ULONG *Arguments,
+    __in ULONG NumberOfArguments,
+    __in PKSERVICE_TABLE_DESCRIPTOR ServiceTable,
+    __in PKTHREAD Thread
+    );
+
+VOID NTAPI KphpSsNewKiFastCallEntry();
 
 /* KphpSsMatchRuleSetEntry
  * 
@@ -143,7 +247,7 @@ typedef enum _KPHSS_SEQUENCE_MODE
  * 
  * Note: This function is inlined for performance reasons.
  */
-FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
+BOOLEAN FORCEINLINE KphpSsMatchRuleSetEntry(
     __in PKPHSS_RULESET_ENTRY RuleSetEntry,
     __in ULONG Number,
     __in ULONG *Arguments,
@@ -317,98 +421,48 @@ FORCEINLINE BOOLEAN KphpSsMatchRuleSetEntry(
     return isRuleSetMatch;
 }
 
-/* Functions */
-
-VOID NTAPI KphpSsClientEntryDeleteProcedure(
-    __in PVOID Object,
-    __in ULONG Flags
-    );
-
-VOID NTAPI KphpSsRuleSetEntryDeleteProcedure(
-    __in PVOID Object,
-    __in ULONG Flags
-    );
-
-NTSTATUS KphpSsAddRule(
-    __out PKPHSS_RULE_ENTRY *RuleEntry,
-    __in PKPHSS_RULESET_ENTRY RuleSetEntry,
-    __in KPHSS_FILTER_TYPE FilterType,
-    __in KPHSS_RULE_TYPE RuleType
-    );
-
-NTSTATUS KphpSsCreateEventBlock(
-    __out PKPHSS_EVENT_BLOCK *EventBlock,
-    __in PKTHREAD Thread,
-    __in ULONG Number,
-    __in ULONG *Arguments,
-    __in ULONG NumberOfArguments
-    );
-
-VOID KphpSsFreeEventBlock(
-    __in PKPHSS_EVENT_BLOCK EventBlock
-    );
-
-NTSTATUS KphpSsCaptureSimpleArgument(
-    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
-    __in PVOID Argument,
-    __in KPHSS_ARGUMENT_TYPE Type,
-    __in KPROCESSOR_MODE PreviousMode
-    );
-
-NTSTATUS KphpSsCaptureHandleArgument(
-    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
-    __in HANDLE Argument,
-    __in KPROCESSOR_MODE PreviousMode
-    );
-
-NTSTATUS KphpSsCaptureUnicodeStringArgument(
-    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
-    __in PUNICODE_STRING Argument,
-    __in KPROCESSOR_MODE PreviousMode
-    );
-
-NTSTATUS KphpSsCaptureObjectAttributesArgument(
-    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
-    __in POBJECT_ATTRIBUTES Argument,
-    __in KPROCESSOR_MODE PreviousMode
-    );
-
-NTSTATUS KphpSsCaptureClientIdArgument(
-    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
-    __in PCLIENT_ID Argument,
-    __in KPROCESSOR_MODE PreviousMode
-    );
-
-NTSTATUS KphpSsCreateArgumentBlock(
-    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
-    __in ULONG Number,
-    __in ULONG Argument,
-    __in ULONG Index
-    );
-
-PKPHSS_ARGUMENT_BLOCK KphpSsAllocateArgumentBlock(
-    __in ULONG InnerSize,
-    __in KPHSS_ARGUMENT_TYPE Type
-    );
-
-VOID KphpSsFreeArgumentBlock(
-    __in PKPHSS_ARGUMENT_BLOCK ArgumentBlock
-    );
-
-NTSTATUS KphpSsWriteBlock(
-    __in PKPHSS_CLIENT_ENTRY ClientEntry,
-    __in_opt PKPHSS_BLOCK_HEADER Block,
-    __in KPHSS_SEQUENCE_MODE SequenceMode
-    );
-
-VOID NTAPI KphpSsLogSystemServiceCall(
+/* KphpSsProcessSpecificArguments
+ * 
+ * Creates argument blocks for specific system calls.
+ * 
+ * Note: This function is inlined for performance reasons.
+ */
+VOID FORCEINLINE KphpSsProcessSpecificArguments(
+    __in PKPHSS_ARGUMENT_BLOCK *ArgumentBlocks,
     __in ULONG Number,
     __in ULONG *Arguments,
     __in ULONG NumberOfArguments,
-    __in PKSERVICE_TABLE_DESCRIPTOR ServiceTable,
-    __in PKTHREAD Thread
-    );
-
-VOID NTAPI KphpSsNewKiFastCallEntry();
+    __in KPROCESSOR_MODE PreviousMode
+    )
+{
+    NTSTATUS status;
+    
+    /* For safety reasons, system call no. 0 is not supported. */
+    if (Number == 0)
+        return;
+    
+    /* Wrap in SEH because we will be accessing the arguments. */
+    
+    __try
+    {
+        if (Number == SsNtDeviceIoControlFile)
+        {
+            /* Create an argument block for the input buffer. */
+            if (!NT_SUCCESS(KphpSsCreateArgumentBlock(
+                &ArgumentBlocks[6],
+                Number,
+                Arguments[6],
+                6,
+                BytesArgument,
+                (PVOID)Arguments[7]
+                )))
+                ArgumentBlocks[6] = NULL;
+        }
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        // Nothing
+    }
+}
 
 #endif

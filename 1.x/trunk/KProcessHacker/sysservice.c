@@ -1367,6 +1367,66 @@ NTSTATUS KphpSsCaptureClientIdArgument(
     return status;
 }
 
+/* KphpSsCaptureBytesArgument
+ * 
+ * Captures a binary blob as an argument.
+ */
+NTSTATUS KphpSsCaptureBytesArgument(
+    __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
+    __in PVOID Argument,
+    __in ULONG Length,
+    __in KPROCESSOR_MODE PreviousMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PKPHSS_ARGUMENT_BLOCK argumentBlock;
+    
+    /* Check if we have a NULL pointer. */
+    if (!Argument)
+        return STATUS_INVALID_PARAMETER_2;
+    
+    /* Make sure the length isn't too big. */
+    if (Length > CAPTURE_BYTES_MAX_SIZE)
+        return STATUS_INVALID_PARAMETER_3;
+    
+    /* Probe the bytes. */
+    __try
+    {
+        if (PreviousMode != KernelMode)
+            ProbeForRead(Argument, Length, 1);
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        return GetExceptionCode();
+    }
+    
+    /* Allocate an argument block. */
+    argumentBlock = KphpSsAllocateArgumentBlock(
+        sizeof(KPHSS_BYTES) + Length,
+        BytesArgument
+        );
+    
+    if (!argumentBlock)
+        return STATUS_INSUFFICIENT_RESOURCES;
+    
+    /* Copy the bytes. */
+    __try
+    {
+        memcpy(argumentBlock->Bytes.Buffer, Argument, Length);
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        KphpSsFreeArgumentBlock(argumentBlock);
+        return GetExceptionCode();
+    }
+    
+    argumentBlock->Bytes.Length = (USHORT)Length;
+    
+    *ArgumentBlock = argumentBlock;
+    
+    return status;
+}
+
 /* KphpSsCreateArgumentBlock
  * 
  * Allocates and initializes an argument block.
@@ -1375,7 +1435,9 @@ NTSTATUS KphpSsCreateArgumentBlock(
     __out PKPHSS_ARGUMENT_BLOCK *ArgumentBlock,
     __in ULONG Number,
     __in ULONG Argument,
-    __in ULONG Index
+    __in ULONG Index,
+    __in_opt KPHSS_ARGUMENT_TYPE Type,
+    __in_opt PVOID Context
     )
 {
 #ifdef _X86_
@@ -1399,12 +1461,15 @@ NTSTATUS KphpSsCreateArgumentBlock(
     if (Index >= callEntry->NumberOfArguments)
         return STATUS_INVALID_PARAMETER_3;
     
+    if (Type != 0)
+        argumentType = Type;
+    else
+        argumentType = callEntry->Arguments[Index];
+    
     /* Is this a normal argument? If so, there's no point 
      * creating an argument block since the data is already 
      * in the event block.
      */
-    argumentType = callEntry->Arguments[Index];
-    
     if (argumentType == NormalArgument)
         return STATUS_UNSUCCESSFUL;
     
@@ -1448,6 +1513,14 @@ NTSTATUS KphpSsCreateArgumentBlock(
             status = KphpSsCaptureClientIdArgument(
                 &argumentBlock,
                 (PCLIENT_ID)Argument,
+                previousMode
+                );
+            break;
+        case BytesArgument:
+            status = KphpSsCaptureBytesArgument(
+                &argumentBlock,
+                (PVOID)Argument,
+                (ULONG)Context,
                 previousMode
                 );
             break;
@@ -1855,13 +1928,28 @@ VOID NTAPI KphpSsLogSystemServiceCall(
         return;
     }
     
-    /* Create the argument blocks. If we fail to create one, 
+    memset(argumentBlockArray, 0, sizeof(argumentBlockArray));
+    
+    /* Process specific argument blocks. */
+    KphpSsProcessSpecificArguments(
+        argumentBlockArray,
+        Number,
+        Arguments,
+        NumberOfArguments,
+        previousMode
+        );
+    
+    /* Create the (generic) argument blocks. If we fail to create one, 
      * set the array entry to NULL and we'll skip it later.
      */
     
     for (i = 0; i < NumberOfArguments && i < KPHSS_MAXIMUM_ARGUMENT_BLOCKS; i++)
     {
         ULONG argument;
+        
+        /* If we already have a specific argument block already, skip this one. */
+        if (argumentBlockArray[i])
+            continue;
         
         __try
         {
@@ -1884,7 +1972,9 @@ VOID NTAPI KphpSsLogSystemServiceCall(
             &argumentBlockArray[i],
             Number,
             argument,
-            i
+            i,
+            0,
+            NULL
             );
         
         if (!NT_SUCCESS(status))

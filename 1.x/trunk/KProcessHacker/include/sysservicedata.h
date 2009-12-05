@@ -72,7 +72,9 @@ typedef enum _KPHSS_ARGUMENT_TYPE
     /* PINITIAL_TEB */
     InitialTebArgument,
     /* PGUID */
-    GuidArgument
+    GuidArgument,
+    /* PVOID */
+    BytesArgument
 } KPHSS_ARGUMENT_TYPE;
 
 typedef struct _KPHSS_HANDLE
@@ -141,6 +143,12 @@ typedef struct _KPHSS_INITIAL_TEB
     PVOID StackLimit;
     PVOID StackAllocationBase;
 } KPHSS_INITIAL_TEB, *PKPHSS_INITIAL_TEB;
+
+typedef struct _KPHSS_BYTES
+{
+    USHORT Length;
+    CHAR Buffer[1];
+} KPHSS_BYTES, *PKPHSS_BYTES;
 
 #ifndef _SYSSERVICEDATA_PRIVATE
 extern RTL_GENERIC_TABLE KphSsCallTable;

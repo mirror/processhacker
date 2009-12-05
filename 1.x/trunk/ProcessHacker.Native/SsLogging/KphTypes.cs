@@ -19,7 +19,9 @@ namespace ProcessHacker.Native.SsLogging
         ObjectAttributes,
         ClientId,
         Context,
-        InitialTeb
+        InitialTeb,
+        Guid,
+        Bytes
     }
 
     public enum KphSsBlockType : ushort
@@ -101,6 +103,15 @@ namespace ProcessHacker.Native.SsLogging
     {
         public ushort Size;
         public KphSsBlockType Type;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KphSsBytes
+    {
+        public static readonly int BufferOffset = Marshal.OffsetOf(typeof(KphSsBytes), "Buffer").ToInt32();
+
+        public ushort Length;
+        public byte Buffer;
     }
 
     [StructLayout(LayoutKind.Sequential)]

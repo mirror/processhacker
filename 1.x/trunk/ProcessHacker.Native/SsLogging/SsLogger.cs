@@ -86,6 +86,11 @@ namespace ProcessHacker.Native.SsLogging
                         ssArg = new SsClientId(dataRegion);
                     }
                     break;
+                case KphSsArgumentType.Bytes:
+                    {
+                        ssArg = new SsBytes(dataRegion);
+                    }
+                    break;
             }
 
             ssArg.Index = argBlock.Index;

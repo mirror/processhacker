@@ -164,6 +164,7 @@ typedef struct _KPHSS_ARGUMENT_BLOCK
         CONTEXT Context;
         KPHSS_INITIAL_TEB InitialTeb;
         GUID Guid;
+        KPHSS_BYTES Bytes;
     };
 } KPHSS_ARGUMENT_BLOCK, *PKPHSS_ARGUMENT_BLOCK;
 

@@ -145,6 +145,7 @@
     <Compile Include="Security\Privilege.cs" />
     <Compile Include="Security\TmAccess.cs" />
     <Compile Include="Security\TransactionAccess.cs" />
+    <Compile Include="SsLogging\SsBytes.cs" />
     <Compile Include="SsLogging\FilterType.cs" />
     <Compile Include="SsLogging\KphTypes.cs" />
     <Compile Include="SsLogging\SsClientId.cs" />
