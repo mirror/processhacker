@@ -163,6 +163,7 @@ namespace ProcessHacker.Native.SsLogging
         private VirtualMemoryAlloc _buffer;
         private SemaphoreHandle _readSemaphore;
         private SemaphoreHandle _writeSemaphore;
+        private int _cursor = 0;
         private KphSsClientEntryHandle _clientEntryHandle;
         private KphSsRuleSetEntryHandle _ruleSetEntryHandle;
 
@@ -233,8 +234,6 @@ namespace ProcessHacker.Native.SsLogging
 
         private void BufferWorkerThreadStart()
         {
-            int cursor = 0;
-
             // Open a handle to the current thread so other functions 
             // can alert us.
             _bufferWorkerThreadHandle = ThreadHandle.OpenCurrent(ThreadAccess.All);
@@ -256,17 +255,17 @@ namespace ProcessHacker.Native.SsLogging
                     return;
 
                 // Check if we have an implicit cursor reset.
-                if (_buffer.Size - cursor < Marshal.SizeOf(typeof(KphSsBlockHeader)))
-                    cursor = 0;
+                if (_buffer.Size - _cursor < Marshal.SizeOf(typeof(KphSsBlockHeader)))
+                    _cursor = 0;
 
                 // Read the block header.
-                blockHeader = _buffer.ReadStruct<KphSsBlockHeader>(cursor, 0);
+                blockHeader = _buffer.ReadStruct<KphSsBlockHeader>(_cursor, 0);
 
                 // Check if we have an explicit cursor reset.
                 if (blockHeader.Type == KphSsBlockType.Reset)
                 {
-                    cursor = 0;
-                    blockHeader = _buffer.ReadStruct<KphSsBlockHeader>(cursor, 0);
+                    _cursor = 0;
+                    blockHeader = _buffer.ReadStruct<KphSsBlockHeader>(_cursor, 0);
                 }
 
                 // Process the block.
@@ -275,22 +274,22 @@ namespace ProcessHacker.Native.SsLogging
                     // Raise the events.
 
                     if (this.EventBlockReceived != null)
-                        this.EventBlockReceived(ReadEventBlock(new MemoryRegion(_buffer, cursor)));
+                        this.EventBlockReceived(ReadEventBlock(new MemoryRegion(_buffer, _cursor)));
                     if (this.RawEventBlockReceived != null)
-                        this.RawEventBlockReceived(new MemoryRegion(_buffer, cursor));
+                        this.RawEventBlockReceived(new MemoryRegion(_buffer, _cursor));
                 }
                 else if (blockHeader.Type == KphSsBlockType.Argument)
                 {
                     // Raise the events.
 
                     if (this.ArgumentBlockReceived != null)
-                        this.ArgumentBlockReceived(ReadArgumentBlock(new MemoryRegion(_buffer, cursor)));
+                        this.ArgumentBlockReceived(ReadArgumentBlock(new MemoryRegion(_buffer, _cursor)));
                     if (this.RawArgumentBlockReceived != null)
-                        this.RawArgumentBlockReceived(new MemoryRegion(_buffer, cursor));
+                        this.RawArgumentBlockReceived(new MemoryRegion(_buffer, _cursor));
                 }
 
                 // Advance the cursor.
-                cursor += blockHeader.Size;
+                _cursor += blockHeader.Size;
                 // Signal that a buffer block is available for writing.
                 _writeSemaphore.Release();
             }
