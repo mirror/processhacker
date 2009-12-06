@@ -514,6 +514,17 @@ namespace ProcessHacker
             if (fileName == null)
                 return null;
 
+            // Don't process the file if it is too big (above 32MB).
+            try
+            {
+                if ((new global::System.IO.FileInfo(fileName)).Length > 32 * 1024 * 1024)
+                    return null;
+            }
+            catch
+            {
+                return null;
+            }
+
             // Find out if it's packed.
             // An image is packed if:
             // 1. It references less than 3 libraries
