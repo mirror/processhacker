@@ -209,45 +209,36 @@ namespace ProcessHacker.Common.Objects
             if (!_owned)
                 return;
 
-            Thread.BeginCriticalRegion();
+            int oldOwnedByGc;
 
-            try
+            // Only proceed if the object is owned by the GC. We can perform 
+            // this operation without any locks by using CAS.
+            oldOwnedByGc = Interlocked.CompareExchange(ref _ownedByGc, 0, 1);
+
+            if (oldOwnedByGc == 1)
             {
-                int oldOwnedByGc;
+                // Decrement the reference count.
+                this.Dereference(managed);
 
-                // Only proceed if the object is owned by the GC. We can perform 
-                // this operation without any locks by using CAS.
-                oldOwnedByGc = Interlocked.CompareExchange(ref _ownedByGc, 0, 1);
-
-                if (oldOwnedByGc == 1)
+                // Disable the finalizer.
+                if (managed)
                 {
-                    // Decrement the reference count.
-                    this.Dereference(managed);
-
-                    // Disable the finalizer.
-                    if (managed)
-                    {
 #if EXTENDED_FINALIZER
-                        this.DisableFinalizer();
+                    this.DisableFinalizer();
 #else
-                        GC.SuppressFinalize(this);
-#endif
-                    }
-
-#if ENABLE_STATISTICS
-                    // Stats.
-                    Interlocked.Increment(ref _disposedCount);
-
-                    // The dereferenced count should count the number of times 
-                    // the user has called Dereference, so decrement it 
-                    // because we just called it.
-                    Interlocked.Decrement(ref _dereferencedCount);
+                    GC.SuppressFinalize(this);
 #endif
                 }
-            }
-            finally
-            {
-                Thread.EndCriticalRegion();
+
+#if ENABLE_STATISTICS
+                // Stats.
+                Interlocked.Increment(ref _disposedCount);
+
+                // The dereferenced count should count the number of times 
+                // the user has called Dereference, so decrement it 
+                // because we just called it.
+                Interlocked.Decrement(ref _dereferencedCount);
+#endif
             }
         }
 
@@ -400,46 +391,36 @@ namespace ProcessHacker.Common.Objects
             if (count < 0)
                 throw new ArgumentException("Cannot dereference a negative number of times.");
 
-            // Critical, prevent thread abortion.
-            Thread.BeginCriticalRegion();
-
-            try
-            {
-                if (!_owned)
-                    return 0;
+            if (!_owned)
+                return 0;
 
 #if ENABLE_STATISTICS
-                // Statistics.
-                Interlocked.Add(ref _dereferencedCount, count);
+            // Statistics.
+            Interlocked.Add(ref _dereferencedCount, count);
 #endif
 
-                // Decrease the reference count.
-                int newRefCount = Interlocked.Add(ref _refCount, -count);
+            // Decrease the reference count.
+            int newRefCount = Interlocked.Add(ref _refCount, -count);
 
-                // Should not ever happen.
-                if (newRefCount < 0)
-                    throw new InvalidOperationException("Reference count cannot be negative.");
+            // Should not ever happen.
+            if (newRefCount < 0)
+                throw new InvalidOperationException("Reference count cannot be negative.");
 
-                // Dispose the object if the reference count is 0.
-                if (newRefCount == 0 && !_disposed)
-                {
-                    // If the dispose object method throws an exception, nothing bad 
-                    // should happen if it does not invalidate any state.
-                    this.DisposeObject(managed);
-                    // Prevent the object from being disposed twice.
-                    _disposed = true;
+            // Dispose the object if the reference count is 0.
+            if (newRefCount == 0 && !_disposed)
+            {
+                // If the dispose object method throws an exception, nothing bad 
+                // should happen if it does not invalidate any state.
+                this.DisposeObject(managed);
+                // Prevent the object from being disposed twice.
+                _disposed = true;
 
 #if ENABLE_STATISTICS
-                    Interlocked.Increment(ref _freedCount);
+                Interlocked.Increment(ref _freedCount);
 #endif
-                }
+            }
 
-                return newRefCount;
-            }
-            finally
-            {
-                Thread.EndCriticalRegion();
-            }
+            return newRefCount;
         }
 
         /// <summary>

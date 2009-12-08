@@ -34,9 +34,9 @@ namespace ProcessHacker.Common.Threading
     /// </remarks>
     public struct FastEvent
     {
+        private int _value;
         private ManualResetEvent _event;
         private int _eventRefCount;
-        private int _value;
 
         /// <summary>
         /// Creates a synchronization event.
@@ -46,10 +46,10 @@ namespace ProcessHacker.Common.Threading
         /// </param>
         public FastEvent(bool value)
         {
+            _value = value ? 1 : 0;
             _event = null;
             // Initial reference for the Set method.
             _eventRefCount = 1;
-            _value = value ? 1 : 0;
         }
 
         /// <summary>
@@ -88,11 +88,17 @@ namespace ProcessHacker.Common.Threading
         /// </summary>
         public void Set()
         {
+            // 1. Value = 1.
+            // 2. Event = Global Event.
+            // 3. Set Event.
+            // 4. [Optional] Dereference the Global Event.
+
             int oldValue;
 
             // Set the value.
             oldValue = Interlocked.Exchange(ref _value, 1);
 
+            // Don't try to do anything if the event has already been set.
             if (oldValue == 1)
                 return;
 
@@ -108,6 +114,11 @@ namespace ProcessHacker.Common.Threading
             {
                 localEvent.Set();
             }
+
+            // Note that at this point we don't need to worry about anyone 
+            // creating the event and waiting for it, because if they did 
+            // they would check the value first. It would be 1, so they 
+            // wouldn't wait at all.
 
             this.DerefEvent();
         }
@@ -127,6 +138,16 @@ namespace ProcessHacker.Common.Threading
         /// <returns>Whether the event was set before the timeout period elapsed.</returns>
         public bool Wait(int millisecondsTimeout)
         {
+            // 1. [Optional] If Value = 1, Return.
+            // 2. [Optional] If Timeout = 0 And Value = 0, Return.
+            // 3. [Optional] Reference the Global Event.
+            // 4. [Optional] If Global Event is present, skip Step 5.
+            // 5. Create Event.
+            // 6. Global Event = Event only if Global Event is not present.
+            // 7. If Value = 1, Return (rather, go to Step 9).
+            // 8. Wait for Global Event.
+            // 9. [Optional] Dereference the Global Event.
+
             bool result;
             ManualResetEvent newEvent;
 
@@ -134,19 +155,38 @@ namespace ProcessHacker.Common.Threading
             if (Thread.VolatileRead(ref _value) == 1)
                 return true;
 
-            // Create an event. We might not need it, though.
-            newEvent = new ManualResetEvent(false);
-
-            // Atomically use the event only if we don't already 
-            // have one.
-            Interlocked.CompareExchange<ManualResetEvent>(
-                ref _event,
-                newEvent,
-                null
-                );
+            // Shortcut: if the timeout is 0, return immediately if 
+            // the event isn't set.
+            if (millisecondsTimeout == 0)
+            {
+                if (Thread.VolatileRead(ref _value) == 0)
+                    return false;
+            }
 
             // Prevent the event from being closed or invalidated.
             this.RefEvent();
+
+            // Shortcut: don't bother creating an event if we already have one.
+            newEvent = Interlocked.CompareExchange<ManualResetEvent>(ref _event, null, null);
+
+            // If we don't have an event, create one and try to set it.
+            if (newEvent == null)
+            {
+                // Create an event. We might not need it, though.
+                newEvent = new ManualResetEvent(false);
+
+                // Atomically use the event only if we don't already 
+                // have one.
+                if (Interlocked.CompareExchange<ManualResetEvent>(
+                    ref _event,
+                    newEvent,
+                    null
+                    ) != null)
+                {
+                    // Someone else set the event before we did.
+                    newEvent.Close();
+                }
+            }
 
             try
             {

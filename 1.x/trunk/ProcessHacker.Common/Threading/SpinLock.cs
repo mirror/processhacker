@@ -30,6 +30,8 @@ namespace ProcessHacker.Common.Threading
     /// </summary>
     public sealed class SpinLock
     {
+        private const int SpinCount = 100;
+
         public struct SpinLockContext : IDisposable
         {
             private bool _disposed;
@@ -54,8 +56,6 @@ namespace ProcessHacker.Common.Threading
 
         private int _value = 0;
         private bool _spin;
-        private int _acquireCount = 0;
-        private int _spinCount = 0;
 
         /// <summary>
         /// Creates a spinlock.
@@ -63,10 +63,7 @@ namespace ProcessHacker.Common.Threading
         public SpinLock()
         {
             // We don't want to spin on uniprocessor systems.
-            if (Environment.ProcessorCount == 1)
-                _spin = false;
-            else
-                _spin = true;
+            _spin = Environment.ProcessorCount != 1;
         }
 
         /// <summary>
@@ -74,22 +71,19 @@ namespace ProcessHacker.Common.Threading
         /// </summary>
         public void Acquire()
         {
-            Thread.BeginCriticalRegion();
-
-            Interlocked.Increment(ref _acquireCount);
+            if (Interlocked.CompareExchange(ref _value, 1, 0) == 0)
+                return;
 
             if (_spin)
             {
                 while (Interlocked.CompareExchange(ref _value, 1, 0) == 1)
-                    Thread.SpinWait((_spinCount++ % Thread.VolatileRead(ref _acquireCount)) + 1);
+                    Thread.SpinWait(SpinCount);
             }
             else
             {
                 while (Interlocked.CompareExchange(ref _value, 1, 0) == 1)
                     Thread.Sleep(0);
             }
-
-            Thread.EndCriticalRegion();
         }
 
         /// <summary>
@@ -106,10 +100,7 @@ namespace ProcessHacker.Common.Threading
         /// </summary>
         public void Release()
         {
-            Thread.BeginCriticalRegion();
             Interlocked.Exchange(ref _value, 0);
-            Interlocked.Decrement(ref _acquireCount);
-            Thread.EndCriticalRegion();
         }
     }
 }

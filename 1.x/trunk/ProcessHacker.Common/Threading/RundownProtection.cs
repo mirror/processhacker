@@ -31,8 +31,8 @@ namespace ProcessHacker.Common.Threading
     public struct RundownProtection
     {
         private const int RundownActive = 0x1;
-        private const int RundownActiveShift = 1;
         private const int RundownCountIncrement = 0x2;
+        private const int RundownCountShift = 1;
 
         private int _value;
         private FastEvent _wakeEvent;
@@ -52,7 +52,7 @@ namespace ProcessHacker.Common.Threading
         /// </summary>
         public int Count
         {
-            get { return _value >> RundownActiveShift; }
+            get { return _value >> RundownCountShift; }
         }
 
         /// <summary>
