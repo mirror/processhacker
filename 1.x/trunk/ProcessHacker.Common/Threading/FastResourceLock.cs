@@ -260,6 +260,8 @@ namespace ProcessHacker.Common.Threading
                             (value | LockOwned) & ~LockExclusiveWaking,
                             value
                             ) != value);
+
+                        break;
                     }
                 }
             }
@@ -458,7 +460,7 @@ namespace ProcessHacker.Common.Threading
                 {
                     if (Interlocked.CompareExchange(
                         ref _value,
-                        (value - LockSharedOwnersIncrement - LockExclusiveWaitersIncrement) & ~LockOwned,
+                        (value - LockSharedOwnersIncrement - LockExclusiveWaitersIncrement) & ~LockOwned | LockExclusiveWaking,
                         value
                         ) == value)
                     {
