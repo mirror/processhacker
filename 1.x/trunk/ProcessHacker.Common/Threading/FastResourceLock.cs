@@ -36,7 +36,9 @@ namespace ProcessHacker.Common.Threading
     /// Normal methods (AcquireExclusive, AcquireShared) are preferred 
     /// for general purpose use.
     /// Busy wait methods (SpinAcquireExclusive, SpinAcquireShared) are 
-    /// preferred if very little time is spent while the lock is acquired.
+    /// preferred if very little time is spent while the lock is acquired. 
+    /// However, these do not give exclusive acquires precedence over 
+    /// shared acquires.
     /// Try methods (TryAcquireExclusive, TryAcquireShared) can be used to 
     /// quickly test if the lock is available.
     /// 
@@ -511,6 +513,10 @@ namespace ProcessHacker.Common.Threading
         /// Acquires the lock in exclusive mode, busy waiting 
         /// if necessary.
         /// </summary>
+        /// <remarks>
+        /// Exclusive acquires are *not* given precedence over shared 
+        /// acquires for busy wait methods.
+        /// </remarks>
         public void SpinAcquireExclusive()
         {
             int value;
@@ -540,6 +546,10 @@ namespace ProcessHacker.Common.Threading
         /// Acquires the lock in shared mode, busy waiting 
         /// if necessary.
         /// </summary>
+        /// <remarks>
+        /// Exclusive acquires are *not* given precedence over shared 
+        /// acquires for busy wait methods.
+        /// </remarks>
         public void SpinAcquireShared()
         {
             int value;
