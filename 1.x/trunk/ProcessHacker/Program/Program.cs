@@ -1022,30 +1022,30 @@ namespace ProcessHacker
             info.AppendLine("PWindows: " + PWindows.Count.ToString() + ", " + PThreads.Count.ToString());
             info.AppendLine("ResultsWindows: " + ResultsWindows.Count.ToString() + ", " + ResultsThreads.Count.ToString());
 
-            info.AppendLine();
-            info.AppendLine("LOADED MODULES");
-            info.AppendLine();
+            //info.AppendLine();
+            //info.AppendLine("LOADED MODULES");
+            //info.AppendLine();
 
-            foreach (ProcessModule module in ProcessHandle.Current.GetModules())
-            {
-                info.AppendLine("Module: " + module.BaseName);
-                info.AppendLine("Location: " + module.FileName);
+            //foreach (ProcessModule module in ProcessHandle.Current.GetModules())
+            //{
+            //    info.AppendLine("Module: " + module.BaseName);
+            //    info.AppendLine("Location: " + module.FileName);
 
-                DateTime fileCreatedInfo = System.IO.File.GetCreationTime(module.FileName);
-                info.AppendLine(
-                    "Created: " + fileCreatedInfo.ToLongDateString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo) + " " +
-                    fileCreatedInfo.ToLongTimeString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo)
-                    );
+            //    DateTime fileCreatedInfo = System.IO.File.GetCreationTime(module.FileName);
+            //    info.AppendLine(
+            //        "Created: " + fileCreatedInfo.ToLongDateString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo) + " " +
+            //        fileCreatedInfo.ToLongTimeString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo)
+            //        );
 
-                DateTime fileModifiedInfo = System.IO.File.GetLastWriteTime(module.FileName);
-                info.AppendLine(
-                    "Modified: " + fileModifiedInfo.ToLongDateString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo) + " " +
-                    fileModifiedInfo.ToLongTimeString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo)
-                    );
+            //    DateTime fileModifiedInfo = System.IO.File.GetLastWriteTime(module.FileName);
+            //    info.AppendLine(
+            //        "Modified: " + fileModifiedInfo.ToLongDateString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo) + " " +
+            //        fileModifiedInfo.ToLongTimeString().ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo)
+            //        );
 
-                info.AppendLine("Version: " + System.Diagnostics.FileVersionInfo.GetVersionInfo(module.FileName).FileVersion);
-                info.AppendLine();
-            }
+            //    info.AppendLine("Version: " + System.Diagnostics.FileVersionInfo.GetVersionInfo(module.FileName).FileVersion);
+            //    info.AppendLine();
+            //}
 
             return info.ToString();
         }

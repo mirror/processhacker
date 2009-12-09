@@ -79,7 +79,8 @@ namespace ProcessHacker
             textFileCompany.Text = "";
             textFileVersion.Text = "";
 
-            Program.PWindows.Add(_pid, this);
+            if (!Program.PWindows.ContainsKey(_pid))
+                Program.PWindows.Add(_pid, this);
 
             this.FixTabs();
 
