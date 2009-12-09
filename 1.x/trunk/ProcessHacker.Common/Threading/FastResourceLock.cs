@@ -117,7 +117,8 @@ namespace ProcessHacker.Common.Threading
 
         private const int ExclusiveMask = LockExclusiveWaking | (LockExclusiveWaitersMask << LockExclusiveWaitersShift);
 
-        private const int SpinCount = 40000;
+        // The number of times to spin before going to sleep.
+        private const int SpinCount = 4000;
 
         #endregion
 
@@ -208,6 +209,7 @@ namespace ProcessHacker.Common.Threading
         public void AcquireExclusive()
         {
             int value;
+            int i = 0;
 
             while (true)
             {
@@ -234,7 +236,7 @@ namespace ProcessHacker.Common.Threading
                 // The second case means an exclusive waiter has just been woken up and is 
                 // going to acquire the lock. We have to go to sleep to make sure we don't 
                 // steal the lock.
-                else
+                else if (i >= SpinCount)
                 {
                     if (Interlocked.CompareExchange(
                         ref _value,
@@ -268,6 +270,8 @@ namespace ProcessHacker.Common.Threading
                         break;
                     }
                 }
+
+                i++;
             }
         }
 
@@ -282,6 +286,7 @@ namespace ProcessHacker.Common.Threading
         public void AcquireShared()
         {
             int value;
+            int i = 0;
 
             while (true)
             {
@@ -316,7 +321,7 @@ namespace ProcessHacker.Common.Threading
                         break;
                 }
                 // Other cases.
-                else
+                else if (i >= SpinCount)
                 {
                     if (Interlocked.CompareExchange(
                         ref _value,
@@ -335,6 +340,8 @@ namespace ProcessHacker.Common.Threading
                         continue;
                     }
                 }
+
+                i++;
             }
         }
 

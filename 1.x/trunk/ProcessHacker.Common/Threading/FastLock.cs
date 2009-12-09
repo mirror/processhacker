@@ -7,7 +7,7 @@ namespace ProcessHacker.Common.Threading
 {
     public struct FastLock : IDisposable
     {
-        private const int SpinCount = 40000;
+        private const int SpinCount = 4000;
 
         private int _value;
         private IntPtr _event;
