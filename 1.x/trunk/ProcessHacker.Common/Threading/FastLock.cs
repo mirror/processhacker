@@ -10,22 +10,18 @@ namespace ProcessHacker.Common.Threading
         private const int SpinCount = 40000;
 
         private int _value;
-        private AutoResetEvent _event;
-        private bool _spin;
+        private IntPtr _event;
 
         public FastLock(bool value)
         {
             _value = value ? 1 : 0;
-            _event = null;
-
-            // We don't want to spin on uniprocessor systems.
-            _spin = Environment.ProcessorCount != 1;
+            _event = IntPtr.Zero;
         }
 
         public void Dispose()
         {
-            if (_event != null)
-                _event.Close();
+            if (_event != IntPtr.Zero)
+                NativeMethods.CloseHandle(_event);
         }
 
         public void Acquire()
@@ -37,7 +33,7 @@ namespace ProcessHacker.Common.Threading
 
             // Slow path 1 - spin for a while.
 
-            if (_spin)
+            if (NativeMethods.SpinEnabled)
             {
                 for (int i = 0; i < SpinCount; i++)
                 {
@@ -48,24 +44,24 @@ namespace ProcessHacker.Common.Threading
 
             // Slow path 2 - wait on the event.
 
-            AutoResetEvent newEvent;
+            IntPtr newEvent;
 
             // Note: see FastEvent.cs for a more detailed explanation of this 
             // technique.
 
-            newEvent = Interlocked.CompareExchange<AutoResetEvent>(ref _event, null, null);
+            newEvent = Interlocked.CompareExchange(ref _event, IntPtr.Zero, IntPtr.Zero);
 
-            if (newEvent == null)
+            if (newEvent == IntPtr.Zero)
             {
-                newEvent = new AutoResetEvent(false);
+                newEvent = NativeMethods.CreateEvent(IntPtr.Zero, false, false, null);
 
-                if (Interlocked.CompareExchange<AutoResetEvent>(
+                if (Interlocked.CompareExchange(
                     ref _event,
                     newEvent,
-                    null
-                    ) != null)
+                    IntPtr.Zero
+                    ) != IntPtr.Zero)
                 {
-                    newEvent.Close();
+                    NativeMethods.CloseHandle(newEvent);
                 }
             }
 
@@ -77,74 +73,13 @@ namespace ProcessHacker.Common.Threading
                 if (Interlocked.CompareExchange(ref _value, 1, 0) == 0)
                     break;
 
-                _event.WaitOne();
-            }
-        }
-
-        public bool Acquire(int millisecondsTimeout)
-        {
-            // Fast path.
-
-            if (Interlocked.CompareExchange(ref _value, 1, 0) == 0)
-                return true;
-
-            // Slow path 1 - spin for a while.
-
-            if (_spin)
-            {
-                for (int i = 0; i < SpinCount; i++)
+                if (NativeMethods.WaitForSingleObject(
+                    _event,
+                    Timeout.Infinite
+                    ) != NativeMethods.WaitObject0)
                 {
-                    if (Interlocked.CompareExchange(ref _value, 1, 0) == 0)
-                        return true;
+                    Utils.Break(Utils.MsgFailedToWaitIndefinitely);
                 }
-            }
-
-            // Slow path 2 - wait on the event.
-
-            AutoResetEvent newEvent;
-
-            // Note: see FastEvent.cs for a more detailed explanation of this 
-            // technique.
-
-            newEvent = Interlocked.CompareExchange<AutoResetEvent>(ref _event, null, null);
-
-            if (newEvent == null)
-            {
-                newEvent = new AutoResetEvent(false);
-
-                if (Interlocked.CompareExchange<AutoResetEvent>(
-                    ref _event,
-                    newEvent,
-                    null
-                    ) != null)
-                {
-                    newEvent.Close();
-                }
-            }
-
-            int timeout = millisecondsTimeout;
-
-            // Loop trying to acquire the lock. Note that after we 
-            // get woken up another thread might have acquired the lock, 
-            // and that's why we need a loop.
-            while (true)
-            {
-                if (Interlocked.CompareExchange(ref _value, 1, 0) == 0)
-                    return true;
-
-                if (timeout != Timeout.Infinite && timeout <= 0)
-                    return false;
-
-                int tickCount = Environment.TickCount;
-
-                if (!_event.WaitOne(timeout))
-                    return false;
-
-                tickCount = Environment.TickCount - tickCount;
-
-                // Recompute the timeout.
-                if (tickCount > 0 && timeout != Timeout.Infinite)
-                    timeout -= tickCount;
             }
         }
 
@@ -155,9 +90,9 @@ namespace ProcessHacker.Common.Threading
             // Wake up a thread. Note that that thread might 
             // not actually get to acquire the lock because 
             // another thread may have acquired it already.
-            if (_event != null)
+            if (_event != IntPtr.Zero)
             {
-                _event.Set();
+                NativeMethods.SetEvent(_event);
             }
         }
 

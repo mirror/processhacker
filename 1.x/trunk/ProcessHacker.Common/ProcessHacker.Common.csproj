@@ -102,6 +102,8 @@
     <Compile Include="Logging.cs" />
     <Compile Include="Messaging\MessageQueue.cs" />
     <Compile Include="Threading\FastQueue.cs" />
+    <Compile Include="Threading\FastResourceLock.cs" />
+    <Compile Include="Threading\NativeMethods.cs" />
     <Compile Include="Threading\RundownProtection.cs" />
     <Compile Include="Threading\ActionSync.cs" />
     <Compile Include="Threading\SemaphorePair.cs" />

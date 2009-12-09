@@ -42,6 +42,9 @@ namespace ProcessHacker.Common
 
         #region Constants
 
+        public const string MsgFailedToWaitIndefinitely =
+            "Failed to wait indefinitely on an object.";
+
         public const int OneStackSize = 1024 * 1024;
         public const int HalfStackSize = OneStackSize / 2;
         public const int QuarterStackSize = HalfStackSize / 2;
@@ -80,6 +83,12 @@ namespace ProcessHacker.Common
         public static int Align(int value, int alignment)
         {
             return (value + alignment + 1) & ~(alignment - 1);
+        }
+
+        public static void Break(string logMessage)
+        {
+            System.Diagnostics.Debugger.Log(0, "Error", logMessage);
+            System.Diagnostics.Debugger.Break();
         }
 
         /// <summary>

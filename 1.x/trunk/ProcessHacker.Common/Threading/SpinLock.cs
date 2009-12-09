@@ -54,17 +54,7 @@ namespace ProcessHacker.Common.Threading
             }
         }
 
-        private int _value = 0;
-        private bool _spin;
-
-        /// <summary>
-        /// Creates a spinlock.
-        /// </summary>
-        public SpinLock()
-        {
-            // We don't want to spin on uniprocessor systems.
-            _spin = Environment.ProcessorCount != 1;
-        }
+        private int _value;
 
         /// <summary>
         /// Acquires the spinlock.
@@ -74,7 +64,7 @@ namespace ProcessHacker.Common.Threading
             if (Interlocked.CompareExchange(ref _value, 1, 0) == 0)
                 return;
 
-            if (_spin)
+            if (NativeMethods.SpinEnabled)
             {
                 while (Interlocked.CompareExchange(ref _value, 1, 0) == 1)
                     Thread.SpinWait(SpinCount);

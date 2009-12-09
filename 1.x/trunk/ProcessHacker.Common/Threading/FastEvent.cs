@@ -34,9 +34,12 @@ namespace ProcessHacker.Common.Threading
     /// </remarks>
     public struct FastEvent
     {
+        private const int EventSet = 0x1;
+        private const int EventRefCountShift = 1;
+        private const int EventRefCountIncrement = 0x2;
+
         private int _value;
-        private ManualResetEvent _event;
-        private int _eventRefCount;
+        private IntPtr _event;
 
         /// <summary>
         /// Creates a synchronization event.
@@ -46,10 +49,9 @@ namespace ProcessHacker.Common.Threading
         /// </param>
         public FastEvent(bool value)
         {
-            _value = value ? 1 : 0;
-            _event = null;
-            // Initial reference for the Set method.
-            _eventRefCount = 1;
+            // Set value; need one reference for the Set method.
+            _value = (value ? EventSet : 0) + EventRefCountIncrement;
+            _event = IntPtr.Zero;
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace ProcessHacker.Common.Threading
         /// </summary>
         public bool Value
         {
-            get { return _value == 1; }
+            get { return (_value & EventSet) != 0; }
         }
 
         /// <summary>
@@ -65,12 +67,12 @@ namespace ProcessHacker.Common.Threading
         /// </summary>
         private void DerefEvent()
         {
-            if (Interlocked.Decrement(ref _eventRefCount) == 0)
+            if ((Interlocked.Add(ref _value, -EventRefCountIncrement) >> EventRefCountShift) == 0)
             {
-                if (_event != null)
+                if (_event != IntPtr.Zero)
                 {
-                    _event.Close();
-                    _event = null;
+                    NativeMethods.CloseHandle(_event);
+                    _event = IntPtr.Zero;
                 }
             }
         }
@@ -80,7 +82,7 @@ namespace ProcessHacker.Common.Threading
         /// </summary>
         private void RefEvent()
         {
-            Interlocked.Increment(ref _eventRefCount);
+            Interlocked.Add(ref _value, EventRefCountIncrement);
         }
 
         /// <summary>
@@ -96,23 +98,26 @@ namespace ProcessHacker.Common.Threading
             int oldValue;
 
             // Set the value.
-            oldValue = Interlocked.Exchange(ref _value, 1);
+            do
+            {
+                oldValue = _value;
 
-            // Don't try to do anything if the event has already been set.
-            if (oldValue == 1)
-                return;
+                // Has the event already been set?
+                if ((oldValue & EventSet) != 0)
+                    return;
+            } while (Interlocked.CompareExchange(ref _value, oldValue | EventSet, oldValue) != oldValue);
 
             // Do an update-to-date read.
-            ManualResetEvent localEvent = Interlocked.CompareExchange<ManualResetEvent>(
+            IntPtr localEvent = Interlocked.CompareExchange(
                 ref _event,
-                null,
-                null
+                IntPtr.Zero,
+                IntPtr.Zero
                 );
 
             // Set the event if we had one.
-            if (localEvent != null)
+            if (localEvent != IntPtr.Zero)
             {
-                localEvent.Set();
+                NativeMethods.SetEvent(localEvent);
             }
 
             // Note that at this point we don't need to worry about anyone 
@@ -148,18 +153,20 @@ namespace ProcessHacker.Common.Threading
             // 8. Wait for Global Event.
             // 9. [Optional] Dereference the Global Event.
 
-            bool result;
-            ManualResetEvent newEvent;
+            int result;
+            IntPtr newEvent;
+
+            result = _value;
 
             // Shortcut: return immediately if the event is set.
-            if (Thread.VolatileRead(ref _value) == 1)
+            if ((result & EventSet) != 0)
                 return true;
 
             // Shortcut: if the timeout is 0, return immediately if 
             // the event isn't set.
             if (millisecondsTimeout == 0)
             {
-                if (Thread.VolatileRead(ref _value) == 0)
+                if ((result & EventSet) == 0)
                     return false;
             }
 
@@ -167,36 +174,39 @@ namespace ProcessHacker.Common.Threading
             this.RefEvent();
 
             // Shortcut: don't bother creating an event if we already have one.
-            newEvent = Interlocked.CompareExchange<ManualResetEvent>(ref _event, null, null);
+            newEvent = Interlocked.CompareExchange(ref _event, IntPtr.Zero, IntPtr.Zero);
 
             // If we don't have an event, create one and try to set it.
-            if (newEvent == null)
+            if (newEvent == IntPtr.Zero)
             {
                 // Create an event. We might not need it, though.
-                newEvent = new ManualResetEvent(false);
+                newEvent = NativeMethods.CreateEvent(IntPtr.Zero, true, false, null);
 
                 // Atomically use the event only if we don't already 
                 // have one.
-                if (Interlocked.CompareExchange<ManualResetEvent>(
+                if (Interlocked.CompareExchange(
                     ref _event,
                     newEvent,
-                    null
-                    ) != null)
+                    IntPtr.Zero
+                    ) != IntPtr.Zero)
                 {
                     // Someone else set the event before we did.
-                    newEvent.Close();
+                    NativeMethods.CloseHandle(newEvent);
                 }
             }
 
             try
             {
-                // Check the value to see if we are meant to wait.
-                if (Thread.VolatileRead(ref _value) == 1)
+                // Check the value to see if we are meant to wait. This step 
+                // is essential, because if someone set the event before we 
+                // created the event (previous step), we would be waiting 
+                // on an event no one knows about.
+                if ((Thread.VolatileRead(ref _value) & EventSet) != 0)
                     return true;
 
-                result = _event.WaitOne(millisecondsTimeout, false);
+                result = NativeMethods.WaitForSingleObject(_event, millisecondsTimeout);
 
-                return result;
+                return result == NativeMethods.WaitObject0;
             }
             finally
             {
