@@ -51,8 +51,8 @@ namespace ProcessHacker.Common.Threading
         // Acquire shared:
         // {L=0,W=0,SC=0,SW,EW=0} -> {L=1,W=0,SC=1,SW,EW=0}
         // {L=1,W=0,SC>0,SW,EW=0} -> {L=1,W=0,SC+1,SW,EW=0}
-        // {L,W=1,SC,SW,EW} or {L,W,SC,SW,EW>0} ->
-        //     {L,W,SC,SW+1,EW},
+        // {L=1,W=0,SC=0,SW,EW=0} or {L,W=1,SC,SW,EW} or
+        //     {L,W,SC,SW,EW>0} -> {L,W,SC,SW+1,EW},
         //     wait on event,
         //     retry.
         //
@@ -87,6 +87,11 @@ namespace ProcessHacker.Common.Threading
         //     {L=1,W=0,SC=0,SW,EW}
         //
 
+        /* */
+
+        // Note: I have included many small optimizations in the code 
+        // because of the CLR's dumbass JIT compiler.
+
         #region Constants
 
         // Lock owned: 1 bit.
@@ -109,6 +114,8 @@ namespace ProcessHacker.Common.Threading
         private const int LockExclusiveWaitersShift = 22;
         private const int LockExclusiveWaitersMask = 0x3ff;
         private const int LockExclusiveWaitersIncrement = 0x400000;
+
+        private const int ExclusiveMask = LockExclusiveWaking | (LockExclusiveWaitersMask << LockExclusiveWaitersShift);
 
         private const int SpinCount = 40000;
 
@@ -209,10 +216,7 @@ namespace ProcessHacker.Common.Threading
                 // Case 1: lock not owned AND an exclusive waiter is not waking up.
                 // Here we don't have to check if there are exclusive waiters, because 
                 // if there are the lock would be owned, and we are checking that anyway.
-                if (
-                    (value & LockOwned) == 0 &&
-                    (value & LockExclusiveWaking) == 0
-                    )
+                if ((value & (LockOwned | LockExclusiveWaking)) == 0)
                 {
 #if RIGOROUS_CHECKS
                     System.Diagnostics.Trace.Assert(((value >> LockSharedOwnersShift) & LockSharedOwnersMask) == 0);
@@ -221,7 +225,7 @@ namespace ProcessHacker.Common.Threading
 #endif
                     if (Interlocked.CompareExchange(
                         ref _value,
-                        value | LockOwned,
+                        value + LockOwned,
                         value
                         ) == value)
                         break;
@@ -257,7 +261,7 @@ namespace ProcessHacker.Common.Threading
 #endif
                         } while (Interlocked.CompareExchange(
                             ref _value,
-                            (value | LockOwned) & ~LockExclusiveWaking,
+                            value + LockOwned - LockExclusiveWaking,
                             value
                             ) != value);
 
@@ -283,11 +287,36 @@ namespace ProcessHacker.Common.Threading
             {
                 value = _value;
 
-                // Case 1: an exclusive waiter is waking up OR there are exclusive waiters.
-                if (
-                    (value & LockExclusiveWaking) != 0 ||
-                    ((value >> LockExclusiveWaitersShift) & LockExclusiveWaitersMask) != 0
+                // Case 1: lock not owned AND no exclusive waiter is waking up AND there are no shared owners AND there are no exclusive waiters
+                if ((value & (
+                    LockOwned |
+                    (LockSharedOwnersMask << LockSharedOwnersShift) |
+                    ExclusiveMask
+                    )) == 0)
+                {
+                    if (Interlocked.CompareExchange(
+                        ref _value,
+                        value + LockOwned + LockSharedOwnersIncrement,
+                        value
+                        ) == value)
+                        break;
+                }
+                // Case 2: lock is owned AND no exclusive waiter is waking up AND there are shared owners AND there are no exclusive waiters
+                else if (
+                    (value & LockOwned) != 0 &&
+                    ((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 0 &&
+                    (value & ExclusiveMask) == 0
                     )
+                {
+                    if (Interlocked.CompareExchange(
+                        ref _value,
+                        value + LockSharedOwnersIncrement,
+                        value
+                        ) == value)
+                        break;
+                }
+                // Other cases.
+                else
                 {
                     if (Interlocked.CompareExchange(
                         ref _value,
@@ -305,30 +334,6 @@ namespace ProcessHacker.Common.Threading
                         // Go back and try again.
                         continue;
                     }
-                }
-                // Case 2: lock not owned.
-                else if ((value & LockOwned) == 0)
-                {
-                    if (Interlocked.CompareExchange(
-                        ref _value,
-                        (value | LockOwned) + LockSharedOwnersIncrement,
-                        value
-                        ) == value)
-                        break;
-                }
-                // Case 3: lock owned AND there are shared owners
-                //else if (
-                //    (value & LockOwned) != 0 &&
-                //    ((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 0
-                //    )
-                else
-                {
-                    if (Interlocked.CompareExchange(
-                        ref _value,
-                        value + LockSharedOwnersIncrement,
-                        value
-                        ) == value)
-                        break;
                 }
             }
         }
@@ -394,7 +399,7 @@ namespace ProcessHacker.Common.Threading
                 {
                     if (Interlocked.CompareExchange(
                         ref _value,
-                        (value - LockExclusiveWaitersIncrement) & ~LockOwned | LockExclusiveWaking,
+                        value - LockOwned + LockExclusiveWaking - LockExclusiveWaitersIncrement,
                         value
                         ) == value)
                     {
@@ -460,7 +465,7 @@ namespace ProcessHacker.Common.Threading
                 {
                     if (Interlocked.CompareExchange(
                         ref _value,
-                        (value - LockSharedOwnersIncrement - LockExclusiveWaitersIncrement) & ~LockOwned | LockExclusiveWaking,
+                        value - LockOwned + LockExclusiveWaking - LockSharedOwnersIncrement - LockExclusiveWaitersIncrement,
                         value
                         ) == value)
                     {
@@ -474,7 +479,7 @@ namespace ProcessHacker.Common.Threading
                 {
                     if (Interlocked.CompareExchange(
                         ref _value,
-                        (value - LockSharedOwnersIncrement) & ~LockOwned,
+                        value - LockOwned - LockSharedOwnersIncrement,
                         value
                         ) == value)
                         break;
@@ -494,14 +499,11 @@ namespace ProcessHacker.Common.Threading
             {
                 value = _value;
 
-                if (
-                    (value & LockOwned) == 0 &&
-                    (value & LockExclusiveWaking) == 0
-                    )
+                if ((value & (LockOwned | LockExclusiveWaking)) == 0)
                 {
                     if (Interlocked.CompareExchange(
                         ref _value,
-                        value | LockOwned,
+                        value + LockOwned,
                         value
                         ) == value)
                         break;
@@ -526,21 +528,18 @@ namespace ProcessHacker.Common.Threading
             {
                 value = _value;
 
-                if (
-                    (value & LockExclusiveWaking) == 0 &&
-                    ((value >> LockExclusiveWaitersShift) & LockExclusiveWaitersMask) == 0
-                    )
+                if ((value & ExclusiveMask) == 0)
                 {
                     if ((value & LockOwned) == 0)
                     {
                         if (Interlocked.CompareExchange(
                             ref _value,
-                            (value | LockOwned) + LockSharedOwnersIncrement,
+                            value + LockOwned + LockSharedOwnersIncrement,
                             value
                             ) == value)
                             break;
                     }
-                    else
+                    else if (((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 0)
                     {
                         if (Interlocked.CompareExchange(
                             ref _value,
@@ -598,12 +597,12 @@ namespace ProcessHacker.Common.Threading
 
             value = _value;
 
-            if ((value & LockExclusiveWaking) != 0)
+            if ((value & (LockOwned | LockExclusiveWaking)) != 0)
                 return false;
 
             return Interlocked.CompareExchange(
                 ref _value,
-                value | LockOwned,
+                value + LockOwned,
                 value
                 ) == value;
         }
@@ -618,27 +617,28 @@ namespace ProcessHacker.Common.Threading
 
             value = _value;
 
-            if (
-                (value & LockExclusiveWaking) != 0 ||
-                ((value >> LockExclusiveWaitersShift) & LockExclusiveWaitersMask) != 0
-                )
+            if ((value & ExclusiveMask) != 0)
                 return false;
 
             if ((value & LockOwned) == 0)
             {
                 return Interlocked.CompareExchange(
                     ref _value,
-                    (value | LockOwned) + LockSharedOwnersIncrement,
+                    value + LockOwned + LockSharedOwnersIncrement,
                     value
                     ) == value;
             }
-            else
+            else if (((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 0)
             {
                 return Interlocked.CompareExchange(
                     ref _value,
                     value + LockSharedOwnersIncrement,
                     value
                     ) == value;
+            }
+            else
+            {
+                return false;
             }
         }
 
