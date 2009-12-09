@@ -441,7 +441,7 @@ namespace ProcessHacker.Common.Threading
 
                     if (Interlocked.CompareExchange(
                         ref _value,
-                        value & ~LockOwned & ~(LockSharedWaitersMask << LockSharedWaitersShift),
+                        value & ~(LockOwned | (LockSharedWaitersMask << LockSharedWaitersShift)),
                         value
                         ) == value)
                     {
