@@ -29,6 +29,7 @@ using System.Net;
 using System.Net.Sockets;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Messaging;
+using ProcessHacker.Common.Threading;
 using ProcessHacker.Native;
 
 namespace ProcessHacker
@@ -61,6 +62,7 @@ namespace ProcessHacker
 
         private MessageQueue _messageQueue = new MessageQueue();
         private Dictionary<IPAddress, string> _resolveCache = new Dictionary<IPAddress, string>();
+        private FastResourceLock _resolveCacheLock = new FastResourceLock();
 
         public NetworkProvider()
             : base()
@@ -146,8 +148,13 @@ namespace ProcessHacker
                     {
                         if (!connection.Connection.Local.Address.GetAddressBytes().IsEmpty())
                         {
+                            bool queue = false;
+
                             // See if IP address is in the cache.
-                            lock (_resolveCache)
+
+                            _resolveCacheLock.AcquireShared();
+
+                            try
                             {
                                 if (_resolveCache.ContainsKey(connection.Connection.Local.Address))
                                 {
@@ -156,15 +163,24 @@ namespace ProcessHacker
                                 }
                                 else
                                 {
-                                    // Queue for resolve.
-                                    WorkQueue.GlobalQueueWorkItemTag(
-                                        new Action<string, bool, IPAddress>(this.ResolveAddresses),
-                                        "network-resolve-local",
-                                        connection.Id,
-                                        false,
-                                        connection.Connection.Local.Address
-                                        );
+                                    queue = true;
                                 }
+                            }
+                            finally
+                            {
+                                _resolveCacheLock.ReleaseShared();
+                            }
+
+                            if (queue)
+                            {
+                                // Queue for resolve.
+                                WorkQueue.GlobalQueueWorkItemTag(
+                                    new Action<string, bool, IPAddress>(this.ResolveAddresses),
+                                    "network-resolve-local",
+                                    connection.Id,
+                                    false,
+                                    connection.Connection.Local.Address
+                                    );
                             }
                         }
                     }
@@ -173,7 +189,11 @@ namespace ProcessHacker
                     {
                         if (!connection.Connection.Remote.Address.GetAddressBytes().IsEmpty())
                         {
-                            lock (_resolveCache)
+                            bool queue = false;
+
+                            _resolveCacheLock.AcquireShared();
+
+                            try
                             {
                                 if (_resolveCache.ContainsKey(connection.Connection.Remote.Address))
                                 {
@@ -182,14 +202,23 @@ namespace ProcessHacker
                                 }
                                 else
                                 {
-                                    WorkQueue.GlobalQueueWorkItemTag(
-                                        new Action<string, bool, IPAddress>(this.ResolveAddresses),
-                                        "network-resolve-remote",
-                                        connection.Id,
-                                        true,
-                                        connection.Connection.Remote.Address
-                                        );
+                                    queue = true;
                                 }
+                            }
+                            finally
+                            {
+                                _resolveCacheLock.ReleaseShared();
+                            }
+
+                            if (queue)
+                            {
+                                WorkQueue.GlobalQueueWorkItemTag(
+                                    new Action<string, bool, IPAddress>(this.ResolveAddresses),
+                                    "network-resolve-remote",
+                                    connection.Id,
+                                    true,
+                                    connection.Connection.Remote.Address
+                                    );
                             }
                         }
                     }
@@ -224,13 +253,20 @@ namespace ProcessHacker
             bool inCache = false;
 
             // Last minute check of the cache.
-            lock (_resolveCache)
+
+            _resolveCacheLock.AcquireShared();
+
+            try
             {
                 if (_resolveCache.ContainsKey(address))
                 {
                     hostName = _resolveCache[address];
                     inCache = true;
                 }
+            }
+            finally
+            {
+                _resolveCacheLock.ReleaseShared();
             }
 
             // If it wasn't in the cache, resolve the address.
@@ -247,7 +283,10 @@ namespace ProcessHacker
                 }
 
                 // Update the cache.
-                lock (_resolveCache)
+
+                _resolveCacheLock.AcquireExclusive();
+
+                try
                 {
                     // Add the name if not present already.
                     if (!string.IsNullOrEmpty(hostName))
@@ -255,6 +294,10 @@ namespace ProcessHacker
                         if (!_resolveCache.ContainsKey(address))
                             _resolveCache.Add(address, hostName);
                     }
+                }
+                finally
+                {
+                    _resolveCacheLock.ReleaseExclusive();
                 }
             }
 

@@ -81,7 +81,7 @@ namespace ProcessHacker
         private ProcessHandle _processHandle;
         private ProcessAccess _processAccess;
         private SymbolProvider _symbols;
-        private bool _kernelSymbolsLoaded = false;
+        private int _kernelSymbolsLoaded = 0;
         private int _pid;
         private int _loading = 0;
         private MessageQueue _messageQueue = new MessageQueue();
@@ -153,16 +153,12 @@ namespace ProcessHacker
 
         public void LoadKernelSymbols(bool force)
         {
-            lock (_symbols)
-            {
-                if (!_kernelSymbolsLoaded)
-                {
-                    if (KProcessHacker.Instance != null || force)
-                        _symbols.LoadKernelModules();
+            // Ensure we only load kernel symbols once.
+            if (Interlocked.CompareExchange(ref _kernelSymbolsLoaded, 1, 0) == 1)
+                return;
 
-                    _kernelSymbolsLoaded = true;
-                }
-            }
+            if (KProcessHacker.Instance != null || force)
+                _symbols.LoadKernelModules();
         }
 
         private void LoadSymbols()

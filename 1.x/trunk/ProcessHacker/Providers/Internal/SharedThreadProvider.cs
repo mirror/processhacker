@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
+using ProcessHacker.Common.Objects;
+using ProcessHacker.Common.Threading;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker
 {
-    public class SharedThreadProvider : IDisposable
+    public class SharedThreadProvider : BaseObject
     {
-        private object _disposeLock = new object();
-        private bool _disposed;
         private List<IProvider> _providers = new List<IProvider>();
         private Thread _thread;
+        private bool _terminating = false;
         private int _interval;
 
         public SharedThreadProvider(int interval)
@@ -23,48 +25,16 @@ namespace ProcessHacker
             _thread.Priority = ThreadPriority.Lowest;
         }
 
-        ~SharedThreadProvider()
+        protected override void DisposeObject(bool disposing)
         {
-            this.Dispose(false);
-        }
+            _terminating = true;
+            _thread.Interrupt();
+            _thread = null;
 
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+            IProvider[] providers = _providers.ToArray();
 
-        private void Dispose(bool disposing)
-        {
-            try
-            {
-                if (disposing)
-                {
-                    Monitor.Enter(_disposeLock);
-                    Monitor.Enter(_providers);
-                }
-
-                if (!_disposed)
-                {
-                    _thread.Abort();
-                    _thread = null;
-
-                    IProvider[] providers = _providers.ToArray();
-
-                    foreach (IProvider provider in providers)
-                        this.Remove(provider);
-
-                    _disposed = true;
-                }
-            }
-            finally
-            {
-                if (disposing)
-                {
-                    Monitor.Exit(_disposeLock);
-                    Monitor.Exit(_providers);
-                }
-            }
+            foreach (IProvider provider in providers)
+                this.Remove(provider);
         }
 
         public int Count
@@ -101,7 +71,7 @@ namespace ProcessHacker
 
         private void Update()
         {
-            while (true)
+            while (!_terminating)
             {
                 IProvider[] providers;
 
@@ -109,10 +79,22 @@ namespace ProcessHacker
                     providers = _providers.ToArray();
 
                 foreach (var provider in providers)
+                {
+                    if (_terminating)
+                        return;
+
                     if (provider.Enabled)
                         provider.RunOnce();
+                }
 
-                Thread.Sleep(_interval);
+                try
+                {
+                    Thread.Sleep(_interval);
+                }
+                catch (ThreadInterruptedException)
+                {
+                    break;
+                }
             }
         }
     }

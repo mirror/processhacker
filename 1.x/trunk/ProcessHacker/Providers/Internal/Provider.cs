@@ -186,6 +186,14 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Gets whether the provider is shutting down.
+        /// </summary>
+        protected bool Disposing
+        {
+            get { return _disposing; }
+        }
+
+        /// <summary>
         /// Determines whether the provider should update.
         /// </summary>
         public bool Enabled

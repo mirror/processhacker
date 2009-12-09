@@ -307,7 +307,8 @@ namespace ProcessHacker.Common.Threading
             {
                 value = _value;
 
-                // Case 1: lock not owned AND no exclusive waiter is waking up AND there are no shared owners AND there are no exclusive waiters
+                // Case 1: lock not owned AND no exclusive waiter is waking up AND 
+                // there are no shared owners AND there are no exclusive waiters
                 if ((value & (
                     LockOwned |
                     (LockSharedOwnersMask << LockSharedOwnersShift) |
@@ -321,7 +322,8 @@ namespace ProcessHacker.Common.Threading
                         ) == value)
                         break;
                 }
-                // Case 2: lock is owned AND no exclusive waiter is waking up AND there are shared owners AND there are no exclusive waiters
+                // Case 2: lock is owned AND no exclusive waiter is waking up AND 
+                // there are shared owners AND there are no exclusive waiters
                 else if (
                     (value & LockOwned) != 0 &&
                     ((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 0 &&
