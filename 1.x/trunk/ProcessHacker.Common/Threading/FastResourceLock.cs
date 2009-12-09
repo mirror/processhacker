@@ -30,6 +30,19 @@ namespace ProcessHacker.Common.Threading
     /// <summary>
     /// Provides a fast resource (reader-writer) lock.
     /// </summary>
+    /// <remarks>
+    /// There are three types of acquire methods in this lock:
+    /// 
+    /// Normal methods (AcquireExclusive, AcquireShared) are preferred 
+    /// for general purpose use.
+    /// Busy wait methods (SpinAcquireExclusive, SpinAcquireShared) are 
+    /// preferred if very little time is spent while the lock is acquired.
+    /// Try methods (TryAcquireExclusive, TryAcquireShared) can be used to 
+    /// quickly test if the lock is available.
+    /// 
+    /// Note that all three types of functions can be used concurrently 
+    /// in the same class instance.
+    /// </remarks>
     public sealed class FastResourceLock : IDisposable
     {
         // Details
