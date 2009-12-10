@@ -4,6 +4,7 @@ Process Hacker
  * NEW/IMPROVED:
  * FIXED:
    * #2911938 - "The given key was not present in the dictionary."
+   * #2911957 - "The given key was not present in the dictionary."
 
 1.8
  * NEW/IMPROVED:

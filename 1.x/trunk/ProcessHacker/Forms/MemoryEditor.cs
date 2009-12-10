@@ -87,9 +87,16 @@ namespace ProcessHacker
 
             Program.MemoryEditors.Add(this.Id, this);
 
-            this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
-                "), " + Utils.FormatAddress(_address) + "-" +
-                Utils.FormatAddress(_address.Increment(_length)) + " - Memory Editor";
+            if (Program.ProcessProvider.Dictionary.ContainsKey(_pid))
+            {
+                this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
+                    "), " + Utils.FormatAddress(_address) + "-" +
+                    Utils.FormatAddress(_address.Increment(_length)) + " - Memory Editor";
+            }
+            else
+            {
+                this.Text = "PID " + _pid.ToString() + " - Memory Editor";
+            }
 
             try
             {
