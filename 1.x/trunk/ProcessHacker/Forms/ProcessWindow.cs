@@ -43,6 +43,7 @@ namespace ProcessHacker
     public partial class ProcessWindow : Form
     {
         private bool _isFirstPaint = true;
+
         private ProcessItem _processItem;
         private int _pid;
         private ProcessHandle _processHandle;

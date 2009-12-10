@@ -19,7 +19,8 @@ namespace ProcessHacker
                 components.Dispose();
             }
 
-            Program.PWindows.Remove(_pid);
+            if (Program.PWindows.ContainsKey(_pid))
+                Program.PWindows.Remove(_pid);
 
             if (_processHandle != null)
                 _processHandle.Dispose();
