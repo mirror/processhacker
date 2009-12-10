@@ -20,6 +20,8 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+//#define DEFER_EVENT_CREATION
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -132,13 +134,9 @@ namespace ProcessHacker.Common.Threading
             _waitersListHead->Blink = _waitersListHead;
             _firstSharedWaiter = _waitersListHead;
 
-            if (NativeMethods.NtCreateKeyedEvent(
-                out _wakeEvent,
-                0x3,
-                IntPtr.Zero,
-                0
-                ) < 0)
-                throw new Exception("Failed to create the wake event.");
+#if !DEFER_EVENT_CREATION
+            _wakeEvent = this.CreateWakeEvent();
+#endif
         }
 
         ~FairResourceLock()
@@ -391,6 +389,20 @@ namespace ProcessHacker.Common.Threading
             // Go to sleep if necessary.
             if ((flags & WaiterSpinning) != 0)
             {
+#if DEFER_EVENT_CREATION
+                IntPtr wakeEvent;
+
+                wakeEvent = Thread.VolatileRead(ref _wakeEvent);
+
+                if (wakeEvent == IntPtr.Zero)
+                {
+                    wakeEvent = this.CreateWakeEvent();
+
+                    if (Interlocked.CompareExchange(ref _wakeEvent, wakeEvent, IntPtr.Zero) != IntPtr.Zero)
+                        NativeMethods.CloseHandle(wakeEvent);
+                }
+#endif
+
                 if (NativeMethods.NtWaitForKeyedEvent(
                     _wakeEvent,
                     new IntPtr(waitBlock),
@@ -399,6 +411,25 @@ namespace ProcessHacker.Common.Threading
                     ) != 0)
                     throw new Exception(Utils.MsgFailedToWaitIndefinitely);
             }
+        }
+
+        /// <summary>
+        /// Creates a wake event.
+        /// </summary>
+        /// <returns>A handle to the keyed event.</returns>
+        private IntPtr CreateWakeEvent()
+        {
+            IntPtr wakeEvent;
+
+            if (NativeMethods.NtCreateKeyedEvent(
+                out wakeEvent,
+                0x3,
+                IntPtr.Zero,
+                0
+                ) < 0)
+                throw new Exception("Failed to create the wake event.");
+
+            return wakeEvent;
         }
 
         /// <summary>
@@ -535,6 +566,20 @@ namespace ProcessHacker.Common.Threading
 
             if ((flags & WaiterSpinning) == 0)
             {
+#if DEFER_EVENT_CREATION
+                IntPtr wakeEvent;
+
+                wakeEvent = Thread.VolatileRead(ref _wakeEvent);
+
+                if (wakeEvent == IntPtr.Zero)
+                {
+                    wakeEvent = this.CreateWakeEvent();
+
+                    if (Interlocked.CompareExchange(ref _wakeEvent, wakeEvent, IntPtr.Zero) != IntPtr.Zero)
+                        NativeMethods.CloseHandle(wakeEvent);
+                }
+#endif
+
                 NativeMethods.NtReleaseKeyedEvent(
                     _wakeEvent,
                     new IntPtr(waitBlock),
