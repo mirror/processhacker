@@ -1,12 +1,39 @@
-﻿using System;
+﻿/*
+ * Process Hacker - 
+ *   fair resource lock
+ * 
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
 namespace ProcessHacker.Common.Threading
 {
+    /// <summary>
+    /// Provides a fast and fair resource (reader-writer) lock.
+    /// </summary>
     public unsafe sealed class FairResourceLock : IDisposable
     {
+        #region Constants
+
         // Lock owned
         private const int LockOwned = 0x1;
         // Waiters present
@@ -20,15 +47,14 @@ namespace ProcessHacker.Common.Threading
         private const int WaiterExclusive = 0x1;
         private const int WaiterSpinning = 0x2;
 
+        #endregion
+
         private unsafe struct WaitBlock
         {
             public WaitBlock* Flink;
             public WaitBlock* Blink;
             public int Flags;
         }
-
-        // The number of times to spin before going to sleep.
-        private static readonly int SpinCount = NativeMethods.SpinCount;
 
         private static void InsertHeadList(WaitBlock* listHead, WaitBlock* entry)
         {
@@ -66,19 +92,34 @@ namespace ProcessHacker.Common.Threading
         }
 
         private int _value;
-        private SpinLock _lock;
+        private int _spinCount;
         private IntPtr _wakeEvent;
 
+        private SpinLock _lock;
         private WaitBlock* _waitersListHead;
+        private WaitBlock* _firstSharedWaiter;
+
         private object __waitersListHead;
         private System.Runtime.InteropServices.GCHandle __waitersListHeadHandle;
 
-        private WaitBlock* _firstSharedWaiter;
-
+        /// <summary>
+        /// Creates a FairResourceLock.
+        /// </summary>
         public FairResourceLock()
+            : this(NativeMethods.SpinCount)
+        { }
+
+        /// <summary>
+        /// Creates a FairResourceLock, specifying a spin count.
+        /// </summary>
+        /// <param name="spinCount">
+        /// The number of times to spin before going to sleep.
+        /// </param>
+        public FairResourceLock(int spinCount)
         {
             _value = 0;
             _lock = new SpinLock();
+            _spinCount = Environment.ProcessorCount != 1 ? spinCount : 0;
 
             __waitersListHead = new WaitBlock();
             __waitersListHeadHandle =
@@ -117,12 +158,49 @@ namespace ProcessHacker.Common.Threading
             NativeMethods.CloseHandle(_wakeEvent);
         }
 
+        /// <summary>
+        /// Disposes resources associated with the FairResourceLock.
+        /// </summary>
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Gets whether the lock is owned in either 
+        /// exclusive or shared mode.
+        /// </summary>
+        public bool Owned
+        {
+            get { return (_value & LockOwned) != 0; }
+        }
+
+        /// <summary>
+        /// Gets the number of shared owners.
+        /// </summary>
+        public int SharedOwners
+        {
+            get { return (_value >> LockSharedOwnersShift) & LockSharedOwnersMask; }
+        }
+
+        /// <summary>
+        /// Gets the number of times to spin before going to sleep.
+        /// </summary>
+        public int SpinCount
+        {
+            get { return _spinCount; }
+            set { _spinCount = value; }
+        }
+
+        /// <summary>
+        /// Acquires the lock in exclusive mode, blocking 
+        /// if necessary.
+        /// </summary>
+        /// <remarks>
+        /// Exclusive acquires are given precedence over shared 
+        /// acquires.
+        /// </remarks>
         public void AcquireExclusive()
         {
             int value;
@@ -137,12 +215,12 @@ namespace ProcessHacker.Common.Threading
                 {
                     if (Interlocked.CompareExchange(
                         ref _value,
-                        value | LockOwned,
+                        value + LockOwned,
                         value
                         ) == value)
                         break;
                 }
-                else if (i >= SpinCount / 10)
+                else if (i >= _spinCount)
                 {
                     // We need to wait.
                     WaitBlock waitBlock;
@@ -187,6 +265,14 @@ namespace ProcessHacker.Common.Threading
             }
         }
 
+        /// <summary>
+        /// Acquires the lock in shared mode, blocking 
+        /// if necessary.
+        /// </summary>
+        /// <remarks>
+        /// Exclusive acquires are given precedence over shared 
+        /// acquires.
+        /// </remarks>
         public void AcquireShared()
         {
             int value;
@@ -224,7 +310,7 @@ namespace ProcessHacker.Common.Threading
                             break;
                     }
                 }
-                else if (i >= SpinCount / 10)
+                else if (i >= _spinCount)
                 {
                     // We need to wait.
                     WaitBlock waitBlock;
@@ -277,12 +363,16 @@ namespace ProcessHacker.Common.Threading
             }
         }
 
+        /// <summary>
+        /// Blocks on a wait block.
+        /// </summary>
+        /// <param name="waitBlock">The wait block to block on.</param>
         private void Block(WaitBlock* waitBlock)
         {
             int flags;
 
             // Spin for a while.
-            for (int j = 0; j < SpinCount; j++)
+            for (int j = 0; j < _spinCount; j++)
             {
                 if ((Thread.VolatileRead(ref waitBlock->Flags) & WaiterSpinning) == 0)
                     break;
@@ -311,6 +401,9 @@ namespace ProcessHacker.Common.Threading
             }
         }
 
+        /// <summary>
+        /// Releases the lock in exclusive mode.
+        /// </summary>
         public void ReleaseExclusive()
         {
             int value;
@@ -333,6 +426,9 @@ namespace ProcessHacker.Common.Threading
             }
         }
 
+        /// <summary>
+        /// Releases the lock in shared mode.
+        /// </summary>
         public void ReleaseShared()
         {
             int value;
@@ -361,6 +457,68 @@ namespace ProcessHacker.Common.Threading
             }
         }
 
+        /// <summary>
+        /// Attempts to acquire the lock in exclusive mode.
+        /// </summary>
+        /// <returns>Whether the lock was acquired.</returns>
+        public bool TryAcquireExclusive()
+        {
+            int value;
+
+            value = _value;
+
+            if ((value & LockOwned) != 0)
+                return false;
+
+            return Interlocked.CompareExchange(
+                ref _value,
+                value + LockOwned,
+                value
+                ) == value;
+        }
+
+        /// <summary>
+        /// Attempts to acquire the lock in shared mode.
+        /// </summary>
+        /// <returns>Whether the lock was acquired.</returns>
+        public bool TryAcquireShared()
+        {
+            int value;
+
+            value = _value;
+
+            if (
+                (value & LockOwned) == 0 ||
+                ((value & LockWaiters) == 0 && ((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 0)
+                )
+            {
+                if ((value & LockOwned) == 0)
+                {
+                    if (Interlocked.CompareExchange(
+                        ref _value,
+                        value + LockOwned + LockSharedOwnersIncrement,
+                        value
+                        ) == value)
+                        return true;
+                }
+                else
+                {
+                    if (Interlocked.CompareExchange(
+                        ref _value,
+                        value + LockSharedOwnersIncrement,
+                        value
+                        ) == value)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Unblocks a wait block.
+        /// </summary>
+        /// <param name="waitBlock">The wait block to unblock.</param>
         private void Unblock(WaitBlock* waitBlock)
         {
             int flags;
@@ -386,6 +544,9 @@ namespace ProcessHacker.Common.Threading
             }
         }
 
+        /// <summary>
+        /// Wakes either one exclusive waiter or multiple shared waiters.
+        /// </summary>
         private void Wake()
         {
             WaitBlock wakeList = new WaitBlock();
