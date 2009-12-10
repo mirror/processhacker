@@ -108,11 +108,7 @@ namespace ProcessHacker.Common.Threading
             } while (Interlocked.CompareExchange(ref _value, oldValue | EventSet, oldValue) != oldValue);
 
             // Do an update-to-date read.
-            IntPtr localEvent = Interlocked.CompareExchange(
-                ref _event,
-                IntPtr.Zero,
-                IntPtr.Zero
-                );
+            IntPtr localEvent = Thread.VolatileRead(ref _event);
 
             // Set the event if we had one.
             if (localEvent != IntPtr.Zero)
@@ -126,6 +122,45 @@ namespace ProcessHacker.Common.Threading
             // wouldn't wait at all.
 
             this.DerefEvent();
+        }
+
+        /// <summary>
+        /// Waits for the event to be set by busy waiting.
+        /// </summary>
+        public void SpinWait()
+        {
+            if (Thread.VolatileRead(ref _value) == 1)
+                return;
+
+            if (NativeMethods.SpinEnabled)
+            {
+                while (Thread.VolatileRead(ref _value) == 0)
+                    Thread.SpinWait(400);
+            }
+            else
+            {
+                while (Thread.VolatileRead(ref _value) == 0)
+                    Thread.Sleep(0);
+            }
+        }
+
+        /// <summary>
+        /// Waits for the event to be set by busy waiting.
+        /// </summary>
+        /// <param name="spinCount">The number of times to check the value.</param>
+        /// <returns>Whether the event was set during the wait period.</returns>
+        public bool SpinWait(int spinCount)
+        {
+            if (Thread.VolatileRead(ref _value) == 1)
+                return true;
+
+            for (int i = 0; i < spinCount; i++)
+            {
+                if (Thread.VolatileRead(ref _value) == 1)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -174,7 +209,7 @@ namespace ProcessHacker.Common.Threading
             this.RefEvent();
 
             // Shortcut: don't bother creating an event if we already have one.
-            newEvent = Interlocked.CompareExchange(ref _event, IntPtr.Zero, IntPtr.Zero);
+            newEvent = Thread.VolatileRead(ref _event);
 
             // If we don't have an event, create one and try to set it.
             if (newEvent == IntPtr.Zero)

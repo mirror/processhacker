@@ -30,8 +30,6 @@ namespace ProcessHacker.Common.Threading
     /// </summary>
     public struct SpinLock
     {
-        private const int SpinCount = 10;
-
         public struct SpinLockContext : IDisposable
         {
             private bool _disposed;
@@ -67,7 +65,7 @@ namespace ProcessHacker.Common.Threading
             if (NativeMethods.SpinEnabled)
             {
                 while (Interlocked.CompareExchange(ref _value, 1, 0) == 1)
-                    Thread.SpinWait(SpinCount);
+                    Thread.SpinWait(400);
             }
             else
             {

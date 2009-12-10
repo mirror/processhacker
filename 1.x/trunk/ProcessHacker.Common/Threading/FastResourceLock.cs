@@ -132,10 +132,10 @@ namespace ProcessHacker.Common.Threading
 
         private const int ExclusiveMask = LockExclusiveWaking | (LockExclusiveWaitersMask << LockExclusiveWaitersShift);
 
-        // The number of times to spin before going to sleep.
-        private const int SpinCount = 4000;
-
         #endregion
+
+        // The number of times to spin before going to sleep.
+        private static readonly int SpinCount = NativeMethods.SpinCount;
 
         private int _value;
         private IntPtr _sharedWakeEvent;

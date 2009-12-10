@@ -85,6 +85,7 @@
     <Compile Include="Settings\ISettingsStore.cs" />
     <Compile Include="Settings\VolatileSettingsStore.cs" />
     <Compile Include="Settings\XmlFileSettingsStore.cs" />
+    <Compile Include="Threading\FairResourceLock.cs" />
     <Compile Include="Threading\FastEvent.cs" />
     <Compile Include="Threading\FastLock.cs" />
     <Compile Include="Threading\FastMutex.cs" />

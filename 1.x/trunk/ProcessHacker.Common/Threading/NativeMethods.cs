@@ -14,6 +14,7 @@ namespace ProcessHacker.Common.Threading
         public const int WaitTimeout = 0x102;
         public const int WaitFailed = -1;
 
+        public static readonly int SpinCount = Environment.ProcessorCount != 1 ? 4000 : 0;
         public static readonly bool SpinEnabled = Environment.ProcessorCount != 1;
 
         // We need to import some stuff. We can't use 
@@ -61,6 +62,30 @@ namespace ProcessHacker.Common.Threading
         public static extern int WaitForSingleObject(
             [In] IntPtr Handle,
             [In] int Milliseconds
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtCreateKeyedEvent(
+            [Out] out IntPtr KeyedEventHandle,
+            [In] int DesiredAccess,
+            [In] [Optional] IntPtr ObjectAttributes,
+            [In] int Flags
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtReleaseKeyedEvent(
+            [In] IntPtr KeyedEventHandle,
+            [In] IntPtr KeyValue,
+            [In] bool Alertable,
+            [In] [Optional] IntPtr Timeout
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtWaitForKeyedEvent(
+            [In] IntPtr KeyedEventHandle,
+            [In] IntPtr KeyValue,
+            [In] bool Alertable,
+            [In] [Optional] IntPtr Timeout
             );
     }
 }
