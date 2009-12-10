@@ -47,7 +47,7 @@ namespace ProcessHacker
             get { return _pid + "-" + _id; }
         }
 
-        public ResultsWindow(int PID)
+        public ResultsWindow(int pid)
         {
             InitializeComponent();
             this.AddEscapeToClose();
@@ -58,14 +58,21 @@ namespace ProcessHacker
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
-            _pid = PID;
+            _pid = pid;
 
             _id = Program.ResultsIds.Pop();
 
             Program.ResultsWindows.Add(Id, this);
 
-            this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
-                ") - Results - " + _id;
+            if (Program.ProcessProvider.Dictionary.ContainsKey(_pid))
+            {
+                this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
+                    ") - Results - " + _id.ToString();
+            }
+            else
+            {
+                this.Text = "PID " + _pid.ToString() + " - Results - " + _id.ToString();
+            }
 
             labelText.Text = "Ready.";
 

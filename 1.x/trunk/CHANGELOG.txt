@@ -1,5 +1,10 @@
 Process Hacker
 
+1.9
+ * NEW/IMPROVED:
+ * FIXED:
+   * #2911938 - "The given key was not present in the dictionary."
+
 1.8
  * NEW/IMPROVED:
    * Ability to set I/O priority for processes and threads
