@@ -55,11 +55,11 @@ DefaultGroupName=Process Hacker
 VersionInfoCompany=wj32
 VersionInfoCopyright=Licensed under the GNU GPL, v3.
 VersionInfoDescription=Process Hacker {#= simple_app_version} Setup
-VersionInfoTextVersion={#= app_version}
-VersionInfoVersion={#= app_version}
+VersionInfoTextVersion={#= simple_app_version}
+VersionInfoVersion={#= simple_app_version}
 VersionInfoProductName=Process Hacker
-VersionInfoProductVersion={#= app_version}
-VersionInfoProductTextVersion={#= app_version}
+VersionInfoProductVersion={#= simple_app_version}
+VersionInfoProductTextVersion={#= simple_app_version}
 MinVersion=0,5.0.2195
 AppReadmeFile={app}\README.txt
 LicenseFile=..\..\..\LICENSE.txt
@@ -390,7 +390,7 @@ begin
   OR fileExists(ExpandConstant('{userdocs}\Process Hacker.csv'))
   OR fileExists(ExpandConstant('{userdocs}\Process Hacker Log.txt'))
   OR fileExists(ExpandConstant('{userdocs}\CSR Processes.txt'))
-  OR fileExists(ExpandConstant('{app}\scratchpad.txt'))then begin
+  OR fileExists(ExpandConstant('{app}\scratchpad.txt')) then begin
     if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'),
      mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
        CleanUpFiles;
