@@ -35,11 +35,7 @@ namespace ProcessHacker.Common.Threading
     /// <remarks>
     /// FairResourceLock is better than FastResourceLock when 
     /// very little time is spent inside lock regions, and scales 
-    /// better than FastResourceLock. On a multi-processor system, 
-    /// it can be around 10 times faster than FastResourceLock with 
-    /// more than 60 threads contending. It can also be around 3 
-    /// times faster than Monitor with this level of contention, 
-    /// even when used solely as a mutual exclusion lock.
+    /// better than FastResourceLock.
     /// </remarks>
     public unsafe sealed class FairResourceLock : IDisposable
     {
