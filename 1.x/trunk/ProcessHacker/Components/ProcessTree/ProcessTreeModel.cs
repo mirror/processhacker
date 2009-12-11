@@ -249,7 +249,7 @@ namespace ProcessHacker
                         switch (sortC)
                         {
                             case "name":
-                                return ModifySort(n1.Name.CompareTo(n2.Name), sortO);
+                                return ModifySort(string.Compare(n1.Name, n2.Name), sortO);
                             case "pid":
                                 return ModifySort(n1.Pid.CompareTo(n2.Pid), sortO);
                             case "pvt. memory":
@@ -285,7 +285,7 @@ namespace ProcessHacker
                             case "cpu":
                                 return ModifySort(n1.ProcessItem.CpuUsage.CompareTo(n2.ProcessItem.CpuUsage), sortO);
                             case "username":
-                                return ModifySort(n1.Username.CompareTo(n2.Username), sortO);
+                                return ModifySort(string.Compare(n1.Username, n2.Username), sortO);
                             case "session id":
                                 return ModifySort(n1.ProcessItem.SessionId.CompareTo(n2.ProcessItem.SessionId), sortO);
                             case "priority class":
@@ -293,13 +293,13 @@ namespace ProcessHacker
                                 return ModifySort(n1.ProcessItem.Process.BasePriority.CompareTo(
                                     n2.ProcessItem.Process.BasePriority), sortO);
                             case "description":
-                                return ModifySort(n1.Description.CompareTo(n2.Description), sortO);
+                                return ModifySort(string.Compare(n1.Description, n2.Description), sortO);
                             case "company":
-                                return ModifySort(n1.Company.CompareTo(n2.Company), sortO);
+                                return ModifySort(string.Compare(n1.Company, n2.Company), sortO);
                             case "file name":
-                                return ModifySort(n1.FileName.CompareTo(n2.FileName), sortO);
+                                return ModifySort(string.Compare(n1.FileName, n2.FileName), sortO);
                             case "command line":
-                                return ModifySort(n1.CommandLine.CompareTo(n2.CommandLine), sortO);
+                                return ModifySort(string.Compare(n1.CommandLine, n2.CommandLine), sortO);
                             case "threads":
                                 return ModifySort(n1.ProcessItem.Process.NumberOfThreads.CompareTo(
                                     n2.ProcessItem.Process.NumberOfThreads), sortO);
@@ -337,9 +337,9 @@ namespace ProcessHacker
                                 return ModifySort(n1.ProcessItem.Process.UserTime.CompareTo(
                                     n2.ProcessItem.Process.UserTime), sortO);
                             case "verification status":
-                                return ModifySort(n1.VerificationStatus.CompareTo(n2.VerificationStatus), sortO);
+                                return ModifySort(string.Compare(n1.VerificationStatus, n2.VerificationStatus), sortO);
                             case "verified signer":
-                                return ModifySort(n1.VerifiedSigner.CompareTo(n2.VerifiedSigner), sortO);
+                                return ModifySort(string.Compare(n1.VerifiedSigner, n2.VerifiedSigner), sortO);
                             default:
                                 return 0;
                         }

@@ -5,6 +5,7 @@ Process Hacker
  * FIXED:
    * #2911938 - "The given key was not present in the dictionary."
    * #2911957 - "The given key was not present in the dictionary."
+   * #2912500 - "Failed to compare two elements in the array."
 
 1.8
  * NEW/IMPROVED:
