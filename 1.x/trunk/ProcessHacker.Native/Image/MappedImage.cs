@@ -61,6 +61,12 @@ namespace ProcessHacker.Native.Image
             this.MapAndLoad(fileHandle, readOnly);
         }
 
+        public MappedImage(IntPtr memory, int size)
+        {
+            _size = size;
+            this.Load((void*)memory);
+        }
+
         protected override void DisposeObject(bool disposing)
         {
             if (_view != null)
@@ -254,6 +260,23 @@ namespace ProcessHacker.Native.Image
             return new string((sbyte*)section->Name, 0, 8).TrimEnd('\0');
         }
 
+        private void Load(void* memory)
+        {
+            _memory = memory;
+
+            byte* start = (byte*)_memory;
+
+            if (start[0] != 'M' || start[1] != 'Z')
+                throw new Exception("The file is not a valid executable image.");
+
+            _ntHeaders = this.GetNtHeaders();
+            _sections = (ImageSectionHeader*)((byte*)&_ntHeaders->OptionalHeader + _ntHeaders->FileHeader.SizeOfOptionalHeader);
+            _magic = _ntHeaders->OptionalHeader.Magic;
+
+            if (_magic != Win32.Pe32Magic && _magic != Win32.Pe32PlusMagic)
+                throw new Exception("The file is not a PE32 or PE32+ image.");
+        }
+
         private void MapAndLoad(FileHandle fileHandle, bool readOnly)
         {
             using (Section section = new Section(
@@ -264,19 +287,8 @@ namespace ProcessHacker.Native.Image
             {
                 _size = (int)fileHandle.GetSize();
                 _view = section.MapView(_size);
-                _memory = _view;
 
-                byte* start = (byte*)_memory;
-
-                if (start[0] != 'M' || start[1] != 'Z')
-                    throw new Exception("The file is not a valid executable image.");
-
-                _ntHeaders = this.GetNtHeaders();
-                _sections = (ImageSectionHeader*)((byte*)&_ntHeaders->OptionalHeader + _ntHeaders->FileHeader.SizeOfOptionalHeader);
-                _magic = _ntHeaders->OptionalHeader.Magic;
-
-                if (_magic != Win32.Pe32Magic && _magic != Win32.Pe32PlusMagic)
-                    throw new Exception("The file is not a PE32 or PE32+ image.");
+                this.Load(_view);
             }
         }
 

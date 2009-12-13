@@ -632,7 +632,7 @@ namespace ProcessHacker
         {
             ProcessHacker.Native.Image.MappedImage file =
                 new ProcessHacker.Native.Image.MappedImage(Environment.SystemDirectory + "\\ntdll.dll");
-            IntPtr ntdll = Win32.GetModuleHandle("ntdll.dll");
+            IntPtr ntdll = Loader.GetDllHandle("ntdll.dll");
             MemoryProtection oldProtection;
 
             oldProtection = ProcessHandle.Current.ProtectMemory(
@@ -669,6 +669,26 @@ namespace ProcessHacker
                 );
 
             file.Dispose();
+        }
+
+        public static void NopNtYieldExecution()
+        {
+            IntPtr ntYieldExecution = Loader.GetProcedure("ntdll.dll", "NtYieldExecution");
+
+            if (ntYieldExecution != IntPtr.Zero)
+            {
+                ProcessHandle.Current.ProtectMemory(
+                    ntYieldExecution,
+                    12,
+                    MemoryProtection.ExecuteReadWrite
+                    );
+                Win32.RtlFillMemory(ntYieldExecution, (12).ToIntPtr(), 0x90);
+                ProcessHandle.Current.ProtectMemory(
+                    ntYieldExecution,
+                    12,
+                    MemoryProtection.ExecuteRead
+                    );
+            }
         }
 
         public static bool CheckPreviousInstance()

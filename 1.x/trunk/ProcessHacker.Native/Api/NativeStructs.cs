@@ -1485,6 +1485,11 @@ namespace ProcessHacker.Native.Api
             return this.QuadPart == other;
         }
 
+        public override int GetHashCode()
+        {
+            return this.QuadPart.GetHashCode();
+        }
+
         public long ToLong()
         {
             return this.QuadPart;
