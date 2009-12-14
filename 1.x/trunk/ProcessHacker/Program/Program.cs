@@ -154,7 +154,9 @@ namespace ProcessHacker
 
             if (pArgs.ContainsKey("-elevate"))
             {
-                StartProcessHackerAdmin();
+                // Propagate arguments.
+                pArgs.Remove("-elevate");
+                StartProcessHackerAdmin(Utils.JoinCommandLine(pArgs), null);
                 return;
             }
 

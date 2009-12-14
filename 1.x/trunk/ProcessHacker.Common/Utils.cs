@@ -920,6 +920,28 @@ namespace ProcessHacker.Common
             return true;
         }
 
+        public static string JoinCommandLine(Dictionary<string, string> args)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var kvp in args)
+            {
+                if (string.IsNullOrEmpty(kvp.Value))
+                {
+                    sb.Append(kvp.Key + " ");
+                }
+                else
+                {
+                    sb.Append(kvp.Key + " \"" + kvp.Value + "\" ");
+                }
+            }
+
+            if (sb.Length > 0)
+                sb.Remove(sb.Length - 1, 1);
+
+            return sb.ToString();
+        }
+
         /// <summary>
         /// Makes a character printable by converting unprintable characters to a dot ('.').
         /// </summary>

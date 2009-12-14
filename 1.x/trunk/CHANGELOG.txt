@@ -2,6 +2,7 @@ Process Hacker
 
 1.9
  * NEW/IMPROVED:
+   * The "-elevate" command line option propagates other arguments
  * FIXED:
    * #2911938 - "The given key was not present in the dictionary."
    * #2911957 - "The given key was not present in the dictionary."
