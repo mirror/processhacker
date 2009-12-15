@@ -151,7 +151,7 @@ namespace ProcessHacker.Structs
                     readSize = 1;
                     break;
                 case FieldType.CharUTF16:
-                    value.Value = UnicodeEncoding.Unicode.GetString(IOProvider.ReadBytes(offset, 2))[0];
+                    value.Value = Encoding.Unicode.GetString(IOProvider.ReadBytes(offset, 2))[0];
                     readSize = 2;
                     break;
                 case FieldType.Double:
@@ -217,7 +217,7 @@ namespace ProcessHacker.Structs
                         }
                         else
                         {
-                            str.Append(ASCIIEncoding.ASCII.GetString(
+                            str.Append(Encoding.ASCII.GetString(
                                 IOProvider.ReadBytes(offset, field.VarLength)));
                             readSize = field.VarLength;
                         }
@@ -241,14 +241,14 @@ namespace ProcessHacker.Structs
                                 if (Utils.IsEmpty(b))
                                     break;
 
-                                str.Append(UnicodeEncoding.Unicode.GetString(b));
+                                str.Append(Encoding.Unicode.GetString(b));
                             }
 
                             readSize = i;
                         }
                         else
                         {
-                            str.Append(UnicodeEncoding.Unicode.GetString(
+                            str.Append(Encoding.Unicode.GetString(
                                 IOProvider.ReadBytes(offset, field.VarLength * 2))); // each char is 2 bytes
                             readSize = field.VarLength;
                         }

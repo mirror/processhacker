@@ -406,7 +406,7 @@ namespace ProcessHacker.Native
         /// <param name="s">The string to write.</param>
         public void WriteUnicodeString(int offset, string s)
         {
-            byte[] b = UnicodeEncoding.Unicode.GetBytes(s);
+            byte[] b = Encoding.Unicode.GetBytes(s);
 
             Marshal.Copy(b, 0, _memory.Increment(offset), b.Length);
         }

@@ -139,52 +139,52 @@ namespace ProcessHacker.Components
 
         private void aSCIIMenuItem_Click(object sender, EventArgs e)
         {
-            InsertUsingEncoding(UnicodeEncoding.ASCII, _hexbox, false);
+            InsertUsingEncoding(Encoding.ASCII, _hexbox, false);
         }
 
         private void uTF8MenuItem_Click(object sender, EventArgs e)
         {
-            InsertUsingEncoding(UnicodeEncoding.UTF8, _hexbox, false);
+            InsertUsingEncoding(Encoding.UTF8, _hexbox, false);
         }
 
         private void uTF16MenuItem_Click(object sender, EventArgs e)
         {
-            InsertUsingEncoding(UnicodeEncoding.Unicode, _hexbox, false);
+            InsertUsingEncoding(Encoding.Unicode, _hexbox, false);
         }
 
         private void uTF16BigEndianMenuItem_Click(object sender, EventArgs e)
         {
-            InsertUsingEncoding(UnicodeEncoding.BigEndianUnicode, _hexbox, false);
+            InsertUsingEncoding(Encoding.BigEndianUnicode, _hexbox, false);
         }
 
         private void uTF32MenuItem_Click(object sender, EventArgs e)
         {
-            InsertUsingEncoding(UnicodeEncoding.UTF32, _hexbox, false);
+            InsertUsingEncoding(Encoding.UTF32, _hexbox, false);
         }
 
         private void aSCIIMultilineMenuItem_Click(object sender, EventArgs e)
         {
-            InsertUsingEncoding(UnicodeEncoding.ASCII, _hexbox, true);
+            InsertUsingEncoding(Encoding.ASCII, _hexbox, true);
         }
 
         private void uTF8MultilineMenuItem_Click(object sender, EventArgs e)
         {
-            InsertUsingEncoding(UnicodeEncoding.UTF8, _hexbox, true);
+            InsertUsingEncoding(Encoding.UTF8, _hexbox, true);
         }
 
         private void uTF16MultilineMenuItem_Click(object sender, EventArgs e)
         {
-            InsertUsingEncoding(UnicodeEncoding.Unicode, _hexbox, true);
+            InsertUsingEncoding(Encoding.Unicode, _hexbox, true);
         }
 
         private void uTF16BigEndianMultilineMenuItem_Click(object sender, EventArgs e)
         {
-            InsertUsingEncoding(UnicodeEncoding.BigEndianUnicode, _hexbox, true);
+            InsertUsingEncoding(Encoding.BigEndianUnicode, _hexbox, true);
         }
 
         private void uTF32MultilineMenuItem_Click(object sender, EventArgs e)
         {
-            InsertUsingEncoding(UnicodeEncoding.UTF32, _hexbox, true);
+            InsertUsingEncoding(Encoding.UTF32, _hexbox, true);
         }
 
         #endregion

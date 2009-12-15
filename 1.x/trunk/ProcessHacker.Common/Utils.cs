@@ -1123,7 +1123,7 @@ namespace ProcessHacker.Common
             if (s.Read(buffer, 0, length) == 0)
                 throw new EndOfStreamException();
 
-            return System.Text.ASCIIEncoding.ASCII.GetString(buffer);
+            return System.Text.Encoding.ASCII.GetString(buffer);
         }
 
         public static uint ReadUInt32(Stream s, Endianness type)
@@ -1160,7 +1160,7 @@ namespace ProcessHacker.Common
                 if (b == 0 && b2 == 0)
                     break;
 
-                str.Append(UnicodeEncoding.Unicode.GetChars(new byte[] { (byte)b, (byte)b2 }));
+                str.Append(Encoding.Unicode.GetChars(new byte[] { (byte)b, (byte)b2 }));
             }
 
             return str.ToString();
@@ -1189,7 +1189,7 @@ namespace ProcessHacker.Common
                 if (b2 == -1)
                     break;
 
-                str.Append(UnicodeEncoding.Unicode.GetChars(new byte[] { (byte)b, (byte)b2 }));
+                str.Append(Encoding.Unicode.GetChars(new byte[] { (byte)b, (byte)b2 }));
                 i += 2;
             }
 

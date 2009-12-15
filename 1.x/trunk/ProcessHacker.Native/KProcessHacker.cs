@@ -291,7 +291,7 @@ namespace ProcessHacker.Native
                 int len = _fileHandle.IoControl(CtlCode(Control.GetHandleObjectName),
                     inData, 8, outData);
 
-                return UnicodeEncoding.Unicode.GetString(outData, 8, len - 8).TrimEnd('\0');
+                return Encoding.Unicode.GetString(outData, 8, len - 8).TrimEnd('\0');
             }
             catch
             { }

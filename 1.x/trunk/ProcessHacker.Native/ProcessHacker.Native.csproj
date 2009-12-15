@@ -76,6 +76,10 @@
     <Compile Include="Io\StorageDevice.cs" />
     <Compile Include="Memory\AlignedMemoryAlloc.cs" />
     <Compile Include="Memory\SamMemoryAlloc.cs" />
+    <Compile Include="Mfs\Exceptions.cs" />
+    <Compile Include="Mfs\MemoryFile.cs" />
+    <Compile Include="Mfs\MemoryFileSystem.cs" />
+    <Compile Include="Mfs\Internal.cs" />
     <Compile Include="NativeBitmap.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Debugging\DebugBuffer.cs" />

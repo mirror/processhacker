@@ -1344,8 +1344,7 @@ namespace ProcessHacker.Native.Objects
                 if (i >= memory.Length)
                     break;
 
-                char currentChar =
-                    UnicodeEncoding.Unicode.GetChars(memory, i, 2)[0];
+                char currentChar = Encoding.Unicode.GetChars(memory, i, 2)[0];
 
                 i += 2;
 
@@ -1912,8 +1911,7 @@ namespace ProcessHacker.Native.Objects
             this.ReadMemory(processParameters.Increment(realOffset), &pebStr, Marshal.SizeOf(typeof(UnicodeString)));
 
             // read string and decode it
-            return UnicodeEncoding.Unicode.GetString(
-                this.ReadMemory(pebStr.Buffer, pebStr.Length), 0, pebStr.Length);
+            return Encoding.Unicode.GetString(this.ReadMemory(pebStr.Buffer, pebStr.Length), 0, pebStr.Length);
         }
 
         /// <summary>
@@ -1986,7 +1984,7 @@ namespace ProcessHacker.Native.Objects
             {
                 byte[] data = this.ReadMemory(strPointers[i], partsSize);
 
-                commandLine.Append(ASCIIEncoding.ASCII.GetString(data, 0, Array.IndexOf<byte>(data, 0)) + " ");
+                commandLine.Append(Encoding.ASCII.GetString(data, 0, Array.IndexOf<byte>(data, 0)) + " ");
             }
 
             string commandLineStr = commandLine.ToString();
@@ -2110,7 +2108,7 @@ namespace ProcessHacker.Native.Objects
         {
             IntPtr stringPage = this.AllocateMemory(path.Length * 2 + 2, MemoryProtection.ReadWrite);
 
-            this.WriteMemory(stringPage, UnicodeEncoding.Unicode.GetBytes(path));
+            this.WriteMemory(stringPage, Encoding.Unicode.GetBytes(path));
 
             // Vista seems to support non-Win32 threads better than XP can.
             if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
