@@ -77,7 +77,7 @@
     <Compile Include="Memory\AlignedMemoryAlloc.cs" />
     <Compile Include="Memory\SamMemoryAlloc.cs" />
     <Compile Include="Mfs\Exceptions.cs" />
-    <Compile Include="Mfs\MemoryFile.cs" />
+    <Compile Include="Mfs\MemoryObject.cs" />
     <Compile Include="Mfs\MemoryFileSystem.cs" />
     <Compile Include="Mfs\Internal.cs" />
     <Compile Include="NativeBitmap.cs" />

@@ -1392,7 +1392,41 @@ namespace ProcessHacker.Common
             nameList.Sort((kvp1, kvp2) => kvp2.Value.CountBits().CompareTo(kvp1.Value.CountBits()));
 
             return nameList;
-        }   
+        }
+
+        public unsafe static void StrCpy(char* dest, string src, int maxChars)
+        {
+            for (int i = 0; i < src.Length && i < maxChars; i++)
+            {
+                dest[i] = src[i];
+            }
+        }
+
+        public static Bitmap ToBitmap(IntPtr iconHandle, int width, int height)
+        {
+            Bitmap b = new Bitmap(width, height);
+
+            using (Graphics g = Graphics.FromImage(b))
+            {
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawIcon(Icon.FromHandle(iconHandle), new Rectangle(0, 0, width, height));
+            }
+
+            return b;
+        }
+
+        public static Bitmap ToBitmap(this Icon icon, int width, int height)
+        {
+            Bitmap b = new Bitmap(width, height);
+
+            using (Graphics g = Graphics.FromImage(b))
+            {
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawIcon(icon, new Rectangle(0, 0, width, height));
+            }
+
+            return b;
+        }
 
         public static int ToInt32(this byte[] data)
         {

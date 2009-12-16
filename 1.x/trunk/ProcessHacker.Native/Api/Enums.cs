@@ -255,6 +255,13 @@ namespace ProcessHacker.Native.Api
         Moveable = 0x00000004
     }
 
+    public enum LoadImageType : int
+    {
+        Bitmap = 0,
+        Icon = 1,
+        Cursor = 2
+    }
+
     public enum LogonFlags : uint
     {
         LogonWithProfile = 1,

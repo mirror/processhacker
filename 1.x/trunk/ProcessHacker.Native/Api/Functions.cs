@@ -42,6 +42,28 @@ namespace ProcessHacker.Native.Api
 {
     public static partial class Win32
     {
+        #region Controls
+
+        [DllImport("comctl32.dll")]
+        public static extern int LoadIconMetric(
+            [In] IntPtr InstanceHandle,
+            [In] IntPtr Name,
+            [In] int Metric,
+            [Out] out IntPtr IconHandle
+            );
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr LoadImage(
+            [In] IntPtr InstanceHandle,
+            [In] IntPtr Name,
+            [In] LoadImageType Type,
+            [In] int DesiredWidth,
+            [In] int DesiredHeight,
+            [In] int Flags
+            );
+
+        #endregion
+
         #region Credentials
 
         [DllImport("credui.dll", SetLastError = true, CharSet = CharSet.Unicode)]

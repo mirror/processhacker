@@ -130,6 +130,9 @@
     <EmbeddedResource Include="Components\JobProperties.resx">
       <DependentUpon>JobProperties.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\MessageLabel.resx">
+      <DependentUpon>MessageLabel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\MutantProperties.resx">
       <DependentUpon>MutantProperties.cs</DependentUpon>
     </EmbeddedResource>
@@ -373,6 +376,12 @@
     <None Include="Resources\folder_explore.png" />
     <None Include="Resources\pencil_go.png" />
     <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Components\MessageLabel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MessageLabel.Designer.cs">
+      <DependentUpon>MessageLabel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\RestartRecoveryLib\RestartRecoveryManager.cs" />
     <Compile Include="Components\RestartRecoveryLib\RestartRecoveryInterop.cs" />
     <Compile Include="Components\RestartRecoveryLib\RecoveryData.cs" />

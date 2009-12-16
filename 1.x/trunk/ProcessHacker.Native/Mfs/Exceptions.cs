@@ -33,4 +33,19 @@ namespace ProcessHacker.Native.Mfs
             : base(message, innerException)
         { }
     }
+
+    public class MfsInvalidOperationException : Exception
+    {
+        public MfsInvalidOperationException()
+            : base()
+        { }
+
+        public MfsInvalidOperationException(string message)
+            : base(message)
+        { }
+
+        public MfsInvalidOperationException(string message, Exception innerException)
+            : base(message, innerException)
+        { }
+    }
 }
