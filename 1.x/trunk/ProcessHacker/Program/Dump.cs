@@ -1,0 +1,373 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Text;
+using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Mfs;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
+
+namespace ProcessHacker
+{
+    public static class Dump
+    {
+        public static void Write(this BinaryWriter bw, string key, string value)
+        {
+            bw.Write(Encoding.Unicode.GetBytes(key + "=" + value + "\0"));
+        }
+
+        public static void Write(this BinaryWriter bw, string key, int value)
+        {
+            bw.Write(Encoding.Unicode.GetBytes(key + "=" + value.ToString("x") + "\0"));
+        }
+
+        public static void Write(this BinaryWriter bw, string key, IntPtr value)
+        {
+            bw.Write(Encoding.Unicode.GetBytes(key + "=" + value.ToString("x") + "\0"));
+        }      
+
+        public static void Write(this BinaryWriter bw, string key, bool value)
+        {
+            bw.Write(Encoding.Unicode.GetBytes(key + "=" + (value ? "1" : "0") + "\0"));
+        }
+
+        public static void Write(this BinaryWriter bw, string key, DateTime value)
+        {
+            bw.Write(Encoding.Unicode.GetBytes(
+                key +
+                "=" +
+                value.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+                "\0"
+                ));
+        }
+
+        public static MemoryFileSystem BeginDump(string fileName)
+        {
+            MemoryFileSystem mfs = new MemoryFileSystem(fileName);
+
+            using (var sysinfo = mfs.RootObject.CreateChild("SystemInformation"))
+            {
+                BinaryWriter bw = new BinaryWriter(sysinfo.GetStream());
+
+                bw.Write("ProcessHackerVersion", Application.ProductVersion);
+                bw.Write("OSVersion", Environment.OSVersion.VersionString);
+
+                bw.Close();
+            }
+
+            mfs.RootObject.CreateChild("Processes").Dispose();
+            mfs.RootObject.CreateChild("Services").Dispose();
+            mfs.RootObject.CreateChild("Network").Dispose();
+
+            return mfs;
+        }
+
+        public static void DumpProcesses(MemoryFileSystem mfs, ProcessSystemProvider provider)
+        {
+            using (var processes = mfs.RootObject.GetChild("Processes"))
+            {
+                var p = Windows.GetProcesses();
+
+                foreach (var process in p.Values)
+                {
+                    using (var processChild = processes.CreateChild(process.Process.ProcessId.ToString("x")))
+                    {
+                        ProcessItem item = null;
+
+                        if (provider != null)
+                        {
+                            if (provider.Dictionary.ContainsKey(process.Process.ProcessId))
+                                item = provider.Dictionary[process.Process.ProcessId];
+                        }
+
+                        DumpProcess(processChild, process, item, Windows.GetHandles());
+                    }
+                }
+            }
+        }
+
+        public static void DumpProcess(MemoryObject processMo, SystemProcess process, ProcessItem item, object handles)
+        {
+            int pid = process.Process.ProcessId;
+
+            using (var general = processMo.CreateChild("General"))
+            {
+                BinaryWriter bw = new BinaryWriter(general.GetStream());
+
+                bw.Write("ProcessId", pid);
+                bw.Write("Name", process.Name);
+
+                try
+                {
+                    string fileName;
+
+                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                        fileName = FileUtils.GetFileName(phandle.GetImageFileName());
+
+                    var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(fileName);
+
+                    bw.Write("FileName", fileName);
+                    bw.Write("FileDescription", info.FileDescription);
+                    bw.Write("FileCompanyName", info.CompanyName);
+                    bw.Write("FileVersion", info.FileVersion);
+                    bw.Write("StartTime", DateTime.FromFileTime(process.Process.CreateTime));
+                    bw.Write("ParentPid", process.Process.InheritedFromProcessId);
+                    bw.Write("SessionId", process.Process.SessionId);
+
+                    try
+                    {
+                        Icon icon;
+
+                        icon = FileUtils.GetFileIcon(fileName, false);
+
+                        using (var smallIcon = processMo.CreateChild("SmallIcon"))
+                        {
+                            using (var s = smallIcon.GetStream())
+                                icon.Save(s);
+                        }
+
+                        Win32.DestroyIcon(icon.Handle);
+
+                        icon = FileUtils.GetFileIcon(fileName, true);
+
+                        using (var largeIcon = processMo.CreateChild("LargeIcon"))
+                        {
+                            using (var s = largeIcon.GetStream())
+                                icon.Save(s);
+                        }
+
+                        Win32.DestroyIcon(icon.Handle);
+                    }
+                    catch
+                    { }
+                }
+                catch
+                { }
+
+                try
+                {
+                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
+                    {
+                        bw.Write("CommandLine", phandle.GetPebString(PebOffset.CommandLine));
+                        bw.Write("CurrentDirectory", phandle.GetPebString(PebOffset.CurrentDirectoryPath));
+                        bw.Write("IsPosix", phandle.IsPosix());
+                    }
+                }
+                catch
+                { }
+
+                try
+                {
+                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                    {
+                        bw.Write("IsCritical", phandle.IsCritical());
+                        bw.Write("IsWow64", phandle.IsWow64());
+                    }
+
+                    using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
+                    {
+                        bw.Write("IsBeingDebugged", phandle.IsBeingDebugged());
+                    }
+                }
+                catch
+                { }
+
+                try
+                {
+                    using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryLimitedInformation))
+                    {
+                        using (var thandle = phandle.GetToken())
+                        {
+                            bw.Write("ElevationType", (int)thandle.GetElevationType());
+                            bw.Write("UserName", thandle.GetUser().GetFullName(true));
+                        }
+                    }
+                }
+                catch
+                { }
+
+                if (item != null)
+                {
+                    bw.Write("CpuUsage", item.CpuUsage.ToString());
+                    bw.Write("JobName", item.JobName.ToString());
+                    bw.Write("IsInJob", item.IsInJob.ToString());
+                    bw.Write("IsInSignificantJob", item.IsInSignificantJob.ToString());
+                    bw.Write("Integrity", item.Integrity);
+                    bw.Write("IntegrityLevel", item.IntegrityLevel);
+                    bw.Write("IsDotNet", item.IsDotNet);
+                    bw.Write("IsPacked", item.IsPacked);
+                }
+
+                bw.Close();
+            }
+
+            try
+            {
+                DumpProcessModules(processMo, pid);
+            }
+            catch
+            { }
+
+            try
+            {
+                DumpProcessHandles(processMo, pid, handles);
+            }
+            catch
+            { }
+        }
+
+        private static void DumpProcessModules(MemoryObject processMo, int pid)
+        {
+            if (pid <= 0)
+                return;
+
+            using (var modules = processMo.CreateChild("Modules"))
+            {
+                if (pid != 4)
+                {
+                    using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                    {
+                        phandle.EnumModules((module) =>
+                            {
+                                DumpProcessModule(modules, module);
+                                return true;
+                            });
+                        phandle.EnumMemory((memory) =>
+                            {
+                                if (memory.Type == MemoryType.Mapped)
+                                {
+                                    string fileName = phandle.GetMappedFileName(memory.BaseAddress);
+
+                                    fileName = FileUtils.GetFileName(fileName);
+
+                                    DumpProcessModule(modules, new ProcessModule(
+                                        memory.BaseAddress,
+                                        memory.RegionSize.ToInt32(),
+                                        IntPtr.Zero,
+                                        0,
+                                        Path.GetFileName(fileName),
+                                        fileName
+                                        ));
+                                }
+
+                                return true;
+                            });
+                    }
+                }
+                else
+                {
+                    foreach (var module in Windows.GetKernelModules())
+                        DumpProcessModule(modules, module);
+                }
+            }
+        }
+
+        private static void DumpProcessModule(MemoryObject modulesMo, ILoadedModule module)
+        {
+            using (var child = modulesMo.CreateChild(module.BaseAddress.ToString("x")))
+            {
+                BinaryWriter bw = new BinaryWriter(child.GetStream());
+
+                bw.Write("Name", module.BaseName);
+                bw.Write("FileName", module.FileName);
+                bw.Write("Size", module.Size);
+                bw.Write("BaseAddress", module.BaseAddress);
+                bw.Write("Flags", (int)module.Flags);
+
+                try
+                {
+                    var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(module.FileName);
+
+                    bw.Write("FileDescription", info.FileDescription);
+                    bw.Write("FileCompanyName", info.CompanyName);
+                    bw.Write("FileVersion", info.FileVersion);
+                }
+                catch
+                { }
+
+                bw.Close();
+            }
+        }
+
+        private static void DumpProcessHandles(MemoryObject processMo, int pid, object handlesIn)
+        {
+            using (var handlesChild = processMo.CreateChild("Handles"))
+            {
+                SystemHandleEntry[] handles = (SystemHandleEntry[])handlesIn;
+
+                foreach (var handle in handles)
+                {
+                    if (handle.ProcessId != pid)
+                        continue;
+
+                    using (var child = handlesChild.CreateChild(handle.Handle.ToString("x")))
+                    {
+                        BinaryWriter bw = new BinaryWriter(child.GetStream());
+
+                        bw.Write("Handle", handle.Handle);
+                        bw.Write("Flags", (int)handle.Flags);
+                        bw.Write("Object", (int)handle.Object);
+                        bw.Write("GrantedAccess", handle.GrantedAccess);
+
+                        try
+                        {
+                            var info = handle.GetHandleInfo();
+
+                            bw.Write("TypeName", info.TypeName);
+                            bw.Write("ObjectName", info.BestName);
+                        }
+                        catch
+                        { }
+
+                        bw.Close();
+                    }
+                }
+            }
+        }
+
+        public static void DumpServices(MemoryFileSystem mfs)
+        {
+            using (var services = mfs.RootObject.GetChild("Services"))
+            {
+                foreach (var service in Windows.GetServices().Values)
+                {
+                    using (var serviceChild = services.CreateChild(service.ServiceName))
+                    {
+                        BinaryWriter bw = new BinaryWriter(serviceChild.GetStream());
+
+                        bw.Write("Name", service.ServiceName);
+                        bw.Write("DisplayName", service.DisplayName);
+                        bw.Write("Type", (int)service.ServiceStatusProcess.ServiceType);
+                        bw.Write("State", (int)service.ServiceStatusProcess.CurrentState);
+                        bw.Write("ProcessId", service.ServiceStatusProcess.ProcessID);
+                        bw.Write("ControlsAccepted", (int)service.ServiceStatusProcess.ControlsAccepted);
+                        bw.Write("Flags", (int)service.ServiceStatusProcess.ServiceFlags);
+
+                        try
+                        {        
+                            QueryServiceConfig config;
+
+                            using (var shandle = new ServiceHandle(service.ServiceName, ServiceAccess.QueryConfig))
+                            {
+                                config = shandle.GetConfig();
+
+                                bw.Write("StartType", (int)config.StartType);
+                                bw.Write("ErrorControl", (int)config.ErrorControl);
+                                bw.Write("BinaryPath", FileUtils.GetFileName(config.BinaryPathName));
+                                bw.Write("Group", config.LoadOrderGroup);
+                                bw.Write("UserName", config.ServiceStartName);
+                            }
+                        }
+                        catch
+                        { }
+
+                        bw.Close();
+                    }
+                }
+            }
+        }
+    }
+}

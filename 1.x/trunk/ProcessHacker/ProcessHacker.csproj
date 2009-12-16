@@ -536,6 +536,7 @@
       <DependentUpon>NetInfoWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Program\Assistant.cs" />
+    <Compile Include="Program\Dump.cs" />
     <Compile Include="Program\Settings.cs" />
     <Compile Include="Program\Updater.cs" />
     <Compile Include="Forms\UpdaterDownloadWindow.cs">

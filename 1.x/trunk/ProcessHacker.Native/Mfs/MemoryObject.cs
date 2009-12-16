@@ -42,6 +42,7 @@ namespace ProcessHacker.Native.Mfs
             {
                 _fs.DereferenceObject(_cellId);
                 _fs.Dereference(disposing);
+                _obj = null;
             }
         }
 
@@ -178,6 +179,11 @@ namespace ProcessHacker.Native.Mfs
         public MemoryObject GetParent()
         {
             return new MemoryObject(_fs, _obj->Parent);
+        }
+
+        public MemoryDataStream GetStream()
+        {
+            return new MemoryDataStream(this);
         }
 
         public byte[] ReadData()

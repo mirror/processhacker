@@ -40,6 +40,14 @@ namespace ProcessHacker.Native.Mfs
             return this.Block == other.Block && this.Cell == other.Cell;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is MfsCellId)
+                return this.Equals((MfsCellId)obj);
+            else
+                return false;
+        }
+
         public override int GetHashCode()
         {
             return ((Block << 16) | Cell).GetHashCode();
@@ -79,7 +87,7 @@ namespace ProcessHacker.Native.Mfs
         public MfsCellId LastData;
 
         public int NameLength;
-        public fixed char Name[64];
+        public fixed char Name[32];
     }
 
     [StructLayout(LayoutKind.Sequential)]

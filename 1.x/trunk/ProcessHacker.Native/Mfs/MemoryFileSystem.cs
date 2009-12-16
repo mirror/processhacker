@@ -42,6 +42,10 @@ namespace ProcessHacker.Native.Mfs
         private Dictionary<IntPtr, ViewDescriptor> _views2 =
             new Dictionary<IntPtr, ViewDescriptor>();
 
+        public MemoryFileSystem(string fileName)
+            : this(fileName, false)
+        { }
+
         public MemoryFileSystem(string fileName, bool readOnly)
         {
             using (var fhandle = FileHandle.CreateWin32(
@@ -92,7 +96,7 @@ namespace ProcessHacker.Native.Mfs
                     throw new MfsInvalidFileSystemException();
 
                 _rootObject = (MfsObjectHeader*)((byte*)_header + MfsCellSize);
-                _rootObjectMo = new MemoryObject(this, _rootObjectCellId, false);
+                _rootObjectMo = new MemoryObject(this, _rootObjectCellId, true);
             }
         }
 
@@ -422,7 +426,7 @@ namespace ProcessHacker.Native.Mfs
                 throw new MfsInvalidOperationException();
 
             obj->NameLength = name.Length;
-            Utils.StrCpy(obj->Name, name, 128);
+            Utils.StrCpy(obj->Name, name, 32);
         }
     }
 }
