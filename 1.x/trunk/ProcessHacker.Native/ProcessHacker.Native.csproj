@@ -81,6 +81,7 @@
     <Compile Include="Mfs\MemoryObject.cs" />
     <Compile Include="Mfs\MemoryFileSystem.cs" />
     <Compile Include="Mfs\Internal.cs" />
+    <Compile Include="Mfs\MfsOpenMode.cs" />
     <Compile Include="NativeBitmap.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Debugging\DebugBuffer.cs" />

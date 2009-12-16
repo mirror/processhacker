@@ -49,9 +49,9 @@ namespace ProcessHacker
                 ));
         }
 
-        public static MemoryFileSystem BeginDump(string fileName)
+        public static MemoryFileSystem BeginDump(string fileName, MfsOpenMode mode)
         {
-            MemoryFileSystem mfs = new MemoryFileSystem(fileName);
+            MemoryFileSystem mfs = new MemoryFileSystem(fileName, mode);
 
             using (var sysinfo = mfs.RootObject.CreateChild("SystemInformation"))
             {
@@ -197,9 +197,9 @@ namespace ProcessHacker
                 if (item != null)
                 {
                     bw.Write("CpuUsage", item.CpuUsage.ToString());
-                    bw.Write("JobName", item.JobName.ToString());
-                    bw.Write("IsInJob", item.IsInJob.ToString());
-                    bw.Write("IsInSignificantJob", item.IsInSignificantJob.ToString());
+                    bw.Write("JobName", item.JobName);
+                    bw.Write("IsInJob", item.IsInJob);
+                    bw.Write("IsInSignificantJob", item.IsInSignificantJob);
                     bw.Write("Integrity", item.Integrity);
                     bw.Write("IntegrityLevel", item.IntegrityLevel);
                     bw.Write("IsDotNet", item.IsDotNet);

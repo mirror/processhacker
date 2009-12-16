@@ -47,19 +47,20 @@ namespace ProcessHacker
             sfd.Filter = "Process Hacker Dump Files (*.phi)|*.phi|Text Files (*.txt;*.log)|*.txt;*.log|" + 
                 "Comma-separated values (*.csv)|*.csv|All Files (*.*)|*.*";
 
-            if (Program.HackerWindow.SelectedPid == -1)
-            {
-                sfd.FileName = "Process List.txt";
-            }
-            else
-            {
-                string processName = Windows.GetProcessName(Program.HackerWindow.SelectedPid);
+            //if (Program.HackerWindow.SelectedPid == -1)
+            //{
+            //    sfd.FileName = "Process List.txt";
+            //}
+            //else
+            //{
+            //    string processName = Windows.GetProcessName(Program.HackerWindow.SelectedPid);
 
-                if (processName != null)
-                    sfd.FileName = processName + ".txt";
-                else
-                    sfd.FileName = "Process Info.txt";
-            }
+            //    if (processName != null)
+            //        sfd.FileName = processName + ".txt";
+            //    else
+            //        sfd.FileName = "Process Info.txt";
+            //}
+            sfd.FileName = "phdump-" + DateTime.Now.ToString("ddMMyy") + ".phi";
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
@@ -70,7 +71,7 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        var mfs = Dump.BeginDump(fi.FullName);
+                        var mfs = Dump.BeginDump(fi.FullName, ProcessHacker.Native.Mfs.MfsOpenMode.OverwriteIf);
 
                         Dump.DumpProcesses(mfs, Program.ProcessProvider);
                         Dump.DumpServices(mfs);

@@ -493,7 +493,16 @@ namespace ProcessHacker
 
         private void saveMenuItem_Click(object sender, EventArgs e)
         {
-            Save.SaveToFile();
+            this.Cursor = Cursors.WaitCursor;
+
+            try
+            {
+                Save.SaveToFile();
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
         }
 
         private void createServiceMenuItem_Click(object sender, EventArgs e)

@@ -45,16 +45,39 @@ namespace ProcessHacker.Native.Mfs
         private ViewDescriptor _cachedLastBlockView;
 
         public MemoryFileSystem(string fileName)
-            : this(fileName, false)
+            : this(fileName, MfsOpenMode.OpenIf, false)
         { }
 
-        public MemoryFileSystem(string fileName, bool readOnly)
+        public MemoryFileSystem(string fileName, MfsOpenMode mode)
+            : this(fileName, mode, false)
+        { }
+
+        public MemoryFileSystem(string fileName, MfsOpenMode mode, bool readOnly)
         {
+            FileCreationDispositionWin32 cdWin32;
+
+            if (readOnly && mode != MfsOpenMode.Open)
+                throw new ArgumentException("Invalid mode for read only access.");
+
+            switch (mode)
+            {
+                case MfsOpenMode.Open:
+                    cdWin32 = FileCreationDispositionWin32.OpenExisting;
+                    break;
+                default:
+                case MfsOpenMode.OpenIf:
+                    cdWin32 = FileCreationDispositionWin32.OpenAlways;
+                    break;
+                case MfsOpenMode.OverwriteIf:
+                    cdWin32 = FileCreationDispositionWin32.CreateAlways;
+                    break;
+            }
+
             using (var fhandle = FileHandle.CreateWin32(
                 fileName,
                 FileAccess.GenericRead | (!readOnly ? FileAccess.GenericWrite : 0),
                 FileShareMode.Read,
-                FileCreationDispositionWin32.OpenAlways
+                cdWin32
                 ))
             {
                 _readOnly = readOnly;
