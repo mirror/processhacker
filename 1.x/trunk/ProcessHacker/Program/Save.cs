@@ -43,8 +43,9 @@ namespace ProcessHacker
         {
             SaveFileDialog sfd = new SaveFileDialog();
 
-            //sfd.Filter = "Text Files (*.txt;*.log)|*.txt;*.log|Comma-separated values (*.csv)|*.csv|HTML Files (*.htm;*.html)|*.htm;*.html|All Files (*.*)|*.*";
-            sfd.Filter = "Text Files (*.txt;*.log)|*.txt;*.log|Comma-separated values (*.csv)|*.csv|All Files (*.*)|*.*";
+            // HTML Files (*.htm;*.html)|*.htm;*.html
+            sfd.Filter = "Process Hacker Dump Files (*.phi)|*.phi|Text Files (*.txt;*.log)|*.txt;*.log|" + 
+                "Comma-separated values (*.csv)|*.csv|All Files (*.*)|*.*";
 
             if (Program.HackerWindow.SelectedPid == -1)
             {
@@ -64,6 +65,25 @@ namespace ProcessHacker
             {
                 FileInfo fi = new FileInfo(sfd.FileName);
                 string ext = fi.Extension.ToLowerInvariant();
+
+                if (ext == ".phi")
+                {
+                    try
+                    {
+                        var mfs = Dump.BeginDump(fi.FullName);
+
+                        Dump.DumpProcesses(mfs, Program.ProcessProvider);
+                        Dump.DumpServices(mfs);
+
+                        mfs.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowException("Unable to create the dump file", ex);
+                    }
+
+                    return;
+                }
 
                 try
                 {

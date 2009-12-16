@@ -30,6 +30,8 @@ namespace ProcessHacker.Native
 {
     public static class NativeExtensions
     {
+        private static bool NphNotAvailable = false;
+
         public static ObjectBasicInformation GetBasicInfo(this SystemHandleEntry thisHandle)
         {
             using (ProcessHandle process = new ProcessHandle(thisHandle.ProcessId, ProcessAccess.DupHandle))
@@ -272,6 +274,11 @@ namespace ProcessHacker.Native
                     // 2: Hack.
                     int hackLevel = 1;
 
+                    // If we already tried to use NPH but it wasn't present, 
+                    // skip to level 2.
+                    if (NphNotAvailable)
+                        hackLevel = 2;
+
                     // Can't use NPH because XP had a bug where a thread hanging 
                     // on NtQueryObject couldn't be terminated.
                     if (OSVersion.IsBelowOrEqual(WindowsVersion.XP))
@@ -302,6 +309,7 @@ namespace ProcessHacker.Native
                         catch (DllNotFoundException)
                         {
                             hackLevel = 2;
+                            NphNotAvailable = true;
                         }
                     }
 

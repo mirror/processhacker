@@ -24,6 +24,11 @@ namespace ProcessHacker
             bw.Write(Encoding.Unicode.GetBytes(key + "=" + value.ToString("x") + "\0"));
         }
 
+        public static void Write(this BinaryWriter bw, string key, long value)
+        {
+            bw.Write(Encoding.Unicode.GetBytes(key + "=" + value.ToString("x") + "\0"));
+        }
+
         public static void Write(this BinaryWriter bw, string key, IntPtr value)
         {
             bw.Write(Encoding.Unicode.GetBytes(key + "=" + value.ToString("x") + "\0"));
@@ -179,7 +184,7 @@ namespace ProcessHacker
                 {
                     using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryLimitedInformation))
                     {
-                        using (var thandle = phandle.GetToken())
+                        using (var thandle = phandle.GetToken(TokenAccess.Query))
                         {
                             bw.Write("ElevationType", (int)thandle.GetElevationType());
                             bw.Write("UserName", thandle.GetUser().GetFullName(true));
@@ -199,6 +204,8 @@ namespace ProcessHacker
                     bw.Write("IntegrityLevel", item.IntegrityLevel);
                     bw.Write("IsDotNet", item.IsDotNet);
                     bw.Write("IsPacked", item.IsPacked);
+                    bw.Write("VerifyResult", (int)item.VerifyResult);
+                    bw.Write("VerifySignerName", item.VerifySignerName);
                 }
 
                 bw.Close();
@@ -207,6 +214,20 @@ namespace ProcessHacker
             try
             {
                 DumpProcessModules(processMo, pid);
+            }
+            catch
+            { }
+
+            try
+            {
+                DumpProcessToken(processMo, pid);
+            }
+            catch
+            { }
+
+            try
+            {
+                DumpProcessEnvironment(processMo, pid);
             }
             catch
             { }
@@ -289,6 +310,113 @@ namespace ProcessHacker
                 { }
 
                 bw.Close();
+            }
+        }
+
+        private static void DumpProcessToken(MemoryObject processMo, int pid)
+        {
+            using (var tokenMo = processMo.CreateChild("Token"))
+            {
+                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                {
+                    BinaryWriter bw = new BinaryWriter(tokenMo.GetStream());
+
+                    using (var thandle = phandle.GetToken(TokenAccess.Query))
+                    {
+                        Sid user = thandle.GetUser();
+
+                        bw.Write("UserName", user.GetFullName(true));
+                        bw.Write("UserStringSid", user.StringSid);
+                        bw.Write("OwnerName", thandle.GetOwner().GetFullName(true));
+                        bw.Write("PrimaryGroupName", thandle.GetPrimaryGroup().GetFullName(true));
+                        bw.Write("SessionId", thandle.GetSessionId());
+
+                        if (OSVersion.HasUac)
+                        {
+                            bw.Write("Elevated", thandle.IsElevated());
+                            bw.Write("VirtualizationAllowed", thandle.IsVirtualizationAllowed());
+                            bw.Write("VirtualizationEnabled", thandle.IsVirtualizationEnabled());
+                        }
+
+                        var statistics = thandle.GetStatistics();
+
+                        bw.Write("Type", (int)statistics.TokenType);
+                        bw.Write("ImpersonationLevel", (int)statistics.ImpersonationLevel);
+                        bw.Write("Luid", statistics.TokenId.QuadPart);
+                        bw.Write("AuthenticationLuid", statistics.AuthenticationId.QuadPart);
+                        bw.Write("MemoryUsed", statistics.DynamicCharged);
+                        bw.Write("MemoryAvailable", statistics.DynamicAvailable);
+
+                        var groups = thandle.GetGroups();
+
+                        using (var groupsMo = tokenMo.CreateChild("Groups"))
+                        {
+                            BinaryWriter bw2 = new BinaryWriter(groupsMo.GetStream());
+
+                            for (int i = 0; i < groups.Length; i++)
+                            {
+                                bw2.Write(
+                                    i.ToString("x"),
+                                    groups[i].GetFullName(true) + ";" + ((int)groups[i].Attributes).ToString("x")
+                                    );
+                            }
+
+                            bw2.Close();
+                        }
+
+                        var privileges = thandle.GetPrivileges();
+
+                        using (var privilegesMo = tokenMo.CreateChild("Privileges"))
+                        {
+                            BinaryWriter bw2 = new BinaryWriter(privilegesMo.GetStream());
+
+                            for (int i = 0; i < privileges.Length; i++)
+                            {
+                                bw2.Write(
+                                    i.ToString("x"),
+                                    privileges[i].Name + ";" +
+                                    privileges[i].DisplayName + ";" +
+                                    ((int)privileges[i].Attributes).ToString("x")
+                                    );
+                            }
+
+                            bw2.Close();
+                        }
+                    }
+
+                    try
+                    {
+                        using (var thandle = phandle.GetToken(TokenAccess.QuerySource))
+                        {
+                            var source = thandle.GetSource();
+
+                            bw.Write("SourceName", source.SourceName.TrimEnd('\0', '\r', '\n', ' '));
+                            bw.Write("SourceLuid", source.SourceIdentifier.QuadPart);
+                        }
+                    }
+                    catch
+                    { }
+                                                              
+                    bw.Close();
+                }
+            }
+        }
+
+        private static void DumpProcessEnvironment(MemoryObject processMo, int pid)
+        {
+            using (var envMo = processMo.CreateChild("Environment"))
+            {
+                using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                {
+                    BinaryWriter bw = new BinaryWriter(envMo.GetStream());
+
+                    foreach (var kvp in phandle.GetEnvironmentVariables())
+                    {
+                        bw.Write(kvp.Key, kvp.Value);
+                    }
+
+                    bw.Close();
+                }
             }
         }
 

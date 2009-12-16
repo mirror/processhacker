@@ -17,7 +17,7 @@ namespace ProcessHacker.Native.Mfs
 
         internal const int MfsBlockSize = 0x10000;
         internal const int MfsBlockMask = MfsBlockSize - 1;
-        internal const int MfsCellSize = 0x100;
+        internal const int MfsCellSize = 0x80;
         internal const int MfsCellCount = MfsBlockSize / MfsCellSize;
 
         internal static readonly int MfsDataCellDataMaxLength = MfsCellSize - MfsDataCell.DataOffset;
@@ -41,6 +41,8 @@ namespace ProcessHacker.Native.Mfs
             new Dictionary<ushort, ViewDescriptor>();
         private Dictionary<IntPtr, ViewDescriptor> _views2 =
             new Dictionary<IntPtr, ViewDescriptor>();
+
+        private ViewDescriptor _cachedLastBlockView;
 
         public MemoryFileSystem(string fileName)
             : this(fileName, false)
@@ -97,6 +99,14 @@ namespace ProcessHacker.Native.Mfs
 
                 _rootObject = (MfsObjectHeader*)((byte*)_header + MfsCellSize);
                 _rootObjectMo = new MemoryObject(this, _rootObjectCellId, true);
+
+                if (_header->NextFreeBlock != 1 && !readOnly)
+                {
+                    ushort lastBlockId = (ushort)(_header->NextFreeBlock - 1);
+
+                    this.ReferenceBlock(lastBlockId);
+                    _cachedLastBlockView = _views[lastBlockId];
+                }
             }
         }
 
@@ -184,8 +194,20 @@ namespace ProcessHacker.Native.Mfs
             {
                 // Block full. Allocate a new one.
                 this.DereferenceBlock(lastBlock);
+
+                // Fix up the cached reference.
+                if (_cachedLastBlockView != null)
+                {
+                    this.DereferenceBlock(_cachedLastBlockView.BlockId);
+                    _cachedLastBlockView = null;
+                }
+
                 lastBlock = this.AllocateBlock(out blockId);
                 header = (MfsBlockHeader*)lastBlock;
+
+                // Add a new cached reference.
+                this.ReferenceBlock(blockId);
+                _cachedLastBlockView = _views[blockId];
             }
 
             cellId = header->NextFreeCell++;
