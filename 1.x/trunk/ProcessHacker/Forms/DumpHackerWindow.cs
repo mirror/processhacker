@@ -19,6 +19,7 @@ namespace ProcessHacker
         private MemoryFileSystem _mfs;
         private string _phVersion;
         private string _osVersion;
+        private OSArch _architecture;
         private string _userName;
         private Dictionary<int, ProcessItem> _processes = new Dictionary<int, ProcessItem>();
         private Dictionary<string, ServiceItem> _services = new Dictionary<string, ServiceItem>();
@@ -93,11 +94,15 @@ namespace ProcessHacker
 
             _phVersion = dict["ProcessHackerVersion"];
             _osVersion = dict["OSVersion"];
+            _architecture = (OSArch)ParseInt32(dict["Architecture"]);
             _userName = dict["UserName"];
 
             treeProcesses.DumpUserName = _userName;
 
-            this.Text = "Process Hacker " + _phVersion + " [" + _userName + "] (" + _osVersion + ")";
+            this.Text = "Process Hacker " + _phVersion +
+                " [" + _userName + "] (" + _osVersion + ", " +
+                (_architecture == OSArch.I386 ? "32-bit" : "64-bit") +
+                ")";
         }
 
         private void LoadProcesses()

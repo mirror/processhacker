@@ -114,6 +114,7 @@ namespace ProcessHacker
 
                 bw.Write("ProcessHackerVersion", Application.ProductVersion);
                 bw.Write("OSVersion", Environment.OSVersion.VersionString);
+                bw.Write("Architecture", (int)OSVersion.Architecture);
                 bw.Write("UserName", Sid.CurrentUser.GetFullName(true));
 
                 bw.Close();
