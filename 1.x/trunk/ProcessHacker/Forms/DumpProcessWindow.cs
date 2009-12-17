@@ -119,6 +119,12 @@ namespace ProcessHacker
                 textFileCompany.Text = _item.VersionInfo.CompanyName;
                 textFileVersion.Text = _item.VersionInfo.FileVersion;
             }
+            else
+            {
+                textFileDescription.Text = _item.Name;
+                textFileCompany.Text = "";
+                textFileVersion.Text = "";
+            }
 
             textFileName.Text = _item.FileName;
 
@@ -202,6 +208,11 @@ namespace ProcessHacker
 
             var dict = Dump.GetDictionary(token);
 
+            _tokenProps.DumpInitialize();
+
+            if (!dict.ContainsKey("UserName"))
+                return;
+
             string elevated =
                 dict.ContainsKey("Elevated") ? 
                 Dump.ParseBool(dict["Elevated"]).ToString() :
@@ -212,13 +223,12 @@ namespace ProcessHacker
                 (Dump.ParseBool(dict["VirtualizationEnabled"]) ? "Enabled" : "Disabled") :
                 "Not Allowed") : "N/A";
 
-            _tokenProps.DumpInitialize();
             _tokenProps.DumpSetTextToken(
                 dict["UserName"],
                 dict["UserStringSid"],
                 dict["OwnerName"],
                 dict["PrimaryGroupName"],
-                dict["SessionId"],
+                Dump.ParseInt32(dict["SessionId"]).ToString(),
                 elevated,
                 virtualization
                 );
