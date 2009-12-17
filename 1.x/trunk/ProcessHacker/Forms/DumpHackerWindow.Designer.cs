@@ -37,8 +37,14 @@
             this.listServices = new ProcessHacker.Components.ServiceList();
             this.menuProcess = new System.Windows.Forms.ContextMenu();
             this.propertiesMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.goToProcessServiceMenuItem = new System.Windows.Forms.MenuItem();
+            this.propertiesServiceMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyServiceMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuService = new System.Windows.Forms.ContextMenu();
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.tabControl.SuspendLayout();
             this.tabProcesses.SuspendLayout();
             this.tabServices.SuspendLayout();
@@ -108,6 +114,7 @@
             // 
             this.menuProcess.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.propertiesMenuItem,
+            this.menuItem2,
             this.copyMenuItem});
             this.menuProcess.Popup += new System.EventHandler(this.menuProcess_Popup);
             // 
@@ -119,16 +126,56 @@
             this.propertiesMenuItem.Text = "Properties";
             this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
             // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 1;
+            this.menuItem2.Text = "-";
+            // 
             // copyMenuItem
             // 
             this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyMenuItem.Index = 1;
+            this.copyMenuItem.Index = 2;
             this.copyMenuItem.Text = "Copy";
             // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
             this.vistaMenu.DelaySetImageCalls = false;
+            // 
+            // goToProcessServiceMenuItem
+            // 
+            this.vistaMenu.SetImage(this.goToProcessServiceMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
+            this.goToProcessServiceMenuItem.Index = 0;
+            this.goToProcessServiceMenuItem.Text = "Go to Process";
+            this.goToProcessServiceMenuItem.Click += new System.EventHandler(this.goToProcessServiceMenuItem_Click);
+            // 
+            // propertiesServiceMenuItem
+            // 
+            this.propertiesServiceMenuItem.DefaultItem = true;
+            this.vistaMenu.SetImage(this.propertiesServiceMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
+            this.propertiesServiceMenuItem.Index = 1;
+            this.propertiesServiceMenuItem.Text = "Properties";
+            this.propertiesServiceMenuItem.Click += new System.EventHandler(this.propertiesServiceMenuItem_Click);
+            // 
+            // copyServiceMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyServiceMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyServiceMenuItem.Index = 3;
+            this.copyServiceMenuItem.Text = "Copy";
+            // 
+            // menuService
+            // 
+            this.menuService.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.goToProcessServiceMenuItem,
+            this.propertiesServiceMenuItem,
+            this.menuItem1,
+            this.copyServiceMenuItem});
+            this.menuService.Popup += new System.EventHandler(this.menuService_Popup);
+            // 
+            // menuItem1
+            // 
+            this.menuItem1.Index = 2;
+            this.menuItem1.Text = "-";
             // 
             // DumpHackerWindow
             // 
@@ -160,5 +207,11 @@
         private System.Windows.Forms.MenuItem propertiesMenuItem;
         private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MenuItem copyMenuItem;
+        private System.Windows.Forms.ContextMenu menuService;
+        private System.Windows.Forms.MenuItem goToProcessServiceMenuItem;
+        private System.Windows.Forms.MenuItem propertiesServiceMenuItem;
+        private System.Windows.Forms.MenuItem menuItem2;
+        private System.Windows.Forms.MenuItem menuItem1;
+        private System.Windows.Forms.MenuItem copyServiceMenuItem;
     }
 }

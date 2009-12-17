@@ -679,6 +679,23 @@ namespace ProcessHacker
                                 bw.Write("Group", config.LoadOrderGroup);
                                 bw.Write("UserName", config.ServiceStartName);
                             }
+
+                            if (config.ServiceType == ServiceType.Win32ShareProcess)
+                            {
+                                try
+                                {
+                                    using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+                                        "SYSTEM\\CurrentControlSet\\Services\\" + service.ServiceName + "\\Parameters"))
+                                    {
+                                        bw.Write(
+                                            "ServiceDll",
+                                            Environment.ExpandEnvironmentVariables((string)key.GetValue("ServiceDll"))
+                                            );
+                                    }
+                                }
+                                catch
+                                { }
+                            }
                         }
                         catch
                         { }

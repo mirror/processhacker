@@ -52,6 +52,9 @@ namespace ProcessHacker
             _mfs = new MemoryFileSystem(fileName, MfsOpenMode.Open, true);
 
             ColumnSettings.LoadSettings(Settings.Instance.ProcessTreeColumns, treeProcesses.Tree);
+            ColumnSettings.LoadSettings(Settings.Instance.ServiceListViewColumns, listServices.List);
+
+            listServices.DoubleClick += new EventHandler(listServices_DoubleClick);
         }
 
         private void DumpHackerWindow_Load(object sender, EventArgs e)
@@ -63,6 +66,9 @@ namespace ProcessHacker
 
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, treeProcesses.Tree);
             treeProcesses.Tree.ContextMenu = menuProcess;
+
+            GenericViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
+            listServices.List.ContextMenu = menuService;
 
             this.LoadSystemInformation();
             this.LoadProcesses();
@@ -280,6 +286,9 @@ namespace ProcessHacker
                 item.Config.ServiceStartName = dict["UserName"];
                 item.Config.ServiceType = item.Status.ServiceStatusProcess.ServiceType;
                 item.Config.StartType = (ServiceStartType)Dump.ParseInt32(dict["StartType"]);
+
+                if (dict.ContainsKey("ServiceDll"))
+                    item.ServiceDll = dict["ServiceDll"];
             }
 
             _services.Add(item.Status.ServiceName, item);
@@ -303,6 +312,35 @@ namespace ProcessHacker
                 );
 
             dpw.Show();
+        }
+
+        public void ShowProperties(IWin32Window owner, ServiceItem item)
+        {
+            DumpServiceWindow dsw = new DumpServiceWindow(item);
+
+            dsw.ShowDialog(owner);
+        }
+
+        private void SelectProcess(int pid)
+        {
+            foreach (var node in treeProcesses.Tree.AllNodes)
+                node.IsSelected = false;
+
+            try
+            {
+                var node = treeProcesses.FindTreeNode(pid);
+
+                node.EnsureVisible();
+                node.IsSelected = true;
+                treeProcesses.Tree.FullUpdate();
+                treeProcesses.Tree.Invalidate();
+
+                tabControl.SelectedTab = tabProcesses;
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         private void treeProcesses_NodeMouseDoubleClick(object sender, Aga.Controls.Tree.TreeNodeAdvMouseEventArgs e)
@@ -334,6 +372,42 @@ namespace ProcessHacker
             var pNode = treeProcesses.SelectedNodes[0];
 
             this.ShowProperties(pNode.ProcessItem);
+        }
+
+        private void listServices_DoubleClick(object sender, EventArgs e)
+        {
+            if (listServices.SelectedItems.Count != 1)
+                return;
+
+            propertiesServiceMenuItem_Click(sender, e);
+        }
+
+        private void menuService_Popup(object sender, EventArgs e)
+        {
+            if (listServices.SelectedItems.Count == 0)
+            {
+                menuService.DisableAll();
+            }
+            else if (listServices.SelectedItems.Count == 1)
+            {
+                menuService.EnableAll();
+            }
+            else
+            {
+                menuService.EnableAll();
+                goToProcessServiceMenuItem.Enabled = false;
+                propertiesServiceMenuItem.Enabled = false;
+            }
+        }
+
+        private void goToProcessServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            this.SelectProcess(_services[listServices.SelectedItems[0].Text].Status.ServiceStatusProcess.ProcessID);
+        }
+
+        private void propertiesServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            this.ShowProperties(this, _services[listServices.SelectedItems[0].Text]);
         }
     }
 }

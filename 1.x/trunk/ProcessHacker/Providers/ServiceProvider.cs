@@ -39,6 +39,7 @@ namespace ProcessHacker
         public int RunId;
         public EnumServiceStatusProcess Status;
         public QueryServiceConfig Config;
+        public string ServiceDll;
     }
 
     public class ServiceProvider : Provider<string, ServiceItem>
