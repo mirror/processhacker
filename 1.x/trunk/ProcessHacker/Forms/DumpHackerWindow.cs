@@ -85,6 +85,11 @@ namespace ProcessHacker
             }
         }
 
+        public OSArch Architecture
+        {
+            get { return _architecture; }
+        }
+
         public Dictionary<int, ProcessItem> Processes
         {
             get { return _processes; }

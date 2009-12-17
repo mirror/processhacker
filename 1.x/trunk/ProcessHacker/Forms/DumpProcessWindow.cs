@@ -169,7 +169,7 @@ namespace ProcessHacker
                         textDEP.Text += ", DEP-ATL thunk emulation disabled";
                 }
 
-                if (OSVersion.Architecture == OSArch.Amd64)
+                if (_hw.Architecture == OSArch.Amd64)
                 {                          
                     labelProcessType.Visible = true;
                     labelProcessTypeValue.Visible = true;
