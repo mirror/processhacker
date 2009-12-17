@@ -17,6 +17,12 @@ namespace ProcessHacker
     public partial class DumpHackerWindow : Form
     {
         private MemoryFileSystem _mfs;
+        private string _phVersion;
+        private string _osVersion;
+        private string _userName;
+        private Dictionary<int, ProcessItem> _processes = new Dictionary<int, ProcessItem>();
+        private Dictionary<string, ServiceItem> _services = new Dictionary<string, ServiceItem>();
+        private Dictionary<int, List<string>> _processServices = new Dictionary<int, List<string>>();
 
         public DumpHackerWindow(string fileName)
         {
@@ -29,10 +35,15 @@ namespace ProcessHacker
 
         private void DumpHackerWindow_Load(object sender, EventArgs e)
         {
+            this.LoadSystemInformation();
             this.LoadProcesses();
             this.LoadServices();
 
             listServices.UpdateItems();
+
+            treeProcesses.DumpMode = true;
+            treeProcesses.DumpProcessServices = _processServices;
+            treeProcesses.DumpServices = _services;
         }
 
         private void DumpHackerWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -60,6 +71,28 @@ namespace ProcessHacker
             return DateTime.Parse(str, System.Globalization.CultureInfo.InvariantCulture);
         }
 
+        private void LoadSystemInformation()
+        {
+            MemoryObject sysInfoMo;
+
+            sysInfoMo = _mfs.RootObject.GetChild("SystemInformation");
+
+            if (sysInfoMo == null)
+            {
+                PhUtils.ShowWarning("The dump file does not contain system information. This most likely " +
+                    "means the file is corrupt.");
+                return;
+            }
+
+            var dict = Dump.GetDictionary(sysInfoMo);
+
+            _phVersion = dict["ProcessHackerVersion"];
+            _osVersion = dict["OSVersion"];
+            _userName = dict["UserName"];
+
+            this.Text = "Process Hacker " + _phVersion + " [" + _userName + "] (" + _osVersion + ")";
+        }
+
         private void LoadProcesses()
         {
             MemoryObject processesMo;
@@ -70,6 +103,7 @@ namespace ProcessHacker
             {
                 PhUtils.ShowWarning("The dump file does not contain process information. This most likely " +
                     "means the file is corrupt.");
+                return;
             }
 
             processesMo.EnumChildren((childMo) =>
@@ -161,6 +195,7 @@ namespace ProcessHacker
             using (var ioCounters = mo.GetChild("IoCounters"))
                 pitem.Process.IoCounters = Dump.GetStruct<IoCounters>(ioCounters);
 
+            _processes.Add(pitem.Pid, pitem);
             treeProcesses.AddItem(pitem);
         }
 
@@ -174,6 +209,7 @@ namespace ProcessHacker
             {
                 PhUtils.ShowWarning("The dump file does not contain service information. This most likely " +
                     "means the file is corrupt.");
+                return;
             }
 
             servicesMo.EnumChildren((childMo) =>
@@ -211,7 +247,16 @@ namespace ProcessHacker
                 item.Config.StartType = (ServiceStartType)ParseInt32(dict["StartType"]);
             }
 
+            _services.Add(item.Status.ServiceName, item);
             listServices.AddItem(item);
+
+            if (item.Status.ServiceStatusProcess.ProcessID != 0)
+            {
+                if (!_processServices.ContainsKey(item.Status.ServiceStatusProcess.ProcessID))
+                    _processServices.Add(item.Status.ServiceStatusProcess.ProcessID, new List<string>());
+
+                _processServices[item.Status.ServiceStatusProcess.ProcessID].Add(item.Status.ServiceName);
+            }
         }
     }
 }

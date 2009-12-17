@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Aga.Controls.Tree;
 using ProcessHacker.Common;
@@ -135,15 +136,29 @@ namespace ProcessHacker
 
                 try
                 {
-                    if (Program.HackerWindow.ProcessServices.ContainsKey(pNode.Pid))
+                    IDictionary<int, List<string>> processServices;
+                    IDictionary<string, ServiceItem> services;
+
+                    if (!_tree.DumpMode)
                     {
-                        foreach (string service in Program.HackerWindow.ProcessServices[pNode.Pid])
+                        processServices = Program.HackerWindow.ProcessServices;
+                        services = Program.ServiceProvider.Dictionary;
+                    }
+                    else
+                    {
+                        processServices = _tree.DumpProcessServices;
+                        services = _tree.DumpServices;
+                    }
+
+                    if (processServices.ContainsKey(pNode.Pid))
+                    {
+                        foreach (string service in processServices[pNode.Pid])
                         {
-                            if (Program.ServiceProvider.Dictionary.ContainsKey(service))
+                            if (services.ContainsKey(service))
                             {
-                                if (Program.ServiceProvider.Dictionary[service].Status.DisplayName != "")
+                                if (services[service].Status.DisplayName != "")
                                     servicesText += "    " + service + " (" +
-                                    Program.ServiceProvider.Dictionary[service].Status.DisplayName + ")\n";
+                                    services[service].Status.DisplayName + ")\n";
                                 else
                                     servicesText += "    " + service + "\n";
                             }

@@ -2,11 +2,13 @@ Process Hacker
 
 1.9
  * NEW/IMPROVED:
+   * Dump/view process information
    * The "-elevate" command line option propagates other arguments
  * FIXED:
    * #2911938 - "The given key was not present in the dictionary."
    * #2911957 - "The given key was not present in the dictionary."
    * #2912500 - "Failed to compare two elements in the array."
+   * Buggy save as text file behaviour on Windows XP
 
 1.8
  * NEW/IMPROVED:

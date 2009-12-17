@@ -265,7 +265,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryLimitedInformation))
+                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                 {
                     var fileName = phandle.GetImageFileName();
 
@@ -301,7 +301,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryLimitedInformation | ProcessAccess.VmRead))
+                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                 {
                     var commandLine = phandle.GetCommandLine();
                     var currentDirectory = phandle.GetPebString(PebOffset.CurrentDirectoryPath);
@@ -321,7 +321,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryLimitedInformation | ProcessAccess.VmRead))
+                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                 {
                     foreach (var module in phandle.GetModules())
                     {
@@ -357,7 +357,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryLimitedInformation))
+                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                 using (var thandle = phandle.GetToken(TokenAccess.Query))
                 {
                     sb.AppendLine("User: " + thandle.GetUser().GetFullName(true));

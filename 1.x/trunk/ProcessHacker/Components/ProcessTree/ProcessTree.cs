@@ -45,6 +45,7 @@ namespace ProcessHacker
         public event EventHandler<TreeNodeAdvMouseEventArgs> NodeMouseDoubleClick;
         private object _listLock = new object();
         private bool _draw = true;
+        private bool _dumpMode = false;
 
         public ProcessTree()
         {
@@ -223,6 +224,30 @@ namespace ProcessHacker
             get { return _tooltipProvider; }
         }
 
+        public bool DumpMode
+        {
+            get { return _dumpMode; }
+            set { _dumpMode = value; }
+        }
+
+        public IDictionary<int, List<string>> DumpProcessServices
+        {
+            get;
+            set;
+        }
+
+        public IDictionary<string, ServiceItem> DumpServices
+        {
+            get;
+            set;
+        }
+
+        public string DumpUserName
+        {
+            get;
+            set;
+        }
+
         #endregion
 
         private void provider_Updated()
@@ -297,7 +322,9 @@ namespace ProcessHacker
                 return Settings.Instance.ColorServiceProcesses;
             else if (Settings.Instance.UseColorSystemProcesses && p.Username == "NT AUTHORITY\\SYSTEM")
                 return Settings.Instance.ColorSystemProcesses;
-            else if (Settings.Instance.UseColorOwnProcesses && p.Username == Program.CurrentUsername)
+            else if (_dumpMode && Settings.Instance.UseColorOwnProcesses && p.Username == DumpUserName)
+                return Settings.Instance.ColorOwnProcesses;
+            else if (!_dumpMode && Settings.Instance.UseColorOwnProcesses && p.Username == Program.CurrentUsername)
                 return Settings.Instance.ColorOwnProcesses;
             else
                 return SystemColors.Window;

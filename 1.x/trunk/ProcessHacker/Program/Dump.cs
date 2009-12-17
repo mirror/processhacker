@@ -114,6 +114,7 @@ namespace ProcessHacker
 
                 bw.Write("ProcessHackerVersion", Application.ProductVersion);
                 bw.Write("OSVersion", Environment.OSVersion.VersionString);
+                bw.Write("UserName", Sid.CurrentUser.GetFullName(true));
 
                 bw.Close();
             }
@@ -277,7 +278,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryLimitedInformation))
+                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                     {
                         using (var thandle = phandle.GetToken(TokenAccess.Query))
                         {
@@ -349,7 +350,7 @@ namespace ProcessHacker
             {
                 if (pid != 4)
                 {
-                    using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                     {
                         phandle.EnumModules((module) =>
                             {
@@ -506,7 +507,7 @@ namespace ProcessHacker
         {
             using (var envMo = processMo.CreateChild("Environment"))
             {
-                using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                 {
                     BinaryWriter bw = new BinaryWriter(envMo.GetStream());
 
