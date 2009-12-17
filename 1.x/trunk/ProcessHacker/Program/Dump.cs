@@ -276,18 +276,16 @@ namespace ProcessHacker
                 catch
                 { }
 
+                bool userNameWritten = false;
+
                 try
                 {
                     using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                     {
                         using (var thandle = phandle.GetToken(TokenAccess.Query))
                         {
-                            var userName = thandle.GetUser().GetFullName(true);
-
-                            if (userName != null)
-                                bw.Write("UserName", userName);
-                            else if (pid <= 4)
-                                bw.Write("UserName", "NT AUTHORITY\\SYSTEM");
+                            bw.Write("UserName", thandle.GetUser().GetFullName(true));
+                            userNameWritten = true;
 
                             if (OSVersion.HasUac)
                                 bw.Write("ElevationType", (int)thandle.GetElevationType());
@@ -296,6 +294,9 @@ namespace ProcessHacker
                 }
                 catch
                 { }
+
+                if (!userNameWritten && pid <= 4)
+                    bw.Write("UserName", "NT AUTHORITY\\SYSTEM");
 
                 if (item != null)
                 {
