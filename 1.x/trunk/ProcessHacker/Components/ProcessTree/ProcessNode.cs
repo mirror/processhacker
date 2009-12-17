@@ -350,27 +350,9 @@ namespace ProcessHacker
             }
         }
 
-        private string GetBestUsername(string username, bool includeDomain)
-        {
-            if (username == null)
-                return "";
-
-            if (!username.Contains("\\"))
-                return username;
-
-            string[] split = username.Split(new char[] { '\\' }, 2);
-            string domain = split[0];
-            string user = split[1];
-
-            if (includeDomain)
-                return domain + "\\" + user;
-            else
-                return user;
-        }
-
         public string Username
         {
-            get { return this.GetBestUsername(_pitem.Username, Settings.Instance.ShowAccountDomains); }
+            get { return PhUtils.GetBestUserName(_pitem.Username, Settings.Instance.ShowAccountDomains); }
         }
 
         public string SessionId

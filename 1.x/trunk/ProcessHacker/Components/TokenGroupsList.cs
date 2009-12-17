@@ -36,13 +36,16 @@ namespace ProcessHacker.Components
         {
             InitializeComponent();
 
-            for (int i = 0; i < groups.Length; i++)
+            if (groups != null)
             {
-                ListViewItem item = listGroups.Items.Add(new ListViewItem());
+                for (int i = 0; i < groups.Length; i++)
+                {
+                    ListViewItem item = listGroups.Items.Add(new ListViewItem());
 
-                item.Text = groups[i].GetFullName(Settings.Instance.ShowAccountDomains);
-                item.BackColor = GetAttributeColor(groups[i].Attributes);
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, GetAttributeString(groups[i].Attributes)));
+                    item.Text = groups[i].GetFullName(Settings.Instance.ShowAccountDomains);
+                    item.BackColor = GetAttributeColor(groups[i].Attributes);
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, GetAttributeString(groups[i].Attributes)));
+                }
             }
 
             listGroups.ListViewItemSorter = new SortedListViewComparer(listGroups);
@@ -55,6 +58,15 @@ namespace ProcessHacker.Components
         public void SaveSettings()
         {
             Settings.Instance.GroupListColumns = ColumnSettings.SaveSettings(listGroups);
+        }
+
+        public void DumpAddGroup(string name, SidAttributes attributes)
+        {
+            ListViewItem item = listGroups.Items.Add(new ListViewItem());
+
+            item.Text = PhUtils.GetBestUserName(name, Settings.Instance.ShowAccountDomains);
+            item.BackColor = GetAttributeColor(attributes);
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, GetAttributeString(attributes)));
         }
 
         private string GetAttributeString(SidAttributes Attributes)

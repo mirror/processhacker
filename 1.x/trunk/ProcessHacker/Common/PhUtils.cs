@@ -151,6 +151,24 @@ namespace ProcessHacker.Common
             }
         }
 
+        public static string GetBestUserName(string userName, bool includeDomain)
+        {
+            if (userName == null)
+                return "";
+
+            if (!userName.Contains("\\"))
+                return userName;
+
+            string[] split = userName.Split(new char[] { '\\' }, 2);
+            string domain = split[0];
+            string user = split[1];
+
+            if (includeDomain)
+                return domain + "\\" + user;
+            else
+                return user;
+        }
+
         /// <summary>
         /// Gets an appropriate foreground color to be displayed on top of a 
         /// specified background color.

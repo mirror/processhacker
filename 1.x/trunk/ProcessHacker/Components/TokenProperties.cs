@@ -43,12 +43,13 @@ namespace ProcessHacker.Components
         {
             InitializeComponent();
 
-            _object = obj;
-
             listPrivileges.SetDoubleBuffered(true);
             listPrivileges.ListViewItemSorter = new SortedListViewComparer(listPrivileges);
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listPrivileges, null);
             listPrivileges.ContextMenu = menuPrivileges;
+
+            if (obj == null)
+                return;
 
             _object = obj;
 
@@ -191,13 +192,7 @@ namespace ProcessHacker.Components
 
                         for (int i = 0; i < privileges.Length; i++)
                         {
-                            var privilege = privileges[i];
-
-                            ListViewItem item = listPrivileges.Items.Add(privilege.Name.ToLowerInvariant(), privilege.Name, 0);
-
-                            item.BackColor = GetAttributeColor(privilege.Attributes);
-                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, GetAttributeString(privilege.Attributes)));
-                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, privilege.DisplayName));
+                            this.AddPrivilege(privileges[i]);
                         }
                     }
                     catch (Exception ex)
@@ -238,6 +233,92 @@ namespace ProcessHacker.Components
         public IWithToken Object
         {
             get { return _object; }
+        }
+
+        private void AddPrivilege(Privilege privilege)
+        {
+            ListViewItem item = listPrivileges.Items.Add(privilege.Name.ToLowerInvariant(), privilege.Name, 0);
+
+            item.BackColor = GetAttributeColor(privilege.Attributes);
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, GetAttributeString(privilege.Attributes)));
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, privilege.DisplayName));
+        }
+
+        public void DumpInitialize()
+        {
+            buttonLinkedToken.Visible = false;
+            buttonPermissions.Visible = false;
+            listPrivileges.ContextMenu = listPrivileges.GetCopyMenu();
+
+            _groups = new TokenGroupsList(null);
+            _groups.Dock = DockStyle.Fill;
+            tabGroups.Controls.Add(_groups);
+        }
+
+        public void DumpSetTextToken(
+            string userName,
+            string userStringSid,
+            string ownerName,
+            string primaryGroupName,
+            string sessionId,
+            string elevated,
+            string virtualization
+            )
+        {
+            textUser.Text = userName;
+            textUserSID.Text = userStringSid;
+            textOwner.Text = ownerName;
+            textPrimaryGroup.Text = primaryGroupName;
+            textSessionID.Text = sessionId;
+            textElevated.Text = elevated;
+            textVirtualized.Text = virtualization;
+        }
+
+        public void DumpSetTextSource(
+            string name,
+            string luid
+            )
+        {
+            textSourceName.Text = name;
+            textSourceLUID.Text = luid;
+        }
+
+        public void DumpSetTextAdvanced(
+            string type,
+            string impersonationLevel,
+            string tokenLuid,
+            string authenticationLuid,
+            string memoryUsed,
+            string memoryAvailable
+            )
+        {
+            textTokenType.Text = type;
+            textImpersonationLevel.Text = impersonationLevel;
+            textTokenId.Text = tokenLuid;
+            textAuthenticationId.Text = authenticationLuid;
+            textMemoryUsed.Text = memoryUsed;
+            textMemoryAvailable.Text = memoryAvailable;
+        }
+
+        public void DumpAddGroup(
+            string name,
+            SidAttributes attributes
+            )
+        {
+            _groups.DumpAddGroup(name, attributes);
+        }
+
+        public void DumpAddPrivilege(
+            string name,
+            string displayName,
+            SePrivilegeAttributes attributes
+            )
+        {
+            ListViewItem item = listPrivileges.Items.Add(name.ToLowerInvariant(), name, 0);
+
+            item.BackColor = GetAttributeColor(attributes);
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, GetAttributeString(attributes)));
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, displayName));
         }
 
         public void SaveSettings()

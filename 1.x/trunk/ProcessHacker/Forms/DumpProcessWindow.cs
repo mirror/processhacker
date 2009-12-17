@@ -23,6 +23,7 @@
 using System;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Mfs; 
@@ -36,6 +37,8 @@ namespace ProcessHacker
         private DumpHackerWindow _hw;
         private ProcessItem _item;
         private MemoryObject _processMo;
+
+        private TokenProperties _tokenProps;
 
         public DumpProcessWindow(DumpHackerWindow hw, ProcessItem item, MemoryObject processMo)
         {
@@ -53,6 +56,11 @@ namespace ProcessHacker
         private void DumpProcessWindow_Load(object sender, EventArgs e)
         {
             this.LoadProperties();
+
+            _tokenProps = new TokenProperties(null);
+            _tokenProps.Dock = DockStyle.Fill;
+            tabToken.Controls.Add(_tokenProps);
+            this.LoadToken();
 
             // Modules
             if (_item.FileName != null)
@@ -83,6 +91,8 @@ namespace ProcessHacker
 
         private void DumpProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            _tokenProps.SaveSettings();
+
             if (pictureIcon.Image != null)
                 pictureIcon.Image.Dispose();
 
@@ -183,6 +193,84 @@ namespace ProcessHacker
             }
         }
 
+        private void LoadToken()
+        {
+            var token = _processMo.GetChild("Token");
+
+            if (token == null)
+                return;
+
+            var dict = Dump.GetDictionary(token);
+
+            string elevated =
+                dict.ContainsKey("Elevated") ? 
+                Dump.ParseBool(dict["Elevated"]).ToString() :
+                "N/A";
+            string virtualization =
+                dict.ContainsKey("VirtualizationAllowed") ?
+                (Dump.ParseBool(dict["VirtualizationAllowed"]) ?
+                (Dump.ParseBool(dict["VirtualizationEnabled"]) ? "Enabled" : "Disabled") :
+                "Not Allowed") : "N/A";
+
+            _tokenProps.DumpInitialize();
+            _tokenProps.DumpSetTextToken(
+                dict["UserName"],
+                dict["UserStringSid"],
+                dict["OwnerName"],
+                dict["PrimaryGroupName"],
+                dict["SessionId"],
+                elevated,
+                virtualization
+                );
+
+            if (dict.ContainsKey("SourceName"))
+            {
+                _tokenProps.DumpSetTextSource(
+                    dict["SourceName"],
+                    "0x" + Dump.ParseInt64(dict["SourceLuid"]).ToString("x")
+                    );
+            }
+
+            _tokenProps.DumpSetTextAdvanced(
+                ((TokenType)Dump.ParseInt32(dict["Type"])).ToString(),
+                ((SecurityImpersonationLevel)Dump.ParseInt32(dict["ImpersonationLevel"])).ToString(),
+                "0x" + Dump.ParseInt64(dict["Luid"]).ToString("x"),
+                "0x" + Dump.ParseInt64(dict["AuthenticationLuid"]).ToString("x"),
+                Utils.FormatSize(Dump.ParseInt32(dict["MemoryUsed"])),
+                Utils.FormatSize(Dump.ParseInt32(dict["MemoryAvailable"]))
+                );
+
+            using (var groups = token.GetChild("Groups"))
+            {
+                var groupsList = Dump.GetList(groups);
+
+                foreach (var group in groupsList)
+                {
+                    var split = group.Split(';');
+
+                    _tokenProps.DumpAddGroup(split[0], (SidAttributes)Dump.ParseInt32(split[1]));
+                }
+            }
+
+            using (var privileges = token.GetChild("Privileges"))
+            {
+                var privilegesList = Dump.GetList(privileges);
+
+                foreach (var privilege in privilegesList)
+                {
+                    var split = privilege.Split(';');
+
+                    _tokenProps.DumpAddPrivilege(
+                        split[0],
+                        split[1],
+                        (SePrivilegeAttributes)Dump.ParseInt32(split[2])
+                        );
+                }
+            }
+
+            token.Dispose();
+        }
+
         private void LoadModules()
         {
             MemoryObject modulesMo;
@@ -226,6 +314,10 @@ namespace ProcessHacker
         private void LoadEnvironment()
         {
             var env = _processMo.GetChild("Environment");
+
+            if (env == null)
+                return;
+
             var dict = Dump.GetDictionary(env);
 
             foreach (var kvp in dict)

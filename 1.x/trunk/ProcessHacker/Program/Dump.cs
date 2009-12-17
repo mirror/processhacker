@@ -72,6 +72,11 @@ namespace ProcessHacker
                 ));
         }
 
+        public static void WriteListEntry(this BinaryWriter bw, string value)
+        {
+            bw.Write(Encoding.Unicode.GetBytes(value + "\0"));
+        }
+
         public static void AppendStruct<T>(MemoryObject mo, T s)
             where T : struct
         {
@@ -123,6 +128,16 @@ namespace ProcessHacker
             {
                 return Icon.FromHandle(b.GetHicon());
             }
+        }
+
+        public static string[] GetList(MemoryObject mo)
+        {
+            string str = Encoding.Unicode.GetString(mo.ReadData());
+
+            if (str.Length > 0)
+                str = str.Remove(str.Length - 1, 1);
+
+            return str.Split('\0');
         }
 
         public static T GetStruct<T>(MemoryObject mo)
@@ -533,8 +548,7 @@ namespace ProcessHacker
 
                             for (int i = 0; i < groups.Length; i++)
                             {
-                                bw2.Write(
-                                    i.ToString("x"),
+                                bw2.WriteListEntry(
                                     groups[i].GetFullName(true) + ";" + ((int)groups[i].Attributes).ToString("x")
                                     );
                             }
@@ -550,8 +564,7 @@ namespace ProcessHacker
 
                             for (int i = 0; i < privileges.Length; i++)
                             {
-                                bw2.Write(
-                                    i.ToString("x"),
+                                bw2.WriteListEntry(
                                     privileges[i].Name + ";" +
                                     privileges[i].DisplayName + ";" +
                                     ((int)privileges[i].Attributes).ToString("x")
