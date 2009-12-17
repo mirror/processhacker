@@ -28,26 +28,38 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DumpHackerWindow));
             this.treeProcesses = new ProcessHacker.ProcessTree();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcesses = new System.Windows.Forms.TabPage();
             this.tabServices = new System.Windows.Forms.TabPage();
             this.listServices = new ProcessHacker.Components.ServiceList();
+            this.menuProcess = new System.Windows.Forms.ContextMenu();
+            this.propertiesMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyMenuItem = new System.Windows.Forms.MenuItem();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.tabControl.SuspendLayout();
             this.tabProcesses.SuspendLayout();
             this.tabServices.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // treeProcesses
             // 
             this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeProcesses.Draw = true;
+            this.treeProcesses.DumpMode = false;
+            this.treeProcesses.DumpProcesses = null;
+            this.treeProcesses.DumpProcessServices = null;
+            this.treeProcesses.DumpServices = null;
+            this.treeProcesses.DumpUserName = null;
             this.treeProcesses.Location = new System.Drawing.Point(3, 3);
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.Provider = null;
             this.treeProcesses.Size = new System.Drawing.Size(889, 493);
             this.treeProcesses.TabIndex = 0;
+            this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
             // 
             // tabControl
             // 
@@ -92,6 +104,32 @@
             this.listServices.Size = new System.Drawing.Size(889, 493);
             this.listServices.TabIndex = 0;
             // 
+            // menuProcess
+            // 
+            this.menuProcess.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.propertiesMenuItem,
+            this.copyMenuItem});
+            this.menuProcess.Popup += new System.EventHandler(this.menuProcess_Popup);
+            // 
+            // propertiesMenuItem
+            // 
+            this.propertiesMenuItem.DefaultItem = true;
+            this.vistaMenu.SetImage(this.propertiesMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
+            this.propertiesMenuItem.Index = 0;
+            this.propertiesMenuItem.Text = "Properties";
+            this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
+            // 
+            // copyMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyMenuItem.Index = 1;
+            this.copyMenuItem.Text = "Copy";
+            // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
+            // 
             // DumpHackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -106,6 +144,7 @@
             this.tabControl.ResumeLayout(false);
             this.tabProcesses.ResumeLayout(false);
             this.tabServices.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -117,5 +156,9 @@
         private System.Windows.Forms.TabPage tabProcesses;
         private System.Windows.Forms.TabPage tabServices;
         private ProcessHacker.Components.ServiceList listServices;
+        private System.Windows.Forms.ContextMenu menuProcess;
+        private System.Windows.Forms.MenuItem propertiesMenuItem;
+        private wyDay.Controls.VistaMenu vistaMenu;
+        private System.Windows.Forms.MenuItem copyMenuItem;
     }
 }

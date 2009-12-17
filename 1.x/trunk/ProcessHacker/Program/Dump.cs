@@ -66,10 +66,20 @@ namespace ProcessHacker
             string str = Encoding.Unicode.GetString(mo.ReadData());
             int i = 0;
 
+            if (str == "")
+                return dict;
+
             while (true)
             {
                 int equalsIndex = str.IndexOf('=', i);
+
+                if (equalsIndex == -1)
+                    break;
+
                 int nullIndex = str.IndexOf('\0', equalsIndex + 1);
+
+                if (nullIndex == -1)
+                    break;
 
                 dict.Add(str.Substring(i, equalsIndex - i), str.Substring(equalsIndex + 1, nullIndex - equalsIndex - 1));
 
@@ -102,6 +112,31 @@ namespace ProcessHacker
                 fixed (byte* dataPtr = data)
                     return (T)Marshal.PtrToStructure(new IntPtr(dataPtr), typeof(T));
             }
+        }
+
+        public static bool ParseBool(string str)
+        {
+            return str != "0";
+        }
+
+        public static int ParseInt32(string str)
+        {
+            return int.Parse(str, System.Globalization.NumberStyles.AllowHexSpecifier);
+        }
+
+        public static long ParseInt64(string str)
+        {
+            return long.Parse(str, System.Globalization.NumberStyles.AllowHexSpecifier);
+        }
+
+        public static IntPtr ParseIntPtr(string str)
+        {
+            return long.Parse(str, System.Globalization.NumberStyles.AllowHexSpecifier).ToIntPtr();
+        }
+
+        public static DateTime ParseDateTime(string str)
+        {
+            return DateTime.Parse(str, System.Globalization.CultureInfo.InvariantCulture);
         }
 
         public static MemoryFileSystem BeginDump(string fileName, MfsOpenMode mode)
@@ -196,8 +231,15 @@ namespace ProcessHacker
                 {
                     string fileName;
 
-                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
-                        fileName = FileUtils.GetFileName(phandle.GetImageFileName());
+                    if (pid != 4)
+                    {
+                        using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                            fileName = FileUtils.GetFileName(phandle.GetImageFileName());
+                    }
+                    else
+                    {
+                        fileName = Windows.KernelFileName;
+                    }
 
                     bw.Write("FileName", fileName);
 
@@ -273,6 +315,7 @@ namespace ProcessHacker
                     {
                         bw.Write("IsBeingDebugged", phandle.IsBeingDebugged());
                         bw.Write("IsCritical", phandle.IsCritical());
+                        bw.Write("DepStatus", (int)phandle.GetDepStatus());
                     }
                 }
                 catch
@@ -519,7 +562,7 @@ namespace ProcessHacker
         {
             using (var envMo = processMo.CreateChild("Environment"))
             {
-                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
+                using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
                 {
                     BinaryWriter bw = new BinaryWriter(envMo.GetStream());
 

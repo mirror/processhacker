@@ -17,6 +17,7 @@ namespace ProcessHacker
     public partial class DumpHackerWindow : Form
     {
         private MemoryFileSystem _mfs;
+        private MemoryObject _processesMo;
         private string _phVersion;
         private string _osVersion;
         private OSArch _architecture;
@@ -42,6 +43,9 @@ namespace ProcessHacker
             treeProcesses.DumpProcessServices = _processServices;
             treeProcesses.DumpServices = _services;
 
+            GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, treeProcesses.Tree);
+            treeProcesses.Tree.ContextMenu = menuProcess;
+
             this.LoadSystemInformation();
             this.LoadProcesses();
             this.LoadServices();
@@ -53,26 +57,17 @@ namespace ProcessHacker
         private void DumpHackerWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             _mfs.Dispose();
+
+            foreach (var item in _processes.Values)
+            {
+                if (item.Icon != null)
+                    Win32.DestroyIcon(item.Icon.Handle);
+            }
         }
 
-        private bool ParseBool(string str)
+        public Dictionary<int, ProcessItem> Processes
         {
-            return str != "0";
-        }
-
-        private int ParseInt32(string str)
-        {
-            return int.Parse(str, System.Globalization.NumberStyles.AllowHexSpecifier);
-        }
-
-        private long ParseInt64(string str)
-        {
-            return long.Parse(str, System.Globalization.NumberStyles.AllowHexSpecifier);
-        }
-
-        private DateTime ParseDateTime(string str)
-        {
-            return DateTime.Parse(str, System.Globalization.CultureInfo.InvariantCulture);
+            get { return _processes; }
         }
 
         private void LoadSystemInformation()
@@ -94,7 +89,7 @@ namespace ProcessHacker
 
             _phVersion = dict["ProcessHackerVersion"];
             _osVersion = dict["OSVersion"];
-            _architecture = (OSArch)ParseInt32(dict["Architecture"]);
+            _architecture = (OSArch)Dump.ParseInt32(dict["Architecture"]);
             _userName = dict["UserName"];
 
             treeProcesses.DumpUserName = _userName;
@@ -110,6 +105,7 @@ namespace ProcessHacker
             MemoryObject processesMo;
 
             processesMo = _mfs.RootObject.GetChild("Processes");
+            _processesMo = processesMo;
 
             if (processesMo == null)
             {
@@ -125,8 +121,6 @@ namespace ProcessHacker
 
                     return true;
                 });
-
-            processesMo.Dispose();
         }
 
         private void LoadProcess(MemoryObject mo)
@@ -143,12 +137,12 @@ namespace ProcessHacker
                 generalDict = Dump.GetDictionary(general);
 
             pitem = new ProcessItem();
-            pitem.Pid = ParseInt32(generalDict["ProcessId"]);
+            pitem.Pid = Dump.ParseInt32(generalDict["ProcessId"]);
             pitem.Name = generalDict["Name"];
-            pitem.CreateTime = ParseDateTime(generalDict["StartTime"]);
-            pitem.HasParent = ParseBool(generalDict["HasParent"]);
-            pitem.ParentPid = ParseInt32(generalDict["ParentPid"]);
-            pitem.SessionId = ParseInt32(generalDict["SessionId"]);
+            pitem.CreateTime = Dump.ParseDateTime(generalDict["StartTime"]);
+            pitem.HasParent = Dump.ParseBool(generalDict["HasParent"]);
+            pitem.ParentPid = Dump.ParseInt32(generalDict["ParentPid"]);
+            pitem.SessionId = Dump.ParseInt32(generalDict["SessionId"]);
 
             if (generalDict.ContainsKey("FileName"))
                 pitem.FileName = generalDict["FileName"];
@@ -165,40 +159,40 @@ namespace ProcessHacker
             if (generalDict.ContainsKey("CommandLine"))
                 pitem.CmdLine = generalDict["CommandLine"];
             if (generalDict.ContainsKey("IsPosix"))
-                pitem.IsPosix = ParseBool(generalDict["IsPosix"]);
+                pitem.IsPosix = Dump.ParseBool(generalDict["IsPosix"]);
             if (generalDict.ContainsKey("IsWow64"))
-                pitem.IsWow64 = ParseBool(generalDict["IsWow64"]);
+                pitem.IsWow64 = Dump.ParseBool(generalDict["IsWow64"]);
             if (generalDict.ContainsKey("IsBeingDebugged"))
-                pitem.IsBeingDebugged = ParseBool(generalDict["IsBeingDebugged"]);
+                pitem.IsBeingDebugged = Dump.ParseBool(generalDict["IsBeingDebugged"]);
             if (generalDict.ContainsKey("UserName"))
                 pitem.Username = generalDict["UserName"];
             if (generalDict.ContainsKey("ElevationType"))
-                pitem.ElevationType = (TokenElevationType)ParseInt32(generalDict["ElevationType"]);
+                pitem.ElevationType = (TokenElevationType)Dump.ParseInt32(generalDict["ElevationType"]);
 
             if (generalDict.ContainsKey("CpuUsage"))
                 pitem.CpuUsage = float.Parse(generalDict["CpuUsage"]);
             if (generalDict.ContainsKey("JobName"))
                 pitem.JobName = generalDict["JobName"];
             if (generalDict.ContainsKey("IsInJob"))
-                pitem.IsInJob = ParseBool(generalDict["IsInJob"]);
+                pitem.IsInJob = Dump.ParseBool(generalDict["IsInJob"]);
             if (generalDict.ContainsKey("IsInSignificantJob"))
-                pitem.IsInSignificantJob = ParseBool(generalDict["IsInSignificantJob"]);
+                pitem.IsInSignificantJob = Dump.ParseBool(generalDict["IsInSignificantJob"]);
             if (generalDict.ContainsKey("Integrity"))
                 pitem.Integrity = generalDict["Integrity"];
             if (generalDict.ContainsKey("IntegrityLevel"))
-                pitem.IntegrityLevel = ParseInt32(generalDict["IntegrityLevel"]);
+                pitem.IntegrityLevel = Dump.ParseInt32(generalDict["IntegrityLevel"]);
             if (generalDict.ContainsKey("IsDotNet"))
-                pitem.IsDotNet = ParseBool(generalDict["IsDotNet"]);
+                pitem.IsDotNet = Dump.ParseBool(generalDict["IsDotNet"]);
             if (generalDict.ContainsKey("IsPacked"))
-                pitem.IsPacked = ParseBool(generalDict["IsPacked"]);
+                pitem.IsPacked = Dump.ParseBool(generalDict["IsPacked"]);
             if (generalDict.ContainsKey("VerifyResult"))
-                pitem.VerifyResult = (VerifyResult)ParseInt32(generalDict["VerifyResult"]);
+                pitem.VerifyResult = (VerifyResult)Dump.ParseInt32(generalDict["VerifyResult"]);
             if (generalDict.ContainsKey("VerifySignerName"))
                 pitem.VerifySignerName = generalDict["VerifySignerName"];
             if (generalDict.ContainsKey("ImportFunctions"))
-                pitem.ImportFunctions = ParseInt32(generalDict["ImportFunctions"]);
+                pitem.ImportFunctions = Dump.ParseInt32(generalDict["ImportFunctions"]);
             if (generalDict.ContainsKey("ImportModules"))
-                pitem.ImportModules = ParseInt32(generalDict["ImportModules"]);
+                pitem.ImportModules = Dump.ParseInt32(generalDict["ImportModules"]);
 
             if (names.Contains("SmallIcon"))
             {
@@ -246,21 +240,21 @@ namespace ProcessHacker
 
             item.Status.ServiceName = dict["Name"];
             item.Status.DisplayName = dict["DisplayName"];
-            item.Status.ServiceStatusProcess.ControlsAccepted = (ServiceAccept)ParseInt32(dict["ControlsAccepted"]);
-            item.Status.ServiceStatusProcess.CurrentState = (ServiceState)ParseInt32(dict["State"]);
-            item.Status.ServiceStatusProcess.ProcessID = ParseInt32(dict["ProcessId"]);
-            item.Status.ServiceStatusProcess.ServiceFlags = (ServiceFlags)ParseInt32(dict["Flags"]);
-            item.Status.ServiceStatusProcess.ServiceType = (ServiceType)ParseInt32(dict["Type"]);
+            item.Status.ServiceStatusProcess.ControlsAccepted = (ServiceAccept)Dump.ParseInt32(dict["ControlsAccepted"]);
+            item.Status.ServiceStatusProcess.CurrentState = (ServiceState)Dump.ParseInt32(dict["State"]);
+            item.Status.ServiceStatusProcess.ProcessID = Dump.ParseInt32(dict["ProcessId"]);
+            item.Status.ServiceStatusProcess.ServiceFlags = (ServiceFlags)Dump.ParseInt32(dict["Flags"]);
+            item.Status.ServiceStatusProcess.ServiceType = (ServiceType)Dump.ParseInt32(dict["Type"]);
 
             if (dict.ContainsKey("BinaryPath"))
             {
                 item.Config.BinaryPathName = dict["BinaryPath"];
                 item.Config.DisplayName = item.Status.DisplayName;
-                item.Config.ErrorControl = (ServiceErrorControl)ParseInt32(dict["ErrorControl"]);
+                item.Config.ErrorControl = (ServiceErrorControl)Dump.ParseInt32(dict["ErrorControl"]);
                 item.Config.LoadOrderGroup = dict["Group"];
                 item.Config.ServiceStartName = dict["UserName"];
                 item.Config.ServiceType = item.Status.ServiceStatusProcess.ServiceType;
-                item.Config.StartType = (ServiceStartType)ParseInt32(dict["StartType"]);
+                item.Config.StartType = (ServiceStartType)Dump.ParseInt32(dict["StartType"]);
             }
 
             _services.Add(item.Status.ServiceName, item);
@@ -273,6 +267,48 @@ namespace ProcessHacker
 
                 _processServices[item.Status.ServiceStatusProcess.ProcessID].Add(item.Status.ServiceName);
             }
+        }
+
+        public void ShowProperties(ProcessItem item)
+        {
+            DumpProcessWindow dpw = new DumpProcessWindow(
+                this,
+                item,
+                _processesMo.GetChild(item.Pid.ToString("x"))
+                );
+
+            dpw.Show();
+        }
+
+        private void treeProcesses_NodeMouseDoubleClick(object sender, Aga.Controls.Tree.TreeNodeAdvMouseEventArgs e)
+        {
+            var pNode = treeProcesses.FindNode(e.Node);
+
+            this.ShowProperties(pNode.ProcessItem);
+        }
+
+        private void menuProcess_Popup(object sender, EventArgs e)
+        {
+            if (treeProcesses.SelectedTreeNodes.Count == 0)
+            {
+                menuProcess.DisableAll();
+            }
+            else if (treeProcesses.SelectedTreeNodes.Count == 1)
+            {
+                menuProcess.EnableAll();
+            }
+            else
+            {
+                menuProcess.EnableAll();
+                propertiesMenuItem.Enabled = false;
+            }
+        }
+
+        private void propertiesMenuItem_Click(object sender, EventArgs e)
+        {
+            var pNode = treeProcesses.SelectedNodes[0];
+
+            this.ShowProperties(pNode.ProcessItem);
         }
     }
 }

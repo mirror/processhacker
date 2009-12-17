@@ -175,27 +175,7 @@ namespace ProcessHacker.Components
                                 _mainModule = FileUtils.GetFileName(phandle.GetMainModule().FileName);
                         }
 
-                        SortedListViewComparer comparer = (SortedListViewComparer)
-                            (listModules.ListViewItemSorter = new SortedListViewComparer(listModules)
-                            {
-                                TriState = true,
-                                TriStateComparer = new ModuleListComparer(_mainModule),
-                                SortColumn = 0,
-                                SortOrder = SortOrder.None
-                            });
-
-                        comparer.ColumnSortOrder.Add(0);
-                        comparer.ColumnSortOrder.Add(1);
-                        comparer.ColumnSortOrder.Add(2);
-
-                        (listModules.ListViewItemSorter as SortedListViewComparer).CustomSorters.Add(2,
-                            (x, y) =>
-                            {
-                                ModuleItem ix = (ModuleItem)x.Tag;
-                                ModuleItem iy = (ModuleItem)y.Tag;
-
-                                return ix.Size.CompareTo(iy.Size);
-                            });
+                        this.SetMainModule(_mainModule);
                     }
                     catch
                     { }
@@ -228,6 +208,33 @@ namespace ProcessHacker.Components
         }
 
         #endregion
+
+        private void SetMainModule(string mainModule)
+        {
+            _mainModule = mainModule;
+
+            SortedListViewComparer comparer = (SortedListViewComparer)
+                (listModules.ListViewItemSorter = new SortedListViewComparer(listModules)
+                {
+                    TriState = true,
+                    TriStateComparer = new ModuleListComparer(_mainModule),
+                    SortColumn = 0,
+                    SortOrder = SortOrder.None
+                });
+
+            comparer.ColumnSortOrder.Add(0);
+            comparer.ColumnSortOrder.Add(1);
+            comparer.ColumnSortOrder.Add(2);
+
+            (listModules.ListViewItemSorter as SortedListViewComparer).CustomSorters.Add(2,
+                (x, y) =>
+                {
+                    ModuleItem ix = (ModuleItem)x.Tag;
+                    ModuleItem iy = (ModuleItem)y.Tag;
+
+                    return ix.Size.CompareTo(iy.Size);
+                });
+        }
 
         private void provider_Updated()
         {
@@ -262,6 +269,21 @@ namespace ProcessHacker.Components
                 return Settings.Instance.ColorRelocatedDlls;
             else
                 return SystemColors.Window;
+        }
+
+        public void AddItem(ModuleItem item)
+        {
+            provider_DictionaryAdded(item);
+        }
+
+        public void UpdateItems()
+        {
+            provider_Updated();
+        }
+
+        public void DumpSetMainModule(string mainModule)
+        {
+            this.SetMainModule(mainModule);
         }
 
         private void provider_DictionaryAdded(ModuleItem item)
@@ -424,7 +446,7 @@ namespace ProcessHacker.Components
         private void changeMemoryProtectionModuleMenuItem_Click(object sender, EventArgs e)
         {
             ModuleItem item = (ModuleItem)listModules.SelectedItems[0].Tag;
-            VirtualProtectWindow w = new VirtualProtectWindow(_pid, item.BaseAddress, item.Size);
+            VirtualProtectWindow w = new VirtualProtectWindow(_pid, item.BaseAddress.ToIntPtr(), item.Size);
 
             w.ShowDialog();
         }
@@ -433,7 +455,7 @@ namespace ProcessHacker.Components
         {
             ModuleItem item = (ModuleItem)listModules.SelectedItems[0].Tag;
 
-            MemoryEditor.ReadWriteMemory(_pid, item.BaseAddress, item.Size, true);
+            MemoryEditor.ReadWriteMemory(_pid, item.BaseAddress.ToIntPtr(), item.Size, true);
         }
 
         private void selectAllModuleMenuItem_Click(object sender, EventArgs e)
@@ -471,7 +493,7 @@ namespace ProcessHacker.Components
                             {
                                 using (var driverHandle = new DriverHandle("\\Driver\\" + obj.Name))
                                 {
-                                    if (driverHandle.GetBasicInformation().DriverStart == moduleItem.BaseAddress)
+                                    if (driverHandle.GetBasicInformation().DriverStart == moduleItem.BaseAddress.ToIntPtr())
                                     {
                                         serviceName = driverHandle.GetServiceKeyName();
                                         break;
@@ -547,7 +569,7 @@ namespace ProcessHacker.Components
                         Program.MinProcessQueryRights | ProcessAccess.VmOperation |
                         ProcessAccess.VmRead | ProcessAccess.VmWrite | ProcessAccess.CreateThread))
                     {
-                        IntPtr baseAddress = ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress;
+                        IntPtr baseAddress = ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress.ToIntPtr();
 
                         phandle.SetModuleReferenceCount(baseAddress, 1);
 

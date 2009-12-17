@@ -229,6 +229,9 @@
     <EmbeddedResource Include="Forms\DumpHackerWindow.resx">
       <DependentUpon>DumpHackerWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DumpProcessWindow.resx">
+      <DependentUpon>DumpProcessWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\HandleStatisticsWindow.resx">
       <DependentUpon>HandleStatisticsWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -483,6 +486,12 @@
     </Compile>
     <Compile Include="Forms\DumpHackerWindow.Designer.cs">
       <DependentUpon>DumpHackerWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DumpProcessWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DumpProcessWindow.Designer.cs">
+      <DependentUpon>DumpProcessWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\HandleStatisticsWindow.cs">
       <SubType>Form</SubType>

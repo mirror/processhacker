@@ -448,6 +448,21 @@ namespace ProcessHacker.Components
                 return SystemColors.Window;
         }
 
+        public void AddItem(HandleItem item)
+        {
+            provider_DictionaryAdded(item);
+        }
+
+        public void UpdateItems()
+        {
+            provider_Updated();
+        }
+
+        public void DumpDisableDoubleClick()
+        {
+            listHandles.DoubleClick -= listHandles_DoubleClick;
+        }
+
         private void provider_DictionaryAdded(HandleItem item)
         {
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
