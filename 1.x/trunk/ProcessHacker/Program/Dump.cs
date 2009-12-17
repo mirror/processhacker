@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+ * Process Hacker - 
+ *   dump system information
+ * 
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -295,7 +317,7 @@ namespace ProcessHacker
                 {
                     using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                     {
-                        bw.Write("CommandLine", phandle.GetPebString(PebOffset.CommandLine));
+                        bw.Write("CommandLine", phandle.GetCommandLine());
                         bw.Write("CurrentDirectory", phandle.GetPebString(PebOffset.CurrentDirectoryPath));
                         bw.Write("IsPosix", phandle.IsPosix());
                     }
