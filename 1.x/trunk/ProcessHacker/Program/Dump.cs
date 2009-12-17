@@ -615,7 +615,7 @@ namespace ProcessHacker
 
                         bw.Write("Handle", handle.Handle);
                         bw.Write("Flags", (int)handle.Flags);
-                        bw.Write("Object", (int)handle.Object);
+                        bw.Write("Object", handle.Object);
                         bw.Write("GrantedAccess", handle.GrantedAccess);
 
                         try

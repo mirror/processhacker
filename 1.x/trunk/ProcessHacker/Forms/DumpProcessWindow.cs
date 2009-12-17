@@ -103,9 +103,13 @@ namespace ProcessHacker
                 pictureIcon.Image = Properties.Resources.Process.ToBitmap();
             }
 
-            textFileDescription.Text = _item.VersionInfo.FileDescription;
-            textFileCompany.Text = _item.VersionInfo.CompanyName;
-            textFileVersion.Text = _item.VersionInfo.FileVersion;
+            if (_item.VersionInfo != null)
+            {
+                textFileDescription.Text = _item.VersionInfo.FileDescription;
+                textFileCompany.Text = _item.VersionInfo.CompanyName;
+                textFileVersion.Text = _item.VersionInfo.FileVersion;
+            }
+
             textFileName.Text = _item.FileName;
 
             if (_item.VerifyResult == VerifyResult.Trusted)
