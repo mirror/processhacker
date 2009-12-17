@@ -67,12 +67,7 @@ namespace ProcessHacker
 
         public static void Write(this BinaryWriter bw, string key, DateTime value)
         {
-            bw.Write(Encoding.Unicode.GetBytes(
-                key +
-                "=" +
-                value.ToString(System.Globalization.CultureInfo.InvariantCulture) +
-                "\0"
-                ));
+            bw.Write(key, value.ToFileTime());
         }
 
         public static void WriteListEntry(this BinaryWriter bw, string value)
@@ -179,7 +174,7 @@ namespace ProcessHacker
 
         public static DateTime ParseDateTime(string str)
         {
-            return DateTime.Parse(str, System.Globalization.CultureInfo.InvariantCulture);
+            return DateTime.FromFileTime(ParseInt64(str));
         }
 
         public static MemoryFileSystem BeginDump(string fileName, MfsOpenMode mode)
