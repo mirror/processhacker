@@ -514,7 +514,8 @@ namespace ProcessHacker
                     PhUtils.ShowException("Unable to open the dump file", ex);
                 }
 
-                dhw.Show();
+                if (dhw != null)
+                    dhw.Show();
             }
         }
 
