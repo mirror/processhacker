@@ -27,6 +27,7 @@ namespace ProcessHacker
         public DumpHackerWindow(string fileName)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _mfs = new MemoryFileSystem(fileName, MfsOpenMode.Open, true);
 

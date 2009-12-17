@@ -264,13 +264,14 @@ namespace ProcessHacker
                 {
                     using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                     {
-                        bw.Write("IsCritical", phandle.IsCritical());
-                        bw.Write("IsWow64", phandle.IsWow64());
+                        if (OSVersion.Architecture == OSArch.Amd64)
+                            bw.Write("IsWow64", phandle.IsWow64());
                     }
 
                     using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
                     {
                         bw.Write("IsBeingDebugged", phandle.IsBeingDebugged());
+                        bw.Write("IsCritical", phandle.IsCritical());
                     }
                 }
                 catch
