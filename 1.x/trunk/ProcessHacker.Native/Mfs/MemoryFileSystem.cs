@@ -406,10 +406,10 @@ namespace ProcessHacker.Native.Mfs
                 MfsCellId newCellId;
                 int readLength;
 
-                dc = (MfsDataCell*)this.ReferenceCell(cellId);
-
                 if (length == 0)
                     break;
+
+                dc = (MfsDataCell*)this.ReferenceCell(cellId);
 
                 readLength = length > dc->DataLength ? dc->DataLength : length;
                 Marshal.Copy(new IntPtr(&dc->Data), buffer, offset, readLength);
@@ -417,12 +417,12 @@ namespace ProcessHacker.Native.Mfs
                 bytesRead += readLength;
                 length -= readLength;
 
-                if (dc->NextCell == MfsCellId.Empty)
-                    break;
-
                 newCellId = dc->NextCell;
                 this.DereferenceCell(cellId);
                 cellId = newCellId;
+
+                if (cellId == MfsCellId.Empty)
+                    break;
             }
 
             return bytesRead;

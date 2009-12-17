@@ -86,6 +86,8 @@ namespace ProcessHacker
 
             var dict = Dump.GetDictionary(sysInfoMo);
 
+            sysInfoMo.Dispose();
+
             _phVersion = dict["ProcessHackerVersion"];
             _osVersion = dict["OSVersion"];
             _userName = dict["UserName"];
