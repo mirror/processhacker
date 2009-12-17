@@ -230,6 +230,12 @@ namespace ProcessHacker
             set { _dumpMode = value; }
         }
 
+        public IDictionary<int, ProcessItem> DumpProcesses
+        {
+            get;
+            set;
+        }
+
         public IDictionary<int, List<string>> DumpProcessServices
         {
             get;
@@ -338,6 +344,11 @@ namespace ProcessHacker
             provider_DictionaryAdded(item);
         }
 
+        public void UpdateItems()
+        {
+            provider_Updated();
+        }
+
         private void provider_DictionaryAdded(ProcessItem item)
         {
             this.BeginInvoke(new MethodInvoker(delegate
@@ -433,12 +444,18 @@ namespace ProcessHacker
                     try
                     {
                         ProcessNode pNode = this.FindNode(node);
+                        IDictionary<int, ProcessItem> processes;
+
+                        if (!_dumpMode)
+                            processes = _provider.Dictionary;
+                        else
+                            processes = DumpProcesses;
 
                         // May not be in the dictionary if the process has terminated but 
                         // the node is still being highlighted.
-                        if (_provider.Dictionary.ContainsKey(pNode.Pid))
+                        if (processes.ContainsKey(pNode.Pid))
                         {
-                            ProcessItem item = _provider.Dictionary[pNode.Pid];
+                            ProcessItem item = processes[pNode.Pid];
 
                             node.BackColor = this.GetProcessColor(item);
                         }

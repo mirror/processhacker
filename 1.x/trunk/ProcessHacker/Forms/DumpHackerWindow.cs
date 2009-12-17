@@ -35,15 +35,17 @@ namespace ProcessHacker
 
         private void DumpHackerWindow_Load(object sender, EventArgs e)
         {
+            treeProcesses.DumpMode = true;
+            treeProcesses.DumpProcesses = _processes;
+            treeProcesses.DumpProcessServices = _processServices;
+            treeProcesses.DumpServices = _services;
+
             this.LoadSystemInformation();
             this.LoadProcesses();
             this.LoadServices();
 
+            treeProcesses.UpdateItems();
             listServices.UpdateItems();
-
-            treeProcesses.DumpMode = true;
-            treeProcesses.DumpProcessServices = _processServices;
-            treeProcesses.DumpServices = _services;
         }
 
         private void DumpHackerWindow_FormClosing(object sender, FormClosingEventArgs e)
