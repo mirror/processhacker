@@ -74,6 +74,8 @@ namespace ProcessHacker
 
         private void DumpHackerWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (_processesMo != null)
+                _processesMo.Dispose();
             _mfs.Dispose();
 
             foreach (var item in _processes.Values)
