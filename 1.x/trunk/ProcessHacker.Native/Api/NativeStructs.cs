@@ -3185,6 +3185,58 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct VmCountersEx64
+    {
+        public VmCountersEx64(VmCountersEx vm)
+        {
+            this.PeakVirtualSize = vm.PeakVirtualSize.ToInt64();
+            this.VirtualSize = vm.VirtualSize.ToInt64();
+            this.PageFaultCount = vm.PageFaultCount;
+            this.PeakWorkingSetSize = vm.PeakWorkingSetSize.ToInt64();
+            this.WorkingSetSize = vm.WorkingSetSize.ToInt64();
+            this.QuotaPeakPagedPoolUsage = vm.QuotaPeakPagedPoolUsage.ToInt64();
+            this.QuotaPagedPoolUsage = vm.QuotaPagedPoolUsage.ToInt64();
+            this.QuotaPeakNonPagedPoolUsage = vm.QuotaPeakNonPagedPoolUsage.ToInt64();
+            this.QuotaNonPagedPoolUsage = vm.QuotaNonPagedPoolUsage.ToInt64();
+            this.PagefileUsage = vm.PagefileUsage.ToInt64();
+            this.PeakPagefileUsage = vm.PeakPagefileUsage.ToInt64();
+            this.PrivatePageCount = vm.PrivatePageCount.ToInt64();
+        }
+
+        public long PeakVirtualSize;
+        public long VirtualSize;
+        public int PageFaultCount;
+        public long PeakWorkingSetSize;
+        public long WorkingSetSize;
+        public long QuotaPeakPagedPoolUsage;
+        public long QuotaPagedPoolUsage;
+        public long QuotaPeakNonPagedPoolUsage;
+        public long QuotaNonPagedPoolUsage;
+        public long PagefileUsage;
+        public long PeakPagefileUsage;
+        public long PrivatePageCount;
+
+        public VmCountersEx ToVmCountersEx()
+        {
+            return new VmCountersEx()
+            {
+                PeakVirtualSize = this.PeakVirtualSize.ToIntPtr(),
+                VirtualSize = this.VirtualSize.ToIntPtr(),
+                PageFaultCount = this.PageFaultCount,
+                PeakWorkingSetSize = this.PeakWorkingSetSize.ToIntPtr(),
+                WorkingSetSize = this.WorkingSetSize.ToIntPtr(),
+                QuotaPeakPagedPoolUsage = this.QuotaPeakPagedPoolUsage.ToIntPtr(),
+                QuotaPagedPoolUsage = this.QuotaPagedPoolUsage.ToIntPtr(),
+                QuotaPeakNonPagedPoolUsage = this.QuotaPeakNonPagedPoolUsage.ToIntPtr(),
+                QuotaNonPagedPoolUsage = this.QuotaNonPagedPoolUsage.ToIntPtr(),
+                PagefileUsage = this.PagefileUsage.ToIntPtr(),
+                PeakPagefileUsage = this.PeakPagefileUsage.ToIntPtr(),
+                PrivatePageCount = this.PrivatePageCount.ToIntPtr()
+            };
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct XmmSaveArea32
     {
         public ushort ControlWord;

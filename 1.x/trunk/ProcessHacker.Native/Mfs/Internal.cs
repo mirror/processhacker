@@ -11,7 +11,7 @@ namespace ProcessHacker.Native.Mfs
     //
     // Data can only be added to MFS, not removed.
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct MfsCellId : IEquatable<MfsCellId>
     {
         public static readonly MfsCellId Empty = new MfsCellId(0, 0);
@@ -54,7 +54,7 @@ namespace ProcessHacker.Native.Mfs
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct MfsFsHeader
     {
         public int Magic; // MFS\0
@@ -63,7 +63,7 @@ namespace ProcessHacker.Native.Mfs
         public MfsCellId RootObject;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct MfsBlockHeader
     {
         public int Hash; // CRC32
@@ -71,7 +71,7 @@ namespace ProcessHacker.Native.Mfs
         public ushort Reserved;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public unsafe struct MfsObjectHeader
     {
         public MfsCellId Flink;
@@ -90,7 +90,7 @@ namespace ProcessHacker.Native.Mfs
         public fixed char Name[32];
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public unsafe struct MfsDataCell
     {
         public static readonly int DataOffset = Marshal.OffsetOf(typeof(MfsDataCell), "Data").ToInt32();

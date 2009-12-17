@@ -90,6 +90,8 @@ namespace ProcessHacker
             _osVersion = dict["OSVersion"];
             _userName = dict["UserName"];
 
+            treeProcesses.DumpUserName = _userName;
+
             this.Text = "Process Hacker " + _phVersion + " [" + _userName + "] (" + _osVersion + ")";
         }
 
@@ -195,7 +197,7 @@ namespace ProcessHacker
             }
 
             using (var vmCounters = mo.GetChild("VmCounters"))
-                pitem.Process.VirtualMemoryCounters = Dump.GetStruct<VmCountersEx>(vmCounters);
+                pitem.Process.VirtualMemoryCounters = Dump.GetStruct<VmCountersEx64>(vmCounters).ToVmCountersEx();
             using (var ioCounters = mo.GetChild("IoCounters"))
                 pitem.Process.IoCounters = Dump.GetStruct<IoCounters>(ioCounters);
 
