@@ -391,6 +391,9 @@ namespace ProcessHacker
             else if (listServices.SelectedItems.Count == 1)
             {
                 menuService.EnableAll();
+
+                if (_services[listServices.SelectedItems[0].Text].Status.ServiceStatusProcess.ProcessID == 0)
+                    goToProcessServiceMenuItem.Enabled = false;
             }
             else
             {
