@@ -158,10 +158,10 @@ namespace ProcessHacker
                 pitem.IsWow64 = ParseBool(generalDict["IsWow64"]);
             if (generalDict.ContainsKey("IsBeingDebugged"))
                 pitem.IsBeingDebugged = ParseBool(generalDict["IsBeingDebugged"]);
-            if (generalDict.ContainsKey("ElevationType"))
-                pitem.ElevationType = (TokenElevationType)ParseInt32(generalDict["ElevationType"]);
             if (generalDict.ContainsKey("UserName"))
                 pitem.Username = generalDict["UserName"];
+            if (generalDict.ContainsKey("ElevationType"))
+                pitem.ElevationType = (TokenElevationType)ParseInt32(generalDict["ElevationType"]);
 
             if (generalDict.ContainsKey("CpuUsage"))
                 pitem.CpuUsage = float.Parse(generalDict["CpuUsage"]);
@@ -183,6 +183,10 @@ namespace ProcessHacker
                 pitem.VerifyResult = (VerifyResult)ParseInt32(generalDict["VerifyResult"]);
             if (generalDict.ContainsKey("VerifySignerName"))
                 pitem.VerifySignerName = generalDict["VerifySignerName"];
+            if (generalDict.ContainsKey("ImportFunctions"))
+                pitem.ImportFunctions = ParseInt32(generalDict["ImportFunctions"]);
+            if (generalDict.ContainsKey("ImportModules"))
+                pitem.ImportModules = ParseInt32(generalDict["ImportModules"]);
 
             if (names.Contains("SmallIcon"))
             {

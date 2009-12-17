@@ -282,8 +282,10 @@ namespace ProcessHacker
                     {
                         using (var thandle = phandle.GetToken(TokenAccess.Query))
                         {
-                            bw.Write("ElevationType", (int)thandle.GetElevationType());
                             bw.Write("UserName", thandle.GetUser().GetFullName(true));
+
+                            if (OSVersion.HasUac)
+                                bw.Write("ElevationType", (int)thandle.GetElevationType());
                         }
                     }
                 }
@@ -302,6 +304,8 @@ namespace ProcessHacker
                     bw.Write("IsPacked", item.IsPacked);
                     bw.Write("VerifyResult", (int)item.VerifyResult);
                     bw.Write("VerifySignerName", item.VerifySignerName);
+                    bw.Write("ImportFunctions", item.ImportFunctions);
+                    bw.Write("ImportModules", item.ImportModules);
                 }
 
                 bw.Close();
