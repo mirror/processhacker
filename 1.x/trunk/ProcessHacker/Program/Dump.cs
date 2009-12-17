@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.Native;
@@ -49,6 +50,16 @@ namespace ProcessHacker
                 ));
         }
 
+        public static void AppendStruct<T>(MemoryObject mo, T s)
+            where T : struct
+        {
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(T))))
+            {
+                data.WriteStruct<T>(s);
+                mo.AppendData(data.ReadBytes(data.Size));
+            }
+        }
+
         public static IDictionary<string, string> GetDictionary(MemoryObject mo)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
@@ -79,6 +90,17 @@ namespace ProcessHacker
             using (Bitmap b = new Bitmap(reader))
             {
                 return Icon.FromHandle(b.GetHicon());
+            }
+        }
+
+        public static T GetStruct<T>(MemoryObject mo)
+        {
+            byte[] data = mo.ReadData();
+
+            unsafe
+            {
+                fixed (byte* dataPtr = data)
+                    return (T)Marshal.PtrToStructure(new IntPtr(dataPtr), typeof(T));
             }
         }
 
@@ -283,6 +305,11 @@ namespace ProcessHacker
 
                 bw.Close();
             }
+
+            using (var vmCounters = processMo.CreateChild("VmCounters"))
+                AppendStruct(vmCounters, process.Process.VirtualMemoryCounters);
+            using (var ioCounters = processMo.CreateChild("IoCounters"))
+                AppendStruct(ioCounters, process.Process.IoCounters);
 
             try
             {

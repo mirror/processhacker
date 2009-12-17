@@ -156,6 +156,11 @@ namespace ProcessHacker
                     pitem.Icon = Dump.GetIcon(smallIcon);
             }
 
+            using (var vmCounters = mo.GetChild("VmCounters"))
+                pitem.Process.VirtualMemoryCounters = Dump.GetStruct<VmCountersEx>(vmCounters);
+            using (var ioCounters = mo.GetChild("IoCounters"))
+                pitem.Process.IoCounters = Dump.GetStruct<IoCounters>(ioCounters);
+
             treeProcesses.AddItem(pitem);
         }
 

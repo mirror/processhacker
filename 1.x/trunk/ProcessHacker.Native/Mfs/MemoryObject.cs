@@ -67,6 +67,11 @@ namespace ProcessHacker.Native.Mfs
             }
         }
 
+        public void AppendData(byte[] buffer)
+        {
+            this.AppendData(buffer, 0, buffer.Length);
+        }
+
         public void AppendData(byte[] buffer, int offset, int length)
         {
             MfsCellId cellId;
