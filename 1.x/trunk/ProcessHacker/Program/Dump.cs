@@ -39,7 +39,10 @@ namespace ProcessHacker
     {
         public static void Write(this BinaryWriter bw, string key, string value)
         {
-            bw.Write(Encoding.Unicode.GetBytes(key + "=" + value + "\0"));
+            if (value == null)
+                value = "";
+
+            bw.Write(Encoding.Unicode.GetBytes(key + "=" + value.Replace("\0", "") + "\0"));
         }
 
         public static void Write(this BinaryWriter bw, string key, int value)
@@ -74,7 +77,10 @@ namespace ProcessHacker
 
         public static void WriteListEntry(this BinaryWriter bw, string value)
         {
-            bw.Write(Encoding.Unicode.GetBytes(value + "\0"));
+            if (value == null)
+                value = "";
+
+            bw.Write(Encoding.Unicode.GetBytes(value.Replace("\0", "") + "\0"));
         }
 
         public static void AppendStruct<T>(MemoryObject mo, T s)
