@@ -316,7 +316,10 @@ namespace ProcessHacker
                 return Settings.Instance.ColorDotNetProcesses;
             else if (Settings.Instance.UseColorPackedProcesses && p.IsPacked)
                 return Settings.Instance.ColorPackedProcesses;
-            else if (Settings.Instance.UseColorServiceProcesses &&
+            else if (_dumpMode && Settings.Instance.UseColorServiceProcesses &&
+                DumpProcessServices.ContainsKey(p.Pid) && DumpProcessServices[p.Pid].Count > 0)
+                return Settings.Instance.ColorServiceProcesses;
+            else if (!_dumpMode && Settings.Instance.UseColorServiceProcesses &&
                 Program.HackerWindow.ProcessServices.ContainsKey(p.Pid) &&
                 Program.HackerWindow.ProcessServices[p.Pid].Count > 0)
                 return Settings.Instance.ColorServiceProcesses;

@@ -202,7 +202,7 @@ namespace ProcessHacker
                             otherNotes += "";
                         }
                         else if (pNode.ProcessItem.VerifyResult == VerifyResult.Unknown &&
-                            Settings.Instance.VerifySignatures)
+                            Settings.Instance.VerifySignatures && !_tree.DumpMode)
                         {
                             otherNotes += "\n    File has not been processed yet. Please wait..."; 
                         }
