@@ -39,7 +39,14 @@ namespace ProcessHacker
 {
     public enum ProcessStats
     {
-        CpuKernel, CpuUser, IoRead, IoWrite, IoOther, IoReadOther, PrivateMemory, WorkingSet
+        CpuKernel, // delta, float-hist
+        CpuUser, // delta, float-hist
+        IoRead, // delta, long-hist
+        IoWrite, // delta, long-hist
+        IoOther, // delta, long-hist
+        IoReadOther, // long-hist
+        PrivateMemory, // long-hist
+        WorkingSet // long-hist
     }
 
     public class ImageVersionInfo

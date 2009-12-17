@@ -423,13 +423,10 @@ namespace ProcessHacker.Native.Mfs
 
             Utils.ValidateBuffer(buffer, offset, length);
 
-            while (true)
+            while (length > 0)
             {
                 MfsCellId newCellId;
                 int readLength;
-
-                if (length == 0)
-                    break;
 
                 dc = (MfsDataCell*)this.ReferenceCell(cellId);
 

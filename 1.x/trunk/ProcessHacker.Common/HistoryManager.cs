@@ -77,6 +77,11 @@ namespace ProcessHacker.Common
             _history.Add(key, new CircularBuffer<TValue>(this.EffectiveMaxCount));
         }
 
+        public CircularBuffer<TValue> GetBuffer(TKey key)
+        {
+            return _history[key];
+        }
+
         public ReadOnlyCollection<TValue> GetHistory(TKey key)
         {
             if (!_readOnlyCollections.ContainsKey(key))

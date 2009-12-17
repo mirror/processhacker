@@ -79,6 +79,38 @@ namespace ProcessHacker.Common
             _data = new T[_size];
         }
 
+        public CircularBuffer(System.IO.Stream s)
+        {
+            byte[] buf = new byte[sizeof(int)];
+
+            s.Read(buf, 0, 4);
+            _size = buf.ToInt32();
+#if POWER_OF_TWO_SIZE
+            _sizeMinusOne = _size - 1;
+#endif
+            s.Read(buf, 0, 4);
+            _count = buf.ToInt32();
+            s.Read(buf, 0, 4);
+            _index = buf.ToInt32();
+
+            _data = new T[_size];
+
+            int i = 0;
+            int length = Buffer.ByteLength(_data);
+
+            buf = new byte[256];
+
+            while (length > 0)
+            {
+                int readLength = length > buf.Length ? buf.Length : length;
+
+                s.Read(buf, 0, readLength);
+                length -= readLength;
+                Buffer.BlockCopy(buf, 0, _data, i, readLength);
+                i += readLength;
+            }
+        }
+
         /// <summary>
         /// Gets or sets an element in the buffer. This is guaranteed to 
         /// never throw an exception.
@@ -266,6 +298,27 @@ namespace ProcessHacker.Common
             _data = newArray;
             _size = newSize;
             _sizeMinusOne = _size - 1;
+        }
+
+        public void Save(System.IO.Stream s)
+        {
+            s.Write(_size.GetBytes(), 0, sizeof(int));
+            s.Write(_count.GetBytes(), 0, sizeof(int));
+            s.Write(_index.GetBytes(), 0, sizeof(int));
+
+            int i = 0;
+            int length = Buffer.ByteLength(_data);
+            byte[] buf = new byte[256];
+
+            while (length > 0)
+            {
+                int writeLength = length > buf.Length ? buf.Length : length;
+
+                Buffer.BlockCopy(_data, i, buf, 0, writeLength);
+                length -= writeLength;
+                s.Write(buf, 0, writeLength);
+                i += writeLength;
+            }
         }
 
         /// <summary>

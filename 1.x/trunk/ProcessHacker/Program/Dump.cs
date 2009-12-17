@@ -27,6 +27,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Mfs;
@@ -433,6 +434,18 @@ namespace ProcessHacker
             }
             catch
             { }
+
+            //if (item != null)
+            //{
+            //    DumpProcessHistory(processMo, item.FloatHistoryManager.GetBuffer(ProcessStats.CpuKernel), "CpuKernel");
+            //    DumpProcessHistory(processMo, item.FloatHistoryManager.GetBuffer(ProcessStats.CpuUser), "CpuUser");
+            //    DumpProcessHistory(processMo, item.LongHistoryManager.GetBuffer(ProcessStats.IoRead), "IoRead");
+            //    DumpProcessHistory(processMo, item.LongHistoryManager.GetBuffer(ProcessStats.IoWrite), "IoWrite");
+            //    DumpProcessHistory(processMo, item.LongHistoryManager.GetBuffer(ProcessStats.IoOther), "IoOther");
+            //    DumpProcessHistory(processMo, item.LongHistoryManager.GetBuffer(ProcessStats.IoReadOther), "IoReadOther");
+            //    DumpProcessHistory(processMo, item.LongHistoryManager.GetBuffer(ProcessStats.PrivateMemory), "PrivateMemory");
+            //    DumpProcessHistory(processMo, item.LongHistoryManager.GetBuffer(ProcessStats.WorkingSet), "WorkingSet");
+            //}
         }
 
         private static void DumpProcessModules(MemoryObject processMo, int pid)
@@ -646,6 +659,15 @@ namespace ProcessHacker
                         bw.Close();
                     }
                 }
+            }
+        }
+
+        private static void DumpProcessHistory<T>(MemoryObject processMo, CircularBuffer<T> buffer, string name)
+        {
+            using (var child = processMo.CreateChild(name + "History"))
+            {
+                using (var s = child.GetStream())
+                    buffer.Save(s);
             }
         }
 
