@@ -72,7 +72,7 @@ namespace ProcessHacker
             this.LoadEnvironment();
 
             // Handles
-            listHandles.DumpDisableDoubleClick();
+            listHandles.DumpDisableEvents();
             listHandles.List.SetTheme("explorer");
             listHandles.List.AddShortcuts();
             listHandles.List.ContextMenu = listHandles.List.GetCopyMenu();

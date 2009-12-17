@@ -458,9 +458,10 @@ namespace ProcessHacker.Components
             provider_Updated();
         }
 
-        public void DumpDisableDoubleClick()
+        public void DumpDisableEvents()
         {
             listHandles.DoubleClick -= listHandles_DoubleClick;
+            listHandles.KeyDown -= listHandles_KeyDown;
         }
 
         private void provider_DictionaryAdded(HandleItem item)
