@@ -42,6 +42,27 @@ namespace ProcessHacker
         CpuKernel, CpuUser, IoRead, IoWrite, IoOther, IoReadOther, PrivateMemory, WorkingSet
     }
 
+    public class ImageVersionInfo
+    {
+        public ImageVersionInfo()
+        { }
+
+        public ImageVersionInfo(FileVersionInfo info)
+        {
+            this.CompanyName = info.CompanyName;
+            this.FileDescription = info.FileDescription;
+            this.FileName = info.FileName;
+            this.FileVersion = info.FileVersion;
+            this.ProductName = info.ProductName;
+        }
+
+        public string CompanyName { get; set; }
+        public string FileDescription { get; set; }
+        public string FileName { get; set; }
+        public string FileVersion { get; set; }
+        public string ProductName { get; set; }
+    }
+
     public class ProcessItem : ICloneable
     {
         public object Clone()
@@ -57,7 +78,7 @@ namespace ProcessHacker
         public string CmdLine;
         public float CpuUsage;
         public string FileName;
-        public FileVersionInfo VersionInfo;
+        public ImageVersionInfo VersionInfo;
         public string Name;
         public string Username;
         public string JobName;
@@ -116,7 +137,7 @@ namespace ProcessHacker
             public bool IsWow64;
             public Icon Icon;
             public Icon LargeIcon;
-            public FileVersionInfo VersionInfo;
+            public ImageVersionInfo VersionInfo;
             public string CmdLine;
 
             public bool IsDotNet;
@@ -431,7 +452,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    fpResult.VersionInfo = FileVersionInfo.GetVersionInfo(fileName);
+                    fpResult.VersionInfo = new ImageVersionInfo(FileVersionInfo.GetVersionInfo(fileName));
                 }
                 catch
                 { }

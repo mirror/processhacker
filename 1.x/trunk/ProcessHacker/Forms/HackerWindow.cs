@@ -491,6 +491,33 @@ namespace ProcessHacker
             }
         }
 
+        private void openMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter = "Process Hacker Dump Files (*.phi)|*.phi|All Files (*.*)|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                DumpHackerWindow dhw = null;
+
+                try
+                {
+                    dhw = new DumpHackerWindow(ofd.FileName);
+                }
+                catch (ProcessHacker.Native.Mfs.MfsInvalidFileSystemException)
+                {
+                    PhUtils.ShowError("Unable to open the dump file: the dump file is invalid.");
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowException("Unable to open the dump file", ex);
+                }
+
+                dhw.Show();
+            }
+        }
+
         private void saveMenuItem_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;

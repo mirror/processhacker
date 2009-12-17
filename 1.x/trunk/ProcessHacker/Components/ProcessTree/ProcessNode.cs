@@ -555,7 +555,10 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0)
+                if (
+                    _pitem.LongHistoryManager == null ||
+                    _pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0
+                    )
                     return 0;
                 else
                     return (_pitem.LongHistoryManager[ProcessStats.IoReadOther][0] +
@@ -579,7 +582,10 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0)
+                if (
+                    _pitem.LongHistoryManager == null ||
+                    _pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0
+                    )
                     return 0;
                 else
                     return _pitem.LongHistoryManager[ProcessStats.IoReadOther][0] * 1000 /
@@ -602,7 +608,10 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0)
+                if (
+                    _pitem.LongHistoryManager == null ||
+                    _pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0
+                    )
                     return 0;
                 else
                     return _pitem.LongHistoryManager[ProcessStats.IoWrite][0] * 1000 /

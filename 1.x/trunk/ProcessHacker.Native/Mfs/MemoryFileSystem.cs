@@ -403,6 +403,7 @@ namespace ProcessHacker.Native.Mfs
 
             while (true)
             {
+                MfsCellId newCellId;
                 int readLength;
 
                 dc = (MfsDataCell*)this.ReferenceCell(cellId);
@@ -419,8 +420,9 @@ namespace ProcessHacker.Native.Mfs
                 if (dc->NextCell == MfsCellId.Empty)
                     break;
 
+                newCellId = dc->NextCell;
                 this.DereferenceCell(cellId);
-                cellId = dc->NextCell;
+                cellId = newCellId;
             }
 
             return bytesRead;

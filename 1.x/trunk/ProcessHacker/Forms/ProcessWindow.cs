@@ -437,7 +437,7 @@ namespace ProcessHacker
                     return;
                 }
 
-                FileVersionInfo info = _processItem.VersionInfo;
+                var info = _processItem.VersionInfo;
 
                 textFileDescription.Text = info.FileDescription;
                 textFileCompany.Text = info.CompanyName;

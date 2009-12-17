@@ -226,6 +226,9 @@
     <EmbeddedResource Include="Forms\CreateServiceWindow.resx">
       <DependentUpon>CreateServiceWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DumpHackerWindow.resx">
+      <DependentUpon>DumpHackerWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\HandleStatisticsWindow.resx">
       <DependentUpon>HandleStatisticsWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -474,6 +477,12 @@
     </Compile>
     <Compile Include="Forms\CreateServiceWindow.Designer.cs">
       <DependentUpon>CreateServiceWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DumpHackerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DumpHackerWindow.Designer.cs">
+      <DependentUpon>DumpHackerWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\HandleStatisticsWindow.cs">
       <SubType>Form</SubType>
@@ -961,6 +970,7 @@
     <None Include="Resources\active_search.png" />
     <None Include="Resources\inactive_search.png" />
     <None Include="Resources\money.png" />
+    <None Include="Resources\folder.png" />
     <Content Include="SharpDevelop\LICENSE.txt" />
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />

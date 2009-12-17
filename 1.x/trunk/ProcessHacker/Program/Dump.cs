@@ -49,6 +49,39 @@ namespace ProcessHacker
                 ));
         }
 
+        public static IDictionary<string, string> GetDictionary(MemoryObject mo)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            string str = Encoding.Unicode.GetString(mo.ReadData());
+            int i = 0;
+
+            while (true)
+            {
+                int equalsIndex = str.IndexOf('=', i);
+                int nullIndex = str.IndexOf('\0', equalsIndex + 1);
+
+                dict.Add(str.Substring(i, equalsIndex - i), str.Substring(equalsIndex + 1, nullIndex - equalsIndex - 1));
+
+                i = nullIndex + 1;
+
+                if (i >= str.Length)
+                    break;
+            }
+
+            return dict;
+        }
+
+        public static Icon GetIcon(MemoryObject mo)
+        {
+            byte[] data = mo.ReadData();
+            ProcessHacker.Common.ByteStreamReader reader = new ProcessHacker.Common.ByteStreamReader(data);
+
+            using (Bitmap b = new Bitmap(reader))
+            {
+                return Icon.FromHandle(b.GetHicon());
+            }
+        }
+
         public static MemoryFileSystem BeginDump(string fileName, MfsOpenMode mode)
         {
             MemoryFileSystem mfs = new MemoryFileSystem(fileName, mode);
@@ -88,13 +121,19 @@ namespace ProcessHacker
                                 item = provider.Dictionary[process.Process.ProcessId];
                         }
 
-                        DumpProcess(processChild, process, item, Windows.GetHandles());
+                        DumpProcess(processChild, process, item, p, Windows.GetHandles());
                     }
                 }
             }
         }
 
-        public static void DumpProcess(MemoryObject processMo, SystemProcess process, ProcessItem item, object handles)
+        public static void DumpProcess(
+            MemoryObject processMo,
+            SystemProcess process,
+            ProcessItem item,
+            Dictionary<int, SystemProcess> processesDict,
+            object handles
+            )
         {
             int pid = process.Process.ProcessId;
 
@@ -103,7 +142,31 @@ namespace ProcessHacker
                 BinaryWriter bw = new BinaryWriter(general.GetStream());
 
                 bw.Write("ProcessId", pid);
-                bw.Write("Name", process.Name);
+                bw.Write("Name", pid != 0 ? process.Name : "System Idle Process");
+                bw.Write("StartTime", DateTime.FromFileTime(process.Process.CreateTime));
+                bw.Write("ParentPid", process.Process.InheritedFromProcessId);
+                bw.Write("SessionId", process.Process.SessionId);
+
+                bool hasParent = true;
+
+                if (
+                    !processesDict.ContainsKey(process.Process.InheritedFromProcessId) ||
+                    process.Process.InheritedFromProcessId == process.Process.ProcessId
+                    )
+                {
+                    hasParent = false;
+                }
+                else if (processesDict.ContainsKey(process.Process.InheritedFromProcessId))
+                {
+                    ulong parentStartTime =
+                        (ulong)processesDict[process.Process.InheritedFromProcessId].Process.CreateTime;
+                    ulong thisStartTime = (ulong)process.Process.CreateTime;
+
+                    if (parentStartTime > thisStartTime)
+                        hasParent = false;
+                }
+
+                bw.Write("HasParent", hasParent);
 
                 try
                 {
@@ -112,15 +175,13 @@ namespace ProcessHacker
                     using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                         fileName = FileUtils.GetFileName(phandle.GetImageFileName());
 
+                    bw.Write("FileName", fileName);
+
                     var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(fileName);
 
-                    bw.Write("FileName", fileName);
                     bw.Write("FileDescription", info.FileDescription);
                     bw.Write("FileCompanyName", info.CompanyName);
                     bw.Write("FileVersion", info.FileVersion);
-                    bw.Write("StartTime", DateTime.FromFileTime(process.Process.CreateTime));
-                    bw.Write("ParentPid", process.Process.InheritedFromProcessId);
-                    bw.Write("SessionId", process.Process.SessionId);
 
                     try
                     {
@@ -128,23 +189,35 @@ namespace ProcessHacker
 
                         icon = FileUtils.GetFileIcon(fileName, false);
 
-                        using (var smallIcon = processMo.CreateChild("SmallIcon"))
+                        if (icon != null)
                         {
-                            using (var s = smallIcon.GetStream())
-                                icon.Save(s);
-                        }
+                            using (var smallIcon = processMo.CreateChild("SmallIcon"))
+                            {
+                                using (var s = smallIcon.GetStream())
+                                {
+                                    using (var b = icon.ToBitmap())
+                                        b.Save(s, System.Drawing.Imaging.ImageFormat.Png);
+                                }
+                            }
 
-                        Win32.DestroyIcon(icon.Handle);
+                            Win32.DestroyIcon(icon.Handle);
+                        }
 
                         icon = FileUtils.GetFileIcon(fileName, true);
 
-                        using (var largeIcon = processMo.CreateChild("LargeIcon"))
+                        if (icon != null)
                         {
-                            using (var s = largeIcon.GetStream())
-                                icon.Save(s);
-                        }
+                            using (var largeIcon = processMo.CreateChild("LargeIcon"))
+                            {
+                                using (var s = largeIcon.GetStream())
+                                {
+                                    using (var b = icon.ToBitmap())
+                                        b.Save(s, System.Drawing.Imaging.ImageFormat.Png);
+                                }
+                            }
 
-                        Win32.DestroyIcon(icon.Handle);
+                            Win32.DestroyIcon(icon.Handle);
+                        }
                     }
                     catch
                     { }

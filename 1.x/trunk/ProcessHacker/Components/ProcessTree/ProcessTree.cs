@@ -191,7 +191,6 @@ namespace ProcessHacker
                 }
 
                 _provider = value;
-
                 treeProcesses.Model = _treeModel = new ProcessTreeModel(this);
 
                 if (_provider != null)
@@ -302,6 +301,11 @@ namespace ProcessHacker
                 return Settings.Instance.ColorOwnProcesses;
             else
                 return SystemColors.Window;
+        }
+
+        public void AddItem(ProcessItem item)
+        {
+            provider_DictionaryAdded(item);
         }
 
         private void provider_DictionaryAdded(ProcessItem item)

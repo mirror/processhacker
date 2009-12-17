@@ -225,6 +225,16 @@ namespace ProcessHacker.Components
             _runCount++;
         }
 
+        public void AddItem(ServiceItem item)
+        {
+            provider_DictionaryAdded(item);
+        }
+
+        public void UpdateItems()
+        {
+            provider_Updated();
+        }
+
         private void provider_DictionaryAdded(ServiceItem item)
         {
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,

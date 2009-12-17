@@ -60,20 +60,9 @@ namespace ProcessHacker
 
                 try
                 {
-                    string filename = "";
-
-                    if (pNode.Pid == 4)
+                    if (pNode.ProcessItem.VersionInfo != null)
                     {
-                        filename = FileUtils.GetFileName(Windows.KernelFileName);
-                    }
-                    else
-                    {
-                        filename = pNode.ProcessItem.FileName;
-                    }
-
-                    if (filename != null)
-                    {
-                        FileVersionInfo info = FileVersionInfo.GetVersionInfo(filename);
+                        var info = pNode.ProcessItem.VersionInfo;
 
                         fileText = "File:\n    " + info.FileName + "\n    " +
                             info.FileDescription + " " + info.FileVersion + "\n    " +
