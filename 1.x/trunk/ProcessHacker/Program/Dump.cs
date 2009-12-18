@@ -208,22 +208,6 @@ namespace ProcessHacker
             {
                 var p = Windows.GetProcesses();
 
-                if (provider != null)
-                {
-                    int dpcsPid = provider.DpcsProcess.Process.ProcessId;
-                    int interruptsPid = provider.InterruptsProcess.Process.ProcessId;
-
-                    using (var dpcsChild = processes.CreateChild(dpcsPid.ToString("x")))
-                    {
-                        DumpProcess(dpcsChild, provider.DpcsProcess, provider.Dictionary[dpcsPid], null, null);
-                    }
-
-                    using (var interruptsChild = processes.CreateChild(interruptsPid.ToString("x")))
-                    {
-                        DumpProcess(interruptsChild, provider.InterruptsProcess, provider.Dictionary[interruptsPid], null, null);
-                    }
-                }
-
                 foreach (var process in p.Values)
                 {
                     using (var processChild = processes.CreateChild(process.Process.ProcessId.ToString("x")))
@@ -237,6 +221,22 @@ namespace ProcessHacker
                         }
 
                         DumpProcess(processChild, process, item, p, Windows.GetHandles());
+                    }
+                }
+
+                if (provider != null)
+                {
+                    int dpcsPid = provider.DpcsProcess.Process.ProcessId;
+                    int interruptsPid = provider.InterruptsProcess.Process.ProcessId;
+
+                    using (var dpcsChild = processes.CreateChild(dpcsPid.ToString("x")))
+                    {
+                        DumpProcess(dpcsChild, provider.DpcsProcess, provider.Dictionary[dpcsPid], null, null);
+                    }
+
+                    using (var interruptsChild = processes.CreateChild(interruptsPid.ToString("x")))
+                    {
+                        DumpProcess(interruptsChild, provider.InterruptsProcess, provider.Dictionary[interruptsPid], null, null);
                     }
                 }
             }
