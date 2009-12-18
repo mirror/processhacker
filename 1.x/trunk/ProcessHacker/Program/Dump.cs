@@ -520,18 +520,21 @@ namespace ProcessHacker
                                         {
                                             string fileName = phandle.GetMappedFileName(memory.BaseAddress);
 
-                                            fileName = FileUtils.GetFileName(fileName);
+                                            if (fileName != null)
+                                            {
+                                                fileName = FileUtils.GetFileName(fileName);
 
-                                            DumpProcessModule(modules, new ProcessModule(
-                                                memory.BaseAddress,
-                                                memory.RegionSize.ToInt32(),
-                                                IntPtr.Zero,
-                                                0,
-                                                Path.GetFileName(fileName),
-                                                fileName
-                                                ));
+                                                DumpProcessModule(modules, new ProcessModule(
+                                                    memory.BaseAddress,
+                                                    memory.RegionSize.ToInt32(),
+                                                    IntPtr.Zero,
+                                                    0,
+                                                    Path.GetFileName(fileName),
+                                                    fileName
+                                                    ));
 
-                                            baseAddressList.Add(memory.BaseAddress, null);
+                                                baseAddressList.Add(memory.BaseAddress, null);
+                                            }
                                         }
                                     }
 
