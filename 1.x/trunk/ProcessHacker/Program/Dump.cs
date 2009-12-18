@@ -488,6 +488,7 @@ namespace ProcessHacker
             {
                 if (pid != 4)
                 {
+                    var baseAddressList = new Dictionary<IntPtr, object>();
                     bool isWow64 = false;
 
                     using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
@@ -497,25 +498,35 @@ namespace ProcessHacker
 
                         phandle.EnumModules((module) =>
                             {
-                                DumpProcessModule(modules, module);
+                                if (!baseAddressList.ContainsKey(module.BaseAddress))
+                                {
+                                    DumpProcessModule(modules, module);
+                                    baseAddressList.Add(module.BaseAddress, null);
+                                }
+
                                 return true;
                             });
                         phandle.EnumMemory((memory) =>
                             {
                                 if (memory.Type == MemoryType.Mapped)
                                 {
-                                    string fileName = phandle.GetMappedFileName(memory.BaseAddress);
+                                    if (!baseAddressList.ContainsKey(memory.BaseAddress))
+                                    {
+                                        string fileName = phandle.GetMappedFileName(memory.BaseAddress);
 
-                                    fileName = FileUtils.GetFileName(fileName);
+                                        fileName = FileUtils.GetFileName(fileName);
 
-                                    DumpProcessModule(modules, new ProcessModule(
-                                        memory.BaseAddress,
-                                        memory.RegionSize.ToInt32(),
-                                        IntPtr.Zero,
-                                        0,
-                                        Path.GetFileName(fileName),
-                                        fileName
-                                        ));
+                                        DumpProcessModule(modules, new ProcessModule(
+                                            memory.BaseAddress,
+                                            memory.RegionSize.ToInt32(),
+                                            IntPtr.Zero,
+                                            0,
+                                            Path.GetFileName(fileName),
+                                            fileName
+                                            ));
+
+                                        baseAddressList.Add(memory.BaseAddress, null);
+                                    }
                                 }
 
                                 return true;
@@ -532,7 +543,12 @@ namespace ProcessHacker
 
                                 buffer.EnumModules((module) =>
                                     {
-                                        DumpProcessModule(modules, module);
+                                        if (!baseAddressList.ContainsKey(module.BaseAddress))
+                                        {
+                                            DumpProcessModule(modules, module);
+                                            baseAddressList.Add(module.BaseAddress, null);
+                                        }
+
                                         return true;
                                     });
                             }
