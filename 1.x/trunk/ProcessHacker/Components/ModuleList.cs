@@ -321,6 +321,11 @@ namespace ProcessHacker.Components
             Settings.Instance.ModuleListViewColumns = ColumnSettings.SaveSettings(listModules);
         }
 
+        private string GetItemFileName(ListViewItem litem)
+        {
+            return ((ModuleItem)litem.Tag).FileName;
+        }
+
         private void menuModule_Popup(object sender, EventArgs e)
         {
             if (listModules.SelectedItems.Count == 1)
@@ -384,7 +389,7 @@ namespace ProcessHacker.Components
 
             for (int i = 0; i < listModules.SelectedItems.Count; i++)
             {
-                text += listModules.SelectedItems[i].ToolTipText;
+                text += this.GetItemFileName(listModules.SelectedItems[i]);
 
                 if (i != listModules.SelectedItems.Count - 1)
                     text += "\r\n";
@@ -397,7 +402,7 @@ namespace ProcessHacker.Components
         {
             try
             {
-                Utils.ShowFileInExplorer(listModules.SelectedItems[0].ToolTipText);
+                Utils.ShowFileInExplorer(this.GetItemFileName(listModules.SelectedItems[0]));
             }
             catch (Exception ex)
             {
@@ -407,14 +412,14 @@ namespace ProcessHacker.Components
 
         private void propertiesMenuItem_Click(object sender, EventArgs e)
         {
-            FileUtils.ShowProperties(listModules.SelectedItems[0].ToolTipText);
+            FileUtils.ShowProperties(this.GetItemFileName(listModules.SelectedItems[0]));
         }
 
         private void inspectModuleMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                PEWindow pw = Program.GetPEWindow(listModules.SelectedItems[0].ToolTipText,
+                PEWindow pw = Program.GetPEWindow(this.GetItemFileName(listModules.SelectedItems[0]),
                     new Program.PEWindowInvokeAction(delegate(PEWindow f)
                     {
                         if (!f.IsDisposed)
@@ -439,7 +444,8 @@ namespace ProcessHacker.Components
 
         private void getFuncAddressMenuItem_Click(object sender, EventArgs e)
         {
-            GetProcAddressWindow gpaWindow = new GetProcAddressWindow(listModules.SelectedItems[0].ToolTipText);
+            GetProcAddressWindow gpaWindow = new GetProcAddressWindow(
+                this.GetItemFileName(listModules.SelectedItems[0]));
 
             gpaWindow.ShowDialog();
         }
