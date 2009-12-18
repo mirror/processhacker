@@ -19,10 +19,10 @@ namespace ProcessHacker.Native.Mfs
         { }
     }
 
-    public class MfsInvalidFileSystemException : Exception
+    public class MfsInvalidFileSystemException : MfsException
     {
         public MfsInvalidFileSystemException()
-            : base()
+            : base("The specified file does not contain a valid file system structure.")
         { }
 
         public MfsInvalidFileSystemException(string message)
@@ -34,10 +34,10 @@ namespace ProcessHacker.Native.Mfs
         { }
     }
 
-    public class MfsInvalidOperationException : Exception
+    public class MfsInvalidOperationException : MfsException
     {
         public MfsInvalidOperationException()
-            : base()
+            : base("The operation is not valid for the mode specified when the file system was opened.")
         { }
 
         public MfsInvalidOperationException(string message)
