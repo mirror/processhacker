@@ -49,7 +49,15 @@ namespace ProcessHacker
             _item = item;
             _processMo = processMo;
 
-            this.Text = _item.Name + " (PID " + _item.Pid.ToString() + ")";
+            if (_item.Pid > 0)
+            {
+                this.Text = _item.Name + " (PID " + _item.Pid.ToString() + ")";
+            }
+            else
+            {
+                this.Text = _item.Name;
+            }
+
             this.Icon = _item.Icon;
         }
 

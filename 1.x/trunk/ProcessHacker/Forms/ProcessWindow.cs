@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using ProcessHacker.Common;
@@ -191,6 +190,7 @@ namespace ProcessHacker
                     fileImage.Enabled = false;
 
                 buttonSearch.Enabled = false;
+                buttonPermissions.Enabled = false;
                 buttonTerminate.Enabled = false;
 
                 // remove tab controls not relevant to DPCs/Interrupts
