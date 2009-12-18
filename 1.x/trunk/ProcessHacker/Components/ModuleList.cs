@@ -296,7 +296,8 @@ namespace ProcessHacker.Components
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Utils.FormatAddress(item.BaseAddress)));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Utils.FormatSize(item.Size)));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
-            litem.ToolTipText = item.FileName;
+            litem.ToolTipText = PhUtils.FormatFileInfo(
+                item.FileName, item.FileDescription, item.FileCompanyName, item.FileVersion, 0);
             litem.Tag = item;
             litem.NormalColor = this.GetModuleColor(item);
 

@@ -45,6 +45,7 @@ namespace ProcessHacker
         public string Name;
         public string FileName;
         public string FileDescription;
+        public string FileCompanyName;
         public string FileVersion;
     }
 
@@ -221,6 +222,7 @@ namespace ProcessHacker
                         var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(item.FileName);
 
                         item.FileDescription = info.FileDescription;
+                        item.FileCompanyName = info.CompanyName;
                         item.FileVersion = info.FileVersion;
                     }
                     catch

@@ -322,6 +322,7 @@ namespace ProcessHacker
             if (dict.ContainsKey("FileDescription"))
             {
                 item.FileDescription = dict["FileDescription"];
+                item.FileCompanyName = dict["FileCompanyName"];
                 item.FileVersion = dict["FileVersion"];
             }
 

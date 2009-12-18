@@ -65,9 +65,8 @@ namespace ProcessHacker
                     {
                         var info = pNode.ProcessItem.VersionInfo;
 
-                        fileText = "File:\n    " + info.FileName + "\n    " +
-                            info.FileDescription + " " + info.FileVersion + "\n    " +
-                            info.CompanyName;
+                        fileText = "File:\n" + PhUtils.FormatFileInfo(
+                            info.FileName, info.FileDescription, info.CompanyName, info.FileVersion, 4);
                     }
                 }
                 catch

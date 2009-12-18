@@ -3,6 +3,7 @@ Process Hacker
 1.9
  * NEW/IMPROVED:
    * Dump/view process information
+   * Added useful tooltips to the module list
    * The "-elevate" command line option propagates other arguments
  * FIXED:
    * #2911938 - "The given key was not present in the dictionary."

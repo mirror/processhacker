@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Net;
+using System.Text;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.Components;
@@ -127,6 +128,45 @@ namespace ProcessHacker.Common
                 return operation + ": " + ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : "");
             else
                 return ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : "");
+        }
+
+        public static string FormatFileInfo(
+            string fileName,
+            string fileDescription,
+            string fileCompanyName,
+            string fileVersion,
+            int indent
+            )
+        {
+            StringBuilder sb = new StringBuilder();
+            string indentStr = new string(' ', indent);
+
+            if (!string.IsNullOrEmpty(fileName))
+                sb.AppendLine(indentStr + fileName);
+
+            if (!string.IsNullOrEmpty(fileDescription))
+            {
+                if (!string.IsNullOrEmpty(fileVersion))
+                {
+                    sb.AppendLine(indentStr + fileDescription + " " + fileVersion);
+                }
+                else
+                {
+                    sb.AppendLine(indentStr + fileDescription);
+                }
+            }
+            else
+            {
+                sb.AppendLine(indentStr + fileVersion);
+            }
+
+            if (!string.IsNullOrEmpty(fileCompanyName))
+                sb.AppendLine(indentStr + fileCompanyName);
+
+            if (sb.Length > 0)
+                sb.Remove(sb.Length - 1, 1);
+
+            return sb.ToString();
         }
 
         public static string FormatPriorityClass(ProcessPriorityClass priorityClass)
