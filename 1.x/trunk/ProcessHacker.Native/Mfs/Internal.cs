@@ -27,7 +27,7 @@ using System.Text;
 
 namespace ProcessHacker.Native.Mfs
 {
-    // MFS consists of 64K blocks. Within each block are 256 256B cells.
+    // MFS consists of 64K blocks. Within each block are 512 128B cells.
     // The first block of the file system is the file system header. 
     // The first cell of each block is the block header.
     //
