@@ -506,32 +506,41 @@ namespace ProcessHacker
 
                                 return true;
                             });
-                        phandle.EnumMemory((memory) =>
-                            {
-                                if (memory.Type == MemoryType.Mapped)
-                                {
-                                    if (!baseAddressList.ContainsKey(memory.BaseAddress))
-                                    {
-                                        string fileName = phandle.GetMappedFileName(memory.BaseAddress);
-
-                                        fileName = FileUtils.GetFileName(fileName);
-
-                                        DumpProcessModule(modules, new ProcessModule(
-                                            memory.BaseAddress,
-                                            memory.RegionSize.ToInt32(),
-                                            IntPtr.Zero,
-                                            0,
-                                            Path.GetFileName(fileName),
-                                            fileName
-                                            ));
-
-                                        baseAddressList.Add(memory.BaseAddress, null);
-                                    }
-                                }
-
-                                return true;
-                            });
                     }
+
+                    try
+                    {
+                        using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                        {
+                            phandle.EnumMemory((memory) =>
+                                {
+                                    if (memory.Type == MemoryType.Mapped)
+                                    {
+                                        if (!baseAddressList.ContainsKey(memory.BaseAddress))
+                                        {
+                                            string fileName = phandle.GetMappedFileName(memory.BaseAddress);
+
+                                            fileName = FileUtils.GetFileName(fileName);
+
+                                            DumpProcessModule(modules, new ProcessModule(
+                                                memory.BaseAddress,
+                                                memory.RegionSize.ToInt32(),
+                                                IntPtr.Zero,
+                                                0,
+                                                Path.GetFileName(fileName),
+                                                fileName
+                                                ));
+
+                                            baseAddressList.Add(memory.BaseAddress, null);
+                                        }
+                                    }
+
+                                    return true;
+                                });
+                        }
+                    }
+                    catch
+                    { }
 
                     if (isWow64)
                     {
