@@ -280,6 +280,9 @@
       <DependentUpon>ProcessWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProgressWindow.resx">
+      <DependentUpon>ProgressWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProtectProcessWindow.resx">
       <DependentUpon>ProtectProcessWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -531,6 +534,12 @@
     </Compile>
     <Compile Include="Forms\MessageBoxWindow.Designer.cs">
       <DependentUpon>MessageBoxWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProgressWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProgressWindow.Designer.cs">
+      <DependentUpon>ProgressWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ProtectProcessWindow.cs">
       <SubType>Form</SubType>

@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Threading;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -39,7 +40,7 @@ namespace ProcessHacker
     {
         private const int TabSize = 8;
 
-        public static void SaveToFile()
+        public static void SaveToFile(IWin32Window owner)
         {
             SaveFileDialog sfd = new SaveFileDialog();
 
@@ -69,7 +70,9 @@ namespace ProcessHacker
 
                 if (ext == ".phi")
                 {
-                    try
+                    ThreadTask dumpTask = new ThreadTask();
+
+                    dumpTask.RunTask += delegate(object result, ref object param)
                     {
                         var mfs = Dump.BeginDump(fi.FullName, ProcessHacker.Native.Mfs.MfsOpenMode.OverwriteIf);
 
@@ -77,11 +80,29 @@ namespace ProcessHacker
                         Dump.DumpServices(mfs);
 
                         mfs.Dispose();
-                    }
-                    catch (Exception ex)
+                    };
+
+                    ProgressWindow progressWindow = new ProgressWindow();
+
+                    progressWindow.CloseButtonVisible = false;
+                    progressWindow.ProgressBarStyle = ProgressBarStyle.Marquee;
+                    progressWindow.ProgressText = "Creating the dump file...";
+
+                    dumpTask.Completed += (result) =>
                     {
-                        PhUtils.ShowException("Unable to create the dump file", ex);
-                    }
+                        progressWindow.SetCompleted();
+
+                        if (progressWindow.IsHandleCreated)
+                            progressWindow.BeginInvoke(new MethodInvoker(progressWindow.Close));
+                    };
+
+                    dumpTask.Start();
+
+                    if (dumpTask.Running)
+                        progressWindow.ShowDialog(owner);
+
+                    if (dumpTask.Exception != null)
+                        PhUtils.ShowException("Unable to create the dump file", dumpTask.Exception);
 
                     return;
                 }

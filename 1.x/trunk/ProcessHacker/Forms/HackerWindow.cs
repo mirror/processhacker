@@ -525,7 +525,7 @@ namespace ProcessHacker
 
             try
             {
-                Save.SaveToFile();
+                Save.SaveToFile(this);
             }
             finally
             {

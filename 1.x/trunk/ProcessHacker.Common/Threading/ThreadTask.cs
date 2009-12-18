@@ -54,6 +54,9 @@ namespace ProcessHacker.Common.Threading
             if (_thread != null)
                 throw new InvalidOperationException("The task has already been started.");
 
+            _cancelled = false;
+            _running = true;
+
             _thread = new Thread(this.ThreadStart);
             _thread.IsBackground = true;
             _thread.Start(param);
@@ -61,9 +64,6 @@ namespace ProcessHacker.Common.Threading
 
         private void ThreadStart(object param)
         {
-            _cancelled = false;
-            _running = true;
-
             try
             {
                 if (this.RunTask != null)
