@@ -488,8 +488,13 @@ namespace ProcessHacker
             {
                 if (pid != 4)
                 {
+                    bool isWow64 = false;
+
                     using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                     {
+                        if (OSVersion.Architecture == OSArch.Amd64)
+                            isWow64 = phandle.IsWow64();
+
                         phandle.EnumModules((module) =>
                             {
                                 DumpProcessModule(modules, module);
@@ -515,6 +520,25 @@ namespace ProcessHacker
 
                                 return true;
                             });
+                    }
+
+                    if (isWow64)
+                    {
+                        try
+                        {
+                            using (var buffer = new ProcessHacker.Native.Debugging.DebugBuffer())
+                            {
+                                buffer.Query(pid, RtlQueryProcessDebugFlags.Modules32);
+
+                                buffer.EnumModules((module) =>
+                                    {
+                                        DumpProcessModule(modules, module);
+                                        return true;
+                                    });
+                            }
+                        }
+                        catch
+                        { }
                     }
                 }
                 else
