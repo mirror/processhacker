@@ -60,6 +60,7 @@ namespace ProcessHacker
             _tokenProps = new TokenProperties(null);
             _tokenProps.Dock = DockStyle.Fill;
             tabToken.Controls.Add(_tokenProps);
+            _tokenProps.DumpInitialize();
             this.LoadToken();
 
             // Modules
@@ -207,8 +208,6 @@ namespace ProcessHacker
                 return;
 
             var dict = Dump.GetDictionary(token);
-
-            _tokenProps.DumpInitialize();
 
             if (!dict.ContainsKey("UserName"))
                 return;

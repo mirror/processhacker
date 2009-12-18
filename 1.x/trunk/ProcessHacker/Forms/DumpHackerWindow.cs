@@ -170,10 +170,14 @@ namespace ProcessHacker
             pitem = new ProcessItem();
             pitem.Pid = Dump.ParseInt32(generalDict["ProcessId"]);
             pitem.Name = generalDict["Name"];
-            pitem.CreateTime = Dump.ParseDateTime(generalDict["StartTime"]);
-            pitem.HasParent = Dump.ParseBool(generalDict["HasParent"]);
             pitem.ParentPid = Dump.ParseInt32(generalDict["ParentPid"]);
-            pitem.SessionId = Dump.ParseInt32(generalDict["SessionId"]);
+
+            if (generalDict.ContainsKey("HasParent"))
+                pitem.HasParent = Dump.ParseBool(generalDict["HasParent"]);
+            if (generalDict.ContainsKey("StartTime"))
+                pitem.CreateTime = Dump.ParseDateTime(generalDict["StartTime"]);
+            if (generalDict.ContainsKey("SessionId"))
+                pitem.SessionId = Dump.ParseInt32(generalDict["SessionId"]);
 
             if (generalDict.ContainsKey("FileName"))
                 pitem.FileName = generalDict["FileName"];
@@ -231,10 +235,17 @@ namespace ProcessHacker
                     pitem.Icon = Dump.GetIcon(smallIcon);
             }
 
-            using (var vmCounters = mo.GetChild("VmCounters"))
-                pitem.Process.VirtualMemoryCounters = Dump.GetStruct<VmCountersEx64>(vmCounters).ToVmCountersEx();
-            using (var ioCounters = mo.GetChild("IoCounters"))
-                pitem.Process.IoCounters = Dump.GetStruct<IoCounters>(ioCounters);
+            if (names.Contains("VmCounters"))
+            {
+                using (var vmCounters = mo.GetChild("VmCounters"))
+                    pitem.Process.VirtualMemoryCounters = Dump.GetStruct<VmCountersEx64>(vmCounters).ToVmCountersEx();
+            }
+
+            if (names.Contains("IoCounters"))
+            {
+                using (var ioCounters = mo.GetChild("IoCounters"))
+                    pitem.Process.IoCounters = Dump.GetStruct<IoCounters>(ioCounters);
+            }
 
             _processes.Add(pitem.Pid, pitem);
             treeProcesses.AddItem(pitem);

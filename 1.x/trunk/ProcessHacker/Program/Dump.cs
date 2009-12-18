@@ -208,6 +208,22 @@ namespace ProcessHacker
             {
                 var p = Windows.GetProcesses();
 
+                if (provider != null)
+                {
+                    int dpcsPid = provider.DpcsProcess.Process.ProcessId;
+                    int interruptsPid = provider.InterruptsProcess.Process.ProcessId;
+
+                    using (var dpcsChild = processes.CreateChild(dpcsPid.ToString("x")))
+                    {
+                        DumpProcess(dpcsChild, provider.DpcsProcess, provider.Dictionary[dpcsPid], null, null);
+                    }
+
+                    using (var interruptsChild = processes.CreateChild(interruptsPid.ToString("x")))
+                    {
+                        DumpProcess(interruptsChild, provider.InterruptsProcess, provider.Dictionary[interruptsPid], null, null);
+                    }
+                }
+
                 foreach (var process in p.Values)
                 {
                     using (var processChild = processes.CreateChild(process.Process.ProcessId.ToString("x")))
@@ -240,10 +256,25 @@ namespace ProcessHacker
             {
                 BinaryWriter bw = new BinaryWriter(general.GetStream());
 
+                if (pid < 0)
+                {
+                    bw.Write("ProcessId", pid);
+                    bw.Write("Name", process.Name);
+                    bw.Write("ParentPid", 0);
+                    bw.Write("HasParent", true);
+
+                    if (item != null)
+                        bw.Write("CpuUsage", item.CpuUsage.ToString());
+
+                    bw.Close();
+
+                    return;
+                }
+
                 bw.Write("ProcessId", pid);
                 bw.Write("Name", pid != 0 ? process.Name : "System Idle Process");
-                bw.Write("StartTime", DateTime.FromFileTime(process.Process.CreateTime));
                 bw.Write("ParentPid", process.Process.InheritedFromProcessId);
+                bw.Write("StartTime", DateTime.FromFileTime(process.Process.CreateTime));
                 bw.Write("SessionId", process.Process.SessionId);
 
                 bool hasParent = true;

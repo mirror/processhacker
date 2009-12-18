@@ -305,6 +305,16 @@ namespace ProcessHacker
             _longHistory.Add(SystemStats.PhysicalMemory);
         }
 
+        public SystemProcess DpcsProcess
+        {
+            get { return _dpcs; }
+        }
+
+        public SystemProcess InterruptsProcess
+        {
+            get { return _interrupts; }
+        }
+
         private void UpdateProcessorPerf()
         {
             int retLen;
