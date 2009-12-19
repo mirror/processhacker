@@ -141,6 +141,13 @@ namespace ProcessHacker.Native.Mfs
                     }
                     else
                     {
+                        // We're creating a new file system. We need the correct block size 
+                        // now.
+                        if (createParams != null)
+                            _blockSize = createParams.BlockSize;
+                        else
+                            _blockSize = MfsDefaultBlockSize;
+
                         _section.Extend(_blockSize);
 
                         using (var view = _section.MapView(0, _blockSize, _protection))
