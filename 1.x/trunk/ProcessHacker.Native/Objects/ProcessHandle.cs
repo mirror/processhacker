@@ -1330,44 +1330,51 @@ namespace ProcessHacker.Native.Objects
 
             // Now we read in the entire region of memory
             // And yes, some memory is wasted.
-            byte[] memory = this.ReadMemory(envBase, length);
-
-            /* The environment variables block is a series of Unicode strings separated by 
-             * two null bytes. The entire block is terminated by four null bytes.
-             */
-            Dictionary<string, string> vars = new Dictionary<string, string>();
-            StringBuilder currentVariable = new StringBuilder();
-            int i = 0;
-
-            while (true)
+            using (var memoryAlloc = new MemoryAlloc(length))
             {
-                if (i >= memory.Length)
-                    break;
+                byte* memory = (byte*)memoryAlloc.Memory;
 
-                char currentChar = Encoding.Unicode.GetChars(memory, i, 2)[0];
+                this.ReadMemory(envBase, memoryAlloc.Memory, length);
 
-                i += 2;
+                /* The environment variables block is a series of Unicode strings separated by 
+                 * two null bytes. The entire block is terminated by four null bytes.
+                 */
+                Dictionary<string, string> vars = new Dictionary<string, string>();
+                StringBuilder currentVariable = new StringBuilder();
+                int i = 0;
 
-                if (currentChar == '\0')
+                while (true)
                 {
-                    // Two nulls in a row, the env. block is finished.
-                    if (currentVariable.Length == 0)
+                    if (i >= length)
                         break;
 
-                    string[] s = currentVariable.ToString().Split(new char[] { '=' }, 2);
+                    char currentChar;
 
-                    if (!vars.ContainsKey(s[0]) && s.Length > 1)
-                        vars.Add(s[0], s[1]);
+                    Encoding.Unicode.GetChars(&memory[i], 2, &currentChar, 1);
 
-                    currentVariable = new StringBuilder();
+                    i += 2;
+
+                    if (currentChar == '\0')
+                    {
+                        // Two nulls in a row, the env. block is finished.
+                        if (currentVariable.Length == 0)
+                            break;
+
+                        string[] s = currentVariable.ToString().Split(new char[] { '=' }, 2);
+
+                        if (!vars.ContainsKey(s[0]) && s.Length > 1)
+                            vars.Add(s[0], s[1]);
+
+                        currentVariable = new StringBuilder();
+                    }
+                    else
+                    {
+                        currentVariable.Append(currentChar);
+                    }
                 }
-                else
-                {
-                    currentVariable.Append(currentChar);
-                }
+
+                return vars;
             }
-
-            return vars;
         }
 
         /// <summary>

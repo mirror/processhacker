@@ -248,9 +248,16 @@ namespace ProcessHacker.Native
             handleCount = data.ReadStruct<SystemHandleInformation>().NumberOfHandles;
             returnHandles = new SystemHandleEntry[handleCount];
 
-            for (int i = 0; i < handleCount; i++)
+            // Unsafe code for speed.
+            unsafe
             {
-                returnHandles[i] = data.ReadStruct<SystemHandleEntry>(SystemHandleInformation.HandlesOffset, i);
+                SystemHandleEntry* handlesPtr = (SystemHandleEntry*)((byte*)data.Memory + SystemHandleInformation.HandlesOffset);
+
+                for (int i = 0; i < handleCount; i++)
+                {
+                    //returnHandles[i] = data.ReadStruct<SystemHandleEntry>(SystemHandleInformation.HandlesOffset, i);
+                    returnHandles[i] = handlesPtr[i];
+                }
             }
 
             return returnHandles;
@@ -600,7 +607,12 @@ namespace ProcessHacker.Native
 
             do
             {
-                currentProcess.Process = data.ReadStruct<SystemProcessInformation>(i, 0);
+                //currentProcess.Process = data.ReadStruct<SystemProcessInformation>(i, 0);
+                unsafe
+                {
+                    currentProcess.Process = *(SystemProcessInformation*)((byte*)data.Memory + i);
+                }
+
                 currentProcess.Name = currentProcess.Process.ImageName.Read();
 
                 if (getThreads &&
@@ -665,7 +677,11 @@ namespace ProcessHacker.Native
 
             do
             {
-                process = data.ReadStruct<SystemProcessInformation>(i, 0);
+                unsafe
+                {
+                    //process = data.ReadStruct<SystemProcessInformation>(i, 0);
+                    process = *(SystemProcessInformation*)((byte*)data.Memory + i);
+                }
 
                 if (process.ProcessId == pid)
                 {
