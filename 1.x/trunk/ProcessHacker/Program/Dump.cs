@@ -173,6 +173,11 @@ namespace ProcessHacker
             return long.Parse(str, System.Globalization.NumberStyles.AllowHexSpecifier).ToIntPtr();
         }
 
+        public static ulong ParseUInt64(string str)
+        {
+            return ulong.Parse(str, System.Globalization.NumberStyles.AllowHexSpecifier);
+        }
+
         public static DateTime ParseDateTime(string str)
         {
             return DateTime.FromFileTime(ParseInt64(str));

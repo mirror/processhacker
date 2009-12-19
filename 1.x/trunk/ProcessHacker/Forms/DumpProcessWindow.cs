@@ -313,7 +313,7 @@ namespace ProcessHacker
             var dict = Dump.GetDictionary(mo);
             ModuleItem item = new ModuleItem();
 
-            item.BaseAddress = Dump.ParseInt64(dict["BaseAddress"]);
+            item.BaseAddress = Dump.ParseUInt64(dict["BaseAddress"]);
             item.Size = Dump.ParseInt32(dict["Size"]);
             item.Flags = (LdrpDataTableEntryFlags)Dump.ParseInt32(dict["Flags"]);
             item.Name = dict["Name"];

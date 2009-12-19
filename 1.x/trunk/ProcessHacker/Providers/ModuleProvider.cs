@@ -39,7 +39,7 @@ namespace ProcessHacker
         }
 
         public int RunId;
-        public long BaseAddress;
+        public ulong BaseAddress;
         public int Size;
         public LdrpDataTableEntryFlags Flags;
         public string Name;
@@ -213,7 +213,7 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    item.BaseAddress = b.ToInt64();
+                    item.BaseAddress = b.ToUInt64();
                     item.Size = m.Size;
                     item.Flags = m.Flags;
 
