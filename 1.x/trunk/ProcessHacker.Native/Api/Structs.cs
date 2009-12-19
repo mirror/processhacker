@@ -230,7 +230,7 @@ namespace ProcessHacker.Native.Api
         public IntPtr Key;
         public int LineNumber;
         public string FileName;
-        public long Address;
+        public ulong Address;
     }
 
     [StructLayout(LayoutKind.Explicit)]
@@ -829,7 +829,7 @@ namespace ProcessHacker.Native.Api
         public ulong ModBase;
         public SymbolFlags Flags;
         public long Value;
-        public long Address;
+        public ulong Address;
         public int Register;
         public int Scope;
         public int Tag;

@@ -40,7 +40,7 @@ namespace ProcessHacker.Native.Symbols
             this.Address = si.Address;
         }
 
-        public long Address
+        public ulong Address
         {
             get;
             private set;
