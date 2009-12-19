@@ -139,6 +139,12 @@ namespace ProcessHacker.Native
                 fileName = System.IO.Path.GetFullPath(Environment.SystemDirectory + "\\.." + fileName.Substring(11));
                 alreadyCanonicalized = true;
             }
+            // If the path starts with "\WINDOWS", we can replace it with C:\WINDOWS.
+            else if (fileName.StartsWith("\\windows", StringComparison.OrdinalIgnoreCase))
+            {
+                fileName = System.IO.Path.GetFullPath(Environment.SystemDirectory + "\\.." + fileName.Substring(8));
+                alreadyCanonicalized = true;
+            }
             // If the path starts with "\??\", we can remove it and we will have the path.
             else if (fileName.StartsWith("\\??\\"))
             {
