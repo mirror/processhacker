@@ -110,6 +110,8 @@ namespace ProcessHacker.Native.Mfs
                 cdWin32
                 ))
             {
+                bool justCreated = false;
+
                 _readOnly = readOnly;
                 _protection = !readOnly ? MemoryProtection.ReadWrite : MemoryProtection.ReadOnly;
 
@@ -143,6 +145,8 @@ namespace ProcessHacker.Native.Mfs
 
                         using (var view = _section.MapView(0, _blockSize, _protection))
                             this.InitializeFs((MfsFsHeader*)view.Memory, createParams);
+
+                        justCreated = true;
                     }
                 }
 
@@ -171,6 +175,11 @@ namespace ProcessHacker.Native.Mfs
 
                 // Remap block 0 with the correct block size.
                 this.DereferenceBlock(0);
+
+                // If we just created a new file system, fix the section size.
+                if (justCreated)
+                    _section.Extend(_blockSize);
+
                 _header = (MfsFsHeader*)this.ReferenceBlock(0);
 
                 // Set up the root object.
