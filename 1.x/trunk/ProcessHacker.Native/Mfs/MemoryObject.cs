@@ -203,9 +203,9 @@ namespace ProcessHacker.Native.Mfs
             return new MemoryObject(_fs, _obj->Parent);
         }
 
-        public MemoryDataStream GetStream()
+        public MemoryDataWriteStream GetWriteStream()
         {
-            return new MemoryDataStream(this, _fs.DataCellDataMaxLength);
+            return new MemoryDataWriteStream(this, _fs.DataCellDataMaxLength);
         }
 
         public byte[] ReadData()

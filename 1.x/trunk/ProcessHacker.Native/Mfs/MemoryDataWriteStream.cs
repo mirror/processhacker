@@ -28,13 +28,13 @@ using ProcessHacker.Common;
 
 namespace ProcessHacker.Native.Mfs
 {
-    public class MemoryDataStream : Stream
+    public class MemoryDataWriteStream : Stream
     {
         private MemoryObject _obj;
         private byte[] _buffer;
         private int _bufferLength;
 
-        internal MemoryDataStream(MemoryObject obj, int bufferSize)
+        internal MemoryDataWriteStream(MemoryObject obj, int bufferSize)
         {
             _obj = obj;
             _buffer = new byte[bufferSize];

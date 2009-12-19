@@ -184,7 +184,7 @@ namespace ProcessHacker
 
             using (var sysinfo = mfs.RootObject.CreateChild("SystemInformation"))
             {
-                BinaryWriter bw = new BinaryWriter(sysinfo.GetStream());
+                BinaryWriter bw = new BinaryWriter(sysinfo.GetWriteStream());
 
                 bw.Write("ProcessHackerVersion", Application.ProductVersion);
                 bw.Write("OSVersion", Environment.OSVersion.VersionString);
@@ -254,7 +254,7 @@ namespace ProcessHacker
 
             using (var general = processMo.CreateChild("General"))
             {
-                BinaryWriter bw = new BinaryWriter(general.GetStream());
+                BinaryWriter bw = new BinaryWriter(general.GetWriteStream());
 
                 if (pid < 0)
                 {
@@ -330,7 +330,7 @@ namespace ProcessHacker
                         {
                             using (var smallIcon = processMo.CreateChild("SmallIcon"))
                             {
-                                using (var s = smallIcon.GetStream())
+                                using (var s = smallIcon.GetWriteStream())
                                 {
                                     using (var b = icon.ToBitmap())
                                         b.Save(s, System.Drawing.Imaging.ImageFormat.Png);
@@ -346,7 +346,7 @@ namespace ProcessHacker
                         {
                             using (var largeIcon = processMo.CreateChild("LargeIcon"))
                             {
-                                using (var s = largeIcon.GetStream())
+                                using (var s = largeIcon.GetWriteStream())
                                 {
                                     using (var b = icon.ToBitmap())
                                         b.Save(s, System.Drawing.Imaging.ImageFormat.Png);
@@ -581,7 +581,7 @@ namespace ProcessHacker
         {
             using (var child = modulesMo.CreateChild(module.BaseAddress.ToString("x")))
             {
-                BinaryWriter bw = new BinaryWriter(child.GetStream());
+                BinaryWriter bw = new BinaryWriter(child.GetWriteStream());
 
                 bw.Write("Name", module.BaseName);
                 bw.Write("FileName", module.FileName);
@@ -610,7 +610,7 @@ namespace ProcessHacker
             {
                 using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                 {
-                    BinaryWriter bw = new BinaryWriter(tokenMo.GetStream());
+                    BinaryWriter bw = new BinaryWriter(tokenMo.GetWriteStream());
 
                     using (var thandle = phandle.GetToken(TokenAccess.Query))
                     {
@@ -642,7 +642,7 @@ namespace ProcessHacker
 
                         using (var groupsMo = tokenMo.CreateChild("Groups"))
                         {
-                            BinaryWriter bw2 = new BinaryWriter(groupsMo.GetStream());
+                            BinaryWriter bw2 = new BinaryWriter(groupsMo.GetWriteStream());
 
                             for (int i = 0; i < groups.Length; i++)
                             {
@@ -658,7 +658,7 @@ namespace ProcessHacker
 
                         using (var privilegesMo = tokenMo.CreateChild("Privileges"))
                         {
-                            BinaryWriter bw2 = new BinaryWriter(privilegesMo.GetStream());
+                            BinaryWriter bw2 = new BinaryWriter(privilegesMo.GetWriteStream());
 
                             for (int i = 0; i < privileges.Length; i++)
                             {
@@ -697,7 +697,7 @@ namespace ProcessHacker
             {
                 using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
                 {
-                    BinaryWriter bw = new BinaryWriter(envMo.GetStream());
+                    BinaryWriter bw = new BinaryWriter(envMo.GetWriteStream());
 
                     foreach (var kvp in phandle.GetEnvironmentVariables())
                     {
@@ -722,7 +722,7 @@ namespace ProcessHacker
 
                     using (var child = handlesChild.CreateChild(handle.Handle.ToString("x")))
                     {
-                        BinaryWriter bw = new BinaryWriter(child.GetStream());
+                        BinaryWriter bw = new BinaryWriter(child.GetWriteStream());
 
                         bw.Write("Handle", handle.Handle);
                         bw.Write("Flags", (int)handle.Flags);
@@ -749,7 +749,7 @@ namespace ProcessHacker
         {
             using (var child = processMo.CreateChild(name + "History"))
             {
-                using (var s = child.GetStream())
+                using (var s = child.GetWriteStream())
                     buffer.Save(s);
             }
         }
@@ -762,7 +762,7 @@ namespace ProcessHacker
                 {
                     using (var serviceChild = services.CreateChild(service.ServiceName))
                     {
-                        BinaryWriter bw = new BinaryWriter(serviceChild.GetStream());
+                        BinaryWriter bw = new BinaryWriter(serviceChild.GetWriteStream());
 
                         bw.Write("Name", service.ServiceName);
                         bw.Write("DisplayName", service.DisplayName);
