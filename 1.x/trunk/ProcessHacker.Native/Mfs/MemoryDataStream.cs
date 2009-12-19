@@ -31,12 +31,13 @@ namespace ProcessHacker.Native.Mfs
     public class MemoryDataStream : Stream
     {
         private MemoryObject _obj;
-        private byte[] _buffer = new byte[MemoryFileSystem.MfsDataCellDataMaxLength];
+        private byte[] _buffer;
         private int _bufferLength;
 
-        internal MemoryDataStream(MemoryObject obj)
+        internal MemoryDataStream(MemoryObject obj, int bufferSize)
         {
             _obj = obj;
+            _buffer = new byte[bufferSize];
         }
 
         public override bool CanRead

@@ -20,9 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Objects;
 
@@ -104,10 +102,7 @@ namespace ProcessHacker.Native.Mfs
             {
                 int writeLength;
 
-                writeLength =
-                    length > MemoryFileSystem.MfsDataCellDataMaxLength ?
-                    MemoryFileSystem.MfsDataCellDataMaxLength :
-                    length;
+                writeLength = length > _fs.DataCellDataMaxLength ? _fs.DataCellDataMaxLength : length;
                 cellId = _fs.CreateDataCell(_obj->LastData, buffer, offset, writeLength);
                 offset += writeLength;
                 length -= writeLength;
@@ -210,7 +205,7 @@ namespace ProcessHacker.Native.Mfs
 
         public MemoryDataStream GetStream()
         {
-            return new MemoryDataStream(this);
+            return new MemoryDataStream(this, _fs.DataCellDataMaxLength);
         }
 
         public byte[] ReadData()
@@ -222,12 +217,25 @@ namespace ProcessHacker.Native.Mfs
             return buffer;
         }
 
+        public int ReadData(System.IO.Stream stream)
+        {
+            return this.ReadData(stream, _obj->DataLength);
+        }
+
         public int ReadData(byte[] buffer, int offset, int length)
         {
             if (_obj->Data == MfsCellId.Empty)
                 return 0;
 
             return _fs.ReadDataCell(_obj->Data, buffer, offset, length);
+        }
+
+        public int ReadData(System.IO.Stream stream, int length)
+        {
+            if (_obj->Data == MfsCellId.Empty)
+                return 0;
+
+            return _fs.ReadDataCell(_obj->Data, stream, length);
         }
     }
 }
