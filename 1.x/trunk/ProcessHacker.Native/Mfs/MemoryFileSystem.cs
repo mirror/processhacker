@@ -49,7 +49,7 @@ namespace ProcessHacker.Native.Mfs
 
             public void ResetObject()
             {
- 	            // No need.
+                // No need.
             }
         }
 
