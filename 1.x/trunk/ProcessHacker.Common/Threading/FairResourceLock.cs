@@ -32,6 +32,11 @@ namespace ProcessHacker.Common.Threading
     /// <summary>
     /// Provides a fast and fair resource (reader-writer) lock.
     /// </summary>
+    /// <remarks>
+    /// FairResourceLock has slightly more overhead than FastResourceLock, 
+    /// but guarantees that waiters will be released in FIFO order and 
+    /// provides better ownership conversion functions.
+    /// </remarks>
     public unsafe sealed class FairResourceLock : IDisposable, IResourceLock
     {
         #region Constants
@@ -58,6 +63,25 @@ namespace ProcessHacker.Common.Threading
             public int Flags;
         }
 
+        private enum ListPosition
+        {
+            /// <summary>
+            /// The wait block will be inserted ahead of all other wait blocks.
+            /// </summary>
+            First,
+
+            /// <summary>
+            /// The wait block will be inserted behind all exclusive wait blocks 
+            /// but ahead of the first shared wait block (if any).
+            /// </summary>
+            LastExclusive,
+
+            /// <summary>
+            /// The wait block will be inserted behind all other wait blocks.
+            /// </summary>
+            Last
+        }
+
         private static void InsertHeadList(WaitBlock* listHead, WaitBlock* entry)
         {
             WaitBlock* flink;
@@ -78,6 +102,19 @@ namespace ProcessHacker.Common.Threading
             entry->Blink = blink;
             blink->Flink = entry;
             listHead->Blink = entry;
+        }
+
+        private static bool RemoveEntryList(WaitBlock* entry)
+        {
+            WaitBlock* blink;
+            WaitBlock* flink;
+
+            flink = entry->Flink;
+            blink = entry->Blink;
+            blink->Flink = flink;
+            flink->Blink = blink;
+
+            return flink == blink;
         }
 
         private static WaitBlock* RemoveHeadList(WaitBlock* listHead)
@@ -205,6 +242,22 @@ namespace ProcessHacker.Common.Threading
         /// </remarks>
         public void AcquireExclusive()
         {
+            this.AcquireExclusive(true);
+        }
+
+        /// <summary>
+        /// Acquires the lock in exclusive mode, blocking 
+        /// if necessary.
+        /// </summary>
+        /// <param name="sleep">
+        /// If true, go to sleep, otherwise busy wait indefinitely.
+        /// </param>
+        /// <remarks>
+        /// Exclusive acquires are given precedence over shared 
+        /// acquires.
+        /// </remarks>
+        private void AcquireExclusive(bool sleep)
+        {
             int value;
             int i = 0;
 
@@ -250,14 +303,14 @@ namespace ProcessHacker.Common.Threading
 
                         // Put our wait block behind other exclusive waiters but 
                         // in front of all shared waiters.
-                        InsertTailList(_firstSharedWaiter, &waitBlock);
+                        this.InsertWaitBlock(&waitBlock, ListPosition.LastExclusive);
                     }
                     finally
                     {
                         _lock.Release();
                     }
 
-                    this.Block(&waitBlock);
+                    this.Block(&waitBlock, sleep);
 
                     // Go back and try again.
                     continue;
@@ -276,6 +329,22 @@ namespace ProcessHacker.Common.Threading
         /// acquires.
         /// </remarks>
         public void AcquireShared()
+        {
+            this.AcquireShared(true);
+        }
+
+        /// <summary>
+        /// Acquires the lock in shared mode, blocking 
+        /// if necessary.
+        /// </summary>
+        /// <param name="sleep">
+        /// If true, go to sleep, otherwise busy wait indefinitely.
+        /// </param>
+        /// <remarks>
+        /// Exclusive acquires are given precedence over shared 
+        /// acquires.
+        /// </remarks>
+        private void AcquireShared(bool sleep)
         {
             int value;
             int i = 0;
@@ -331,15 +400,11 @@ namespace ProcessHacker.Common.Threading
                             value
                             ) != value)
                         {
-                            // Unfortunately we have to go back. This is 
-                            // very wasteful since the waiters list lock 
-                            // must be released again, but must happen since 
-                            // the lock may have been released.
                             continue;
                         }
 
                         // Put our wait block behind other waiters.
-                        InsertTailList(_waitersListHead, &waitBlock);
+                        this.InsertWaitBlock(&waitBlock, ListPosition.Last);
 
                         // Set the first shared waiter pointer.
                         if (
@@ -355,7 +420,7 @@ namespace ProcessHacker.Common.Threading
                         _lock.Release();
                     }
 
-                    this.Block(&waitBlock);
+                    this.Block(&waitBlock, sleep);
 
                     // Go back and try again.
                     continue;
@@ -369,7 +434,11 @@ namespace ProcessHacker.Common.Threading
         /// Blocks on a wait block.
         /// </summary>
         /// <param name="waitBlock">The wait block to block on.</param>
-        private void Block(WaitBlock* waitBlock)
+        /// <param name="sleep">
+        /// If true, go to sleep if not unblocked while spinning, 
+        /// otherwise continue spinning.
+        /// </param>
+        private void Block(WaitBlock* waitBlock, bool sleep)
         {
             int flags;
 
@@ -380,40 +449,171 @@ namespace ProcessHacker.Common.Threading
                     break;
             }
 
-            // Clear the spinning flag.
-            do
+            if (sleep)
             {
-                flags = waitBlock->Flags;
-            } while (Interlocked.CompareExchange(
-                ref waitBlock->Flags,
-                flags & ~WaiterSpinning,
-                flags
-                ) != flags);
-
-            // Go to sleep if necessary.
-            if ((flags & WaiterSpinning) != 0)
-            {
-#if DEFER_EVENT_CREATION
-                IntPtr wakeEvent;
-
-                wakeEvent = Thread.VolatileRead(ref _wakeEvent);
-
-                if (wakeEvent == IntPtr.Zero)
+                // Clear the spinning flag.
+                do
                 {
-                    wakeEvent = this.CreateWakeEvent();
+                    flags = waitBlock->Flags;
+                } while (Interlocked.CompareExchange(
+                    ref waitBlock->Flags,
+                    flags & ~WaiterSpinning,
+                    flags
+                    ) != flags);
 
-                    if (Interlocked.CompareExchange(ref _wakeEvent, wakeEvent, IntPtr.Zero) != IntPtr.Zero)
-                        NativeMethods.CloseHandle(wakeEvent);
-                }
+                // Go to sleep if necessary.
+                if ((flags & WaiterSpinning) != 0)
+                {
+#if DEFER_EVENT_CREATION
+                    IntPtr wakeEvent;
+
+                    wakeEvent = Thread.VolatileRead(ref _wakeEvent);
+
+                    if (wakeEvent == IntPtr.Zero)
+                    {
+                        wakeEvent = this.CreateWakeEvent();
+
+                        if (Interlocked.CompareExchange(ref _wakeEvent, wakeEvent, IntPtr.Zero) != IntPtr.Zero)
+                            NativeMethods.CloseHandle(wakeEvent);
+                    }
 #endif
 
-                if (NativeMethods.NtWaitForKeyedEvent(
-                    _wakeEvent,
-                    new IntPtr(waitBlock),
-                    false,
-                    IntPtr.Zero
-                    ) != 0)
-                    throw new Exception(Utils.MsgFailedToWaitIndefinitely);
+                    if (NativeMethods.NtWaitForKeyedEvent(
+                        _wakeEvent,
+                        new IntPtr(waitBlock),
+                        false,
+                        IntPtr.Zero
+                        ) != 0)
+                        throw new Exception(Utils.MsgFailedToWaitIndefinitely);
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    if ((Thread.VolatileRead(ref waitBlock->Flags) & WaiterSpinning) == 0)
+                        break;
+
+                    if (NativeMethods.SpinEnabled)
+                        Thread.SpinWait(SpinCount);
+                    else
+                        Thread.Sleep(0);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Converts the ownership mode from exclusive to shared.
+        /// </summary>
+        /// <remarks>
+        /// This operation is almost the same as releasing then 
+        /// acquiring in shared mode, except that exclusive waiters 
+        /// are not given a chance to acquire the lock.
+        /// </remarks>
+        public void ConvertExclusiveToShared()
+        {
+            int value;
+
+            while (true)
+            {
+                value = _value;
+
+                if (Interlocked.CompareExchange(
+                    ref _value,
+                    value + LockSharedOwnersIncrement,
+                    value
+                    ) == value)
+                {
+                    if ((value & LockWaiters) != 0)
+                        this.WakeShared();
+
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Converts the ownership mode from shared to exclusive, 
+        /// blocking if necessary.
+        /// </summary>
+        /// <remarks>
+        /// This operation is almost the same as releasing then 
+        /// acquiring in exclusive mode, except that the caller is 
+        /// placed ahead of all other waiters when acquiring.
+        /// </remarks>
+        public void ConvertSharedToExclusive()
+        {
+            this.ConvertSharedToExclusive(true);
+        }
+
+        /// <summary>
+        /// Converts the ownership mode from shared to exclusive.
+        /// </summary>
+        /// <param name="sleep">
+        /// If true, go to sleep, otherwise busy wait indefinitely.
+        /// </param>
+        /// <remarks>
+        /// This operation is almost the same as releasing then 
+        /// acquiring in exclusive mode, except that the caller is 
+        /// placed ahead of all other waiters when acquiring.
+        /// </remarks>
+        private void ConvertSharedToExclusive(bool sleep)
+        {
+            int value;
+            int i = 0;
+
+            while (true)
+            {
+                value = _value;
+
+                // Are we the only shared waiter? If so, acquire in exclusive mode, 
+                // otherwise wait.
+                if (((value >> LockSharedOwnersShift) & LockSharedOwnersMask) == 1)
+                {
+                    if (Interlocked.CompareExchange(
+                        ref _value,
+                        value - LockSharedOwnersIncrement,
+                        value
+                        ) == value)
+                        break;
+                }
+                else if (i >= _spinCount)
+                {
+                    // We need to wait.
+                    WaitBlock waitBlock;
+
+                    waitBlock.Flags = WaiterExclusive | WaiterSpinning;
+
+                    // Obtain the waiters list lock.
+                    _lock.Acquire();
+
+                    try
+                    {
+                        // Try to set the waiters bit.
+                        if (Interlocked.CompareExchange(
+                            ref _value,
+                            value | LockWaiters,
+                            value
+                            ) != value)
+                        {
+                            continue;
+                        }
+
+                        // Put our wait block ahead of all other waiters.
+                        this.InsertWaitBlock(&waitBlock, ListPosition.First);
+                    }
+                    finally
+                    {
+                        _lock.Release();
+                    }
+
+                    this.Block(&waitBlock, sleep);
+
+                    // Go back and try again.
+                    continue;
+                }
+
+                i++;
             }
         }
 
@@ -434,6 +634,27 @@ namespace ProcessHacker.Common.Threading
                 throw new Exception("Failed to create the wake event.");
 
             return wakeEvent;
+        }
+
+        /// <summary>
+        /// Inserts a wait block into the waiters list.
+        /// </summary>
+        /// <param name="waitBlock">The wait block to insert.</param>
+        /// <param name="position">Specifies where to insert the wait block.</param>
+        private void InsertWaitBlock(WaitBlock* waitBlock, ListPosition position)
+        {
+            switch (position)
+            {
+                case ListPosition.First:
+                    InsertHeadList(_waitersListHead, waitBlock);
+                    break;
+                case ListPosition.LastExclusive:
+                    InsertTailList(_firstSharedWaiter, waitBlock);
+                    break;
+                case ListPosition.Last:
+                    InsertTailList(_waitersListHead, waitBlock);
+                    break;
+            }
         }
 
         /// <summary>
@@ -490,6 +711,41 @@ namespace ProcessHacker.Common.Threading
                     break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Acquires the lock in exclusive mode, busy waiting 
+        /// if necessary.
+        /// </summary>
+        /// <remarks>
+        /// Exclusive acquires are given precedence over shared 
+        /// acquires.
+        /// </remarks>
+        public void SpinAcquireExclusive()
+        {
+            this.AcquireExclusive(false);
+        }
+
+        /// <summary>
+        /// Acquires the lock in shared mode, busy waiting 
+        /// if necessary.
+        /// </summary>
+        /// <remarks>
+        /// Exclusive acquires are given precedence over shared 
+        /// acquires.
+        /// </remarks>
+        public void SpinAcquireShared()
+        {
+            this.AcquireShared(false);
+        }
+
+        /// <summary>
+        /// Converts the ownership mode from shared to exclusive, 
+        /// busy waiting if necessary.
+        /// </summary>
+        public void SpinConvertSharedToExclusive()
+        {
+            this.ConvertSharedToExclusive(false);
         }
 
         /// <summary>
@@ -670,6 +926,122 @@ namespace ProcessHacker.Common.Threading
             {
                 this.Unblock(wb);
                 return;
+            }
+
+            // Carefully traverse the wake list and wake each waiter.
+            wb = wakeList.Flink;
+
+            while (true)
+            {
+                WaitBlock* flink;
+
+                if (wb == &wakeList)
+                    break;
+
+                flink = wb->Flink;
+                this.Unblock(wb);
+                wb = flink;
+            }
+        }
+
+        /// <summary>
+        /// Wakes one exclusive waiter.
+        /// </summary>
+        private void WakeExclusive()
+        {
+            WaitBlock* wb;
+            WaitBlock* unblockWaitBlock = null;
+
+            _lock.Acquire();
+
+            try
+            {
+                wb = _waitersListHead->Flink;
+
+                if (
+                    wb != _waitersListHead &&
+                    (wb->Flags & WaiterExclusive) != 0
+                    )
+                {
+                    unblockWaitBlock = RemoveHeadList(_waitersListHead);
+                    wb = _waitersListHead->Flink;
+                }
+
+                if (wb == _waitersListHead)
+                {
+                    int value;
+
+                    // No more waiters. Clear the waiters bit.
+                    do
+                    {
+                        value = _value;
+                    } while (Interlocked.CompareExchange(
+                        ref _value,
+                        value & ~LockWaiters,
+                        value
+                        ) != value);
+                }
+            }
+            finally
+            {
+                _lock.Release();
+            }
+
+            if (unblockWaitBlock != null)
+                this.Unblock(unblockWaitBlock);
+        }
+
+        /// <summary>
+        /// Wakes multiple shared waiters.
+        /// </summary>
+        private void WakeShared()
+        {
+            WaitBlock wakeList = new WaitBlock();
+            WaitBlock* wb = null;
+
+            wakeList.Flink = &wakeList;
+            wakeList.Blink = &wakeList;
+
+            _lock.Acquire();
+
+            try
+            {
+                wb = _firstSharedWaiter;
+
+                while (true)
+                {
+                    WaitBlock* flink;
+
+                    if (wb == _waitersListHead)
+                    {
+                        int value;
+
+                        // No more waiters. Clear the waiters bit.
+                        do
+                        {
+                            value = _value;
+                        } while (Interlocked.CompareExchange(
+                            ref _value,
+                            value & ~LockWaiters,
+                            value
+                            ) != value);
+
+                        break;
+                    }
+
+                    // Remove the waiter and add it to the wake list.
+                    flink = wb->Flink;
+                    RemoveEntryList(wb);
+                    InsertTailList(&wakeList, wb);
+                    wb = flink;
+                }
+
+                // Reset the first shared waiter pointer.
+                _firstSharedWaiter = _waitersListHead;
+            }
+            finally
+            {
+                _lock.Release();
             }
 
             // Carefully traverse the wake list and wake each waiter.
