@@ -41,11 +41,16 @@ namespace ProcessHacker.Native.Mfs
         internal const int MfsDefaultBlockSize = 0x10000;
         internal const int MfsDefaultCellSize = 0x80;
 
-        private class ViewDescriptor
+        private class ViewDescriptor : IResettable
         {
             public ushort RefCount;
             public ushort BlockId;
             public SectionView View;
+
+            public void ResetObject()
+            {
+ 	            // No need.
+            }
         }
 
         private bool _readOnly;
@@ -63,6 +68,7 @@ namespace ProcessHacker.Native.Mfs
         private MfsObjectHeader* _rootObject;
         private MemoryObject _rootObjectMo;
 
+        private FreeList<ViewDescriptor> _vdFreeList = new FreeList<ViewDescriptor>() { MaximumCount = 16 };
         private Dictionary<ushort, ViewDescriptor> _views =
             new Dictionary<ushort, ViewDescriptor>();
         private Dictionary<IntPtr, ViewDescriptor> _views2 =
@@ -264,7 +270,7 @@ namespace ProcessHacker.Native.Mfs
             header->Hash = 0;
             header->NextFreeCell = 1;
 
-            ViewDescriptor vd = new ViewDescriptor();
+            ViewDescriptor vd = _vdFreeList.Allocate();
 
             vd.RefCount = 1;
             vd.BlockId = blockId;
@@ -420,6 +426,8 @@ namespace ProcessHacker.Native.Mfs
                 _views.Remove(vd.BlockId);
                 _views2.Remove(vd.View.Memory);
                 vd.View.Dispose();
+
+                _vdFreeList.Free(vd);
             }
         } 
 
@@ -573,7 +581,7 @@ namespace ProcessHacker.Native.Mfs
             else
             {
                 view = _section.MapView(blockId * _blockSize, _blockSize, _protection);
-                vd = new ViewDescriptor();
+                vd = _vdFreeList.Allocate();
                 vd.RefCount = 1;
                 vd.BlockId = blockId;
                 vd.View = view;

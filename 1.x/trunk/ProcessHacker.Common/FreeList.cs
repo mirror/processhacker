@@ -75,7 +75,8 @@ namespace ProcessHacker.Common
                     ) == listHead)
                 {
                     // Success.
-                    _count--;
+                    Interlocked.Decrement(ref _count);
+
                     return listHead.Object;
                 }
             }
@@ -116,7 +117,8 @@ namespace ProcessHacker.Common
                         ) == listHead)
                     {
                         // Success.
-                        _count++;
+                        Interlocked.Increment(ref _count);
+
                         break;
                     }
                 }
