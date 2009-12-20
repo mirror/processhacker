@@ -1085,106 +1085,115 @@ namespace ProcessHacker
                     ioPriorityThreadMenuItem.Enabled = false;
                 }
 
-                // Check the virtualization menu item.
-                try
+                // Check if we think the process exists. If we don't, disable all menu items
+                // to avoid random exceptions occurring when the user clicks on certain things.
+                if (!Program.ProcessProvider.Dictionary.ContainsKey(processSelectedPid))
                 {
-                    using (var phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
-                    {
-                        try
-                        {
-                            using (var thandle = phandle.GetToken(TokenAccess.Query))
-                            {
-                                if (virtualizationProcessMenuItem.Enabled = thandle.IsVirtualizationAllowed())
-                                    virtualizationProcessMenuItem.Checked = thandle.IsVirtualizationEnabled();
-                            }
-                        }
-                        catch
-                        { }
-                    }
-                }
-                catch
-                {
-                    virtualizationProcessMenuItem.Enabled = false;
-                }
-
-                // Enable/disable DLL injection based on the process' session ID. This only applies 
-                // on XP and above.
-                try
-                {
-                    if (
-                        OSVersion.IsBelowOrEqual(WindowsVersion.XP) &&
-                        Program.ProcessProvider.Dictionary[processSelectedPid].SessionId != Program.CurrentSessionId
-                        )
-                        injectDllProcessMenuItem.Enabled = false;
-                    else
-                        injectDllProcessMenuItem.Enabled = true;
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
-                }
-
-                // Disable Terminate Process Tree if the selected process doesn't 
-                // have any children. Note that this may also happen if the user 
-                // is sorting the list (!).
-                try
-                {
-                    if (treeProcesses.SelectedTreeNodes[0].IsLeaf &&
-                        (treeProcesses.Tree.Model as ProcessTreeModel).GetSortColumn() == "")
-                        terminateProcessTreeMenuItem.Visible = false;
-                    else
-                        terminateProcessTreeMenuItem.Visible = true;
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
-                }
-
-                // Find the process' window (if any).
-                windowHandle = WindowHandle.Zero;
-                WindowHandle.Enumerate(
-                    (handle) =>
-                    {
-                        // GetWindowLong
-                        // Shell_TrayWnd
-                        if (handle.IsWindow() && handle.IsVisible() && handle.IsParent())
-                        {
-                            int pid;
-                            Win32.GetWindowThreadProcessId(handle, out pid);
-
-                            if (pid == processSelectedPid)
-                            {
-                                windowHandle = handle;
-                                return false;
-                            }
-                        }
-                        return true;
-                    });
-
-                // Enable the Window submenu if we found window owned 
-                // by the process. Otherwise, disable the submenu.
-                if (windowHandle.IsInvalid)
-                {
-                    windowProcessMenuItem.Enabled = false;
+                    menuProcess.DisableAll();
                 }
                 else
                 {
-                    windowProcessMenuItem.Enabled = true;
-                    windowProcessMenuItem.EnableAll();
-
-                    switch (windowHandle.GetPlacement().ShowState)
+                    // Check the virtualization menu item.
+                    try
                     {
-                        case ShowWindowType.ShowMinimized:
-                            minimizeProcessMenuItem.Enabled = false;                          
-                            break;
+                        using (var phandle = new ProcessHandle(processSelectedPid, Program.MinProcessQueryRights))
+                        {
+                            try
+                            {
+                                using (var thandle = phandle.GetToken(TokenAccess.Query))
+                                {
+                                    if (virtualizationProcessMenuItem.Enabled = thandle.IsVirtualizationAllowed())
+                                        virtualizationProcessMenuItem.Checked = thandle.IsVirtualizationEnabled();
+                                }
+                            }
+                            catch
+                            { }
+                        }
+                    }
+                    catch
+                    {
+                        virtualizationProcessMenuItem.Enabled = false;
+                    }
 
-                        case ShowWindowType.ShowMaximized:
-                            maximizeProcessMenuItem.Enabled = false;                       
-                            break;
+                    // Enable/disable DLL injection based on the process' session ID. This only applies 
+                    // on XP and above.
+                    try
+                    {
+                        if (
+                            OSVersion.IsBelowOrEqual(WindowsVersion.XP) &&
+                            Program.ProcessProvider.Dictionary[processSelectedPid].SessionId != Program.CurrentSessionId
+                            )
+                            injectDllProcessMenuItem.Enabled = false;
+                        else
+                            injectDllProcessMenuItem.Enabled = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
 
-                        case ShowWindowType.ShowNormal:
-                            restoreProcessMenuItem.Enabled = false; 
-                            break;                       
+                    // Disable Terminate Process Tree if the selected process doesn't 
+                    // have any children. Note that this may also happen if the user 
+                    // is sorting the list (!).
+                    try
+                    {
+                        if (treeProcesses.SelectedTreeNodes[0].IsLeaf &&
+                            (treeProcesses.Tree.Model as ProcessTreeModel).GetSortColumn() == "")
+                            terminateProcessTreeMenuItem.Visible = false;
+                        else
+                            terminateProcessTreeMenuItem.Visible = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
+
+                    // Find the process' window (if any).
+                    windowHandle = WindowHandle.Zero;
+                    WindowHandle.Enumerate(
+                        (handle) =>
+                        {
+                            // GetWindowLong
+                            // Shell_TrayWnd
+                            if (handle.IsWindow() && handle.IsVisible() && handle.IsParent())
+                            {
+                                int pid;
+                                Win32.GetWindowThreadProcessId(handle, out pid);
+
+                                if (pid == processSelectedPid)
+                                {
+                                    windowHandle = handle;
+                                    return false;
+                                }
+                            }
+                            return true;
+                        });
+
+                    // Enable the Window submenu if we found window owned 
+                    // by the process. Otherwise, disable the submenu.
+                    if (windowHandle.IsInvalid)
+                    {
+                        windowProcessMenuItem.Enabled = false;
+                    }
+                    else
+                    {
+                        windowProcessMenuItem.Enabled = true;
+                        windowProcessMenuItem.EnableAll();
+
+                        switch (windowHandle.GetPlacement().ShowState)
+                        {
+                            case ShowWindowType.ShowMinimized:
+                                minimizeProcessMenuItem.Enabled = false;
+                                break;
+
+                            case ShowWindowType.ShowMaximized:
+                                maximizeProcessMenuItem.Enabled = false;
+                                break;
+
+                            case ShowWindowType.ShowNormal:
+                                restoreProcessMenuItem.Enabled = false;
+                                break;
+                        }
                     }
                 }
             }
