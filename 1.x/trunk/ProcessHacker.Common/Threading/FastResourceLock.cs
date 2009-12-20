@@ -20,6 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define DEFER_EVENT_CREATION
 //#define RIGOROUS_CHECKS
 
 using System;
@@ -147,8 +148,11 @@ namespace ProcessHacker.Common.Threading
         public FastResourceLock()
         {
             _value = 0;
+
+#if !DEFER_EVENT_CREATION
             _sharedWakeEvent = NativeMethods.CreateSemaphore(IntPtr.Zero, 0, int.MaxValue, null);
             _exclusiveWakeEvent = NativeMethods.CreateSemaphore(IntPtr.Zero, 0, int.MaxValue, null);
+#endif
         }
 
         ~FastResourceLock()
@@ -253,6 +257,13 @@ namespace ProcessHacker.Common.Threading
                 // steal the lock.
                 else if (i >= SpinCount)
                 {
+#if DEFER_EVENT_CREATION
+                    // This call must go *before* the next operation. Otherwise, 
+                    // we will have a race condition between potential releasers 
+                    // and us.
+                    this.EnsureEventCreated(ref _exclusiveWakeEvent);
+
+#endif
                     if (Interlocked.CompareExchange(
                         ref _value,
                         value + LockExclusiveWaitersIncrement,
@@ -340,6 +351,10 @@ namespace ProcessHacker.Common.Threading
                 // Other cases.
                 else if (i >= SpinCount)
                 {
+#if DEFER_EVENT_CREATION
+                    this.EnsureEventCreated(ref _sharedWakeEvent);
+
+#endif
                     if (Interlocked.CompareExchange(
                         ref _value,
                         value + LockSharedWaitersIncrement,
@@ -400,6 +415,26 @@ namespace ProcessHacker.Common.Threading
                 }
             }
         }
+
+#if DEFER_EVENT_CREATION
+        /// <summary>
+        /// Checks if the specified event has been created, and 
+        /// if not, creates it.
+        /// </summary>
+        /// <param name="handle">A reference to the event handle.</param>
+        private void EnsureEventCreated(ref IntPtr handle)
+        {
+            IntPtr eventHandle;
+
+            if (Thread.VolatileRead(ref handle) != IntPtr.Zero)
+                return;
+
+            eventHandle = NativeMethods.CreateSemaphore(IntPtr.Zero, 0, int.MaxValue, null);
+
+            if (Interlocked.CompareExchange(ref handle, eventHandle, IntPtr.Zero) != IntPtr.Zero)
+                NativeMethods.CloseHandle(eventHandle);
+        }
+#endif
 
         /// <summary>
         /// Releases the lock in exclusive mode.

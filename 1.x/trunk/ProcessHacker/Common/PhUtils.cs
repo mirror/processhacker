@@ -448,23 +448,12 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Controls whether the UAC shield icon is displayed on the specified button.
-        /// </summary>
-        /// <param name="button">The button to modify.</param>
-        /// <param name="show">Whether to show the UAC shield icon.</param>
-        private static void SetShieldIconInternal(Button button, bool show)
-        {
-            Win32.SendMessage(button.Handle,
-                WindowMessage.BcmSetShield, 0, show ? 1 : 0);
-        }
-
-        /// <summary>
         /// Controls whether the UAC shield icon is displayed on the button.
         /// </summary>
         /// <param name="visible">Whether the shield icon is visible.</param>
         public static void SetShieldIcon(this Button button, bool visible)
         {
-            SetShieldIconInternal(button, visible);
+            Win32.SendMessage(button.Handle, WindowMessage.BcmSetShield, 0, visible ? 1 : 0);
         }
 
         /// <summary>

@@ -20,7 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//#define DEFER_EVENT_CREATION
+#define DEFER_EVENT_CREATION
 
 using System;
 using System.Collections.Generic;
@@ -158,7 +158,11 @@ namespace ProcessHacker.Common.Threading
                 __waitersListHead = null;
             }
 
-            NativeMethods.CloseHandle(_wakeEvent);
+            if (_wakeEvent != IntPtr.Zero)
+            {
+                NativeMethods.CloseHandle(_wakeEvent);
+                _wakeEvent = IntPtr.Zero;
+            }
         }
 
         /// <summary>
