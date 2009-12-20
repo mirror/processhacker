@@ -21,6 +21,7 @@
  */
 
 using System.Collections.Generic;
+using ProcessHacker.Common.Threading;
 
 namespace ProcessHacker.Common.Objects
 {
@@ -64,16 +65,24 @@ namespace ProcessHacker.Common.Objects
         public delegate bool EnumerateHandleTableDelegate(int handle, TEntry entry);
 
         private IdGenerator _handleGenerator = new IdGenerator(4, 4);
-        private Dictionary<int, TEntry> _handles =
-            new Dictionary<int, TEntry>();
+        private FastResourceLock _lock = new FastResourceLock();
+        private Dictionary<int, TEntry> _handles = new Dictionary<int, TEntry>();
 
         protected override void DisposeObject(bool disposing)
         {
-            lock (_handles)
+            _lock.AcquireExclusive();
+
+            try
             {
                 foreach (var entry in _handles.Values)
                     entry.Object.Dereference(disposing);
             }
+            finally
+            {
+                _lock.ReleaseExclusive();
+            }
+
+            _lock.Dispose();
         }
 
         /// <summary>
@@ -108,9 +117,15 @@ namespace ProcessHacker.Common.Objects
             entry.Object = obj;
 
             // Add the handle entry.
-            lock (_handles)
+            _lock.AcquireExclusive();
+
+            try
             {
                 _handles.Add(handle, entry);
+            }
+            finally
+            {
+                _lock.ReleaseExclusive();
             }
 
             return handle;
@@ -123,7 +138,9 @@ namespace ProcessHacker.Common.Objects
         /// <returns>Whether the enumeration was stopped by the callback.</returns>
         public bool Enumerate(EnumerateHandleTableDelegate callback)
         {
-            lock (_handles)
+            _lock.AcquireShared();
+
+            try
             {
                 foreach (var entry in _handles.Values)
                 {
@@ -132,6 +149,10 @@ namespace ProcessHacker.Common.Objects
                 }
 
                 return false;
+            }
+            finally
+            {
+                _lock.ReleaseShared();
             }
         }
 
@@ -144,7 +165,9 @@ namespace ProcessHacker.Common.Objects
         {
             IRefCounted obj;
 
-            lock (_handles)
+            _lock.AcquireExclusive();
+
+            try
             {
                 if (!_handles.ContainsKey(handle))
                     return false;
@@ -153,6 +176,10 @@ namespace ProcessHacker.Common.Objects
                 obj = _handles[handle].Object;
                 // Remove the handle so it can no longer be used.
                 _handles.Remove(handle);
+            }
+            finally
+            {
+                _lock.ReleaseExclusive();
             }
 
             // Make the handle value available.
@@ -170,12 +197,18 @@ namespace ProcessHacker.Common.Objects
         /// <returns>A handle table entry.</returns>
         public TEntry LookupEntry(int handle)
         {
-            lock (_handles)
+            _lock.AcquireShared();
+
+            try
             {
                 if (_handles.ContainsKey(handle))
                     return _handles[handle];
                 else
                     return null;
+            }
+            finally
+            {
+                _lock.ReleaseShared();
             }
         }
 
@@ -218,6 +251,7 @@ namespace ProcessHacker.Common.Objects
         public IRefCounted ReferenceByHandle(int handle)
         {
             TEntry entry;
+
             return this.ReferenceByHandle(handle, out entry);
         }
 
@@ -232,7 +266,9 @@ namespace ProcessHacker.Common.Objects
         /// </returns>
         public IRefCounted ReferenceByHandle(int handle, out TEntry entry)
         {
-            lock (_handles)
+            _lock.AcquireShared();
+
+            try
             {
                 if (_handles.ContainsKey(handle))
                 {
@@ -249,6 +285,10 @@ namespace ProcessHacker.Common.Objects
                     return null;
                 }
             }
+            finally
+            {
+                _lock.ReleaseShared();
+            }
         }
 
         /// <summary>
@@ -264,6 +304,7 @@ namespace ProcessHacker.Common.Objects
             where T : class, IRefCounted
         {
             TEntry entry;
+
             return this.ReferenceByHandle<T>(handle, out entry);
         }
 

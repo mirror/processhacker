@@ -32,7 +32,7 @@ namespace ProcessHacker.Common.Threading
     /// <summary>
     /// Provides a fast and fair resource (reader-writer) lock.
     /// </summary>
-    public unsafe sealed class FairResourceLock : IDisposable
+    public unsafe sealed class FairResourceLock : IDisposable, IResourceLock
     {
         #region Constants
 

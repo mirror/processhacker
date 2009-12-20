@@ -46,7 +46,7 @@ namespace ProcessHacker.Common.Threading
     /// Note that all three types of functions can be used concurrently 
     /// in the same class instance.
     /// </remarks>
-    public sealed class FastResourceLock : IDisposable
+    public sealed class FastResourceLock : IDisposable, IResourceLock
     {
         // Details
         //
