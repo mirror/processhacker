@@ -32,11 +32,6 @@ namespace ProcessHacker.Common.Threading
     /// <summary>
     /// Provides a fast and fair resource (reader-writer) lock.
     /// </summary>
-    /// <remarks>
-    /// FairResourceLock is better than FastResourceLock when 
-    /// very little time is spent inside lock regions, and scales 
-    /// better than FastResourceLock.
-    /// </remarks>
     public unsafe sealed class FairResourceLock : IDisposable
     {
         #region Constants
