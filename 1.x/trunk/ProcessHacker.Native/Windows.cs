@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Runtime.InteropServices;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Threading;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -51,6 +52,7 @@ namespace ProcessHacker.Native
         /// reason. The dictionary relates object type numbers to their names.
         /// </summary>
         internal static Dictionary<byte, string> ObjectTypes = new Dictionary<byte, string>();
+        internal static FastResourceLock ObjectTypesLock = new FastResourceLock();
 
         [ThreadStatic]
         private static MemoryAlloc _handlesBuffer;

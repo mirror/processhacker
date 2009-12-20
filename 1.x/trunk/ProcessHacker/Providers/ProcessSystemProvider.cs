@@ -197,9 +197,9 @@ namespace ProcessHacker
         public DeltaManager<SystemStats, long> LongDeltas { get { return _longDeltas; } }
         public HistoryManager<string, float> FloatHistory { get { return _floatHistory; } }
         public HistoryManager<SystemStats, long> LongHistory { get { return _longHistory; } }
-        public ReadOnlyCollection<DateTime> TimeHistory { get { return _timeHistory[false]; } }
-        public ReadOnlyCollection<string> MostCpuHistory { get { return _mostUsageHistory[false]; } }
-        public ReadOnlyCollection<string> MostIoHistory { get { return _mostUsageHistory[true]; } }
+        public IList<DateTime> TimeHistory { get { return _timeHistory[false]; } }
+        public IList<string> MostCpuHistory { get { return _mostUsageHistory[false]; } }
+        public IList<string> MostIoHistory { get { return _mostUsageHistory[true]; } }
 
         private delegate ProcessQueryMessage QueryProcessDelegate(int pid, string fileName, bool useCache);
 

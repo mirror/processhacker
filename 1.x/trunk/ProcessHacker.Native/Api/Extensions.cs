@@ -204,52 +204,70 @@ namespace ProcessHacker.Native
 
             // If the cache contains the object type's name, use it. Otherwise, query the type 
             // for its name.
-            lock (Windows.ObjectTypes)
+            Windows.ObjectTypesLock.AcquireShared();
+
+            try
             {
                 if (Windows.ObjectTypes.ContainsKey(thisHandle.ObjectTypeNumber))
                 {
                     info.TypeName = Windows.ObjectTypes[thisHandle.ObjectTypeNumber];
                 }
+            }
+            finally
+            {
+                Windows.ObjectTypesLock.ReleaseShared();
+            }
+
+            if (info.TypeName == null)
+            {
+                int baseAddress = 0;
+
+                if (KProcessHacker.Instance != null)
+                {
+                    KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectTypeInformation,
+                        IntPtr.Zero, 0, out retLength, out baseAddress);
+                }
                 else
                 {
-                    int baseAddress = 0;
+                    Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectTypeInformation,
+                        IntPtr.Zero, 0, out retLength);
+                }
 
-                    if (KProcessHacker.Instance != null)
+                if (retLength > 0)
+                {
+                    using (MemoryAlloc otiMem = new MemoryAlloc(retLength))
                     {
-                        KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectTypeInformation,
-                            IntPtr.Zero, 0, out retLength, out baseAddress);
-                    }
-                    else
-                    {
-                        Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectTypeInformation,
-                            IntPtr.Zero, 0, out retLength);
-                    }
-
-                    if (retLength > 0)
-                    {
-                        using (MemoryAlloc otiMem = new MemoryAlloc(retLength))
+                        if (KProcessHacker.Instance != null)
                         {
-                            if (KProcessHacker.Instance != null)
-                            {
-                                if (KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectTypeInformation,
-                                    otiMem, otiMem.Size, out retLength, out baseAddress) >= NtStatus.Error)
-                                    throw new Exception("ZwQueryObject failed.");
-                            }
-                            else
-                            {
-                                if (Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectTypeInformation,
-                                    otiMem, otiMem.Size, out retLength) >= NtStatus.Error)
-                                    throw new Exception("NtQueryObject failed.");
-                            }
+                            if (KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectTypeInformation,
+                                otiMem, otiMem.Size, out retLength, out baseAddress) >= NtStatus.Error)
+                                throw new Exception("ZwQueryObject failed.");
+                        }
+                        else
+                        {
+                            if (Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectTypeInformation,
+                                otiMem, otiMem.Size, out retLength) >= NtStatus.Error)
+                                throw new Exception("NtQueryObject failed.");
+                        }
 
-                            var oti = otiMem.ReadStruct<ObjectTypeInformation>();
-                            var str = oti.Name;
+                        var oti = otiMem.ReadStruct<ObjectTypeInformation>();
+                        var str = oti.Name;
 
-                            if (KProcessHacker.Instance != null)
-                                str.Buffer = str.Buffer.Increment(otiMem.Memory.Decrement(baseAddress));
+                        if (KProcessHacker.Instance != null)
+                            str.Buffer = str.Buffer.Increment(otiMem.Memory.Decrement(baseAddress));
 
-                            info.TypeName = str.Read();
-                            Windows.ObjectTypes.Add(thisHandle.ObjectTypeNumber, info.TypeName);
+                        info.TypeName = str.Read();
+
+                        Windows.ObjectTypesLock.AcquireExclusive();
+
+                        try
+                        {
+                            if (!Windows.ObjectTypes.ContainsKey(thisHandle.ObjectTypeNumber))
+                                Windows.ObjectTypes.Add(thisHandle.ObjectTypeNumber, info.TypeName);
+                        }
+                        finally
+                        {
+                            Windows.ObjectTypesLock.ReleaseExclusive();
                         }
                     }
                 }
