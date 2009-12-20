@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ProcessHacker.Common;
 
 namespace ProcessHacker.Native.Api
 {
@@ -107,27 +108,38 @@ namespace ProcessHacker.Native.Api
 
         public static string GetMessage(this Win32Error errorCode)
         {
-            StringBuilder buffer = new StringBuilder(0x100);
+            String255 buffer = new String255();
 
-            if (Win32.FormatMessage(0x3200, IntPtr.Zero, (int)errorCode, 0, buffer, buffer.Capacity, IntPtr.Zero) == 0)
-                return "Unknown error (0x" + ((int)errorCode).ToString("x") + ")";
-
-            StringBuilder result = new StringBuilder();
-            int i = 0;
-
-            while (i < buffer.Length)
+            unsafe
             {
-                if (!char.IsLetterOrDigit(buffer[i]) &&
-                    !char.IsPunctuation(buffer[i]) &&
-                    !char.IsSymbol(buffer[i]) &&
-                    !char.IsWhiteSpace(buffer[i]))
-                    break;
+                if ((buffer.Length = (byte)Win32.FormatMessage(
+                    0x3200,
+                    IntPtr.Zero,
+                    (int)errorCode,
+                    0,
+                    new IntPtr(buffer.Buffer),
+                    String255.MaximumLength,
+                    IntPtr.Zero
+                    )) == 0)
+                    return "Unknown error (0x" + ((int)errorCode).ToString("x") + ")";
 
-                result.Append(buffer[i]);
-                i++;
+                String255 result = new String255();
+
+                for (int i = 0; i < buffer.Length; i++)
+                {
+                    char c = buffer.Buffer[i];
+
+                    if (!char.IsLetterOrDigit(c) &&
+                        !char.IsPunctuation(c) &&
+                        !char.IsSymbol(c) &&
+                        !char.IsWhiteSpace(c))
+                        break;
+
+                    result.Append(c);
+                }
+
+                return result.ToString().Replace("\r\n", "");
             }
-
-            return result.ToString().Replace("\r\n", "");
         }
     }
 }

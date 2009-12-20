@@ -64,6 +64,20 @@ namespace ProcessHacker.Common
             this.Length = (byte)length;
         }
 
+        public char this[int index]
+        {
+            get
+            {
+                fixed (char* buffer = this.Buffer)
+                    return buffer[index];
+            }
+            set
+            {
+                fixed (char* buffer = this.Buffer)
+                    buffer[index] = value;
+            }
+        }
+
         public void Append(char c)
         {
             if ((this.Length + 1) > MaximumLength)

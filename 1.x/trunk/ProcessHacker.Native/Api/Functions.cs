@@ -252,6 +252,17 @@ namespace ProcessHacker.Native.Api
             [In] [Optional] IntPtr Arguments
             );
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern int FormatMessage(
+            [In] int Flags,
+            [In] [Optional] IntPtr Source,
+            [In] int MessageId,
+            [In] int LanguageId,
+            [In] IntPtr Buffer,
+            [In] int Size,
+            [In] [Optional] IntPtr Arguments
+            );
+
         /// <summary>
         /// Removes an Application from Windows Error Reporting on Windows Vista
         /// </summary>
