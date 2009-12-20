@@ -2460,6 +2460,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemPerformanceInformation
     {
+        public static readonly int Size = Marshal.SizeOf(typeof(SystemPerformanceInformation));
+
         /// <summary>
         /// The total idle time of all processors in units of 100-nanoseconds.
         /// </summary>

@@ -349,7 +349,7 @@ namespace ProcessHacker
             int retLen;
 
             Win32.NtQuerySystemInformation(SystemInformationClass.SystemPerformanceInformation,
-                 out _performance, Marshal.SizeOf(typeof(SystemPerformanceInformation)), out retLen);
+                 out _performance, SystemPerformanceInformation.Size, out retLen);
         }
 
         private ProcessQueryMessage QueryProcessStage1(int pid, string fileName, bool forced)

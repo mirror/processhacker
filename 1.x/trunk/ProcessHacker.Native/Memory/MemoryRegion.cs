@@ -20,17 +20,23 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define SIZE_CACHE_USE_RESOURCE_LOCK
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using ProcessHacker.Common.Objects;
+using ProcessHacker.Common.Threading;
 
 namespace ProcessHacker.Native
 {
     public class MemoryRegion : BaseObject
     {
         private static Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
+#if SIZE_CACHE_USE_RESOURCE_LOCK
+        private static FastResourceLock _sizeCacheLock = new FastResourceLock();
+#endif
 
         public static implicit operator IntPtr(MemoryRegion memory)
         {
@@ -130,7 +136,7 @@ namespace ProcessHacker.Native
         public void DestroyStruct<T>(int offset, int index)
         {
             Marshal.DestroyStructure(
-                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index),
+                _memory.Increment(offset + this.GetStructSize(typeof(T)) * index),
                 typeof(T)
                 );
         }
@@ -149,12 +155,48 @@ namespace ProcessHacker.Native
             return new MemoryRegionStream(this);
         }
 
-        private int GetStructSizeCached(Type structType)
+        private int GetStructSize(Type structType)
         {
-            if (!_sizeCache.ContainsKey(structType))
-                _sizeCache.Add(structType, Marshal.SizeOf(structType));
+            int size;
 
-            return _sizeCache[structType];
+#if SIZE_CACHE_USE_RESOURCE_LOCK
+            _sizeCacheLock.AcquireShared();
+
+            if (_sizeCache.ContainsKey(structType))
+            {
+                size = _sizeCache[structType];
+                _sizeCacheLock.ReleaseShared();
+            }
+            else
+            {
+                _sizeCacheLock.ReleaseShared();
+
+                size = Marshal.SizeOf(structType);
+                _sizeCacheLock.AcquireExclusive();
+
+                try
+                {
+                    if (!_sizeCache.ContainsKey(structType))
+                        _sizeCache.Add(structType, size);
+                }
+                finally
+                {
+                    _sizeCacheLock.ReleaseExclusive();
+                }
+            }
+
+            return size;
+#else
+            lock (_sizeCache)
+            {
+                if (_sizeCache.ContainsKey(structType))
+                    size = _sizeCache[structType];
+                else
+                    _sizeCache.Add(structType, size = Marshal.SizeOf(structType));
+
+                return size;
+            }
+#endif
         }
 
         public MemoryRegion MakeChild(int offset, int size)
@@ -311,7 +353,7 @@ namespace ProcessHacker.Native
             where T : struct
         {
             return (T)Marshal.PtrToStructure(
-                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index),
+                _memory.Increment(offset + this.GetStructSize(typeof(T)) * index),
                 typeof(T)
                 );
         }
@@ -394,7 +436,7 @@ namespace ProcessHacker.Native
         {
             Marshal.StructureToPtr(
                 s,
-                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index),
+                _memory.Increment(offset + this.GetStructSize(typeof(T)) * index),
                 false
                 );
         }
