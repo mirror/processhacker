@@ -44,7 +44,7 @@ namespace ProcessHacker
 
             _pid = PID;
 
-            labelProgress.Text = "";
+            labelProgress.Text = "Double-click a termination method or click Run.";
 
             this.AddTest("TP1", "Terminates the process using NtTerminateProcess");
             this.AddTest("TP2", "Creates a remote thread in the process which terminates the process");
