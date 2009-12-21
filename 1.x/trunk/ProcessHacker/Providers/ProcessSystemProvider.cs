@@ -783,7 +783,7 @@ namespace ProcessHacker
             if (this.RunCount % 3 == 0)
                 FileUtils.RefreshFileNamePrefixes();
 
-            var tsProcesses = new Dictionary<int, IntPtr>();
+            Dictionary<int, IntPtr> tsProcesses = null;
             var procs = Windows.GetProcesses();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>(this.Dictionary);
             Win32.WtsEnumProcessesFastData wtsEnumData = new Win32.WtsEnumProcessesFastData();
@@ -1064,9 +1064,10 @@ namespace ProcessHacker
                     // to get the SID of the process' token's user.
                     if (pid > 4 && item.Username == null)
                     {
-                        if (tsProcesses.Count == 0)
+                        if (tsProcesses == null)
                         {
-                            // delay loading until this point
+                            // Delay loading until this point.
+                            tsProcesses = new Dictionary<int, IntPtr>();
                             wtsEnumData = Win32.TSEnumProcessesFast();
 
                             for (int i = 0; i < wtsEnumData.PIDs.Length; i++)
