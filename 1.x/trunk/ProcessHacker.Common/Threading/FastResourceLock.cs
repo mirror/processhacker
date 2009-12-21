@@ -21,6 +21,7 @@
  */
 
 #define DEFER_EVENT_CREATION
+//#define ENABLE_STATISTICS
 //#define RIGOROUS_CHECKS
 
 using System;
@@ -135,12 +136,67 @@ namespace ProcessHacker.Common.Threading
 
         #endregion
 
+        public struct Statistics
+        {
+            /// <summary>
+            /// The number of times the lock has been acquired in exclusive mode.
+            /// </summary>
+            public int AcqExcl;
+            /// <summary>
+            /// The number of times the lock has been acquired in shared mode.
+            /// </summary>
+            public int AcqShrd;
+            /// <summary>
+            /// The number of times either the fast path was retried due to the 
+            /// spin count or the exclusive waiter went to sleep.
+            /// </summary>
+            /// <remarks>
+            /// This number is usually much higher than AcqExcl, and indicates 
+            /// a good spin count if AcqExclSlp is very small.
+            /// </remarks>
+            public int AcqExclCont;
+            /// <summary>
+            /// The number of times either the fast path was retried due to the 
+            /// spin count or the shared waiter went to sleep.
+            /// </summary>
+            /// <remarks>
+            /// This number is usually much higher than AcqShrd, and indicates 
+            /// a good spin count if AcqShrdSlp is very small.
+            /// </remarks>
+            public int AcqShrdCont;
+            /// <summary>
+            /// The number of times exclusive waiters have gone to sleep.
+            /// </summary>
+            /// <remarks>
+            /// If this number is high and not much time is spent in the 
+            /// lock, consider increasing the spin count.
+            /// </remarks>
+            public int AcqExclSlp;
+            /// <summary>
+            /// The number of times shared waiters have gone to sleep.
+            /// </summary>
+            /// <remarks>
+            /// If this number is high and not much time is spent in the 
+            /// lock, consider increasing the spin count.
+            /// </remarks>
+            public int AcqShrdSlp;
+        }
+
         // The number of times to spin before going to sleep.
         private static readonly int SpinCount = NativeMethods.SpinCount;
 
         private int _value;
         private IntPtr _sharedWakeEvent;
         private IntPtr _exclusiveWakeEvent;
+
+#if ENABLE_STATISTICS
+        private int _acqExclCount = 0;
+        private int _acqShrdCount = 0;
+        private int _acqExclContCount = 0;
+        private int _acqShrdContCount = 0;
+        private int _acqExclSlpCount = 0;
+        private int _acqShrdSlpCount = 0;
+#endif
 
         /// <summary>
         /// Creates a FastResourceLock.
@@ -230,6 +286,10 @@ namespace ProcessHacker.Common.Threading
             int value;
             int i = 0;
 
+#if ENABLE_STATISTICS
+            Interlocked.Increment(ref _acqExclCount);
+
+#endif
             while (true)
             {
                 value = _value;
@@ -269,7 +329,11 @@ namespace ProcessHacker.Common.Threading
                         value + LockExclusiveWaitersIncrement,
                         value
                         ) == value)
-                    {
+                    {         
+#if ENABLE_STATISTICS
+                        Interlocked.Increment(ref _acqExclSlpCount);
+
+#endif
                         // Go to sleep.
                         if (NativeMethods.WaitForSingleObject(
                             _exclusiveWakeEvent,
@@ -297,6 +361,9 @@ namespace ProcessHacker.Common.Threading
                     }
                 }
 
+#if ENABLE_STATISTICS
+                Interlocked.Increment(ref _acqExclContCount);
+#endif
                 i++;
             }
         }
@@ -314,6 +381,10 @@ namespace ProcessHacker.Common.Threading
             int value;
             int i = 0;
 
+#if ENABLE_STATISTICS
+            Interlocked.Increment(ref _acqShrdCount);
+
+#endif
             while (true)
             {
                 value = _value;
@@ -360,7 +431,11 @@ namespace ProcessHacker.Common.Threading
                         value + LockSharedWaitersIncrement,
                         value
                         ) == value)
-                    {
+                    {         
+#if ENABLE_STATISTICS
+                        Interlocked.Increment(ref _acqShrdSlpCount);
+
+#endif
                         // Go to sleep.
                         if (NativeMethods.WaitForSingleObject(
                             _sharedWakeEvent,
@@ -373,6 +448,9 @@ namespace ProcessHacker.Common.Threading
                     }
                 }
 
+#if ENABLE_STATISTICS
+                Interlocked.Increment(ref _acqShrdContCount);
+#endif
                 i++;
             }
         }
@@ -435,6 +513,27 @@ namespace ProcessHacker.Common.Threading
                 NativeMethods.CloseHandle(eventHandle);
         }
 #endif
+
+        /// <summary>
+        /// Gets statistics information for the lock.
+        /// </summary>
+        /// <returns>A structure containing statistics.</returns>
+        public Statistics GetStatistics()
+        {
+#if ENABLE_STATISTICS
+            return new Statistics()
+            {
+                AcqExcl = _acqExclCount,
+                AcqShrd = _acqShrdCount,
+                AcqExclCont = _acqExclContCount,
+                AcqShrdCont = _acqShrdContCount,
+                AcqExclSlp = _acqExclSlpCount,
+                AcqShrdSlp = _acqShrdSlpCount
+            };
+#else
+            return new Statistics();
+#endif
+        }
 
         /// <summary>
         /// Releases the lock in exclusive mode.

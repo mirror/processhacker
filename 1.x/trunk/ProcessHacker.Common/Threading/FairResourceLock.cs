@@ -21,6 +21,8 @@
  */
 
 #define DEFER_EVENT_CREATION
+//#define ENABLE_STATISTICS
+//#define RIGOROUS_CHECKS
 
 using System;
 using System.Runtime.InteropServices;
@@ -52,8 +54,57 @@ namespace ProcessHacker.Common.Threading
 
         private const int WaiterExclusive = 0x1;
         private const int WaiterSpinning = 0x2;
+        private const int WaiterFlags = 0x3;
 
         #endregion
+
+        public struct Statistics
+        {
+            /// <summary>
+            /// The number of times the lock has been acquired in exclusive mode.
+            /// </summary>
+            public int AcqExcl;
+            /// <summary>
+            /// The number of times the lock has been acquired in shared mode.
+            /// </summary>
+            public int AcqShrd;
+            /// <summary>
+            /// The number of times either the fast path was retried due to the 
+            /// spin count or the exclusive waiter blocked on its wait block.
+            /// </summary>
+            /// <remarks>
+            /// This number is usually much higher than AcqExcl, and indicates 
+            /// a good spin count if AcqExclBlk/Slp is very small.
+            /// </remarks>
+            public int AcqExclCont;
+            /// <summary>
+            /// The number of times either the fast path was retried due to the 
+            /// spin count or the shared waiter blocked on its wait block.
+            /// </summary>
+            /// <remarks>
+            /// This number is usually much higher than AcqShrd, and indicates 
+            /// a good spin count if AcqShrdBlk/Slp is very small.
+            /// </remarks>
+            public int AcqShrdCont;
+            /// <summary>
+            /// The number of times exclusive waiters have blocked on their 
+            /// wait blocks.
+            /// </summary>
+            public int AcqExclBlk;
+            /// <summary>
+            /// The number of times shared waiters have blocked on their 
+            /// wait blocks.
+            /// </summary>
+            public int AcqShrdBlk;
+            /// <summary>
+            /// The number of times exclusive waiters have gone to sleep.
+            /// </summary>
+            public int AcqExclSlp;
+            /// <summary>
+            /// The number of times shared waiters have gone to sleep.
+            /// </summary>
+            public int AcqShrdSlp;
+        }
 
         private unsafe struct WaitBlock
         {
@@ -139,6 +190,17 @@ namespace ProcessHacker.Common.Threading
         private WaitBlock* _waitersListHead;
         private WaitBlock* _firstSharedWaiter;
 
+#if ENABLE_STATISTICS
+        private int _acqExclCount = 0;
+        private int _acqShrdCount = 0;
+        private int _acqExclContCount = 0;
+        private int _acqShrdContCount = 0;
+        private int _acqExclBlkCount = 0;
+        private int _acqShrdBlkCount = 0;
+        private int _acqExclSlpCount = 0;
+        private int _acqShrdSlpCount = 0;
+#endif
+
         /// <summary>
         /// Creates a FairResourceLock.
         /// </summary>
@@ -161,6 +223,7 @@ namespace ProcessHacker.Common.Threading
             _waitersListHead = (WaitBlock*)Marshal.AllocHGlobal(WaitBlock.Size);
             _waitersListHead->Flink = _waitersListHead;
             _waitersListHead->Blink = _waitersListHead;
+            _waitersListHead->Flags = 0;
             _firstSharedWaiter = _waitersListHead;
 
 #if !DEFER_EVENT_CREATION
@@ -252,6 +315,10 @@ namespace ProcessHacker.Common.Threading
             int value;
             int i = 0;
 
+#if ENABLE_STATISTICS
+            Interlocked.Increment(ref _acqExclCount);
+
+#endif
             while (true)
             {
                 value = _value;
@@ -259,6 +326,10 @@ namespace ProcessHacker.Common.Threading
                 // Try to obtain the lock.
                 if ((value & LockOwned) == 0)
                 {
+#if RIGOROUS_CHECKS
+                    System.Diagnostics.Trace.Assert(((value >> LockSharedOwnersShift) & LockSharedOwnersMask) == 0);
+
+#endif
                     if (Interlocked.CompareExchange(
                         ref _value,
                         value + LockOwned,
@@ -301,12 +372,18 @@ namespace ProcessHacker.Common.Threading
                         _lock.Release();
                     }
 
+#if ENABLE_STATISTICS
+                    Interlocked.Increment(ref _acqExclBlkCount);
+#endif
                     this.Block(&waitBlock, sleep);
 
                     // Go back and try again.
                     continue;
                 }
 
+#if ENABLE_STATISTICS
+                Interlocked.Increment(ref _acqExclContCount);
+#endif
                 i++;
             }
         }
@@ -340,6 +417,10 @@ namespace ProcessHacker.Common.Threading
             int value;
             int i = 0;
 
+#if ENABLE_STATISTICS
+            Interlocked.Increment(ref _acqShrdCount);
+
+#endif
             while (true)
             {
                 value = _value;
@@ -355,6 +436,10 @@ namespace ProcessHacker.Common.Threading
                 {
                     if ((value & LockOwned) == 0)
                     {
+#if RIGOROUS_CHECKS
+                        System.Diagnostics.Trace.Assert(((value >> LockSharedOwnersShift) & LockSharedOwnersMask) == 0);
+
+#endif
                         if (Interlocked.CompareExchange(
                             ref _value,
                             value + LockOwned + LockSharedOwnersIncrement,
@@ -411,12 +496,18 @@ namespace ProcessHacker.Common.Threading
                         _lock.Release();
                     }
 
+#if ENABLE_STATISTICS
+                    Interlocked.Increment(ref _acqShrdBlkCount);
+#endif
                     this.Block(&waitBlock, sleep);
 
                     // Go back and try again.
                     continue;
                 }
 
+#if ENABLE_STATISTICS
+                Interlocked.Increment(ref _acqShrdContCount);
+#endif
                 i++;
             }
         }
@@ -469,6 +560,13 @@ namespace ProcessHacker.Common.Threading
                 // Go to sleep if necessary.
                 if ((flags & WaiterSpinning) != 0)
                 {
+#if ENABLE_STATISTICS
+                    if ((waitBlock->Flags & WaiterExclusive) != 0)
+                        Interlocked.Increment(ref _acqExclSlpCount);
+                    else
+                        Interlocked.Increment(ref _acqShrdSlpCount);
+
+#endif
                     if (NativeMethods.NtWaitForKeyedEvent(
                         _wakeEvent,
                         new IntPtr(waitBlock),
@@ -628,6 +726,29 @@ namespace ProcessHacker.Common.Threading
         }
 
         /// <summary>
+        /// Gets statistics information for the lock.
+        /// </summary>
+        /// <returns>A structure containing statistics.</returns>
+        public Statistics GetStatistics()
+        {
+#if ENABLE_STATISTICS
+            return new Statistics()
+            {
+                AcqExcl = _acqExclCount,
+                AcqShrd = _acqShrdCount,
+                AcqExclCont = _acqExclContCount,
+                AcqShrdCont = _acqShrdContCount,
+                AcqExclBlk = _acqExclBlkCount,
+                AcqShrdBlk = _acqShrdBlkCount,
+                AcqExclSlp = _acqExclSlpCount,
+                AcqShrdSlp = _acqShrdSlpCount
+            };
+#else
+            return new Statistics();
+#endif
+        }
+
+        /// <summary>
         /// Inserts a wait block into the waiters list.
         /// </summary>
         /// <param name="waitBlock">The wait block to insert.</param>
@@ -658,6 +779,11 @@ namespace ProcessHacker.Common.Threading
             while (true)
             {
                 value = _value;
+#if RIGOROUS_CHECKS
+
+                System.Diagnostics.Trace.Assert((value & LockOwned) != 0);
+                System.Diagnostics.Trace.Assert(((value >> LockSharedOwnersShift) & LockSharedOwnersMask) == 0);
+#endif
 
                 if (Interlocked.CompareExchange(
                     ref _value,
@@ -680,12 +806,20 @@ namespace ProcessHacker.Common.Threading
         {
             int value;
             int newValue;
+            int sharedOwners;
 
             while (true)
             {
                 value = _value;
+#if RIGOROUS_CHECKS
 
-                if (((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 1)
+                System.Diagnostics.Trace.Assert((value & LockOwned) != 0);
+                System.Diagnostics.Trace.Assert(((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 0);
+#endif
+
+                sharedOwners = (value >> LockSharedOwnersShift) & LockSharedOwnersMask;
+
+                if (sharedOwners > 1)
                     newValue = value - LockSharedOwnersIncrement;
                 else
                     newValue = value - LockOwned - LockSharedOwnersIncrement;
@@ -696,8 +830,9 @@ namespace ProcessHacker.Common.Threading
                     value
                     ) == value)
                 {
-                    if ((value & LockWaiters) != 0)
-                        this.Wake();
+                    // Only wake if we are the last out.
+                    if (sharedOwners == 1 && (value & LockWaiters) != 0)
+                        this.WakeExclusive();
 
                     break;
                 }
@@ -817,6 +952,10 @@ namespace ProcessHacker.Common.Threading
 
             if ((flags & WaiterSpinning) == 0)
             {
+#if RIGOROUS_CHECKS
+                System.Diagnostics.Trace.Assert(_wakeEvent != IntPtr.Zero);
+
+#endif
                 NativeMethods.NtReleaseKeyedEvent(
                     _wakeEvent,
                     new IntPtr(waitBlock),
@@ -826,13 +965,38 @@ namespace ProcessHacker.Common.Threading
             }
         }
 
+        [System.Diagnostics.Conditional("RIGOROUS_CHECKS")]
+        private void VerifyWaitersList()
+        {
+            bool firstSharedWaiterInList = false;
+
+            if (_firstSharedWaiter == _waitersListHead)
+                firstSharedWaiterInList = true;
+
+            for (
+                WaitBlock* wb = _waitersListHead->Flink;
+                wb != _waitersListHead;
+                wb = wb->Flink
+                )
+            {
+                System.Diagnostics.Trace.Assert(wb == wb->Flink->Blink);
+                System.Diagnostics.Trace.Assert((wb->Flags & ~WaiterFlags) == 0);
+
+                if (_firstSharedWaiter == wb)
+                    firstSharedWaiterInList = true;
+            }
+
+            System.Diagnostics.Trace.Assert(firstSharedWaiterInList);
+        }
+
         /// <summary>
         /// Wakes either one exclusive waiter or multiple shared waiters.
         /// </summary>
         private void Wake()
         {
             WaitBlock wakeList = new WaitBlock();
-            WaitBlock* wb = null;
+            WaitBlock* wb;
+            WaitBlock* exclusiveWb = null;
 
             wakeList.Flink = &wakeList;
             wakeList.Blink = &wakeList;
@@ -868,28 +1032,35 @@ namespace ProcessHacker.Common.Threading
                     // anyone else.
                     if (first && (wb->Flags & WaiterExclusive) != 0)
                     {
-                        wb = RemoveHeadList(_waitersListHead);
+                        exclusiveWb = RemoveHeadList(_waitersListHead);
                         break;
                     }
 
+#if RIGOROUS_CHECKS
                     // If this is not the first waiter we have looked at 
-                    // and it is an exclusive waiter, don't wake anyone 
-                    // else - it means we have reached the end of a chain 
-                    // of shared waiters.
+                    // and it is an exclusive waiter, then we have a bug - 
+                    // we should have stopped upon encountering the first 
+                    // exclusive waiter (previous block), so this means 
+                    // we have an exclusive waiter *behind* shared waiters.
                     if (!first && (wb->Flags & WaiterExclusive) != 0)
-                        break;
+                    {
+                        System.Diagnostics.Trace.Fail("Exclusive waiter behind shared waiters!");
+                    }
 
-                    // Remove the waiter and add it to the wake list.
+#endif
+                    // Remove the (shared) waiter and add it to the wake list.
                     wb = RemoveHeadList(_waitersListHead);
                     InsertTailList(&wakeList, wb);
 
                     first = false;
                 }
 
-                if ((wb->Flags & WaiterExclusive) == 0)
+                if (exclusiveWb == null)
                 {
                     // If we removed shared waiters, we removed all of them. 
                     // Reset the first shared waiter pointer.
+                    // Note that this also applies if we haven't woken anyone 
+                    // at all; this just becomes a redundant assignment.
                     _firstSharedWaiter = _waitersListHead;
                 }
             }
@@ -899,21 +1070,18 @@ namespace ProcessHacker.Common.Threading
             }
 
             // If we removed one exclusive waiter, unblock it.
-            if ((wb->Flags & WaiterExclusive) != 0)
+            if (exclusiveWb != null)
             {
-                this.Unblock(wb);
+                this.Unblock(exclusiveWb);
                 return;
             }
 
-            // Carefully traverse the wake list and wake each waiter.
+            // Carefully traverse the wake list and wake each shared waiter.
             wb = wakeList.Flink;
 
-            while (true)
+            while (wb != &wakeList)
             {
                 WaitBlock* flink;
-
-                if (wb == &wakeList)
-                    break;
 
                 flink = wb->Flink;
                 this.Unblock(wb);
@@ -927,7 +1095,7 @@ namespace ProcessHacker.Common.Threading
         private void WakeExclusive()
         {
             WaitBlock* wb;
-            WaitBlock* unblockWaitBlock = null;
+            WaitBlock* exclusiveWb = null;
 
             _lock.Acquire();
 
@@ -940,7 +1108,7 @@ namespace ProcessHacker.Common.Threading
                     (wb->Flags & WaiterExclusive) != 0
                     )
                 {
-                    unblockWaitBlock = RemoveHeadList(_waitersListHead);
+                    exclusiveWb = RemoveHeadList(_waitersListHead);
                     wb = _waitersListHead->Flink;
                 }
 
@@ -964,8 +1132,8 @@ namespace ProcessHacker.Common.Threading
                 _lock.Release();
             }
 
-            if (unblockWaitBlock != null)
-                this.Unblock(unblockWaitBlock);
+            if (exclusiveWb != null)
+                this.Unblock(exclusiveWb);
         }
 
         /// <summary>
@@ -1005,6 +1173,13 @@ namespace ProcessHacker.Common.Threading
 
                         break;
                     }
+#if RIGOROUS_CHECKS
+                    // We shouldn't have *any* exclusive waiters at this 
+                    // point since we started at _firstSharedWaiter.
+                    if ((wb->Flags & WaiterExclusive) != 0)
+                        System.Diagnostics.Trace.Fail("Exclusive waiter behind shared waiters!");
+
+#endif
 
                     // Remove the waiter and add it to the wake list.
                     flink = wb->Flink;
@@ -1024,12 +1199,9 @@ namespace ProcessHacker.Common.Threading
             // Carefully traverse the wake list and wake each waiter.
             wb = wakeList.Flink;
 
-            while (true)
+            while (wb != &wakeList)
             {
                 WaitBlock* flink;
-
-                if (wb == &wakeList)
-                    break;
 
                 flink = wb->Flink;
                 this.Unblock(wb);
