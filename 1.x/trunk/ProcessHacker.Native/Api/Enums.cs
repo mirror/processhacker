@@ -541,6 +541,103 @@ namespace ProcessHacker.Native.Api
         UsedForAccess = 0x80000000
     }
 
+    public enum ServiceAccept : uint
+    {
+        NetBindChange = 0x10,
+        ParamChange = 0x8,
+        PauseContinue = 0x2,
+        PreShutdown = 0x100,
+        Shutdown = 0x4,
+        Stop = 0x1,
+        HardwareProfileChange = 0x20,
+        PowerEvent = 0x40,
+        SessionChange = 0x80
+    }
+
+    public enum ServiceControl : uint
+    {
+        Continue = 0x3,
+        Interrogate = 0x4,
+        NetBindAdd = 0x7,
+        NetBindDisable = 0xa,
+        NetBindEnable = 0x9,
+        NetBindRemove = 0x8,
+        ParamChange = 0x6,
+        Pause = 0x2,
+        Stop = 0x1
+    }
+
+    public enum ServiceErrorControl : uint
+    {
+        Critical = 0x3,
+        Ignore = 0x0,
+        Normal = 0x1,
+        Severe = 0x2
+    }
+
+    public enum ServiceFlags : uint
+    {
+        None = 0,
+        RunsInSystemProcess = 0x1
+    }
+
+    public enum ServiceInfoLevel : uint
+    {
+        Description = 1,
+        FailureActions = 2,
+        DelayedAutoStartInfo = 3,
+        FailureActionsFlag = 4,
+        SidInfo = 5,
+        RequiredPrivilegesInfo = 6,
+        PreShutdownInfo = 7,
+        TriggerInfo = 8,
+        PreferredNode = 9
+    }
+
+    public enum ServiceQueryState : uint
+    {
+        Active = 1,
+        Inactive = 2,
+        All = 3
+    }
+
+    [Flags]
+    public enum ServiceQueryType : uint
+    {
+        Driver = 0xb,
+        Win32 = 0x30
+    }
+
+    public enum ServiceStartType : uint
+    {
+        AutoStart = 0x2,
+        BootStart = 0x0,
+        DemandStart = 0x3,
+        Disabled = 0x4,
+        SystemStart = 0x1
+    }
+
+    public enum ServiceState : uint
+    {
+        ContinuePending = 0x5,
+        PausePending = 0x6,
+        Paused = 0x7,
+        Running = 0x4,
+        StartPending = 0x2,
+        StopPending = 0x3,
+        Stopped = 0x1
+    }
+
+    [Flags]
+    public enum ServiceType : uint
+    {
+        FileSystemDriver = 0x2,
+        KernelDriver = 0x1,
+        Win32OwnProcess = 0x10,
+        Win32ShareProcess = 0x20,
+        InteractiveProcess = 0x100
+    }
+
     public enum ShowWindowType : int
     {
         Hide = 0,

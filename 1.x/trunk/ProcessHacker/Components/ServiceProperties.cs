@@ -79,7 +79,7 @@ namespace ProcessHacker.Components
 
             Utils.Fill(comboErrorControl, typeof(ServiceErrorControl));
             Utils.Fill(comboStartType, typeof(ServiceStartType));
-            Utils.Fill(comboType, typeof(ProcessHacker.Native.Objects.ServiceType));
+            Utils.Fill(comboType, typeof(ProcessHacker.Native.Api.ServiceType));
             comboType.Items.Add("Win32OwnProcess, InteractiveProcess");
             comboType.Items.Add("Win32ShareProcess, InteractiveProcess");
 
@@ -243,12 +243,12 @@ namespace ProcessHacker.Components
                     comboType.SelectedItem = item.Config.ServiceType.ToString();
 
                     if (item.Config.ServiceType ==
-                        (ProcessHacker.Native.Objects.ServiceType.Win32OwnProcess | 
-                        ProcessHacker.Native.Objects.ServiceType.InteractiveProcess))
+                        (ProcessHacker.Native.Api.ServiceType.Win32OwnProcess |
+                        ProcessHacker.Native.Api.ServiceType.InteractiveProcess))
                         comboType.SelectedItem = "Win32OwnProcess, InteractiveProcess";
                     else if (item.Config.ServiceType ==
-                        (ProcessHacker.Native.Objects.ServiceType.Win32ShareProcess |
-                        ProcessHacker.Native.Objects.ServiceType.InteractiveProcess))
+                        (ProcessHacker.Native.Api.ServiceType.Win32ShareProcess |
+                        ProcessHacker.Native.Api.ServiceType.InteractiveProcess))
                         comboType.SelectedItem = "Win32ShareProcess, InteractiveProcess";
 
                     comboStartType.SelectedItem = item.Config.StartType.ToString();
@@ -270,7 +270,7 @@ namespace ProcessHacker.Components
 
                     textServiceDll.Text = "";
 
-                    if (item.Config.ServiceType == ProcessHacker.Native.Objects.ServiceType.Win32ShareProcess)
+                    if (item.Config.ServiceType == ProcessHacker.Native.Api.ServiceType.Win32ShareProcess)
                     {
                         try
                         {
@@ -329,17 +329,17 @@ namespace ProcessHacker.Components
             {
                 string serviceName = listServices.SelectedItems[0].Name;
 
-                ProcessHacker.Native.Objects.ServiceType type;
+                ProcessHacker.Native.Api.ServiceType type;
 
                 if (comboType.SelectedItem.ToString() == "Win32OwnProcess, InteractiveProcess")
-                    type = ProcessHacker.Native.Objects.ServiceType.Win32OwnProcess |
-                        ProcessHacker.Native.Objects.ServiceType.InteractiveProcess;
+                    type = ProcessHacker.Native.Api.ServiceType.Win32OwnProcess |
+                        ProcessHacker.Native.Api.ServiceType.InteractiveProcess;
                 else if (comboType.SelectedItem.ToString() == "Win32ShareProcess, InteractiveProcess")
-                    type = ProcessHacker.Native.Objects.ServiceType.Win32ShareProcess |
-                        ProcessHacker.Native.Objects.ServiceType.InteractiveProcess;
+                    type = ProcessHacker.Native.Api.ServiceType.Win32ShareProcess |
+                        ProcessHacker.Native.Api.ServiceType.InteractiveProcess;
                 else
-                    type = (ProcessHacker.Native.Objects.ServiceType)
-                        Enum.Parse(typeof(ProcessHacker.Native.Objects.ServiceType), 
+                    type = (ProcessHacker.Native.Api.ServiceType)
+                        Enum.Parse(typeof(ProcessHacker.Native.Api.ServiceType), 
                         comboType.SelectedItem.ToString());
 
                 string binaryPath = textServiceBinaryPath.Text;
@@ -361,8 +361,8 @@ namespace ProcessHacker.Components
                 if (!checkChangePassword.Checked)
                     password = null;
 
-                if (type == ProcessHacker.Native.Objects.ServiceType.KernelDriver || 
-                    type == ProcessHacker.Native.Objects.ServiceType.FileSystemDriver)
+                if (type == ProcessHacker.Native.Api.ServiceType.KernelDriver ||
+                    type == ProcessHacker.Native.Api.ServiceType.FileSystemDriver)
                     userAccount = null;
 
                 if (Program.ElevationType == TokenElevationType.Full)

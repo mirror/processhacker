@@ -26,7 +26,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
-using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Api;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
