@@ -442,6 +442,20 @@ namespace ProcessHacker.Common.Threading
 
             if (sleep)
             {
+#if DEFER_EVENT_CREATION
+                IntPtr wakeEvent;
+
+                wakeEvent = Thread.VolatileRead(ref _wakeEvent);
+
+                if (wakeEvent == IntPtr.Zero)
+                {
+                    wakeEvent = this.CreateWakeEvent();
+
+                    if (Interlocked.CompareExchange(ref _wakeEvent, wakeEvent, IntPtr.Zero) != IntPtr.Zero)
+                        NativeMethods.CloseHandle(wakeEvent);
+                }
+
+#endif
                 // Clear the spinning flag.
                 do
                 {
@@ -455,20 +469,6 @@ namespace ProcessHacker.Common.Threading
                 // Go to sleep if necessary.
                 if ((flags & WaiterSpinning) != 0)
                 {
-#if DEFER_EVENT_CREATION
-                    IntPtr wakeEvent;
-
-                    wakeEvent = Thread.VolatileRead(ref _wakeEvent);
-
-                    if (wakeEvent == IntPtr.Zero)
-                    {
-                        wakeEvent = this.CreateWakeEvent();
-
-                        if (Interlocked.CompareExchange(ref _wakeEvent, wakeEvent, IntPtr.Zero) != IntPtr.Zero)
-                            NativeMethods.CloseHandle(wakeEvent);
-                    }
-#endif
-
                     if (NativeMethods.NtWaitForKeyedEvent(
                         _wakeEvent,
                         new IntPtr(waitBlock),
@@ -817,20 +817,6 @@ namespace ProcessHacker.Common.Threading
 
             if ((flags & WaiterSpinning) == 0)
             {
-#if DEFER_EVENT_CREATION
-                IntPtr wakeEvent;
-
-                wakeEvent = Thread.VolatileRead(ref _wakeEvent);
-
-                if (wakeEvent == IntPtr.Zero)
-                {
-                    wakeEvent = this.CreateWakeEvent();
-
-                    if (Interlocked.CompareExchange(ref _wakeEvent, wakeEvent, IntPtr.Zero) != IntPtr.Zero)
-                        NativeMethods.CloseHandle(wakeEvent);
-                }
-#endif
-
                 NativeMethods.NtReleaseKeyedEvent(
                     _wakeEvent,
                     new IntPtr(waitBlock),
