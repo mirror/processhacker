@@ -120,6 +120,21 @@ namespace ProcessHacker
                 menuHandle.EnableAll();
                 processPropertiesMenuItem.Enabled = false;
                 propertiesMenuItem.Enabled = false;
+
+                string firstProcess = listHandles.SelectedItems[0].SubItems[0].Text;
+                bool good = true;
+
+                foreach (ListViewItem item in listHandles.SelectedItems)
+                {
+                    if (item.SubItems[0].Text != firstProcess)
+                    {
+                        good = false;
+                        break;
+                    }
+                }
+
+                if (good)
+                    processPropertiesMenuItem.Enabled = true;
             }
         }
 
