@@ -23,8 +23,7 @@
 #define DEFER_EVENT_CREATION
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace ProcessHacker.Common.Threading
@@ -58,6 +57,8 @@ namespace ProcessHacker.Common.Threading
 
         private unsafe struct WaitBlock
         {
+            public static readonly int Size = Marshal.SizeOf(typeof(WaitBlock));
+
             public WaitBlock* Flink;
             public WaitBlock* Blink;
             public int Flags;
@@ -138,9 +139,6 @@ namespace ProcessHacker.Common.Threading
         private WaitBlock* _waitersListHead;
         private WaitBlock* _firstSharedWaiter;
 
-        private object __waitersListHead;
-        private System.Runtime.InteropServices.GCHandle __waitersListHeadHandle;
-
         /// <summary>
         /// Creates a FairResourceLock.
         /// </summary>
@@ -160,13 +158,7 @@ namespace ProcessHacker.Common.Threading
             _lock = new SpinLock();
             _spinCount = Environment.ProcessorCount != 1 ? spinCount : 0;
 
-            __waitersListHead = new WaitBlock();
-            __waitersListHeadHandle =
-                System.Runtime.InteropServices.GCHandle.Alloc(
-                __waitersListHead,
-                System.Runtime.InteropServices.GCHandleType.Pinned
-                );
-            _waitersListHead = (WaitBlock*)__waitersListHeadHandle.AddrOfPinnedObject();
+            _waitersListHead = (WaitBlock*)Marshal.AllocHGlobal(WaitBlock.Size);
             _waitersListHead->Flink = _waitersListHead;
             _waitersListHead->Blink = _waitersListHead;
             _firstSharedWaiter = _waitersListHead;
@@ -185,9 +177,8 @@ namespace ProcessHacker.Common.Threading
         {
             if (_waitersListHead != null)
             {
-                __waitersListHeadHandle.Free();
+                Marshal.FreeHGlobal((IntPtr)_waitersListHead);
                 _waitersListHead = null;
-                __waitersListHead = null;
             }
 
             if (_wakeEvent != IntPtr.Zero)
