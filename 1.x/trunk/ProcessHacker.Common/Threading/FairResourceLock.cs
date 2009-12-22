@@ -536,7 +536,7 @@ namespace ProcessHacker.Common.Threading
 #if DEFER_EVENT_CREATION
                 IntPtr wakeEvent;
 
-                wakeEvent = Thread.VolatileRead(ref _wakeEvent);
+                wakeEvent = Interlocked.CompareExchange(ref _wakeEvent, IntPtr.Zero, IntPtr.Zero);
 
                 if (wakeEvent == IntPtr.Zero)
                 {
@@ -584,7 +584,7 @@ namespace ProcessHacker.Common.Threading
                         break;
 
                     if (NativeMethods.SpinEnabled)
-                        Thread.SpinWait(SpinCount);
+                        Thread.SpinWait(8);
                     else
                         Thread.Sleep(0);
                 }

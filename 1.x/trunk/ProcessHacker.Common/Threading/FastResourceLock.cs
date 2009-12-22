@@ -672,7 +672,7 @@ namespace ProcessHacker.Common.Threading
                 }
 
                 if (NativeMethods.SpinEnabled)
-                    Thread.SpinWait(SpinCount);
+                    Thread.SpinWait(8);
                 else
                     Thread.Sleep(0);
             }
@@ -717,7 +717,7 @@ namespace ProcessHacker.Common.Threading
                 }
 
                 if (NativeMethods.SpinEnabled)
-                    Thread.SpinWait(SpinCount);
+                    Thread.SpinWait(8);
                 else
                     Thread.Sleep(0);
             }
@@ -747,7 +747,7 @@ namespace ProcessHacker.Common.Threading
                 }
 
                 if (NativeMethods.SpinEnabled)
-                    Thread.SpinWait(SpinCount);
+                    Thread.SpinWait(8);
                 else
                     Thread.Sleep(0);
             }

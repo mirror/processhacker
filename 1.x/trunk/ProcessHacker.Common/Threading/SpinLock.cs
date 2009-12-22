@@ -65,7 +65,7 @@ namespace ProcessHacker.Common.Threading
             if (NativeMethods.SpinEnabled)
             {
                 while (Interlocked.CompareExchange(ref _value, 1, 0) == 1)
-                    Thread.SpinWait(400);
+                    Thread.SpinWait(8);
             }
             else
             {

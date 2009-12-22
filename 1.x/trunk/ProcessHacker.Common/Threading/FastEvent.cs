@@ -108,7 +108,7 @@ namespace ProcessHacker.Common.Threading
             } while (Interlocked.CompareExchange(ref _value, oldValue | EventSet, oldValue) != oldValue);
 
             // Do an update-to-date read.
-            IntPtr localEvent = Thread.VolatileRead(ref _event);
+            IntPtr localEvent = Interlocked.CompareExchange(ref _event, IntPtr.Zero, IntPtr.Zero);
 
             // Set the event if we had one.
             if (localEvent != IntPtr.Zero)
@@ -209,7 +209,7 @@ namespace ProcessHacker.Common.Threading
             this.RefEvent();
 
             // Shortcut: don't bother creating an event if we already have one.
-            newEvent = Thread.VolatileRead(ref _event);
+            newEvent = Interlocked.CompareExchange(ref _event, IntPtr.Zero, IntPtr.Zero);
 
             // If we don't have an event, create one and try to set it.
             if (newEvent == IntPtr.Zero)
@@ -236,7 +236,7 @@ namespace ProcessHacker.Common.Threading
                 // is essential, because if someone set the event before we 
                 // created the event (previous step), we would be waiting 
                 // on an event no one knows about.
-                if ((Thread.VolatileRead(ref _value) & EventSet) != 0)
+                if ((Interlocked.CompareExchange(ref _value, 0, 0) & EventSet) != 0)
                     return true;
 
                 result = NativeMethods.WaitForSingleObject(_event, millisecondsTimeout);
