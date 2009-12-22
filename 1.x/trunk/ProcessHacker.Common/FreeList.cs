@@ -20,6 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Threading;
 
 namespace ProcessHacker.Common
@@ -30,58 +31,45 @@ namespace ProcessHacker.Common
     public class FreeList<T>
         where T : IResettable, new()
     {
-        private class FreeListEntry<U>
-            where U : IResettable, new()
-        {
-            public U Object;
-            public FreeListEntry<U> Next;
-        }
+        private T[] _list;
+        private int _freeIndex = 0;
 
-        private FreeListEntry<T> _listHead = null;
-        private int _count = 0;
-        private int _maximumCount = 0;
+        public FreeList(int maximumCount)
+        {
+            _list = new T[maximumCount];
+        }
 
         public int Count
         {
-            get { return _count; }
+            get { return _freeIndex; }
         }
 
         public int MaximumCount
         {
-            get { return _maximumCount; }
-            set { _maximumCount = value; }
+            get { return _list.Length; }
         }
 
         public T Allocate()
         {
-            FreeListEntry<T> listHead;
+            int freeIndex;
 
-            // Atomically pop an entry off and replace the list head 
-            // pointer with a pointer to the next entry.
             while (true)
             {
-                listHead = _listHead;
+                freeIndex = _freeIndex;
 
-                // If the list head pointer is null, we don't have anything 
-                // to use from the free list.
-                if (listHead == null)
-                    break;
+                // Check if we have any stored objects.
+                if (freeIndex == 0)
+                    return this.AllocateNew();
 
-                // Try to replace the list head pointer.
-                if (Interlocked.CompareExchange<FreeListEntry<T>>(
-                    ref _listHead,
-                    listHead.Next,
-                    listHead
-                    ) == listHead)
+                if (Interlocked.CompareExchange(
+                    ref _freeIndex,
+                    freeIndex - 1,
+                    freeIndex
+                    ) == freeIndex)
                 {
-                    // Success.
-                    Interlocked.Decrement(ref _count);
-
-                    return listHead.Object;
+                    return _list[freeIndex - 1];
                 }
             }
-
-            return this.AllocateNew();
         }
 
         private T AllocateNew()
@@ -93,34 +81,24 @@ namespace ProcessHacker.Common
 
         public void Free(T obj)
         {
-            FreeListEntry<T> listHead;
-            FreeListEntry<T> listEntry;
+            int freeIndex;
 
-            // Add the object to the free list if we haven't 
-            // exceeded the maximum count.
-            if (_count < _maximumCount || _maximumCount == 0)
+            while (true)
             {
-                listEntry = new FreeListEntry<T>();
+                freeIndex = _freeIndex;
 
-                listEntry.Object = obj;
+                // Check if we have room for another object.
+                if (freeIndex == _list.Length)
+                    return;
 
-                // Atomically add the list entry.
-                while (true)
+                if (Interlocked.CompareExchange(
+                    ref _freeIndex,
+                    freeIndex + 1,
+                    freeIndex
+                    ) == freeIndex)
                 {
-                    listHead = _listHead;
-                    listEntry.Next = listHead;
-
-                    if (Interlocked.CompareExchange<FreeListEntry<T>>(
-                        ref _listHead,
-                        listEntry,
-                        listHead
-                        ) == listHead)
-                    {
-                        // Success.
-                        Interlocked.Increment(ref _count);
-
-                        break;
-                    }
+                    _list[freeIndex] = obj;
+                    break;
                 }
             }
         }

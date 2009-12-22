@@ -68,7 +68,7 @@ namespace ProcessHacker.Native.Mfs
         private MfsObjectHeader* _rootObject;
         private MemoryObject _rootObjectMo;
 
-        private FreeList<ViewDescriptor> _vdFreeList = new FreeList<ViewDescriptor>() { MaximumCount = 16 };
+        private FreeList<ViewDescriptor> _vdFreeList = new FreeList<ViewDescriptor>(16);
         private Dictionary<ushort, ViewDescriptor> _views =
             new Dictionary<ushort, ViewDescriptor>();
         private Dictionary<IntPtr, ViewDescriptor> _views2 =
