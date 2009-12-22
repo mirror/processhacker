@@ -570,10 +570,11 @@ namespace ProcessHacker.Common
                         {
                             // Check the minimum.
                             if (_workerThreads.Count > _minWorkerThreads)
+                            {
                                 this.DestroyWorkerThread();
+                                return;
+                            }
                         }
-
-                        return;
                     }
                 }
             }
