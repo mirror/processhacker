@@ -547,33 +547,25 @@ namespace Aga.Controls.Tree
 
         internal IEnumerable<NodeControlInfo> GetNodeControls(TreeNodeAdv node)
         {
-            IEnumerable<NodeControlInfo> nodeControls = null;
-
             if (node == null)
                 return new List<NodeControlInfo>();
 
-            lock (_cachedNodeControls)
+            if (!_cachedNodeControls.ContainsKey(node))
             {
-                if (!_cachedNodeControls.ContainsKey(node))
-                {
-                    List<NodeControlInfo> ncList = new List<NodeControlInfo>();
+                List<NodeControlInfo> ncList = new List<NodeControlInfo>();
 
-                    foreach (var item in this.GetNodeControlsInternal(node))
-                        ncList.Add(item);
+                foreach (var item in this.GetNodeControlsInternal(node))
+                    ncList.Add(item);
 
-                    _cachedNodeControls.Add(node, ncList);
-                }
-
-                nodeControls = _cachedNodeControls[node];
+                _cachedNodeControls.Add(node, ncList);
             }
 
-            return nodeControls;
+            return _cachedNodeControls[node];
         }
 
         public void InvalidateNodeControlCache()
         {
-            lock (_cachedNodeControls)
-                _cachedNodeControls.Clear();
+            _cachedNodeControls.Clear();
         }
 
 		private IEnumerable<NodeControlInfo> GetNodeControlsInternal(TreeNodeAdv node)
