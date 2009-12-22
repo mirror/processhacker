@@ -296,22 +296,6 @@ namespace ProcessHacker.Common.Threading
         /// </remarks>
         public void AcquireExclusive()
         {
-            this.AcquireExclusive(true);
-        }
-
-        /// <summary>
-        /// Acquires the lock in exclusive mode, blocking 
-        /// if necessary.
-        /// </summary>
-        /// <param name="sleep">
-        /// If true, go to sleep, otherwise busy wait indefinitely.
-        /// </param>
-        /// <remarks>
-        /// Exclusive acquires are given precedence over shared 
-        /// acquires.
-        /// </remarks>
-        private void AcquireExclusive(bool sleep)
-        {
             int value;
             int i = 0;
 
@@ -375,7 +359,7 @@ namespace ProcessHacker.Common.Threading
 #if ENABLE_STATISTICS
                     Interlocked.Increment(ref _acqExclBlkCount);
 #endif
-                    this.Block(&waitBlock, sleep);
+                    this.Block(&waitBlock);
 
                     // Go back and try again.
                     continue;
@@ -397,22 +381,6 @@ namespace ProcessHacker.Common.Threading
         /// acquires.
         /// </remarks>
         public void AcquireShared()
-        {
-            this.AcquireShared(true);
-        }
-
-        /// <summary>
-        /// Acquires the lock in shared mode, blocking 
-        /// if necessary.
-        /// </summary>
-        /// <param name="sleep">
-        /// If true, go to sleep, otherwise busy wait indefinitely.
-        /// </param>
-        /// <remarks>
-        /// Exclusive acquires are given precedence over shared 
-        /// acquires.
-        /// </remarks>
-        private void AcquireShared(bool sleep)
         {
             int value;
             int i = 0;
@@ -499,7 +467,7 @@ namespace ProcessHacker.Common.Threading
 #if ENABLE_STATISTICS
                     Interlocked.Increment(ref _acqShrdBlkCount);
 #endif
-                    this.Block(&waitBlock, sleep);
+                    this.Block(&waitBlock);
 
                     // Go back and try again.
                     continue;
@@ -520,7 +488,7 @@ namespace ProcessHacker.Common.Threading
         /// If true, go to sleep if not unblocked while spinning, 
         /// otherwise continue spinning.
         /// </param>
-        private void Block(WaitBlock* waitBlock, bool sleep)
+        private void Block(WaitBlock* waitBlock)
         {
             int flags;
 
@@ -531,63 +499,47 @@ namespace ProcessHacker.Common.Threading
                     break;
             }
 
-            if (sleep)
-            {
 #if DEFER_EVENT_CREATION
-                IntPtr wakeEvent;
+            IntPtr wakeEvent;
 
-                wakeEvent = Interlocked.CompareExchange(ref _wakeEvent, IntPtr.Zero, IntPtr.Zero);
+            wakeEvent = Interlocked.CompareExchange(ref _wakeEvent, IntPtr.Zero, IntPtr.Zero);
 
-                if (wakeEvent == IntPtr.Zero)
-                {
-                    wakeEvent = this.CreateWakeEvent();
-
-                    if (Interlocked.CompareExchange(ref _wakeEvent, wakeEvent, IntPtr.Zero) != IntPtr.Zero)
-                        NativeMethods.CloseHandle(wakeEvent);
-                }
-
-#endif
-                // Clear the spinning flag.
-                do
-                {
-                    flags = waitBlock->Flags;
-                } while (Interlocked.CompareExchange(
-                    ref waitBlock->Flags,
-                    flags & ~WaiterSpinning,
-                    flags
-                    ) != flags);
-
-                // Go to sleep if necessary.
-                if ((flags & WaiterSpinning) != 0)
-                {
-#if ENABLE_STATISTICS
-                    if ((waitBlock->Flags & WaiterExclusive) != 0)
-                        Interlocked.Increment(ref _acqExclSlpCount);
-                    else
-                        Interlocked.Increment(ref _acqShrdSlpCount);
-
-#endif
-                    if (NativeMethods.NtWaitForKeyedEvent(
-                        _wakeEvent,
-                        new IntPtr(waitBlock),
-                        false,
-                        IntPtr.Zero
-                        ) != 0)
-                        throw new Exception(Utils.MsgFailedToWaitIndefinitely);
-                }
-            }
-            else
+            if (wakeEvent == IntPtr.Zero)
             {
-                while (true)
-                {
-                    if ((Thread.VolatileRead(ref waitBlock->Flags) & WaiterSpinning) == 0)
-                        break;
+                wakeEvent = this.CreateWakeEvent();
 
-                    if (NativeMethods.SpinEnabled)
-                        Thread.SpinWait(8);
-                    else
-                        Thread.Sleep(0);
-                }
+                if (Interlocked.CompareExchange(ref _wakeEvent, wakeEvent, IntPtr.Zero) != IntPtr.Zero)
+                    NativeMethods.CloseHandle(wakeEvent);
+            }
+
+#endif
+            // Clear the spinning flag.
+            do
+            {
+                flags = waitBlock->Flags;
+            } while (Interlocked.CompareExchange(
+                ref waitBlock->Flags,
+                flags & ~WaiterSpinning,
+                flags
+                ) != flags);
+
+            // Go to sleep if necessary.
+            if ((flags & WaiterSpinning) != 0)
+            {
+#if ENABLE_STATISTICS
+                if ((waitBlock->Flags & WaiterExclusive) != 0)
+                    Interlocked.Increment(ref _acqExclSlpCount);
+                else
+                    Interlocked.Increment(ref _acqShrdSlpCount);
+
+#endif
+                if (NativeMethods.NtWaitForKeyedEvent(
+                    _wakeEvent,
+                    new IntPtr(waitBlock),
+                    false,
+                    IntPtr.Zero
+                    ) != 0)
+                    throw new Exception(Utils.MsgFailedToWaitIndefinitely);
             }
         }
 
@@ -631,22 +583,6 @@ namespace ProcessHacker.Common.Threading
         /// placed ahead of all other waiters when acquiring.
         /// </remarks>
         public void ConvertSharedToExclusive()
-        {
-            this.ConvertSharedToExclusive(true);
-        }
-
-        /// <summary>
-        /// Converts the ownership mode from shared to exclusive.
-        /// </summary>
-        /// <param name="sleep">
-        /// If true, go to sleep, otherwise busy wait indefinitely.
-        /// </param>
-        /// <remarks>
-        /// This operation is almost the same as releasing then 
-        /// acquiring in exclusive mode, except that the caller is 
-        /// placed ahead of all other waiters when acquiring.
-        /// </remarks>
-        private void ConvertSharedToExclusive(bool sleep)
         {
             int value;
             int i = 0;
@@ -696,7 +632,7 @@ namespace ProcessHacker.Common.Threading
                         _lock.Release();
                     }
 
-                    this.Block(&waitBlock, sleep);
+                    this.Block(&waitBlock);
 
                     // Go back and try again.
                     continue;
@@ -837,41 +773,6 @@ namespace ProcessHacker.Common.Threading
                     break;
                 }
             }
-        }
-
-        /// <summary>
-        /// Acquires the lock in exclusive mode, busy waiting 
-        /// if necessary.
-        /// </summary>
-        /// <remarks>
-        /// Exclusive acquires are given precedence over shared 
-        /// acquires.
-        /// </remarks>
-        public void SpinAcquireExclusive()
-        {
-            this.AcquireExclusive(false);
-        }
-
-        /// <summary>
-        /// Acquires the lock in shared mode, busy waiting 
-        /// if necessary.
-        /// </summary>
-        /// <remarks>
-        /// Exclusive acquires are given precedence over shared 
-        /// acquires.
-        /// </remarks>
-        public void SpinAcquireShared()
-        {
-            this.AcquireShared(false);
-        }
-
-        /// <summary>
-        /// Converts the ownership mode from shared to exclusive, 
-        /// busy waiting if necessary.
-        /// </summary>
-        public void SpinConvertSharedToExclusive()
-        {
-            this.ConvertSharedToExclusive(false);
         }
 
         /// <summary>
