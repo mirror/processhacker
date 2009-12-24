@@ -23,15 +23,20 @@
 using System;
 using System.Windows.Forms;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Mfs;
 
 namespace ProcessHacker
 {
     public partial class DumpServiceWindow : Form
     {
-        public DumpServiceWindow(ServiceItem item)
+        private MemoryObject _serviceMo;
+
+        public DumpServiceWindow(ServiceItem item, MemoryObject serviceMo)
         {
             InitializeComponent();
             this.AddEscapeToClose();
+
+            _serviceMo = serviceMo;
 
             this.Text = "Service - " + item.Status.ServiceName;
 
@@ -50,6 +55,21 @@ namespace ProcessHacker
             textServiceBinaryPath.Text = item.Config.BinaryPathName;
             textUserAccount.Text = item.Config.ServiceStartName;
             textServiceDll.Text = item.ServiceDll;
+
+            try
+            {
+                var dict = Dump.GetDictionary(_serviceMo);
+
+                if (dict.ContainsKey("Description"))
+                    textDescription.Text = dict["Description"];
+            }
+            catch
+            { }
+        }
+
+        private void DumpServiceWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _serviceMo.Dispose();
         }
 
         private void buttonClose_Click(object sender, EventArgs e)

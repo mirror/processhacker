@@ -1,5 +1,10 @@
 Process Hacker
 
+1.10
+ * NEW/IMPROVED:
+ * FIXED:
+   * Missing service descriptions in dumps
+
 1.9
  * NEW/IMPROVED:
    * Dump/view process information

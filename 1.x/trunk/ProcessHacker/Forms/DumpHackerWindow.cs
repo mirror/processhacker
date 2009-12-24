@@ -36,6 +36,7 @@ namespace ProcessHacker
     {
         private MemoryFileSystem _mfs;
         private MemoryObject _processesMo;
+        private MemoryObject _servicesMo;
         private string _phVersion;
         private string _osVersion;
         private OSArch _architecture;
@@ -82,6 +83,8 @@ namespace ProcessHacker
         {
             if (_processesMo != null)
                 _processesMo.Dispose();
+            if (_servicesMo != null)
+                _servicesMo.Dispose();
             _mfs.Dispose();
 
             foreach (var item in _processes.Values)
@@ -256,6 +259,7 @@ namespace ProcessHacker
             MemoryObject servicesMo;
 
             servicesMo = _mfs.RootObject.GetChild("Services");
+            _servicesMo = servicesMo;
 
             if (servicesMo == null)
             {
@@ -271,8 +275,6 @@ namespace ProcessHacker
 
                 return true;
             });
-
-            servicesMo.Dispose();
         }
 
         private void LoadService(MemoryObject mo)
@@ -327,7 +329,7 @@ namespace ProcessHacker
 
         public void ShowProperties(IWin32Window owner, ServiceItem item)
         {
-            DumpServiceWindow dsw = new DumpServiceWindow(item);
+            DumpServiceWindow dsw = new DumpServiceWindow(item, _servicesMo.GetChild(item.Status.ServiceName));
 
             dsw.ShowDialog(owner);
         }

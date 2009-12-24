@@ -790,6 +790,8 @@ namespace ProcessHacker
                                 bw.Write("BinaryPath", FileUtils.GetFileName(config.BinaryPathName));
                                 bw.Write("Group", config.LoadOrderGroup);
                                 bw.Write("UserName", config.ServiceStartName);
+
+                                bw.Write("Description", shandle.GetDescription());
                             }
 
                             if (config.ServiceType == ServiceType.Win32ShareProcess)
