@@ -2,6 +2,7 @@ Process Hacker
 
 1.10
  * NEW/IMPROVED:
+   * Small performance improvements
  * FIXED:
    * Missing service descriptions in dumps
 
