@@ -4,6 +4,8 @@ Process Hacker
  * NEW/IMPROVED:
    * Small performance improvements
  * FIXED:
+   * #2920711 - "Value was either too large or too small for an Int32."
+   * #2920734 - "Found a reproducible bug : Value does not fall within..."
    * Missing service descriptions in dumps
 
 1.9

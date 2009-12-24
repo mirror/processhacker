@@ -38,8 +38,18 @@ namespace ProcessHacker
             IntPtr snapshot;
             var hlist = new HeapList32();
             var heap = new HeapEntry32();
-            int minsize = (int)BaseConverter.ToNumberParse((string)Params["h_ms"]);
+            int minsize;
             int count = 0;
+
+            try
+            {
+                minsize = (int)BaseConverter.ToNumberParse((string)Params["h_ms"]);
+            }
+            catch (Exception ex)
+            {
+                CallSearchError("Unable to parse the minimum size argument: " + ex.Message);
+                return;
+            }
 
             snapshot = Win32.CreateToolhelp32Snapshot(SnapshotFlags.HeapList, PID);
 

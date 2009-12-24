@@ -164,8 +164,10 @@ namespace ProcessHacker.Components
             {
                 if (value < this.Minimum)
                 {
-                    throw new ArgumentException();
+                    //throw new ArgumentException();
+                    return;
                 }
+
                 this._Maximum = value;
                 base.Invalidate();
             }
