@@ -103,7 +103,7 @@ Name: gr; MessagesFile: Languages\Greek.isl
 
 
 [Messages]
-BeveledLabel=Process Hacker v{#= simple_app_version} by wj32                                                                      Setup v{#= installer_build_number} built on {#= installer_build_date}
+BeveledLabel=Process Hacker v{#= simple_app_version} by wj32                                                                    Setup v{#= installer_build_number} built on {#= installer_build_date}
 
 
 [Files]
