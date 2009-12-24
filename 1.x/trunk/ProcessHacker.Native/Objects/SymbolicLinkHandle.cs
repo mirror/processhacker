@@ -103,7 +103,7 @@ namespace ProcessHacker.Native.Objects
 
                 if ((status = Win32.NtQuerySymbolicLinkObject(this, ref str, out retLength)) >= NtStatus.Error)
                 {
-                    buffer.Resize(retLength);
+                    buffer.ResizeNew(retLength);
                     str.MaximumLength = (ushort)retLength;
                     str.Buffer = buffer;
                 }

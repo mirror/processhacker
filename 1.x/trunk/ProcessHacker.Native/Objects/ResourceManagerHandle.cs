@@ -132,7 +132,7 @@ namespace ProcessHacker.Native.Objects
             if (status == NtStatus.BufferTooSmall)
             {
                 // Resize the buffer and try again.
-                data.Resize(retLength);
+                data.ResizeNew(retLength);
 
                 status = Win32.NtQueryInformationResourceManager(
                     this,

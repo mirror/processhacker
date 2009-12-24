@@ -61,7 +61,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             // Write the ACE to memory.
             this.MemoryRegion.WriteStruct<KnownAceStruct>(knownAce);
             // Write the SID.
-            this.MemoryRegion.WriteMemory(Win32.KnownAceSidStartOffset.ToInt32(), sid, 0, sid.Length);
+            this.MemoryRegion.WriteMemory(Win32.KnownAceSidStartOffset.ToInt32(), sid, sid.Length);
             // Update the cached info.
             this.Read();
         }

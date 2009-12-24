@@ -129,5 +129,17 @@ namespace ProcessHacker.Native
             System.Threading.Interlocked.Increment(ref _reallocatedCount);
 #endif
         }
+
+        /// <summary>
+        /// Resizes the memory allocation without retaining the contents 
+        /// of the allocated memory.
+        /// </summary>
+        /// <param name="newSize">The new size of the allocation.</param>
+        public virtual void ResizeNew(int newSize)
+        {
+            _privateHeap.Free(0, this.Memory);
+            this.Memory = _privateHeap.Allocate(0, newSize);
+            this.Size = newSize;
+        }
     }
 }

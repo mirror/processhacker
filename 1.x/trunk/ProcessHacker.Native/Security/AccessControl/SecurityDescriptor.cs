@@ -55,7 +55,7 @@ namespace ProcessHacker.Native.Security.AccessControl
 
                 if (status == NtStatus.BufferTooSmall)
                 {
-                    data.Resize(retLength);
+                    data.ResizeNew(retLength);
 
                     status = Win32.NtQuerySecurityObject(
                         handle,
@@ -585,7 +585,7 @@ namespace ProcessHacker.Native.Security.AccessControl
 
                 if (status == NtStatus.BufferTooSmall)
                 {
-                    data.Resize(retLength);
+                    data.ResizeNew(retLength);
                     status = Win32.RtlMakeSelfRelativeSD(this, data, ref retLength);
                 }
 

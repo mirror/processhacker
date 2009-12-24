@@ -145,7 +145,7 @@ namespace ProcessHacker.Native.Objects
                     if (status == NtStatus.BufferTooSmall)
                     {
                         // Resize and try again (+2 for the null terminator).
-                        data.Resize(valueStr.Length + 2);
+                        data.ResizeNew(valueStr.Length + 2);
                         valueStr.Buffer = data;
                         valueStr.MaximumLength = (ushort)(valueStr.Length + 2);
 

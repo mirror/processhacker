@@ -47,6 +47,8 @@ namespace ProcessHacker.Native.Io
         [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrMountPoint
         {
+            public static readonly int Size = Marshal.SizeOf(typeof(MountMgrMountPoint));
+
             public int SymbolicLinkNameOffset;
             public ushort SymbolicLinkNameLength;
             public int UniqueIdOffset;
@@ -92,6 +94,8 @@ namespace ProcessHacker.Native.Io
         [StructLayout(LayoutKind.Sequential)]
         public struct MountMgrVolumeMountPoint
         {
+            public static readonly int Size = Marshal.SizeOf(typeof(MountMgrVolumeMountPoint));
+
             public ushort SourceVolumeNameOffset;
             public ushort SourceVolumeNameLength;
             public ushort TargetVolumeNameOffset;
@@ -159,6 +163,201 @@ namespace ProcessHacker.Native.Io
 
         public static readonly int IoCtlQueryDeviceName = Win32.CtlCode(DeviceType.MountMgrDevice, 2, DeviceControlMethod.Buffered, DeviceControlAccess.Any);
 
+        private static void DeleteSymbolicLink(string path)
+        {
+            using (var data = new MemoryAlloc(MountMgrMountPoint.Size + path.Length * 2))
+            using (var outData = new MemoryAlloc(1600))
+            {
+                MountMgrMountPoint mountPoint = new MountMgrMountPoint();
+
+                mountPoint.SymbolicLinkNameLength = (ushort)(path.Length * 2);
+                mountPoint.SymbolicLinkNameOffset = MountMgrMountPoint.Size;
+                data.WriteStruct<MountMgrMountPoint>(mountPoint);
+                data.WriteUnicodeString(mountPoint.SymbolicLinkNameOffset, path);
+
+                using (var fhandle = OpenMountManager(FileAccess.GenericRead | FileAccess.GenericWrite))
+                {
+                    fhandle.IoControl(IoCtlDeletePoints, data.Memory, data.Size, outData.Memory, outData.Size);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the device name associated with the specified file name.
+        /// </summary>
+        /// <param name="fileName">
+        /// A file name referring to a DOS drive. For example: "\??\C:" (no 
+        /// trailing backslash).
+        /// </param>
+        /// <returns>The device name associated with the DOS drive.</returns>
+        public static string GetDeviceName(string fileName)
+        {
+            using (var fhandle = new FileHandle(
+                fileName,
+                FileShareMode.ReadWrite,
+                FileCreateOptions.SynchronousIoNonAlert,
+                FileAccess.ReadAttributes | (FileAccess)StandardRights.Synchronize
+                ))
+                return GetDeviceName(fhandle);
+        }
+
+        public static string GetDeviceName(FileHandle fhandle)
+        {
+            using (var data = new MemoryAlloc(600))
+            {
+                fhandle.IoControl(IoCtlQueryDeviceName, IntPtr.Zero, 0, data, data.Size);
+
+                MountDevName name = data.ReadStruct<MountDevName>();
+
+                return data.ReadUnicodeString(MountDevName.NameOffset, name.NameLength / 2);
+            }
+        }
+
+        private static string GetReparsePointTarget(FileHandle fhandle)
+        {
+            using (var data = new MemoryAlloc(FileSystem.MaximumReparseDataBufferSize))
+            {
+                fhandle.IoControl(FileSystem.FsCtlGetReparsePoint, IntPtr.Zero, 0, data, data.Size);
+
+                FileSystem.ReparseDataBuffer buffer = data.ReadStruct<FileSystem.ReparseDataBuffer>();
+
+                // Make sure it is in fact a mount point.
+                if (buffer.ReparseTag != (uint)IoReparseTag.MountPoint)
+                    Win32.Throw(NtStatus.InvalidParameter);
+
+                return data.ReadUnicodeString(
+                    FileSystem.ReparseDataBuffer.MountPointPathBuffer + buffer.SubstituteNameOffset,
+                    buffer.SubstituteNameLength / 2
+                    );
+            }
+        }
+
+        public static string GetMountPointTarget(string fileName)
+        {
+            // Special cases for DOS drives.
+
+            // "C:", "C:\"
+            if (
+                (fileName.Length == 2 && fileName[1] == ':') ||
+                (fileName.Length == 3 && fileName[1] == ':' && fileName[2] == '\\')
+                )
+            {
+                return GetVolumeName(fileName[0]);
+            }
+
+            // "\\.\C:\", "\\?\C:\" (and variants without the trailing backslash"
+            if (
+                (fileName.Length == 6 || fileName.Length == 7) &&
+                fileName[0] == '\\' &&
+                fileName[1] == '\\' &&
+                (fileName[2] == '.' || fileName[2] == '?') &&
+                fileName[3] == '\\' &&
+                fileName[5] == ':'
+                )
+            {
+                return GetVolumeName(fileName[4]);
+            }
+
+            // "\??\C:"
+            if (
+                fileName.Length == 6 &&
+                fileName[0] == '\\' &&
+                fileName[1] == '?' &&
+                fileName[2] == '?' &&
+                fileName[3] == '\\' &&
+                fileName[5] == ':'
+                )
+            {
+                return GetVolumeName(fileName[4]);
+            }
+
+            // Query the reparse point.
+            using (var fhandle = new FileHandle(
+                fileName,
+                FileShareMode.ReadWrite,
+                FileCreateOptions.OpenReparsePoint | FileCreateOptions.SynchronousIoNonAlert,
+                FileAccess.GenericRead
+                ))
+            {
+                return GetReparsePointTarget(fhandle);
+            }
+        }
+
+        public static string GetVolumeName(char driveLetter)
+        {
+            return GetVolumeName(FileUtils.GetPathForDosDrive(driveLetter));
+        }
+
+        public static string GetVolumeName(string deviceName)
+        {
+            using (var data = new MemoryAlloc(MountMgrMountPoint.Size + deviceName.Length * 2))
+            {
+                MountMgrMountPoint mountPoint = new MountMgrMountPoint();
+
+                mountPoint.DeviceNameLength = (ushort)(deviceName.Length * 2);
+                mountPoint.DeviceNameOffset = MountMgrMountPoint.Size;
+                data.WriteStruct<MountMgrMountPoint>(mountPoint);
+                data.WriteUnicodeString(mountPoint.DeviceNameOffset, deviceName);
+
+                using (var fhandle = OpenMountManager((FileAccess)StandardRights.Synchronize))
+                {
+                    NtStatus status;
+                    int retLength;
+
+                    using (var outData = new MemoryAlloc(0x100))
+                    {
+                        while (true)
+                        {
+                            status = fhandle.IoControl(
+                                IoCtlQueryPoints,
+                                data.Memory,
+                                data.Size,
+                                outData.Memory,
+                                outData.Size,
+                                out retLength
+                                );
+
+                            if (status == NtStatus.BufferOverflow)
+                            {
+                                outData.ResizeNew(Marshal.ReadInt32(outData.Memory)); // read Size field
+                                continue;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+                        if (status >= NtStatus.Error)
+                            Win32.Throw(status);
+
+                        MountMgrMountPoints mountPoints = outData.ReadStruct<MountMgrMountPoints>();
+
+                        // Go through the mount points given and return the first symbolic link that seems 
+                        // to be a volume name.
+                        for (int i = 0; i < mountPoints.NumberOfMountPoints; i++)
+                        {
+                            MountMgrMountPoint mp = outData.ReadStruct<MountMgrMountPoint>(
+                                MountMgrMountPoints.MountPointsOffset,
+                                i
+                                );
+                            string symLinkName;
+
+                            symLinkName = Marshal.PtrToStringUni(
+                                outData.Memory.Increment(mp.SymbolicLinkNameOffset),
+                                mp.SymbolicLinkNameLength / 2
+                                );
+
+                            if (IsVolumePath(symLinkName))
+                                return symLinkName;
+                        }
+
+                        return null;
+                    }
+                }
+            }
+        }
+
         public static bool IsDriveLetterPath(string path)
         {
             if (
@@ -187,6 +386,39 @@ namespace ProcessHacker.Native.Io
                 return true;
             else
                 return false;
+        }
+
+        private static void Notify(bool created, string sourceVolumeName, string targetVolumeName)
+        {
+            using (var data = new MemoryAlloc(
+                MountMgrVolumeMountPoint.Size +
+                sourceVolumeName.Length * 2 +
+                targetVolumeName.Length * 2
+                ))
+            {
+                MountMgrVolumeMountPoint mountPoint = new MountMgrVolumeMountPoint();
+
+                mountPoint.SourceVolumeNameLength = (ushort)(sourceVolumeName.Length * 2);
+                mountPoint.SourceVolumeNameOffset = (ushort)MountMgrVolumeMountPoint.Size;
+                mountPoint.TargetVolumeNameLength = (ushort)(targetVolumeName.Length * 2);
+                mountPoint.TargetVolumeNameOffset = 
+                    (ushort)(mountPoint.SourceVolumeNameOffset + mountPoint.SourceVolumeNameLength);
+
+                data.WriteStruct<MountMgrVolumeMountPoint>(mountPoint);
+                data.WriteUnicodeString(mountPoint.SourceVolumeNameOffset, sourceVolumeName);
+                data.WriteUnicodeString(mountPoint.TargetVolumeNameOffset, targetVolumeName);
+
+                using (var fhandle = OpenMountManager(FileAccess.GenericRead | FileAccess.GenericWrite))
+                {
+                    fhandle.IoControl(
+                        created ? IoCtlVolumeMountPointCreated : IoCtlVolumeMountPointDeleted,
+                        data.Memory,
+                        data.Size,
+                        IntPtr.Zero,
+                        0
+                        );
+                }
+            }
         }
 
         private static FileHandle OpenMountManager(FileAccess access)

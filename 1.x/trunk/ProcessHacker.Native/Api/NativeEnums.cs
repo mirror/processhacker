@@ -987,6 +987,25 @@ namespace ProcessHacker.Native.Api
         IoCompletionBasicInformation
     }
 
+    public enum IoReparseTag : uint
+    {
+        ReservedZero = 0x0,
+        ReservedOne = 0x1,
+
+        MountPoint = 0xa0000003,
+        Hsm = 0xc0000004,
+        DriveExtender = 0x80000005,
+        Hsm2 = 0x80000006,
+        Sis = 0x80000007,
+        Wim = 0x80000008,
+        Csv = 0x80000009,
+        Dfs = 0x8000000a,
+        FilterManager = 0x8000000b,
+        SymLink = 0xa000000c,
+        IisCache = 0xa0000010,
+        Dfsr = 0x80000012
+    }
+
     [Flags]
     public enum JobObjectBasicUiRestrictions : uint
     {

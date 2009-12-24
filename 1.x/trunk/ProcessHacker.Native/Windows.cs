@@ -156,7 +156,7 @@ namespace ProcessHacker.Native
 
             if (status == NtStatus.InfoLengthMismatch)
             {
-                _kernelModulesBuffer.Resize(retLength);
+                _kernelModulesBuffer.ResizeNew(retLength);
 
                 status = Win32.NtQuerySystemInformation(
                     SystemInformationClass.SystemModuleInformation,
@@ -235,7 +235,7 @@ namespace ProcessHacker.Native
                 out retLength)
                 ) == NtStatus.InfoLengthMismatch)
             {
-                data.Resize(data.Size * 2);
+                data.ResizeNew(data.Size * 2);
 
                 // Fail if we've resized it to over 16MB - protect from infinite resizing
                 if (data.Size > 16 * 1024 * 1024)
@@ -520,7 +520,7 @@ namespace ProcessHacker.Native
                     out retLength)
                     ) == NtStatus.InfoLengthMismatch)
                 {
-                    data.Resize(data.Size * 2);
+                    data.ResizeNew(data.Size * 2);
 
                     // Fail if we've resized it to over 16MB - protect from infinite resizing
                     if (data.Size > 16 * 1024 * 1024)
@@ -594,7 +594,7 @@ namespace ProcessHacker.Native
                     if (attempts > 3)
                         Win32.Throw(status);
 
-                    data.Resize(retLength);
+                    data.ResizeNew(retLength);
                 }
                 else
                 {
@@ -666,7 +666,7 @@ namespace ProcessHacker.Native
                     if (attempts > 3)
                         Win32.Throw(status);
 
-                    data.Resize(retLength);
+                    data.ResizeNew(retLength);
                 }
                 else
                 {
@@ -731,7 +731,7 @@ namespace ProcessHacker.Native
                     ref resume, null))
                 {
                     // resize buffer
-                    data.Resize(requiredSize);
+                    data.ResizeNew(requiredSize);
 
                     if (!Win32.EnumServicesStatusEx(manager, IntPtr.Zero, ServiceQueryType.Win32 | ServiceQueryType.Driver,
                         ServiceQueryState.All, data,

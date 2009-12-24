@@ -268,7 +268,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                     // the security descriptor into it.
                     using (var localAlloc = new LocalMemoryAlloc(sd.Length))
                     {
-                        localAlloc.WriteMemory(0, sd.Memory, 0, sd.Length);
+                        localAlloc.WriteMemory(0, sd.Memory, sd.Length);
                         localAlloc.Reference(); // reference for ACL editor
                         SecurityDescriptor = localAlloc;
                     }

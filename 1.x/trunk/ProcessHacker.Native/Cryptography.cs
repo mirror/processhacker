@@ -161,7 +161,7 @@ namespace ProcessHacker.Native
 
                         if (length > buffer.Size / 2)
                         {
-                            buffer.Resize(length * 2);
+                            buffer.ResizeNew(length * 2);
 
                             length = Win32.CertNameToStr(
                                 1,

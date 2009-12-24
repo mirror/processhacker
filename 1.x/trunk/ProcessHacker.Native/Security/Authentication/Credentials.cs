@@ -40,7 +40,7 @@ namespace ProcessHacker.Native.Security.Authentication
 
             if (!Win32.CredPackAuthenticationBuffer(flags, userName, password, data, ref size))
             {
-                data.Resize(size);
+                data.ResizeNew(size);
 
                 if (!Win32.CredPackAuthenticationBuffer(flags, userName, password, data, ref size))
                     Win32.Throw();
@@ -77,9 +77,9 @@ namespace ProcessHacker.Native.Security.Authentication
                     ref passwordSize
                     ))
                 {
-                    domainNameBuffer.Resize(domainNameSize * 2 + 2);
-                    userNameBuffer.Resize(userNameSize * 2 + 2);
-                    passwordBuffer.Resize(passwordSize * 2 + 2);
+                    domainNameBuffer.ResizeNew(domainNameSize * 2 + 2);
+                    userNameBuffer.ResizeNew(userNameSize * 2 + 2);
+                    passwordBuffer.ResizeNew(passwordSize * 2 + 2);
 
                     if (!Win32.CredUnPackAuthenticationBuffer(
                         flags,

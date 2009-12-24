@@ -81,7 +81,7 @@ namespace ProcessHacker.Native
 
                 if (retLength * 2 > data.Size)
                 {
-                    data.Resize(retLength * 2);
+                    data.ResizeNew(retLength * 2);
                     retLength = Win32.SearchPath(null, fileName, null, data.Size / 2, data, out filePart);
                 }
 
@@ -183,7 +183,7 @@ namespace ProcessHacker.Native
             driveLetter = char.ToUpperInvariant(driveLetter);
 
             if (driveLetter < 'A' || driveLetter > 'Z')
-                throw new ArgumentException("The drive letter must be from A to Z.");
+                throw new ArgumentException("The drive letter must be between A to Z (inclusive).");
 
             using (var shandle = new SymbolicLinkHandle(@"\??\" + driveLetter + ":", SymbolicLinkAccess.Query))
             {

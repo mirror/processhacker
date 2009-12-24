@@ -75,7 +75,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             // Allocate memory for the new ACL.
             _memory = new MemoryAlloc(existingAcl.Size);
             // Copy the ACL.
-            _memory.WriteMemory(0, existingAcl, 0, existingAcl.Size);
+            _memory.WriteMemory(0, existingAcl, existingAcl.Size);
             _memory.Reference();
             _memory.Dispose();
         }
@@ -255,7 +255,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 // Copy the ACEs into one contiguous block.
                 foreach (Ace ace in aceList)
                 {
-                    aceListMemory.WriteMemory(i, ace, 0, ace.Size);
+                    aceListMemory.WriteMemory(i, ace, ace.Size);
                     i += ace.Size;
                 }
 

@@ -762,7 +762,7 @@ namespace ProcessHacker.Native.Objects
                         }
 
                         if (status == NtStatus.BufferOverflow || status == NtStatus.InfoLengthMismatch)
-                            data.Resize(data.Size * 2);
+                            data.ResizeNew(data.Size * 2);
                         else
                             break;
                     }
@@ -1388,7 +1388,7 @@ namespace ProcessHacker.Native.Objects
                     status == NtStatus.BufferTooSmall || 
                     status == NtStatus.InfoLengthMismatch
                     )
-                    data.Resize(data.Size * 2);
+                    data.ResizeNew(data.Size * 2);
                 else
                     break;
             }

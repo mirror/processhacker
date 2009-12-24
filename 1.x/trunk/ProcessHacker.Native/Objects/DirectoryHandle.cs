@@ -139,7 +139,7 @@ namespace ProcessHacker.Native.Objects
                         if (data.Size > 16 * 1024 * 1024)
                             Win32.Throw(status);
 
-                        data.Resize(data.Size * 2);
+                        data.ResizeNew(data.Size * 2);
                     }
 
                     if (status >= NtStatus.Error)

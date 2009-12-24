@@ -154,7 +154,7 @@ namespace ProcessHacker.Native.Objects
             {
                 if (!Win32.QueryInformationJobObject(this, informationClass, data, data.Size, out retLength))
                 {
-                    data.Resize(retLength);
+                    data.ResizeNew(retLength);
 
                     if (!Win32.QueryInformationJobObject(this, informationClass, data, data.Size, out retLength))
                         Win32.Throw();

@@ -88,7 +88,7 @@ namespace ProcessHacker.Native.Objects
                 }
                 catch (WindowsException)
                 {
-                    data.Resize(retLength);
+                    data.ResizeNew(retLength);
 
                     KProcessHacker.Instance.KphQueryInformationDriver(
                         this,

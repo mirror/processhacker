@@ -1453,7 +1453,7 @@ namespace ProcessHacker.Native.Objects
                             ex.Status == NtStatus.BufferTooSmall &&
                             returnLength > data.Size
                             )
-                            data.Resize(returnLength);
+                            data.ResizeNew(returnLength);
 
                         attempts++;
 
@@ -1517,7 +1517,7 @@ namespace ProcessHacker.Native.Objects
 
                     if (status == NtStatus.InfoLengthMismatch)
                     {
-                        data.Resize(data.Size * 4);
+                        data.ResizeNew(data.Size * 4);
                         continue;
                     }
 
@@ -1766,7 +1766,7 @@ namespace ProcessHacker.Native.Objects
                     out retLength
                     )) == NtStatus.BufferOverflow)
                 {
-                    data.Resize(retLength.ToInt32());
+                    data.ResizeNew(retLength.ToInt32());
 
                     status = Win32.NtQueryVirtualMemory(
                         this,

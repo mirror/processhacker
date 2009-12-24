@@ -76,7 +76,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 Ace existingAce = new Ace(memory);
 
                 _memory = new MemoryAlloc(existingAce.Size);
-                _memory.WriteMemory(0, existingAce, 0, existingAce.Size);
+                _memory.WriteMemory(0, existingAce, existingAce.Size);
             }
             else
             {

@@ -120,7 +120,7 @@ namespace ProcessHacker.Native.Lpc
             MemoryAlloc data = new MemoryAlloc(_portMessageSize + _message.DataLength);
 
             data.WriteStruct<PortMessageStruct>(_message);
-            data.WriteMemory(_portMessageSize, _data, 0, _message.DataLength);
+            data.WriteMemory(_portMessageSize, _data, _message.DataLength);
 
             return data;
         }
