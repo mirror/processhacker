@@ -180,6 +180,14 @@ namespace ProcessHacker.Common.Threading
             /// lock, consider increasing the spin count.
             /// </remarks>
             public int AcqShrdSlp;
+            /// <summary>
+            /// The highest number of exclusive waiters at any one time.
+            /// </summary>
+            public int PeakExclWtrsCount;
+            /// <summary>
+            /// The highest number of shared waiters at any one time.
+            /// </summary>
+            public int PeakShrdWtrsCount;
         }
 
         // The number of times to spin before going to sleep.
@@ -196,6 +204,8 @@ namespace ProcessHacker.Common.Threading
         private int _acqShrdContCount = 0;
         private int _acqExclSlpCount = 0;
         private int _acqShrdSlpCount = 0;
+        private int _peakExclWtrsCount = 0;
+        private int _peakShrdWtrsCount = 0;
 #endif
 
         /// <summary>
@@ -333,6 +343,14 @@ namespace ProcessHacker.Common.Threading
 #if ENABLE_STATISTICS
                         Interlocked.Increment(ref _acqExclSlpCount);
 
+                        int exclWtrsCount = (value >> LockExclusiveWaitersShift) & LockExclusiveWaitersMask;
+
+                        Interlocked2.Set(
+                            ref _peakExclWtrsCount,
+                            (p) => p < exclWtrsCount,
+                            (p) => exclWtrsCount
+                            );
+
 #endif
                         // Go to sleep.
                         if (NativeMethods.WaitForSingleObject(
@@ -435,6 +453,14 @@ namespace ProcessHacker.Common.Threading
 #if ENABLE_STATISTICS
                         Interlocked.Increment(ref _acqShrdSlpCount);
 
+                        int shrdWtrsCount = (value >> LockSharedWaitersShift) & LockSharedWaitersMask;
+
+                        Interlocked2.Set(
+                            ref _peakShrdWtrsCount,
+                            (p) => p < shrdWtrsCount,
+                            (p) => shrdWtrsCount
+                            );
+
 #endif
                         // Go to sleep.
                         if (NativeMethods.WaitForSingleObject(
@@ -528,7 +554,9 @@ namespace ProcessHacker.Common.Threading
                 AcqExclCont = _acqExclContCount,
                 AcqShrdCont = _acqShrdContCount,
                 AcqExclSlp = _acqExclSlpCount,
-                AcqShrdSlp = _acqShrdSlpCount
+                AcqShrdSlp = _acqShrdSlpCount,
+                PeakExclWtrsCount = _peakExclWtrsCount,
+                PeakShrdWtrsCount = _peakShrdWtrsCount
             };
 #else
             return new Statistics();

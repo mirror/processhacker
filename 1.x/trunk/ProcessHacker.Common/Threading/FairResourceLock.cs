@@ -105,6 +105,20 @@ namespace ProcessHacker.Common.Threading
             /// The number of times shared waiters have gone to sleep.
             /// </summary>
             public int AcqShrdSlp;
+            /// <summary>
+            /// The number of times the waiters bit was unable to be 
+            /// set while the waiters list spinlock was acquired in 
+            /// order to insert a wait block.
+            /// </summary>
+            public int InsWaitBlkRetry;
+            /// <summary>
+            /// The highest number of exclusive waiters at any one time.
+            /// </summary>
+            public int PeakExclWtrsCount;
+            /// <summary>
+            /// The highest number of shared waiters at any one time.
+            /// </summary>
+            public int PeakShrdWtrsCount;
         }
 
         private unsafe struct WaitBlock
@@ -192,6 +206,9 @@ namespace ProcessHacker.Common.Threading
         private WaitBlock* _firstSharedWaiter;
 
 #if ENABLE_STATISTICS
+        private int _exclusiveWaitersCount = 0;
+        private int _sharedWaitersCount = 0;
+
         private int _acqExclCount = 0;
         private int _acqShrdCount = 0;
         private int _acqExclContCount = 0;
@@ -200,6 +217,9 @@ namespace ProcessHacker.Common.Threading
         private int _acqShrdBlkCount = 0;
         private int _acqExclSlpCount = 0;
         private int _acqShrdSlpCount = 0;
+        private int _insWaitBlkRetryCount = 0;
+        private int _peakExclWtrsCount = 0;
+        private int _peakShrdWtrsCount = 0;
 #endif
 
         /// <summary>
@@ -341,6 +361,10 @@ namespace ProcessHacker.Common.Threading
                             value
                             ) != value)
                         {
+#if ENABLE_STATISTICS
+                            Interlocked.Increment(ref _insWaitBlkRetryCount);
+
+#endif
                             // Unfortunately we have to go back. This is 
                             // very wasteful since the waiters list lock 
                             // must be released again, but must happen since 
@@ -351,6 +375,13 @@ namespace ProcessHacker.Common.Threading
                         // Put our wait block behind other exclusive waiters but 
                         // in front of all shared waiters.
                         this.InsertWaitBlock(&waitBlock, ListPosition.LastExclusive);
+#if ENABLE_STATISTICS
+
+                        _exclusiveWaitersCount++;
+
+                        if (_peakExclWtrsCount < _exclusiveWaitersCount)
+                            _peakExclWtrsCount = _exclusiveWaitersCount;
+#endif
                     }
                     finally
                     {
@@ -445,6 +476,10 @@ namespace ProcessHacker.Common.Threading
                             value
                             ) != value)
                         {
+#if ENABLE_STATISTICS
+                            Interlocked.Increment(ref _insWaitBlkRetryCount);
+
+#endif
                             continue;
                         }
 
@@ -459,6 +494,13 @@ namespace ProcessHacker.Common.Threading
                         {
                             _firstSharedWaiter = &waitBlock;
                         }
+#if ENABLE_STATISTICS
+
+                        _sharedWaitersCount++;
+
+                        if (_peakShrdWtrsCount < _sharedWaitersCount)
+                            _peakShrdWtrsCount = _sharedWaitersCount;
+#endif
                     }
                     finally
                     {
@@ -622,11 +664,22 @@ namespace ProcessHacker.Common.Threading
                             value
                             ) != value)
                         {
+#if ENABLE_STATISTICS
+                            Interlocked.Increment(ref _insWaitBlkRetryCount);
+
+#endif
                             continue;
                         }
 
                         // Put our wait block ahead of all other waiters.
                         this.InsertWaitBlock(&waitBlock, ListPosition.First);
+#if ENABLE_STATISTICS
+
+                        _exclusiveWaitersCount++;
+
+                        if (_peakExclWtrsCount < _exclusiveWaitersCount)
+                            _peakExclWtrsCount = _exclusiveWaitersCount;
+#endif
                     }
                     finally
                     {
@@ -678,7 +731,10 @@ namespace ProcessHacker.Common.Threading
                 AcqExclBlk = _acqExclBlkCount,
                 AcqShrdBlk = _acqShrdBlkCount,
                 AcqExclSlp = _acqExclSlpCount,
-                AcqShrdSlp = _acqShrdSlpCount
+                AcqShrdSlp = _acqShrdSlpCount,
+                InsWaitBlkRetry = _insWaitBlkRetryCount,
+                PeakExclWtrsCount = _peakExclWtrsCount,
+                PeakShrdWtrsCount = _peakShrdWtrsCount
             };
 #else
             return new Statistics();
@@ -935,6 +991,10 @@ namespace ProcessHacker.Common.Threading
                     if (first && (wb->Flags & WaiterExclusive) != 0)
                     {
                         exclusiveWb = RemoveHeadList(_waitersListHead);
+#if ENABLE_STATISTICS
+                        _exclusiveWaitersCount--;
+
+#endif
                         break;
                     }
 
@@ -953,6 +1013,9 @@ namespace ProcessHacker.Common.Threading
                     // Remove the (shared) waiter and add it to the wake list.
                     wb = RemoveHeadList(_waitersListHead);
                     InsertTailList(&wakeList, wb);
+#if ENABLE_STATISTICS
+                    _sharedWaitersCount--;
+#endif
 
                     first = false;
                 }
@@ -1012,6 +1075,9 @@ namespace ProcessHacker.Common.Threading
                 {
                     exclusiveWb = RemoveHeadList(_waitersListHead);
                     wb = _waitersListHead->Flink;
+#if ENABLE_STATISTICS
+                    _exclusiveWaitersCount--;
+#endif
                 }
 
                 if (wb == _waitersListHead)
@@ -1087,6 +1153,9 @@ namespace ProcessHacker.Common.Threading
                     flink = wb->Flink;
                     RemoveEntryList(wb);
                     InsertTailList(&wakeList, wb);
+#if ENABLE_STATISTICS
+                    _sharedWaitersCount--;
+#endif
                     wb = flink;
                 }
 
