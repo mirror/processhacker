@@ -891,6 +891,26 @@ namespace ProcessHacker.Common.Threading
         }
 
         /// <summary>
+        /// Attempts to convert the ownership mode from shared to exclusive.
+        /// </summary>
+        /// <returns>Whether the lock was converted.</returns>
+        public bool TryConvertSharedToExclusive()
+        {
+            int value;
+
+            value = _value;
+
+            if (((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 1)
+                return false;
+
+            return Interlocked.CompareExchange(
+                ref _value,
+                value - LockSharedOwnersIncrement,
+                value
+                ) == value;
+        }
+
+        /// <summary>
         /// Unblocks a wait block.
         /// </summary>
         /// <param name="waitBlock">The wait block to unblock.</param>
