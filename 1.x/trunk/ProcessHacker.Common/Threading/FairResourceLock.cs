@@ -36,7 +36,8 @@ namespace ProcessHacker.Common.Threading
     /// <remarks>
     /// FairResourceLock has slightly more overhead than FastResourceLock, 
     /// but guarantees that waiters will be released in FIFO order and 
-    /// provides better ownership conversion functions.
+    /// provides better ownership conversion functions. In most cases 
+    /// FairResourceLock will also perform better under heavy contention.
     /// </remarks>
     public unsafe sealed class FairResourceLock : IDisposable, IResourceLock
     {
