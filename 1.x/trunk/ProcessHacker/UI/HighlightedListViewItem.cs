@@ -95,8 +95,11 @@ namespace ProcessHacker.UI
                 // Execute the pre-queue items.
                 _list.BeginUpdate();
 
-                while (_preQueue.Count > 0)
-                    _preQueue.Dequeue().Invoke();
+                lock (_preQueue)
+                {
+                    while (_preQueue.Count > 0)
+                        _preQueue.Dequeue().Invoke();
+                }
 
                 _list.EndUpdate();
 
@@ -111,8 +114,11 @@ namespace ProcessHacker.UI
                         {
                             _list.BeginUpdate();
 
-                            while (_queue.Count > 0)
-                                _queue.Dequeue().Invoke();
+                            lock (_queue)
+                            {
+                                while (_queue.Count > 0)
+                                    _queue.Dequeue().Invoke();
+                            }
 
                             _list.EndUpdate();
                         }));
@@ -125,12 +131,14 @@ namespace ProcessHacker.UI
 
         public void Enqueue(MethodInvoker method)
         {
-            _queue.Enqueue(method);
+            lock (_queue)
+                _queue.Enqueue(method);
         }
 
         public void EnqueuePre(MethodInvoker method)
         {
-            _preQueue.Enqueue(method);
+            lock (_preQueue)
+                _preQueue.Enqueue(method);
         }
 
         public void Dispose()
