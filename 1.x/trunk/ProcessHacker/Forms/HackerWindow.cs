@@ -3183,9 +3183,6 @@ namespace ProcessHacker
 
             if (!OSVersion.HasIoPriority)
                 ioPriorityThreadMenuItem.Visible = false;
-
-            networkInfomationMenuItem.Visible = false; // not ready
-            analyzeWaitChainProcessMenuItem.Visible = false; // not ready
         }
 
         private void LoadFixNProcessHacker()
@@ -3299,6 +3296,9 @@ namespace ProcessHacker
 
         private void LoadControls()
         {
+            networkInfomationMenuItem.Visible = false; // not ready
+            analyzeWaitChainProcessMenuItem.Visible = false; // not ready
+
             GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
             GenericViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
             GenericViewMenu.AddMenuItems(copyNetworkMenuItem.MenuItems, listNetwork.List, null);
