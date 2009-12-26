@@ -725,91 +725,121 @@ namespace ProcessHacker.Native.Objects
         /// <param name="callback">The callback function to use.</param>
         public void EnumFiles(EnumFilesDelegate callback)
         {
+            this.EnumFiles(callback, null);
+        }
+
+        /// <summary>
+        /// Enumerates the files contained in the directory.
+        /// </summary>
+        /// <param name="callback">The callback function to use.</param>
+        /// <param name="searchPattern">A search pattern to use. For example, "*.txt".</param>
+        /// <remarks>
+        /// If a search pattern is specified, it will be used for all future 
+        /// enumerations performed on this file handle. Any search patterns 
+        /// specified in future enumerations will be ignored.
+        /// </remarks>
+        public void EnumFiles(EnumFilesDelegate callback, string searchPattern)
+        {
             NtStatus status;
             IoStatusBlock isb;
+            UnicodeString searchPatternStr = new UnicodeString();
             bool firstTime = true;
 
-            using (var data = new MemoryAlloc(0x400))
-            {
-                while (true)
-                {
-                    // Query the directory, doubling the buffer size each 
-                    // time NtQueryDirectoryFile fails. We will also handle 
-                    // any pending status.
+            if (searchPattern != null)
+                searchPatternStr = new UnicodeString(searchPattern);
 
+            try
+            {
+                using (var data = new MemoryAlloc(0x400))
+                {
                     while (true)
                     {
-                        status = Win32.NtQueryDirectoryFile(
-                            this,
-                            IntPtr.Zero,
-                            null,
-                            IntPtr.Zero,
-                            out isb,
-                            data,
-                            data.Size,
-                            FileInformationClass.FileDirectoryInformation,
-                            false,
-                            IntPtr.Zero,
-                            firstTime
-                            );
+                        // Query the directory, doubling the buffer size each 
+                        // time NtQueryDirectoryFile fails. We will also handle 
+                        // any pending status.
 
-                        // Our ISB is on the stack, so we have to wait for the operation to complete 
-                        // before continuing.
-                        if (status == NtStatus.Pending)
+                        while (true)
                         {
-                            this.Wait();
-                            status = isb.Status;
+                            unsafe
+                            {
+                                status = Win32.NtQueryDirectoryFile(
+                                    this,
+                                    IntPtr.Zero,
+                                    null,
+                                    IntPtr.Zero,
+                                    out isb,
+                                    data,
+                                    data.Size,
+                                    FileInformationClass.FileDirectoryInformation,
+                                    false,
+                                    searchPattern == null ? IntPtr.Zero : new IntPtr(&searchPatternStr),
+                                    firstTime
+                                    );
+                            }
+
+                            // Our ISB is on the stack, so we have to wait for the operation to complete 
+                            // before continuing.
+                            if (status == NtStatus.Pending)
+                            {
+                                this.Wait();
+                                status = isb.Status;
+                            }
+
+                            if (status == NtStatus.BufferOverflow || status == NtStatus.InfoLengthMismatch)
+                                data.ResizeNew(data.Size * 2);
+                            else
+                                break;
                         }
 
-                        if (status == NtStatus.BufferOverflow || status == NtStatus.InfoLengthMismatch)
-                            data.ResizeNew(data.Size * 2);
-                        else
+                        // If we don't have any entries to read, exit.
+                        if (status == NtStatus.NoMoreFiles)
                             break;
+
+                        // Handle any errors.
+                        if (status >= NtStatus.Error)
+                            Win32.Throw(status);
+
+                        // Read the list of files we got in this batch.
+
+                        int i = 0;
+
+                        while (true)
+                        {
+                            FileDirectoryInformation info = data.ReadStruct<FileDirectoryInformation>(i, 0);
+                            string name = data.ReadUnicodeString(
+                                i + FileDirectoryInformation.FileNameOffset,
+                                info.FileNameLength / 2
+                                );
+
+                            if (!callback(new FileEntry(
+                                name,
+                                info.FileIndex,
+                                DateTime.FromFileTime(info.CreationTime),
+                                DateTime.FromFileTime(info.LastAccessTime),
+                                DateTime.FromFileTime(info.LastWriteTime),
+                                DateTime.FromFileTime(info.ChangeTime),
+                                info.EndOfFile,
+                                info.AllocationSize,
+                                info.FileAttributes
+                                )))
+                                return;
+
+                            if (info.NextEntryOffset == 0)
+                                break;
+                            else
+                                i += info.NextEntryOffset;
+                        }
+
+                        firstTime = false;
+
+                        // Go back and get another batch of file entries.
                     }
-
-                    // If we don't have any entries to read, exit.
-                    if (status == NtStatus.NoMoreFiles)
-                        break;
-
-                    // Handle any errors.
-                    if (status >= NtStatus.Error)
-                        Win32.Throw(status);
-
-                    // Read the list of files we got in this batch.
-
-                    int i = 0;
-
-                    while (true)
-                    {
-                        FileDirectoryInformation info = data.ReadStruct<FileDirectoryInformation>(i, 0);
-                        string name = data.ReadUnicodeString(
-                            i + FileDirectoryInformation.FileNameOffset,
-                            info.FileNameLength / 2
-                            );
-
-                        if (!callback(new FileEntry(
-                            name,
-                            info.FileIndex,
-                            DateTime.FromFileTime(info.CreationTime),
-                            DateTime.FromFileTime(info.LastAccessTime),
-                            DateTime.FromFileTime(info.LastWriteTime),
-                            DateTime.FromFileTime(info.ChangeTime),
-                            info.EndOfFile,
-                            info.AllocationSize,
-                            info.FileAttributes
-                            )))
-                            return;
-
-                        if (info.NextEntryOffset == 0)
-                            break;
-                        else
-                            i += info.NextEntryOffset;
-                    }
-
-                    firstTime = false;
-
-                    // Go back and get another batch of file entries.
                 }
+            }
+            finally
+            {
+                if (searchPattern != null)
+                    searchPatternStr.Dispose();
             }
         }
 
@@ -1022,13 +1052,28 @@ namespace ProcessHacker.Native.Objects
         /// <returns>An array of file information structures.</returns>
         public FileEntry[] GetFiles()
         {
+            return this.GetFiles(null);
+        }
+
+        /// <summary>
+        /// Gets a list of the files contained in the directory.
+        /// </summary>
+        /// <param name="searchPattern">A search pattern to use. For example, "*.txt".</param>
+        /// <returns>An array of file information structures.</returns>
+        /// <remarks>
+        /// If a search pattern is specified, it will be used for all future 
+        /// enumerations performed on this file handle. Any search patterns 
+        /// specified in future enumerations will be ignored.
+        /// </remarks>
+        public FileEntry[] GetFiles(string searchPattern)
+        {
             List<FileEntry> files = new List<FileEntry>();
 
             this.EnumFiles((file) =>
                 {
                     files.Add(file);
                     return true;
-                });
+                }, searchPattern);
 
             return files.ToArray();
         }
