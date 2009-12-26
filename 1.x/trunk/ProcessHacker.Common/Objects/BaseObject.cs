@@ -28,6 +28,9 @@
  */
 //#define EXTENDED_FINALIZER
 
+/* If enabled, the object system will keep a list of live objects. */
+//#define DEBUG_ENABLE_LIVE_LIST
+
 using System;
 using System.ComponentModel;
 using System.Threading;
@@ -74,8 +77,13 @@ namespace ProcessHacker.Common.Objects
         private static int _referencedCount = 0;
         private static int _dereferencedCount = 0;
 
+#if DEBUG && DEBUG_ENABLE_LIVE_LIST
+        private static System.Collections.Generic.List<WeakReference<BaseObject>> _liveList =
+            new System.Collections.Generic.List<WeakReference<BaseObject>>();
+#endif
+
         /// <summary>
-        /// Gets the number of disposable objects that have been created.
+        /// Gets the number of disposable, owned objects that have been created.
         /// </summary>
         public static int CreatedCount { get { return _createdCount; } }
         /// <summary>
@@ -98,6 +106,21 @@ namespace ProcessHacker.Common.Objects
         /// Gets the number of times disposable objects have been dereferenced.
         /// </summary>
         public static int DereferencedCount { get { return _dereferencedCount; } }
+
+#if DEBUG && DEBUG_ENABLE_LIVE_LIST
+        public static void CleanLiveList()
+        {
+            var list = new System.Collections.Generic.List<WeakReference<BaseObject>>();
+
+            foreach (var r in _liveList)
+            {
+                if (r.Target != null)
+                    list.Add(r);
+            }
+
+            _liveList = list;
+        }
+#endif
 
         public static T SwapRef<T>(ref T reference, T newObj)
             where T : class, IRefCounted
@@ -160,11 +183,15 @@ namespace ProcessHacker.Common.Objects
             }
 
 #if ENABLE_STATISTICS
-            Interlocked.Increment(ref _createdCount);
+            if (owned)
+                Interlocked.Increment(ref _createdCount);
 #endif
 
 #if DEBUG
             _creationStackTrace = Environment.StackTrace;
+#if DEBUG_ENABLE_LIVE_LIST
+            _liveList.Add(new WeakReference<BaseObject>(this));
+#endif
 #endif
         }
 
