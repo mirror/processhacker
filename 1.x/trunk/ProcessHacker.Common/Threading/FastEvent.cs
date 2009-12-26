@@ -86,6 +86,17 @@ namespace ProcessHacker.Common.Threading
         }
 
         /// <summary>
+        /// Resets the event.
+        /// </summary>
+        public void Reset()
+        {
+            if ((_value & EventSet) != 0)
+            {
+                _value = EventRefCountIncrement;
+            }
+        }
+
+        /// <summary>
         /// Sets the event.
         /// </summary>
         public void Set()
