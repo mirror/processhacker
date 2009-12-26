@@ -61,26 +61,47 @@ namespace ProcessHacker.Components
                 var process = publish.GetProcess(_pid);
                 Debugger.Interop.CorPub.ICorPublishAppDomainEnum appDomainEnum;
 
-                process.WrappedObject.EnumAppDomains(out appDomainEnum);
-
-                if (appDomainEnum != null)
+                try
                 {
-                    uint count;
-                    Debugger.Interop.CorPub.ICorPublishAppDomain appDomain;
+                    process.WrappedObject.EnumAppDomains(out appDomainEnum);
 
-                    while (true)
+                    if (appDomainEnum != null)
                     {
-                        appDomainEnum.Next(1, out appDomain, out count);
+                        uint count;
+                        Debugger.Interop.CorPub.ICorPublishAppDomain appDomain;
 
-                        if (count == 0)
-                            break;
+                        try
+                        {
+                            while (true)
+                            {
+                                appDomainEnum.Next(1, out appDomain, out count);
 
-                        StringBuilder sb = new StringBuilder(0x100);
-                        uint strCount;
+                                if (count == 0)
+                                    break;
 
-                        appDomain.GetName((uint)sb.Capacity, out strCount, sb);
-                        listAppDomains.Items.Add(new ListViewItem(sb.ToString(0, (int)strCount - 1)));
+                                try
+                                {
+                                    StringBuilder sb = new StringBuilder(0x100);
+                                    uint strCount;
+
+                                    appDomain.GetName((uint)sb.Capacity, out strCount, sb);
+                                    listAppDomains.Items.Add(new ListViewItem(sb.ToString(0, (int)strCount - 1)));
+                                }
+                                finally
+                                {
+                                    System.Runtime.InteropServices.Marshal.ReleaseComObject(appDomain);
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            System.Runtime.InteropServices.Marshal.ReleaseComObject(appDomainEnum);
+                        }
                     }
+                }
+                finally
+                {
+                    Debugger.Wrappers.ResourceManager.ReleaseCOMObject(process.WrappedObject, process.GetType());
                 }
             }
             catch

@@ -288,7 +288,7 @@ namespace ProcessHacker.Common
             {
                 if (process != null)
                 {
-                    Debugger.Wrappers.ResourceManager.ReleaseCOMObject(process, process.GetType());
+                    Debugger.Wrappers.ResourceManager.ReleaseCOMObject(process.WrappedObject, process.GetType());
                 }
             }
         }
