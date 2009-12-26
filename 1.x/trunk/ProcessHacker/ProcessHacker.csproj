@@ -118,6 +118,9 @@
       <DependentUpon>ColorModifier.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\DotNetCounters.resx">
+      <DependentUpon>DotNetCounters.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\EventPairProperties.resx">
       <DependentUpon>EventPairProperties.cs</DependentUpon>
     </EmbeddedResource>
@@ -388,6 +391,12 @@
     <None Include="Resources\folder_explore.png" />
     <None Include="Resources\pencil_go.png" />
     <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Components\DotNetCounters.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\DotNetCounters.Designer.cs">
+      <DependentUpon>DotNetCounters.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\MessageLabel.cs">
       <SubType>UserControl</SubType>
     </Compile>
