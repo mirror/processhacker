@@ -60,7 +60,6 @@
             this.listAppDomains.TabIndex = 1;
             this.listAppDomains.UseCompatibleStateImageBehavior = false;
             this.listAppDomains.View = System.Windows.Forms.View.List;
-            this.listAppDomains.SelectedIndexChanged += new System.EventHandler(this.listAppDomains_SelectedIndexChanged);
             // 
             // label2
             // 

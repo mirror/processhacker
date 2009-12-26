@@ -2,6 +2,7 @@ Process Hacker
 
 1.10
  * NEW/IMPROVED:
+   * .NET tab in process properties - exact copy of Process Explorer's tab
    * Small performance improvements
  * FIXED:
    * #2920711 - "Value was either too large or too small for an Int32."

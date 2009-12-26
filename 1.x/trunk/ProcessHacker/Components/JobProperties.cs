@@ -27,6 +27,7 @@ using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
 {
@@ -37,6 +38,14 @@ namespace ProcessHacker.Components
         public JobProperties(JobObjectHandle jobObject)
         {
             InitializeComponent();
+
+            listProcesses.SetTheme("explorer");
+            listProcesses.AddShortcuts();
+            listProcesses.ContextMenu = listProcesses.GetCopyMenu();
+
+            listLimits.SetTheme("explorer");
+            listLimits.AddShortcuts();
+            listLimits.ContextMenu = listLimits.GetCopyMenu();
 
             _jobObject = jobObject;
             _jobObject.Reference();

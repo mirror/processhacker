@@ -1,9 +1,32 @@
-﻿using System;
+﻿/*
+ * Process Hacker - 
+ *   .NET counters control
+ * 
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Common;
+using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
 {
@@ -18,6 +41,13 @@ namespace ProcessHacker.Components
         public DotNetCounters(int pid, string name)
         {
             InitializeComponent();
+
+            listAppDomains.SetTheme("explorer");
+
+            listValues.SetDoubleBuffered(true);
+            listValues.SetTheme("explorer");
+            listValues.ContextMenu = listValues.GetCopyMenu();
+            listValues.AddShortcuts();
 
             _pid = pid;
             _name = name;
@@ -49,7 +79,7 @@ namespace ProcessHacker.Components
                         uint strCount;
 
                         appDomain.GetName((uint)sb.Capacity, out strCount, sb);
-                        listAppDomains.Items.Add(new ListViewItem(sb.ToString(0, (int)strCount)));
+                        listAppDomains.Items.Add(new ListViewItem(sb.ToString(0, (int)strCount - 1)));
                     }
                 }
             }
@@ -57,13 +87,16 @@ namespace ProcessHacker.Components
             { }
 
             var categories = PerformanceCounterCategory.GetCategories();
+            List<string> names = new List<string>();
 
             foreach (var category in categories)
             {
                 if (category.CategoryName.StartsWith(".NET CLR"))
-                    comboCategories.Items.Add(category.CategoryName);
+                    names.Add(category.CategoryName);
             }
 
+            names.Sort();
+            comboCategories.Items.AddRange(names.ToArray());
             comboCategories.SelectedItem = comboCategories.Items[0];
         }
 
@@ -76,28 +109,74 @@ namespace ProcessHacker.Components
         }
 
         private void UpdateCounters()
-        {
-            _counters = (new PerformanceCounterCategory(_categoryName)).GetCounters(_instanceName);
-
+        {             
             listValues.Items.Clear();
+
+            try
+            {
+                _counters = (new PerformanceCounterCategory(_categoryName)).GetCounters(_instanceName);
+            }
+            catch
+            {
+                _counters = null;
+                return;
+            }
 
             for (int i = 0; i < _counters.Length; i++)
             {
-                listValues.Items.Add(new ListViewItem(
-                    new string[] 
+                var counter = _counters[i];
+
+                if (
+                    (counter.CounterType == PerformanceCounterType.NumberOfItems32 ||
+                    counter.CounterType == PerformanceCounterType.NumberOfItems64 ||
+                    counter.CounterType == PerformanceCounterType.RawFraction) &&
+                    counter.CounterName != "Not Displayed"
+                    )
+                {
+                    listValues.Items.Add(new ListViewItem(
+                        new string[] 
                     {
-                        counter.CounterName,
+                        _counters[i].CounterName,
                         ""
                     }));
+                }
             }
+        }
+
+        public void InitialColumnAutoSize()
+        {
+            columnName.Width = (listValues.Width - 20) * 6 / 10;
+            columnValue.Width = (listValues.Width - 20) * 4 / 10;
         }
 
         public void UpdateInfo()
         {
-            for (int i = 0; i < _counters.Length; i++)
+            if (_counters == null)
+                return;
+
+            for (int i = 0, listIndex = 0; i < _counters.Length; i++, listIndex++)
             {
                 var counter = _counters[i];
-                string result;
+                string value;
+
+                if (
+                    (counter.CounterType == PerformanceCounterType.NumberOfItems32 ||
+                    counter.CounterType == PerformanceCounterType.NumberOfItems64 ||
+                    counter.CounterType == PerformanceCounterType.RawFraction) &&
+                    counter.CounterName != "Not Displayed"
+                    )
+                {
+                    if (counter.CounterType == PerformanceCounterType.RawFraction)
+                        value = counter.NextValue().ToString("N2");
+                    else
+                        value = counter.RawValue.ToString("N0");
+
+                    listValues.Items[listIndex].SubItems[1].Text = value;
+                }
+                else
+                {
+                    listIndex--;
+                }
             }
         }
     }

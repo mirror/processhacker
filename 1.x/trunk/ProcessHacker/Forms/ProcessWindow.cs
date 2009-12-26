@@ -57,6 +57,7 @@ namespace ProcessHacker
         private TokenProperties _tokenProps;
         private JobProperties _jobProps;
         private ServiceProperties _serviceProps;
+        private DotNetCounters _dotNetCounters;
 
         private ProcessHacker.Common.Threading.ActionSync _selectThreadRun;
 
@@ -203,6 +204,7 @@ namespace ProcessHacker
                 if (tabControl.TabPages.Contains(tabJob))
                     tabControl.TabPages.Remove(tabJob);
                 tabControl.TabPages.Remove(tabEnvironment);
+                tabControl.TabPages.Remove(tabDotNet);
             }
             else
             {
@@ -232,6 +234,9 @@ namespace ProcessHacker
                         tabControl.TabPages.Remove(tabServices);
                     }
                 }
+
+                if (!_processItem.IsDotNet)
+                    tabControl.TabPages.Remove(tabDotNet);
             }
         }
 
@@ -338,6 +343,10 @@ namespace ProcessHacker
             this.ResumeLayout();
 
             _selectThreadRun.Increment();
+
+            // Auto-size the .NET counter columns
+            if (_dotNetCounters != null)
+                _dotNetCounters.InitialColumnAutoSize();
         }
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -655,6 +664,15 @@ namespace ProcessHacker
                     }
                 }
             }
+
+            try
+            {
+                _dotNetCounters = new DotNetCounters(_pid, _processItem.Name);
+                _dotNetCounters.Dock = DockStyle.Fill;
+                tabDotNet.Controls.Add(_dotNetCounters);
+            }
+            catch
+            { }
 
             listEnvironment.ListViewItemSorter = new SortedListViewComparer(listEnvironment);
             listEnvironment.SetDoubleBuffered(true);
@@ -1219,6 +1237,11 @@ namespace ProcessHacker
                     else if (tabControl.SelectedTab == tabPerformance)
                     {
                         this.UpdatePerformance();
+                    }
+                    else if (tabControl.SelectedTab == tabDotNet)
+                    {
+                        if (_dotNetCounters != null)
+                            _dotNetCounters.UpdateInfo();
                     }
                 }));
             }
