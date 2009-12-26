@@ -135,6 +135,16 @@ namespace ProcessHacker.Native.Objects
                 Win32.Throw(status);
         }
 
+        public string GetAdminComment()
+        {
+            return this.GetInformation().AdminComment;
+        }
+
+        public UserAccountFlags GetFlags()
+        {
+            return this.GetInformation().UserFlags;
+        }
+
         public string GetFullName()
         {
             using (var data = this.GetInformation(UserInformationClass.UserFullNameInformation))
@@ -210,6 +220,39 @@ namespace ProcessHacker.Native.Objects
         {
             using (var data = this.GetInformation(UserInformationClass.UserExtendedInformation))
                 return data.ReadStruct<UserExtendedInformation>().PasswordHint.Read();
+        }
+
+        public void SetAdminComment(string comment)
+        {
+            unsafe
+            {
+                UserAllInformation info = new UserAllInformation();
+
+                info.WhichFields = UserWhichFields.AdminComment;
+                info.AdminComment = new UnicodeString(comment);
+
+                try
+                {
+                    this.SetInformation(UserInformationClass.UserAllInformation, new IntPtr(&info));
+                }
+                finally
+                {
+                    info.AdminComment.Dispose();
+                }
+            }
+        }
+
+        public void SetFlags(UserAccountFlags flags)
+        {
+            unsafe
+            {
+                UserAllInformation info = new UserAllInformation();
+
+                info.WhichFields = UserWhichFields.UserAccountControl;
+                info.UserAccountControl = flags;
+
+                this.SetInformation(UserInformationClass.UserAllInformation, new IntPtr(&info));
+            }
         }
 
         public void SetFullName(string fullName)
