@@ -52,8 +52,17 @@ namespace ProcessHacker.Components
             _pid = pid;
             _name = name;
 
-            if (_name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
-                _instanceName = _name.Remove(_name.Length - 4, 4);
+            // The .NET counters remove the file name extension in the 
+            // instance names, even if the extension is something other than 
+            // ".exe".
+            {
+                int indexOfDot = _name.IndexOf('.');
+
+                if (indexOfDot != -1)
+                    _instanceName = _name.Substring(0, indexOfDot);
+                else
+                    _instanceName = _name;
+            }
 
             try
             {
