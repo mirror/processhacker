@@ -9,6 +9,13 @@ namespace ProcessHacker.Native.Objects
 {
     public struct EnvironmentBlock
     {
+        private static readonly EnvironmentBlock _zero = new EnvironmentBlock(IntPtr.Zero);
+
+        public static EnvironmentBlock Zero
+        {
+            get { return _zero; }
+        }
+
         public static EnvironmentBlock GetCurrent()
         {
             unsafe

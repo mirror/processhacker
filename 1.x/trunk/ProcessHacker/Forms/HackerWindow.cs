@@ -1360,17 +1360,21 @@ namespace ProcessHacker
 
                         try
                         {
-                            var startupInfo = new StartupInfo();
-                            var procInfo = new ProcessInformation();
+                            ClientId cid;
+                            ThreadHandle thandle;
 
-                            startupInfo.Size = Marshal.SizeOf(startupInfo);
-
-                            if (!Win32.CreateProcess(null, cmdLine, IntPtr.Zero, IntPtr.Zero, false, 0, IntPtr.Zero, currentDirectory,
-                                ref startupInfo, out procInfo))
-                                Win32.Throw();
-
-                            Win32.CloseHandle(procInfo.ProcessHandle);
-                            Win32.CloseHandle(procInfo.ThreadHandle);
+                            ProcessHandle.CreateWin32(
+                                null,
+                                cmdLine,
+                                false,
+                                0,
+                                EnvironmentBlock.Zero,
+                                currentDirectory,
+                                new StartupInfo(),
+                                out cid,
+                                out thandle
+                                ).Dispose();
+                            thandle.Dispose();
                         }
                         catch (Exception ex)
                         {
