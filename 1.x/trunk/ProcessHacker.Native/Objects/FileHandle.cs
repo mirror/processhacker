@@ -901,17 +901,15 @@ namespace ProcessHacker.Native.Objects
             unsafe
             {
                 fixed (byte* inBufferPtr = inBuffer)
+                fixed (byte* outBufferPtr = outBuffer)
                 {
-                    fixed (byte* outBufferPtr = outBuffer)
-                    {
-                        return this.FsControl(
-                            controlCode,
-                            &inBufferPtr[inBufferOffset],
-                            inBuffer != null ? inBuffer.Length : 0,
-                            &outBufferPtr[outBufferOffset],
-                            outBuffer != null ? outBuffer.Length : 0
-                            );
-                    }
+                    return this.FsControl(
+                        controlCode,
+                        &inBufferPtr[inBufferOffset],
+                        inBuffer != null ? inBuffer.Length : 0,
+                        &outBufferPtr[outBufferOffset],
+                        outBuffer != null ? outBuffer.Length : 0
+                        );
                 }
             }
         }
@@ -1173,17 +1171,15 @@ namespace ProcessHacker.Native.Objects
             unsafe
             {
                 fixed (byte* inBufferPtr = inBuffer)
+                fixed (byte* outBufferPtr = outBuffer)
                 {
-                    fixed (byte* outBufferPtr = outBuffer)
-                    {
-                        return this.IoControl(
-                            controlCode,
-                            &inBufferPtr[inBufferOffset],
-                            inBuffer != null ? inBuffer.Length : 0,
-                            &outBufferPtr[outBufferOffset],
-                            outBuffer != null ? outBuffer.Length : 0
-                            );
-                    }
+                    return this.IoControl(
+                        controlCode,
+                        &inBufferPtr[inBufferOffset],
+                        inBuffer != null ? inBuffer.Length : 0,
+                        &outBufferPtr[outBufferOffset],
+                        outBuffer != null ? outBuffer.Length : 0
+                        );
                 }
             }
         }

@@ -60,6 +60,13 @@ namespace ProcessHacker.Common.Objects
     /// </remarks>
     public abstract class BaseObject : IDisposable, IRefCounted
     {
+        private const int ObjectOwned = 0x1;
+        private const int ObjectOwnedByGc = 0x2;
+        private const int ObjectDisposed = 0x4;
+        private const int ObjectRefCountShift = 3;
+        private const int ObjectRefCountMask = 0x1fffffff;
+        private const int ObjectRefCountIncrement = 0x8;
+
         private static int _createdCount = 0;
         private static int _freedCount = 0;
         private static int _disposedCount = 0;
@@ -116,23 +123,9 @@ namespace ProcessHacker.Common.Objects
         private string _creationStackTrace;
 #endif
         /// <summary>
-        /// Whether the object is owned (rather, whether this class should 
-        /// take care of anything).
+        /// An Int32 containing various fields.
         /// </summary>
-        private bool _owned = true;
-        /// <summary>
-        /// Whether the object is owned by the garbage collector (to ensure 
-        /// calling Dispose more than once has no effect).
-        /// </summary>
-        private int _ownedByGc = 1;
-        /// <summary>
-        /// The reference count of the object.
-        /// </summary>
-        private int _refCount = 1;
-        /// <summary>
-        /// Whether the object has been freed.
-        /// </summary>
-        private volatile bool _disposed = false;
+        private int _value;
 #if EXTENDED_FINALIZER
         /// <summary>
         /// Whether the finalizer will run.
@@ -153,18 +146,17 @@ namespace ProcessHacker.Common.Objects
         /// <param name="owned">Whether the resource is owned.</param>
         public BaseObject(bool owned)
         {
-            _owned = owned;
+            _value = ObjectOwned + ObjectOwnedByGc + ObjectRefCountIncrement;
 
             // Don't need to finalize the object if it doesn't need to be disposed.
-            if (!_owned)
+            if (!owned)
             {
 #if EXTENDED_FINALIZER
                 this.DisableFinalizer();
 #else
                 GC.SuppressFinalize(this);
 #endif
-                _ownedByGc = 0;
-                _refCount = 0;
+                _value = 0;
             }
 
 #if ENABLE_STATISTICS
@@ -205,41 +197,49 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         /// <param name="managed">Whether to dispose managed resources.</param>
         public void Dispose(bool managed)
-        {
-            if (!_owned)
+        {          
+            int value;
+
+            if ((_value & ObjectOwned) == 0)
                 return;
 
-            int oldOwnedByGc;
-
-            // Only proceed if the object is owned by the GC. We can perform 
-            // this operation without any locks by using CAS.
-            oldOwnedByGc = Interlocked.CompareExchange(ref _ownedByGc, 0, 1);
-
-            if (oldOwnedByGc == 1)
+            // Only proceed if the object is owned by the GC, and 
+            // clear the owned by GC flag (all atomically).
+            do
             {
-                // Decrement the reference count.
-                this.Dereference(managed);
+                value = _value;
 
-                // Disable the finalizer.
-                if (managed)
-                {
+                if ((value & ObjectOwnedByGc) == 0)
+                    return;
+            }
+            while (Interlocked.CompareExchange(
+                ref _value,
+                value - ObjectOwnedByGc,
+                value
+                ) != value);
+
+            // Decrement the reference count.
+            this.Dereference(managed);
+
+            // Disable the finalizer.
+            if (managed)
+            {
 #if EXTENDED_FINALIZER
-                    this.DisableFinalizer();
+                this.DisableFinalizer();
 #else
-                    GC.SuppressFinalize(this);
-#endif
-                }
-
-#if ENABLE_STATISTICS
-                // Stats.
-                Interlocked.Increment(ref _disposedCount);
-
-                // The dereferenced count should count the number of times 
-                // the user has called Dereference, so decrement it 
-                // because we just called it.
-                Interlocked.Decrement(ref _dereferencedCount);
+                GC.SuppressFinalize(this);
 #endif
             }
+
+#if ENABLE_STATISTICS
+            // Stats.
+            Interlocked.Increment(ref _disposedCount);
+
+            // The dereferenced count should count the number of times 
+            // the user has called Dereference, so decrement it 
+            // because we just called it.
+            Interlocked.Decrement(ref _dereferencedCount);
+#endif
         }
 
         /// <summary>
@@ -263,7 +263,7 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         public bool Disposed
         {
-            get { return _disposed; }
+            get { return (_value & ObjectDisposed) != 0; }
         }
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         public bool Owned
         {
-            get { return _owned; }
+            get { return (_value & ObjectOwned) != 0; }
         }
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         public bool OwnedByGc
         {
-            get { return _ownedByGc == 1; }
+            get { return (_value & ObjectOwnedByGc) != 0; }
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace ProcessHacker.Common.Objects
         /// </remarks>
         public int ReferenceCount
         {
-            get { return Thread.VolatileRead(ref _refCount); }
+            get { return (_value >> ObjectRefCountShift) & ObjectRefCountMask; }
         }
 
 #if EXTENDED_FINALIZER
@@ -316,6 +316,8 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         protected void DisableOwnership(bool dispose)
         {
+            int value;
+
             if (dispose)
                 this.Dispose();
 
@@ -324,7 +326,14 @@ namespace ProcessHacker.Common.Objects
 #else
             GC.SuppressFinalize(this);
 #endif
-            _owned = false;
+            do
+            {
+                value = _value;
+            } while (Interlocked.CompareExchange(
+                ref _value,
+                value & ~ObjectOwned,
+                value
+                ) != value);
 
 #if ENABLE_STATISTICS
             // If the object didn't get disposed, pretend the object 
@@ -385,13 +394,16 @@ namespace ProcessHacker.Common.Objects
         /// <returns>The new reference count.</returns>
         public int Dereference(int count, bool managed)
         {
+            int value;
+            int newRefCount;
+
             // Initial parameter validation.
             if (count == 0)
-                return Interlocked.Add(ref _refCount, 0);
+                return this.ReferenceCount;
             if (count < 0)
                 throw new ArgumentException("Cannot dereference a negative number of times.");
 
-            if (!_owned)
+            if ((_value & ObjectOwned) == 0)
                 return 0;
 
 #if ENABLE_STATISTICS
@@ -400,20 +412,29 @@ namespace ProcessHacker.Common.Objects
 #endif
 
             // Decrease the reference count.
-            int newRefCount = Interlocked.Add(ref _refCount, -count);
+            value = Interlocked.Add(ref _value, -ObjectRefCountIncrement * count);
+            newRefCount = (value >> ObjectRefCountShift) & ObjectRefCountMask;
 
             // Should not ever happen.
             if (newRefCount < 0)
                 throw new InvalidOperationException("Reference count cannot be negative.");
 
             // Dispose the object if the reference count is 0.
-            if (newRefCount == 0 && !_disposed)
+            if (newRefCount == 0)
             {
                 // If the dispose object method throws an exception, nothing bad 
                 // should happen if it does not invalidate any state.
                 this.DisposeObject(managed);
-                // Prevent the object from being disposed twice.
-                _disposed = true;
+
+                // Set the disposed flag.
+                do
+                {
+                    value = _value;
+                } while (Interlocked.CompareExchange(
+                    ref _value,
+                    value | ObjectDisposed,
+                    value
+                    ) != value);
 
 #if ENABLE_STATISTICS
                 Interlocked.Increment(ref _freedCount);
@@ -471,12 +492,14 @@ namespace ProcessHacker.Common.Objects
         /// <returns>The new reference count.</returns>
         public int Reference(int count)
         {
+            int value;
+
             // Don't do anything if the object isn't owned.
-            if (!_owned)
+            if ((_value & ObjectOwned) == 0)
                 return 0;
             // Parameter validation.
             if (count == 0)
-                return Interlocked.Add(ref _refCount, 0);
+                return this.ReferenceCount;
             if (count < 0)
                 throw new ArgumentException("Cannot reference a negative number of times.");
 
@@ -484,7 +507,9 @@ namespace ProcessHacker.Common.Objects
             Interlocked.Add(ref _referencedCount, count);
 #endif
 
-            return Interlocked.Add(ref _refCount, count);
+            value = Interlocked.Add(ref _value, ObjectRefCountIncrement * count);
+
+            return (value >> ObjectRefCountShift) & ObjectRefCountMask;
         }
     }
 }

@@ -220,17 +220,15 @@ namespace ProcessHacker.Common.Threading
             if (value == 0 || value == RundownActive)
                 return true;
 
-            while (true)
+            // Set the rundown active flag.
+            do
             {
                 value = _value;
-
-                if (Interlocked.CompareExchange(
-                    ref _value,
-                    value | RundownActive,
-                    value
-                    ) == value)
-                    break;
-            }
+            } while (Interlocked.CompareExchange(
+                ref _value,
+                value | RundownActive,
+                value
+                ) != value);
 
             // Wait for the event, but only if we had users.
             if ((value & ~RundownActive) != 0)
