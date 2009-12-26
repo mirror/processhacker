@@ -2135,6 +2135,7 @@ namespace ProcessHacker.Native.Objects
             if (_context != IntPtr.Zero)
             {
                 GCHandle.FromIntPtr(_context).Free();
+                _context = IntPtr.Zero;
             }
         }
 
@@ -2148,6 +2149,10 @@ namespace ProcessHacker.Native.Objects
 
         public NtStatus Wait()
         {
+            // Shortcut
+            if (this.Status != NtStatus.Pending)
+                return NtStatus.Success;
+
             if (this.Method != AsyncIoMethod.Event)
                 throw new InvalidOperationException("The asynchronous I/O context object is not event-based.");
 
@@ -2156,6 +2161,10 @@ namespace ProcessHacker.Native.Objects
 
         public NtStatus Wait(bool alertable)
         {
+            // Shortcut
+            if (this.Status != NtStatus.Pending)
+                return NtStatus.Success;
+
             if (this.Method != AsyncIoMethod.Event)
                 throw new InvalidOperationException("The asynchronous I/O context object is not event-based.");
 
@@ -2164,6 +2173,10 @@ namespace ProcessHacker.Native.Objects
 
         public NtStatus Wait(bool alertable, long timeout)
         {
+            // Shortcut
+            if (this.Status != NtStatus.Pending)
+                return NtStatus.Success;
+
             if (this.Method != AsyncIoMethod.Event)
                 throw new InvalidOperationException("The asynchronous I/O context object is not event-based.");
 
