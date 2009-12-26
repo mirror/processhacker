@@ -9,6 +9,7 @@ Process Hacker
    * #2920734 - "Found a reproducible bug : Value does not fall within..."
    * Missing service descriptions in dumps
    * Multi-threading issues with highlighting
+   * Highlighting for incredibly small intervals, ignoring user settings
 
 1.9
  * NEW/IMPROVED:

@@ -77,8 +77,9 @@ namespace ProcessHacker.UI
         }
 
         private ListView _list;
-        private Queue<MethodInvoker> _preQueue = new Queue<MethodInvoker>();
         private Queue<MethodInvoker> _queue = new Queue<MethodInvoker>();
+        private Queue<MethodInvoker> _postQueue = new Queue<MethodInvoker>();
+        private Queue<MethodInvoker> _postQueuePending = new Queue<MethodInvoker>();
 
         public HighlightingContext(ListView list)
         {
@@ -92,18 +93,18 @@ namespace ProcessHacker.UI
 
             _list.BeginInvoke(new MethodInvoker(delegate
             {
-                // Execute the pre-queue items.
+                // Execute the queue items.
                 _list.BeginUpdate();
 
-                lock (_preQueue)
+                lock (_queue)
                 {
-                    while (_preQueue.Count > 0)
-                        _preQueue.Dequeue().Invoke();
+                    while (_queue.Count > 0)
+                        _queue.Dequeue().Invoke();
                 }
 
                 _list.EndUpdate();
 
-                // Execute the normal queue items.
+                // Execute the post-queue items.
                 System.Threading.Timer t = null;
 
                 t = new System.Threading.Timer(o =>
@@ -114,13 +115,23 @@ namespace ProcessHacker.UI
                         {
                             _list.BeginUpdate();
 
-                            lock (_queue)
+                            lock (_postQueue)
                             {
-                                while (_queue.Count > 0)
-                                    _queue.Dequeue().Invoke();
+                                while (_postQueue.Count > 0)
+                                    _postQueue.Dequeue().Invoke();
                             }
 
                             _list.EndUpdate();
+
+                            // Re-enqueue the pending post-queue items.
+                            lock (_postQueuePending)
+                            {
+                                lock (_postQueue)
+                                {
+                                    while (_postQueuePending.Count > 0)
+                                        _postQueue.Enqueue(_postQueuePending.Dequeue());
+                                }
+                            }
                         }));
                     }
 
@@ -135,10 +146,10 @@ namespace ProcessHacker.UI
                 _queue.Enqueue(method);
         }
 
-        public void EnqueuePre(MethodInvoker method)
+        public void EnqueuePost(MethodInvoker method)
         {
-            lock (_preQueue)
-                _preQueue.Enqueue(method);
+            lock (_postQueuePending)
+                _postQueuePending.Enqueue(method);
         }
 
         public void Dispose()
@@ -179,7 +190,7 @@ namespace ProcessHacker.UI
                 this.ForeColor = PhUtils.GetForeColor(this.BackColor);
                 _state = ListViewItemState.New;
 
-                _context.Enqueue(delegate
+                _context.EnqueuePost(delegate
                     {
                         this.BackColor = _normalColor;
                         this.ForeColor = PhUtils.GetForeColor(this.BackColor);
@@ -196,12 +207,12 @@ namespace ProcessHacker.UI
         {
             if (HighlightingContext.StateHighlighting)
             {
-                _context.EnqueuePre(delegate
+                _context.Enqueue(delegate
                     {
                         this.BackColor = HighlightingContext.Colors[ListViewItemState.Removed];
                         this.ForeColor = PhUtils.GetForeColor(this.BackColor);
 
-                        _context.Enqueue(delegate
+                        _context.EnqueuePost(delegate
                         {
                             this.BaseRemove();
                         });
@@ -235,13 +246,13 @@ namespace ProcessHacker.UI
 
         public void SetTemporaryState(ListViewItemState state)
         {
-            _context.EnqueuePre(delegate
+            _context.Enqueue(delegate
             {
                 this.BackColor = HighlightingContext.Colors[state];
                 this.ForeColor = PhUtils.GetForeColor(this.BackColor);
                 _state = state;
 
-                _context.Enqueue(delegate
+                _context.EnqueuePost(delegate
                 {
                     this.BackColor = _normalColor;
                     this.ForeColor = PhUtils.GetForeColor(this.BackColor);
