@@ -110,6 +110,36 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
+        public void AddPrivilege(Sid accountSid, string privilege)
+        {
+            this.AddPrivileges(accountSid, new string[] { privilege });
+        }
+
+        public void AddPrivileges(Sid accountSid, string[] privileges)
+        {
+            NtStatus status;
+            UnicodeString[] privilegeStrArray = new UnicodeString[privileges.Length];
+
+            for (int i = 0; i < privileges.Length; i++)
+                privilegeStrArray[i] = new UnicodeString(privileges[i]);
+
+            try
+            {
+                if ((status = Win32.LsaAddAccountRights(
+                    this,
+                    accountSid,
+                    privilegeStrArray,
+                    privilegeStrArray.Length
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
+            }
+            finally
+            {
+                for (int i = 0; i < privilegeStrArray.Length; i++)
+                    privilegeStrArray[i].Dispose();
+            }
+        }
+
         public void DeletePrivateData(string name)
         {
             NtStatus status;
@@ -538,6 +568,51 @@ namespace ProcessHacker.Native.Objects
                 }
 
                 return new Sid(translatedSid.Sid);
+            }
+        }
+
+        public void RemovePrivilege(Sid accountSid, string privilege)
+        {
+            this.RemovePrivileges(accountSid, new string[] { privilege });
+        }
+
+        public void RemovePrivileges(Sid accountSid)
+        {
+            NtStatus status;
+
+            if ((status = Win32.LsaRemoveAccountRights(
+                this,
+                accountSid,
+                true,
+                null,
+                0
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+        }
+
+        public void RemovePrivileges(Sid accountSid, string[] privileges)
+        {
+            NtStatus status;
+            UnicodeString[] privilegeStrArray = new UnicodeString[privileges.Length];
+
+            for (int i = 0; i < privileges.Length; i++)
+                privilegeStrArray[i] = new UnicodeString(privileges[i]);
+
+            try
+            {
+                if ((status = Win32.LsaRemoveAccountRights(
+                    this,
+                    accountSid,
+                    false,
+                    privilegeStrArray,
+                    privilegeStrArray.Length
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
+            }
+            finally
+            {
+                for (int i = 0; i < privilegeStrArray.Length; i++)
+                    privilegeStrArray[i].Dispose();
             }
         }
 
