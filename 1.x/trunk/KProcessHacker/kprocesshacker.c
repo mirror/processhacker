@@ -1131,6 +1131,19 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             status = KphQueryNameObject(object, (PUNICODE_STRING)dataBuffer, outLength, &retLength);
             ObDereferenceObject(object);
+            
+            /* Check if the return length is greater than the length of the user buffer. 
+             * If so, it means the user needs to provide a larger buffer. In that case, 
+             * store the length in the Unicode string structure.
+             */
+            if (retLength > outLength)
+            {
+                if (outLength >= sizeof(UNICODE_STRING))
+                {
+                    ((PUNICODE_STRING)dataBuffer)->Length = (USHORT)retLength;
+                    retLength = sizeof(UNICODE_STRING);
+                }
+            }
         }
         break;
         
