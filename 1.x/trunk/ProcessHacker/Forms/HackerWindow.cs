@@ -2325,7 +2325,7 @@ namespace ProcessHacker
         {
             if (tabControl.SelectedTab == tabNetwork)
             {
-                _enableNetworkProviderSync.Increment();
+                _enableNetworkProviderSync.IncrementMultiple();
             }
             else
             {
@@ -3321,7 +3321,6 @@ namespace ProcessHacker
             if (Program.InspectPid != -1) Program.ProcessProvider.ProcessQueryReceived += processP_FileProcessingReceived;
             Program.ProcessProvider.Enabled = true;
             Program.ProcessProvider.Boost();
-            Program.PrimaryProviderThread.Run();
             updateProcessesMenuItem.Checked = true;
 
             HighlightingContext.HighlightingDuration = Settings.Instance.HighlightingDuration;

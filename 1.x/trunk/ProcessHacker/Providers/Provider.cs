@@ -95,11 +95,13 @@ namespace ProcessHacker
         private IDictionary<TKey, TValue> _dictionary;
 
         private bool _disposing = false;
+        private bool _boosting = false;
         private bool _busy = false;
         private bool _enabled = false;
         private LinkedListEntry<IProvider> _listEntry;
         private ProviderThread _owner;
         private int _runCount = 0;
+        private bool _unregistering = false;
 
         /// <summary>
         /// Creates a new instance of the Provider class.
@@ -162,6 +164,12 @@ namespace ProcessHacker
             }
         }
 
+        public bool Boosting
+        {
+            get { return _boosting; }
+            set { _boosting = value; }
+        }
+
         /// <summary>
         /// Determines whether the provider is currently updating.
         /// </summary>
@@ -204,6 +212,12 @@ namespace ProcessHacker
         public int RunCount
         {
             get { return _runCount; }
+        }
+
+        public bool Unregistering
+        {
+            get { return _unregistering; }
+            set { _unregistering = value; }
         }
 
         /// <summary>

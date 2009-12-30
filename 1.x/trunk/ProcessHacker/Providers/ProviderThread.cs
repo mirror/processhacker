@@ -96,6 +96,8 @@ namespace ProcessHacker
         public void Add(IProvider provider)
         {
             provider.Owner = this;
+            provider.Unregistering = false;
+            provider.Boosting = false;
 
             lock (_listHead)
             {
@@ -106,14 +108,20 @@ namespace ProcessHacker
 
         public void Boost(IProvider provider)
         {
-            if (!provider.Enabled)
+            if (provider.Unregistering)
                 return;
 
             lock (_listHead)
             {
                 LinkedList.RemoveEntryList(provider.ListEntry);
                 LinkedList.InsertHeadList(_listHead, provider.ListEntry);
+
+                provider.Boosting = true;
+                _boostCount++;
             }
+
+            // Wake up the thread.
+            _threadHandle.Alert();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -135,24 +143,25 @@ namespace ProcessHacker
 
         public void Remove(IProvider provider)
         {
-            provider.Enabled = false;
+            provider.Unregistering = false;
 
             lock (_listHead)
             {
                 LinkedList.RemoveEntryList(provider.ListEntry);
+
+                // Fix the boost count.
+                if (provider.Boosting)
+                    _boostCount--;
+
                 _count--;
             }
-        }
-
-        public void Run()
-        {
-            _threadHandle.Alert();
         }
 
         private void Update()
         {
             LinkedListEntry<IProvider> tempListHead = new LinkedListEntry<IProvider>();
             LinkedListEntry<IProvider> listEntry;
+            NtStatus status = NtStatus.Success;
 
             _threadHandle = ThreadHandle.OpenCurrent(
                 ThreadAccess.Alert | (ThreadAccess)StandardRights.Synchronize
@@ -167,13 +176,46 @@ namespace ProcessHacker
 
                 // Main loop.
 
-                while ((listEntry = LinkedList.RemoveHeadList(_listHead)) != _listHead)
+                while (true)
                 {
+                    if (status == NtStatus.Alerted)
+                    {
+                        // Check if we have any more providers to boost.
+                        if (_boostCount == 0)
+                            break;
+                    }
+
+                    listEntry = LinkedList.RemoveHeadList(_listHead);
+
+                    if (listEntry == _listHead)
+                        break;
+
                     // Add the provider to the temp list.
                     LinkedList.InsertTailList(tempListHead, listEntry);
 
-                    if (!listEntry.Value.Enabled)
-                        continue;
+                    if (status != NtStatus.Alerted)
+                    {
+                        if (!listEntry.Value.Enabled || listEntry.Value.Unregistering)
+                            continue;
+                    }
+                    else
+                    {
+                        if (listEntry.Value.Unregistering)
+                        {
+                            // Give the unregistering thread a chance to fix 
+                            // the boost count.
+                            Monitor.Exit(_listHead);
+                            Monitor.Enter(_listHead);
+
+                            continue;
+                        }
+                    }
+
+                    if (status == NtStatus.Alerted)
+                    {
+                        listEntry.Value.Boosting = false;
+                        _boostCount--;
+                    }
 
                     Monitor.Exit(_listHead);
 
@@ -195,7 +237,7 @@ namespace ProcessHacker
                 Monitor.Exit(_listHead);
 
                 // Wait for the interval. We may get alerted.
-                _timerHandle.Wait(true);
+                status = _timerHandle.Wait(true);
             }
         }
     }

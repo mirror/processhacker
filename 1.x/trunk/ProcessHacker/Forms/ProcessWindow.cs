@@ -1336,23 +1336,18 @@ namespace ProcessHacker
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int runCount = -1;
-
             if (_threadP != null)
                 if (_threadP.Enabled = tabControl.SelectedTab == tabThreads)
-                { _threadP.Boost(); runCount = _threadP.RunCount; }
+                    _threadP.Boost();
             if (_moduleP != null)
                 if (_moduleP.Enabled = tabControl.SelectedTab == tabModules)
-                { _moduleP.Boost(); runCount = _moduleP.RunCount; }
+                    _moduleP.Boost();
             if (_memoryP != null)
                 if (_memoryP.Enabled = tabControl.SelectedTab == tabMemory)
-                { _memoryP.Boost(); runCount = _memoryP.RunCount; }
+                    _memoryP.Boost();
             if (_handleP != null)
                 if (_handleP.Enabled = tabControl.SelectedTab == tabHandles)
-                { _handleP.Boost(); runCount = _handleP.RunCount; }
-
-            if (runCount == 0)
-                Program.SecondaryProviderThread.Run();
+                    _handleP.Boost();
 
             if (tabControl.SelectedTab == tabStatistics)
             {
