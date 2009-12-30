@@ -24,11 +24,11 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Threading;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
@@ -140,6 +140,19 @@ namespace ProcessHacker
         /// Only populated when the user right-clicks exactly one process.
         /// </summary>
         WindowHandle windowHandle = WindowHandle.Zero;
+
+        /// <summary>
+        /// Synchronizes the enabling of the network provider:
+        /// 1. The process provider needs to have run at least once.
+        /// 2. The user must have clicked on the Network tab.
+        /// </summary>
+        ActionSync _enableNetworkProviderSync;
+        /// <summary>
+        /// Synchronizes a highlighting refresh:
+        /// 1. The process provider needs to have run at least once.
+        /// 2. The service provider needs to have run at least once.
+        /// </summary>
+        ActionSync _refreshHighlightingSync;
 
         #endregion
 
@@ -408,10 +421,10 @@ namespace ProcessHacker
         private void updateNowMenuItem_Click(object sender, EventArgs e)
         {
             if (Program.ProcessProvider.RunCount > 1)
-                Program.ProcessProvider.RunOnce();
+                Program.ProcessProvider.Boost();
 
             if (Program.ServiceProvider.RunCount > 1)
-                Program.ServiceProvider.RunOnce();
+                Program.ServiceProvider.Boost();
         }
 
         private void updateProcessesMenuItem_Click(object sender, EventArgs e)
@@ -1905,6 +1918,9 @@ namespace ProcessHacker
             try { ProcessHandle.Current.SetPriorityClass(ProcessPriorityClass.High); }
             catch { }
 
+            _enableNetworkProviderSync.Increment();
+            _refreshHighlightingSync.Increment();
+
             if (Program.ProcessProvider.RunCount >= 1)
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
@@ -1934,9 +1950,8 @@ namespace ProcessHacker
                     }
 
                     treeProcesses.Invalidate();
-                    Program.ProcessProvider.RunOnceAsync();
+                    Program.ProcessProvider.Boost();
                     this.Cursor = Cursors.Default;
-                    this.UpdateCommon();
                 }));
         }
 
@@ -2012,8 +2027,7 @@ namespace ProcessHacker
             Program.ServiceProvider.DictionaryRemoved += serviceP_DictionaryRemoved;
             Program.ServiceProvider.Updated -= serviceP_Updated;
 
-            if (Program.ProcessProvider.RunCount >= 1)
-                this.BeginInvoke(new MethodInvoker(UpdateCommon));
+            _refreshHighlightingSync.Increment();
         }
 
         public void serviceP_DictionaryAdded(ServiceItem item)
@@ -2311,11 +2325,7 @@ namespace ProcessHacker
         {
             if (tabControl.SelectedTab == tabNetwork)
             {
-                if (Program.ProcessProvider.RunCount == 0)
-                    Program.ProcessProvider.Wait();
-
-                Program.NetworkProvider.Enabled = true;
-                Program.NetworkProvider.RunOnceAsync();
+                _enableNetworkProviderSync.Increment();
             }
             else
             {
@@ -3156,11 +3166,6 @@ namespace ProcessHacker
             ((MenuItem)sender).Checked = !((MenuItem)sender).Checked;
         }
 
-        private void UpdateCommon()
-        {
-            treeProcesses.RefreshItems();
-        }
-
         public void LoadFixOSSpecific()
         {
             if (KProcessHacker.Instance == null)
@@ -3307,7 +3312,6 @@ namespace ProcessHacker
             listServices.ContextMenu = menuService;
             listNetwork.ContextMenu = menuNetwork;
 
-            Program.ProcessProvider.Interval = Settings.Instance.RefreshInterval;
             treeProcesses.Provider = Program.ProcessProvider;
             treeProcesses.Tree.BeginUpdate();
             treeProcesses.Tree.BeginCompleteUpdate();
@@ -3315,15 +3319,15 @@ namespace ProcessHacker
             Program.ProcessProvider.Updated += processP_Updated;
             Program.ProcessProvider.Updated += processP_InfoUpdater;
             if (Program.InspectPid != -1) Program.ProcessProvider.ProcessQueryReceived += processP_FileProcessingReceived;
-            Program.ProcessProvider.RunOnceAsync();
             Program.ProcessProvider.Enabled = true;
+            Program.ProcessProvider.Boost();
+            Program.PrimaryProviderThread.Run();
             updateProcessesMenuItem.Checked = true;
 
             HighlightingContext.HighlightingDuration = Settings.Instance.HighlightingDuration;
             HighlightingContext.StateHighlighting = false;
 
             listServices.List.BeginUpdate();
-            Program.ServiceProvider.Interval = Settings.Instance.RefreshInterval;
             listServices.Provider = Program.ServiceProvider;
             Program.ServiceProvider.DictionaryAdded += serviceP_DictionaryAdded_Process;
             Program.ServiceProvider.DictionaryModified += serviceP_DictionaryModified_Process;
@@ -3333,7 +3337,6 @@ namespace ProcessHacker
 
             if (OSVersion.IsAboveOrEqual(WindowsVersion.XP))
             {
-                Program.NetworkProvider.Interval = Settings.Instance.RefreshInterval;
                 listNetwork.Provider = Program.NetworkProvider;
             }
 
@@ -3442,13 +3445,26 @@ namespace ProcessHacker
                 // We need to call this here or we don't receive the TaskbarButtonCreated message
                 Windows7Taskbar.AllowWindowMessagesThroughUipi();
                 Windows7Taskbar.AppId = "ProcessHacker";
-                Windows7Taskbar.ProcessAppId  = "ProcessHacker";
+                Windows7Taskbar.ProcessAppId = "ProcessHacker";
 
                 thumbButtonManager = new ThumbButtonManager(this);
                 thumbButtonManager.TaskbarButtonCreated += new EventHandler(thumbButtonManager_TaskbarButtonCreated);
             }
 
             this.AddEscapeToClose();
+
+            // Initialize action syncs
+            _enableNetworkProviderSync = new ActionSync(
+                () =>
+                {
+                    Program.NetworkProvider.Enabled = true;
+                    Program.NetworkProvider.Boost();
+                }, 2);
+            _refreshHighlightingSync = new ActionSync(
+                () =>
+                {
+                    this.BeginInvoke(new Action(treeProcesses.RefreshItems), null);
+                }, 2);
 
             Logging.Logged += this.QueueMessage;
             this.LoadWindowSettings();
@@ -3470,10 +3486,10 @@ namespace ProcessHacker
 
             vistaMenu.DelaySetImageCalls = false;
             vistaMenu.PerformPendingSetImageCalls();
-           
+
             Program.ServiceProvider.Enabled = true;
-            Program.ServiceProvider.RunOnceAsync();
-            
+            Program.ServiceProvider.Boost();
+
             _dontCalculate = false;
         }
 

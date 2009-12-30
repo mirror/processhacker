@@ -527,10 +527,6 @@ namespace ProcessHacker.Common.Threading
         /// Blocks on a wait block.
         /// </summary>
         /// <param name="waitBlock">The wait block to block on.</param>
-        /// <param name="sleep">
-        /// If true, go to sleep if not unblocked while spinning, 
-        /// otherwise continue spinning.
-        /// </param>
         private void Block(WaitBlock* waitBlock)
         {
             int flags;

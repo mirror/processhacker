@@ -68,7 +68,7 @@ namespace ProcessHacker
             this.Disposed += (provider) => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
-        protected override void UpdateOnce()
+        protected override void Update()
         {
             if (_processHandle == null)
                 return;

@@ -29,7 +29,7 @@ using ProcessHacker.Common.Objects;
 namespace ProcessHacker
 {                                                 
     /// <summary>
-    /// Provides services for continuously updating a dictionary.
+    /// Provides services for continuously updating data.
     /// </summary>
     public abstract class Provider<TKey, TValue> : BaseObject, IProvider
     {
@@ -92,16 +92,14 @@ namespace ProcessHacker
         public event ProviderError Error;
 
         private string _name = string.Empty;
-        private Thread _thread;
         private IDictionary<TKey, TValue> _dictionary;
 
-        private object _busyLock = new object();
         private bool _disposing = false;
         private bool _busy = false;
-        private bool _createThread = true;
         private bool _enabled = false;
+        private LinkedListEntry<IProvider> _listEntry;
+        private ProviderThread _owner;
         private int _runCount = 0;
-        private int _interval;
 
         /// <summary>
         /// Creates a new instance of the Provider class.
@@ -128,6 +126,8 @@ namespace ProcessHacker
                 throw new ArgumentNullException("dictionary");
 
             _dictionary = dictionary;
+            _listEntry = new LinkedListEntry<IProvider>();
+            _listEntry.Value = this;
         }
 
         protected override void DisposeObject(bool disposing)
@@ -135,9 +135,6 @@ namespace ProcessHacker
             Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): disposing (" + disposing.ToString() + ")");
 
             _disposing = true;
-
-            if (disposing)
-                Monitor.Enter(_busyLock);
 
             if (this.Disposed != null)
             {
@@ -150,9 +147,6 @@ namespace ProcessHacker
                     Logging.Log(ex);
                 }
             }
-
-            if (disposing)
-                Monitor.Exit(_busyLock);
 
             Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): finished disposing (" + disposing.ToString() + ")");
         }
@@ -177,15 +171,6 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// If enabled, the provider manages a background thread for the updater.
-        /// </summary>
-        public bool CreateThread
-        {
-            get { return _createThread; }
-            set { _createThread = value; }
-        }
-
-        /// <summary>
         /// Gets whether the provider is shutting down.
         /// </summary>
         protected bool Disposing
@@ -199,19 +184,18 @@ namespace ProcessHacker
         public bool Enabled
         {
             get { return _enabled; }
-            set
-            {
-                _enabled = value;
+            set { _enabled = value; }
+        }
 
-                if (_enabled && _createThread && _thread == null)
-                {
-                    _thread = new Thread(new ThreadStart(Update), Utils.SixteenthStackSize);
-                    _thread.IsBackground = true;
-                    _thread.SetApartmentState(ApartmentState.STA);
-                    _thread.Start();
-                    _thread.Priority = ThreadPriority.Lowest;
-                }
-            }
+        public LinkedListEntry<IProvider> ListEntry
+        {
+            get { return _listEntry; }
+        }
+
+        public ProviderThread Owner
+        {
+            get { return _owner; }
+            set { _owner = value; }
         }
 
         /// <summary>
@@ -220,15 +204,6 @@ namespace ProcessHacker
         public int RunCount
         {
             get { return _runCount; }
-        }
-
-        /// <summary>
-        /// Gets or sets the interval to wait between each update.
-        /// </summary>
-        public int Interval
-        {
-            get { return _interval; }
-            set { _interval = value; }
         }
 
         /// <summary>
@@ -241,113 +216,68 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Updates the provider if it is enabled.
+        /// Causes the provider to run immediately.
         /// </summary>
-        private void Update()
+        public void Boost()
         {
-            while (true)
-            {
-                if (_enabled && !_disposing)
-                {
-                    this.RunOnce();
-                }
-
-                Thread.Sleep(_interval);
-            }
+            _owner.Boost(this);
         }
 
         /// <summary>
-        /// Updates the provider. If it is already updating, this function waits until it finishes.
+        /// Updates the provider. Do not call this function.
         /// </summary>
-        public void RunOnce()
+        public void Run()
         {
-            lock (_busyLock)
+            // Bail out if we are disposing
+            if (_disposing)
             {
-                // Bail out if we are disposing
-                if (_disposing)
+                Logging.Log(Logging.Importance.Warning, "Provider (" + _name + "): RunOnce: currently disposing");
+                return;
+            }
+
+            _busy = true;
+
+            {
+                try
                 {
-                    Logging.Log(Logging.Importance.Warning, "Provider (" + _name + "): RunOnce: currently disposing");
-                    return;
+                    if (BeforeUpdate != null)
+                        BeforeUpdate();
                 }
+                catch
+                { }
 
-                _busy = true;
-
+                try
                 {
-                    try
+                    this.Update();
+                    _runCount++;
+                }
+                catch (Exception ex)
+                {
+                    if (Error != null)
                     {
-                        if (BeforeUpdate != null)
-                            BeforeUpdate();
-                    }
-                    catch
-                    { }
-
-                    try
-                    {
-                        this.UpdateOnce();
-                        _runCount++;
-                    }
-                    catch (Exception ex)
-                    {
-                        if (Error != null)
+                        try
                         {
-                            try
-                            {
-                                Error(ex);
-                            }
-                            catch
-                            { }
+                            Error(ex);
                         }
-                        else
-                        {
-                            Logging.Log(Logging.Importance.Error, ex.ToString());
-                        }
+                        catch
+                        { }
                     }
-
-                    try
+                    else
                     {
-                        if (Updated != null)
-                            Updated();
+                        Logging.Log(Logging.Importance.Error, ex.ToString());
                     }
-                    catch
-                    { }
                 }
 
-                _busy = false;
-            }
-        }
-
-        /// <summary>
-        /// Updates the provider in an internal worker thread.
-        /// </summary>
-        public void RunOnceAsync()
-        {
-            WorkQueue.GlobalQueueWorkItemTag(new Action(this.RunOnce), "provider-runonceasync");
-        }
-
-        /// <summary>
-        /// Waits for the current update process to finish. If an update process is not currently 
-        /// running, this function returns immediately.
-        /// </summary>
-        public void Wait()
-        {
-            this.Wait(-1);
-        }
-
-        /// <summary>
-        /// Waits for the current update process to finish. If an update process is not currently 
-        /// running, this function returns immediately. You may specify a timeout for the wait.
-        /// </summary>
-        /// <param name="timeout">The time in milliseconds to wait for the update process to finish.</param>
-        /// <returns>Whether the update process was finished before the timeout.</returns>
-        public bool Wait(int timeout)
-        {
-            if (Monitor.TryEnter(_busyLock, timeout))
-            {
-                Monitor.Exit(_busyLock);
-                return true;
+                try
+                {
+                    if (Updated != null)
+                        Updated();
+                }
+                catch
+                { }
             }
 
-            return false;
+            _busy = false;
         }
 
         private void CallEvent(Delegate e, params object[] args)
@@ -380,7 +310,7 @@ namespace ProcessHacker
             this.CallEvent(this.DictionaryRemoved, item);
         }
 
-        protected virtual void UpdateOnce()
+        protected virtual void Update()
         { }
     }
 }

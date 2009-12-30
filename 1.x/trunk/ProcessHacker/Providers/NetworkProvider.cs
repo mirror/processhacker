@@ -86,7 +86,7 @@ namespace ProcessHacker
                 }));
         }
 
-        protected override void UpdateOnce()
+        protected override void Update()
         {
             var networkDict = Windows.GetNetworkConnections();
             var preKeyDict = new Dictionary<string, KeyValuePair<int, NetworkConnection>>();

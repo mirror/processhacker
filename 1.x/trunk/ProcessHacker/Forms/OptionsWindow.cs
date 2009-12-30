@@ -548,9 +548,6 @@ namespace ProcessHacker
 
             Program.HackerWindow.ApplyIconVisibilities();
             Program.HackerWindow.LoadFixOSSpecific();
-            Program.ProcessProvider.Interval = Settings.Instance.RefreshInterval;
-            Program.ServiceProvider.Interval = Settings.Instance.RefreshInterval;
-            Program.NetworkProvider.Interval = Settings.Instance.RefreshInterval;
 
             HighlightingContext.HighlightingDuration = Settings.Instance.HighlightingDuration;
             HighlightingContext.Colors[ListViewItemState.New] = Settings.Instance.ColorNew;
@@ -559,11 +556,8 @@ namespace ProcessHacker
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Settings.Instance.ColorNew;
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Settings.Instance.ColorRemoved;
 
-            Program.ProcessProvider.Interval = Settings.Instance.RefreshInterval;
-            Program.ServiceProvider.Interval = Settings.Instance.RefreshInterval;
-            Program.NetworkProvider.Interval = Settings.Instance.RefreshInterval;
-            Program.SharedThreadProvider.Interval = Settings.Instance.RefreshInterval;
-            Program.SecondarySharedThreadProvider.Interval = Settings.Instance.RefreshInterval;
+            Program.PrimaryProviderThread.Interval = Settings.Instance.RefreshInterval;
+            Program.SecondaryProviderThread.Interval = Settings.Instance.RefreshInterval;
 
             Program.HackerWindow.ProcessTree.RefreshItems();
             Program.ApplyFont(Settings.Instance.Font);

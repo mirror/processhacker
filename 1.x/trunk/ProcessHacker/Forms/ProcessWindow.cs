@@ -685,37 +685,29 @@ namespace ProcessHacker
         {
             listThreads.BeginUpdate();
             _threadP = new ThreadProvider(_pid);
-            Program.SecondarySharedThreadProvider.Add(_threadP);
-            _threadP.Interval = Settings.Instance.RefreshInterval;
+            Program.SecondaryProviderThread.Add(_threadP);
             _threadP.Updated += new ThreadProvider.ProviderUpdateOnce(_threadP_Updated);
             listThreads.Provider = _threadP;
-            //_threadP.RunOnceAsync();
 
             listModules.BeginUpdate();
             _moduleP = new ModuleProvider(_pid);
-            Program.SecondarySharedThreadProvider.Add(_moduleP);
-            _moduleP.Interval = Settings.Instance.RefreshInterval;
+            Program.SecondaryProviderThread.Add(_moduleP);
             _moduleP.Updated += new ModuleProvider.ProviderUpdateOnce(_moduleP_Updated);
             listModules.Provider = _moduleP;
-            //_moduleP.RunOnceAsync();
 
             listMemory.BeginUpdate();
             _memoryP = new MemoryProvider(_pid);
-            Program.SecondarySharedThreadProvider.Add(_memoryP);
+            Program.SecondaryProviderThread.Add(_memoryP);
             _memoryP.IgnoreFreeRegions = true;
-            _memoryP.Interval = Settings.Instance.RefreshInterval;
             _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
             listMemory.Provider = _memoryP;
-            //_memoryP.RunOnceAsync();
 
             listHandles.BeginUpdate();
             _handleP = new HandleProvider(_pid);
-            Program.SecondarySharedThreadProvider.Add(_handleP);
+            Program.SecondaryProviderThread.Add(_handleP);
             _handleP.HideHandlesWithNoName = Settings.Instance.HideHandlesWithNoName;
-            _handleP.Interval = Settings.Instance.RefreshInterval;
             _handleP.Updated += new HandleProvider.ProviderUpdateOnce(_handleP_Updated);
             listHandles.Provider = _handleP;
-            //_handleP.RunOnceAsync();
 
             listThreads.List.SetTheme("explorer");
             listModules.List.SetTheme("explorer");
@@ -1007,7 +999,7 @@ namespace ProcessHacker
             if (_threadP.RunCount == 0)
             {
                 listThreads.ThreadItemsAdded += SelectThread_listThreads_ThreadItemsAdded;
-                _threadP.RunOnce();
+                _threadP.Boost();
             }
             else
             {
@@ -1159,7 +1151,7 @@ namespace ProcessHacker
             listMemory.BeginUpdate();
             _memoryP.IgnoreFreeRegions = checkHideFreeRegions.Checked;
             _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
-            _memoryP.RunOnceAsync();
+            _memoryP.Boost();
         }
 
         private void checkHideHandlesNoName_CheckedChanged(object sender, EventArgs e)
@@ -1168,15 +1160,14 @@ namespace ProcessHacker
             {
                 checkHideHandlesNoName.Enabled = false;
                 this.Cursor = Cursors.WaitCursor;
-                Program.SecondarySharedThreadProvider.Remove(_handleP);
+                Program.SecondaryProviderThread.Remove(_handleP);
                 _handleP.Dispose();
                 listHandles.BeginUpdate();
                 _handleP = new HandleProvider(_pid);
-                Program.SecondarySharedThreadProvider.Add(_handleP);
+                Program.SecondaryProviderThread.Add(_handleP);
                 _handleP.HideHandlesWithNoName = checkHideHandlesNoName.Checked;
-                _handleP.Interval = Settings.Instance.RefreshInterval;
                 _handleP.Updated += new HandleProvider.ProviderUpdateOnce(_handleP_Updated);
-                _handleP.RunOnceAsync();
+                _handleP.Boost();
                 listHandles.Provider = _handleP;
                 _handleP.Enabled = true;
             }
@@ -1345,18 +1336,23 @@ namespace ProcessHacker
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
+            int runCount = -1;
+
             if (_threadP != null)
                 if (_threadP.Enabled = tabControl.SelectedTab == tabThreads)
-                    _threadP.RunOnceAsync();
+                { _threadP.Boost(); runCount = _threadP.RunCount; }
             if (_moduleP != null)
                 if (_moduleP.Enabled = tabControl.SelectedTab == tabModules)
-                    _moduleP.RunOnceAsync();
+                { _moduleP.Boost(); runCount = _moduleP.RunCount; }
             if (_memoryP != null)
                 if (_memoryP.Enabled = tabControl.SelectedTab == tabMemory)
-                    _memoryP.RunOnceAsync();
+                { _memoryP.Boost(); runCount = _memoryP.RunCount; }
             if (_handleP != null)
                 if (_handleP.Enabled = tabControl.SelectedTab == tabHandles)
-                    _handleP.RunOnceAsync();
+                { _handleP.Boost(); runCount = _handleP.RunCount; }
+
+            if (runCount == 0)
+                Program.SecondaryProviderThread.Run();
 
             if (tabControl.SelectedTab == tabStatistics)
             {

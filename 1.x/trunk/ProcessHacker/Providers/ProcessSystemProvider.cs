@@ -775,7 +775,7 @@ namespace ProcessHacker
                 this.ProcessQueryReceived(result.Stage, result.Pid);
         }
 
-        protected override void UpdateOnce()
+        protected override void Update()
         {
             this.UpdatePerformance();
             this.UpdateProcessorPerf();

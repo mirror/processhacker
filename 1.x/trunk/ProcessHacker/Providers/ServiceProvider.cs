@@ -63,7 +63,7 @@ namespace ProcessHacker
             this.OnDictionaryModified(item, Dictionary[name]);
         }
 
-        protected override void UpdateOnce()
+        protected override void Update()
         {
             var newdictionary = Windows.GetServices();
 

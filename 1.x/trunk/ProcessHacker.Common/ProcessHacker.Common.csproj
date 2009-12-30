@@ -55,6 +55,7 @@
     <Compile Include="CircularBuffer.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="LibC.cs" />
+    <Compile Include="LinkedList.cs" />
     <Compile Include="Linq\GroupedEnumerable.cs" />
     <Compile Include="Linq\Grouping.cs" />
     <Compile Include="Linq\IGrouping.cs" />

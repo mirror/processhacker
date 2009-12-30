@@ -102,8 +102,8 @@ namespace ProcessHacker
         public static string SelectTab = "Processes";
         public static bool StartHidden = false;
         public static bool StartVisible = false;
-        public static SharedThreadProvider SecondarySharedThreadProvider;
-        public static SharedThreadProvider SharedThreadProvider;
+        public static ProviderThread PrimaryProviderThread;
+        public static ProviderThread SecondaryProviderThread;
         public static ProcessHacker.Native.Threading.Waiter SharedWaiter;
 
         private static object CollectWorkerThreadsLock = new object();
@@ -313,13 +313,13 @@ namespace ProcessHacker
             ProcessProvider = new ProcessSystemProvider();
             ServiceProvider = new ServiceProvider();
             NetworkProvider = new NetworkProvider();
-            Program.SharedThreadProvider =
-                new SharedThreadProvider(Settings.Instance.RefreshInterval);
-            Program.SharedThreadProvider.Add(ProcessProvider);
-            Program.SharedThreadProvider.Add(ServiceProvider);
-            Program.SharedThreadProvider.Add(NetworkProvider);
-            Program.SecondarySharedThreadProvider =
-                new SharedThreadProvider(Settings.Instance.RefreshInterval);
+            Program.PrimaryProviderThread =
+                new ProviderThread(Settings.Instance.RefreshInterval);
+            Program.PrimaryProviderThread.Add(ProcessProvider);
+            Program.PrimaryProviderThread.Add(ServiceProvider);
+            Program.PrimaryProviderThread.Add(NetworkProvider);
+            Program.SecondaryProviderThread =
+                new ProviderThread(Settings.Instance.RefreshInterval);
         }
 
         private static void LoadSettings(bool useSettings, string settingsFileName)
@@ -522,15 +522,15 @@ namespace ProcessHacker
             {
                 int pid = int.Parse(pArgs["-pw"]);
 
-                SharedThreadProvider = new SharedThreadProvider(Settings.Instance.RefreshInterval);
-                SecondarySharedThreadProvider = new SharedThreadProvider(Settings.Instance.RefreshInterval);
+                PrimaryProviderThread = new ProviderThread(Settings.Instance.RefreshInterval);
+                SecondaryProviderThread = new ProviderThread(Settings.Instance.RefreshInterval);
 
                 ProcessProvider = new ProcessSystemProvider();
                 ServiceProvider = new ServiceProvider();
-                SharedThreadProvider.Add(ProcessProvider);
-                SharedThreadProvider.Add(ServiceProvider);
-                ProcessProvider.RunOnce();
-                ServiceProvider.RunOnce();
+                PrimaryProviderThread.Add(ProcessProvider);
+                PrimaryProviderThread.Add(ServiceProvider);
+                ProcessProvider.Boost();
+                ServiceProvider.Boost();
                 ProcessProvider.Enabled = true;
                 ServiceProvider.Enabled = true;
 
@@ -547,7 +547,7 @@ namespace ProcessHacker
 
                 Application.Run(pw);
 
-                SharedThreadProvider.Dispose();
+                PrimaryProviderThread.Dispose();
                 ProcessProvider.Dispose();
                 ServiceProvider.Dispose();
 
@@ -1002,15 +1002,14 @@ namespace ProcessHacker
             info.AppendLine();
             info.AppendLine("PRIMARY SHARED THREAD PROVIDER");
             
-            if (SharedThreadProvider != null)
+            if (PrimaryProviderThread != null)
             {
-                info.AppendLine("Count: " + SharedThreadProvider.Count.ToString());
+                info.AppendLine("Count: " + PrimaryProviderThread.Count.ToString());
 
-                foreach (var provider in SharedThreadProvider.Providers)
+                foreach (IProvider provider in PrimaryProviderThread)
                     info.AppendLine(provider.GetType().FullName +
                         " (Enabled: " + provider.Enabled +
                         ", Busy: " + provider.Busy.ToString() +
-                        ", CreateThread: " + provider.CreateThread.ToString() +
                         ")");
             }
             else
@@ -1021,15 +1020,14 @@ namespace ProcessHacker
             info.AppendLine();
             info.AppendLine("SECONDARY SHARED THREAD PROVIDER");
 
-            if (SecondarySharedThreadProvider != null)
+            if (SecondaryProviderThread != null)
             {
-                info.AppendLine("Count: " + SecondarySharedThreadProvider.Count.ToString());
+                info.AppendLine("Count: " + SecondaryProviderThread.Count.ToString());
 
-                foreach (var provider in SecondarySharedThreadProvider.Providers)
+                foreach (IProvider provider in SecondaryProviderThread)
                     info.AppendLine(provider.GetType().FullName +
                         " (Enabled: " + provider.Enabled +
                         ", Busy: " + provider.Busy.ToString() +
-                        ", CreateThread: " + provider.CreateThread.ToString() +
                         ")");
             }
             else

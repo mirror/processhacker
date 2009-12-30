@@ -27,7 +27,7 @@ namespace ProcessHacker
 
             if (_threadP != null)
             {
-                Program.SecondarySharedThreadProvider.Remove(_threadP);
+                Program.SecondaryProviderThread.Remove(_threadP);
                 // May take a very, very long time
                 WorkQueue.GlobalQueueWorkItemTag(
                     new System.Windows.Forms.MethodInvoker(_threadP.Dispose),
@@ -38,21 +38,21 @@ namespace ProcessHacker
 
             if (_moduleP != null)
             {
-                Program.SecondarySharedThreadProvider.Remove(_moduleP);
+                Program.SecondaryProviderThread.Remove(_moduleP);
                 _moduleP.Dispose();
                 _moduleP = null;
             }
 
             if (_memoryP != null)
             {
-                Program.SecondarySharedThreadProvider.Remove(_memoryP);
+                Program.SecondaryProviderThread.Remove(_memoryP);
                 _memoryP.Dispose();
                 _memoryP = null;
             }
 
             if (_handleP != null)
             {
-                Program.SecondarySharedThreadProvider.Remove(_handleP);
+                Program.SecondaryProviderThread.Remove(_handleP);
                 _handleP.Dispose();
                 _handleP = null;
             }

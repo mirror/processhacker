@@ -356,7 +356,7 @@ namespace ProcessHacker
             }
         }
 
-        protected override void UpdateOnce()
+        protected override void Update()
         {
             // Load symbols if they are not already loaded.
             this.LoadSymbols();

@@ -90,7 +90,7 @@ namespace ProcessHacker
             this.Disposed += (provider) => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
-        protected override void UpdateOnce()
+        protected override void Update()
         {
             if (_pid != 4 && _processHandle == null)
             {
