@@ -1,5 +1,9 @@
 Process Hacker
 
+1.11
+ * FIXED:
+   * #2926287 - "Scroll Problems with Microsoft Intellipoint Mouse"
+
 1.10
  * NEW/IMPROVED:
    * .NET tab in process properties - exact copy of Process Explorer's tab

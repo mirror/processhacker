@@ -119,7 +119,8 @@ namespace Aga.Controls.Tree
 			_search.EndSearch();
 			if (SystemInformation.MouseWheelScrollLines > 0)
 			{
-				int lines = e.Delta / 120 * SystemInformation.MouseWheelScrollLines;
+				int lines = e.Delta * SystemInformation.MouseWheelScrollLines /
+                    SystemInformation.MouseWheelScrollDelta;
 				int newValue = _vScrollBar.Value - lines;
 				newValue = Math.Min(_vScrollBar.Maximum - _vScrollBar.LargeChange + 1, newValue);
 				newValue = Math.Min(_vScrollBar.Maximum, newValue);
