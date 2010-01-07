@@ -25,7 +25,7 @@
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 
-#define installer_build_number "40"
+#define installer_build_number "41"
 
 #define VerMajor
 #define VerMinor
@@ -130,13 +130,13 @@ Name: startup_task; Description: {cm:tsk_StartupDescr}; GroupDescription: {cm:ts
 Name: startup_task\minimized; Description: {cm:tsk_StartupDescrMin}; GroupDescription: {cm:tsk_Startup}; Check: StartupCheck(); Flags: unchecked
 Name: remove_startup_task; Description: {cm:tsk_RemoveStartup}; GroupDescription: {cm:tsk_Startup}; Check: NOT StartupCheck(); Flags: unchecked
 
-Name: create_KPH_service; Description: {cm:tsk_CreateKPHService}; GroupDescription: {cm:tsk_Other}; Check: NOT KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
-Name: delete_KPH_service; Description: {cm:tsk_DeleteKPHService}; GroupDescription: {cm:tsk_Other}; Check: KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked dontinheritcheck
+Name: create_KPH_service; Description: {cm:tsk_CreateKPHService}; GroupDescription: {cm:tsk_Other}; Check: NOT KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked
+Name: delete_KPH_service; Description: {cm:tsk_DeleteKPHService}; GroupDescription: {cm:tsk_Other}; Check: KPHServiceCheck() AND NOT Is64BitInstallMode(); Flags: unchecked
 
-Name: reset_settings; Description: {cm:tsk_ResetSettings}; GroupDescription: {cm:tsk_Other}; Check: SettingsExistCheck(); Flags: unchecked checkablealone
+Name: reset_settings; Description: {cm:tsk_ResetSettings}; GroupDescription: {cm:tsk_Other}; Check: SettingsExistCheck(); Flags: checkedonce unchecked
 
-Name: set_default_taskmgr; Description: {cm:tsk_SetDefaultTaskmgr}; GroupDescription: {cm:tsk_Other}; Check: PHDefaulTaskmgrCheck(); Flags: unchecked dontinheritcheck
-Name: restore_taskmgr; Description: {cm:tsk_RestoreTaskmgr}; GroupDescription: {cm:tsk_Other}; Check: NOT PHDefaulTaskmgrCheck(); Flags: unchecked dontinheritcheck
+Name: set_default_taskmgr; Description: {cm:tsk_SetDefaultTaskmgr}; GroupDescription: {cm:tsk_Other}; Check: PHDefaulTaskmgrCheck(); Flags: unchecked
+Name: restore_taskmgr; Description: {cm:tsk_RestoreTaskmgr}; GroupDescription: {cm:tsk_Other}; Check: NOT PHDefaulTaskmgrCheck(); Flags: unchecked
 
 
 [Icons]
@@ -226,9 +226,6 @@ Name: {sd}\ProgramData\wj32; Type: dirifempty; MinVersion: 0,6.0.6001
 
 [Code]
 // Global variables and constants
-var
-  SetResetTask: Boolean;
-
 const installer_mutex_name = 'process_hacker_setup_mutex';
 
 
@@ -293,19 +290,6 @@ begin
 end;
 
 
-// Bypass Inno Setup UsePreviousTasks directive only for the "reset_settings" task
-procedure UncheckTask();
-var
-  i: Integer;
-begin
-  i := WizardForm.TasksList.Items.IndexOf(ExpandConstant('{cm:tsk_ResetSettings}'));
-
-  if(i <> -1) then begin
-    WizardForm.TasksList.Checked[i] := False;
-  end;
-end;
-
-
 procedure URLLabelOnClick(Sender: TObject);
 var
   ErrorCode: Integer;
@@ -364,15 +348,6 @@ begin
     end;
   end;
  end;
-end;
-
-
-procedure CurPageChanged(CurPageID: Integer);
-begin
-  if not SetResetTask and (CurPageID = wpSelectTasks) then begin
-    UncheckTask();
-    SetResetTask := True;
-  end;
 end;
 
 
