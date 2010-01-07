@@ -1,6 +1,6 @@
 ;* Process Hacker - Installer script
 ;*
-;* Copyright (C) 2009 XhmikosR
+;* Copyright (C) 2009-2010 XhmikosR
 ;*
 ;* This file is part of Process Hacker.
 ;*
@@ -18,7 +18,7 @@
 ;* along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
 
 
-; Inno Setup v5.3.6
+; Inno Setup v5.3.7
 ;
 ; Requirements:
 ; *Inno Setup QuickStart Pack:
@@ -40,7 +40,7 @@
 
 [Setup]
 AppID=Process_Hacker
-AppCopyright=Copyright © 2008-2009, Process Hacker Team. Licensed under the GNU GPL, v3.
+AppCopyright=Copyright © 2008-2010, Process Hacker Team. Licensed under the GNU GPL, v3.
 AppContact=http://sourceforge.net/tracker/?group_id=242527
 AppName=Process Hacker
 AppVerName=Process Hacker {#= simple_app_version}
