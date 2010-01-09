@@ -694,7 +694,17 @@ namespace ProcessHacker.Native
                         var thread = data.ReadStruct<SystemThreadInformation>(i +
                             Marshal.SizeOf(typeof(SystemProcessInformation)), j);
 
-                        threads.Add(thread.ClientId.ThreadId, thread);
+                        if (pid != 0)
+                        {
+                            threads.Add(thread.ClientId.ThreadId, thread);
+                        }
+                        else
+                        {
+                            // Fix System Idle Process threads.
+                            // There is one thread per CPU, but they 
+                            // all have a TID of 0. Assign unique TIDs.
+                            threads.Add(j, thread);
+                        }
                     }
 
                     return threads;

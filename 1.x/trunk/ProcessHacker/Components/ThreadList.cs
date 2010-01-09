@@ -41,6 +41,7 @@ namespace ProcessHacker.Components
     public partial class ThreadList : UserControl
     {
         private ThreadProvider _provider;
+        private bool _useCycleTime = false;
         private int _runCount = 0;
         private List<ListViewItem> _needsAdd = new List<ListViewItem>();
         private HighlightingContext _highlightingContext;
@@ -55,10 +56,6 @@ namespace ProcessHacker.Components
         public ThreadList()
         {
             InitializeComponent();
-
-            // Use Cycles instead of Context Switches on Vista
-            if (OSVersion.HasCycleTime)
-                listThreads.Columns[1].Text = "Cycles Delta";
 
             // Hide the I/O Priority menu item on XP and below.
             ioPriorityThreadMenuItem.Visible = OSVersion.HasIoPriority;
@@ -286,18 +283,34 @@ namespace ProcessHacker.Components
 
                 if (_provider != null)
                 {
+                    _pid = _provider.Pid;
+
                     foreach (ThreadItem item in _provider.Dictionary.Values)
                     {
                         provider_DictionaryAdded(item);
                     }
+
+                    if (_pid != 0)
+                    {
+                        // Use Cycles instead of Context Switches on Vista.
+                        if (OSVersion.HasCycleTime)
+                            _useCycleTime = true;
+                    }
+                    else
+                    {
+                        _useCycleTime = false;
+                    }
+
+                    if (_useCycleTime)
+                        listThreads.Columns[1].Text = "Cycles Delta";
+                    else
+                        listThreads.Columns[1].Text = "Context Switches Delta";
 
                     _provider.DictionaryAdded += new ThreadProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new ThreadProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new ThreadProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                     _provider.Updated += new ThreadProvider.ProviderUpdateOnce(provider_Updated);
                     _provider.LoadingStateChanged += new ThreadProvider.LoadingStateChangedDelegate(provider_LoadingStateChanged);
-
-                    _pid = _provider.Pid;
 
                     this.EnableDisableMenuItems();
                 }
@@ -419,7 +432,7 @@ namespace ProcessHacker.Components
                         if (litem == null)
                             return;
 
-                        if (!OSVersion.HasCycleTime)
+                        if (!_useCycleTime)
                         {
                             if (newItem.ContextSwitchesDelta == 0)
                                 litem.SubItems[1].Text = "";

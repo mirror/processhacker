@@ -178,7 +178,7 @@ namespace ProcessHacker
         {
             if (_pid <= 0)
             {
-                // this "process" is probably DPCs or Interrupts, so we won't try to load any more information
+                // this "process" is probably Idle, DPCs or Interrupts, so we won't try to load any more information.
                 buttonEditDEP.Enabled = false;
                 buttonEditProtected.Enabled = false;
                 buttonInspectParent.Enabled = false;
@@ -194,12 +194,13 @@ namespace ProcessHacker
                 buttonPermissions.Enabled = false;
                 buttonTerminate.Enabled = false;
 
-                // remove tab controls not relevant to DPCs/Interrupts
+                // Remove tab controls not relevant to Idle/DPCs/Interrupts.
                 tabControl.TabPages.Remove(tabHandles);
                 tabControl.TabPages.Remove(tabMemory);
                 tabControl.TabPages.Remove(tabModules);
                 tabControl.TabPages.Remove(tabServices);
-                tabControl.TabPages.Remove(tabThreads);
+                if (_pid != 0) // Idle has threads
+                    tabControl.TabPages.Remove(tabThreads);
                 tabControl.TabPages.Remove(tabToken);
                 if (tabControl.TabPages.Contains(tabJob))
                     tabControl.TabPages.Remove(tabJob);

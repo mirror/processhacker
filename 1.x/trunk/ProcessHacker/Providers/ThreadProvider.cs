@@ -196,7 +196,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        if (_pid != 4)
+                        if (_pid > 4)
                         {
                             using (var phandle =
                                 new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
