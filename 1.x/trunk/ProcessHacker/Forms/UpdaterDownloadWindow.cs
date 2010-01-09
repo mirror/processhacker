@@ -53,8 +53,10 @@ namespace ProcessHacker
 
         private void UpdaterDownload_Load(object sender, EventArgs e)
         {
+            string currentVersion;
             string version;
 
+            currentVersion = Application.ProductVersion;
             version = _updateItem.Version.Major + "." + _updateItem.Version.Minor;
             _fileName = Path.GetTempPath() + "processhacker-" + version + "-setup.exe";
 
@@ -64,8 +66,8 @@ namespace ProcessHacker
             _webClient = new WebClient();
             _webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(webClient_DownloadProgressChanged);
             _webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(webClient_DownloadFileCompleted);
-            _webClient.Headers.Add("User-Agent", "PH/" + version + " (compatible; PH " +
-                version + "; PH " + version + "; .NET CLR " + Environment.Version.ToString() + ";)");
+            _webClient.Headers.Add("User-Agent", "PH/" + currentVersion + " (compatible; PH " +
+                currentVersion + "; PH " + currentVersion + "; .NET CLR " + Environment.Version.ToString() + ";)");
 
             try
             {
