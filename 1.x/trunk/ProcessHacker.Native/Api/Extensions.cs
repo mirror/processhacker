@@ -356,7 +356,7 @@ namespace ProcessHacker.Native
                 switch (info.TypeName)
                 {
                     case "File":
-                        // Resolves \Device\Harddisk1 into C:, for example.
+                        // Resolves \Device\HarddiskVolume1 into C:, for example.
                         if (!string.IsNullOrEmpty(info.OrigName))
                             info.BestName = FileUtils.GetFileName(info.OrigName);
 
