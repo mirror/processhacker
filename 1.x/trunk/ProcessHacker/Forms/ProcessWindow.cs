@@ -58,6 +58,7 @@ namespace ProcessHacker
         private JobProperties _jobProps;
         private ServiceProperties _serviceProps;
         private DotNetCounters _dotNetCounters;
+        private bool _dotNetCountersInitialized = false;
 
         private ProcessHacker.Common.Threading.ActionSync _selectThreadRun;
 
@@ -1340,6 +1341,13 @@ namespace ProcessHacker
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Delay initialization of the .NET tab until this point.
+            if (_dotNetCounters != null && !_dotNetCountersInitialized)
+            {
+                _dotNetCounters.Initialize();
+                _dotNetCountersInitialized = true;
+            }
+
             if (_threadP != null)
                 if (_threadP.Enabled = tabControl.SelectedTab == tabThreads)
                     _threadP.Boost();

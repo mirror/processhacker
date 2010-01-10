@@ -51,7 +51,10 @@ namespace ProcessHacker.Components
 
             _pid = pid;
             _name = name;
+        }
 
+        public void Initialize()
+        {
             // The .NET counters remove the file name extension in the 
             // instance names, even if the extension is something other than 
             // ".exe".
