@@ -43,6 +43,8 @@ namespace ProcessHacker.FormHelper
         public event MatchListViewEvent MatchListView;
         public event MatchProgressEvent MatchProgress;
         private string strFilter;
+        private string strFilterLower;
+        private IntPtr intPtrFilter;
         private List<ListViewItem> listViewItemContainer = new List<ListViewItem>(BufferSize);
         private Dictionary<int, bool> isCurrentSessionIdCache = new Dictionary<int, bool>();
 
@@ -50,21 +52,29 @@ namespace ProcessHacker.FormHelper
             : base(isi)
         {
             this.strFilter = strFilter;
+            strFilterLower = strFilter.ToLowerInvariant();
+
+            try
+            {
+                ulong address = (ulong)BaseConverter.ToNumberParse(strFilter);
+
+                intPtrFilter = address.ToIntPtr();
+            }
+            catch
+            { }
         }
 
         protected override void DoWork()
         {
-            DoFilter(strFilter);
+            DoFilter();
             if (CancelRequested)
             {
                 AcknowledgeCancel();
             }
         }
 
-        private void DoFilter(string strFilter)
+        private void DoFilter()
         {
-            string lowerFilter = strFilter.ToLowerInvariant();
-
             // Stop if cancel
             if (!CancelRequested)
             {
@@ -83,7 +93,7 @@ namespace ProcessHacker.FormHelper
 
                     var handle = handles[i];
 
-                    CompareHandleBestNameWithFilterString(processHandles, handle, lowerFilter);
+                    CompareHandleBestNameWithFilter(processHandles, handle);
                     // test Exception 
                     //if (i > 2000) throw new Exception("test");
                 }
@@ -104,7 +114,7 @@ namespace ProcessHacker.FormHelper
                         {
                             phandle.EnumModules((module) =>
                             {
-                                if (module.FileName.ToLowerInvariant().Contains(lowerFilter))
+                                if (module.FileName.ToLowerInvariant().Contains(strFilterLower))
                                     this.CallDllMatchListView(process.Key, module);
                                 return true;
                             });
@@ -121,7 +131,7 @@ namespace ProcessHacker.FormHelper
 
                                 string name = phandle.GetMappedFileName(region.BaseAddress);
 
-                                if (name != null && name.ToLowerInvariant().Contains(lowerFilter))
+                                if (name != null && name.ToLowerInvariant().Contains(strFilterLower))
                                     this.CallMappedFileMatchListView(process.Key, region.BaseAddress, name);
 
                                 return true;
@@ -137,7 +147,7 @@ namespace ProcessHacker.FormHelper
 
                                 buffer.EnumModules((module) =>
                                     {
-                                        if (module.FileName.ToLowerInvariant().Contains(lowerFilter))
+                                        if (module.FileName.ToLowerInvariant().Contains(strFilterLower))
                                             this.CallDllMatchListView(process.Key, module);
                                         return true;
                                     });
@@ -154,20 +164,15 @@ namespace ProcessHacker.FormHelper
             }
         }
 
-        private void CompareHandleBestNameWithFilterString(
+        private void CompareHandleBestNameWithFilter(
             Dictionary<int, ProcessHandle> processHandles,
-            SystemHandleEntry currhandle, string lowerFilter)
+            SystemHandleEntry currhandle)
         {
             try
             {
                 // Don't get handles from processes in other session 
-                // if we don't have KPH to reduce freezes. Note that 
-                // on Windows 7 the hanging bug appears to have been 
-                // fixed, so there is an exception for that.
-                if (
-                    KProcessHacker.Instance == null &&
-                    !OSVersion.IsAboveOrEqual(WindowsVersion.Seven)
-                    )
+                // if we don't have KPH to reduce freezes.
+                if (KProcessHacker.Instance == null)
                 {
                     try
                     {
@@ -198,12 +203,16 @@ namespace ProcessHacker.FormHelper
 
                 var info = currhandle.GetHandleInfo(processHandles[currhandle.ProcessId]);
 
-                if (string.IsNullOrEmpty(info.BestName))
-                    return;
-                if (!info.BestName.ToLowerInvariant().Contains(lowerFilter))
+                if (intPtrFilter == IntPtr.Zero && string.IsNullOrEmpty(info.BestName))
                     return;
 
-                CallHandleMatchListView(currhandle, info);
+                if (
+                    (info.BestName != null && info.BestName.ToLowerInvariant().Contains(strFilterLower)) ||
+                    (intPtrFilter != IntPtr.Zero && currhandle.Object == intPtrFilter)
+                    )
+                {
+                    CallHandleMatchListView(currhandle, info);
+                }
             }
             catch
             {
