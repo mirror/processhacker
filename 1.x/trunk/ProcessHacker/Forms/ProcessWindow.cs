@@ -397,7 +397,10 @@ namespace ProcessHacker
 
             // Remove the process handle from the shared waiter.
             if (_processHandle != null)
+            {
                 Program.SharedWaiter.Remove(_processHandle);
+                Program.SharedWaiter.ObjectSignaled -= SharedWaiter_ObjectSignaled;
+            }
 
             if (_processImage != null)
             {
