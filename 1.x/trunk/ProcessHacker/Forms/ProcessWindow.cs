@@ -670,14 +670,17 @@ namespace ProcessHacker
                 }
             }
 
-            try
+            if (_processItem.IsDotNet)
             {
-                _dotNetCounters = new DotNetCounters(_pid, _processItem.Name);
-                _dotNetCounters.Dock = DockStyle.Fill;
-                tabDotNet.Controls.Add(_dotNetCounters);
+                try
+                {
+                    _dotNetCounters = new DotNetCounters(_pid, _processItem.Name);
+                    _dotNetCounters.Dock = DockStyle.Fill;
+                    tabDotNet.Controls.Add(_dotNetCounters);
+                }
+                catch
+                { }
             }
-            catch
-            { }
 
             listEnvironment.ListViewItemSorter = new SortedListViewComparer(listEnvironment);
             listEnvironment.SetDoubleBuffered(true);
