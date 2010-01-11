@@ -184,8 +184,8 @@ namespace ProcessHacker.Components
 
         public void InitialColumnAutoSize()
         {
-            columnName.Width = (listValues.Width - 20) * 6 / 10;
-            columnValue.Width = (listValues.Width - 20) * 4 / 10;
+            columnName.Width = (listValues.Width - 30) * 6 / 10;
+            columnValue.Width = (listValues.Width - 30) * 4 / 10;
         }
 
         public void UpdateInfo()
