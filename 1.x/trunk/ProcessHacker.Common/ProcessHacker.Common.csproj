@@ -98,7 +98,6 @@
     <Compile Include="ExtensionAttribute.cs" />
     <Compile Include="FreeList.cs" />
     <Compile Include="Objects\HandleTable.cs" />
-    <Compile Include="HistoryManager.cs" />
     <Compile Include="IdGenerator.cs" />
     <Compile Include="Objects\BaseObject.cs" />
     <Compile Include="Objects\IRefCounted.cs" />

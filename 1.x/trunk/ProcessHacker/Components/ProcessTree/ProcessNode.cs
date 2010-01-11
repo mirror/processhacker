@@ -188,8 +188,8 @@ namespace ProcessHacker
                     UseSecondLine = true,
                     OverlaySecondLine = false,
                     UseLongData = false,
-                    Data1 = _pitem.FloatHistoryManager[ProcessStats.CpuKernel],
-                    Data2 = _pitem.FloatHistoryManager[ProcessStats.CpuUser],
+                    Data1 = _pitem.CpuKernelHistory,
+                    Data2 = _pitem.CpuUserHistory,
                     LineColor1 = Settings.Instance.PlotterCPUKernelColor,
                     LineColor2 = Settings.Instance.PlotterCPUUserColor
                 };
@@ -205,8 +205,8 @@ namespace ProcessHacker
                     UseSecondLine = true,
                     OverlaySecondLine = true,
                     UseLongData = true,
-                    LongData1 = _pitem.LongHistoryManager[ProcessStats.IoReadOther],
-                    LongData2 = _pitem.LongHistoryManager[ProcessStats.IoWrite],
+                    LongData1 = _pitem.IoReadOtherHistory,
+                    LongData2 = _pitem.IoWriteHistory,
                     LineColor1 = Settings.Instance.PlotterIOROColor,
                     LineColor2 = Settings.Instance.PlotterIOWColor
                 };
@@ -537,15 +537,8 @@ namespace ProcessHacker
         {
             get
             {
-                if (
-                    _pitem.LongHistoryManager == null ||
-                    _pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0
-                    )
-                    return 0;
-                else
-                    return (_pitem.LongHistoryManager[ProcessStats.IoReadOther][0] +
-                        _pitem.LongHistoryManager[ProcessStats.IoWrite][0]) * 1000 /
-                        Settings.Instance.RefreshInterval;
+                return (_pitem.IoReadDelta.Delta + _pitem.IoWriteDelta.Delta +
+                    _pitem.IoOtherDelta.Delta) * 1000 / Settings.Instance.RefreshInterval;
             }
         }
 
@@ -564,14 +557,8 @@ namespace ProcessHacker
         {
             get
             {
-                if (
-                    _pitem.LongHistoryManager == null ||
-                    _pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0
-                    )
-                    return 0;
-                else
-                    return _pitem.LongHistoryManager[ProcessStats.IoReadOther][0] * 1000 /
-                        Settings.Instance.RefreshInterval;
+                return (_pitem.IoReadDelta.Delta + _pitem.IoOtherDelta.Delta) * 1000 /
+                    Settings.Instance.RefreshInterval;
             }
         }
 
@@ -590,14 +577,8 @@ namespace ProcessHacker
         {
             get
             {
-                if (
-                    _pitem.LongHistoryManager == null ||
-                    _pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0
-                    )
-                    return 0;
-                else
-                    return _pitem.LongHistoryManager[ProcessStats.IoWrite][0] * 1000 /
-                        Settings.Instance.RefreshInterval;
+                return _pitem.IoWriteDelta.Delta * 1000 /
+                    Settings.Instance.RefreshInterval;
             }
         }
 

@@ -100,23 +100,23 @@ namespace ProcessHacker
 
 
             // Set up the plotter controls.
-            plotterCPU.Data1 = Program.ProcessProvider.FloatHistory["Kernel"];
-            plotterCPU.Data2 = Program.ProcessProvider.FloatHistory["User"];
+            plotterCPU.Data1 = Program.ProcessProvider.CpuKernelHistory;
+            plotterCPU.Data2 = Program.ProcessProvider.CpuUserHistory;
             plotterCPU.GetToolTip = i =>
                 Program.ProcessProvider.MostCpuHistory[i] + "\n" +
                 ((plotterCPU.Data1[i] + plotterCPU.Data2[i]) * 100).ToString("N2") +
                 "% (K " + (plotterCPU.Data1[i] * 100).ToString("N2") +
                 "%, U " + (plotterCPU.Data2[i] * 100).ToString("N2") + "%)" + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
-            plotterIO.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther];
-            plotterIO.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.IoWrite];
+            plotterIO.LongData1 = Program.ProcessProvider.IoReadOtherHistory;
+            plotterIO.LongData2 = Program.ProcessProvider.IoWriteHistory;
             plotterIO.GetToolTip = i =>
                 Program.ProcessProvider.MostIoHistory[i] + "\n" +
                 "R+O: " + Utils.FormatSize(plotterIO.LongData1[i]) + "\n" +
                 "W: " + Utils.FormatSize(plotterIO.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
-            plotterMemory.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.Commit];
-            plotterMemory.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.PhysicalMemory];
+            plotterMemory.LongData1 = Program.ProcessProvider.CommitHistory;
+            plotterMemory.LongData2 = Program.ProcessProvider.PhysicalMemoryHistory;
             plotterMemory.GetToolTip = i =>
                 "Commit: " + Utils.FormatSize(plotterMemory.LongData1[i]) + "\n" +
                 "Phys. Memory: " + Utils.FormatSize(plotterMemory.LongData2[i]) + "\n" +
@@ -138,8 +138,8 @@ namespace ProcessHacker
                 plotter.Dock = DockStyle.Fill;
                 plotter.Margin = new Padding(i == 0 ? 0 : 3, 0, 0, 0); // nice spacing
                 plotter.UseSecondLine = true;
-                plotter.Data1 = Program.ProcessProvider.FloatHistory[i.ToString() + " Kernel"];
-                plotter.Data2 = Program.ProcessProvider.FloatHistory[i.ToString() + " User"];
+                plotter.Data1 = Program.ProcessProvider.CpusKernelHistory[i];
+                plotter.Data2 = Program.ProcessProvider.CpusUserHistory[i];
                 plotter.GetToolTip = j =>
                     Program.ProcessProvider.MostCpuHistory[j] + "\n" +
                     ((plotter.Data1[j] + plotter.Data2[j]) * 100).ToString("N2") +
@@ -189,18 +189,18 @@ namespace ProcessHacker
 
             // Update the I/O indicator.  
             int count = plotterIO.Width / plotterIO.EffectiveMoveStep;
-            long maxRO = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther].Take(count).Max();
-            long maxW = Program.ProcessProvider.LongHistory[SystemStats.IoWrite].Take(count).Max();
+            long maxRO = Program.ProcessProvider.IoReadOtherHistory.Take(count).Max();
+            long maxW = Program.ProcessProvider.IoWriteHistory.Take(count).Max();
             if(maxRO>maxW)
                 indicatorIO.Maximum = maxRO;
             else
                 indicatorIO.Maximum = maxW;
-            indicatorIO.Data1 = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther][0];
-            indicatorIO.TextValue = Utils.FormatSize(Program.ProcessProvider.LongHistory[SystemStats.IoReadOther][0]);
+            indicatorIO.Data1 = Program.ProcessProvider.IoReadOtherHistory[0];
+            indicatorIO.TextValue = Utils.FormatSize(Program.ProcessProvider.IoReadOtherHistory[0]);
 
             // Update the plotter settings.
-            plotterIO.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther];
-            plotterIO.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.IoWrite];
+            plotterIO.LongData1 = Program.ProcessProvider.IoReadOtherHistory;
+            plotterIO.LongData2 = Program.ProcessProvider.IoWriteHistory;
 
             plotterCPU.LineColor1 = Settings.Instance.PlotterCPUKernelColor;
             plotterCPU.LineColor2 = Settings.Instance.PlotterCPUUserColor;

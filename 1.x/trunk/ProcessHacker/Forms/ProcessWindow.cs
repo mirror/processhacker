@@ -298,21 +298,21 @@ namespace ProcessHacker
         {
             this.SuspendLayout();
 
-            plotterCPUUsage.Data1 = _processItem.FloatHistoryManager[ProcessStats.CpuKernel];
-            plotterCPUUsage.Data2 = _processItem.FloatHistoryManager[ProcessStats.CpuUser];
+            plotterCPUUsage.Data1 = _processItem.CpuKernelHistory;
+            plotterCPUUsage.Data2 = _processItem.CpuUserHistory;
             plotterCPUUsage.GetToolTip = i =>
                 ((plotterCPUUsage.Data1[i] + plotterCPUUsage.Data2[i]) * 100).ToString("N2") +
                 "% (K: " + (plotterCPUUsage.Data1[i] * 100).ToString("N2") +
                 "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + "%)" + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
-            plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
-            plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
+            plotterMemory.LongData1 = _processItem.PrivateMemoryHistory;
+            plotterMemory.LongData2 = _processItem.WorkingSetHistory;
             plotterMemory.GetToolTip = i =>
                 "Pvt. Memory: " + Utils.FormatSize(plotterMemory.LongData1[i]) + "\n" +
                 "Working Set: " + Utils.FormatSize(plotterMemory.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
-            plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
-            plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
+            plotterIO.LongData1 = _processItem.IoReadOtherHistory;
+            plotterIO.LongData2 = _processItem.IoWriteHistory;
             plotterIO.GetToolTip = i =>
                 "R+O: " + Utils.FormatSize(plotterIO.LongData1[i]) + "\n" +
                 "W: " + Utils.FormatSize(plotterIO.LongData2[i]) + "\n" +
@@ -969,8 +969,8 @@ namespace ProcessHacker
 
             // Update the Pvt. Memory indicator. 
             int count = plotterIO.Width / plotterIO.EffectiveMoveStep;
-            long maxPvt = _processItem.LongHistoryManager[ProcessStats.PrivateMemory].Take(count).Max();
-            long maxWS = _processItem.LongHistoryManager[ProcessStats.WorkingSet].Take(count).Max();
+            long maxPvt = _processItem.PrivateMemoryHistory.Take(count).Max();
+            long maxWS = _processItem.WorkingSetHistory.Take(count).Max();
             if(maxPvt>maxWS)
                 indicatorPvt.Maximum = maxPvt;
             else
@@ -979,8 +979,8 @@ namespace ProcessHacker
             indicatorPvt.TextValue = pvtString;
 
             // Update the I/O Bytes indicator.
-            long maxRO = _processItem.LongHistoryManager[ProcessStats.IoReadOther].Take(count).Max();
-            long maxW = _processItem.LongHistoryManager[ProcessStats.IoWrite].Take(count).Max();
+            long maxRO = _processItem.IoReadOtherHistory.Take(count).Max();
+            long maxW = _processItem.IoWriteHistory.Take(count).Max();
             if (maxRO > maxW)
                 indicatorIO.Maximum = maxRO;
             else

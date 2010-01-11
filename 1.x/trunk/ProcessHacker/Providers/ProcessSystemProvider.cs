@@ -37,18 +37,6 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
 {
-    public enum ProcessStats
-    {
-        CpuKernel, // delta, float-hist
-        CpuUser, // delta, float-hist
-        IoRead, // delta, long-hist
-        IoWrite, // delta, long-hist
-        IoOther, // delta, long-hist
-        IoReadOther, // long-hist
-        PrivateMemory, // long-hist
-        WorkingSet // long-hist
-    }
-
     public class ImageVersionInfo
     {
         public ImageVersionInfo()
@@ -123,13 +111,14 @@ namespace ProcessHacker
         public Int64Delta IoWriteDelta;
         public Int64Delta IoOtherDelta;
 
-        public HistoryManager<ProcessStats, float> FloatHistoryManager;
-        public HistoryManager<ProcessStats, long> LongHistoryManager;
-    }
-
-    public enum SystemStats
-    {
-        CpuKernel, CpuUser, CpuOther, IoRead, IoWrite, IoOther, IoReadOther, Commit, PhysicalMemory
+        public CircularBuffer<float> CpuKernelHistory;
+        public CircularBuffer<float> CpuUserHistory;
+        public CircularBuffer<long> IoReadHistory;
+        public CircularBuffer<long> IoWriteHistory;
+        public CircularBuffer<long> IoOtherHistory;
+        public CircularBuffer<long> IoReadOtherHistory;
+        public CircularBuffer<long> PrivateMemoryHistory;
+        public CircularBuffer<long> WorkingSetHistory;
     }
 
     public class ProcessSystemProvider : Provider<int, ProcessItem>
@@ -198,6 +187,7 @@ namespace ProcessHacker
         public float CurrentCpuUsage { get { return this.CurrentCpuKernelUsage + this.CurrentCpuUserUsage; } }
         public int PidWithMostIoActivity { get; private set; }
         public int PidWithMostCpuUsage { get; private set; }
+
         public Int64Delta CpuKernelDelta { get { return _cpuKernelDelta; } }
         public Int64Delta CpuUserDelta { get { return _cpuUserDelta; } }
         public Int64Delta CpuOtherDelta { get { return _cpuOtherDelta; } }
@@ -207,16 +197,29 @@ namespace ProcessHacker
         public Int64Delta IoReadDelta { get { return _ioReadDelta; } }
         public Int64Delta IoWriteDelta { get { return _ioWriteDelta; } }
         public Int64Delta IoOtherDelta { get { return _ioOtherDelta; } }
-        public HistoryManager<string, float> FloatHistory { get { return _floatHistory; } }
-        public HistoryManager<SystemStats, long> LongHistory { get { return _longHistory; } }
-        public IList<DateTime> TimeHistory { get { return _timeHistory[false]; } }
-        public IList<string> MostCpuHistory { get { return _mostUsageHistory[false]; } }
-        public IList<string> MostIoHistory { get { return _mostUsageHistory[true]; } }
+
+        public int HistoryMaxSize { get { return _historyMaxSize; } set { _historyMaxSize = value; } }
+        public IList<long> IoReadHistory { get { return _ioReadHistory; } }
+        public IList<long> IoWriteHistory { get { return _ioWriteHistory; } }
+        public IList<long> IoOtherHistory { get { return _ioOtherHistory; } }
+        public IList<long> IoReadOtherHistory { get { return _ioReadOtherHistory; } }
+        public IList<float> CpuKernelHistory { get { return _cpuKernelHistory; } }
+        public IList<float> CpuUserHistory { get { return _cpuUserHistory; } }
+        public IList<float> CpuOtherHistory { get { return _cpuOtherHistory; } }
+        public IList<float>[] CpusKernelHistory { get { return _cpusKernelHistory; } }
+        public IList<float>[] CpusUserHistory { get { return _cpusUserHistory; } }
+        public IList<float>[] CpusOtherHistory { get { return _cpusOtherHistory; } }
+        public IList<long> CommitHistory { get { return _commitHistory; } }
+        public IList<long> PhysicalMemoryHistory { get { return _physicalMemoryHistory; } }
+        public IList<DateTime> TimeHistory { get { return _timeHistory; } }
+        public IList<string> MostCpuHistory { get { return _cpuMostUsageHistory; } }
+        public IList<string> MostIoHistory { get { return _ioMostUsageHistory; } }
 
         private delegate ProcessQueryMessage QueryProcessDelegate(int pid, string fileName, bool useCache);
 
         private MessageQueue _messageQueue = new MessageQueue();
         private Dictionary<string, VerifyResult> _fileResults = new Dictionary<string, VerifyResult>();
+
         private Int64Delta _ioReadDelta;
         private Int64Delta _ioWriteDelta;
         private Int64Delta _ioOtherDelta;
@@ -226,11 +229,23 @@ namespace ProcessHacker
         private Int64Delta[] _cpuKernelDeltas;
         private Int64Delta[] _cpuUserDeltas;
         private Int64Delta[] _cpuOtherDeltas;
-        private HistoryManager<bool, DateTime> _timeHistory = new HistoryManager<bool, DateTime>();
-        private HistoryManager<SystemStats, long> _longHistory = 
-            new HistoryManager<SystemStats, long>(EnumComparer<SystemStats>.Instance);
-        private HistoryManager<string, float> _floatHistory = new HistoryManager<string, float>();
-        private HistoryManager<bool, string> _mostUsageHistory = new HistoryManager<bool, string>();
+
+        private int _historyMaxSize = 100;
+        private CircularBuffer<long> _ioReadHistory;
+        private CircularBuffer<long> _ioWriteHistory;
+        private CircularBuffer<long> _ioOtherHistory;
+        private CircularBuffer<long> _ioReadOtherHistory;
+        private CircularBuffer<float> _cpuKernelHistory;
+        private CircularBuffer<float> _cpuUserHistory;
+        private CircularBuffer<float> _cpuOtherHistory;
+        private CircularBuffer<float>[] _cpusKernelHistory;
+        private CircularBuffer<float>[] _cpusUserHistory;
+        private CircularBuffer<float>[] _cpusOtherHistory;
+        private CircularBuffer<long> _commitHistory;
+        private CircularBuffer<long> _physicalMemoryHistory;
+        private CircularBuffer<DateTime> _timeHistory;
+        private CircularBuffer<string> _cpuMostUsageHistory;
+        private CircularBuffer<string> _ioMostUsageHistory;
 
         private SystemProcess _dpcs = new SystemProcess()
         {
@@ -285,11 +300,7 @@ namespace ProcessHacker
 
             this.UpdateProcessorPerf();
 
-            _timeHistory.Add(false);
-
-            _mostUsageHistory = new HistoryManager<bool, string>();
-            _mostUsageHistory.Add(false);
-            _mostUsageHistory.Add(true);
+            // Initialize the deltas
 
             _cpuKernelDelta = new Int64Delta(this.ProcessorPerf.KernelTime);
             _cpuUserDelta = new Int64Delta(this.ProcessorPerf.UserTime);
@@ -299,13 +310,30 @@ namespace ProcessHacker
             _ioWriteDelta = new Int64Delta(this.Performance.IoWriteTransferCount);
             _ioOtherDelta = new Int64Delta(this.Performance.IoOtherTransferCount);
 
-            _floatHistory.Add("Kernel");
-            _floatHistory.Add("User");
-            _floatHistory.Add("Other");
+            // Initialize history
+
+            _cpuKernelHistory = new CircularBuffer<float>(_historyMaxSize);
+            _cpuUserHistory = new CircularBuffer<float>(_historyMaxSize);
+            _cpuOtherHistory = new CircularBuffer<float>(_historyMaxSize);
+            _ioReadHistory = new CircularBuffer<long>(_historyMaxSize);
+            _ioWriteHistory = new CircularBuffer<long>(_historyMaxSize);
+            _ioOtherHistory = new CircularBuffer<long>(_historyMaxSize);
+            _ioReadOtherHistory = new CircularBuffer<long>(_historyMaxSize);
+            _commitHistory = new CircularBuffer<long>(_historyMaxSize);
+            _physicalMemoryHistory = new CircularBuffer<long>(_historyMaxSize);
+            _timeHistory = new CircularBuffer<DateTime>(_historyMaxSize);
+            _ioMostUsageHistory = new CircularBuffer<string>(_historyMaxSize);
+            _cpuMostUsageHistory = new CircularBuffer<string>(_historyMaxSize);
+
+            // Initialize deltas and history for the CPUs
 
             _cpuKernelDeltas = new Int64Delta[this.System.NumberOfProcessors];
             _cpuUserDeltas = new Int64Delta[this.System.NumberOfProcessors];
             _cpuOtherDeltas = new Int64Delta[this.System.NumberOfProcessors];
+
+            _cpusKernelHistory = new CircularBuffer<float>[this.System.NumberOfProcessors];
+            _cpusUserHistory = new CircularBuffer<float>[this.System.NumberOfProcessors];
+            _cpusOtherHistory = new CircularBuffer<float>[this.System.NumberOfProcessors];
 
             for (int i = 0; i < this.System.NumberOfProcessors; i++)
             {
@@ -315,17 +343,10 @@ namespace ProcessHacker
                     this.ProcessorPerfArray[i].IdleTime + this.ProcessorPerfArray[i].DpcTime +
                     this.ProcessorPerfArray[i].InterruptTime);
 
-                _floatHistory.Add(i.ToString() + " Kernel");
-                _floatHistory.Add(i.ToString() + " User");
-                _floatHistory.Add(i.ToString() + " Other");
+                _cpusKernelHistory[i] = new CircularBuffer<float>(_historyMaxSize);
+                _cpusUserHistory[i] = new CircularBuffer<float>(_historyMaxSize);
+                _cpusOtherHistory[i] = new CircularBuffer<float>(_historyMaxSize);
             }
-
-            _longHistory.Add(SystemStats.IoRead);
-            _longHistory.Add(SystemStats.IoWrite);
-            _longHistory.Add(SystemStats.IoOther);
-            _longHistory.Add(SystemStats.IoReadOther);
-            _longHistory.Add(SystemStats.Commit);
-            _longHistory.Add(SystemStats.PhysicalMemory);
         }
 
         public SystemProcess DpcsProcess
@@ -336,6 +357,14 @@ namespace ProcessHacker
         public SystemProcess InterruptsProcess
         {
             get { return _interrupts; }
+        }
+
+        private void UpdateCb<T>(CircularBuffer<T> cb, T value)
+        {
+            if (cb.Size != _historyMaxSize)
+                cb.Resize(_historyMaxSize);
+
+            cb.Add(value);
         }
 
         private void UpdateProcessorPerf()
@@ -835,9 +864,9 @@ namespace ProcessHacker
                 this.CurrentCpuKernelUsage = (float)sysKernelTime / (sysKernelTime + sysUserTime + otherTime);
                 this.CurrentCpuUserUsage = (float)sysUserTime / (sysKernelTime + sysUserTime + otherTime);
 
-                _floatHistory.Update("Kernel", this.CurrentCpuKernelUsage);
-                _floatHistory.Update("User", this.CurrentCpuUserUsage);
-                _floatHistory.Update("Other", (float)otherTime / (sysKernelTime + sysUserTime + otherTime));
+                UpdateCb(_cpuKernelHistory, this.CurrentCpuKernelUsage);
+                UpdateCb(_cpuUserHistory, this.CurrentCpuUsage);
+                UpdateCb(_cpuOtherHistory, (float)otherTime / (sysKernelTime + sysUserTime + otherTime));
             }
 
             for (int i = 0; i < this.System.NumberOfProcessors; i++)
@@ -852,11 +881,11 @@ namespace ProcessHacker
                 long cpuUserTime = _cpuUserDeltas[i].Delta;
                 long cpuOtherTime = _cpuOtherDeltas[i].Delta;
 
-                _floatHistory.Update(i.ToString() + " Kernel", 
+                UpdateCb(_cpusKernelHistory[i], 
                     (float)cpuKernelTime / (cpuKernelTime + cpuUserTime + cpuOtherTime));
-                _floatHistory.Update(i.ToString() + " User",
+                UpdateCb(_cpusUserHistory[i],
                     (float)cpuUserTime / (cpuKernelTime + cpuUserTime + cpuOtherTime));
-                _floatHistory.Update(i.ToString() + " Other",
+                UpdateCb(_cpusOtherHistory[i],
                     (float)cpuOtherTime / (cpuKernelTime + cpuUserTime + cpuOtherTime));
             }
 
@@ -868,12 +897,12 @@ namespace ProcessHacker
                 _ioOtherDelta.Update(_ioOtherDelta.Value);
             }
 
-            _longHistory.Update(SystemStats.IoRead, _ioReadDelta.Delta);
-            _longHistory.Update(SystemStats.IoWrite, _ioWriteDelta.Delta);
-            _longHistory.Update(SystemStats.IoOther, _ioOtherDelta.Delta);
-            _longHistory.Update(SystemStats.IoReadOther, _ioReadDelta.Delta + _ioOtherDelta.Delta);
-            _longHistory.Update(SystemStats.Commit, (long)_performance.CommittedPages * _system.PageSize);
-            _longHistory.Update(SystemStats.PhysicalMemory,
+            UpdateCb(_ioReadHistory, _ioReadDelta.Delta);
+            UpdateCb(_ioWriteHistory, _ioWriteDelta.Delta);
+            UpdateCb(_ioOtherHistory, _ioOtherDelta.Delta);
+            UpdateCb(_ioReadOtherHistory, _ioReadDelta.Delta + _ioOtherDelta.Delta);
+            UpdateCb(_commitHistory, (long)_performance.CommittedPages * _system.PageSize);
+            UpdateCb(_physicalMemoryHistory,
                 (long)(_system.NumberOfPhysicalPages - _performance.AvailablePages) * _system.PageSize);
 
             // set System Idle Process CPU time
@@ -937,23 +966,21 @@ namespace ProcessHacker
                     item.Name = procs[pid].Name;
 
                     // Create the delta and history managers.
+
                     item.CpuKernelDelta = new Int64Delta(processInfo.KernelTime);
                     item.CpuUserDelta = new Int64Delta(processInfo.UserTime);
                     item.IoReadDelta = new Int64Delta((long)processInfo.IoCounters.ReadTransferCount);
                     item.IoWriteDelta = new Int64Delta((long)processInfo.IoCounters.WriteTransferCount);
                     item.IoOtherDelta = new Int64Delta((long)processInfo.IoCounters.OtherTransferCount);
-                    item.FloatHistoryManager = 
-                        new HistoryManager<ProcessStats, float>(EnumComparer<ProcessStats>.Instance);
-                    item.LongHistoryManager =
-                        new HistoryManager<ProcessStats, long>(EnumComparer<ProcessStats>.Instance);
-                    item.FloatHistoryManager.Add(ProcessStats.CpuKernel);
-                    item.FloatHistoryManager.Add(ProcessStats.CpuUser);
-                    item.LongHistoryManager.Add(ProcessStats.IoReadOther);
-                    item.LongHistoryManager.Add(ProcessStats.IoRead);
-                    item.LongHistoryManager.Add(ProcessStats.IoWrite);
-                    item.LongHistoryManager.Add(ProcessStats.IoOther);
-                    item.LongHistoryManager.Add(ProcessStats.PrivateMemory);
-                    item.LongHistoryManager.Add(ProcessStats.WorkingSet);
+
+                    item.CpuKernelHistory = new CircularBuffer<float>(_historyMaxSize);
+                    item.CpuUserHistory = new CircularBuffer<float>(_historyMaxSize);
+                    item.IoReadHistory = new CircularBuffer<long>(_historyMaxSize);
+                    item.IoWriteHistory = new CircularBuffer<long>(_historyMaxSize);
+                    item.IoOtherHistory = new CircularBuffer<long>(_historyMaxSize);
+                    item.IoReadOtherHistory = new CircularBuffer<long>(_historyMaxSize);
+                    item.PrivateMemoryHistory = new CircularBuffer<long>(_historyMaxSize);
+                    item.WorkingSetHistory = new CircularBuffer<long>(_historyMaxSize);
 
                     // HACK: Shouldn't happen, but it does - sometimes 
                     // the process name is null.
@@ -1124,20 +1151,20 @@ namespace ProcessHacker
                     item.IoWriteDelta.Update((long)processInfo.IoCounters.WriteTransferCount);
                     item.IoOtherDelta.Update((long)processInfo.IoCounters.OtherTransferCount);
 
-                    item.FloatHistoryManager.Update(ProcessStats.CpuKernel,
+                    UpdateCb(item.CpuKernelHistory,
                         (float)item.CpuKernelDelta.Delta /
                         (sysKernelTime + sysUserTime + otherTime));
-                    item.FloatHistoryManager.Update(ProcessStats.CpuUser,
+                    UpdateCb(item.CpuUserHistory,
                         (float)item.CpuUserDelta.Delta /
                         (sysKernelTime + sysUserTime + otherTime));
-                    item.LongHistoryManager.Update(ProcessStats.IoRead, item.IoReadDelta.Delta);
-                    item.LongHistoryManager.Update(ProcessStats.IoWrite, item.IoWriteDelta.Delta);
-                    item.LongHistoryManager.Update(ProcessStats.IoOther, item.IoOtherDelta.Delta);
-                    item.LongHistoryManager.Update(ProcessStats.IoReadOther,
+                    UpdateCb(item.IoReadHistory, item.IoReadDelta.Delta);
+                    UpdateCb(item.IoWriteHistory, item.IoWriteDelta.Delta);
+                    UpdateCb(item.IoOtherHistory, item.IoOtherDelta.Delta);
+                    UpdateCb(item.IoReadOtherHistory,
                         item.IoReadDelta.Delta + item.IoOtherDelta.Delta);
-                    item.LongHistoryManager.Update(ProcessStats.PrivateMemory,
+                    UpdateCb(item.PrivateMemoryHistory,
                         processInfo.VirtualMemoryCounters.PrivatePageCount.ToInt64());
-                    item.LongHistoryManager.Update(ProcessStats.WorkingSet,
+                    UpdateCb(item.WorkingSetHistory,
                         processInfo.VirtualMemoryCounters.WorkingSetSize.ToInt64());
 
                     // Update the struct.
@@ -1166,11 +1193,9 @@ namespace ProcessHacker
                             this.PidWithMostCpuUsage = pid;
                         }
 
-                        if (pid != 0 && (item.LongHistoryManager[ProcessStats.IoReadOther][0] +
-                            item.LongHistoryManager[ProcessStats.IoWrite][0]) > mostIOActivity)
+                        if (pid != 0 && (item.IoReadDelta.Delta + item.IoWriteDelta.Delta) > mostIOActivity)
                         {
-                            mostIOActivity = item.LongHistoryManager[ProcessStats.IoReadOther][0] +
-                                item.LongHistoryManager[ProcessStats.IoWrite][0];
+                            mostIOActivity = item.IoReadDelta.Delta + item.IoWriteDelta.Delta;
                             this.PidWithMostIoActivity = pid;
                         }
                     }
@@ -1227,28 +1252,28 @@ namespace ProcessHacker
 
             try
             {
-                _mostUsageHistory.Update(false, newdictionary[this.PidWithMostCpuUsage].Name + ": " +
+                UpdateCb(_cpuMostUsageHistory, newdictionary[this.PidWithMostCpuUsage].Name + ": " +
                     newdictionary[this.PidWithMostCpuUsage].CpuUsage.ToString("N2") + "%");
             }
             catch
             {
-                _mostUsageHistory.Update(false, "");
+                UpdateCb(_cpuMostUsageHistory, "");
             }
 
             try
             {
-                _mostUsageHistory.Update(true, newdictionary[this.PidWithMostIoActivity].Name + ": " +
+                UpdateCb(_ioMostUsageHistory, newdictionary[this.PidWithMostIoActivity].Name + ": " +
                     "R+O: " + Utils.FormatSize(
-                    newdictionary[this.PidWithMostIoActivity].LongHistoryManager[ProcessStats.IoReadOther][0]) +
+                    newdictionary[this.PidWithMostIoActivity].IoReadOtherHistory[0]) +
                     ", W: " + Utils.FormatSize(
-                    newdictionary[this.PidWithMostIoActivity].LongHistoryManager[ProcessStats.IoWrite][0]));
+                    newdictionary[this.PidWithMostIoActivity].IoWriteHistory[0]));
             }
             catch
             {
-                _mostUsageHistory.Update(true, "");
+                UpdateCb(_ioMostUsageHistory, "");
             }
 
-            _timeHistory.Update(false, DateTime.Now);
+            UpdateCb(_timeHistory, DateTime.Now);
 
             Dictionary = newdictionary;
 

@@ -29,16 +29,18 @@ namespace ProcessHacker
 {
     public abstract class PlotterIcon : UsageIcon
     {
-        private HistoryManager<bool, float> _floatHistory = new HistoryManager<bool, float>();
-        private HistoryManager<bool, long> _longHistory = new HistoryManager<bool, long>();
+        private CircularBuffer<float> _dataHistory1;
+        private CircularBuffer<float> _dataHistory2;
+        private CircularBuffer<long> _longDataHistory1;
+        private CircularBuffer<long> _longDataHistory2;
         private Plotter _plotter;
 
         public PlotterIcon()
         {
-            _floatHistory.Add(true);
-            _floatHistory.Add(false);
-            _longHistory.Add(true);
-            _longHistory.Add(false);
+            _dataHistory1 = new CircularBuffer<float>(20);
+            _dataHistory2 = new CircularBuffer<float>(20);
+            _longDataHistory1 = new CircularBuffer<long>(20);
+            _longDataHistory2 = new CircularBuffer<long>(20);
 
             _plotter = new Plotter()
             {
@@ -46,10 +48,10 @@ namespace ProcessHacker
                 ShowGrid = false,
                 BackColor = Color.Black,
                 MoveStep = 2,
-                Data1 = _floatHistory[true],
-                Data2 = _floatHistory[false],
-                LongData1 = _longHistory[true],
-                LongData2 = _longHistory[false]
+                Data1 = _dataHistory1,
+                Data2 = _dataHistory2,
+                LongData1 = _longDataHistory1,
+                LongData2 = _longDataHistory2
             };
         }
 
@@ -61,14 +63,14 @@ namespace ProcessHacker
 
         protected void Update(float v1, float v2)
         {
-            _floatHistory.Update(true, v1);
-            _floatHistory.Update(false, v2);
+            _dataHistory1.Add(v1);
+            _dataHistory2.Add(v2);
         }
 
         protected void Update(long v1, long v2)
         {
-            _longHistory.Update(true, v1);
-            _longHistory.Update(false, v2);
+            _longDataHistory1.Add(v1);
+            _longDataHistory2.Add(v2);
         }
 
         public void Redraw()

@@ -438,7 +438,7 @@ namespace ProcessHacker
             Settings.Instance.ElevationLevel = comboElevationLevel.SelectedIndex;
 
             Settings.Instance.MaxSamples = (int)textMaxSamples.Value;
-            HistoryManager.GlobalMaxCount = Settings.Instance.MaxSamples;
+            Program.ProcessProvider.HistoryMaxSize = Settings.Instance.MaxSamples;
             Settings.Instance.PlotterStep = (int)textStep.Value;
             ProcessHacker.Components.Plotter.GlobalMoveStep = Settings.Instance.PlotterStep;
 

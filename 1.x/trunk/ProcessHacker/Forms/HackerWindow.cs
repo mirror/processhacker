@@ -2683,7 +2683,7 @@ namespace ProcessHacker
             foreach (string s in Settings.Instance.ImposterNames.Split(','))
                 Program.ImposterNames.Add(s.Trim());
 
-            HistoryManager.GlobalMaxCount = Settings.Instance.MaxSamples;
+            Program.ProcessProvider.HistoryMaxSize = Settings.Instance.MaxSamples;
             ProcessHacker.Components.Plotter.GlobalMoveStep = Settings.Instance.PlotterStep;
 
             // Set up symbols...

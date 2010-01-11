@@ -54,13 +54,13 @@ namespace ProcessHacker
 
             plotterCPU.BackColor = Color.FromArgb(255, 0, 0, 0);
             plotterCPU.Draw();
-            plotterCPU.Data1 = Program.ProcessProvider.FloatHistory["Kernel"];      
-            plotterCPU.Data2 = Program.ProcessProvider.FloatHistory["User"];
+            plotterCPU.Data1 = Program.ProcessProvider.CpuKernelHistory;      
+            plotterCPU.Data2 = Program.ProcessProvider.CpuUserHistory;
 
             plotterIO.BackColor = Color.FromArgb(255, 0, 0, 0);
             plotterIO.Draw();
-            plotterIO.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther];
-            plotterIO.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.IoWrite];
+            plotterIO.LongData1 = Program.ProcessProvider.IoReadOtherHistory;
+            plotterIO.LongData2 = Program.ProcessProvider.IoWriteHistory;
 
             Program.ProcessProvider.Updated += new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
         }

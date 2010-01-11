@@ -21,17 +21,8 @@ namespace ProcessHacker
             InitializeComponent();
         }
 
-        public HistoryManager<string, float> FloatHistory { get { return _floatHistory; } }
-        
-        private HistoryManager<string, float> _floatHistory = new HistoryManager<string, float>();
-
         private void NetInfoWindow_Load(object sender, EventArgs e)
         {
-            _floatHistory.Add("up");
-            _floatHistory.Add("down");
-            plotter1.Data1 = FloatHistory["up"];
-            plotter1.Data2 = FloatHistory["down"];
- 
             this._monitor = new NetworkMonitor();
             this._monitor.StopMonitoring();
             this._monitor.StartMonitoring();
@@ -79,13 +70,6 @@ namespace ProcessHacker
 
                     this.label25.Text = up.ToString();
                     this.label26.Text = down.ToString();
-
-                    plotter1.Data1 = FloatHistory["up"];
-                    plotter1.Data2 = FloatHistory["down"];
-                    _floatHistory.Update("up", (float)i.UploadSpeedKbps);
-                    _floatHistory.Update("down", (float)i.DownloadSpeedKbps);
-                    plotter1.MoveGrid();
-                    plotter1.Draw();
 
                     this.label21.Text = String.Format("U: {0:n}kbps", i.UploadSpeedKbps);
                     this.label22.Text = String.Format("D: {0:n}kbps", i.DownloadSpeedKbps);
