@@ -4,6 +4,7 @@ Process Hacker
  * NEW/IMPROVED:
    * System Idle Process threads are shown
    * Find handles by object address
+   * Small performance improvements
  * FIXED:
    * #2926287 - "Scroll Problems with Microsoft Intellipoint Mouse"
    * Major process properties memory leak

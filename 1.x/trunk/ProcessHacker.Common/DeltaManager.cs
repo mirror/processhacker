@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   delta manager
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2010 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -108,61 +108,74 @@ namespace ProcessHacker.Common
         }
     }
 
-    /// <summary>
-    /// Provides methods for managing deltas of discrete sets of data.
-    /// </summary>
-    public sealed class DeltaManager<TKey, TValue>
+    public interface IDeltaValue<T>
     {
-        private Dictionary<TKey, TValue> _values;
-        private Dictionary<TKey, TValue> _deltas;
-        private ISubtractor<TValue> _subtractor;
+        T Value { get; }
+        T Delta { get; }
+        void Update(T value);
+    }
 
-        /// <summary>
-        /// Creates a delta manager using the specified subtractor.
-        /// </summary>
-        /// <param name="subtractor">A subtractor for the appropriate type.</param>
-        public DeltaManager(ISubtractor<TValue> subtractor)
+    public struct DeltaValue<T> : IDeltaValue<T>
+    {
+        private ISubtractor<T> _subtractor;
+        private T _value;
+        private T _delta;
+
+        public DeltaValue(ISubtractor<T> subtractor, T value)
         {
             _subtractor = subtractor;
-            _values = new Dictionary<TKey, TValue>();
-            _deltas = new Dictionary<TKey, TValue>();
+            _value = value;
+            _delta = default(T);
         }
 
-        public DeltaManager(ISubtractor<TValue> subtractor, IEqualityComparer<TKey> comparer)
+        public T Value
         {
-            _subtractor = subtractor;
-            _values = new Dictionary<TKey, TValue>(comparer);
-            _deltas = new Dictionary<TKey, TValue>(comparer);
+            get { return _value; }
         }
 
-        public TValue this[TKey key]
+        public T Delta
         {
-            get { return _deltas[key]; }
-            set { _deltas[key] = value; }
+            get { return _delta; }
         }
 
-        public TValue GetDelta(TKey key)
+        public void Update(T value)
         {
-            return _deltas[key];
+            _delta = _subtractor.Subtract(value, _value);
+            _value = value;
+        }
+    }
+
+    public struct Int64Delta : IDeltaValue<long>
+    {
+        public static void Update(ref Int64Delta delta, long value)
+        {
+            delta._delta = value - delta._value;
+            delta._value = value;
         }
 
-        public void Add(TKey key, TValue initialValue)
+        private long _value;
+        private long _delta;
+
+        public Int64Delta(long value)
         {
-            _values.Add(key, initialValue);
-            _deltas.Add(key, initialValue);
+            _value = value;
+            _delta = 0;
         }
 
-        public void SetDelta(TKey key, TValue value)
+        public long Value
         {
-            _deltas[key] = value;
+            get { return _value; }
         }
 
-        public TValue Update(TKey key, TValue value)
+        public long Delta
         {
-            _deltas[key] = _subtractor.Subtract(value, _values[key]);
-            _values[key] = value;
+            get { return _delta; }
+        }
 
-            return _deltas[key];
+        public void Update(long value)
+        {
+            _delta = value - _value;
+            _value = value;
         }
     }
 }

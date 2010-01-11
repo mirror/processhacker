@@ -43,20 +43,20 @@ namespace ProcessHacker
             this.LineColor2 = Settings.Instance.PlotterIOWColor;
 
             this.Update(
-                this.Provider.LongDeltas[SystemStats.IoRead] +
-                this.Provider.LongDeltas[SystemStats.IoOther],
-                this.Provider.LongDeltas[SystemStats.IoWrite]
+                this.Provider.IoReadDelta.Delta +
+                this.Provider.IoOtherDelta.Delta,
+                this.Provider.IoWriteDelta.Delta
                 );
 
             this.Redraw();
 
-            string text = "R: " + Utils.FormatSize(this.Provider.LongDeltas[SystemStats.IoRead]) +
-                "\nW: " + Utils.FormatSize(this.Provider.LongDeltas[SystemStats.IoWrite]) +
-                "\nO: " + Utils.FormatSize(this.Provider.LongDeltas[SystemStats.IoOther]);
+            string text = "R: " + Utils.FormatSize(this.Provider.IoReadDelta.Delta) +
+                "\nW: " + Utils.FormatSize(this.Provider.IoWriteDelta.Delta) +
+                "\nO: " + Utils.FormatSize(this.Provider.IoOtherDelta.Delta);
 
-            if (this.Provider.Dictionary.ContainsKey(this.Provider.PIDWithMostIoActivity))
+            if (this.Provider.Dictionary.ContainsKey(this.Provider.PidWithMostIoActivity))
             {
-                string mostIoName = this.Provider.Dictionary[this.Provider.PIDWithMostIoActivity].Name;
+                string mostIoName = this.Provider.Dictionary[this.Provider.PidWithMostIoActivity].Name;
 
                 if (text.Length + mostIoName.Length + 1 < 64) // 1 char for the LF
                     text += "\n" + mostIoName;

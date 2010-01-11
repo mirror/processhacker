@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   .NET counters control
  * 
- * Copyright (C) 2009 wj32
+ * Copyright (C) 2009-2010 wj32
  * 
  * This file is part of Process Hacker.
  * 

@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   process properties window
  * 
- * Copyright (C) 2008-2009 wj32
+ * Copyright (C) 2008-2010 wj32
  * Copyright (C) 2009 Dean
  * 
  * This file is part of Process Hacker.
@@ -935,12 +935,12 @@ namespace ProcessHacker
             plotterIO.LineColor2 = Settings.Instance.PlotterIOWColor;          
 
             // Update the graphs.
-            long sysTotal = sysProvider.LongDeltas[SystemStats.CpuKernel] + sysProvider.LongDeltas[SystemStats.CpuUser]
-                + sysProvider.LongDeltas[SystemStats.CpuOther];
-            float procKernel = (float)item.DeltaManager[ProcessStats.CpuKernel] / sysTotal;
-            float procUser = (float)item.DeltaManager[ProcessStats.CpuUser] / sysTotal;  
-            long ioRO = item.DeltaManager[ProcessStats.IoRead] + item.DeltaManager[ProcessStats.IoOther];
-            long ioW = item.DeltaManager[ProcessStats.IoWrite];
+            long sysTotal = sysProvider.CpuKernelDelta.Delta + sysProvider.CpuUserDelta.Delta
+                + sysProvider.CpuOtherDelta.Delta;
+            float procKernel = (float)item.CpuKernelDelta.Delta / sysTotal;
+            float procUser = (float)item.CpuUserDelta.Delta / sysTotal;  
+            long ioRO = item.IoReadDelta.Delta + item.IoOtherDelta.Delta;
+            long ioW = item.IoWriteDelta.Delta;
 
             string cpuStr = ((procKernel + procUser) * 100).ToString("F2") + "%";
             plotterCPUUsage.Text = cpuStr +
