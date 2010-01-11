@@ -33,6 +33,7 @@ namespace ProcessHacker.Components
     public partial class DotNetCounters : UserControl
     {
         private int _pid;
+        private bool _initialized = false;
         private string _name;
         private string _instanceName;
         private string _categoryName;
@@ -131,10 +132,15 @@ namespace ProcessHacker.Components
             names.Sort();
             comboCategories.Items.AddRange(names.ToArray());
             comboCategories.SelectedItem = comboCategories.Items[0];
+
+            _initialized = true;
         }
 
         private void comboCategories_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (!_initialized)
+                return;
+
             _categoryName = (string)comboCategories.SelectedItem;
 
             this.UpdateCounters();
