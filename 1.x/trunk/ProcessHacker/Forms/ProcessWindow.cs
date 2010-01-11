@@ -1344,13 +1344,6 @@ namespace ProcessHacker
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Delay initialization of the .NET tab until this point.
-            if (_dotNetCounters != null && !_dotNetCountersInitialized)
-            {
-                _dotNetCounters.Initialize();
-                _dotNetCountersInitialized = true;
-            }
-
             if (_threadP != null)
                 if (_threadP.Enabled = tabControl.SelectedTab == tabThreads)
                     _threadP.Boost();
@@ -1385,6 +1378,17 @@ namespace ProcessHacker
                 {
                     _jobProps.UpdateEnabled = false;
                 }
+            }
+
+            // Delay initialization of the .NET tab until this point.
+            if (
+                tabControl.SelectedTab == tabDotNet &&
+                _dotNetCounters != null &&
+                !_dotNetCountersInitialized
+                )
+            {
+                _dotNetCounters.Initialize();
+                _dotNetCountersInitialized = true;
             }
         }
 
