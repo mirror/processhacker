@@ -118,7 +118,11 @@ namespace ProcessHacker
                 {
                     using (DebugBuffer buffer = new DebugBuffer())
                     {
-                        buffer.Query(_pid, RtlQueryProcessDebugFlags.Modules32);
+                        buffer.Query(
+                            _pid,
+                            RtlQueryProcessDebugFlags.Modules32 |
+                            RtlQueryProcessDebugFlags.NonInvasive
+                            );
 
                         var processModules = buffer.GetModules();
 

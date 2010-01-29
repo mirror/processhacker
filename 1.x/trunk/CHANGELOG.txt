@@ -1,5 +1,9 @@
 Process Hacker
 
+1.12
+ * NEW/IMPROVED:
+ * FIXED:
+
 1.11
  * NEW/IMPROVED:
    * System Idle Process threads are shown

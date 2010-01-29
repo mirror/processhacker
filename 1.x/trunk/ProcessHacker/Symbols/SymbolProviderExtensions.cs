@@ -150,7 +150,11 @@ namespace ProcessHacker.Native.Symbols
         {
             using (var buffer = new ProcessHacker.Native.Debugging.DebugBuffer())
             {
-                buffer.Query(pid, ProcessHacker.Native.Api.RtlQueryProcessDebugFlags.Modules32);
+                buffer.Query(
+                    pid,
+                    ProcessHacker.Native.Api.RtlQueryProcessDebugFlags.Modules32 |
+                    ProcessHacker.Native.Api.RtlQueryProcessDebugFlags.NonInvasive
+                    );
 
                 foreach (var module in buffer.GetModules())
                 {

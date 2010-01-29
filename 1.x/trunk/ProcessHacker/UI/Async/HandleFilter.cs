@@ -143,7 +143,11 @@ namespace ProcessHacker.FormHelper
                         {
                             using (DebugBuffer buffer = new DebugBuffer())
                             {
-                                buffer.Query(process.Key, RtlQueryProcessDebugFlags.Modules32);
+                                buffer.Query(
+                                    process.Key,
+                                    RtlQueryProcessDebugFlags.Modules32 |
+                                    RtlQueryProcessDebugFlags.NonInvasive
+                                    );
 
                                 buffer.EnumModules((module) =>
                                     {
