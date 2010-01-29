@@ -2806,7 +2806,7 @@ namespace ProcessHacker.Native.Api
         public static readonly int LogPathOffset = Marshal.OffsetOf(typeof(TmLogPathInformation), "LogPath").ToInt32();
 
         /// <summary>
-        /// The length, in characters, of the log path string.
+        /// The length, in bytes, of the log path string.
         /// </summary>
         public int LogPathLength;
 
