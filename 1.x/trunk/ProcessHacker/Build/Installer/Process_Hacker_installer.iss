@@ -75,6 +75,7 @@ AllowNoIcons=yes
 Compression=lzma/ultra64
 SolidCompression=yes
 InternalCompressLevel=ultra64
+CompressionThreads=2
 EnableDirDoesntExistWarning=no
 DirExistsWarning=no
 ShowTasksTreeLines=yes
