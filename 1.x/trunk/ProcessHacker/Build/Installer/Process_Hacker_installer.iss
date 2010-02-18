@@ -16,13 +16,11 @@
 ;*
 ;* You should have received a copy of the GNU General Public License
 ;* along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
-
-
-; Inno Setup v5.3.7
+;
+;
 ;
 ; Requirements:
-; *Inno Setup QuickStart Pack:
-;   http://www.jrsoftware.org/isdl.php#qsp
+; *Inno Setup QuickStart Pack v5.3.8+: http://www.jrsoftware.org/isdl.php#qsp
 
 
 #define installer_build_number "41"
@@ -74,7 +72,6 @@ OutputBaseFilename=processhacker-{#= simple_app_version}-setup
 AllowNoIcons=yes
 Compression=lzma/ultra64
 SolidCompression=yes
-InternalCompressLevel=ultra64
 CompressionThreads=2
 EnableDirDoesntExistWarning=no
 DirExistsWarning=no
