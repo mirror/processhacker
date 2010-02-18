@@ -44,7 +44,7 @@ namespace ProcessHacker.Native.Debugging
         /// </summary>
         public DebugBuffer()
         {
-            _buffer = Win32.RtlCreateQueryDebugBuffer(0, true);
+            _buffer = Win32.RtlCreateQueryDebugBuffer(0, false);
 
             if (_buffer == IntPtr.Zero)
             {
