@@ -60,7 +60,7 @@ namespace ProcessHacker.Components
             // instance names, even if the extension is something other than 
             // ".exe".
             {
-                int indexOfDot = _name.IndexOf('.');
+                int indexOfDot = _name.LastIndexOf('.');
 
                 if (indexOfDot != -1)
                     _instanceName = _name.Substring(0, indexOfDot);
