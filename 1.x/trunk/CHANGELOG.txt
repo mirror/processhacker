@@ -3,6 +3,7 @@ Process Hacker
 1.12
  * NEW/IMPROVED:
  * FIXED:
+   * Crashes with the Heaps feature
 
 1.11
  * NEW/IMPROVED:
