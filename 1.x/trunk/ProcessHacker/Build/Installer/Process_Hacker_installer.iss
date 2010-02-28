@@ -72,18 +72,15 @@ OutputBaseFilename=processhacker-{#= simple_app_version}-setup
 AllowNoIcons=yes
 Compression=lzma/ultra64
 SolidCompression=yes
-CompressionThreads=2
 EnableDirDoesntExistWarning=no
 DirExistsWarning=no
 ShowTasksTreeLines=yes
 AlwaysShowDirOnReadyPage=yes
 AlwaysShowGroupOnReadyPage=yes
-WizardImageStretch=no
 PrivilegesRequired=admin
 ShowLanguageDialog=auto
 DisableDirPage=auto
 DisableProgramGroupPage=auto
-LanguageDetectionMethod=uilanguage
 AppMutex=Global\ProcessHackerMutex
 ArchitecturesInstallIn64BitMode=x64
 
@@ -273,7 +270,7 @@ begin
 end;
 
 
-procedure CleanUpFiles();
+Procedure CleanUpFiles();
 begin
   DeleteFile(ExpandConstant('{userappdata}\Process Hacker\settings.xml'));
   RemoveDir(ExpandConstant('{userappdata}\Process Hacker\'));
@@ -288,44 +285,7 @@ begin
 end;
 
 
-procedure URLLabelOnClick(Sender: TObject);
-var
-  ErrorCode: Integer;
-begin
-  ShellExec('open', 'http://processhacker.sourceforge.net/', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
-end;
-
-
-procedure CreateURLLabel(ParentForm: TSetupForm; CancelButton: TNewButton);
-var
-  URLLabel: TNewStaticText;
-begin
-  URLLabel := TNewStaticText.Create(ParentForm);
-  URLLabel.Caption := 'Homepage';
-  URLLabel.Cursor := crHand;
-  URLLabel.OnClick := @URLLabelOnClick;
-  URLLabel.Parent := ParentForm;
-  { Alter Font *after* setting Parent so the correct defaults are inherited first }
-  URLLabel.Font.Style := URLLabel.Font.Style + [fsUnderline];
-  URLLabel.Font.Color := clBlue;
-  URLLabel.Top := CancelButton.Top + CancelButton.Height - URLLabel.Height - 2;
-  URLLabel.Left := ParentForm.ClientWidth - CancelButton.Left - CancelButton.Width;
-end;
-
-
-procedure InitializeWizard();
-begin
-  CreateURLLabel(WizardForm, WizardForm.CancelButton);
-end;
-
-
-procedure InitializeUninstallProgressForm();
-begin
-  CreateURLLabel(UninstallProgressForm, UninstallProgressForm.CancelButton);
-end;
-
-
-procedure CurStepChanged(CurStep: TSetupStep);
+Procedure CurStepChanged(CurStep: TSetupStep);
 begin
   case CurStep of ssInstall:
   begin
