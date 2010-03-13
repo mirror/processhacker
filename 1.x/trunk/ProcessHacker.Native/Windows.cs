@@ -1045,7 +1045,7 @@ namespace ProcessHacker.Native
         public SystemPagefile(int totalSize, int totalInUse, int peakUsage, string fileName)
         {
             this.TotalSize = totalSize;
-            this.TotalInUse = TotalInUse;
+            this.TotalInUse = totalInUse;
             this.PeakUsage = peakUsage;
             this.FileName = fileName;
         }
