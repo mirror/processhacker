@@ -24,7 +24,7 @@ REM Check if ILMerge is present in the default installation location or in PATH
 SET ILMergePath="%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe"
 IF NOT EXIST %ILMergePath% (FOR %%a IN (ILMerge.exe) DO IF %%~$PATH:a' NEQ ' (
 	SET ILMergePath="%%~$PATH:a") ELSE (SET "N_=T"
-		ECHO:ILMerge IS NOT INSTALLED!!!&&(GOTO CLEANUP)))
+		ECHO:ILMerge IS NOT INSTALLED!!!&&(GOTO :PDBFILES)))
 
 SET RequiredDLLs="Aga.Controls.dll" "ProcessHacker.Common.dll"^
  "ProcessHacker.Native.dll"
@@ -35,6 +35,7 @@ MD "tmp" >NUL 2>&1
 REM Merge DLLs with "ProcessHacker.exe" using ILMerge
 %ILMergePath% /t:winexe /out:"tmp\ProcessHacker.exe" "ProcessHacker.exe"^
  %RequiredDLLs% && ECHO:DLLs merged successfully with ProcessHacker.exe!
+IF %ERRORLEVEL% NEQ 0 GOTO :SubError
 
 REM Delete the existing EXEs and PDBs
 DEL/f/a "ProcessHacker.exe" "*.pdb" >NUL 2>&1
@@ -64,18 +65,17 @@ FOR /f "delims=" %%a IN (
 
 IF DEFINED InnoSetupPath ("%InnoSetupPath%\iscc.exe" /Q /O"..\..\bin\Release"^
  "..\..\Build\Installer\Process_Hacker_installer.iss"&&(
-	ECHO:Installer compiled successfully!)) ELSE (ECHO:%M_%)
+	ECHO:Compiled installer!)) ELSE (ECHO:%M_%)
 
 REM ZIP the files
 IF NOT DEFINED N_ (START "" /B /WAIT "..\..\Build\7za\7za.exe" a -tzip -mx=9^
  "processhacker-bin.zip" "base.txt" "CHANGELOG.txt" "Help.htm"^
  "kprocesshacker.sys" "LICENSE.txt" "NProcessHacker.dll"^
- "NProcessHacker64.dll" "ProcessHacker.exe" "README.txt" "structs.txt"^
- >NUL&&(
-	ECHO:ZIP created successfully!))
+ "NProcessHacker64.dll" "ProcessHacker.exe" "README.txt" "structs.txt") >NUL
+IF %ERRORLEVEL% NEQ 0 (GOTO :SubError) ELSE (ECHO:ZIP package created successfully!)
 
 
-:CLEANUP
+:PDBFILES
 REM Copy some PDBs over
 FOR %%a IN (
 	"KProcessHacker\i386\kprocesshacker.pdb" ^
@@ -83,13 +83,18 @@ FOR %%a IN (
 	) DO COPY "..\..\..\%%a" >NUL
 
 REM Make a PDB zip
-"..\..\Build\7za\7za.exe" a -tzip -mx=9 "processhacker-pdb.zip"^
- "*.pdb" >NUL&&(ECHO:PDB ZIP created successfully!)
+"..\..\Build\7za\7za.exe" a -tzip -mx=9 "processhacker-pdb.zip" "*.pdb" >NUL
+IF %ERRORLEVEL% NEQ 0 (GOTO :SubError) ELSE (ECHO:PDB ZIP package created successfully!)
 
 
 :END
-ENDLOCAL && GOTO :EOF
+ENDLOCAL
+GOTO :EOF
 
 :Sub
 SET InnoSetupPath=%*
 GOTO :EOF
+
+:SubError
+ECHO:Error detected!!!
+GOTO :END
