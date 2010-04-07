@@ -316,13 +316,7 @@ begin
   if CurUninstallStep = usUninstall then begin
     StopService('KProcessHacker');
     RemoveService('KProcessHacker');
-  if FileExists(ExpandConstant('{userappdata}\Process Hacker\settings.xml'))
-  OR fileExists(ExpandConstant('{app}\Process Hacker Log.txt'))
-  OR fileExists(ExpandConstant('{userdocs}\Process Hacker.txt'))
-  OR fileExists(ExpandConstant('{userdocs}\Process Hacker.log'))
-  OR fileExists(ExpandConstant('{userdocs}\Process Hacker.csv'))
-  OR fileExists(ExpandConstant('{userdocs}\Process Hacker Log.txt'))
-  OR fileExists(ExpandConstant('{userdocs}\CSR Processes.txt'))
+  if SettingsExistCheck OR fileExists(ExpandConstant('{app}\Process Hacker Log.txt'))
   OR fileExists(ExpandConstant('{app}\scratchpad.txt')) then begin
     if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'),
      mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
