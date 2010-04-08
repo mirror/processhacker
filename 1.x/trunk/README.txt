@@ -25,9 +25,9 @@ Its most basic functionality includes:
  * Viewing and closing network connections
 
 Process Hacker is brought to you by the Process Hacker team:
- * wj32 (Project Manager)
- * dmex (Developer)
+ * dmex (Project Manager)
  * XhmikosR (Installer Developer, Tester)
+ * wj32 (Project Founder)
 Inactive:
  * Dean (Developer)
  * Fliser (Developer)
