@@ -3,6 +3,8 @@ Process Hacker
 1.12
  * NEW/IMPROVED:
  * FIXED:
+   * #2983529 - fixed x64 rundll32/dllhost Tooltips and also fixed registry keys not being disposed
+   * #2983538 - fixed ProcessPriorityClass DataTypeMisalignment
    * Crashes with the Heaps feature
 
 1.11
