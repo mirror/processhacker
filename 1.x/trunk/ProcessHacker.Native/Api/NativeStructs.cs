@@ -1911,9 +1911,9 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessPriorityClassStruct
     {
-        [MarshalAs(UnmanagedType.I1)]
-        public bool Foreground;
-        public ProcessPriorityClass PriorityClass;
+        //the type char is set by the CLR runtime to marshal as Ansi (single byte) for some insane reason...
+        public char Foreground;
+        public char PriorityClass;
     }
 
     [StructLayout(LayoutKind.Sequential)]

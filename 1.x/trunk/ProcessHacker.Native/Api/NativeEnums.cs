@@ -1661,7 +1661,7 @@ namespace ProcessHacker.Native.Api
         MaxProcessInfoClass
     }
 
-    public enum ProcessPriorityClass : byte
+    public enum ProcessPriorityClass
     {
         Unknown = 0,
         Idle = 1,
