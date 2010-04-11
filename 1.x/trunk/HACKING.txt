@@ -16,5 +16,5 @@ Tools > Options > Projects and Solutions > General.
 The build script relies on ILMerge being present in the default installation
 location ("%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe") or in your PATH
 environment variable.
-In order to build the installer you must have Inno Setup QuickStart Pack v5.3.8
-installed, ANSI or Unicode.
+In order to build the installer you must have Inno Setup QuickStart Pack v5.3.9
+or newer installed, ANSI or Unicode.
