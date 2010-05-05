@@ -70,7 +70,8 @@ WizardSmallImageFile=Icons\ProcessHackerSmall.bmp
 OutputDir=.
 OutputBaseFilename=processhacker-{#= simple_app_version}-setup
 AllowNoIcons=yes
-Compression=lzma2/max
+Compression=lzma/max
+InternalCompressLevel=max
 SolidCompression=yes
 EnableDirDoesntExistWarning=no
 DirExistsWarning=no
@@ -92,13 +93,13 @@ Name: de; MessagesFile: compiler:Languages\German.isl
 Name: gr; MessagesFile: Languages\Greek.isl
 
 
-; Include the installer's custom messages and services stuff
+; Include the installer's custom messages and services script
 #include "Custom_Messages.iss"
 #include "Services.iss"
 
 
 [Messages]
-BeveledLabel=Process Hacker v{#= simple_app_version} by wj32                                                                Setup v{#= installer_build_number} built on {#= installer_build_date}
+BeveledLabel=Process Hacker v{#= simple_app_version} by wj32, Setup v{#= installer_build_number} built on {#= installer_build_date}
 
 
 [Files]
@@ -318,8 +319,7 @@ begin
     RemoveService('KProcessHacker');
   if SettingsExistCheck OR fileExists(ExpandConstant('{app}\Process Hacker Log.txt'))
   OR fileExists(ExpandConstant('{app}\scratchpad.txt')) then begin
-    if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'),
-     mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
+    if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
        CleanUpFiles;
      end;
       //Always delete older settings folder
