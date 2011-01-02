@@ -1,0 +1,283 @@
+Index: hndlinfo.c
+===================================================================
+--- hndlinfo.c	(revision 3919)
++++ hndlinfo.c	(working copy)
+@@ -23,41 +23,44 @@
+ #include <ph.h>
+ #include <kph.h>
+ 
+-typedef enum _PH_QUERY_OBJECT_WORK
+-{
+-    QueryNameHack,
+-    QuerySecurityHack,
+-    SetSecurityHack
+-} PH_QUERY_OBJECT_WORK;
++#define PH_QUERY_HACK_MAX_THREADS 4
++#define PH_QUERY_HACK_THREAD_BITMAP_ALL ((1 << PH_QUERY_HACK_MAX_THREADS) - 1)
+ 
+-typedef struct _PH_QUERY_OBJECT_CONTEXT
++typedef struct _PH_QUERY_HACK_THREAD
+ {
+-    LOGICAL Initialized;
+-    PH_QUERY_OBJECT_WORK Work;
++    SINGLE_LIST_ENTRY ListEntry;
++    HANDLE StartEventHandle;
++    HANDLE CompletedEventHandle;
+ 
++    HANDLE ThreadHandle;
++    PVOID Fiber;
++    PTHREAD_START_ROUTINE Routine;
++    PVOID Context;
++} PH_QUERY_HACK_THREAD, *PPH_QUERY_HACK_THREAD;
++
++typedef struct _QUERY_HACK_COMMON_CONTEXT
++{
+     HANDLE Handle;
+     SECURITY_INFORMATION SecurityInformation;
+     PVOID Buffer;
+-    ULONG Length;
++    ULONG BufferLength;
+ 
+     NTSTATUS Status;
+     ULONG ReturnLength;
+-} PH_QUERY_OBJECT_CONTEXT, *PPH_QUERY_OBJECT_CONTEXT;
++} QUERY_HACK_COMMON_CONTEXT, *PQUERY_HACK_COMMON_CONTEXT;
+ 
+-NTSTATUS PhpQueryObjectThreadStart(
++NTSTATUS PhpQueryHackThreadStart(
+     __in PVOID Parameter
+     );
+ 
+-static HANDLE PhQueryObjectThreadHandle = NULL;
+-static PVOID PhQueryObjectFiber = NULL;
+-static PH_QUEUED_LOCK PhQueryObjectMutex;
+-static HANDLE PhQueryObjectStartEvent = NULL;
+-static HANDLE PhQueryObjectCompletedEvent = NULL;
+-static PH_QUERY_OBJECT_CONTEXT PhQueryObjectContext;
+-
+ static PPH_STRING PhObjectTypeNames[MAX_OBJECT_TYPE_NUMBER] = { 0 };
+ static PPH_GET_CLIENT_ID_NAME PhHandleGetClientIdName = NULL;
+ 
++static PH_QUERY_HACK_THREAD PhQueryHackThreads[PH_QUERY_HACK_MAX_THREADS];
++static SINGLE_LIST_ENTRY PhQueryHackThreadListHead;
++static PH_QUEUED_LOCK PhQueryHackThreadListLock = PH_QUEUED_LOCK_INIT;
++static PH_QUEUED_LOCK PhQueryHackThreadReleaseEvent = PH_QUEUED_LOCK_INIT;
++
+ VOID PhHandleInfoInitialization()
+ {
+     PhHandleGetClientIdName = PhStdGetClientIdName;
+@@ -1145,109 +1148,71 @@
+     return status;
+ }
+ 
+-BOOLEAN PhpHeadQueryObjectHack()
++PPH_QUERY_HACK_THREAD PhpAcquireQueryHackThread(
++    __in PTHREAD_START_ROUTINE Routine,
++    __in PVOID Context
++    )
+ {
+-    PhAcquireQueuedLockExclusive(&PhQueryObjectMutex);
++    PPH_QUERY_HACK_THREAD hackThread;
++    PSINGLE_LIST_ENTRY listEntry;
++    PH_QUEUED_WAIT_BLOCK waitBlock;
+ 
+-    // Create a query thread if we don't have one.
+-    if (!PhQueryObjectThreadHandle)
++    while (TRUE)
+     {
+-        PhQueryObjectThreadHandle = CreateThread(NULL, 0, PhpQueryObjectThreadStart, NULL, 0, NULL);
+-
+-        if (!PhQueryObjectThreadHandle)
++        if (!PhQueryHackThreadListHead.Next)
+         {
+-            PhReleaseQueuedLockExclusive(&PhQueryObjectMutex);
+-            return FALSE;
++            if (!Try)
++            {
++                PhQueueWakeEvent(&PhQueryHackThreadReleaseEvent, &waitBlock);
++
++                if (PhQueryHackThreadListHead.Next)
++                {
++                    // A new entry has just become available; cancel the wait.
++                    PhSetWakeEvent(&PhQueryHackThreadReleaseEvent, &waitBlock);
++                }
++                else
++                {
++                    PhWaitForWakeEvent(&PhQueryHackThreadReleaseEvent, &waitBlock, FALSE, NULL);
++                }
++            }
++            else
++            {
++                return NULL;
++            }
+         }
+-    }
+ 
+-    // Create the events if they don't exist.
++        PhAcquireQueuedLockExclusive(&PhQueryHackThreadListLock);
++        listEntry = PopEntryList(&PhQueryHackThreadListHead);
++        PhReleaseQueuedLockExclusive(&PhQueryHackThreadListLock);
+ 
+-    if (!PhQueryObjectStartEvent)
+-    {
+-        if (!NT_SUCCESS(NtCreateEvent(
+-            &PhQueryObjectStartEvent,
+-            EVENT_ALL_ACCESS,
+-            NULL,
+-            SynchronizationEvent,
+-            FALSE
+-            )))
++        if (listEntry)
+         {
+-            PhReleaseQueuedLockExclusive(&PhQueryObjectMutex);
+-            return FALSE;
++            hackThread = CONTAINING_RECORD(listEntry, PH_QUERY_HACK_THREAD, ListEntry);
++            break;
+         }
+     }
+ 
+-    if (!PhQueryObjectCompletedEvent)
++    // Initialize the structure.
++    if (!NT_SUCCESS(NtCreateEvent(&hackThread->ThreadHandle, EVENT_ALL_ACCESS, NULL, NotificationEvent, FALSE)))
+     {
+-        if (!NT_SUCCESS(NtCreateEvent(
+-            &PhQueryObjectCompletedEvent,
+-            EVENT_ALL_ACCESS,
+-            NULL,
+-            SynchronizationEvent,
+-            FALSE
+-            )))
+-        {
+-            PhReleaseQueuedLockExclusive(&PhQueryObjectMutex);
+-            return FALSE;
+-        }
+-    }
++        // Error; push the entry back onto the free list and return.
++        PhAcquireQueuedLockExclusive(&PhQueryHackThreadListLock);
++        PushEntryList(&PhQueryHackThreadListHead, &hackThread->ListEntry);
++        PhReleaseQueuedLockExclusive(&PhQueryHackThreadListLock);
+ 
+-    return TRUE;
+-}
+-
+-NTSTATUS PhpTailQueryObjectHack(
+-    __out_opt PULONG ReturnLength
+-    )
+-{
+-    NTSTATUS status;
+-    LARGE_INTEGER timeout;
+-
+-    PhQueryObjectContext.Initialized = TRUE;
+-
+-    // Allow the worker thread to start.
+-    NtSetEvent(PhQueryObjectStartEvent, NULL);
+-    // Wait for the work to complete, with a timeout of 1 second.
+-    timeout.QuadPart = -1000 * PH_TIMEOUT_MS;
+-    status = NtWaitForSingleObject(PhQueryObjectCompletedEvent, FALSE, &timeout);
+-
+-    PhQueryObjectContext.Initialized = FALSE;
+-
+-    // Return normally if the work was completed.
+-    if (status == STATUS_WAIT_0)
+-    {
+-        ULONG returnLength;
+-
+-        status = PhQueryObjectContext.Status;
+-        returnLength = PhQueryObjectContext.ReturnLength;
+-
+-        PhReleaseQueuedLockExclusive(&PhQueryObjectMutex);
+-
+-        if (ReturnLength)
+-            *ReturnLength = returnLength;
+-
+-        return status;
++        return NULL;
+     }
+-    // Kill the worker thread if it took too long.
+-    // else if (status == STATUS_TIMEOUT)
+-    else
+-    {
+-        // Kill the thread.
+-        if (NT_SUCCESS(NtTerminateThread(PhQueryObjectThreadHandle, STATUS_TIMEOUT)))
+-        {
+-            PhQueryObjectThreadHandle = NULL;
+ 
+-            // Delete the fiber (and free the thread stack).
+-            DeleteFiber(PhQueryObjectFiber);
+-            PhQueryObjectFiber = NULL;
+-        }
++    hackThread->ThreadHandle = NULL;
++    hackThread->Fiber = NULL;
++    hackThread->Routine = Routine;
++    hackThread->Context = Context;
+ 
+-        PhReleaseQueuedLockExclusive(&PhQueryObjectMutex);
+-
+-        return STATUS_UNSUCCESSFUL;
+-    }
++    return hackThread;
+ }
+ 
++
++
+ NTSTATUS PhQueryObjectNameHack(
+     __in HANDLE Handle,
+     __out_bcount(ObjectNameInformationLength) POBJECT_NAME_INFORMATION ObjectNameInformation,
+@@ -1303,54 +1268,13 @@
+     return PhpTailQueryObjectHack(NULL);
+ }
+ 
+-NTSTATUS PhpQueryObjectThreadStart(
++NTSTATUS PhpQueryHackThreadStart(
+     __in PVOID Parameter
+     )
+ {
+-    PhQueryObjectFiber = ConvertThreadToFiber(Parameter);
++    PPH_QUERY_HACK_THREAD hackThread = Parameter;
+ 
+-    while (TRUE)
+-    {
+-        // Wait for work.
+-        if (NtWaitForSingleObject(PhQueryObjectStartEvent, FALSE, NULL) != STATUS_WAIT_0)
+-            continue;
++    hackThread->Fiber = ConvertThreadToFiber(NULL);
+ 
+-        // Make sure we actually have work.
+-        if (PhQueryObjectContext.Initialized)
+-        {
+-            switch (PhQueryObjectContext.Work)
+-            {
+-            case QueryNameHack:
+-                PhQueryObjectContext.Status = NtQueryObject(
+-                    PhQueryObjectContext.Handle,
+-                    ObjectNameInformation,
+-                    PhQueryObjectContext.Buffer,
+-                    PhQueryObjectContext.Length,
+-                    &PhQueryObjectContext.ReturnLength
+-                    );
+-                break;
+-            case QuerySecurityHack:
+-                PhQueryObjectContext.Status = NtQuerySecurityObject(
+-                    PhQueryObjectContext.Handle,
+-                    PhQueryObjectContext.SecurityInformation,
+-                    (PSECURITY_DESCRIPTOR)PhQueryObjectContext.Buffer,
+-                    PhQueryObjectContext.Length,
+-                    &PhQueryObjectContext.ReturnLength
+-                    );
+-                break;
+-            case SetSecurityHack:
+-                PhQueryObjectContext.Status = NtSetSecurityObject(
+-                    PhQueryObjectContext.Handle,
+-                    PhQueryObjectContext.SecurityInformation,
+-                    (PSECURITY_DESCRIPTOR)PhQueryObjectContext.Buffer
+-                    );
+-                break;
+-            }
+-
+-            // Work done.
+-            NtSetEvent(PhQueryObjectCompletedEvent, NULL);
+-        }
+-    }
+-
+     return STATUS_SUCCESS;
+ }

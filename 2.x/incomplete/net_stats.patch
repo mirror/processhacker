@@ -1,0 +1,314 @@
+Index: ProcessHacker/include/providers.h
+===================================================================
+--- ProcessHacker/include/providers.h	(revision 3508)
++++ ProcessHacker/include/providers.h	(working copy)
+@@ -397,6 +397,9 @@
+     PPH_STRING RemoteHostString;
+ 
+     ULONGLONG OwnerInfo[PH_NETWORK_OWNER_INFO_SIZE];
++
++    ULONG64 NumberOfBytesOut;
++    ULONG64 NumberOfBytesIn;
+ } PH_NETWORK_ITEM, *PPH_NETWORK_ITEM;
+ 
+ BOOLEAN PhNetworkProviderInitialization();
+Index: ProcessHacker/mainwnd.c
+===================================================================
+--- ProcessHacker/mainwnd.c	(revision 3508)
++++ ProcessHacker/mainwnd.c	(working copy)
+@@ -2964,6 +2964,12 @@
+     PhAddListViewColumn(NetworkListViewHandle, 6, 6, 6, LVCFMT_LEFT, 70, L"State");
+     PhAddListViewColumn(NetworkListViewHandle, 7, 7, 7, LVCFMT_LEFT, 80, L"Owner");
+ 
++    if (WindowsVersion >= WINDOWS_VISTA)
++    {
++        PhAddListViewColumn(NetworkListViewHandle, 8, 8, 8, LVCFMT_LEFT, 70, L"Bytes Out");
++        PhAddListViewColumn(NetworkListViewHandle, 9, 9, 9, LVCFMT_LEFT, 70, L"Bytes In");
++    }
++
+     PhProcessTreeListInitialization();
+     PhInitializeProcessTreeList(ProcessTreeListHandle);
+ 
+@@ -4114,6 +4120,47 @@
+     PhSetListViewItemImageIndex(NetworkListViewHandle, ItemIndex, imageIndex);
+ }
+ 
++VOID PhpGetNetworkBytesString(
++    __in ULONG64 Value,
++    __out PPH_STRINGREF String,
++    __out PPH_STRING *UsedString
++    )
++{
++    if (Value != 0)
++    {
++        PPH_STRING sizeString;
++
++        sizeString = PhFormatSize(Value, -1);
++        *String = sizeString->sr;
++        *UsedString = sizeString;
++    }
++    else
++    {
++        PhInitializeStringRef(String, L"");
++        *UsedString = NULL;
++    }
++}
++
++VOID PhpFillNetworkStatisticsStrings(
++    __in INT ItemIndex,
++    __in PPH_NETWORK_ITEM NetworkItem
++    )
++{
++    if (WindowsVersion >= WINDOWS_VISTA)
++    {
++        PH_STRINGREF bytesString;
++        PPH_STRING usedString;
++
++        PhpGetNetworkBytesString(NetworkItem->NumberOfBytesOut, &bytesString, &usedString);
++        PhSetListViewSubItem(NetworkListViewHandle, ItemIndex, 8, bytesString.Buffer);
++        if (usedString) PhDereferenceObject(usedString);
++
++        PhpGetNetworkBytesString(NetworkItem->NumberOfBytesIn, &bytesString, &usedString);
++        PhSetListViewSubItem(NetworkListViewHandle, ItemIndex, 9, bytesString.Buffer);
++        if (usedString) PhDereferenceObject(usedString);
++    }
++}
++
+ VOID PhMainWndOnNetworkItemAdded(
+     __in ULONG RunId,
+     __in PPH_NETWORK_ITEM NetworkItem
+@@ -4149,6 +4196,8 @@
+         (NetworkItem->ProtocolType & PH_TCP_PROTOCOL_TYPE) ? PhGetTcpStateName(NetworkItem->State) : NULL);
+     PhSetListViewSubItem(NetworkListViewHandle, lvItemIndex, 7, PhGetString(NetworkItem->OwnerName));
+ 
++    PhpFillNetworkStatisticsStrings(lvItemIndex, NetworkItem);
++
+     if (!NetworkImageListWrapper.Handle)
+     {
+         PhInitializeImageListWrapper(&NetworkImageListWrapper, 16, 16, ILC_COLOR32 | ILC_MASK);
+@@ -4185,6 +4234,8 @@
+         (NetworkItem->ProtocolType & PH_TCP_PROTOCOL_TYPE) ? PhGetTcpStateName(NetworkItem->State) : NULL);
+     PhSetListViewSubItem(NetworkListViewHandle, lvItemIndex, 7, PhGetString(NetworkItem->OwnerName));
+ 
++    PhpFillNetworkStatisticsStrings(lvItemIndex, NetworkItem);
++
+     // Only set a new icon if we didn't have a proper one before.
+     if (PhGetListViewItemImageIndex(
+         NetworkListViewHandle,
+Index: ProcessHacker/netprv.c
+===================================================================
+--- ProcessHacker/netprv.c	(revision 3487)
++++ ProcessHacker/netprv.c	(working copy)
+@@ -24,7 +24,6 @@
+ #define NETPRV_PRIVATE
+ #include <phapp.h>
+ #include <ws2tcpip.h>
+-#include <ws2ipdef.h>
+ #include <iphlpapi.h>
+ 
+ typedef struct _PH_NETWORK_CONNECTION
+@@ -35,6 +34,11 @@
+     ULONG State;
+     HANDLE ProcessId;
+     ULONGLONG OwnerInfo[PH_NETWORK_OWNER_INFO_SIZE];
++
++    ULONG64 NumberOfBytesOut;
++    ULONG64 NumberOfSegmentsOut;
++    ULONG64 NumberOfBytesIn;
++    ULONG64 NumberOfSegmentsIn;
+ } PH_NETWORK_CONNECTION, *PPH_NETWORK_CONNECTION;
+ 
+ typedef struct _PH_NETWORK_ITEM_QUERY_DATA
+@@ -71,6 +75,34 @@
+     __in ULONG Reserved
+     );
+ 
++typedef ULONG (WINAPI *_GetPerTcpConnectionEStats)(
++    __in PMIB_TCPROW Row,
++    __in TCP_ESTATS_TYPE EstatsType,
++    __out_opt PUCHAR Rw,
++    __in ULONG RwVersion,
++    __in ULONG RwSize,
++    __out_opt PUCHAR Ros,
++    __in ULONG RosVersion,
++    __in ULONG RosSize,
++    __out_opt PUCHAR Rod,
++    __in ULONG RodVersion,
++    __in ULONG RodSize
++    );
++
++typedef ULONG (WINAPI *_GetPerTcp6ConnectionEStats)(
++    __in PMIB_TCP6ROW Row,
++    __in TCP_ESTATS_TYPE EstatsType,
++    __out_opt PUCHAR Rw,
++    __in ULONG RwVersion,
++    __in ULONG RwSize,
++    __out_opt PUCHAR Ros,
++    __in ULONG RosVersion,
++    __in ULONG RosSize,
++    __out_opt PUCHAR Rod,
++    __in ULONG RodVersion,
++    __in ULONG RodSize
++    );
++
+ typedef int (WSAAPI *_WSAStartup)(
+     __in WORD wVersionRequested,
+     __out LPWSADATA lpWSAData
+@@ -142,6 +174,8 @@
+ static BOOLEAN NetworkImportDone = FALSE;
+ static _GetExtendedTcpTable GetExtendedTcpTable_I;
+ static _GetExtendedUdpTable GetExtendedUdpTable_I;
++static _GetPerTcpConnectionEStats GetPerTcpConnectionEStats_I;
++static _GetPerTcp6ConnectionEStats GetPerTcp6ConnectionEStats_I;
+ static _WSAStartup WSAStartup_I;
+ static _WSAGetLastError WSAGetLastError_I;
+ static _GetNameInfoW GetNameInfoW_I;
+@@ -522,6 +556,8 @@
+         LoadLibrary(L"iphlpapi.dll");
+         GetExtendedTcpTable_I = PhGetProcAddress(L"iphlpapi.dll", "GetExtendedTcpTable");
+         GetExtendedUdpTable_I = PhGetProcAddress(L"iphlpapi.dll", "GetExtendedUdpTable");
++        GetPerTcpConnectionEStats_I = PhGetProcAddress(L"iphlpapi.dll", "GetPerTcpConnectionEStats");
++        GetPerTcp6ConnectionEStats_I = PhGetProcAddress(L"iphlpapi.dll", "GetPerTcp6ConnectionEStats");
+         LoadLibrary(L"ws2_32.dll");
+         WSAStartup_I = PhGetProcAddress(L"ws2_32.dll", "WSAStartup");
+         WSAGetLastError_I = PhGetProcAddress(L"ws2_32.dll", "WSAGetLastError");
+@@ -715,6 +751,9 @@
+                 PhDereferenceObject(processItem);
+             }
+ 
++            networkItem->NumberOfBytesOut = connections[i].NumberOfBytesOut;
++            networkItem->NumberOfBytesIn = connections[i].NumberOfBytesIn;
++
+             // Add the network item to the hashtable.
+             PhAcquireQueuedLockExclusive(&PhNetworkHashtableLock);
+             PhAddEntryHashtable(PhNetworkHashtable, &networkItem);
+@@ -737,6 +776,21 @@
+                 modified = TRUE;
+             }
+ 
++            // Update the statistics values.
++            {
++                if (networkItem->NumberOfBytesOut != connections[i].NumberOfBytesOut)
++                {
++                    networkItem->NumberOfBytesOut = connections[i].NumberOfBytesOut;
++                    modified = TRUE;
++                }
++
++                if (networkItem->NumberOfBytesIn != connections[i].NumberOfBytesIn)
++                {
++                    networkItem->NumberOfBytesIn = connections[i].NumberOfBytesIn;
++                    modified = TRUE;
++                }
++            }
++
+             if (!networkItem->ProcessName || !networkItem->ProcessIconValid)
+             {
+                 if (processItem = PhReferenceProcessItem(networkItem->ProcessId))
+@@ -831,6 +885,43 @@
+     }
+ }
+ 
++FORCEINLINE VOID PhpTcpOwnerModuleToRow(
++    __out PMIB_TCPROW Row,
++    __in PMIB_TCPROW_OWNER_MODULE OwnerModule
++    )
++{
++    Row->dwState = OwnerModule->dwState;
++    Row->dwLocalAddr = OwnerModule->dwLocalAddr;
++    Row->dwLocalPort = OwnerModule->dwLocalPort;
++    Row->dwRemoteAddr = OwnerModule->dwRemoteAddr;
++    Row->dwRemotePort = OwnerModule->dwRemotePort;
++}
++
++FORCEINLINE VOID PhpTcp6OwnerModuleToRow(
++    __out PMIB_TCP6ROW Row,
++    __in PMIB_TCP6ROW_OWNER_MODULE OwnerModule
++    )
++{
++    Row->State = OwnerModule->dwState;
++    memcpy(Row->LocalAddr.u.Byte, OwnerModule->ucLocalAddr, 16);
++    Row->dwLocalScopeId = OwnerModule->dwLocalScopeId;
++    Row->dwLocalPort = OwnerModule->dwLocalPort;
++    memcpy(Row->RemoteAddr.u.Byte, OwnerModule->ucRemoteAddr, 16);
++    Row->dwRemoteScopeId = OwnerModule->dwRemoteScopeId;
++    Row->dwRemotePort = OwnerModule->dwRemotePort;
++}
++
++FORCEINLINE VOID PhpFillTcpEstats(
++    __inout PPH_NETWORK_CONNECTION Connection,
++    __in PTCP_ESTATS_DATA_ROD_v0 DataRod
++    )
++{
++    Connection->NumberOfBytesOut = DataRod->DataBytesOut;
++    Connection->NumberOfSegmentsOut = DataRod->DataSegsOut;
++    Connection->NumberOfBytesIn = DataRod->DataBytesIn;
++    Connection->NumberOfSegmentsIn = DataRod->DataSegsIn;
++}
++
+ BOOLEAN PhGetNetworkConnections(
+     __out PPH_NETWORK_CONNECTION *Connections,
+     __out PULONG NumberOfConnections
+@@ -939,6 +1030,31 @@
+                 sizeof(ULONGLONG) * min(PH_NETWORK_OWNER_INFO_SIZE, TCPIP_OWNING_MODULE_SIZE)
+                 );
+ 
++            if (GetPerTcpConnectionEStats_I)
++            {
++                MIB_TCPROW row;
++                TCP_ESTATS_DATA_ROD_v0 dataRod;
++
++                PhpTcpOwnerModuleToRow(&row, &tcp4Table->table[i]);
++
++                if (GetPerTcpConnectionEStats_I(
++                    &row,
++                    TcpConnectionEstatsData,
++                    NULL,
++                    0,
++                    0,
++                    NULL,
++                    0,
++                    0,
++                    (PUCHAR)&dataRod,
++                    0,
++                    sizeof(TCP_ESTATS_DATA_ROD_v0)
++                    ) == 0)
++                {
++                    PhpFillTcpEstats(&connections[index], &dataRod);
++                }
++            }
++
+             index++;
+         }
+         PhFree(tcp4Table);
+@@ -966,6 +1082,31 @@
+                 sizeof(ULONGLONG) * min(PH_NETWORK_OWNER_INFO_SIZE, TCPIP_OWNING_MODULE_SIZE)
+                 );
+ 
++            if (GetPerTcp6ConnectionEStats_I)
++            {
++                MIB_TCP6ROW row;
++                TCP_ESTATS_DATA_ROD_v0 dataRod;
++
++                PhpTcp6OwnerModuleToRow(&row, &tcp6Table->table[i]);
++
++                if (GetPerTcp6ConnectionEStats_I(
++                    &row,
++                    TcpConnectionEstatsData,
++                    NULL,
++                    0,
++                    0,
++                    NULL,
++                    0,
++                    0,
++                    (PUCHAR)&dataRod,
++                    0,
++                    sizeof(TCP_ESTATS_DATA_ROD_v0)
++                    ) == 0)
++                {
++                    PhpFillTcpEstats(&connections[index], &dataRod);
++                }
++            }
++
+             index++;
+         }
+         PhFree(tcp6Table);
