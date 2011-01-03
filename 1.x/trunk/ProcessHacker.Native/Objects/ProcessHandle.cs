@@ -1431,7 +1431,7 @@ namespace ProcessHacker.Native.Objects
         /// Gets the handles owned by the process.
         /// </summary>
         /// <returns>An array of handle information structures.</returns>
-        public ProcessHandleInformation[] GetHandles()
+        public KphProcessHandle[] GetHandles()
         {
             int returnLength = 0;
             int attempts = 0;
@@ -1461,10 +1461,10 @@ namespace ProcessHacker.Native.Objects
                     }
 
                     int handleCount = data.ReadInt32(0);
-                    ProcessHandleInformation[] handles = new ProcessHandleInformation[handleCount];
+                    KphProcessHandle[] handles = new KphProcessHandle[handleCount];
 
                     for (int i = 0; i < handleCount; i++)
-                        handles[i] = data.ReadStruct<ProcessHandleInformation>(sizeof(int), i);
+                        handles[i] = data.ReadStruct<KphProcessHandle>(sizeof(int), i);
 
                     return handles;
                 }
