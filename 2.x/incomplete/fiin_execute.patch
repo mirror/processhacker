@@ -1,0 +1,217 @@
+Index: main.c
+===================================================================
+--- main.c	(revision 3995)
++++ main.c	(working copy)
+@@ -24,6 +24,20 @@
+ #include <md5.h>
+ #include <sha.h>
+ 
++typedef NTSTATUS (NTAPI *_NtCreateUserProcess)(
++    __out PHANDLE ProcessHandle,
++    __out PHANDLE ThreadHandle,
++    __in ACCESS_MASK ProcessDesiredAccess,
++    __in ACCESS_MASK ThreadDesiredAccess,
++    __in_opt POBJECT_ATTRIBUTES ProcessObjectAttributes,
++    __in_opt POBJECT_ATTRIBUTES ThreadObjectAttributes,
++    __in ULONG ProcessFlags,
++    __in ULONG ThreadFlags,
++    __in_opt PVOID ProcessParameters,
++    __inout PPS_CREATE_INFO CreateInfo,
++    __in_opt PPS_ATTRIBUTE_LIST AttributeList
++    );
++
+ #define FI_ARG_HELP 1
+ #define FI_ARG_ACTION 2
+ #define FI_ARG_NATIVE 3
+@@ -254,6 +268,180 @@
+     return TRUE;
+ }
+ 
++NTSTATUS FiCreateProcess(
++    __in PPH_STRING FileName,
++    __in_opt PPH_STRINGREF CommandLine,
++    __in_opt PVOID Environment,
++    __in_opt PPH_STRINGREF CurrentDirectory,
++    __in_opt PPH_CREATE_PROCESS_INFO Information,
++    __in ULONG Flags,
++    __in_opt HANDLE ParentProcessHandle,
++    __out_opt PCLIENT_ID ClientId,
++    __out_opt PHANDLE ProcessHandle,
++    __out_opt PHANDLE ThreadHandle
++    )
++{
++    NTSTATUS status;
++    _NtCreateUserProcess NtCreateUserProcess_I;
++    HANDLE processHandle;
++    HANDLE threadHandle;
++    CLIENT_ID clientId;
++    PRTL_USER_PROCESS_PARAMETERS parameters;
++    PPH_STRING newFileName;
++    UNICODE_STRING fileName;
++    PUNICODE_STRING windowTitle;
++    PUNICODE_STRING desktopInfo;
++
++    NtCreateUserProcess_I = PhGetProcAddress(L"ntdll.dll", "NtCreateUserProcess");
++
++    if (!NtCreateUserProcess_I)
++        return STATUS_NOT_SUPPORTED;
++
++    newFileName = FiFormatFileName(FileName);
++    fileName = newFileName->us;
++
++    if (Information)
++    {
++        windowTitle = (PUNICODE_STRING)Information->WindowTitle;
++        desktopInfo = (PUNICODE_STRING)Information->DesktopInfo;
++    }
++    else
++    {
++        windowTitle = NULL;
++        desktopInfo = NULL;
++    }
++
++    if (!windowTitle)
++        windowTitle = &fileName;
++
++    if (!desktopInfo)
++        desktopInfo = &NtCurrentPeb()->ProcessParameters->DesktopInfo;
++
++    status = RtlCreateProcessParameters(
++        &parameters,
++        &fileName,
++        Information ? (PUNICODE_STRING)Information->DllPath : NULL,
++        (PUNICODE_STRING)CurrentDirectory,
++        CommandLine ? &CommandLine->us : &fileName,
++        Environment,
++        windowTitle,
++        desktopInfo,
++        Information ? (PUNICODE_STRING)Information->ShellInfo : NULL,
++        Information ? (PUNICODE_STRING)Information->RuntimeData : NULL
++        );
++
++    if (NT_SUCCESS(status))
++    {
++        OBJECT_ATTRIBUTES processObjectAttributes;
++        OBJECT_ATTRIBUTES threadObjectAttributes;
++        UCHAR attributeListBuffer[FIELD_OFFSET(PS_ATTRIBUTE_LIST, Attributes) + sizeof(PS_ATTRIBUTE) * 4];
++        PPS_ATTRIBUTE_LIST attributeList;
++        PPS_ATTRIBUTE attribute;
++        ULONG numberOfAttributes;
++        PS_CREATE_INFO createInfo;
++        PS_STD_HANDLE_INFO stdHandleInfo;
++
++        memset(attributeListBuffer, 0, sizeof(attributeListBuffer));
++        attributeList = (PPS_ATTRIBUTE_LIST)attributeListBuffer;
++        numberOfAttributes = 0;
++
++        // Parent process
++        attribute = &attributeList->Attributes[numberOfAttributes++];
++        attribute->Attribute = PS_ATTRIBUTE_PARENT_PROCESS;
++        attribute->Size = sizeof(HANDLE);
++        attribute->ValuePtr = NtCurrentProcess();
++
++        // Image name
++        attribute = &attributeList->Attributes[numberOfAttributes++];
++        attribute->Attribute = PS_ATTRIBUTE_IMAGE_NAME;
++        attribute->Size = fileName.Length;
++        attribute->ValuePtr = fileName.Buffer;
++
++        // Client ID
++        attribute = &attributeList->Attributes[numberOfAttributes++];
++        attribute->Attribute = PS_ATTRIBUTE_CLIENT_ID;
++        attribute->Size = sizeof(CLIENT_ID);
++        attribute->ValuePtr = &clientId;
++
++        // Standard handles
++        attribute = &attributeList->Attributes[numberOfAttributes++];
++        attribute->Attribute = PS_ATTRIBUTE_STD_HANDLE_INFO;
++        attribute->Size = sizeof(PS_STD_HANDLE_INFO);
++        attribute->ValuePtr = &stdHandleInfo;
++
++        attributeList->TotalLength = FIELD_OFFSET(PS_ATTRIBUTE_LIST, Attributes) + sizeof(PS_ATTRIBUTE) * numberOfAttributes;
++
++        if (Flags & PH_CREATE_PROCESS_NEW_CONSOLE)
++        {
++            stdHandleInfo.Flags = 0;
++            stdHandleInfo.StdHandleState = PsNeverDuplicate;
++            stdHandleInfo.StdHandleSubsystemType = 0;
++        }
++        else
++        {
++            // Duplicate standard handles if the image subsystem is Win32 command line.
++            stdHandleInfo.Flags = 0;
++            stdHandleInfo.StdHandleState = PsRequestDuplicate;
++            stdHandleInfo.PseudoHandleMask = PS_STD_INPUT_HANDLE | PS_STD_OUTPUT_HANDLE | PS_STD_ERROR_HANDLE;
++            stdHandleInfo.StdHandleSubsystemType = IMAGE_SUBSYSTEM_WINDOWS_CUI;
++
++            parameters->ConsoleHandle = NtCurrentPeb()->ProcessParameters->ConsoleHandle;
++            parameters->ConsoleFlags = NtCurrentPeb()->ProcessParameters->ConsoleFlags;
++            parameters->StandardInput = NtCurrentPeb()->ProcessParameters->StandardInput;
++            parameters->StandardOutput = NtCurrentPeb()->ProcessParameters->StandardOutput;
++            parameters->StandardError = NtCurrentPeb()->ProcessParameters->StandardError;
++        }
++
++        memset(&createInfo, 0, sizeof(PS_CREATE_INFO));
++        createInfo.Size = sizeof(PS_CREATE_INFO);
++        createInfo.State = PsCreateInitialState;
++        createInfo.InitState.IFEOKeyState = PsSkipIFEODebugger; // ignore Debugger option
++
++        InitializeObjectAttributes(&processObjectAttributes, NULL, 0, NULL, NULL);
++        InitializeObjectAttributes(&threadObjectAttributes, NULL, 0, NULL, NULL);
++
++        parameters = RtlNormalizeProcessParams(parameters);
++        status = NtCreateUserProcess_I(
++            &processHandle,
++            &threadHandle,
++            MAXIMUM_ALLOWED,
++            MAXIMUM_ALLOWED,
++            &processObjectAttributes,
++            &threadObjectAttributes,
++            ((Flags & PH_CREATE_PROCESS_INHERIT_HANDLES) ? PROCESS_CREATE_FLAGS_INHERIT_HANDLES : 0) |
++            ((Flags & PH_CREATE_PROCESS_BREAKAWAY_FROM_JOB) ? PROCESS_CREATE_FLAGS_BREAKAWAY : 0),
++            THREAD_CREATE_FLAGS_CREATE_SUSPENDED,
++            parameters,
++            &createInfo,
++            attributeList
++            );
++        RtlDestroyProcessParameters(parameters);
++    }
++
++    PhDereferenceObject(newFileName);
++
++    if (NT_SUCCESS(status))
++    {
++        if (!(Flags & PH_CREATE_PROCESS_SUSPENDED))
++            NtResumeThread(threadHandle, NULL);
++
++        if (ClientId)
++            *ClientId = clientId;
++
++        if (ProcessHandle)
++            *ProcessHandle = processHandle;
++        else
++            NtClose(processHandle);
++
++        if (ThreadHandle)
++            *ThreadHandle = threadHandle;
++        else
++            NtClose(threadHandle);
++    }
++
++    return status;
++}
++
+ BOOLEAN NTAPI FipEnumDirectoryFileForDir(
+     __in PFILE_DIRECTORY_INFORMATION Information,
+     __in_opt PVOID Context
+@@ -532,8 +720,8 @@
+     {
+         if (FiArgNative)
+         {
+-            if (!NT_SUCCESS(status = PhCreateProcess(
+-                FiFormatFileName(FiArgFileName)->Buffer,
++            if (!NT_SUCCESS(status = FiCreateProcess(
++                FiArgFileName,
+                 FiArgOutput ? &FiArgOutput->sr : NULL,
+                 NULL,
+                 NULL,
