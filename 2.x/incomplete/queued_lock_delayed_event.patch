@@ -1,0 +1,81 @@
+Index: phlib/queuedlock.c
+===================================================================
+--- phlib/queuedlock.c	(revision 4068)
++++ phlib/queuedlock.c	(working copy)
+@@ -104,19 +104,11 @@
+     __in BOOLEAN WakeAll
+     );
+ 
+-static HANDLE PhQueuedLockKeyedEventHandle;
++static HANDLE PhQueuedLockKeyedEventHandle = NULL;
+ static ULONG PhQueuedLockSpinCount = 2000;
+ 
+ BOOLEAN PhQueuedLockInitialization()
+ {
+-    if (!NT_SUCCESS(NtCreateKeyedEvent(
+-        &PhQueuedLockKeyedEventHandle,
+-        KEYEDEVENT_ALL_ACCESS,
+-        NULL,
+-        0
+-        )))
+-        return FALSE;
+-
+     if ((ULONG)PhSystemBasicInformation.NumberOfProcessors > 1)
+         PhQueuedLockSpinCount = 4000;
+     else
+@@ -286,6 +278,37 @@
+     return waitBlock;
+ }
+ 
++FORCEINLINE VOID PhpEnsureQueuedLockKeyedEventCreated()
++{
++    while (!PhQueuedLockKeyedEventHandle)
++    {
++        NTSTATUS status;
++        HANDLE keyedEventHandle;
++
++        if (NT_SUCCESS(status = NtCreateKeyedEvent(
++            &keyedEventHandle,
++            KEYEDEVENT_ALL_ACCESS,
++            NULL,
++            0
++            )))
++        {
++            if (_InterlockedCompareExchangePointer(
++                &PhQueuedLockKeyedEventHandle,
++                keyedEventHandle,
++                NULL
++                ) != NULL)
++            {
++                // Another thread created the event before we did.
++                NtClose(keyedEventHandle);
++            }
++        }
++        else
++        {
++            PhRaiseStatus(status);
++        }
++    }
++}
++
+ /**
+  * Waits for a wait block to be unblocked.
+  *
+@@ -319,6 +342,8 @@
+     {
+         PHLIB_INC_STATISTIC(QlBlockWaits);
+ 
++        PhpEnsureQueuedLockKeyedEventCreated();
++
+         status = NtWaitForKeyedEvent(
+             PhQueuedLockKeyedEventHandle,
+             WaitBlock,
+@@ -356,6 +381,8 @@
+ 
+     if (!_interlockedbittestandreset((PLONG)&WaitBlock->Flags, PH_QUEUED_WAITER_SPINNING_SHIFT))
+     {
++        PhpEnsureQueuedLockKeyedEventCreated();
++
+         if (!NT_SUCCESS(status = NtReleaseKeyedEvent(
+             PhQueuedLockKeyedEventHandle,
+             WaitBlock,
