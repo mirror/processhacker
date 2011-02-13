@@ -1,0 +1,227 @@
+Index: phlib/include/phbase.h
+===================================================================
+--- phlib/include/phbase.h	(revision 4085)
++++ phlib/include/phbase.h	(working copy)
+@@ -3086,6 +3086,31 @@
+     __in_opt ULONG Mode
+     );
+ 
++// strpool
++
++typedef struct _PH_STRING_POOL
++{
++    PH_QUEUED_LOCK Lock;
++    PPH_HASHTABLE Hashtable;
++} PH_STRING_POOL, *PPH_STRING_POOL;
++
++VOID
++PhInitializeStringPool(
++    __out PPH_STRING_POOL Pool,
++    __in ULONG InitialCapacity
++    );
++
++VOID
++PhDeleteStringPool(
++    __in PPH_STRING_POOL Pool
++    );
++
++PPH_STRING
++PhInternStringPool(
++    __inout PPH_STRING_POOL Pool,
++    __in __assumeRefs(1) PPH_STRING String
++    );
++
+ // format
+ 
+ VOID
+Index: phlib/phlib.vcxproj
+===================================================================
+--- phlib/phlib.vcxproj	(revision 4085)
++++ phlib/phlib.vcxproj	(working copy)
+@@ -215,6 +215,7 @@
+     <ClCompile Include="secdata.c" />
+     <ClCompile Include="secedit.c" />
+     <ClCompile Include="sha.c" />
++    <ClCompile Include="strpool.c" />
+     <ClCompile Include="support.c" />
+     <ClCompile Include="svcsup.c" />
+     <ClCompile Include="symprv.c" />
+Index: phlib/phlib.vcxproj.filters
+===================================================================
+--- phlib/phlib.vcxproj.filters	(revision 4085)
++++ phlib/phlib.vcxproj.filters	(working copy)
+@@ -201,6 +201,9 @@
+     <ClCompile Include="workqueue.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
++    <ClCompile Include="strpool.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
+   </ItemGroup>
+   <ItemGroup>
+     <ClInclude Include="include\phsync.h">
+Index: ProcessHacker/ProcessHacker.vcxproj
+===================================================================
+--- ProcessHacker/ProcessHacker.vcxproj	(revision 4085)
++++ ProcessHacker/ProcessHacker.vcxproj	(working copy)
+@@ -250,6 +250,7 @@
+     <ClCompile Include="..\phlib\secdata.c" />
+     <ClCompile Include="..\phlib\secedit.c" />
+     <ClCompile Include="..\phlib\sha.c" />
++    <ClCompile Include="..\phlib\strpool.c" />
+     <ClCompile Include="..\phlib\support.c" />
+     <ClCompile Include="..\phlib\svcsup.c" />
+     <ClCompile Include="..\phlib\symprv.c" />
+Index: ProcessHacker/ProcessHacker.vcxproj.filters
+===================================================================
+--- ProcessHacker/ProcessHacker.vcxproj.filters	(revision 4085)
++++ ProcessHacker/ProcessHacker.vcxproj.filters	(working copy)
+@@ -432,6 +432,9 @@
+     <ClCompile Include="phsvc\clapi.c">
+       <Filter>phsvc</Filter>
+     </ClCompile>
++    <ClCompile Include="..\phlib\strpool.c">
++      <Filter>phlib</Filter>
++    </ClCompile>
+   </ItemGroup>
+   <ItemGroup>
+     <ClInclude Include="..\phlib\circbuf_i.h">
+Index: phlib/strpool.c
+===================================================================
+--- phlib/strpool.c	(revision 0)
++++ phlib/strpool.c	(revision 0)
+@@ -0,0 +1,134 @@
++/*
++ * Process Hacker - 
++ *   string pool
++ * 
++ * Copyright (C) 2011 wj32
++ * 
++ * This file is part of Process Hacker.
++ * 
++ * Process Hacker is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * Process Hacker is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <phbase.h>
++
++BOOLEAN PhpStringPoolHashtableCompareFunction(
++    __in PVOID Entry1,
++    __in PVOID Entry2
++    );
++
++ULONG PhpStringPoolHashtableHashFunction(
++    __in PVOID Entry
++    );
++
++VOID PhInitializeStringPool(
++    __out PPH_STRING_POOL Pool,
++    __in ULONG InitialCapacity
++    )
++{
++    PhInitializeQueuedLock(&Pool->Lock);
++    Pool->Hashtable = PhCreateHashtable(
++        sizeof(PPH_STRING),
++        PhpStringPoolHashtableCompareFunction,
++        PhpStringPoolHashtableHashFunction,
++        InitialCapacity
++        );
++}
++
++VOID PhDeleteStringPool(
++    __in PPH_STRING_POOL Pool
++    )
++{
++    PH_HASHTABLE_ENUM_CONTEXT enumContext;
++    PPH_STRING *string;
++
++    PhBeginEnumHashtable(Pool->Hashtable, &enumContext);
++
++    while (string = PhNextEnumHashtable(&enumContext))
++    {
++        PhDereferenceObject(string);
++    }
++
++    PhDereferenceObject(Pool->Hashtable);
++}
++
++BOOLEAN PhpStringPoolHashtableCompareFunction(
++    __in PVOID Entry1,
++    __in PVOID Entry2
++    )
++{
++    PPH_STRING string1 = *(PPH_STRING *)Entry1;
++    PPH_STRING string2 = *(PPH_STRING *)Entry2;
++
++    return PhEqualString(string1, string2, FALSE);
++}
++
++ULONG PhpStringPoolHashtableHashFunction(
++    __in PVOID Entry
++    )
++{
++    PPH_STRING string = *(PPH_STRING *)Entry;
++
++    return PhHashBytes((PUCHAR)string->Buffer, string->Length);
++}
++
++PPH_STRING PhInternStringPool(
++    __inout PPH_STRING_POOL Pool,
++    __in __assumeRefs(1) PPH_STRING String
++    )
++{
++    PPH_STRING string;
++    PPH_STRING *realEntry;
++    BOOLEAN added;
++    PPH_STRING needsDereference;
++
++    needsDereference = NULL;
++
++    PhAcquireQueuedLockExclusive(&Pool->Lock);
++
++    realEntry = PhAddEntryHashtableEx(
++        Pool->Hashtable,
++        &String,
++        &added
++        );
++
++    if (added)
++    {
++        // First entry with this string, so return what the caller gave us.
++        string = String;
++        // We also need an extra reference for storage.
++        PhReferenceObject(String);
++    }
++    else
++    {
++        string = *realEntry;
++
++        if (string != String)
++        {
++            // We need an extra reference for the caller.
++            PhReferenceObject(string);
++            // The entry is already in the hashtable, but the caller gave 
++            // us a string we don't need anymore.
++            // Note that we dereference outside of the lock to avoid 
++            // potential deadlocks involving delete procedures and hooks.
++            needsDereference = String;
++        }
++    }
++
++    PhReleaseQueuedLockExclusive(&Pool->Lock);
++
++    if (needsDereference)
++        PhDereferenceObject(needsDereference);
++
++    return string;
++}
