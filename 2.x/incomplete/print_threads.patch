@@ -1,0 +1,196 @@
+Index: ProcessHacker/cmdmode.c
+===================================================================
+--- ProcessHacker/cmdmode.c	(revision 4119)
++++ ProcessHacker/cmdmode.c	(working copy)
+@@ -21,7 +21,20 @@
+  */
+ 
+ #include <phapp.h>
++#include <symprv.h>
++#include <io.h>
++#include <fcntl.h>
+ 
++typedef struct _PRINTTHREADS_CONTEXT
++{
++    HANDLE ProcessId;
++    PPH_SYMBOL_PROVIDER SymbolProvider;
++} PRINTTHREADS_CONTEXT, *PPRINTTHREADS_CONTEXT;
++
++NTSTATUS PhpPrintThreadsInProcess(
++    __in HANDLE ProcessId
++    );
++
+ static HWND CommandModeWindowHandle;
+ 
+ #define PH_COMMAND_OPTION_HWND 1
+@@ -106,6 +119,14 @@
+                 NtClose(processHandle);
+             }
+         }
++        else if (PhEqualString2(PhStartupParameters.CommandAction, L"printthreads", TRUE))
++        {
++            status = PhpPrintThreadsInProcess(processId);
++        }
++        else
++        {
++            status = STATUS_INVALID_PARAMETER;
++        }
+     }
+     else if (PhEqualString2(PhStartupParameters.CommandType, L"service", TRUE))
+     {
+@@ -180,6 +201,10 @@
+ 
+             CloseServiceHandle(serviceHandle);
+         }
++        else
++        {
++            status = STATUS_INVALID_PARAMETER;
++        }
+     }
+     else if (PhEqualString2(PhStartupParameters.CommandType, L"thread", TRUE))
+     {
+@@ -219,7 +244,144 @@
+                 NtClose(threadHandle);
+             }
+         }
++        else
++        {
++            status = STATUS_INVALID_PARAMETER;
++        }
+     }
++    else
++    {
++        status = STATUS_INVALID_PARAMETER;
++    }
+ 
+     return status;
+ }
++
++static BOOLEAN LoadSymbolsEnumGenericModulesCallback(
++    __in PPH_MODULE_INFO Module,
++    __in_opt PVOID Context
++    )
++{
++    PPRINTTHREADS_CONTEXT context = Context;
++    PPH_SYMBOL_PROVIDER symbolProvider = context->SymbolProvider;
++
++    // If we're loading kernel module symbols for a process other than 
++    // System, ignore modules which are in user space. This may happen 
++    // in Windows 7.
++    if (
++        context->ProcessId == SYSTEM_PROCESS_ID &&
++        (ULONG_PTR)Module->BaseAddress <= PhSystemBasicInformation.MaximumUserModeAddress
++        )
++        return TRUE;
++
++    PhLoadModuleSymbolProvider(
++        symbolProvider,
++        Module->FileName->Buffer,
++        (ULONG64)Module->BaseAddress,
++        Module->Size
++        );
++
++    return TRUE;
++}
++
++static NTSTATUS PhpPrintThreadsInProcess(
++    __in HANDLE ProcessId
++    )
++{
++    NTSTATUS status;
++    PH_CALLBACK_REGISTRATION registration;
++    PRINTTHREADS_CONTEXT context;
++    PVOID processes;
++    PSYSTEM_PROCESS_INFORMATION process;
++    ULONG i;
++    PSYSTEM_THREAD_INFORMATION thread;
++    HANDLE threadHandle;
++    PVOID win32StartAddress;
++    PH_SYMBOL_RESOLVE_LEVEL resolveLevel;
++    PPH_STRING symbol;
++
++    // Prepare for console output.
++    AttachConsole(ATTACH_PARENT_PROCESS);
++    stdout->_file = _open_osfhandle((intptr_t)GetStdHandle(STD_OUTPUT_HANDLE), _O_TEXT);
++    stderr->_file = _open_osfhandle((intptr_t)GetStdHandle(STD_ERROR_HANDLE), _O_TEXT);
++    stdin->_file = _open_osfhandle((intptr_t)GetStdHandle(STD_INPUT_HANDLE), _O_TEXT);
++
++    // Create a symbol provider and load symbols for this process.
++
++    PhRegisterCallback(&PhSymInitCallback, PhMainSymInitHandler, NULL, &registration);
++
++    context.ProcessId = ProcessId;
++
++    if (context.SymbolProvider = PhCreateSymbolProvider(ProcessId))
++    {
++        PhLoadSymbolProviderOptions(context.SymbolProvider);
++
++        if (context.SymbolProvider->IsRealHandle)
++            PhEnumGenericModules(ProcessId, context.SymbolProvider->ProcessHandle, 0, LoadSymbolsEnumGenericModulesCallback, &context);
++
++        if (NT_SUCCESS(status = PhEnumProcesses(&processes)))
++        {
++            if (process = PhFindProcessInformation(processes, ProcessId))
++            {
++                for (i = 0; i < process->NumberOfThreads; i++)
++                {
++                    thread = &process->Threads[i];
++
++                    if (NT_SUCCESS(status = PhOpenThread(&threadHandle, THREAD_QUERY_INFORMATION, thread->ClientId.UniqueThread)))
++                    {
++                        // Try to get a symbol name from the Win32 start address.
++                        if (NT_SUCCESS(status = NtQueryInformationThread(threadHandle, ThreadQuerySetWin32StartAddress,
++                            &win32StartAddress, sizeof(PVOID), NULL)))
++                        {
++                            symbol = PhGetSymbolFromAddress(context.SymbolProvider, (ULONG64)win32StartAddress, &resolveLevel, NULL, NULL, NULL);
++
++                            if (!symbol || resolveLevel == PhsrlAddress)
++                            {
++                                PhSwapReference(&symbol, NULL);
++                                status = STATUS_UNSUCCESSFUL;
++                            }
++                        }
++
++                        NtClose(threadHandle);
++                    }
++
++                    // If that failed, use the basic start address.
++                    if (!NT_SUCCESS(status))
++                    {
++                        symbol = PhGetSymbolFromAddress(context.SymbolProvider, (ULONG64)thread->StartAddress, NULL, NULL, NULL, NULL);
++                    }
++
++                    if (symbol)
++                    {
++                        wprintf(L"%u: %s\n", PtrToUlong(thread->ClientId.UniqueThread), symbol->Buffer);
++                        PhSwapReference(&symbol, NULL);
++                    }
++                    else
++                    {
++                        wprintf(L"%u\n", PtrToUlong(thread->ClientId.UniqueThread));
++                    }
++
++                    status = STATUS_SUCCESS;
++                }
++            }
++            else
++            {
++                status = STATUS_INVALID_CID;
++            }
++
++            PhFree(processes);
++        }
++
++        PhDereferenceObject(context.SymbolProvider);
++    }
++    else
++    {
++        status = STATUS_INTERNAL_ERROR;
++    }
++
++    PhUnregisterCallback(&PhSymInitCallback, &registration);
++
++    FreeConsole();
++
++    return status;
++}
