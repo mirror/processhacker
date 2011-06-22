@@ -101,6 +101,7 @@
     <Compile Include="Components\TreeViewAdv\Threading\WorkItemStatus.cs" />
     <Compile Include="Components\TreeViewAdv\TimeCounter.cs" />
     <Compile Include="Components\TreeViewAdv\Tree\AutoRowHeightLayout.cs" />
+    <Compile Include="Components\TreeViewAdv\Tree\ColumnCollection.cs" />
     <Compile Include="Components\TreeViewAdv\Tree\DrawContext.cs" />
     <Compile Include="Components\TreeViewAdv\Tree\DropPosition.cs" />
     <Compile Include="Components\TreeViewAdv\Tree\EditorContext.cs" />
@@ -786,9 +787,7 @@
     <Compile Include="Components\HandleList.Designer.cs">
       <DependentUpon>HandleList.cs</DependentUpon>
     </Compile>
-    <Compile Include="Components\NodePlotter.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Components\NodePlotter.cs" />
     <Compile Include="Components\ProcessTree\ProcessToolTipProvider.cs" />
     <Compile Include="Components\ProcessTree\ProcessNode.cs" />
     <Compile Include="Components\ProcessTree\ProcessTreeModel.cs" />
