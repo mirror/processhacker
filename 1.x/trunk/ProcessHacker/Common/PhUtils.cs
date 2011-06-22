@@ -393,13 +393,13 @@ namespace ProcessHacker.Common
             string lastKey = keyName;
 
             // Expand the abbreviations.
-            if (lastKey.ToLowerInvariant().StartsWith("hkcu"))
+            if (lastKey.StartsWith("hkcu", StringComparison.OrdinalIgnoreCase))
                 lastKey = "HKEY_CURRENT_USER" + lastKey.Substring(4);
-            else if (lastKey.ToLowerInvariant().StartsWith("hku"))
+            else if (lastKey.StartsWith("hku", StringComparison.OrdinalIgnoreCase))
                 lastKey = "HKEY_USERS" + lastKey.Substring(3);
-            else if (lastKey.ToLowerInvariant().StartsWith("hkcr"))
+            else if (lastKey.StartsWith("hkcr", StringComparison.OrdinalIgnoreCase))
                 lastKey = "HKEY_CLASSES_ROOT" + lastKey.Substring(4);
-            else if (lastKey.ToLowerInvariant().StartsWith("hklm"))
+            else if (lastKey.StartsWith("hklm", StringComparison.OrdinalIgnoreCase))
                 lastKey = "HKEY_LOCAL_MACHINE" + lastKey.Substring(4);
 
             // Set the last opened key in regedit config. Note that if we are on 
@@ -425,7 +425,7 @@ namespace ProcessHacker.Common
             {
                 Program.StartProgramAdmin(
                     Environment.SystemDirectory + "\\..\\regedit.exe",
-                    "",
+                    string.Empty,
                     null,
                     ShowWindowType.Normal,
                     window != null ? window.Handle : IntPtr.Zero

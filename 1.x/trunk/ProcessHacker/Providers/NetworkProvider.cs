@@ -60,17 +60,16 @@ namespace ProcessHacker
             public string HostName;
         }
 
-        private MessageQueue _messageQueue = new MessageQueue();
-        private Dictionary<IPAddress, string> _resolveCache = new Dictionary<IPAddress, string>();
-        private FastResourceLock _resolveCacheLock = new FastResourceLock();
+        private readonly MessageQueue _messageQueue = new MessageQueue();
+        private readonly Dictionary<IPAddress, string> _resolveCache = new Dictionary<IPAddress, string>();
+        private readonly FastResourceLock _resolveCacheLock = new FastResourceLock();
 
         public NetworkProvider()
-            : base()
         {
             this.Name = this.GetType().Name;
 
             _messageQueue.AddListener(
-                new MessageQueueListener<AddressResolveMessage>((message) =>
+                new MessageQueueListener<AddressResolveMessage>(message =>
                 {
                     if (Dictionary.ContainsKey(message.Id))
                     {
@@ -88,9 +87,9 @@ namespace ProcessHacker
 
         protected override void Update()
         {
-            var networkDict = Windows.GetNetworkConnections();
-            var preKeyDict = new Dictionary<string, KeyValuePair<int, NetworkConnection>>();
-            var keyDict = new Dictionary<string, NetworkItem>();
+            Dictionary<int, List<NetworkConnection>> networkDict = Windows.GetNetworkConnections();
+            Dictionary<string, KeyValuePair<int, NetworkConnection>> preKeyDict = new Dictionary<string, KeyValuePair<int, NetworkConnection>>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, NetworkItem> keyDict = new Dictionary<string, NetworkItem>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, NetworkItem> newDict =
                 new Dictionary<string, NetworkItem>(this.Dictionary);
 
@@ -301,7 +300,7 @@ namespace ProcessHacker
                 }
             }
 
-            _messageQueue.Enqueue(new AddressResolveMessage()
+            _messageQueue.Enqueue(new AddressResolveMessage
             {
                 Id = id,
                 Remote = remote,

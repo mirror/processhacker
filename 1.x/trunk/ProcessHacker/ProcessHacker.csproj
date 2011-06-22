@@ -787,7 +787,9 @@
     <Compile Include="Components\HandleList.Designer.cs">
       <DependentUpon>HandleList.cs</DependentUpon>
     </Compile>
-    <Compile Include="Components\NodePlotter.cs" />
+    <Compile Include="Components\NodePlotter.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\ProcessTree\ProcessToolTipProvider.cs" />
     <Compile Include="Components\ProcessTree\ProcessNode.cs" />
     <Compile Include="Components\ProcessTree\ProcessTreeModel.cs" />

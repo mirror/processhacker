@@ -22,8 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 
 namespace ProcessHacker
 {
@@ -50,9 +48,8 @@ namespace ProcessHacker
     /// </summary>
     public class Searcher : ISearcher
     {
-        private int _pid;
-        private Dictionary<string, object> _params;
-        private List<string[]> _results;
+        private readonly int _pid;
+        private readonly Dictionary<string, object> _params;
 
         public event SearchFinished SearchFinished;
         public event SearchProgressChanged SearchProgressChanged;
@@ -65,8 +62,8 @@ namespace ProcessHacker
         public Searcher(int PID)
         {
             _pid = PID;
-            _params = new Dictionary<string, object>();
-            _results = new List<string[]>();
+            _params = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            this.Results = new List<string[]>();
         }
 
         /// <summary>
@@ -86,13 +83,9 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// A <see cref="List"/> containing the search results.
+        /// A <see cref="Results"/> containing the search results.
         /// </summary>
-        public List<string[]> Results
-        {
-            get { return _results; }
-            set { _results = value; }
-        }
+        public List<string[]> Results { get; set; }
 
         /// <summary>
         /// This is a dummy function, and should be overridden.

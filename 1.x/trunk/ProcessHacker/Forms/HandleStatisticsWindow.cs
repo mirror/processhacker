@@ -28,7 +28,7 @@ namespace ProcessHacker
             listTypes.ContextMenu = listTypes.GetCopyMenu();
             listTypes.ListViewItemSorter = new SortedListViewComparer(listTypes);
 
-            var typeStats = new Dictionary<string, int>();
+            var typeStats = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
             using (var phandle = new ProcessHandle(pid, ProcessAccess.DupHandle))
             {
@@ -55,7 +55,11 @@ namespace ProcessHacker
                     catch (Exception ex)
                     {
                         Logging.Log(ex);
-                        info = new ObjectInformation() { TypeName = "(unknown)" };
+
+                        info = new ObjectInformation
+                        {
+                            TypeName = "(unknown)"
+                        };
                     }
 
                     if (typeStats.ContainsKey(info.TypeName))
@@ -75,7 +79,7 @@ namespace ProcessHacker
             }
         }
 
-        private void buttonClose_Click(object sender, System.EventArgs e)
+        private void buttonClose_Click(object sender, EventArgs e)
         {
             this.Close();
         }

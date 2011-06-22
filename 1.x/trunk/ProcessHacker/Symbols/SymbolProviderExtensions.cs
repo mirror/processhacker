@@ -47,7 +47,7 @@ namespace ProcessHacker.Native.Symbols
 
                 foreach (var module in modules)
                 {
-                    if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
+                    if (module.FileName.EndsWith("dbghelp.dll", StringComparison.OrdinalIgnoreCase))
                     {
                         if (!File.Exists(Path.GetDirectoryName(module.FileName) + "\\symsrv.dll"))
                         {

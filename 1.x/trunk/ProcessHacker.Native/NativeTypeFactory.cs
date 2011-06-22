@@ -698,27 +698,34 @@ namespace ProcessHacker.Native
         {
             StringBuilder accessSb = new StringBuilder();
             long accessLong = Convert.ToInt64(access);
-            var accessTypeNames = Utils.SortFlagNames(accessType).
-                ConvertAll<FlagName>((kvp) => new FlagName() { Name = kvp.Key, Value = kvp.Value, Enabled = true });
-            var srNames = Utils.SortFlagNames(typeof(StandardRights)).
-                ConvertAll<FlagName>((kvp) => new FlagName() { Name = kvp.Key, Value = kvp.Value, Enabled = true });
+           
+            var accessTypeNames = Utils.SortFlagNames(accessType).ConvertAll(kvp => new FlagName
+            {
+                Name = kvp.Key, 
+                Value = kvp.Value, 
+                Enabled = true
+            });
+
+            var srNames = Utils.SortFlagNames(typeof(StandardRights)).ConvertAll(kvp => new FlagName
+            {
+                Name = kvp.Key, 
+                Value = kvp.Value, 
+                Enabled = true
+            });
 
             // Get the strings for the matching bits in the given enum type.
             foreach (var fn in accessTypeNames)
             {
-                if (
-                    fn.Enabled && 
-                    (accessLong & fn.Value) == fn.Value
-                    )
+                if (fn.Enabled && (accessLong & fn.Value) == fn.Value)
                 {
                     accessSb.Append(fn.Name + ", ");
                     // Disable equal or more specific flag names in the lists.
-                    accessTypeNames.ForEach((fn2) =>
+                    accessTypeNames.ForEach(fn2 =>
                     {
                         if ((fn.Value | fn2.Value) == fn.Value)
                             fn2.Enabled = false;
                     });
-                    srNames.ForEach((fn2) =>
+                    srNames.ForEach(fn2 =>
                     {
                         if ((fn.Value | fn2.Value) == fn.Value)
                             fn2.Enabled = false;
@@ -729,14 +736,11 @@ namespace ProcessHacker.Native
             // Get the strings for the matching bits in standard rights.
             foreach (var fn in srNames)
             {
-                if (
-                    fn.Enabled &&
-                    (accessLong & fn.Value) == fn.Value
-                    )
+                if (fn.Enabled && (accessLong & fn.Value) == fn.Value)
                 {
                     accessSb.Append(fn.Name + ", ");
                     // Disable equal or more specific flag names in the lists.
-                    srNames.ForEach((fn2) =>
+                    srNames.ForEach(fn2 =>
                     {
                         if ((fn.Value | fn2.Value) == fn.Value)
                             fn2.Enabled = false;
@@ -747,10 +751,10 @@ namespace ProcessHacker.Native
             string accessString = accessSb.ToString();
 
             // Removing trailing ", ".
-            if (accessString.EndsWith(", "))
+            if (accessString.EndsWith(", ", StringComparison.OrdinalIgnoreCase))
                 return accessString.Remove(accessString.Length - 2, 2);
-            else
-                return accessString;
+
+            return accessString;
         }
 
         public static Type GetAccessType(string typeName)

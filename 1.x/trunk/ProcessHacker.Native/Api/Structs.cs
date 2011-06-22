@@ -555,6 +555,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct PerformanceInformation
     {
+        public static readonly int SizeOf;
+
         public int Size;
         public IntPtr CommitTotal;
         public IntPtr CommitLimit;
@@ -569,6 +571,11 @@ namespace ProcessHacker.Native.Api
         public int HandlesCount;
         public int ProcessCount;
         public int ThreadCount;
+
+        static PerformanceInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(PerformanceInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -730,6 +737,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ShFileInfo
     {
+        public static readonly int SizeOf;
+
         public IntPtr hIcon;
         public IntPtr iIcon;
         public uint dwAttributes;
@@ -737,6 +746,11 @@ namespace ProcessHacker.Native.Api
         public string szDisplayName;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
         public string szTypeName;
+
+        static ShFileInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ShFileInfo));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]

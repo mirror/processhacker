@@ -1339,7 +1339,7 @@ namespace ProcessHacker.Native.Objects
                 /* The environment variables block is a series of Unicode strings separated by 
                  * two null bytes. The entire block is terminated by four null bytes.
                  */
-                Dictionary<string, string> vars = new Dictionary<string, string>();
+                Dictionary<string, string> vars = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 StringBuilder currentVariable = new StringBuilder();
                 int i = 0;
 
@@ -1996,7 +1996,7 @@ namespace ProcessHacker.Native.Objects
 
             string commandLineStr = commandLine.ToString();
 
-            if (commandLineStr.EndsWith(" "))
+            if (commandLineStr.EndsWith(" ", StringComparison.OrdinalIgnoreCase))
                 commandLineStr = commandLineStr.Remove(commandLineStr.Length - 1, 1);
 
             return commandLineStr;

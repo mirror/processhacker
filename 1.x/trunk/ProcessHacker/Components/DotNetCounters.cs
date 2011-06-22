@@ -125,7 +125,7 @@ namespace ProcessHacker.Components
 
             foreach (var category in categories)
             {
-                if (category.CategoryName.StartsWith(".NET CLR"))
+                if (category.CategoryName.StartsWith(".NET CLR", StringComparison.OrdinalIgnoreCase))
                     names.Add(category.CategoryName);
             }
 

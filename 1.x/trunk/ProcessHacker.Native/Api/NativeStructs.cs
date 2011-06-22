@@ -2354,6 +2354,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemCacheInformation
     {
+        public static readonly int SizeOf;
+
         /// <summary>
         /// The size of the system working set, in bytes.
         /// </summary>
@@ -2374,6 +2376,11 @@ namespace ProcessHacker.Native.Api
         public IntPtr TransitionSharedPagesPeak;
         public int TransitionRePurposeCount;
         public int Flags;
+
+        static SystemCacheInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemCacheInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2460,7 +2467,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemPerformanceInformation
     {
-        public static readonly int Size = Marshal.SizeOf(typeof(SystemPerformanceInformation));
+        public static readonly int SizeOf;
 
         /// <summary>
         /// The total idle time of all processors in units of 100-nanoseconds.
@@ -2481,189 +2488,194 @@ namespace ProcessHacker.Native.Api
         /// <summary>
         /// Number of calls to NtReadFile.
         /// </summary>
-        public int IoReadOperationCount;
+        public uint IoReadOperationCount;
         /// <summary>
         /// Number of calls to NtWriteFile.
         /// </summary>
-        public int IoWriteOperationCount;
+        public uint IoWriteOperationCount;
         /// <summary>
         /// Number of calls to other I/O functions.
         /// </summary>
-        public int IoOtherOperationCount;
+        public uint IoOtherOperationCount;
         /// <summary>
         /// The number of pages of physical memory available.
         /// </summary>
-        public int AvailablePages;
+        public uint AvailablePages;
         /// <summary>
         /// The number of pages of committed virtual memory.
         /// </summary>
-        public int CommittedPages;
+        public uint CommittedPages;
         /// <summary>
         /// The number of pages of virtual memory that could be committed 
         /// without extending the system's pagefiles.
         /// </summary>
-        public int CommitLimit;
+        public uint CommitLimit;
         /// <summary>
         /// The peak number of pages of committed virtual memory.
         /// </summary>
-        public int PeakCommitment;
+        public uint PeakCommitment;
         /// <summary>
         /// The total number of soft and hard page faults.
         /// </summary>
-        public int PageFaultCount;
+        public uint PageFaultCount;
         /// <summary>
         /// The number of copy-on-write page faults.
         /// </summary>
-        public int CopyOnWriteCount;
+        public uint CopyOnWriteCount;
         /// <summary>
         /// The number of soft page faults.
         /// </summary>
-        public int TransitionCount;
+        public uint TransitionCount;
         /// <summary>
         /// Something that the Native API reference book doesn't have.
         /// </summary>
-        public int CacheTransitionCount;
+        public uint CacheTransitionCount;
         /// <summary>
         /// The number of demand zero faults.
         /// </summary>
-        public int DemandZeroCount;
+        public uint DemandZeroCount;
         /// <summary>
         /// The number of pages read from disk to resolve page faults.
         /// </summary>
-        public int PageReadCount;
+        public uint PageReadCount;
         /// <summary>
         /// The number of read operations initiated to resolve page faults.
         /// </summary>
-        public int PageReadIoCount;
-        public int CacheReadCount;
-        public int CacheIoCount;
+        public uint PageReadIoCount;
+        public uint CacheReadCount;
+        public uint CacheIoCount;
         /// <summary>
         /// The number of pages written to the system's pagefiles.
         /// </summary>
-        public int DirtyPagesWriteCount;
+        public uint DirtyPagesWriteCount;
         /// <summary>
         /// The number of write operations performed on the system's pagefiles.
         /// </summary>
-        public int DirtyWriteIoCount;
+        public uint DirtyWriteIoCount;
         /// <summary>
         /// The number of pages written to mapped files.
         /// </summary>
-        public int MappedPagesWriteCount;
+        public uint MappedPagesWriteCount;
         /// <summary>
         /// The number of write operations performed on mapped files.
         /// </summary>
-        public int MappedWriteIoCount;
+        public uint MappedWriteIoCount;
         /// <summary>
         /// The number of pages used by the paged pool.
         /// </summary>
-        public int PagedPoolPages;
+        public uint PagedPoolPages;
         /// <summary>
         /// The number of pages used by the non-paged pool.
         /// </summary>
-        public int NonPagedPoolPages;
+        public uint NonPagedPoolPages;
         /// <summary>
         /// The number of allocations made from the paged pool.
         /// </summary>
-        public int PagedPoolAllocs;
+        public uint PagedPoolAllocs;
         /// <summary>
         /// The number of allocations returned to the paged pool.
         /// </summary>
-        public int PagedPoolFrees;
+        public uint PagedPoolFrees;
         /// <summary>
         /// The number of allocations made from the non-paged pool.
         /// </summary>
-        public int NonPagedPoolAllocs;
+        public uint NonPagedPoolAllocs;
         /// <summary>
         /// The number of allocations returned to the non-paged pool.
         /// </summary>
-        public int NonPagedPoolFrees;
+        public uint NonPagedPoolFrees;
         /// <summary>
         /// The number of available System Page Table Entries.
         /// </summary>
-        public int FreeSystemPtes;
+        public uint FreeSystemPtes;
         /// <summary>
         /// The number of pages of pageable OS code and data in physical 
         /// memory.
         /// </summary>
-        public int ResidentSystemCodePage;
+        public uint ResidentSystemCodePage;
         /// <summary>
         /// The number of pages of pageable driver code and data.
         /// </summary>
-        public int TotalSystemDriverPages;
+        public uint TotalSystemDriverPages;
         /// <summary>
         /// The number of pages of OS driver code and data.
         /// </summary>
-        public int TotalSystemCodePages;
+        public uint TotalSystemCodePages;
         /// <summary>
         /// The number of times an allocation could be statisfied by one of the 
         /// small non-paged lookaside lists.
         /// </summary>
-        public int NonPagedPoolLookasideHits;
+        public uint NonPagedPoolLookasideHits;
         /// <summary>
         /// The number of times an allocation could be statisfied by one of the 
         /// small paged lookaside lists.
         /// </summary>
-        public int PagedPoolLookasideHits;
+        public uint PagedPoolLookasideHits;
         /// <summary>
         /// The number of pages available for use by the paged pool.
         /// </summary>
-        public int AvailablePagedPoolPages;
+        public uint AvailablePagedPoolPages;
         /// <summary>
         /// The number of pages of the system cache in physical memory.
         /// </summary>
-        public int ResidentSystemCachePage;
+        public uint ResidentSystemCachePage;
         /// <summary>
         /// The number of pages of the paged pool in physical memory.
         /// </summary>
-        public int ResidentPagedPoolPage;
+        public uint ResidentPagedPoolPage;
         /// <summary>
         /// The number of pages of pageable driver code and data in physical memory.
         /// </summary>
-        public int ResidentSystemDriverPage;
+        public uint ResidentSystemDriverPage;
         /// <summary>
         /// The number of asynchronous fast read operations.
         /// </summary>
-        public int CcFastReadNoWait;
+        public uint CcFastReadNoWait;
         /// <summary>
         /// The number of synchronous fast read operations.
         /// </summary>
-        public int CcFastReadWait;
+        public uint CcFastReadWait;
         /// <summary>
         /// The number of fast read operations not possible because of resource 
         /// conflicts.
         /// </summary>
-        public int CcFastReadResourceMiss;
-        public int CcFastReadNotPossible;
-        public int CcFastMdlReadNoWait;
-        public int CcFastMdlReadWait;
-        public int CcFastMdlReadResourceMiss;
-        public int CcFastMdlReadNotPossible;
-        public int CcMapDataNoWait;
-        public int CcMapDataWait;
-        public int CcMapDataNoWaitMiss;
-        public int CcMapDataWaitMiss;
-        public int CcPinMappedDataCount;
-        public int CcPinReadNoWait;
-        public int CcPinReadWait;
-        public int CcPinReadNoWaitMiss;
-        public int CcPinReadWaitMiss;
-        public int CcCopyReadNoWait;
-        public int CcCopyReadWait;
-        public int CcCopyReadNoWaitMiss;
-        public int CcCopyReadWaitMiss;
-        public int CcMdlReadNoWait;
-        public int CcMdlReadWait;
-        public int CcMdlReadNoWaitMiss;
-        public int CcMdlReadWaitMiss;
-        public int CcReadAheadIos;
-        public int CcLazyWriteIos;
-        public int CcLazyWritePages;
-        public int CcDataFlushes;
-        public int CcDataPages;
-        public int ContextSwitches;
-        public int FirstLevelTbFills;
-        public int SecondLevelTbFills;
-        public int SystemCalls;
+        public uint CcFastReadResourceMiss;
+        public uint CcFastReadNotPossible;
+        public uint CcFastMdlReadNoWait;
+        public uint CcFastMdlReadWait;
+        public uint CcFastMdlReadResourceMiss;
+        public uint CcFastMdlReadNotPossible;
+        public uint CcMapDataNoWait;
+        public uint CcMapDataWait;
+        public uint CcMapDataNoWaitMiss;
+        public uint CcMapDataWaitMiss;
+        public uint CcPinMappedDataCount;
+        public uint CcPinReadNoWait;
+        public uint CcPinReadWait;
+        public uint CcPinReadNoWaitMiss;
+        public uint CcPinReadWaitMiss;
+        public uint CcCopyReadNoWait;
+        public uint CcCopyReadWait;
+        public uint CcCopyReadNoWaitMiss;
+        public uint CcCopyReadWaitMiss;
+        public uint CcMdlReadNoWait;
+        public uint CcMdlReadWait;
+        public uint CcMdlReadNoWaitMiss;
+        public uint CcMdlReadWaitMiss;
+        public uint CcReadAheadIos;
+        public uint CcLazyWriteIos;
+        public uint CcLazyWritePages;
+        public uint CcDataFlushes;
+        public uint CcDataPages;
+        public uint ContextSwitches;
+        public uint FirstLevelTbFills;
+        public uint SecondLevelTbFills;
+        public uint SystemCalls;
+
+        static SystemPerformanceInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemPerformanceInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

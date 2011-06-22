@@ -84,16 +84,20 @@ namespace ProcessHacker
         {
             DepStatus depStatus = DepStatus.Enabled;
 
-            if (comboStatus.SelectedItem.ToString() == "Disabled")
-                depStatus = 0;
-            else if (comboStatus.SelectedItem.ToString() == "Enabled")
-                depStatus = DepStatus.Enabled;
-            else if (comboStatus.SelectedItem.ToString() == "Enabled, DEP-ATL thunk emulation disabled")
-                depStatus = DepStatus.Enabled | DepStatus.AtlThunkEmulationDisabled;
-            else
+            switch (this.comboStatus.SelectedItem.ToString())
             {
-                PhUtils.ShowError("Invalid value.");
-                return;
+                case "Disabled":
+                    depStatus = 0;
+                    break;
+                case "Enabled":
+                    depStatus = DepStatus.Enabled;
+                    break;
+                case "Enabled, DEP-ATL thunk emulation disabled":
+                    depStatus = DepStatus.Enabled | DepStatus.AtlThunkEmulationDisabled;
+                    break;
+                default:
+                    PhUtils.ShowError("Invalid value.");
+                    return;
             }
 
             if (checkPermanent.Checked)
@@ -115,7 +119,7 @@ namespace ProcessHacker
 
         private void SetDepStatusNoKph()
         {
-            if (comboStatus.SelectedItem.ToString().StartsWith("Enabled"))
+            if (comboStatus.SelectedItem.ToString().StartsWith("Enabled", StringComparison.OrdinalIgnoreCase))
                 if (!PhUtils.ShowConfirmMessage(
                     "set",
                     "the DEP status",
@@ -125,16 +129,20 @@ namespace ProcessHacker
 
             DepFlags flags = DepFlags.Enable;
 
-            if (comboStatus.SelectedItem.ToString() == "Disabled")
-                flags = DepFlags.Disable;
-            else if (comboStatus.SelectedItem.ToString() == "Enabled")
-                flags = DepFlags.Enable;
-            else if (comboStatus.SelectedItem.ToString() == "Enabled, DEP-ATL thunk emulation disabled")
-                flags = DepFlags.Enable | DepFlags.DisableAtlThunkEmulation;
-            else
+            switch (this.comboStatus.SelectedItem.ToString())
             {
-                PhUtils.ShowError("Invalid value.");
-                return;
+                case "Disabled":
+                    flags = DepFlags.Disable;
+                    break;
+                case "Enabled":
+                    flags = DepFlags.Enable;
+                    break;
+                case "Enabled, DEP-ATL thunk emulation disabled":
+                    flags = DepFlags.Enable | DepFlags.DisableAtlThunkEmulation;
+                    break;
+                default:
+                    PhUtils.ShowError("Invalid value.");
+                    return;
             }
 
             try

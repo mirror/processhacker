@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -62,7 +61,7 @@ namespace ProcessHacker
     {
         public object Clone()
         {
-            return base.MemberwiseClone();
+            return this.MemberwiseClone();
         }
 
         public int RunId;
@@ -168,9 +167,9 @@ namespace ProcessHacker
             get { return _performance; }
         }
 
-        private int _processorPerfArraySize;
-        private MemoryAlloc _processorPerfBuffer;
-        private SystemProcessorPerformanceInformation[] _processorPerfArray;
+        private readonly int _processorPerfArraySize;
+        private readonly MemoryAlloc _processorPerfBuffer;
+        private readonly SystemProcessorPerformanceInformation[] _processorPerfArray;
         public SystemProcessorPerformanceInformation[] ProcessorPerfArray
         {
             get { return _processorPerfArray; }
@@ -217,8 +216,8 @@ namespace ProcessHacker
 
         private delegate ProcessQueryMessage QueryProcessDelegate(int pid, string fileName, bool useCache);
 
-        private MessageQueue _messageQueue = new MessageQueue();
-        private Dictionary<string, VerifyResult> _fileResults = new Dictionary<string, VerifyResult>();
+        private readonly MessageQueue _messageQueue = new MessageQueue();
+        private readonly Dictionary<string, VerifyResult> _fileResults = new Dictionary<string, VerifyResult>(StringComparer.OrdinalIgnoreCase);
 
         private Int64Delta _ioReadDelta;
         private Int64Delta _ioWriteDelta;
@@ -226,31 +225,31 @@ namespace ProcessHacker
         private Int64Delta _cpuKernelDelta;
         private Int64Delta _cpuUserDelta;
         private Int64Delta _cpuOtherDelta;
-        private Int64Delta[] _cpuKernelDeltas;
-        private Int64Delta[] _cpuUserDeltas;
-        private Int64Delta[] _cpuOtherDeltas;
+        private readonly Int64Delta[] _cpuKernelDeltas;
+        private readonly Int64Delta[] _cpuUserDeltas;
+        private readonly Int64Delta[] _cpuOtherDeltas;
 
         private int _historyMaxSize = 100;
-        private CircularBuffer<long> _ioReadHistory;
-        private CircularBuffer<long> _ioWriteHistory;
-        private CircularBuffer<long> _ioOtherHistory;
-        private CircularBuffer<long> _ioReadOtherHistory;
-        private CircularBuffer<float> _cpuKernelHistory;
-        private CircularBuffer<float> _cpuUserHistory;
-        private CircularBuffer<float> _cpuOtherHistory;
-        private CircularBuffer<float>[] _cpusKernelHistory;
-        private CircularBuffer<float>[] _cpusUserHistory;
-        private CircularBuffer<float>[] _cpusOtherHistory;
-        private CircularBuffer<long> _commitHistory;
-        private CircularBuffer<long> _physicalMemoryHistory;
-        private CircularBuffer<DateTime> _timeHistory;
-        private CircularBuffer<string> _cpuMostUsageHistory;
-        private CircularBuffer<string> _ioMostUsageHistory;
+        private readonly CircularBuffer<long> _ioReadHistory;
+        private readonly CircularBuffer<long> _ioWriteHistory;
+        private readonly CircularBuffer<long> _ioOtherHistory;
+        private readonly CircularBuffer<long> _ioReadOtherHistory;
+        private readonly CircularBuffer<float> _cpuKernelHistory;
+        private readonly CircularBuffer<float> _cpuUserHistory;
+        private readonly CircularBuffer<float> _cpuOtherHistory;
+        private readonly CircularBuffer<float>[] _cpusKernelHistory;
+        private readonly CircularBuffer<float>[] _cpusUserHistory;
+        private readonly CircularBuffer<float>[] _cpusOtherHistory;
+        private readonly CircularBuffer<long> _commitHistory;
+        private readonly CircularBuffer<long> _physicalMemoryHistory;
+        private readonly CircularBuffer<DateTime> _timeHistory;
+        private readonly CircularBuffer<string> _cpuMostUsageHistory;
+        private readonly CircularBuffer<string> _ioMostUsageHistory;
 
-        private SystemProcess _dpcs = new SystemProcess()
+        private SystemProcess _dpcs = new SystemProcess
         {
             Name = "DPCs",
-            Process = new SystemProcessInformation()
+            Process = new SystemProcessInformation
             {
                 ProcessId = -2,
                 InheritedFromProcessId = 0,
@@ -258,10 +257,10 @@ namespace ProcessHacker
             }
         };
 
-        private SystemProcess _interrupts = new SystemProcess()
+        private SystemProcess _interrupts = new SystemProcess
         {
             Name = "Interrupts",
-            Process = new SystemProcessInformation()
+            Process = new SystemProcessInformation
             {
                 ProcessId = -3,
                 InheritedFromProcessId = 0,
@@ -270,31 +269,27 @@ namespace ProcessHacker
         };
 
         public ProcessSystemProvider()
-            : base()
         {
             this.Name = this.GetType().Name;
 
             // Add the file processing results listener.
-            _messageQueue.AddListener(
-                new MessageQueueListener<ProcessQueryMessage>((message) =>
-                    {
-                        if (this.Dictionary.ContainsKey(message.Pid))
-                        {
-                            ProcessItem item = this.Dictionary[message.Pid];
+            _messageQueue.AddListener(new MessageQueueListener<ProcessQueryMessage>(message =>
+            {
+                if (this.Dictionary.ContainsKey(message.Pid))
+                {
+                    ProcessItem item = this.Dictionary[message.Pid];
 
-                            this.FillPqResult(item, message);
-                            item.JustProcessed = true;
-                        }
-                    }));
+                    this.FillPqResult(item, message);
+                    item.JustProcessed = true;
+                }
+            }));
 
             SystemBasicInformation basic;
             int retLen;
 
-            Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, out basic,
-                Marshal.SizeOf(typeof(SystemBasicInformation)), out retLen);
+            Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, out basic, Marshal.SizeOf(typeof(SystemBasicInformation)), out retLen);
             _system = basic;
-            _processorPerfArraySize = Marshal.SizeOf(typeof(SystemProcessorPerformanceInformation)) *
-                _system.NumberOfProcessors;
+            _processorPerfArraySize = Marshal.SizeOf(typeof(SystemProcessorPerformanceInformation)) * _system.NumberOfProcessors;
             _processorPerfBuffer = new MemoryAlloc(_processorPerfArraySize);
             _processorPerfArray = new SystemProcessorPerformanceInformation[_system.NumberOfProcessors];
 
@@ -304,8 +299,7 @@ namespace ProcessHacker
 
             _cpuKernelDelta = new Int64Delta(this.ProcessorPerf.KernelTime);
             _cpuUserDelta = new Int64Delta(this.ProcessorPerf.UserTime);
-            _cpuOtherDelta = new Int64Delta(
-                this.ProcessorPerf.IdleTime + this.ProcessorPerf.DpcTime + this.ProcessorPerf.InterruptTime);
+            _cpuOtherDelta = new Int64Delta(this.ProcessorPerf.IdleTime + this.ProcessorPerf.DpcTime + this.ProcessorPerf.InterruptTime);
             _ioReadDelta = new Int64Delta(this.Performance.IoReadTransferCount);
             _ioWriteDelta = new Int64Delta(this.Performance.IoWriteTransferCount);
             _ioOtherDelta = new Int64Delta(this.Performance.IoOtherTransferCount);
@@ -339,9 +333,7 @@ namespace ProcessHacker
             {
                 Int64Delta.Update(ref _cpuKernelDeltas[i], this.ProcessorPerfArray[i].KernelTime);
                 Int64Delta.Update(ref _cpuUserDeltas[i], this.ProcessorPerfArray[i].UserTime);
-                Int64Delta.Update(ref _cpuOtherDeltas[i],
-                    this.ProcessorPerfArray[i].IdleTime + this.ProcessorPerfArray[i].DpcTime +
-                    this.ProcessorPerfArray[i].InterruptTime);
+                Int64Delta.Update(ref _cpuOtherDeltas[i], this.ProcessorPerfArray[i].IdleTime + this.ProcessorPerfArray[i].DpcTime + this.ProcessorPerfArray[i].InterruptTime);
 
                 _cpusKernelHistory[i] = new CircularBuffer<float>(_historyMaxSize);
                 _cpusUserHistory[i] = new CircularBuffer<float>(_historyMaxSize);
@@ -401,7 +393,7 @@ namespace ProcessHacker
             int retLen;
 
             Win32.NtQuerySystemInformation(SystemInformationClass.SystemPerformanceInformation,
-                 out _performance, SystemPerformanceInformation.Size, out retLen);
+                 out _performance, SystemPerformanceInformation.SizeOf, out retLen);
         }
 
         private ProcessQueryMessage QueryProcessStage1(int pid, string fileName, bool forced)
@@ -414,15 +406,16 @@ namespace ProcessHacker
         /// </summary>
         private ProcessQueryMessage QueryProcessStage1(int pid, string fileName, bool forced, bool addToQueue)
         {
-            ProcessQueryMessage fpResult = new ProcessQueryMessage();
+            ProcessQueryMessage fpResult = new ProcessQueryMessage
+            {
+                Pid = pid, 
+                Stage = 0x1
+            };
 
-            fpResult.Pid = pid;
-            fpResult.Stage = 0x1;
-
-            if (fileName == null)
+            if (string.IsNullOrEmpty(fileName))
                 fileName = this.GetFileName(pid);
 
-            if (fileName == null)
+            if (string.IsNullOrEmpty(fileName))
                 Logging.Log(Logging.Importance.Warning, "Could not get file name for PID " + pid.ToString());
 
             fpResult.FileName = fileName;
@@ -509,7 +502,7 @@ namespace ProcessHacker
             catch
             { }
 
-            if (fileName != null)
+            if (!string.IsNullOrEmpty(fileName))
             {
                 try
                 {
@@ -567,10 +560,12 @@ namespace ProcessHacker
         /// </summary>
         private ProcessQueryMessage QueryProcessStage1a(int pid, string fileName, bool forced)
         {
-            ProcessQueryMessage fpResult = new ProcessQueryMessage();
+            ProcessQueryMessage fpResult = new ProcessQueryMessage
+            {
+                Pid = pid, 
+                Stage = 0x1a
+            };
 
-            fpResult.Pid = pid;
-            fpResult.Stage = 0x1a;
 
             if (pid > 4)
             {
@@ -595,19 +590,20 @@ namespace ProcessHacker
         /// </summary>
         private ProcessQueryMessage QueryProcessStage2(int pid, string fileName, bool forced)
         {
-            ProcessQueryMessage fpResult = new ProcessQueryMessage();
+            ProcessQueryMessage fpResult = new ProcessQueryMessage
+            {
+                Pid = pid, 
+                Stage = 0x2, 
+                IsPacked = false
+            };
 
-            fpResult.Pid = pid;
-            fpResult.Stage = 0x2;
-            fpResult.IsPacked = false;
-
-            if (fileName == null)
+            if (string.IsNullOrEmpty(fileName))
                 return null;
 
             // Don't process the file if it is too big (above 32MB).
             try
             {
-                if ((new global::System.IO.FileInfo(fileName)).Length > 32 * 1024 * 1024)
+                if ((new System.IO.FileInfo(fileName)).Length > 32 * 1024 * 1024)
                     return null;
             }
             catch
@@ -623,7 +619,7 @@ namespace ProcessHacker
             // 1. The function-to-library ratio is lower than 4
             //   (on average less than 4 functions are imported from each library)
             // 2. It references more than 3 libraries but less than 14 libraries.
-            if (fileName != null && (Settings.Instance.VerifySignatures || forced))
+            if (Settings.Instance.VerifySignatures || forced)
             {
                 try
                 {
@@ -658,31 +654,28 @@ namespace ProcessHacker
             {
                 if (Settings.Instance.VerifySignatures || forced)
                 {
-                    if (fileName != null)
+                    string uniName = global::System.IO.Path.GetFullPath(fileName).ToLowerInvariant();
+
+                    // No lock needed; verify results are never removed, only added.
+                    if (!forced && _fileResults.ContainsKey(uniName))
                     {
-                        string uniName = global::System.IO.Path.GetFullPath(fileName).ToLowerInvariant();
-
-                        // No lock needed; verify results are never removed, only added.
-                        if (!forced && _fileResults.ContainsKey(uniName))
+                        fpResult.VerifyResult = _fileResults[uniName];
+                    }
+                    else
+                    {
+                        try
                         {
-                            fpResult.VerifyResult = _fileResults[uniName];
+                            fpResult.VerifyResult = Cryptography.VerifyFile(fileName, out fpResult.VerifySignerName);
                         }
+                        catch
+                        {
+                            fpResult.VerifyResult = VerifyResult.NoSignature;
+                        }
+
+                        if (!_fileResults.ContainsKey(uniName))
+                            _fileResults.Add(uniName, fpResult.VerifyResult);
                         else
-                        {
-                            try
-                            {
-                                fpResult.VerifyResult = Cryptography.VerifyFile(fileName, out fpResult.VerifySignerName);
-                            }
-                            catch
-                            {
-                                fpResult.VerifyResult = VerifyResult.NoSignature;
-                            }
-
-                            if (!_fileResults.ContainsKey(uniName))
-                                _fileResults.Add(uniName, fpResult.VerifyResult);
-                            else
-                                _fileResults[uniName] = fpResult.VerifyResult;
-                        }
+                            _fileResults[uniName] = fpResult.VerifyResult;
                     }
                 }
             }
@@ -718,7 +711,7 @@ namespace ProcessHacker
 
                         // If we couldn't get it or we couldn't resolve the \Device prefix,
                         // we'll use the Win32 variant.
-                        if ((fileName == null || fileName.StartsWith("\\")) &&
+                        if ((string.IsNullOrEmpty(fileName) || fileName.StartsWith("\\", StringComparison.OrdinalIgnoreCase)) &&
                             OSVersion.HasWin32ImageFileName)
                         {
                             try
@@ -733,7 +726,7 @@ namespace ProcessHacker
                 catch
                 { }
 
-                if (fileName == null || fileName.StartsWith("\\Device\\"))
+                if (string.IsNullOrEmpty(fileName) || fileName.StartsWith("\\Device\\", StringComparison.OrdinalIgnoreCase))
                 {
                     try
                     {
@@ -812,7 +805,7 @@ namespace ProcessHacker
             }
             else if (result.Stage == 0x2)
             {
-                item.IsPacked = (item.IsDotNet || result.IsDotNet) ? false : result.IsPacked;
+                item.IsPacked = !(item.IsDotNet || result.IsDotNet) && result.IsPacked;
                 item.VerifyResult = result.VerifyResult;
                 item.VerifySignerName = result.VerifySignerName;
                 item.ImportFunctions = result.ImportFunctions;
@@ -954,37 +947,32 @@ namespace ProcessHacker
 
                 if (!Dictionary.ContainsKey(pid))
                 {
-                    ProcessItem item = new ProcessItem();
-
-                    // Set up basic process information.
-                    item.RunId = this.RunCount;
-                    item.Pid = pid;
-                    item.Process = processInfo;
-                    item.SessionId = processInfo.SessionId;
-                    item.ProcessingAttempts = 1;
-
-                    item.Name = procs[pid].Name;
-
-                    // Create the delta and history managers.
-
-                    item.CpuKernelDelta = new Int64Delta(processInfo.KernelTime);
-                    item.CpuUserDelta = new Int64Delta(processInfo.UserTime);
-                    item.IoReadDelta = new Int64Delta((long)processInfo.IoCounters.ReadTransferCount);
-                    item.IoWriteDelta = new Int64Delta((long)processInfo.IoCounters.WriteTransferCount);
-                    item.IoOtherDelta = new Int64Delta((long)processInfo.IoCounters.OtherTransferCount);
-
-                    item.CpuKernelHistory = new CircularBuffer<float>(_historyMaxSize);
-                    item.CpuUserHistory = new CircularBuffer<float>(_historyMaxSize);
-                    item.IoReadHistory = new CircularBuffer<long>(_historyMaxSize);
-                    item.IoWriteHistory = new CircularBuffer<long>(_historyMaxSize);
-                    item.IoOtherHistory = new CircularBuffer<long>(_historyMaxSize);
-                    item.IoReadOtherHistory = new CircularBuffer<long>(_historyMaxSize);
-                    item.PrivateMemoryHistory = new CircularBuffer<long>(_historyMaxSize);
-                    item.WorkingSetHistory = new CircularBuffer<long>(_historyMaxSize);
+                    ProcessItem item = new ProcessItem
+                    {
+                        RunId = this.RunCount, 
+                        Pid = pid, 
+                        Process = processInfo, 
+                        SessionId = processInfo.SessionId, 
+                        ProcessingAttempts = 1, 
+                        Name = procs[pid].Name, 
+                        CpuKernelDelta = new Int64Delta(processInfo.KernelTime), 
+                        CpuUserDelta = new Int64Delta(processInfo.UserTime), 
+                        IoReadDelta = new Int64Delta((long)processInfo.IoCounters.ReadTransferCount), 
+                        IoWriteDelta = new Int64Delta((long)processInfo.IoCounters.WriteTransferCount), 
+                        IoOtherDelta = new Int64Delta((long)processInfo.IoCounters.OtherTransferCount), 
+                        CpuKernelHistory = new CircularBuffer<float>(this._historyMaxSize), 
+                        CpuUserHistory = new CircularBuffer<float>(this._historyMaxSize), 
+                        IoReadHistory = new CircularBuffer<long>(this._historyMaxSize), 
+                        IoWriteHistory = new CircularBuffer<long>(this._historyMaxSize), 
+                        IoOtherHistory = new CircularBuffer<long>(this._historyMaxSize), 
+                        IoReadOtherHistory = new CircularBuffer<long>(this._historyMaxSize), 
+                        PrivateMemoryHistory = new CircularBuffer<long>(this._historyMaxSize), 
+                        WorkingSetHistory = new CircularBuffer<long>(this._historyMaxSize)
+                    };
 
                     // HACK: Shouldn't happen, but it does - sometimes 
                     // the process name is null.
-                    if (item.Name == null)
+                    if (string.IsNullOrEmpty(item.Name))
                     {
                         try
                         {
@@ -994,7 +982,7 @@ namespace ProcessHacker
                         }
                         catch
                         {
-                            item.Name = "";
+                            item.Name = string.Empty;
                         }
                     }
 
@@ -1073,19 +1061,19 @@ namespace ProcessHacker
 
                     // Update the process name if it's a fake process.
 
-                    if (pid == 0)
+                    switch (pid)
                     {
-                        item.Name = "System Idle Process";
-                    }
-                    else if (pid == -2)
-                    {
-                        item.ParentPid = 0;
-                        item.HasParent = true;
-                    }
-                    else if (pid == -3)
-                    {
-                        item.ParentPid = 0;
-                        item.HasParent = true;
+                        case 0:
+                            item.Name = "System Idle Process";
+                            break;
+                        case -2:
+                            item.ParentPid = 0;
+                            item.HasParent = true;
+                            break;
+                        case -3:
+                            item.ParentPid = 0;
+                            item.HasParent = true;
+                            break;
                     }
 
                     // If this is not the first run, we process the item immediately.
@@ -1114,7 +1102,7 @@ namespace ProcessHacker
 
                     // If we didn't get a username, try to use Terminal Services 
                     // to get the SID of the process' token's user.
-                    if (pid > 4 && item.Username == null)
+                    if (pid > 4 && string.IsNullOrEmpty(item.Username))
                     {
                         if (tsProcesses == null)
                         {
@@ -1257,7 +1245,7 @@ namespace ProcessHacker
             }
             catch
             {
-                UpdateCb(_cpuMostUsageHistory, "");
+                UpdateCb(_cpuMostUsageHistory, string.Empty);
             }
 
             try
@@ -1270,7 +1258,7 @@ namespace ProcessHacker
             }
             catch
             {
-                UpdateCb(_ioMostUsageHistory, "");
+                UpdateCb(_ioMostUsageHistory, string.Empty);
             }
 
             UpdateCb(_timeHistory, DateTime.Now);

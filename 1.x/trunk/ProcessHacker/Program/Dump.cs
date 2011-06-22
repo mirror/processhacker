@@ -91,11 +91,11 @@ namespace ProcessHacker
 
         public static IDictionary<string, string> GetDictionary(MemoryObject mo)
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
+            Dictionary<string, string> dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             string str = Encoding.Unicode.GetString(mo.ReadData());
             int i = 0;
 
-            if (str == "")
+            if (string.IsNullOrEmpty(str))
                 return dict;
 
             while (true)

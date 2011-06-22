@@ -67,7 +67,7 @@ namespace Aga.Controls.Tree
 
 			foreach (string label in IterateNodeLabels(node))
 			{
-				if (label.StartsWith(_searchString))
+                if (label.StartsWith(_searchString, StringComparison.OrdinalIgnoreCase))
 				{
 					_tree.SelectedNode = _currentNode;
 					return;
@@ -115,7 +115,7 @@ namespace Aga.Controls.Tree
 		private bool DoContinuousSearch()
 		{
 			bool found = false;
-			if (!String.IsNullOrEmpty(_searchString))
+			if (!string.IsNullOrEmpty(_searchString))
 			{
 				TreeNodeAdv node = null;
 				if (_tree.SelectedNode != null)
@@ -127,7 +127,7 @@ namespace Aga.Controls.Tree
 				{
 					foreach (string label in IterateNodeLabels(node))
 					{
-						if (label.StartsWith(_searchString))
+                        if (label.StartsWith(_searchString, StringComparison.OrdinalIgnoreCase))
 						{
 							found = true;
 							_tree.SelectedNode = _currentNode;

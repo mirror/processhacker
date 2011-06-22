@@ -96,10 +96,11 @@ namespace ProcessHacker
             {
                 if (!Dictionary.ContainsKey(s))
                 {
-                    ServiceItem item = new ServiceItem();
-
-                    item.RunId = this.RunCount;
-                    item.Status = newdictionary[s];
+                    ServiceItem item = new ServiceItem
+                    {
+                        RunId = this.RunCount, 
+                        Status = newdictionary[s]
+                    };
 
                     try
                     {
@@ -114,7 +115,7 @@ namespace ProcessHacker
                 }
             }
 
-            var toModify = new Dictionary<string, ServiceItem>();
+            Dictionary<string, ServiceItem> toModify = new Dictionary<string, ServiceItem>(StringComparer.OrdinalIgnoreCase);
 
             // check for modified services
             foreach (ServiceItem service in Dictionary.Values)

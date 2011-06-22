@@ -44,20 +44,18 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Used to resolve device prefixes (\Device\Harddisk1) into DOS drive names.
         /// </summary>
-        private static Dictionary<string, string> _fileNamePrefixes = new Dictionary<string, string>();
+        private static Dictionary<string, string> _fileNamePrefixes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         public static string FindFile(string basePath, string fileName)
         {
-            string path;
-
-            if (basePath != null)
+            if (!string.IsNullOrEmpty(basePath))
             {
                 // Search the base path first.
                 if (System.IO.File.Exists(basePath + "\\" + fileName))
                     return System.IO.Path.Combine(basePath, fileName);
             }
 
-            path = Environment.GetEnvironmentVariable("Path");
+            string path = Environment.GetEnvironmentVariable("Path");
 
             string[] directories = path.Split(';');
 
@@ -72,12 +70,11 @@ namespace ProcessHacker.Native
 
         public static string FindFileWin32(string fileName)
         {
-            using (var data = new MemoryAlloc(0x400))
+            using (MemoryAlloc data = new MemoryAlloc(0x400))
             {
-                int retLength;
                 IntPtr filePart;
 
-                retLength = Win32.SearchPath(null, fileName, null, data.Size / 2, data, out filePart);
+                int retLength = Win32.SearchPath(null, fileName, null, data.Size / 2, data, out filePart);
 
                 if (retLength * 2 > data.Size)
                 {
@@ -99,24 +96,22 @@ namespace ProcessHacker.Native
 
         public static Icon GetFileIcon(string fileName, bool large)
         {
-            ShFileInfo shinfo = new ShFileInfo();
-
             if (string.IsNullOrEmpty(fileName))
                 throw new Exception("File name cannot be empty.");
 
             try
             {
+                ShFileInfo shinfo;
+
                 if (Win32.SHGetFileInfo(fileName, 0, out shinfo,
-                    (uint)Marshal.SizeOf(shinfo),
+                    (uint)ShFileInfo.SizeOf,
                     Win32.ShgFiIcon |
                     (large ? Win32.ShgFiLargeIcon : Win32.ShgFiSmallIcon)) == 0)
                 {
                     return null;
                 }
-                else
-                {
-                    return Icon.FromHandle(shinfo.hIcon);
-                }
+
+                return Icon.FromHandle(shinfo.hIcon);
             }
             catch
             {
@@ -146,20 +141,20 @@ namespace ProcessHacker.Native
                 alreadyCanonicalized = true;
             }
             // If the path starts with "\??\", we can remove it and we will have the path.
-            else if (fileName.StartsWith("\\??\\"))
+            else if (fileName.StartsWith("\\??\\", StringComparison.OrdinalIgnoreCase))
             {
                 fileName = fileName.Substring(4);
             }
 
             // If the path still starts with a backslash, we probably need to 
             // resolve any native object name to a DOS drive letter.
-            if (fileName.StartsWith("\\"))
+            if (fileName.StartsWith("\\", StringComparison.OrdinalIgnoreCase))
             {
-                var prefixes = _fileNamePrefixes;
+                Dictionary<string, string> prefixes = _fileNamePrefixes;
 
                 foreach (var pair in prefixes)
                 {
-                    if (fileName.StartsWith(pair.Key + "\\"))
+                    if (fileName.StartsWith(pair.Key + "\\", StringComparison.OrdinalIgnoreCase))
                     {
                         fileName = pair.Value + "\\" + fileName.Substring(pair.Key.Length + 1);
                         break;
@@ -194,7 +189,7 @@ namespace ProcessHacker.Native
         public static void RefreshFileNamePrefixes()
         {
             // Just create a new dictionary to avoid having to lock the existing one.
-            var newPrefixes = new Dictionary<string, string>();
+            Dictionary<string, string> newPrefixes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             for (char c = 'A'; c <= 'Z'; c++)
             {
@@ -214,7 +209,7 @@ namespace ProcessHacker.Native
 
         public static void ShowProperties(string fileName)
         {
-            var info = new ShellExecuteInfo();
+            ShellExecuteInfo info = new ShellExecuteInfo();
 
             info.cbSize = Marshal.SizeOf(info);
             info.lpFile = fileName;

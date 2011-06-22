@@ -486,7 +486,7 @@ namespace ProcessHacker.Common
 
         public static string FormatFlags(Type e, long value)
         {
-            string r = "";
+            string r = string.Empty;
 
             for (int i = 0; i < 32; i++)
             {
@@ -498,7 +498,7 @@ namespace ProcessHacker.Common
                 }
             }
 
-            if (r.EndsWith(", "))
+            if (r.EndsWith(", ", StringComparison.OrdinalIgnoreCase))
                 r = r.Remove(r.Length - 2, 2);
 
             return r;
@@ -513,7 +513,7 @@ namespace ProcessHacker.Common
         {
             return String.Format(
                 "{0}{1:d2}:{2:d2}:{3:d2}",
-                time.Days != 0 ? (time.Days.ToString() + ".") : "",
+                time.Days != 0 ? (time.Days.ToString() + ".") : string.Empty,
                 time.Hours,
                 time.Minutes,
                 time.Seconds
@@ -537,7 +537,7 @@ namespace ProcessHacker.Common
             double months = span.TotalDays * 12 / 365;
             double years = months / 12;
             double centuries = years / 100;
-            string str = "";
+            string str = string.Empty;
 
             // Start from the most general time unit and see if they can be used 
             // without any fractional component.
@@ -593,7 +593,7 @@ namespace ProcessHacker.Common
                 str = "a very short time";
 
             // Turn 1 into "a", e.g. 1 minute -> a minute
-            if (str.StartsWith("1 "))
+            if (str.StartsWith("1 ", StringComparison.OrdinalIgnoreCase))
             {
                 // Special vowel case: a hour -> an hour
                 if (str[2] != 'h')
@@ -621,7 +621,7 @@ namespace ProcessHacker.Common
         public static string FormatSize(uint size)
         {
             int i = 0;
-            double s = (double)size;
+            double s = size;
 
             while (s > 1024 && i < SizeUnitNames.Length && i < UnitSpecifier)
             {
@@ -724,7 +724,7 @@ namespace ProcessHacker.Common
         // <returns>The last write time of the assembly, or DateTime.MaxValue if an exception occurred.</returns>
         public static DateTime GetAssemblyLastWriteTime(Assembly assembly)
         {
-            if (assembly.Location == null || assembly.Location == "")
+            if (string.IsNullOrEmpty(assembly.Location))
                 return DateTime.MaxValue;
 
             try
@@ -1054,17 +1054,17 @@ namespace ProcessHacker.Common
 
         public static Dictionary<string, string> ParseCommandLine(string[] args)
         {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
+            Dictionary<string, string> dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             string argPending = null;
 
             foreach (string s in args)
             {
-                if (s.StartsWith("-"))
+                if (s.StartsWith("-", StringComparison.OrdinalIgnoreCase))
                 {
                     if (dict.ContainsKey(s))
                         throw new ArgumentException("Option already specified.");
 
-                    dict.Add(s, "");
+                    dict.Add(s, string.Empty);
                     argPending = s;
                 }
                 else
@@ -1076,8 +1076,8 @@ namespace ProcessHacker.Common
                     }
                     else
                     {
-                        if (!dict.ContainsKey(""))
-                            dict.Add("", s);
+                        if (!dict.ContainsKey(string.Empty))
+                            dict.Add(string.Empty, s);
                     }
                 }
             }

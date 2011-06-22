@@ -32,17 +32,17 @@ namespace ProcessHacker.Common.Settings
     /// </summary>
     public abstract class SettingsBase
     {
-        private ISettingsStore _store;
-        private Dictionary<string, object> _settings = new Dictionary<string, object>();
-        private Dictionary<string, object> _modifiedSettings = new Dictionary<string, object>();
-        private Dictionary<string, string> _defaultsCache = new Dictionary<string, string>();
-        private Dictionary<string, Type> _typeCache = new Dictionary<string, Type>();
+        private readonly ISettingsStore _store;
+        private readonly Dictionary<string, object> _settings = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, object> _modifiedSettings = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> _defaultsCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Type> _typeCache = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Creates a settings class with the specified storage provider.
         /// </summary>
         /// <param name="store">The storage provider.</param>
-        public SettingsBase(ISettingsStore store)
+        protected SettingsBase(ISettingsStore store)
         {
             _store = store;
         }
@@ -168,8 +168,6 @@ namespace ProcessHacker.Common.Settings
         private object GetValue(string name)
         {
             object value;
-            string settingValue;
-            Type settingType;
 
             lock (_modifiedSettings)
             {
@@ -183,14 +181,15 @@ namespace ProcessHacker.Common.Settings
                     return _settings[name];
             }
 
-            settingValue = _store.GetValue(name);
+            string settingValue = this._store.GetValue(name);
 
-            if (settingValue == null)
+            if (string.IsNullOrEmpty(settingValue))
                 settingValue = this.GetSettingDefault(name);
-            if (settingValue == null)
-                settingValue = "";
 
-            settingType = this.GetSettingType(name);
+            if (string.IsNullOrEmpty(settingValue))
+                settingValue = string.Empty;
+
+            Type settingType = this.GetSettingType(name);
 
             try
             {

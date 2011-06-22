@@ -34,11 +34,11 @@ namespace ProcessHacker
 {
     public partial class ThreadWindow : Form
     {
-        private int _pid;
-        private int _tid;
-        private ProcessHandle _phandle;
-        private bool _processHandleOwned = true;
-        private ThreadHandle _thandle;
+        private readonly int _pid;
+        private readonly int _tid;
+        private readonly ProcessHandle _phandle;
+        private readonly bool _processHandleOwned = true;
+        private readonly ThreadHandle _thandle;
         private SymbolProvider _symbols;
 
         public const string DisplayFormat = "0x{0:x}";
@@ -222,12 +222,10 @@ namespace ProcessHacker
 
                     try
                     {
-                        ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(
-                            new string[]
-                                {
-                                    Utils.FormatAddress(address),
-                                    _symbols.GetSymbolFromAddress(address)
-                                }));
+                        ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[]
+                        {
+                            Utils.FormatAddress(address), _symbols.GetSymbolFromAddress(address)
+                        }));
 
                         newItem.Tag = address;
                     }
@@ -256,12 +254,10 @@ namespace ProcessHacker
 
             try
             {
-                ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(
-                    new string[]
-                    {
-                        Utils.FormatAddress(address),
-                        _symbols.GetSymbolFromAddress(address)
-                    }));
+                ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[]
+                {
+                    Utils.FormatAddress(address), _symbols.GetSymbolFromAddress(address)
+                }));
 
                 newItem.Tag = address;
 
@@ -273,18 +269,19 @@ namespace ProcessHacker
                     foreach (IntPtr arg in stackFrame.Params)
                         newItem.ToolTipText += Utils.FormatAddress(arg) + ", ";
 
-                    if (newItem.ToolTipText.EndsWith(", "))
+                    if (newItem.ToolTipText.EndsWith(", ", StringComparison.OrdinalIgnoreCase))
                         newItem.ToolTipText = newItem.ToolTipText.Remove(newItem.ToolTipText.Length - 2);
 
                     try
                     {
                         string fileAndLine = _symbols.GetLineFromAddress(address);
 
-                        if (fileAndLine != null)
+                        if (!string.IsNullOrEmpty(fileAndLine))
                             newItem.ToolTipText += "\nFile: " + fileAndLine;
                     }
                     catch
-                    { }
+                    {
+                    }
                 }
                 catch (Exception ex2)
                 {
@@ -295,10 +292,10 @@ namespace ProcessHacker
             {
                 Logging.Log(ex);
 
-                ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
-                            Utils.FormatAddress(address),
-                            "???"
-                        }));
+                ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[]
+                {
+                    Utils.FormatAddress(address), "???"
+                }));
 
                 newItem.Tag = address;
             }
@@ -323,7 +320,7 @@ namespace ProcessHacker
             }
             else
             {
-                fileModule.Text = "";
+                fileModule.Text = string.Empty;
                 fileModule.Enabled = false;
             }
         }

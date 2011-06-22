@@ -27,7 +27,6 @@ using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Mfs;
-using ProcessHacker.Native.Objects;
 using ProcessHacker.UI;
 
 namespace ProcessHacker
@@ -39,11 +38,10 @@ namespace ProcessHacker
         private MemoryObject _servicesMo;
         private string _phVersion;
         private string _osVersion;
-        private OSArch _architecture;
         private string _userName;
-        private Dictionary<int, ProcessItem> _processes = new Dictionary<int, ProcessItem>();
-        private Dictionary<string, ServiceItem> _services = new Dictionary<string, ServiceItem>();
-        private Dictionary<int, List<string>> _processServices = new Dictionary<int, List<string>>();
+        private readonly Dictionary<int, ProcessItem> _processes = new Dictionary<int, ProcessItem>();
+        private readonly Dictionary<string, ServiceItem> _services = new Dictionary<string, ServiceItem>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<int, List<string>> _processServices = new Dictionary<int, List<string>>();
 
         public DumpHackerWindow(string fileName)
         {
@@ -94,10 +92,7 @@ namespace ProcessHacker
             }
         }
 
-        public OSArch Architecture
-        {
-            get { return _architecture; }
-        }
+        public OSArch Architecture { get; private set; }
 
         public Dictionary<int, ProcessItem> Processes
         {
@@ -106,9 +101,7 @@ namespace ProcessHacker
 
         private void LoadSystemInformation()
         {
-            MemoryObject sysInfoMo;
-
-            sysInfoMo = _mfs.RootObject.GetChild("SystemInformation");
+            MemoryObject sysInfoMo = this._mfs.RootObject.GetChild("SystemInformation");
 
             if (sysInfoMo == null)
             {
@@ -123,38 +116,35 @@ namespace ProcessHacker
 
             _phVersion = dict["ProcessHackerVersion"];
             _osVersion = dict["OSVersion"];
-            _architecture = (OSArch)Dump.ParseInt32(dict["Architecture"]);
+            this.Architecture = (OSArch)Dump.ParseInt32(dict["Architecture"]);
             _userName = dict["UserName"];
 
             treeProcesses.DumpUserName = _userName;
 
             this.Text = "Process Hacker " + _phVersion +
                 " [" + _userName + "] (" + _osVersion + ", " +
-                (_architecture == OSArch.I386 ? "32-bit" : "64-bit") +
+                (this.Architecture == OSArch.I386 ? "32-bit" : "64-bit") +
                 ")";
         }
 
         private void LoadProcesses()
         {
-            MemoryObject processesMo;
-
-            processesMo = _mfs.RootObject.GetChild("Processes");
+            MemoryObject processesMo = this._mfs.RootObject.GetChild("Processes");
             _processesMo = processesMo;
 
             if (processesMo == null)
             {
-                PhUtils.ShowWarning("The dump file does not contain process information. This most likely " +
-                    "means the file is corrupt.");
+                PhUtils.ShowWarning("The dump file does not contain process information. This most likely " + "means the file is corrupt.");
                 return;
             }
 
-            processesMo.EnumChildren((childMo) =>
-                {
-                    using (childMo)
-                        this.LoadProcess(childMo);
+            processesMo.EnumChildren(childMo =>
+            {
+                using (childMo)
+                    this.LoadProcess(childMo);
 
-                    return true;
-                });
+                return true;
+            });
         }
 
         private void LoadProcess(MemoryObject mo)
@@ -170,10 +160,12 @@ namespace ProcessHacker
             using (var general = mo.GetChild("General"))
                 generalDict = Dump.GetDictionary(general);
 
-            pitem = new ProcessItem();
-            pitem.Pid = Dump.ParseInt32(generalDict["ProcessId"]);
-            pitem.Name = generalDict["Name"];
-            pitem.ParentPid = Dump.ParseInt32(generalDict["ParentPid"]);
+            pitem = new ProcessItem
+            {
+                Pid = Dump.ParseInt32(generalDict["ProcessId"]), 
+                Name = generalDict["Name"], 
+                ParentPid = Dump.ParseInt32(generalDict["ParentPid"])
+            };
 
             if (generalDict.ContainsKey("HasParent"))
                 pitem.HasParent = Dump.ParseBool(generalDict["HasParent"]);
@@ -256,9 +248,7 @@ namespace ProcessHacker
 
         private void LoadServices()
         {
-            MemoryObject servicesMo;
-
-            servicesMo = _mfs.RootObject.GetChild("Services");
+            MemoryObject servicesMo = this._mfs.RootObject.GetChild("Services");
             _servicesMo = servicesMo;
 
             if (servicesMo == null)

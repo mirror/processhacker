@@ -707,7 +707,7 @@ namespace Aga.Controls
 			{
 				id += (char) Read();
 			}
-			if (!id.StartsWith("GIF")) 
+            if (!id.StartsWith("GIF", StringComparison.OrdinalIgnoreCase)) 
 			{
 				status = StatusFormatError;
 				return;

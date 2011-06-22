@@ -2718,19 +2718,19 @@ namespace ProcessHacker
             // Find the location of the dbghelp.dll we loaded and load symsrv.dll.
             try
             {
-                ProcessHandle.Current.EnumModules((module) =>
+                ProcessHandle.Current.EnumModules(module =>
+                {
+                    if (module.FileName.EndsWith("dbghelp.dll", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
-                        {
-                            // Load symsrv.dll from the same directory as dbghelp.dll.
+                        // Load symsrv.dll from the same directory as dbghelp.dll.
 
-                            Loader.LoadDll(System.IO.Path.GetDirectoryName(module.FileName) + "\\symsrv.dll");
+                        Loader.LoadDll(System.IO.Path.GetDirectoryName(module.FileName) + "\\symsrv.dll");
 
-                            return false;
-                        }
+                        return false;
+                    }
 
-                        return true;
-                    });
+                    return true;
+                });
             }
             catch
             { }

@@ -389,7 +389,7 @@ namespace ProcessHacker
         {
             // this is a bit complex because the list needs to be sorted as well
             ContextMenu menu = new ContextMenu();
-            Dictionary<string, string> TextToId = new Dictionary<string, string>();
+            Dictionary<string, string> TextToId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             List<string> Texts = new List<string>();
 
             foreach (string s in Program.ResultsWindows.Keys)
