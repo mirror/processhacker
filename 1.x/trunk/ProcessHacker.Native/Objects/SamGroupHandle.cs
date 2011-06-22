@@ -34,22 +34,13 @@ namespace ProcessHacker.Native.Objects
     {
         public static SamGroupHandle Create(SamGroupAccess access, SamDomainHandle domainHandle, string name, out int groupId)
         {
-            NtStatus status;
-            UnicodeString nameStr;
             IntPtr handle;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                if ((status = Win32.SamCreateGroupInDomain(
-                    domainHandle,
-                    ref nameStr,
-                    access,
-                    out handle,
-                    out groupId
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.SamCreateGroupInDomain(domainHandle, nameStr, access, out handle, out groupId).ThrowIf();
             }
             finally
             {
@@ -66,7 +57,7 @@ namespace ProcessHacker.Native.Objects
 
         public static SamGroupHandle Open(Sid sid, SamGroupAccess access)
         {
-            using (var dhandle = new SamDomainHandle(sid.DomainName, SamDomainAccess.Lookup))
+            using (SamDomainHandle dhandle = new SamDomainHandle(sid.DomainName, SamDomainAccess.Lookup))
             {
                 return new SamGroupHandle(dhandle, dhandle.LookupName(sid.Name), access);
             }

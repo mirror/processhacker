@@ -77,14 +77,12 @@ namespace ProcessHacker.Native.Objects
 
         public TimerHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, TimerAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenTimer(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtOpenTimer(out handle, access, oa).ThrowIf();
             }
             finally
             {
@@ -206,23 +204,13 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The state of the timer (whether it is signaled).</returns>
         public bool Set(long dueTime, bool relative, TimerApcRoutine routine, IntPtr context, bool resume, int period)
         {
-            NtStatus status;
             long realDueTime = relative ? -dueTime : dueTime;
             bool previousState;
 
             // Keep the APC routine alive.
             _routine = routine;
 
-            if ((status = Win32.NtSetTimer(
-                this,
-                ref realDueTime,
-                routine,
-                context,
-                resume,
-                period,
-                out previousState
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtSetTimer(this, ref realDueTime, routine, context, resume, period, out previousState).ThrowIf();
 
             return previousState;
         }

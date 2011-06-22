@@ -45,24 +45,16 @@ namespace ProcessHacker.Native.Objects
 
         public static void SetCurrentVariable(string name, string value)
         {
-            NtStatus status;
-            UnicodeString nameStr;
-            UnicodeString valueStr;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                valueStr = new UnicodeString(value);
+                UnicodeString valueStr = new UnicodeString(value);
 
                 try
                 {
-                    if ((status = Win32.RtlSetEnvironmentVariable(
-                        IntPtr.Zero,
-                        ref nameStr,
-                        ref valueStr
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
+                    Win32.RtlSetEnvironmentVariable(IntPtr.Zero, nameStr, ref valueStr).ThrowIf();
                 }
                 finally
                 {
@@ -84,13 +76,7 @@ namespace ProcessHacker.Native.Objects
 
         public EnvironmentBlock(bool cloneCurrent)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlCreateEnvironment(
-                cloneCurrent,
-                out _environment
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlCreateEnvironment(cloneCurrent, out _environment).ThrowIf();
         }
 
         public EnvironmentBlock(TokenHandle tokenHandle)
@@ -129,25 +115,17 @@ namespace ProcessHacker.Native.Objects
 
         public string GetVariable(string name)
         {
-            NtStatus status;
-            UnicodeString nameStr;
-            UnicodeString valueStr;
-
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                using (var data = new MemoryAlloc(100))
+                using (MemoryAlloc data = new MemoryAlloc(100))
                 {
-                    valueStr = new UnicodeString();
+                    UnicodeString valueStr = new UnicodeString();
                     valueStr.Buffer = data;
                     valueStr.MaximumLength = (ushort)data.Size;
 
-                    status = Win32.RtlQueryEnvironmentVariable_U(
-                        this,
-                        ref nameStr,
-                        ref valueStr
-                        );
+                    NtStatus status = Win32.RtlQueryEnvironmentVariable_U(this, nameStr, ref valueStr);
 
                     if (status == NtStatus.BufferTooSmall)
                     {
@@ -156,11 +134,7 @@ namespace ProcessHacker.Native.Objects
                         valueStr.Buffer = data;
                         valueStr.MaximumLength = (ushort)(valueStr.Length + 2);
 
-                        status = Win32.RtlQueryEnvironmentVariable_U(
-                            this,
-                            ref nameStr,
-                            ref valueStr
-                            );
+                        status = Win32.RtlQueryEnvironmentVariable_U(this, nameStr, ref valueStr);
                     }
 
                     if (status >= NtStatus.Error)
@@ -177,25 +151,17 @@ namespace ProcessHacker.Native.Objects
 
         public void SetVariable(string name, string value)
         {
-            NtStatus status;
             IntPtr environment = _environment;
-            UnicodeString nameStr;
-            UnicodeString valueStr;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                valueStr = new UnicodeString(value);
+                UnicodeString valueStr = new UnicodeString(value);
 
                 try
                 {
-                    if ((status = Win32.RtlSetEnvironmentVariable(
-                        ref environment,
-                        ref nameStr,
-                        ref valueStr
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
+                    Win32.RtlSetEnvironmentVariable(environment, nameStr, ref valueStr).ThrowIf();
                 }
                 finally
                 {

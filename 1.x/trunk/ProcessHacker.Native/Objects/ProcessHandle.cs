@@ -322,10 +322,10 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                if ((status = Win32.RtlCreateUserProcess(
-                    ref fileNameStr,
+                Win32.RtlCreateUserProcess(
+                    fileNameStr,
                     0,
-                    ref processParams,
+                    processParams,
                     IntPtr.Zero,
                     IntPtr.Zero,
                     IntPtr.Zero,
@@ -333,8 +333,7 @@ namespace ProcessHacker.Native.Objects
                     IntPtr.Zero,
                     IntPtr.Zero,
                     out processInfo
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
 
                 clientId = processInfo.ClientId;
                 threadHandle = new ThreadHandle(processInfo.Thread, true);
@@ -375,7 +374,7 @@ namespace ProcessHacker.Native.Objects
                 creationFlags,
                 environment,
                 currentDirectory,
-                ref startupInfo,
+                startupInfo,
                 out processInformation
                 ))
                 Win32.Throw();
@@ -413,7 +412,7 @@ namespace ProcessHacker.Native.Objects
                 creationFlags,
                 environment,
                 currentDirectory,
-                ref startupInfo,
+                startupInfo,
                 out processInformation
                 ))
                 Win32.Throw();
@@ -642,34 +641,21 @@ namespace ProcessHacker.Native.Objects
             ProcessAccess access
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
                 // NtOpenProcess fails when both a client ID and a name is specified.
-                if (name != null)
+                if (!string.IsNullOrEmpty(name))
                 {
                     // Name specified, don't specify a CID.
-                    if ((status = Win32.NtOpenProcess(
-                        out handle,
-                        access,
-                        ref oa,
-                        IntPtr.Zero
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
+                    Win32.NtOpenProcess(out handle, access, oa, IntPtr.Zero).ThrowIf();
                 }
                 else
                 {
                     // No name, specify a CID.
-                    if ((status = Win32.NtOpenProcess(
-                        out handle,
-                        access,
-                        ref oa,
-                        ref clientId
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
+                    Win32.NtOpenProcess(out handle, access, oa, ref clientId).ThrowIf();
                 }
             }
             finally
@@ -932,16 +918,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void EnableHandleTracing()
         {
-            NtStatus status;
             ProcessHandleTracingEnable phte = new ProcessHandleTracingEnable();
 
-            if ((status = Win32.NtSetInformationProcess(
-                this,
-                ProcessInformationClass.ProcessHandleTracing,
-                ref phte,
-                Marshal.SizeOf(phte)
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtSetInformationProcess(this, ProcessInformationClass.ProcessHandleTracing, phte, Marshal.SizeOf(phte)).ThrowIf();
         }
 
         /// <summary>
@@ -2471,11 +2450,7 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                NtStatus status;
-
-                if ((status = Win32.NtSetInformationProcess(
-                    this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtSetInformationProcess(this, infoClass, value, sizeof(int)).ThrowIf();
             }
         }
 
@@ -2589,13 +2564,7 @@ namespace ProcessHacker.Native.Objects
             processPriority.Foreground = '\0';
             processPriority.PriorityClass = Convert.ToChar(priorityClass);
 
-            if ((status = Win32.NtSetInformationProcess(
-                this,
-                ProcessInformationClass.ProcessPriorityClass,
-                ref processPriority,
-                Marshal.SizeOf(typeof(ProcessPriorityClassStruct))
-                )) != NtStatus.Success)
-                Win32.Throw(status);
+            Win32.NtSetInformationProcess(this, ProcessInformationClass.ProcessPriorityClass, processPriority, ProcessPriorityClassStruct.SizeOf).ThrowIf();
         }
 
         /// <summary>

@@ -243,10 +243,10 @@ namespace ProcessHacker.Native
 
                 using (MemoryAlloc mem = new MemoryAlloc(fileInfo.Size))
                 {
-                    mem.WriteStruct<WintrustFileInfo>(fileInfo);
+                    mem.WriteStruct(fileInfo);
                     trustData.UnionData = mem;
 
-                    uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, ref trustData);
+                    uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, trustData);
 
                     result = StatusToVerifyResult(winTrustResult);
 
@@ -263,7 +263,7 @@ namespace ProcessHacker.Native
                     {
                         // Close the state data.
                         trustData.StateAction = WtdStateAction.Close;
-                        Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, ref trustData);
+                        Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, trustData);
                     }
                 }
             }
@@ -337,7 +337,7 @@ namespace ProcessHacker.Native
                     {
                         trustData.UnionData = mem;
 
-                        uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, ref trustData);
+                        uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, trustData);
 
                         result = StatusToVerifyResult(winTrustResult);
 
@@ -352,7 +352,7 @@ namespace ProcessHacker.Native
                         {
                             // Close the state data.
                             trustData.StateAction = WtdStateAction.Close;
-                            Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, ref trustData);
+                            Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, trustData);
                         }
                         finally
                         {

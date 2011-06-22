@@ -159,20 +159,12 @@ namespace ProcessHacker.Native.Objects
             TransactionAccess access
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenTransaction(
-                    out handle,
-                    access,
-                    ref oa,
-                    ref unitOfWorkGuid,
-                    tmHandle ?? IntPtr.Zero
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtOpenTransaction(out handle, access, ref oa, unitOfWorkGuid, tmHandle ?? IntPtr.Zero).ThrowIf();
             }
             finally
             {

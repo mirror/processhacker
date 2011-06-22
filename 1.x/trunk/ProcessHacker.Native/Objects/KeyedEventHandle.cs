@@ -69,14 +69,12 @@ namespace ProcessHacker.Native.Objects
 
         public KeyedEventHandle(string name, DirectoryHandle rootDirectory, ObjectFlags objectFlags, KeyedEventAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenKeyedEvent(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtOpenKeyedEvent(out handle, access, oa).ThrowIf();
             }
             finally
             {

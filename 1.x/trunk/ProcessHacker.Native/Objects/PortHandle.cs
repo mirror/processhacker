@@ -54,20 +54,12 @@ namespace ProcessHacker.Native.Objects
             int maxPoolUsage
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreatePort(
-                    out handle,
-                    ref oa,
-                    maxConnectionInfoLength,
-                    maxMessageLength,
-                    maxPoolUsage
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtCreatePort(out handle, oa, maxConnectionInfoLength, maxMessageLength, maxPoolUsage).ThrowIf();
             }
             finally
             {
@@ -102,20 +94,12 @@ namespace ProcessHacker.Native.Objects
             int maxPoolUsage
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateWaitablePort(
-                    out handle,
-                    ref oa,
-                    maxConnectionInfoLength,
-                    maxMessageLength,
-                    maxPoolUsage
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtCreateWaitablePort(out handle, oa, maxConnectionInfoLength, maxMessageLength, maxPoolUsage).ThrowIf();
             }
             finally
             {
@@ -131,44 +115,29 @@ namespace ProcessHacker.Native.Objects
 
         public PortComHandle AcceptConnect(PortMessage message, bool accept)
         {
-            NtStatus status;
             IntPtr portHandle;
 
             using (var messageMemory = message.ToMemory())
             {
-                if ((status = Win32.NtAcceptConnectPort(
-                    out portHandle,
-                    IntPtr.Zero,
-                    messageMemory,
-                    accept,
-                    IntPtr.Zero,
-                    IntPtr.Zero
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtAcceptConnectPort(out portHandle, IntPtr.Zero, messageMemory, accept, IntPtr.Zero, IntPtr.Zero).ThrowIf();
 
                 if (!NativeHandle.IsInvalid(portHandle))
                     return new PortComHandle(portHandle, true);
-                else
-                    return null;
+
+                return null;
             }
         }
 
         public void CompleteConnect()
         {
-            NtStatus status;
-
-            if ((status = Win32.NtCompleteConnectPort(this)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtCompleteConnectPort(this).ThrowIf();
         }
 
         public PortMessage Listen()
         {
-            NtStatus status;
-
-            using (var buffer = PortMessage.AllocateBuffer())
+            using (MemoryAlloc buffer = PortMessage.AllocateBuffer())
             {
-                if ((status = Win32.NtListenPort(this, buffer)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtListenPort(this, buffer).ThrowIf();
 
                 return new PortMessage(buffer);
             }

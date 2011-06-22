@@ -73,10 +73,10 @@ namespace ProcessHacker
 
         public static void WriteListEntry(this BinaryWriter bw, string value)
         {
-            if (value == null)
-                value = "";
+            if (string.IsNullOrEmpty(value))
+                value = string.Empty;
 
-            bw.Write(Encoding.Unicode.GetBytes(value.Replace("\0", "") + "\0"));
+            bw.Write(Encoding.Unicode.GetBytes(value.Replace("\0", string.Empty) + "\0"));
         }
 
         public static void AppendStruct<T>(MemoryObject mo, T s)
@@ -84,7 +84,7 @@ namespace ProcessHacker
         {
             using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(T))))
             {
-                data.WriteStruct<T>(s);
+                data.WriteStruct(s);
                 mo.AppendData(data.ReadBytes(data.Size));
             }
         }

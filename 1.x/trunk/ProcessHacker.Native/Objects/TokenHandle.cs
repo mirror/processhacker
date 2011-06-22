@@ -102,7 +102,6 @@ namespace ProcessHacker.Native.Objects
             TokenSource source
             )
         {
-            NtStatus status;
             TokenUser tokenUser = new TokenUser(user);
             TokenGroups tokenGroups = new TokenGroups(groups);
             TokenPrivileges tokenPrivileges = new TokenPrivileges(privileges);
@@ -114,22 +113,21 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                if ((status = Win32.NtCreateToken(
+                Win32.NtCreateToken(
                     out handle,
                     access,
                     ref oa,
                     tokenType,
-                    ref authenticationId,
-                    ref expirationTime,
-                    ref tokenUser,
-                    ref tokenGroups,
-                    ref tokenPrivileges,
+                    authenticationId,
+                    expirationTime,
+                    tokenUser,
+                    tokenGroups,
+                    tokenPrivileges,
                     ref tokenOwner,
-                    ref tokenPrimaryGroup,
+                    tokenPrimaryGroup,
                     ref tokenDefaultDacl,
-                    ref source
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    source
+                    ).ThrowIf();
             }
             finally
             {
@@ -616,15 +614,7 @@ namespace ProcessHacker.Native.Objects
 
         private void SetInformationInt32(TokenInformationClass infoClass, int value)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtSetInformationToken(
-                this,
-                infoClass,
-                ref value,
-                sizeof(int)
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtSetInformationToken(this, infoClass, value, sizeof(int)).ThrowIf();
         }
 
         /// <summary>
@@ -657,7 +647,7 @@ namespace ProcessHacker.Native.Objects
         {
             int value = enabled ? 1 : 0;
 
-            if (!Win32.SetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled, ref value, 4))
+            if (!Win32.SetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled, value, 4))
             {
                 Win32.Throw();
             }
@@ -679,17 +669,18 @@ namespace ProcessHacker.Native.Objects
 
         public bool TrySetPrivilege(Luid privilegeLuid, SePrivilegeAttributes attributes)
         {
-            TokenPrivileges tkp = new TokenPrivileges();
+            TokenPrivileges tkp = new TokenPrivileges
+            {
+                Privileges = new LuidAndAttributes[1], 
+                PrivilegeCount = 1
+            };
 
-            tkp.Privileges = new LuidAndAttributes[1];
-
-            tkp.PrivilegeCount = 1;
             tkp.Privileges[0].Attributes = attributes;
             tkp.Privileges[0].Luid = privilegeLuid;
 
-            Win32.AdjustTokenPrivileges(this, false, ref tkp, 0, IntPtr.Zero, IntPtr.Zero);
+            NtStatus result = Win32.NtAdjustPrivilegesToken(this, false, ref tkp, 0, IntPtr.Zero, IntPtr.Zero);
 
-            if (Marshal.GetLastWin32Error() != 0)
+            if (result.IsError())
                 return false;
 
             return true;

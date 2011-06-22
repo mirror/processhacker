@@ -53,31 +53,15 @@ namespace ProcessHacker.Native.Objects
             return Create(access, name, objectFlags, rootDirectory, createOptions, out creationDisposition);
         }
 
-        public static KeyHandle Create(
-            KeyAccess access,
-            string name,
-            ObjectFlags objectFlags,
-            KeyHandle rootDirectory,
-            RegOptions createOptions,
-            out KeyCreationDisposition creationDisposition
-            )
+        public static KeyHandle Create(KeyAccess access, string name, ObjectFlags objectFlags, KeyHandle rootDirectory, RegOptions createOptions, out KeyCreationDisposition creationDisposition)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateKey(
-                    out handle,
-                    access,
-                    ref oa,
-                    0,
-                    IntPtr.Zero,
-                    createOptions,
-                    out creationDisposition
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtCreateKey(out handle, access, oa, 0, IntPtr.Zero, createOptions, out creationDisposition).ThrowIf();
             }
             finally
             {
@@ -97,18 +81,12 @@ namespace ProcessHacker.Native.Objects
 
         public KeyHandle(string name, ObjectFlags objectFlags, KeyHandle rootDirectory, KeyAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenKey(
-                    out handle,
-                    access,
-                    ref oa
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtOpenKey(out handle, access, oa).ThrowIf();
             }
             finally
             {
@@ -128,13 +106,11 @@ namespace ProcessHacker.Native.Objects
 
         public void DeleteValue(string name)
         {
-            NtStatus status;
             UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                if ((status = Win32.NtDeleteValueKey(this, ref nameStr)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtDeleteValueKey(this, nameStr).ThrowIf();
             }
             finally
             {

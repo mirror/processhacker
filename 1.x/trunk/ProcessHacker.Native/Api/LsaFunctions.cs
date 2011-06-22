@@ -21,13 +21,13 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
+
 using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
+    [System.Security.SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
         /* Note: Be very careful about where these functions are 
@@ -66,11 +66,11 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaChangePassword(
-            [In] ref UnicodeString ServerName,
-            [In] ref UnicodeString DomainName,
-            [In] ref UnicodeString AccountName,
-            [In] ref UnicodeString OldPassword,
-            [In] ref UnicodeString NewPassword
+            [In] UnicodeString ServerName,
+            [In] UnicodeString DomainName,
+            [In] UnicodeString AccountName,
+            [In] UnicodeString OldPassword,
+            [In] UnicodeString NewPassword
             );
 
         [DllImport("secur32.dll")]
@@ -89,7 +89,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaCreateSecret(
             [In] IntPtr PolicyHandle,
-            [In] ref UnicodeString SecretName,
+            [In] UnicodeString SecretName,
             [In] LsaSecretAccess DesiredAccess,
             [Out] out IntPtr SecretHandle
             );
@@ -97,7 +97,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaCreateTrustedDomain(
             [In] IntPtr PolicyHandle,
-            [In] ref LsaTrustInformation TrustedDomainInformation,
+            [In] LsaTrustInformation TrustedDomainInformation,
             [In] LsaTrustedAccess DesiredAccess,
             [Out] out IntPtr TrustedDomainHandle
             );
@@ -194,7 +194,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("secur32.dll")]
         public static extern NtStatus LsaGetLogonSessionData(
-            [In] ref Luid LogonId,
+            [In] Luid LogonId,
             [Out] out IntPtr LogonSessionData // SecurityLogonSessionData**
             );
 
@@ -226,13 +226,13 @@ namespace ProcessHacker.Native.Api
         [DllImport("secur32.dll")]
         public static extern NtStatus LsaLogonUser(
             [In] IntPtr LsaHandle,
-            [In] ref AnsiString OriginName,
+            [In] AnsiString OriginName,
             [In] SecurityLogonType LogonType,
             [In] int AuthenticationPackage,
             [In] IntPtr AuthenticationInformation,
             [In] int AuthenticationInformationLength,
             [In] [Optional] IntPtr LocalGroups, // TokenGroups*
-            [In] ref TokenSource SourceContext,
+            [In] TokenSource SourceContext,
             [Out] out IntPtr ProfileBuffer,
             [Out] out int ProfileBufferLength,
             [Out] out Luid LogonId,
@@ -244,7 +244,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("secur32.dll")]
         public static extern NtStatus LsaLookupAuthenticationPackage(
             [In] IntPtr LsaHandle,
-            [In] ref AnsiString PackageName,
+            [In] AnsiString PackageName,
             [Out] out int AuthenticationPackage
             );
 
@@ -270,7 +270,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaLookupPrivilegeDisplayName(
             [In] IntPtr PolicyHandle,
-            [In] ref UnicodeString Name,
+            [In] UnicodeString Name,
             [Out] out IntPtr DisplayName, // UnicodeString**
             [Out] out short LanguageReturned
             );
@@ -278,14 +278,14 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaLookupPrivilegeName(
             [In] IntPtr PolicyHandle,
-            [In] ref Luid Value,
+            [In, Out] ref Luid Value,
             [Out] out IntPtr Name // UnicodeString**
             );
 
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaLookupPrivilegeValue(
             [In] IntPtr PolicyHandle,
-            [In] ref UnicodeString Name,
+            [In] UnicodeString Name,
             [Out] out Luid Value
             );
 
@@ -314,7 +314,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaOpenPolicy(
             [In] [Optional] ref UnicodeString SystemName,
-            [In] ref ObjectAttributes ObjectAttributes,
+            [In] ObjectAttributes ObjectAttributes,
             [In] LsaPolicyAccess DesiredAccess,
             [Out] out IntPtr PolicyHandle
             );
@@ -322,7 +322,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaOpenPolicySce(
             [In] [Optional] ref UnicodeString SystemName,
-            [In] ref ObjectAttributes ObjectAttributes,
+            [In] ObjectAttributes ObjectAttributes,
             [In] LsaPolicyAccess DesiredAccess,
             [Out] out IntPtr PolicyHandle
             );
@@ -330,7 +330,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaOpenSecret(
             [In] IntPtr PolicyHandle,
-            [In] ref UnicodeString SecretName,
+            [In] UnicodeString SecretName,
             [In] LsaSecretAccess DesiredAccess,
             [Out] out IntPtr SecretHandle
             );
@@ -346,7 +346,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaOpenTrustedDomainByName(
             [In] IntPtr PolicyHandle,
-            [In] ref UnicodeString TrustedDomainName,
+            [In] UnicodeString TrustedDomainName,
             [In] LsaTrustedAccess DesiredAccess,
             [Out] out IntPtr TrustedDomainHandle
             );
@@ -399,14 +399,14 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaQueryTrustedDomainInfoByName(
             [In] IntPtr PolicyHandle,
-            [In] ref UnicodeString TrustedDomainName,
+            [In] UnicodeString TrustedDomainName,
             [In] TrustedInformationClass InformationClass,
             [Out] out IntPtr Buffer
             );
 
         [DllImport("secur32.dll")]
         public static extern NtStatus LsaRegisterLogonProcess(
-            [In] ref AnsiString LogonProcessName,
+            [In] AnsiString LogonProcessName,
             [Out] out IntPtr LsaHandle,
             [Out] out LsaOperationalMode SecurityMode
             );
@@ -436,7 +436,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaRetrievePrivateData(
             [In] IntPtr PolicyHandle,
-            [In] ref UnicodeString KeyName,
+            [In] UnicodeString KeyName,
             [Out] out IntPtr PrivateData // UnicodeString**
             );
 
@@ -464,7 +464,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaSetQuotasForAccount(
             [In] IntPtr AccountHandle,
-            [In] ref QuotaLimits QuotaLimits
+            [In] QuotaLimits QuotaLimits
             );
 
         [DllImport("advapi32.dll")]
@@ -498,7 +498,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaSetTrustedDomainInfoByName(
             [In] IntPtr PolicyHandle,
-            [In] ref UnicodeString TrustedDomainName,
+            [In] UnicodeString TrustedDomainName,
             [In] TrustedInformationClass InformationClass,
             [In] IntPtr Buffer
             );
@@ -506,15 +506,15 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaStorePrivateData(
             [In] IntPtr PolicyHandle,
-            [In] ref UnicodeString KeyName,
-            [In] [Optional] ref UnicodeString PrivateData
+            [In] UnicodeString KeyName,
+            [In, Optional] UnicodeString PrivateData
             );
 
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaStorePrivateData(
             [In] IntPtr PolicyHandle,
-            [In] ref UnicodeString KeyName,
-            [In] [Optional] IntPtr PrivateData
+            [In] UnicodeString KeyName,
+            [In, Optional] IntPtr PrivateData
             );
 
         [DllImport("secur32.dll")]

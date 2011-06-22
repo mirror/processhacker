@@ -32,6 +32,7 @@ namespace ProcessHacker.Native.Api
     public delegate void WaitOrTimerCallbackDelegate(IntPtr context, bool timeout);
     public delegate void WorkerCallbackDelegate(IntPtr context);
 
+    [System.Security.SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
         public const int AclRevision = 2;

@@ -89,7 +89,6 @@ namespace ProcessHacker.Native.Objects
             long defaultTimeout
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
             IoStatusBlock isb;
             IntPtr handle;
@@ -100,23 +99,7 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                if ((status = Win32.NtCreateNamedPipeFile(
-                    out handle,
-                    access,
-                    ref oa,
-                    out isb,
-                    shareMode,
-                    creationDisposition,
-                    createOptions,
-                    type,
-                    readMode,
-                    completionMode,
-                    maximumInstances,
-                    inboundQuota,
-                    outboundQuota,
-                    ref defaultTimeout
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtCreateNamedPipeFile(out handle, access, oa, out isb, shareMode, creationDisposition, createOptions, type, readMode, completionMode, maximumInstances, inboundQuota, outboundQuota, ref defaultTimeout).ThrowIf();
             }
             finally
             {
@@ -352,16 +335,13 @@ namespace ProcessHacker.Native.Objects
             return this.Peek(buffer, 0, buffer.Length, out bytesAvailable, out bytesLeftInMessage);
         }
 
-        public int Peek(byte[] buffer, int offset, int length, out int bytesAvailable, out int bytesLeftInMessage)
+        public unsafe int Peek(byte[] buffer, int offset, int length, out int bytesAvailable, out int bytesLeftInMessage)
         {
             Utils.ValidateBuffer(buffer, offset, length);
 
-            unsafe
+            fixed (byte* bufferPtr = buffer)
             {
-                fixed (byte* bufferPtr = buffer)
-                {
-                    return this.Peek(new IntPtr(&bufferPtr[offset]), length, out bytesAvailable, out bytesLeftInMessage);
-                }
+                return this.Peek(new IntPtr(&bufferPtr[offset]), length, out bytesAvailable, out bytesLeftInMessage);
             }
         }
 

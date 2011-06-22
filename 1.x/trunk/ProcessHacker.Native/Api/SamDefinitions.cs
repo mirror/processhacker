@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ProcessHacker.Native.Api
+﻿namespace ProcessHacker.Native.Api
 {
+    [System.Security.SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
         public const int SamMaximumLookupCount = 100;

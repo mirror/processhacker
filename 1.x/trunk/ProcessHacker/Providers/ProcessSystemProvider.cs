@@ -287,9 +287,10 @@ namespace ProcessHacker
             SystemBasicInformation basic;
             int retLen;
 
-            Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, out basic, Marshal.SizeOf(typeof(SystemBasicInformation)), out retLen);
+            Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, out basic, SystemBasicInformation.SizeOf, out retLen);
+
             _system = basic;
-            _processorPerfArraySize = Marshal.SizeOf(typeof(SystemProcessorPerformanceInformation)) * _system.NumberOfProcessors;
+            _processorPerfArraySize = SystemProcessorPerformanceInformation.SizeOf * _system.NumberOfProcessors;
             _processorPerfBuffer = new MemoryAlloc(_processorPerfArraySize);
             _processorPerfArray = new SystemProcessorPerformanceInformation[_system.NumberOfProcessors];
 

@@ -460,21 +460,19 @@ namespace ProcessHacker.Native.Security.AccessControl
         /// <returns>Success if access was granted, otherwise another NT status value.</returns>
         public NtStatus CheckAccess(TokenHandle tokenHandle, int desiredAccess, GenericMapping genericMapping, out int grantedAccess)
         {
-            NtStatus status;
             NtStatus accessStatus;
             int privilegeSetLength = 0;
 
-            if ((status = Win32.NtAccessCheck(
+            Win32.NtAccessCheck(
                 this,
                 tokenHandle,
                 desiredAccess,
-                ref genericMapping,
+                genericMapping,
                 IntPtr.Zero,
                 ref privilegeSetLength,
                 out grantedAccess,
                 out accessStatus
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return accessStatus;
         }
@@ -490,18 +488,16 @@ namespace ProcessHacker.Native.Security.AccessControl
 
         private void Read()
         {
-            NtStatus status;
             bool present, defaulted;
             IntPtr dacl, group, owner, sacl;
 
             // Read the DACL.
-            if ((status = Win32.RtlGetDaclSecurityDescriptor(
+            Win32.RtlGetDaclSecurityDescriptor(
                 this,
                 out present,
                 out dacl,
                 out defaulted
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             if (present && dacl != IntPtr.Zero)
                 this.SwapDacl(new Acl(Acl.FromPointer(dacl)));
@@ -509,13 +505,12 @@ namespace ProcessHacker.Native.Security.AccessControl
                 this.SwapDacl(null);
 
             // Read the SACL.
-            if ((status = Win32.RtlGetSaclSecurityDescriptor(
+            Win32.RtlGetSaclSecurityDescriptor(
                 this,
                 out present,
                 out sacl,
                 out defaulted
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             if (present && sacl != IntPtr.Zero)
                 this.SwapSacl(new Acl(Acl.FromPointer(sacl)));
@@ -523,12 +518,11 @@ namespace ProcessHacker.Native.Security.AccessControl
                 this.SwapSacl(null);
 
             // Read the group.
-            if ((status = Win32.RtlGetGroupSecurityDescriptor(
+            Win32.RtlGetGroupSecurityDescriptor(
                 this,
                 out group,
                 out defaulted
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             if (group != IntPtr.Zero)
                 this.SwapGroup(new Sid(group));
@@ -536,12 +530,11 @@ namespace ProcessHacker.Native.Security.AccessControl
                 this.SwapGroup(null);
 
             // Read the owner.
-            if ((status = Win32.RtlGetOwnerSecurityDescriptor(
+            Win32.RtlGetOwnerSecurityDescriptor(
                 this,
                 out owner,
                 out defaulted
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             if (owner != IntPtr.Zero)
                 this.SwapOwner(new Sid(owner));
@@ -551,22 +544,22 @@ namespace ProcessHacker.Native.Security.AccessControl
 
         private void SwapDacl(Acl dacl)
         {
-            BaseObject.SwapRef<Acl>(ref _dacl, dacl);
+            BaseObject.SwapRef(ref _dacl, dacl);
         }
 
         private void SwapGroup(Sid group)
         {
-            BaseObject.SwapRef<Sid>(ref _group, group);
+            BaseObject.SwapRef(ref _group, group);
         }
 
         private void SwapOwner(Sid owner)
         {
-            BaseObject.SwapRef<Sid>(ref _owner, owner);
+            BaseObject.SwapRef(ref _owner, owner);
         }
 
         private void SwapSacl(Acl sacl)
         {
-            BaseObject.SwapRef<Acl>(ref _sacl, sacl);
+            BaseObject.SwapRef(ref _sacl, sacl);
         }
 
         /// <summary>
@@ -578,7 +571,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             NtStatus status;
             int retLength;
 
-            using (var data = new MemoryAlloc(Win32.SecurityDescriptorMinLength))
+            using (MemoryAlloc data = new MemoryAlloc(Win32.SecurityDescriptorMinLength))
             {
                 retLength = data.Size;
                 status = Win32.RtlMakeSelfRelativeSD(this, data, ref retLength);

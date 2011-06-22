@@ -39,7 +39,7 @@ namespace ProcessHacker.Native.Api
     public delegate IntPtr WndProcDelegate(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
 
     public delegate bool SymEnumSymbolsProc(IntPtr SymInfo, int SymbolSize, int UserContext);
-    public unsafe delegate bool ReadProcessMemoryProc64(IntPtr ProcessHandle, ulong BaseAddress, IntPtr Buffer,
+    public delegate bool ReadProcessMemoryProc64(IntPtr ProcessHandle, ulong BaseAddress, IntPtr Buffer,
         int Size, out int BytesRead);
     public delegate IntPtr FunctionTableAccessProc64(IntPtr ProcessHandle, ulong AddrBase);
     public delegate ulong GetModuleBaseProc64(IntPtr ProcessHandle, ulong Address);
@@ -50,7 +50,7 @@ namespace ProcessHacker.Native.Api
     [SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
-        private static FastMutex _dbgHelpLock = new FastMutex();
+        private static readonly FastMutex _dbgHelpLock = new FastMutex();
 
         /// <summary>
         /// A mutex which controls access to the dbghelp.dll functions.
@@ -115,7 +115,7 @@ namespace ProcessHacker.Native.Api
 
         #region Handles
 
-        public unsafe static void DuplicateObject(
+        public static void DuplicateObject(
             IntPtr sourceProcessHandle,
             IntPtr sourceHandle,
             int desiredAccess,
@@ -136,7 +136,7 @@ namespace ProcessHacker.Native.Api
                 );
         }
 
-        public unsafe static void DuplicateObject(
+        public static void DuplicateObject(
             IntPtr sourceProcessHandle,
             IntPtr sourceHandle,
             IntPtr targetProcessHandle,
@@ -151,28 +151,28 @@ namespace ProcessHacker.Native.Api
                 int target;
 
                 KProcessHacker.Instance.KphDuplicateObject(
-                    sourceProcessHandle.ToInt32(),
-                    sourceHandle.ToInt32(),
-                    targetProcessHandle.ToInt32(),
-                    out target,
-                    desiredAccess,
-                    handleAttributes,
-                    options);
+                    sourceProcessHandle.ToInt32(), 
+                    sourceHandle.ToInt32(), 
+                    targetProcessHandle.ToInt32(), 
+                    out target, 
+                    desiredAccess, 
+                    handleAttributes, 
+                    options
+                    );
+                
                 targetHandle = new IntPtr(target);
             }
             else
             {
-                NtStatus status;
-
-                if ((status = NtDuplicateObject(
-                    sourceProcessHandle,
-                    sourceHandle,
-                    targetProcessHandle,
-                    out targetHandle,
-                    desiredAccess,
-                    handleAttributes,
-                    options)) >= NtStatus.Error)
-                    Throw(status);
+                NtDuplicateObject(
+                    sourceProcessHandle, 
+                    sourceHandle, 
+                    targetProcessHandle, 
+                    out targetHandle, 
+                    desiredAccess, 
+                    handleAttributes, 
+                    options
+                    ).ThrowIf();
             }
         }
 
@@ -249,13 +249,11 @@ namespace ProcessHacker.Native.Api
         {
             IntPtr processes;
             int count;
-            int[] pids;
-            IntPtr[] sids;
 
             WTSEnumerateProcesses(IntPtr.Zero, 0, 1, out processes, out count);
 
-            pids = new int[count];
-            sids = new IntPtr[count];
+            int[] pids = new int[count];
+            IntPtr[] sids = new IntPtr[count];
 
             WtsMemoryAlloc data = new WtsMemoryAlloc(processes);
             WtsProcessInfo* dataP = (WtsProcessInfo*)data.Memory;
@@ -266,7 +264,12 @@ namespace ProcessHacker.Native.Api
                 sids[i] = dataP[i].Sid;
             }
 
-            return new WtsEnumProcessesFastData() { PIDs = pids, SIDs = sids, Memory = data };
+            return new WtsEnumProcessesFastData
+            { 
+                PIDs = pids, 
+                SIDs = sids, 
+                Memory = data 
+            };
         }
 
         #endregion
@@ -330,15 +333,13 @@ namespace ProcessHacker.Native.Api
 
                 string str = currentString.ToString();
 
-                if (str == "")
+                if (string.IsNullOrEmpty(str))
                 {
                     break;
                 }
-                else
-                {
-                    list.Add(str);
-                    currentString = new StringBuilder();
-                }
+
+                list.Add(str);
+                currentString = new StringBuilder();
             }
 
             return list.ToArray();

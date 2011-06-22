@@ -56,14 +56,12 @@ namespace ProcessHacker.Native.Objects
 
         public static DirectoryHandle Create(DirectoryAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateDirectoryObject(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtCreateDirectoryObject(out handle, access, oa).ThrowIf();
             }
             finally
             {
@@ -86,7 +84,6 @@ namespace ProcessHacker.Native.Objects
 
         public DirectoryHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, DirectoryAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
@@ -98,8 +95,7 @@ namespace ProcessHacker.Native.Objects
                 }
                 else
                 {
-                    if ((status = Win32.NtOpenDirectoryObject(out handle, access, ref oa)) >= NtStatus.Error)
-                        Win32.Throw(status);
+                    Win32.NtOpenDirectoryObject(out handle, access, oa).ThrowIf();
                 }
             }
             finally

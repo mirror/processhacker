@@ -71,14 +71,12 @@ namespace ProcessHacker.Native.Objects
 
         public IoCompletionHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, IoCompletionAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenIoCompletion(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtOpenIoCompletion(out handle, access, oa).ThrowIf();
             }
             finally
             {

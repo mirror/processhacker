@@ -9,14 +9,13 @@
 namespace ProcessHacker.Components
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
 
     /// <summary>
     /// Class to hold native code interop declarations.
     /// </summary>
     [System.Security.SuppressUnmanagedCodeSecurity]
-    internal static partial class UnsafeNativeMethods
+    internal static class UnsafeNativeMethods
     {
         /// <summary>
         /// WM_USER taken from WinUser.h
@@ -279,7 +278,7 @@ namespace ProcessHacker.Components
         /// <param name="pfVerificationFlagChecked">The state of the verification checkbox on dismiss of the Task Dialog.</param>
         [DllImport("comctl32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
         internal static extern void TaskDialogIndirect(
-            [In] ref TASKDIALOGCONFIG pTaskConfig,
+            [In] TASKDIALOGCONFIG pTaskConfig,
             [Out] out int pnButton,
             [Out] out int pnRadioButton,
             [MarshalAs(UnmanagedType.Bool)]
@@ -313,6 +312,8 @@ namespace ProcessHacker.Components
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
         internal struct TASKDIALOGCONFIG
         {
+            public static readonly int SizeOf;
+
             /// <summary>
             /// Size of the structure in bytes.
             /// </summary>
@@ -440,7 +441,12 @@ namespace ProcessHacker.Components
             /// Width of the Task Dialog's client area in DLU's.
             /// If 0, Task Dialog will calculate the ideal width.
             /// </summary>
-            public uint cxWidth;                                 
+            public uint cxWidth;
+
+            static TASKDIALOGCONFIG()
+            {
+                SizeOf = Marshal.SizeOf(typeof(TASKDIALOGCONFIG));
+            }     
         }
     }
 }

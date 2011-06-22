@@ -141,29 +141,18 @@ namespace ProcessHacker.Native
         /// <param name="enumCallback">A callback for the enumeration.</param>
         public static void EnumKernelModules(EnumKernelModulesDelegate enumCallback)
         {
-            NtStatus status;
             int retLength;
 
             if (_kernelModulesBuffer == null)
                 _kernelModulesBuffer = new MemoryAlloc(0x1000);
 
-            status = Win32.NtQuerySystemInformation(
-                SystemInformationClass.SystemModuleInformation,
-                _kernelModulesBuffer,
-                _kernelModulesBuffer.Size,
-                out retLength
-                );
+            NtStatus status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemModuleInformation, _kernelModulesBuffer, _kernelModulesBuffer.Size, out retLength);
 
             if (status == NtStatus.InfoLengthMismatch)
             {
                 _kernelModulesBuffer.ResizeNew(retLength);
 
-                status = Win32.NtQuerySystemInformation(
-                    SystemInformationClass.SystemModuleInformation,
-                    _kernelModulesBuffer,
-                    _kernelModulesBuffer.Size,
-                    out retLength
-                    );
+                status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemModuleInformation, _kernelModulesBuffer, _kernelModulesBuffer.Size, out retLength);
             }
 
             if (status >= NtStatus.Error)
@@ -176,13 +165,7 @@ namespace ProcessHacker.Native
                 var module = _kernelModulesBuffer.ReadStruct<RtlProcessModuleInformation>(RtlProcessModules.ModulesOffset, i);
                 var moduleInfo = new Debugging.ModuleInformation(module);
 
-                if (!enumCallback(new KernelModule(
-                    moduleInfo.BaseAddress,
-                    moduleInfo.Size,
-                    moduleInfo.Flags,
-                    moduleInfo.BaseName,
-                    FileUtils.GetFileName(moduleInfo.FileName)
-                    )))
+                if (!enumCallback(new KernelModule(moduleInfo.BaseAddress, moduleInfo.Size, moduleInfo.Flags, moduleInfo.BaseName, FileUtils.GetFileName(moduleInfo.FileName))))
                     break;
             }
         }
@@ -193,17 +176,10 @@ namespace ProcessHacker.Native
         /// <returns>A structure containing basic information.</returns>
         public static SystemBasicInformation GetBasicInformation()
         {
-            NtStatus status;
             SystemBasicInformation sbi;
             int retLength;
 
-            if ((status = Win32.NtQuerySystemInformation(
-                SystemInformationClass.SystemBasicInformation,
-                out sbi,
-                Marshal.SizeOf(typeof(SystemBasicInformation)),
-                out retLength
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, out sbi, SystemBasicInformation.SizeOf, out retLength).ThrowIf();
 
             return sbi;
         }
@@ -214,9 +190,7 @@ namespace ProcessHacker.Native
         /// <returns>An array containing information about the handles.</returns>
         public static SystemHandleEntry[] GetHandles()
         {
-            int retLength = 0;
-            int handleCount = 0;
-            SystemHandleEntry[] returnHandles;
+            int retLength;
 
             if (_handlesBuffer == null)
                 _handlesBuffer = new MemoryAlloc(0x1000);
@@ -247,8 +221,8 @@ namespace ProcessHacker.Native
 
             // The structure of the buffer is the handle count plus an array of SYSTEM_HANDLE_INFORMATION 
             // structures.
-            handleCount = data.ReadStruct<SystemHandleInformation>().NumberOfHandles;
-            returnHandles = new SystemHandleEntry[handleCount];
+            int handleCount = data.ReadStruct<SystemHandleInformation>().NumberOfHandles;
+            SystemHandleEntry[] returnHandles = new SystemHandleEntry[handleCount];
 
             // Unsafe code for speed.
             unsafe
@@ -273,7 +247,7 @@ namespace ProcessHacker.Native
         {
             IntPtr kernelBase = IntPtr.Zero;
 
-            Windows.EnumKernelModules((module) =>
+            Windows.EnumKernelModules(module =>
             {
                 kernelBase = module.BaseAddress;
                 return false;
@@ -290,7 +264,7 @@ namespace ProcessHacker.Native
         {
             string kernelFileName = null;
 
-            EnumKernelModules((module) =>
+            EnumKernelModules(module =>
             {
                 kernelFileName = module.FileName;
                 return false;
@@ -307,7 +281,7 @@ namespace ProcessHacker.Native
         {
             List<KernelModule> kernelModules = new List<KernelModule>();
 
-            EnumKernelModules((kernelModule) =>
+            EnumKernelModules(kernelModule =>
             {
                 kernelModules.Add(kernelModule);
                 return true;
@@ -318,50 +292,28 @@ namespace ProcessHacker.Native
 
         public static SystemLogonSession GetLogonSession(Luid logonId)
         {
-            NtStatus status;
             IntPtr logonSessionData;
 
-            if ((status = Win32.LsaGetLogonSessionData(
-                ref logonId,
-                out logonSessionData
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.LsaGetLogonSessionData(logonId, out logonSessionData).ThrowIf();
 
-            using (var logonSessionDataAlloc = new LsaMemoryAlloc(logonSessionData, true))
+            using (LsaMemoryAlloc logonSessionDataAlloc = new LsaMemoryAlloc(logonSessionData, true))
             {
                 var info = logonSessionDataAlloc.ReadStruct<SecurityLogonSessionData>();
 
-                return new SystemLogonSession(
-                    info.AuthenticationPackage.Read(),
-                    info.DnsDomainName.Read(),
-                    info.LogonDomain.Read(),
-                    info.LogonId,
-                    info.LogonServer.Read(),
-                    DateTime.FromFileTime(info.LogonTime),
-                    info.LogonType,
-                    info.Session,
-                    new Sid(info.Sid),
-                    info.Upn.Read(),
-                    info.UserName.Read()
-                    );
+                return new SystemLogonSession(info.AuthenticationPackage.Read(), info.DnsDomainName.Read(), info.LogonDomain.Read(), info.LogonId, info.LogonServer.Read(), DateTime.FromFileTime(info.LogonTime), info.LogonType, info.Session, new Sid(info.Sid), info.Upn.Read(), info.UserName.Read());
             }
         }
 
         public static Luid[] GetLogonSessions()
         {
-            NtStatus status;
             int logonSessionCount;
             IntPtr logonSessionList;
 
-            if ((status = Win32.LsaEnumerateLogonSessions(
-                out logonSessionCount,
-                out logonSessionList
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.LsaEnumerateLogonSessions(out logonSessionCount, out logonSessionList).ThrowIf();
 
             Luid[] logonSessions = new Luid[logonSessionCount];
 
-            using (var logonSessionListAlloc = new LsaMemoryAlloc(logonSessionList, true))
+            using (LsaMemoryAlloc logonSessionListAlloc = new LsaMemoryAlloc(logonSessionList, true))
             {
                 for (int i = 0; i < logonSessionCount; i++)
                     logonSessions[i] = logonSessionListAlloc.ReadStruct<Luid>(i);
@@ -377,14 +329,13 @@ namespace ProcessHacker.Native
         public static Dictionary<int, List<NetworkConnection>> GetNetworkConnections()
         {
             var retDict = new Dictionary<int, List<NetworkConnection>>();
-            int length;
 
             // TCP IPv4
 
-            length = 0;
+            int length = 0;
             Win32.GetExtendedTcpTable(IntPtr.Zero, ref length, false, AiFamily.INet, TcpTableClass.OwnerPidAll, 0);
 
-            using (var mem = new MemoryAlloc(length))
+            using (MemoryAlloc mem = new MemoryAlloc(length))
             {
                 if (Win32.GetExtendedTcpTable(mem, ref length, false, AiFamily.INet, TcpTableClass.OwnerPidAll, 0) != 0)
                     Win32.Throw();
@@ -398,7 +349,7 @@ namespace ProcessHacker.Native
                     if (!retDict.ContainsKey(struc.OwningProcessId))
                         retDict.Add(struc.OwningProcessId, new List<NetworkConnection>());
 
-                    retDict[struc.OwningProcessId].Add(new NetworkConnection()
+                    retDict[struc.OwningProcessId].Add(new NetworkConnection
                     {
                         Protocol = NetworkProtocol.Tcp,
                         Local = new IPEndPoint(struc.LocalAddress, ((ushort)struc.LocalPort).Reverse()),
@@ -570,7 +521,6 @@ namespace ProcessHacker.Native
         public static Dictionary<int, SystemProcess> GetProcesses(bool getThreads)
         {
             int retLength;
-            Dictionary<int, SystemProcess> returnProcesses;
 
             if (_processesBuffer == null)
                 _processesBuffer = new MemoryAlloc(0x10000);
@@ -584,12 +534,7 @@ namespace ProcessHacker.Native
             {
                 attempts++;
 
-                if ((status = Win32.NtQuerySystemInformation(
-                    SystemInformationClass.SystemProcessInformation,
-                    data,
-                    data.Size,
-                    out retLength
-                    )) >= NtStatus.Error)
+                if ((status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessInformation, data, data.Size, out retLength)) >= NtStatus.Error)
                 {
                     if (attempts > 3)
                         Win32.Throw(status);
@@ -602,7 +547,7 @@ namespace ProcessHacker.Native
                 }
             }
 
-            returnProcesses = new Dictionary<int, SystemProcess>(32); // 32 processes on a computer?
+            Dictionary<int, SystemProcess> returnProcesses = new Dictionary<int, SystemProcess>(32);
 
             int i = 0;
             SystemProcess currentProcess = new SystemProcess();
@@ -617,15 +562,13 @@ namespace ProcessHacker.Native
 
                 currentProcess.Name = currentProcess.Process.ImageName.Read();
 
-                if (getThreads &&
-                    currentProcess.Process.ProcessId != 0)
+                if (getThreads && currentProcess.Process.ProcessId != 0)
                 {
                     currentProcess.Threads = new Dictionary<int, SystemThreadInformation>();
 
                     for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
                     {
-                        var thread = data.ReadStruct<SystemThreadInformation>(i +
-                            Marshal.SizeOf(typeof(SystemProcessInformation)), j);
+                        SystemThreadInformation thread = data.ReadStruct<SystemThreadInformation>(i + SystemProcessInformation.SizeOf, j);
 
                         currentProcess.Threads.Add(thread.ClientId.ThreadId, thread);
                     }
@@ -660,8 +603,7 @@ namespace ProcessHacker.Native
             {
                 attempts++;
 
-                if ((status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessInformation, data.Memory,
-                    data.Size, out retLength)) >= NtStatus.Error)
+                if ((status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessInformation, data.Memory, data.Size, out retLength)) >= NtStatus.Error)
                 {
                     if (attempts > 3)
                         Win32.Throw(status);
@@ -691,8 +633,7 @@ namespace ProcessHacker.Native
 
                     for (int j = 0; j < process.NumberOfThreads; j++)
                     {
-                        var thread = data.ReadStruct<SystemThreadInformation>(i +
-                            Marshal.SizeOf(typeof(SystemProcessInformation)), j);
+                        SystemThreadInformation thread = data.ReadStruct<SystemThreadInformation>(i + SystemProcessInformation.SizeOf, j);
 
                         if (pid != 0)
                         {
@@ -723,8 +664,7 @@ namespace ProcessHacker.Native
         /// <returns>A dictionary, indexed by service name.</returns>
         public static Dictionary<string, EnumServiceStatusProcess> GetServices()
         {
-            using (ServiceManagerHandle manager =
-                new ServiceManagerHandle(ScManagerAccess.EnumerateService))
+            using (ServiceManagerHandle manager = new ServiceManagerHandle(ScManagerAccess.EnumerateService))
             {
                 int requiredSize;
                 int servicesReturned;
@@ -777,8 +717,8 @@ namespace ProcessHacker.Native
             var tickCount = QueryKSystemTime(Win32.UserSharedData.Increment(
                 KUserSharedData.TickCountOffset));
 
-            return (((long)tickCount.LowPart * tickCountMultiplier) >> (int)24) +
-                (((long)tickCount.HighPart * tickCountMultiplier) << (int)8);
+            return ((tickCount.LowPart * tickCountMultiplier) >> 24) +
+                (((long)tickCount.HighPart * tickCountMultiplier) << 8);
         }
 
         /// <summary>
@@ -787,19 +727,15 @@ namespace ProcessHacker.Native
         /// <returns>A time of day structure.</returns>
         public static SystemTimeOfDayInformation GetTimeOfDay()
         {
-            NtStatus status;
             SystemTimeOfDayInformation timeOfDay;
             int retLength;
 
-            status = Win32.NtQuerySystemInformation(
-                SystemInformationClass.SystemTimeOfDayInformation,
-                out timeOfDay,
-                Marshal.SizeOf(typeof(SystemTimeOfDayInformation)),
+            Win32.NtQuerySystemInformation(
+                SystemInformationClass.SystemTimeOfDayInformation, 
+                out timeOfDay, 
+                SystemTimeOfDayInformation.SizeOf, 
                 out retLength
-                );
-
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return timeOfDay;
         }
@@ -821,19 +757,9 @@ namespace ProcessHacker.Native
         /// <param name="serviceName">The service name of the driver.</param>
         public static void LoadDriver(string serviceName)
         {
-            var str = new UnicodeString(
-                "\\REGISTRY\\MACHINE\\SYSTEM\\CurrentControlSet\\Services\\" + serviceName);
-
-            try
+            using (UnicodeString str = new UnicodeString("\\REGISTRY\\MACHINE\\SYSTEM\\CurrentControlSet\\Services\\" + serviceName))
             {
-                NtStatus status;
-
-                if ((status = Win32.NtLoadDriver(ref str)) >= NtStatus.Error)
-                    Win32.Throw(status);
-            }
-            finally
-            {
-                str.Dispose();
+                Win32.NtLoadDriver(str).ThrowIf();
             }
         }
 
@@ -842,12 +768,9 @@ namespace ProcessHacker.Native
         /// </summary>
         /// <param name="time">A pointer to a KSYSTEM_TIME value.</param>
         /// <returns>A 64-bit time value.</returns>
-        private static LargeInteger QueryKSystemTime(IntPtr time)
+        private unsafe static LargeInteger QueryKSystemTime(IntPtr time)
         {
-            unsafe
-            {
-                return QueryKSystemTime((KSystemTime*)time);
-            }
+            return QueryKSystemTime((KSystemTime*)time);
         }
 
         /// <summary>
@@ -894,19 +817,9 @@ namespace ProcessHacker.Native
         /// <param name="serviceName">The service name of the driver.</param>
         public static void UnloadDriver(string serviceName)
         {
-            var str = new UnicodeString(
-                "\\REGISTRY\\MACHINE\\SYSTEM\\CurrentControlSet\\Services\\" + serviceName);
-
-            try
+            using (UnicodeString str = new UnicodeString("\\REGISTRY\\MACHINE\\SYSTEM\\CurrentControlSet\\Services\\" + serviceName))
             {
-                NtStatus status;
-
-                if ((status = Win32.NtUnloadDriver(ref str)) >= NtStatus.Error)
-                    Win32.Throw(status);
-            }
-            finally
-            {
-                str.Dispose();
+                Win32.NtUnloadDriver(str).ThrowIf();
             }
         }
     }
@@ -937,7 +850,7 @@ namespace ProcessHacker.Native
 
         public void CloseTcpConnection()
         {
-            MibTcpRow row = new MibTcpRow()
+            MibTcpRow row = new MibTcpRow
             {
                 State = MibTcpState.DeleteTcb,
                 LocalAddress = (uint)this.Local.Address.Address,
@@ -945,7 +858,8 @@ namespace ProcessHacker.Native
                 RemoteAddress = this.Remote != null ? (uint)this.Remote.Address.Address : 0,
                 RemotePort = this.Remote != null ? ((ushort)this.Remote.Port).Reverse() : 0
             };
-            int result = Win32.SetTcpEntry(ref row);
+
+            int result = Win32.SetTcpEntry(row);
 
             if (result != 0)
                 Win32.Throw(result);

@@ -70,14 +70,12 @@ namespace ProcessHacker.Native.Objects
 
         public SemaphoreHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, SemaphoreAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenSemaphore(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtOpenSemaphore(out handle, access, oa).ThrowIf();
             }
             finally
             {

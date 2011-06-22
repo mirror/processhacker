@@ -119,11 +119,10 @@ namespace ProcessHacker.Native.Api
     {
         public AnsiString(string str)
         {
-            UnicodeString unicodeStr;
-
-            unicodeStr = new UnicodeString(str);
-            this = unicodeStr.ToAnsiString();
-            unicodeStr.Dispose();
+            using (UnicodeString unicodeStr = new UnicodeString(str))
+            {
+                this = unicodeStr.ToAnsiString();
+            }
         }
 
         public ushort Length;
@@ -135,17 +134,15 @@ namespace ProcessHacker.Native.Api
             if (this.Buffer == IntPtr.Zero)
                 return;
 
-            Win32.RtlFreeAnsiString(ref this);
+            Win32.RtlFreeAnsiString(this);
             this.Buffer = IntPtr.Zero;
         }
 
         public UnicodeString ToUnicodeString()
         {
-            NtStatus status;
             UnicodeString unicodeStr = new UnicodeString();
 
-            if ((status = Win32.RtlAnsiStringToUnicodeString(ref unicodeStr, ref this, true)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlAnsiStringToUnicodeString(ref unicodeStr, this, true).ThrowIf();
 
             return unicodeStr;
         }
@@ -1555,6 +1552,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectAttributes : IDisposable
     {
+        public static readonly int SizeOf;
+
         public ObjectAttributes(
             string objectName,
             ObjectFlags attributes,
@@ -1616,21 +1615,25 @@ namespace ProcessHacker.Native.Api
             // Object name
             if (this.ObjectName != IntPtr.Zero)
             {
-                UnicodeString unicodeString =
-                    (UnicodeString)Marshal.PtrToStructure(this.ObjectName, typeof(UnicodeString));
+                //UnicodeString unicodeString = (UnicodeString)Marshal.PtrToStructure(this.ObjectName, typeof(UnicodeString));
 
-                unicodeString.Dispose();
+                //unicodeString.Dispose();
                 Marshal.FreeHGlobal(this.ObjectName);
 
                 this.ObjectName = IntPtr.Zero;
             }
 
             // Security QOS
-            if (this.SecurityQualityOfService != null)
+            if (this.SecurityQualityOfService != IntPtr.Zero)
             {
                 Marshal.FreeHGlobal(this.SecurityQualityOfService);
                 this.SecurityQualityOfService = IntPtr.Zero;
             }
+        }
+
+        static ObjectAttributes()
+        {
+            
         }
     }
 
@@ -1911,9 +1914,16 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessPriorityClassStruct
     {
+        public static readonly int SizeOf;
+
         //the type char is set by the CLR runtime to marshal as Ansi (single byte) for some insane reason...
         public char Foreground;
         public char PriorityClass;
+
+        static ProcessPriorityClassStruct()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ProcessPriorityClassStruct));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2338,6 +2348,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemBasicInformation
     {
+        public static readonly int SizeOf;
+
         public int Reserved;
         public int TimerResolution;
         public int PageSize;
@@ -2349,6 +2361,11 @@ namespace ProcessHacker.Native.Api
         public IntPtr MaximumUserModeAddress;
         public IntPtr ActiveProcessorsAffinityMask;
         public byte NumberOfProcessors;
+
+        static SystemBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemBasicInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2681,6 +2698,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemProcessInformation
     {
+        public static readonly int SizeOf;
+
         public int NextEntryOffset;
         public int NumberOfThreads;
         public long SpareLi1;
@@ -2710,17 +2729,30 @@ namespace ProcessHacker.Native.Api
             get { return _inheritedFromProcessId.ToInt32(); }
             set { _inheritedFromProcessId = value.ToIntPtr(); }
         }
+
+        static SystemProcessInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemProcessInformation)); 
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemProcessorPerformanceInformation
     {
+        public static readonly int SizeOf;
+
         public long IdleTime;
         public long KernelTime;
         public long UserTime;
         public long DpcTime;
         public long InterruptTime;
         public int InterruptCount;
+
+
+        static SystemProcessorPerformanceInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemProcessorPerformanceInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2750,6 +2782,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemTimeOfDayInformation
     {
+        public static readonly int SizeOf;
+
         public long BootTime;
         public long CurrentTime;
         public long TimeZoneBias;
@@ -2757,6 +2791,11 @@ namespace ProcessHacker.Native.Api
         public int Reserved;
         public long BootTimeBias;
         public long SleepTimeBias;
+
+        static SystemTimeOfDayInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemTimeOfDayInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -3007,7 +3046,7 @@ namespace ProcessHacker.Native.Api
     {
         public UnicodeString(string str)
         {
-            if (str != null)
+            if (!string.IsNullOrEmpty(str))
             {
                 UnicodeString newString;
 
@@ -3030,7 +3069,7 @@ namespace ProcessHacker.Native.Api
 
         public int CompareTo(UnicodeString unicodeString, bool caseInsensitive)
         {
-            return Win32.RtlCompareUnicodeString(ref this, ref unicodeString, caseInsensitive);
+            return Win32.RtlCompareUnicodeString(this, unicodeString, caseInsensitive);
         }
 
         public int CompareTo(UnicodeString unicodeString)
@@ -3043,7 +3082,7 @@ namespace ProcessHacker.Native.Api
             if (this.Buffer == IntPtr.Zero)
                 return;
 
-            Win32.RtlFreeUnicodeString(ref this);
+            Win32.RtlFreeUnicodeString(this);
             this.Buffer = IntPtr.Zero;
         }
 
@@ -3052,21 +3091,19 @@ namespace ProcessHacker.Native.Api
         /// </summary>
         public UnicodeString Duplicate()
         {
-            NtStatus status;
             UnicodeString newString;
 
-            if ((status = Win32.RtlDuplicateUnicodeString(
-                RtlDuplicateUnicodeStringFlags.AllocateNullString |
-                RtlDuplicateUnicodeStringFlags.NullTerminate,
-                ref this, out newString)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlDuplicateUnicodeString(
+                RtlDuplicateUnicodeStringFlags.AllocateNullString | RtlDuplicateUnicodeStringFlags.NullTerminate,
+                this, out newString
+                ).ThrowIf();
 
             return newString;
         }
 
         public bool Equals(UnicodeString unicodeString, bool caseInsensitive)
         {
-            return Win32.RtlEqualUnicodeString(ref this, ref unicodeString, caseInsensitive);
+            return Win32.RtlEqualUnicodeString(this, unicodeString, caseInsensitive);
         }
 
         public bool Equals(UnicodeString unicodeString)
@@ -3081,12 +3118,9 @@ namespace ProcessHacker.Native.Api
 
         public int Hash(HashStringAlgorithm algorithm, bool caseInsensitive)
         {
-            NtStatus status;
             int hash;
 
-            if ((status = Win32.RtlHashUnicodeString(ref this,
-                caseInsensitive, algorithm, out hash)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlHashUnicodeString(this, caseInsensitive, algorithm, out hash).ThrowIf();
 
             return hash;
         }
@@ -3104,7 +3138,7 @@ namespace ProcessHacker.Native.Api
         public string Read()
         {
             if (this.Length == 0)
-                return "";
+                return string.Empty;
 
             return Marshal.PtrToStringUni(this.Buffer, this.Length / 2);
         }
@@ -3112,7 +3146,7 @@ namespace ProcessHacker.Native.Api
         public string Read(ProcessHandle processHandle)
         {
             if (this.Length == 0)
-                return "";
+                return string.Empty;
 
             byte[] strData = processHandle.ReadMemory(this.Buffer, this.Length);
             GCHandle strDataHandle = GCHandle.Alloc(strData, GCHandleType.Pinned);
@@ -3129,7 +3163,7 @@ namespace ProcessHacker.Native.Api
 
         public bool StartsWith(UnicodeString unicodeString, bool caseInsensitive)
         {
-            return Win32.RtlPrefixUnicodeString(ref this, ref unicodeString, caseInsensitive);
+            return Win32.RtlPrefixUnicodeString(this, unicodeString, caseInsensitive);
         }
 
         public bool StartsWith(UnicodeString unicodeString)
@@ -3139,11 +3173,9 @@ namespace ProcessHacker.Native.Api
 
         public AnsiString ToAnsiString()
         {
-            NtStatus status;
             AnsiString ansiStr = new AnsiString();
 
-            if ((status = Win32.RtlUnicodeStringToAnsiString(ref ansiStr, ref this, true)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlUnicodeStringToAnsiString(ref ansiStr, this, true).ThrowIf();
 
             return ansiStr;
         }
@@ -3155,11 +3187,9 @@ namespace ProcessHacker.Native.Api
 
         public AnsiString ToUpperAnsiString()
         {
-            NtStatus status;
             AnsiString ansiStr = new AnsiString();
 
-            if ((status = Win32.RtlUpcaseUnicodeStringToAnsiString(ref ansiStr, ref this, true)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlUpcaseUnicodeStringToAnsiString(ref ansiStr, this, true).ThrowIf();
 
             return ansiStr;
         }

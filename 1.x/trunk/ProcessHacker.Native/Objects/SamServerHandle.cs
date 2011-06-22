@@ -54,7 +54,7 @@ namespace ProcessHacker.Native.Objects
 
                     connectHandle = new SamServerHandle(SamServerAccess.GenericRead | SamServerAccess.GenericExecute);
 
-                    if (connectHandle != null)
+                    if (connectHandle != IntPtr.Zero)
                         _connectServerHandle = new WeakReference<SamServerHandle>(connectHandle);
                 }
 
@@ -84,22 +84,14 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the server.</param>
         public SamServerHandle(string serverName, SamServerAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes();
-            UnicodeString serverNameStr;
             IntPtr handle;
 
-            serverNameStr = new UnicodeString(serverName);
+            UnicodeString serverNameStr = new UnicodeString(serverName);
 
             try
             {
-                if ((status = Win32.SamConnect(
-                    ref serverNameStr,
-                    out handle,
-                    access,
-                    ref oa
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.SamConnect(serverNameStr, out handle, access, oa).ThrowIf();
             }
             finally
             {
@@ -128,6 +120,7 @@ namespace ProcessHacker.Native.Objects
 
                 if (status >= NtStatus.Error)
                     Win32.Throw(status);
+
                 if (count == 0)
                     break;
 
@@ -148,7 +141,7 @@ namespace ProcessHacker.Native.Objects
         {
             List<string> domains = new List<string>();
 
-            this.EnumDomains((name) =>
+            this.EnumDomains(name =>
             {
                 domains.Add(name);
                 return true;
@@ -159,20 +152,13 @@ namespace ProcessHacker.Native.Objects
 
         public Sid LookupDomain(string name)
         {
-            NtStatus status;
-            UnicodeString nameStr;
             IntPtr domainId;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                if ((status = Win32.SamLookupDomainInSamServer(
-                    this,
-                    ref nameStr,
-                    out domainId
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.SamLookupDomainInSamServer(this, nameStr, out domainId).ThrowIf();
             }
             finally
             {
@@ -180,15 +166,14 @@ namespace ProcessHacker.Native.Objects
             }
 
             using (var domainIdAlloc = new SamMemoryAlloc(domainId))
+            {
                 return new Sid(domainIdAlloc);
+            }
         }
 
         public void Shutdown()
         {
-            NtStatus status;
-
-            if ((status = Win32.SamShutdownSamServer(this)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.SamShutdownSamServer(this).ThrowIf();
         }
     }
 }

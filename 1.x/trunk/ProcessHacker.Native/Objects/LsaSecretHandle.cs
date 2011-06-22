@@ -21,7 +21,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -34,21 +34,13 @@ namespace ProcessHacker.Native.Objects
     {
         public static LsaSecretHandle Create(LsaSecretAccess access, LsaPolicyHandle policyHandle, string name)
         {
-            NtStatus status;
-            UnicodeString nameStr;
             IntPtr handle;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                if ((status = Win32.LsaCreateSecret(
-                    policyHandle,
-                    ref nameStr,
-                    access,
-                    out handle
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.LsaCreateSecret(policyHandle, nameStr, access, out handle).ThrowIf();
             }
             finally
             {
@@ -64,21 +56,13 @@ namespace ProcessHacker.Native.Objects
 
         public LsaSecretHandle(LsaPolicyHandle policyHandle, string name, LsaSecretAccess access)
         {
-            NtStatus status;
-            UnicodeString nameStr;
             IntPtr handle;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                if ((status = Win32.LsaOpenSecret(
-                    policyHandle,
-                    ref nameStr,
-                    access,
-                    out handle
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.LsaOpenSecret(policyHandle, nameStr, access, out handle).ThrowIf();
             }
             finally
             {
