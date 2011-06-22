@@ -4,6 +4,7 @@
  *
  * Copyright (C) 2009 Flavio Erlich
  * Copyright (C) 2008-2009 wj32
+ * Copyright (C) 2011 dmex
  * 
  * This file is part of Process Hacker.
  * 
@@ -619,7 +620,7 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtCreateTimer(
             [Out] out IntPtr TimerHandle,
             [In] TimerAccess DesiredAccess,
-            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In, Optional] ObjectAttributes ObjectAttributes,
             [In] TimerType TimerType
             );
 

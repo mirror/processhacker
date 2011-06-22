@@ -23,10 +23,7 @@
 #define ENABLE_STATISTICS
 
 using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
-using ProcessHacker.Common.Objects;
+
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native
@@ -36,13 +33,13 @@ namespace ProcessHacker.Native
     /// </summary>
     public class MemoryAlloc : MemoryRegion
     {
-        private static int _allocatedCount = 0;
-        private static int _freedCount = 0;
-        private static int _reallocatedCount = 0;
+        private static int _allocatedCount;
+        private static int _freedCount;
+        private static int _reallocatedCount;
 
         // A private heap just for the client.
         private static Heap _privateHeap = new Heap(HeapFlags.Class1 | HeapFlags.Growable);
-        private static Heap _processHeap = Heap.GetDefault();
+        //private static Heap _processHeap = Heap.GetDefault();
 
         public static int AllocatedCount
         {
@@ -69,7 +66,6 @@ namespace ProcessHacker.Native
         /// You must set the pointer using the Memory property.
         /// </summary>
         protected MemoryAlloc()
-            : base()
         { }
 
         public MemoryAlloc(IntPtr memory)
@@ -89,31 +85,24 @@ namespace ProcessHacker.Native
         /// </summary>
         /// <param name="size">The amount of memory, in bytes, to allocate.</param>
         public MemoryAlloc(int size)
-            : this(size, 0)
-        { }
-
-        /// <summary>
-        /// Creates a new memory allocation with the specified size.
-        /// </summary>
-        /// <param name="size">The amount of memory, in bytes, to allocate.</param>
-        /// <param name="flags">Any flags to use.</param>
-        public MemoryAlloc(int size, HeapFlags flags)
         {
-            this.Memory = _privateHeap.Allocate(flags, size);
+            this.Memory = _privateHeap.Allocate(size);
             this.Size = size;
 
 #if ENABLE_STATISTICS
             System.Threading.Interlocked.Increment(ref _allocatedCount);
 #endif
+            GC.AddMemoryPressure(size);
         }
 
         protected override void Free()
         {
-            _privateHeap.Free(0, this);
+            _privateHeap.Free(this);
 
 #if ENABLE_STATISTICS
             System.Threading.Interlocked.Increment(ref _freedCount);
 #endif
+            GC.RemoveMemoryPressure(this.Size);
         }
 
         /// <summary>
@@ -122,12 +111,15 @@ namespace ProcessHacker.Native
         /// <param name="newSize">The new size of the allocation.</param>
         public virtual void Resize(int newSize)
         {
-            this.Memory = _privateHeap.Reallocate(0, this.Memory, newSize);
+            GC.RemoveMemoryPressure(this.Size);
+
+            this.Memory = _privateHeap.Reallocate(this.Memory, newSize);
             this.Size = newSize;
 
 #if ENABLE_STATISTICS
             System.Threading.Interlocked.Increment(ref _reallocatedCount);
 #endif
+            GC.AddMemoryPressure(newSize);
         }
 
         /// <summary>
@@ -137,9 +129,13 @@ namespace ProcessHacker.Native
         /// <param name="newSize">The new size of the allocation.</param>
         public virtual void ResizeNew(int newSize)
         {
-            _privateHeap.Free(0, this.Memory);
-            this.Memory = _privateHeap.Allocate(0, newSize);
+            GC.RemoveMemoryPressure(this.Size);
+
+            _privateHeap.Free(this.Memory);
+            this.Memory = _privateHeap.Allocate(newSize);
             this.Size = newSize;
+
+            GC.AddMemoryPressure(newSize);
         }
     }
 }

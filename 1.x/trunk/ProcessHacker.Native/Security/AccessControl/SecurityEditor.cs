@@ -26,7 +26,6 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
-using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker.Native.Security.AccessControl
 {

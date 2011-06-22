@@ -1569,17 +1569,17 @@ namespace ProcessHacker.Native.Api
             SecurityQualityOfService? securityQos
             )
         {
-            this.Length = Marshal.SizeOf(typeof(ObjectAttributes));
+            this.Length = ObjectAttributes.SizeOf;
             this.RootDirectory = IntPtr.Zero;
             this.ObjectName = IntPtr.Zero;
             this.SecurityDescriptor = IntPtr.Zero;
             this.SecurityQualityOfService = IntPtr.Zero;
 
             // Object name
-            if (objectName != null)
+            if (!string.IsNullOrEmpty(objectName))
             {
                 UnicodeString unicodeString = new UnicodeString(objectName);
-                IntPtr unicodeStringMemory = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UnicodeString)));
+                IntPtr unicodeStringMemory = Marshal.AllocHGlobal(UnicodeString.SizeOf);
 
                 Marshal.StructureToPtr(unicodeString, unicodeStringMemory, false);
                 this.ObjectName = unicodeStringMemory;
@@ -1633,13 +1633,15 @@ namespace ProcessHacker.Native.Api
 
         static ObjectAttributes()
         {
-            
+            SizeOf = Marshal.SizeOf(typeof(ObjectAttributes));
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectBasicInformation
     {
+        public static readonly int SizeOf;
+
         public uint Attributes;
         public int GrantedAccess;
         public uint HandleCount;
@@ -1654,6 +1656,11 @@ namespace ProcessHacker.Native.Api
         public uint TypeInformationLength;
         public uint SecurityDescriptorLength;
         public ulong CreateTime;
+
+        static ObjectBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ObjectBasicInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -3044,6 +3051,12 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct UnicodeString : IComparable<UnicodeString>, IEquatable<UnicodeString>, IDisposable
     {
+        public static readonly int SizeOf;
+
+        public ushort Length;
+        public ushort MaximumLength;
+        public IntPtr Buffer;
+
         public UnicodeString(string str)
         {
             if (!string.IsNullOrEmpty(str))
@@ -3062,10 +3075,6 @@ namespace ProcessHacker.Native.Api
                 this.Buffer = IntPtr.Zero;
             }
         }
-
-        public ushort Length;
-        public ushort MaximumLength;
-        public IntPtr Buffer;
 
         public int CompareTo(UnicodeString unicodeString, bool caseInsensitive)
         {
@@ -3192,6 +3201,11 @@ namespace ProcessHacker.Native.Api
             Win32.RtlUpcaseUnicodeStringToAnsiString(ref ansiStr, this, true).ThrowIf();
 
             return ansiStr;
+        }
+
+        static UnicodeString()
+        {
+            SizeOf = Marshal.SizeOf(typeof(UnicodeString));
         }
     }
 

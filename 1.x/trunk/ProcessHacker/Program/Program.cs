@@ -3,6 +3,7 @@
  *   static variables and user interface thread management
  * 
  * Copyright (C) 2008-2009 wj32
+ * Copyright (C) 2011 dmex
  * 
  * This file is part of Process Hacker.
  * 
@@ -75,7 +76,7 @@ namespace ProcessHacker
         public static Dictionary<string, ResultsWindow> ResultsWindows = new Dictionary<string, ResultsWindow>(StringComparer.OrdinalIgnoreCase);
         public static Dictionary<string, Thread> ResultsThreads = new Dictionary<string, Thread>(StringComparer.OrdinalIgnoreCase);
 
-        public static bool PEWindowsThreaded = false;
+        public static bool PEWindowsThreaded = true;
         public static Dictionary<string, PEWindow> PEWindows = new Dictionary<string, PEWindow>(StringComparer.OrdinalIgnoreCase);
         public static Dictionary<string, Thread> PEThreads = new Dictionary<string, Thread>(StringComparer.OrdinalIgnoreCase);
 
@@ -96,7 +97,7 @@ namespace ProcessHacker
 
         public static bool BadConfig;
         public static TokenElevationType ElevationType;
-        public static ProcessHacker.Native.Threading.Mutant GlobalMutex;
+        public static Native.Threading.Mutant GlobalMutex;
         public static string GlobalMutexName = @"\BaseNamedObjects\ProcessHackerMutex";
         public static System.Collections.Specialized.StringCollection ImposterNames =
             new System.Collections.Specialized.StringCollection();
@@ -107,7 +108,7 @@ namespace ProcessHacker
         public static bool StartVisible;
         public static ProviderThread PrimaryProviderThread;
         public static ProviderThread SecondaryProviderThread;
-        public static ProcessHacker.Native.Threading.Waiter SharedWaiter;
+        public static Native.Threading.Waiter SharedWaiter;
 
         private static readonly object CollectWorkerThreadsLock = new object();
 
@@ -117,16 +118,8 @@ namespace ProcessHacker
         [STAThread]
         public static void Main(string[] args)
         {
-            Dictionary<string, string> pArgs = null;
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            if (Environment.Version.Major < 2)
-            {
-                PhUtils.ShowError("You must have .NET Framework 2.0 or higher to use Process Hacker.");
-                Environment.Exit(1);
-            }
 
             // Check OS support.
             if (OSVersion.IsBelow(WindowsVersion.TwoThousand) || OSVersion.IsAbove(WindowsVersion.Seven))
@@ -134,11 +127,14 @@ namespace ProcessHacker
                 PhUtils.ShowWarning("Your operating system is not supported by Process Hacker.");
             }
 #if !DEBUG
-            // Setup exception handling at first opportunity.
+    // Setup exception handling at first opportunity.
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException, true);
 #endif
+
+            Dictionary<string, string> pArgs;
+
             try
             {
                 pArgs = ParseArgs(args);
@@ -165,18 +161,13 @@ namespace ProcessHacker
 
             LoadSettings(!pArgs.ContainsKey("-nosettings"), pArgs.ContainsKey("-settings") ? pArgs["-settings"] : null);
 
-            try
-            {
-                if (pArgs.ContainsKey("-nokph"))
-                    NoKph = true;
-                if (Settings.Instance.AllowOnlyOneInstance && 
-                    !(pArgs.ContainsKey("-e") || pArgs.ContainsKey("-o") ||
-                    pArgs.ContainsKey("-pw") || pArgs.ContainsKey("-pt"))
-                    )
-                    ActivatePreviousInstance();
-            }
-            catch
-            { }
+
+            if (pArgs.ContainsKey("-nokph"))
+                NoKph = true;
+
+            if (Settings.Instance.AllowOnlyOneInstance && !(pArgs.ContainsKey("-e") || pArgs.ContainsKey("-o") || pArgs.ContainsKey("-pw") || pArgs.ContainsKey("-pt")))
+                ActivatePreviousInstance();
+
 
             ThreadPool.SetMinThreads(1, 1);
             ThreadPool.SetMaxThreads(2, 2);
@@ -194,7 +185,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var thandle = ProcessHandle.Current.GetToken())
+                using (TokenHandle thandle = ProcessHandle.Current.GetToken())
                 {
                     thandle.TrySetPrivilege("SeDebugPrivilege", SePrivilegeAttributes.Enabled);
                     thandle.TrySetPrivilege("SeIncreaseBasePriorityPrivilege", SePrivilegeAttributes.Enabled);
@@ -205,12 +196,16 @@ namespace ProcessHacker
 
                     if (OSVersion.HasUac)
                     {
-                        try { ElevationType = thandle.GetElevationType(); }
-                        catch { ElevationType = TokenElevationType.Full; }
+                        try
+                        {
+                            ElevationType = thandle.GetElevationType();
+                        }
+                        catch
+                        {
+                            ElevationType = TokenElevationType.Full;
+                        }
 
-                        if (ElevationType == TokenElevationType.Default &&
-                            !(new WindowsPrincipal(WindowsIdentity.GetCurrent())).
-                                IsInRole(WindowsBuiltInRole.Administrator))
+                        if (ElevationType == TokenElevationType.Default && !(new WindowsPrincipal(WindowsIdentity.GetCurrent())).IsInRole(WindowsBuiltInRole.Administrator))
                             ElevationType = TokenElevationType.Limited;
                         else if (ElevationType == TokenElevationType.Default)
                             ElevationType = TokenElevationType.Full;
@@ -228,18 +223,14 @@ namespace ProcessHacker
 
             try
             {
-                if (
-                    // Only load KPH if we're on 32-bit and it's enabled.
-                    OSVersion.Architecture == OSArch.I386 &&
-                    Settings.Instance.EnableKPH &&
-                    !NoKph &&
-                    // Don't load KPH if we're going to install/uninstall it.
-                    !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph")
-                    )
+                if (// Only load KPH if we're on 32-bit and it's enabled.
+                    OSVersion.Architecture == OSArch.I386 && Settings.Instance.EnableKPH && !NoKph &&// Don't load KPH if we're going to install/uninstall it.
+                    !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph"))
                     KProcessHacker.Instance = new KProcessHacker("KProcessHacker");
             }
             catch
-            { }
+            {
+            }
 
             MinProcessQueryRights = OSVersion.MinProcessQueryInfoAccess;
             MinThreadQueryRights = OSVersion.MinThreadQueryInfoAccess;
@@ -253,7 +244,7 @@ namespace ProcessHacker
 
             try
             {
-                CurrentUsername = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                CurrentUsername = WindowsIdentity.GetCurrent().Name;
             }
             catch (Exception ex)
             {
@@ -264,7 +255,7 @@ namespace ProcessHacker
             {
                 CurrentProcessId = Win32.GetCurrentProcessId();
                 CurrentSessionId = Win32.GetProcessSessionId(Win32.GetCurrentProcessId());
-                System.Threading.Thread.CurrentThread.Priority = ThreadPriority.Highest;
+                Thread.CurrentThread.Priority = ThreadPriority.Highest;
             }
             catch (Exception ex)
             {
@@ -276,10 +267,7 @@ namespace ProcessHacker
 
             Win32.FileIconInit(true);
             LoadProviders();
-            Windows.GetProcessName = (pid) => 
-                ProcessProvider.Dictionary.ContainsKey(pid) ? 
-                ProcessProvider.Dictionary[pid].Name :
-                null;
+            Windows.GetProcessName = pid => ProcessProvider.Dictionary.ContainsKey(pid) ? ProcessProvider.Dictionary[pid].Name : null;
 
             // Create the shared waiter.
             SharedWaiter = new ProcessHacker.Native.Threading.Waiter();
@@ -316,13 +304,15 @@ namespace ProcessHacker
             ProcessProvider = new ProcessSystemProvider();
             ServiceProvider = new ServiceProvider();
             NetworkProvider = new NetworkProvider();
-            Program.PrimaryProviderThread =
-                new ProviderThread(Settings.Instance.RefreshInterval);
-            Program.PrimaryProviderThread.Add(ProcessProvider);
-            Program.PrimaryProviderThread.Add(ServiceProvider);
-            Program.PrimaryProviderThread.Add(NetworkProvider);
-            Program.SecondaryProviderThread =
-                new ProviderThread(Settings.Instance.RefreshInterval);
+
+            Program.PrimaryProviderThread = new ProviderThread(Settings.Instance.RefreshInterval)
+            {
+                ProcessProvider, 
+                ServiceProvider, 
+                NetworkProvider
+            };
+
+            Program.SecondaryProviderThread = new ProviderThread(Settings.Instance.RefreshInterval);
         }
 
         private static void LoadSettings(bool useSettings, string settingsFileName)
@@ -333,7 +323,7 @@ namespace ProcessHacker
                 return;
             }
 
-            if (settingsFileName == null)
+            if (string.IsNullOrEmpty(settingsFileName))
             {
                 bool success = true;
                 string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -355,15 +345,11 @@ namespace ProcessHacker
                 {
                     settingsFileName = appData + @"\Process Hacker\settings.xml";
                 }
-                else
-                {
-                    settingsFileName = null;
-                }
             }
 
             // Make sure we have an absolute path so we don't run into problems 
             // when saving.
-            if (settingsFileName != null)
+            if (!string.IsNullOrEmpty(settingsFileName))
             {
                 try
                 {
@@ -383,9 +369,6 @@ namespace ProcessHacker
             catch
             {
                 // Settings file is probably corrupt. Ask the user.
-
-                try { ThemingScope.Activate(); }
-                catch { }
 
                 DialogResult result;
 
@@ -918,13 +901,12 @@ namespace ProcessHacker
         public static void CompactNativeHeaps()
         {
             foreach (var heap in Heap.GetHeaps())
-                heap.Compact(0);
+                heap.Compact();
         }
 
         public static string GetDiagnosticInformation()
         {
             StringBuilder info = new StringBuilder();
-            AppDomain app = System.AppDomain.CurrentDomain;
 
             info.AppendLine("Process Hacker " + Application.ProductVersion);
             info.AppendLine("Process Hacker Build Time: " + Utils.GetAssemblyBuildDate(System.Reflection.Assembly.GetExecutingAssembly(), false).ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo));

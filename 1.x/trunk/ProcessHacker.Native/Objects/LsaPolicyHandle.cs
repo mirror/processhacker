@@ -3,6 +3,7 @@
  *   LSA policy handle
  * 
  * Copyright (C) 2008-2009 wj32
+ * Copyright (C) 2011 dmex
  * 
  * This file is part of Process Hacker.
  * 
@@ -34,7 +35,7 @@ namespace ProcessHacker.Native.Objects
     public sealed class LsaPolicyHandle : LsaHandle<LsaPolicyAccess>
     {
         private static WeakReference<LsaPolicyHandle> _lookupPolicyHandle;
-        private static int _lookupPolicyHandleMisses = 0;
+        private static int _lookupPolicyHandleMisses;
 
         public static LsaPolicyHandle LookupPolicyHandle
         {
@@ -54,7 +55,7 @@ namespace ProcessHacker.Native.Objects
 
                     policyHandle = new LsaPolicyHandle(LsaPolicyAccess.LookupNames);
 
-                    if (policyHandle != null)
+                    if (policyHandle != IntPtr.Zero)
                         _lookupPolicyHandle = new WeakReference<LsaPolicyHandle>(policyHandle);
                 }
 
@@ -104,12 +105,11 @@ namespace ProcessHacker.Native.Objects
 
         public void AddPrivilege(Sid accountSid, string privilege)
         {
-            this.AddPrivileges(accountSid, new string[] { privilege });
+            this.AddPrivileges(accountSid, new[] { privilege });
         }
 
         public void AddPrivileges(Sid accountSid, string[] privileges)
         {
-            NtStatus status;
             UnicodeString[] privilegeStrArray = new UnicodeString[privileges.Length];
 
             for (int i = 0; i < privileges.Length; i++)
@@ -117,13 +117,12 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                if ((status = Win32.LsaAddAccountRights(
+                Win32.LsaAddAccountRights(
                     this,
                     accountSid,
                     privilegeStrArray,
                     privilegeStrArray.Length
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -134,15 +133,9 @@ namespace ProcessHacker.Native.Objects
 
         public void DeletePrivateData(string name)
         {
-            UnicodeString nameStr = new UnicodeString(name);
-
-            try
+            using (UnicodeString nameStr = new UnicodeString(name))
             {
                 Win32.LsaStorePrivateData(this, nameStr, IntPtr.Zero).ThrowIf();
-            }
-            finally
-            {
-                nameStr.Dispose();
             }
         }
 
@@ -153,14 +146,13 @@ namespace ProcessHacker.Native.Objects
         /// <param name="callback">The callback for the enumeration.</param>
         public void EnumAccounts(EnumAccountsDelegate callback)
         {
-            NtStatus status;
             int enumerationContext = 0;
             IntPtr buffer;
             int count;
 
             while (true)
             {
-                status = Win32.LsaEnumerateAccounts(
+                NtStatus status = Win32.LsaEnumerateAccounts(
                     this,
                     ref enumerationContext,
                     out buffer,
@@ -194,36 +186,20 @@ namespace ProcessHacker.Native.Objects
         /// <param name="callback">The callback for the enumeration.</param>
         public void EnumAccountsWithPrivilege(string privilegeName, EnumAccountsDelegate callback)
         {
-            NtStatus status;
-            UnicodeString privilegeNameStr;
-            IntPtr buffer;
-            int count;
-
-            privilegeNameStr = new UnicodeString(privilegeName);
-
-            try
+            using (UnicodeString privilegeNameStr = new UnicodeString(privilegeName))
             {
-                if ((status = Win32.LsaEnumerateAccountsWithUserRight(
-                    this,
-                    ref privilegeNameStr,
-                    out buffer,
-                    out count
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
-            }
-            finally
-            {
-                privilegeNameStr.Dispose();
-            }
+                IntPtr buffer;
+                int count;
 
-            Sid[] sids = new Sid[count];
+                Win32.LsaEnumerateAccountsWithUserRight(this, privilegeNameStr, out buffer, out count).ThrowIf();
 
-            using (var bufferAlloc = new LsaMemoryAlloc(buffer))
-            {
-                for (int i = 0; i < count; i++)
+                using (LsaMemoryAlloc bufferAlloc = new LsaMemoryAlloc(buffer))
                 {
-                    if (!callback(new Sid(bufferAlloc.ReadIntPtr(0, i))))
-                        break;
+                    for (int i = 0; i < count; i++)
+                    {
+                        if (!callback(new Sid(bufferAlloc.ReadIntPtr(0, i))))
+                            break;
+                    }
                 }
             }
         }
@@ -235,14 +211,13 @@ namespace ProcessHacker.Native.Objects
         /// <param name="callback">The callback for the enumeration.</param>
         public void EnumPrivileges(EnumPrivilegesDelegate callback)
         {
-            NtStatus status;
             int enumerationContext = 0;
             IntPtr buffer;
             int count;
 
             while (true)
             {
-                status = Win32.LsaEnumeratePrivileges(
+                NtStatus status = Win32.LsaEnumeratePrivileges(
                     this,
                     ref enumerationContext,
                     out buffer,
@@ -252,6 +227,7 @@ namespace ProcessHacker.Native.Objects
 
                 if (status == NtStatus.NoMoreEntries)
                     break;
+
                 if (status >= NtStatus.Error)
                     Win32.Throw(status);
 
@@ -274,11 +250,11 @@ namespace ProcessHacker.Native.Objects
         {
             List<Sid> sids = new List<Sid>();
 
-            this.EnumAccounts((sid) =>
-                {
-                    sids.Add(sid);
-                    return true;
-                });
+            this.EnumAccounts(sid =>
+            {
+                sids.Add(sid);
+                return true;
+            });
 
             return sids.ToArray();
         }
@@ -293,7 +269,7 @@ namespace ProcessHacker.Native.Objects
         {
             List<Sid> sids = new List<Sid>();
 
-            this.EnumAccountsWithPrivilege(privilegeName, (sid) =>
+            this.EnumAccountsWithPrivilege(privilegeName, sid =>
             {
                 sids.Add(sid);
                 return true;
@@ -302,17 +278,20 @@ namespace ProcessHacker.Native.Objects
             return sids.ToArray();
         }
 
-        public Privilege[] GetPrivileges()
+        public Privilege[] Privileges
         {
-            List<Privilege> privileges = new List<Privilege>();
-
-            this.EnumPrivileges((privilege) =>
+            get
             {
-                privileges.Add(privilege);
-                return true;
-            });
+                List<Privilege> privileges = new List<Privilege>();
 
-            return privileges.ToArray();
+                this.EnumPrivileges(privilege =>
+                {
+                    privileges.Add(privilege);
+                    return true;
+                });
+
+                return privileges.ToArray();
+            }
         }
 
         public string LookupName(Sid sid)
@@ -401,20 +380,14 @@ namespace ProcessHacker.Native.Objects
             IntPtr displayName;
             short language;
 
-            UnicodeString nameStr = new UnicodeString(name);
-
-            try
+            using (UnicodeString nameStr = new UnicodeString(name))
             {
                 Win32.LsaLookupPrivilegeDisplayName(this, nameStr, out displayName, out language).ThrowIf();
-            }
-            finally
-            {
-                nameStr.Dispose();
-            }
 
-            using (var displayNameAlloc = new LsaMemoryAlloc(displayName))
-            {
-                return displayNameAlloc.ReadStruct<UnicodeString>().Read();
+                using (var displayNameAlloc = new LsaMemoryAlloc(displayName))
+                {
+                    return displayNameAlloc.ReadStruct<UnicodeString>().Read();
+                }
             }
         }
 
@@ -432,20 +405,14 @@ namespace ProcessHacker.Native.Objects
 
         public Luid LookupPrivilegeValue(string name)
         {
-            Luid luid;
-
-            UnicodeString nameStr = new UnicodeString(name);
-
-            try
+            using (UnicodeString nameStr = new UnicodeString(name))
             {
+                Luid luid;
+
                 Win32.LsaLookupPrivilegeValue(this, nameStr, out luid).ThrowIf();
-            }
-            finally
-            {
-                nameStr.Dispose();
-            }
 
-            return luid;
+                return luid;
+            }
         }
 
         public Sid LookupSid(string name)
@@ -479,14 +446,10 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                if ((status = Win32.LsaLookupNames2(
-                    this,
-                    0,
-                    1,
-                    new UnicodeString[] { nameStr },
-                    out referencedDomains,
-                    out sids
-                    )) >= NtStatus.Error)
+                if ((status = Win32.LsaLookupNames2(this, 0, 1, new[]
+                {
+                    nameStr
+                }, out referencedDomains, out sids)) >= NtStatus.Error)
                 {
                     if (status == NtStatus.NoneMapped)
                     {
@@ -536,21 +499,12 @@ namespace ProcessHacker.Native.Objects
 
         public void RemovePrivilege(Sid accountSid, string privilege)
         {
-            this.RemovePrivileges(accountSid, new string[] { privilege });
+            this.RemovePrivileges(accountSid, new[] { privilege });
         }
 
         public void RemovePrivileges(Sid accountSid)
         {
-            NtStatus status;
-
-            if ((status = Win32.LsaRemoveAccountRights(
-                this,
-                accountSid,
-                true,
-                null,
-                0
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.LsaRemoveAccountRights(this, accountSid, true, null, 0).ThrowIf();
         }
 
         public void RemovePrivileges(Sid accountSid, string[] privileges)
@@ -577,36 +531,23 @@ namespace ProcessHacker.Native.Objects
 
         public string RetrievePrivateData(string name)
         {
-            IntPtr privateData;
-
-            UnicodeString nameStr = new UnicodeString(name);
-
-            try
+            using (UnicodeString nameStr = new UnicodeString(name))
             {
+                IntPtr privateData;
+
                 Win32.LsaRetrievePrivateData(this, nameStr, out privateData).ThrowIf();
-            }
-            finally
-            {
-                nameStr.Dispose();
-            }
 
-            using (var privateDataAlloc = new LsaMemoryAlloc(privateData))
-                return privateDataAlloc.ReadStruct<UnicodeString>().Read();
+                using (var privateDataAlloc = new LsaMemoryAlloc(privateData))
+                    return privateDataAlloc.ReadStruct<UnicodeString>().Read();
+            }
         }
 
         public void StorePrivateData(string name, string privateData)
         {
-            UnicodeString nameStr = new UnicodeString(name);
-            UnicodeString privateDataStr = new UnicodeString(privateData);
-
-            try
+            using (UnicodeString nameStr = new UnicodeString(name))
+            using (UnicodeString privateDataStr = new UnicodeString(privateData))
             {
                 Win32.LsaStorePrivateData(this, nameStr, privateDataStr).ThrowIf();
-            }
-            finally
-            {
-                nameStr.Dispose();
-                privateDataStr.Dispose();
             }
         }
     }

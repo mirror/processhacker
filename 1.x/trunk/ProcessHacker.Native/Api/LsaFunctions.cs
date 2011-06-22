@@ -3,6 +3,7 @@
  *   LSA functions
  *
  * Copyright (C) 2009 wj32
+ * Copyright (C) 2011 dmex
  * 
  * This file is part of Process Hacker.
  * 
@@ -130,7 +131,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaEnumerateAccountsWithUserRight(
             [In] IntPtr PolicyHandle,
-            [In] [Optional] ref UnicodeString UserRight,
+            [In, Optional] UnicodeString UserRight,
             [Out] out IntPtr Buffer, // Sid***
             [Out] out int CountReturned
             );

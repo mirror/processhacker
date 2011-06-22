@@ -104,7 +104,7 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Gets the size of the allocated memory.
         /// </summary>
-        public virtual int Size { get; protected set; }
+        public int Size { get; protected set; }
 
         public void DestroyStruct<T>()
         {

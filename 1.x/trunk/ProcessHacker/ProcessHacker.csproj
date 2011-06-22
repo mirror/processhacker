@@ -14,7 +14,6 @@
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>ProcessHacker.ico</ApplicationIcon>
     <StartupObject>ProcessHacker.Program</StartupObject>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -61,6 +60,9 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -239,6 +241,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="app.manifest" />
     <None Include="Components\Be.Windows.Forms.HexBox\HexBox.snk" />
     <Compile Include="Components\VistaMenu\OwnerDrawnMenu.cs">
       <SubType>Component</SubType>
@@ -743,7 +746,6 @@
     <Compile Include="UI\Icons\IoHistoryIcon.cs" />
     <Compile Include="UI\Icons\CpuHistoryIcon.cs" />
     <Compile Include="UI\Icons\ProviderIcon.cs" />
-    <Compile Include="Program\ThemingScope.cs" />
     <Compile Include="UI\Actions\ServiceActions.cs" />
     <Compile Include="Components\ColorModifier.cs">
       <SubType>UserControl</SubType>
@@ -1094,7 +1096,6 @@
     <Compile Include="Forms\WaitChainWindow.Designer.cs">
       <DependentUpon>WaitChainWindow.cs</DependentUpon>
     </Compile>
-    <None Include="app.manifest" />
     <None Include="Resources\control_stop_blue.png" />
     <None Include="Resources\control_play_blue.png" />
     <None Include="Resources\control_pause_blue.png" />

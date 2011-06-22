@@ -42,7 +42,6 @@ namespace ProcessHacker.Native
 
         public static ObjectBasicInformation GetBasicInfo(this SystemHandleEntry thisHandle, ProcessHandle process)
         {
-            NtStatus status = NtStatus.Success;
             IntPtr handle = new IntPtr(thisHandle.Handle);
             IntPtr objectHandleI;
             GenericHandle objectHandle = null;
@@ -51,30 +50,23 @@ namespace ProcessHacker.Native
 
             if (KProcessHacker.Instance == null)
             {
-                if ((status = Win32.NtDuplicateObject(
-                    process, handle, ProcessHandle.Current, out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
-                    Win32.Throw();
+                Win32.NtDuplicateObject(process, handle, ProcessHandle.Current, out objectHandleI, 0, 0, 0).ThrowIf();
 
                 objectHandle = new GenericHandle(objectHandleI);
             }
 
             try
             {
-                using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(ObjectBasicInformation))))
+                using (MemoryAlloc data = new MemoryAlloc(ObjectBasicInformation.SizeOf))
                 {
                     if (KProcessHacker.Instance != null)
                     {
-                        KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectBasicInformation,
-                            data, data.Size, out retLength, out baseAddress);
+                        KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectBasicInformation, data, data.Size, out retLength, out baseAddress);
                     }
                     else
                     {
-                        status = Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectBasicInformation,
-                            data, data.Size, out retLength);
+                        Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectBasicInformation, data, data.Size, out retLength).ThrowIf();
                     }
-
-                    if (status >= NtStatus.Error)
-                        Win32.Throw(status);
 
                     return data.ReadStruct<ObjectBasicInformation>();
                 }

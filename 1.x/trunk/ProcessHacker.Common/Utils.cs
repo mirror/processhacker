@@ -1352,16 +1352,7 @@ namespace ProcessHacker.Common
             System.Diagnostics.Process.Start("explorer.exe", "/select," + fileName);
         }
 
-        /// <summary>
-        /// Calculates the size of a structure.
-        /// </summary>
-        /// <typeparam name="T">The structure type.</typeparam>
-        /// <returns>The size of the structure.</returns>
-        public static int SizeOf<T>()
-        {
-            return System.Runtime.InteropServices.Marshal.SizeOf(typeof(T));
-        }
-
+  
         /// <summary>
         /// Calculates the size of a structure.
         /// </summary>
@@ -1371,7 +1362,7 @@ namespace ProcessHacker.Common
         public static int SizeOf<T>(int alignment)
         {
             // HACK: This is wrong, but it works.
-            return SizeOf<T>() + alignment;
+            return Marshal.SizeOf(typeof(T)) + alignment;
         }
 
         /// <summary>
@@ -1436,17 +1427,18 @@ namespace ProcessHacker.Common
 
         public static int ToInt32(this byte[] data, Endianness type)
         {
-            if (type == Endianness.Little)
+            switch (type)
             {
-                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
-            }
-            else if (type == Endianness.Big)
-            {
-                return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | (data[3]);
-            }
-            else
-            {
-                throw new ArgumentException();
+                case Endianness.Little:
+                    {
+                        return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
+                    }
+                case Endianness.Big:
+                    {
+                        return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | (data[3]);
+                    }
+                default:
+                    throw new ArgumentException();
             }
         }
 
@@ -1457,19 +1449,16 @@ namespace ProcessHacker.Common
 
         public static long ToInt64(this byte[] data, Endianness type)
         {
-            if (type == Endianness.Little)
+            switch (type)
             {
-                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24) |
-                    (data[4] << 32) | (data[5] << 40) | (data[6] << 48) | (data[7] << 56);
-            }
-            else if (type == Endianness.Big)
-            {
-                return (data[0] << 56) | (data[1] << 48) | (data[2] << 40) | (data[3] << 32) |
-                    (data[4] << 24) | (data[5] << 16) | (data[6] << 8) | (data[7]);
-            }
-            else
-            {
-                throw new ArgumentException();
+                case Endianness.Little:
+                    return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24) |
+                           (data[4] << 32) | (data[5] << 40) | (data[6] << 48) | (data[7] << 56);
+                case Endianness.Big:
+                    return (data[0] << 56) | (data[1] << 48) | (data[2] << 40) | (data[3] << 32) |
+                           (data[4] << 24) | (data[5] << 16) | (data[6] << 8) | (data[7]);
+                default:
+                    throw new ArgumentException();
             }
         }
 
@@ -1478,12 +1467,19 @@ namespace ProcessHacker.Common
             if (IntPtr.Size != data.Length)
                 throw new ArgumentException("data");
 
-            if (IntPtr.Size == sizeof(int))
-                return new IntPtr(data.ToInt32(Endianness.Little));
-            else if (IntPtr.Size == sizeof(long))
-                return new IntPtr(data.ToInt64(Endianness.Little));
-            else
-                throw new ArgumentException("data");
+            switch (IntPtr.Size)
+            {
+                case sizeof(int):
+                    {
+                        return new IntPtr(data.ToInt32(Endianness.Little));
+                    }
+                case sizeof(long):
+                    {
+                        return new IntPtr(data.ToInt64(Endianness.Little));
+                    }
+                default:
+                    throw new ArgumentException("data");
+            }
         }
 
         public static ushort ToUInt16(this byte[] data, Endianness type)
@@ -1493,17 +1489,18 @@ namespace ProcessHacker.Common
 
         public static ushort ToUInt16(this byte[] data, int offset, Endianness type)
         {
-            if (type == Endianness.Little)
+            switch (type)
             {
-                return (ushort)(data[offset] | (data[offset + 1] << 8));
-            }
-            else if (type == Endianness.Big)
-            {
-                return (ushort)((data[offset] << 8) | data[offset + 1]);
-            }
-            else
-            {
-                throw new ArgumentException();
+                case Endianness.Little:
+                    {
+                        return (ushort)(data[offset] | (data[offset + 1] << 8));
+                    }
+                case Endianness.Big:
+                    {
+                        return (ushort)((data[offset] << 8) | data[offset + 1]);
+                    }
+                default:
+                    throw new ArgumentException();
             }
         }
 
@@ -1514,19 +1511,18 @@ namespace ProcessHacker.Common
 
         public static uint ToUInt32(this byte[] data, int offset, Endianness type)
         {
-            if (type == Endianness.Little)
+            switch (type)
             {
-                return (uint)(data[offset]) | (uint)(data[offset + 1] << 8) |
-                    (uint)(data[offset + 2] << 16) | (uint)(data[offset + 3] << 24);
-            }
-            else if (type == Endianness.Big)
-            {
-                return (uint)(data[offset] << 24) | (uint)(data[offset + 1] << 16) |
-                    (uint)(data[offset + 2] << 8) | (uint)(data[offset + 3]);
-            }
-            else
-            {
-                throw new ArgumentException();
+                case Endianness.Little:
+                    {
+                        return data[offset] | (uint)(data[offset + 1] << 8) | (uint)(data[offset + 2] << 16) | (uint)(data[offset + 3] << 24);
+                    }
+                case Endianness.Big:
+                    {
+                        return (uint)(data[offset] << 24) | (uint)(data[offset + 1] << 16) | (uint)(data[offset + 2] << 8) | data[offset + 3];
+                    }
+                default:
+                    throw new ArgumentException();
             }
         }
 
