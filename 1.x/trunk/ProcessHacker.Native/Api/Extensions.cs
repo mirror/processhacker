@@ -21,7 +21,7 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
+
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -30,7 +30,7 @@ namespace ProcessHacker.Native
 {
     public static class NativeExtensions
     {
-        private static bool NphNotAvailable = false;
+        private static bool NphNotAvailable;
 
         public static ObjectBasicInformation GetBasicInfo(this SystemHandleEntry thisHandle)
         {
@@ -117,8 +117,13 @@ namespace ProcessHacker.Native
             }
             else
             {
-                Win32.NtQueryObject(dupHandle, ObjectInformationClass.ObjectNameInformation,
-                    IntPtr.Zero, 0, out retLength);
+                Win32.NtQueryObject(
+                    dupHandle, 
+                    ObjectInformationClass.ObjectNameInformation,
+                    IntPtr.Zero, 
+                    0, 
+                    out retLength
+                    );
             }
 
             if (retLength > 0)

@@ -40,6 +40,8 @@ namespace ProcessHacker.Native.Objects
             get { return _phTokenSource; }
         }
 
+        public WindowsException LastError { get; private set; }
+
         public static TokenHandle Create(
             TokenAccess access,
             TokenType tokenType,
@@ -183,9 +185,9 @@ namespace ProcessHacker.Native.Objects
 
         public static TokenHandle OpenSystemToken(TokenAccess access, SecurityImpersonationLevel impersonationLevel, TokenType type)
         {
-            using (var phandle = new ProcessHandle(4, OSVersion.MinProcessQueryInfoAccess))
+            using (ProcessHandle phandle = new ProcessHandle(4, OSVersion.MinProcessQueryInfoAccess))
             {
-                using (var thandle = phandle.GetToken(TokenAccess.Duplicate | access))
+                using (TokenHandle thandle = phandle.GetToken(TokenAccess.Duplicate | access))
                 {
                     return thandle.Duplicate(access, impersonationLevel, type);
                 }
@@ -214,7 +216,7 @@ namespace ProcessHacker.Native.Objects
                 if (!Win32.OpenProcessToken(handle, access, out h))
                 {
                     this.MarkAsInvalid();
-                    Win32.Throw();
+                    this.LastError = Win32.Thrown();
                 }
             }
 
@@ -243,7 +245,7 @@ namespace ProcessHacker.Native.Objects
             if (!Win32.OpenThreadToken(handle, access, openAsSelf, out h))
             {
                 this.MarkAsInvalid();
-                Win32.Throw();
+                this.LastError = Win32.Thrown();
             }
 
             this.Handle = h;
@@ -278,7 +280,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
             bool result;
 
-            using (var privilegesMemory = privileges.ToMemory())
+            using (MemoryAlloc privilegesMemory = privileges.ToMemory())
             {
                 if ((status = Win32.NtPrivilegeCheck(
                     this,
@@ -332,9 +334,9 @@ namespace ProcessHacker.Native.Objects
         /// Gets the elevation type of the token.
         /// </summary>
         /// <returns>A TOKEN_ELEVATION_TYPE enum.</returns>
-        public TokenElevationType GetElevationType()
+        public TokenElevationType ElevationType
         {
-            return (TokenElevationType)this.GetInformationInt32(TokenInformationClass.TokenElevationType);
+            get { return (TokenElevationType)this.GetInformationInt32(TokenInformationClass.TokenElevationType); }
         }
 
         /// <summary>
@@ -374,12 +376,11 @@ namespace ProcessHacker.Native.Objects
         private int GetInformationInt32(TokenInformationClass infoClass)
         {
             NtStatus status;
-            int value;
 
-            value = this.GetInformationInt32(infoClass, out status);
+            int value = this.GetInformationInt32(infoClass, out status);
 
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+            if (status.IsError())
+                this.LastError = Win32.Thrown(status);
 
             return value;
         }
@@ -403,12 +404,11 @@ namespace ProcessHacker.Native.Objects
         private IntPtr GetInformationIntPtr(TokenInformationClass infoClass)
         {
             NtStatus status;
-            IntPtr value;
 
-            value = this.GetInformationIntPtr(infoClass, out status);
+            IntPtr value = this.GetInformationIntPtr(infoClass, out status);
 
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+            if (status.IsError())
+                this.LastError = Win32.Thrown(status);
 
             return value;
         }
@@ -432,12 +432,12 @@ namespace ProcessHacker.Native.Objects
         public TokenHandle GetLinkedToken()
         {
             NtStatus status;
-            IntPtr handle;
 
-            handle = this.GetInformationIntPtr(TokenInformationClass.TokenLinkedToken, out status);
+            IntPtr handle = this.GetInformationIntPtr(TokenInformationClass.TokenLinkedToken, out status);
 
             if (status == NtStatus.NoSuchLogonSession)
                 return null;
+
             if (status >= NtStatus.Error)
                 Win32.Throw(status);
 
@@ -448,19 +448,21 @@ namespace ProcessHacker.Native.Objects
         /// Gets the token's owner.
         /// </summary>
         /// <returns>A WindowsSID instance.</returns>
-        public Sid GetOwner()
+        public Sid Owner
         {
-            int retLen;
-
-            Win32.GetTokenInformation(this, TokenInformationClass.TokenOwner, IntPtr.Zero, 0, out retLen);
-
-            using (MemoryAlloc data = new MemoryAlloc(retLen))
+            get
             {
-                if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenOwner, data,
-                    data.Size, out retLen))
-                    Win32.Throw();
+                int retLen;
 
-                return new Sid(data.ReadIntPtr(0));
+                Win32.GetTokenInformation(this, TokenInformationClass.TokenOwner, IntPtr.Zero, 0, out retLen);
+
+                using (MemoryAlloc data = new MemoryAlloc(retLen))
+                {
+                    if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenOwner, data, data.Size, out retLen))
+                        Win32.Throw();
+
+                    return new Sid(data.ReadIntPtr(0));
+                }
             }
         }
 
@@ -468,19 +470,21 @@ namespace ProcessHacker.Native.Objects
         /// Gets the token's primary group.
         /// </summary>
         /// <returns>A WindowsSID instance.</returns>
-        public Sid GetPrimaryGroup()
+        public Sid PrimaryGroup
         {
-            int retLen;
-
-            Win32.GetTokenInformation(this, TokenInformationClass.TokenPrimaryGroup, IntPtr.Zero, 0, out retLen);
-
-            using (MemoryAlloc data = new MemoryAlloc(retLen))
+            get
             {
-                if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrimaryGroup, data,
-                    data.Size, out retLen))
-                    Win32.Throw();
+                int retLen;
 
-                return new Sid(data.ReadIntPtr(0));
+                Win32.GetTokenInformation(this, TokenInformationClass.TokenPrimaryGroup, IntPtr.Zero, 0, out retLen);
+
+                using (MemoryAlloc data = new MemoryAlloc(retLen))
+                {
+                    if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrimaryGroup, data, data.Size, out retLen))
+                        Win32.Throw();
+
+                    return new Sid(data.ReadIntPtr(0));
+                }
             }
         }
 
@@ -488,28 +492,30 @@ namespace ProcessHacker.Native.Objects
         /// Gets the token's privileges.
         /// </summary>
         /// <returns>A TOKEN_PRIVILEGES structure.</returns>
-        public Privilege[] GetPrivileges()
+        public Privilege[] Privileges
         {
-            int retLen;
-
-            Win32.GetTokenInformation(this, TokenInformationClass.TokenPrivileges, IntPtr.Zero, 0, out retLen);
-
-            using (MemoryAlloc data = new MemoryAlloc(retLen))
+            get
             {
-                if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrivileges, data,
-                    data.Size, out retLen))
-                    Win32.Throw();
+                int retLen;
 
-                uint count = data.ReadUInt32(0);
-                Privilege[] privileges = new Privilege[count];
+                Win32.GetTokenInformation(this, TokenInformationClass.TokenPrivileges, IntPtr.Zero, 0, out retLen);
 
-                for (int i = 0; i < count; i++)
+                using (MemoryAlloc data = new MemoryAlloc(retLen))
                 {
-                    var laa = data.ReadStruct<LuidAndAttributes>(sizeof(int), i);
-                    privileges[i] = new Privilege(this, laa.Luid, laa.Attributes);
-                }
+                    if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrivileges, data, data.Size, out retLen))
+                        Win32.Throw();
 
-                return privileges;
+                    uint count = data.ReadUInt32(0);
+                    Privilege[] privileges = new Privilege[count];
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        var laa = data.ReadStruct<LuidAndAttributes>(sizeof(int), i);
+                        privileges[i] = new Privilege(this, laa.Luid, laa.Attributes);
+                    }
+
+                    return privileges;
+                }
             }
         }
 

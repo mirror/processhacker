@@ -286,7 +286,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaLookupPrivilegeValue(
             [In] IntPtr PolicyHandle,
-            [In] UnicodeString Name,
+            [In, Out] ref UnicodeString Name,
             [Out] out Luid Value
             );
 
@@ -315,7 +315,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll")]
         public static extern NtStatus LsaOpenPolicy(
             [In] [Optional] ref UnicodeString SystemName,
-            [In] ObjectAttributes ObjectAttributes,
+            [In] ref ObjectAttributes ObjectAttributes,
             [In] LsaPolicyAccess DesiredAccess,
             [Out] out IntPtr PolicyHandle
             );

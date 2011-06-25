@@ -96,9 +96,19 @@ namespace ProcessHacker.Native.Api
             Throw(GetLastErrorCode());
         }
 
+        public static WindowsException Thrown()
+        {
+            return new WindowsException(GetLastErrorCode());
+        }
+
         public static void Throw(NtStatus status)
         {
             throw new WindowsException(status);
+        }
+
+        public static WindowsException Thrown(NtStatus status)
+        {
+            return new WindowsException(GetLastErrorCode());
         }
 
         public static void Throw(int error)

@@ -21,11 +21,9 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
+
 using ProcessHacker.Common.Objects;
-using ProcessHacker.Common.Threading;
 
 namespace ProcessHacker.Native
 {
@@ -108,7 +106,7 @@ namespace ProcessHacker.Native
 
         public void DestroyStruct<T>()
         {
-            this.DestroyStruct<T>(0);
+            Marshal.DestroyStructure(this.Memory, typeof(T));
         }
 
         public void DestroyStruct<T>(int index)
@@ -249,12 +247,9 @@ namespace ProcessHacker.Native
         /// <param name="offset">The offset at which to begin reading.</param>
         /// <param name="index">The index at which to begin reading, after the offset is added.</param>
         /// <returns>The integer.</returns>
-        public uint ReadUInt32(int offset, int index)
+        public unsafe uint ReadUInt32(int offset, int index)
         {
-            unsafe
-            {
-                return ((uint*)((byte*)this.Memory + offset))[index];
-            }
+            return ((uint*)((byte*)this.Memory + offset))[index];
         }
 
         /// <summary>
@@ -265,7 +260,7 @@ namespace ProcessHacker.Native
         public T ReadStruct<T>()
             where T : struct
         {
-            return this.ReadStruct<T>(0);
+            return (T)Marshal.PtrToStructure(this.Memory, typeof(T));
         }
 
         /// <summary>
@@ -296,13 +291,8 @@ namespace ProcessHacker.Native
             {
                 return (T)Marshal.PtrToStructure(this.Memory.Increment(offset), typeof(T));
             }
-            else
-            {
-                return (T)Marshal.PtrToStructure(
-                    this.Memory.Increment(offset + Marshal.SizeOf(typeof(T)) * index),
-                    typeof(T)
-                    );
-            }
+
+            return (T)Marshal.PtrToStructure(this.Memory.Increment(offset + Marshal.SizeOf(typeof(T)) * index), typeof(T));
         }
 
         public string ReadUnicodeString(int offset)
@@ -357,7 +347,7 @@ namespace ProcessHacker.Native
         public void WriteStruct<T>(T s)
             where T : struct
         {
-            this.WriteStruct(0, s);
+            Marshal.StructureToPtr(s, this.Memory, false);
         }
 
         public void WriteStruct<T>(int index, T s)

@@ -69,12 +69,13 @@ namespace ProcessHacker
             _tokenProps.Dock = DockStyle.Fill;
             tabToken.Controls.Add(_tokenProps);
             _tokenProps.DumpInitialize();
+
             this.LoadToken();
 
             // Modules
-            if (_item.FileName != null)
+            if (!string.IsNullOrEmpty(_item.FileName))
                 listModules.DumpSetMainModule(_item.FileName);
-            listModules.List.SetTheme("explorer");
+
             listModules.List.AddShortcuts();
             listModules.List.ContextMenu = listModules.List.GetCopyMenu();
 
@@ -82,7 +83,6 @@ namespace ProcessHacker
             listModules.UpdateItems();
 
             // Environment
-            listEnvironment.SetTheme("explorer");
             listEnvironment.AddShortcuts();
             listEnvironment.ContextMenu = listEnvironment.GetCopyMenu();
 
@@ -90,7 +90,6 @@ namespace ProcessHacker
 
             // Handles
             listHandles.DumpDisableEvents();
-            listHandles.List.SetTheme("explorer");
             listHandles.List.AddShortcuts();
             listHandles.List.ContextMenu = listHandles.List.GetCopyMenu();
 

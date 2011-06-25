@@ -49,11 +49,6 @@ namespace ProcessHacker
             listView.ContextMenu = listView.GetCopyMenu();
         }
 
-        private void ListWindow_Load(object sender, EventArgs e)
-        {
-            listView.SetTheme("explorer");
-        }
-
         private void buttonClose_Click(object sender, EventArgs e)
         {
             this.Close();

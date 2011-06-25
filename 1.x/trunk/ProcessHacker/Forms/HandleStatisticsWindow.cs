@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
 using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
@@ -17,55 +18,57 @@ namespace ProcessHacker
         public HandleStatisticsWindow(int pid)
         {
             InitializeComponent();
+
             this.AddEscapeToClose();
             this.SetTopMost();
 
             _pid = pid;
 
-            listTypes.SetDoubleBuffered(true);
-            listTypes.SetTheme("explorer");
             listTypes.AddShortcuts();
             listTypes.ContextMenu = listTypes.GetCopyMenu();
             listTypes.ListViewItemSorter = new SortedListViewComparer(listTypes);
 
             var typeStats = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
-            using (var phandle = new ProcessHandle(pid, ProcessAccess.DupHandle))
+            using (ProcessHandle phandle = new ProcessHandle(pid, ProcessAccess.DupHandle))
             {
-                var handles = Windows.GetHandles();
-
-                foreach (var handle in handles)
+                if (phandle.LastError == null)
                 {
-                    if (pid != -1 && handle.ProcessId != pid)
-                        continue;
+                    SystemHandleEntry[] handles = Windows.GetHandles();
 
-                    ObjectInformation info;
-
-                    try
+                    foreach (var handle in handles)
                     {
-                        if (pid != -1)
+                        if (pid != -1 && handle.ProcessId != pid)
+                            continue;
+
+                        ObjectInformation info;
+
+                        try
                         {
-                            info = handle.GetHandleInfo(phandle, false);
+                            if (pid != -1)
+                            {
+                                info = handle.GetHandleInfo(phandle, false);
+                            }
+                            else
+                            {
+                                info = handle.GetHandleInfo(false);
+                            }
                         }
+                        catch (Exception ex)
+                        {
+                            Logging.Log(ex);
+
+                            info = new ObjectInformation
+                            {
+                                TypeName = "(unknown)"
+                            };
+                        }
+
+                        if (typeStats.ContainsKey(info.TypeName))
+                            typeStats[info.TypeName]++;
                         else
-                        {
-                            info = handle.GetHandleInfo(false);
-                        }
+                            typeStats.Add(info.TypeName, 1);
                     }
-                    catch (Exception ex)
-                    {
-                        Logging.Log(ex);
-
-                        info = new ObjectInformation
-                        {
-                            TypeName = "(unknown)"
-                        };
-                    }
-
-                    if (typeStats.ContainsKey(info.TypeName))
-                        typeStats[info.TypeName]++;
-                    else
-                        typeStats.Add(info.TypeName, 1);
                 }
             }
 

@@ -61,7 +61,7 @@ namespace ProcessHacker.Common.Objects
     /// the object will be freed.
     /// </para>
     /// </remarks>
-    public abstract class BaseObject : IDisposable, IRefCounted
+    public abstract class BaseObject : IRefCounted
     {
         private const int ObjectOwned = 0x1;
         private const int ObjectOwnedByGc = 0x2;
@@ -70,14 +70,14 @@ namespace ProcessHacker.Common.Objects
         private const int ObjectRefCountMask = 0x1fffffff;
         private const int ObjectRefCountIncrement = 0x8;
 
-        private static int _createdCount = 0;
-        private static int _freedCount = 0;
-        private static int _disposedCount = 0;
-        private static int _finalizedCount = 0;
-        private static int _referencedCount = 0;
-        private static int _dereferencedCount = 0;
+        private static int _createdCount;
+        private static int _freedCount;
+        private static int _disposedCount;
+        private static int _finalizedCount;
+        private static int _referencedCount;
+        private static int _dereferencedCount;
 
-#if DEBUG && DEBUG_ENABLE_LIVE_LIST
+#if DEBUG_ENABLE_LIVE_LIST
         private static System.Collections.Generic.List<WeakReference<BaseObject>> _liveList =
             new System.Collections.Generic.List<WeakReference<BaseObject>>();
 #endif
@@ -139,7 +139,7 @@ namespace ProcessHacker.Common.Objects
             return oldObj;
         }
 
-#if DEBUG
+#if DEBUG_ENABLE_LIVE_LIST
         /// <summary>
         /// A stack trace collected when the object is created.
         /// </summary>
@@ -159,7 +159,7 @@ namespace ProcessHacker.Common.Objects
         /// <summary>
         /// Initializes a disposable object.
         /// </summary>
-        public BaseObject()
+        protected BaseObject()
             : this(true)
         { }
 
@@ -167,7 +167,7 @@ namespace ProcessHacker.Common.Objects
         /// Initializes a disposable object.
         /// </summary>
         /// <param name="owned">Whether the resource is owned.</param>
-        public BaseObject(bool owned)
+        protected BaseObject(bool owned)
         {
             _value = ObjectOwned + ObjectOwnedByGc + ObjectRefCountIncrement;
 
@@ -187,11 +187,10 @@ namespace ProcessHacker.Common.Objects
                 Interlocked.Increment(ref _createdCount);
 #endif
 
-#if DEBUG
-            _creationStackTrace = Environment.StackTrace;
 #if DEBUG_ENABLE_LIVE_LIST
+            _creationStackTrace = Environment.StackTrace;
+
             _liveList.Add(new WeakReference<BaseObject>(this));
-#endif
 #endif
         }
 

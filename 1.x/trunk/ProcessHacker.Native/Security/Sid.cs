@@ -34,6 +34,8 @@ namespace ProcessHacker.Native.Security
     /// </summary>
     public sealed class Sid : BaseObject, IEquatable<Sid>
     {
+        public WindowsException LastError { get; private set; }
+
         private static readonly byte[] _nullSidAuthority = { 0, 0, 0, 0, 0, 0 };
         private static readonly byte[] _worldSidAuthority = { 0, 0, 0, 0, 0, 1 };
         private static readonly byte[] _localSidAuthority = { 0, 0, 0, 0, 0, 2 };
@@ -51,8 +53,10 @@ namespace ProcessHacker.Native.Security
 
                 if (currentUser == null)
                 {
-                    using (var thandle = TokenHandle.OpenCurrentPrimary(TokenAccess.Query))
+                    using (TokenHandle thandle = TokenHandle.OpenCurrentPrimary(TokenAccess.Query))
+                    {
                         _currentUser = currentUser = thandle.GetUser();
+                    }
                 }
 
                 return currentUser;
@@ -129,10 +133,10 @@ namespace ProcessHacker.Native.Security
             return sid.Memory;
         }
 
-        private MemoryRegion _memory;
-        private string _systemName;
-        private bool _hasAttributes;
-        private SidAttributes _attributes;
+        private readonly MemoryRegion _memory;
+        private readonly string _systemName;
+        private readonly bool _hasAttributes;
+        private readonly SidAttributes _attributes;
 
         private string _stringSid;
         private string _domain;
@@ -215,12 +219,14 @@ namespace ProcessHacker.Native.Security
 
         private Sid(IntPtr sid, bool hasAttributes, SidAttributes attributes, string systemName)
         {
-            NtStatus status;
-
             _memory = new MemoryAlloc(Win32.RtlLengthSid(sid));
 
-            if ((status = Win32.RtlCopySid(_memory.Size, _memory, sid)) >= NtStatus.Error)
-                Win32.Throw(status);
+            NtStatus status = Win32.RtlCopySid(_memory.Size, _memory, sid);
+
+            if (status.IsError())
+            {
+                this.LastError = Win32.Thrown(status);
+            }
 
             _hasAttributes = hasAttributes;
             _attributes = attributes;
@@ -243,19 +249,14 @@ namespace ProcessHacker.Native.Security
             {
                 if (_domain == null)
                     this.GetNameAndUse(out _domain, out _name, out _nameUse);
+
                 return _domain;
             }
         }
 
-        public byte[] IdentifierAuthority
+        public unsafe byte[] IdentifierAuthority
         {
-            get
-            {
-                unsafe
-                {
-                    return Utils.Create((*Win32.RtlIdentifierAuthoritySid(this)).Value, 6);
-                }
-            }
+            get { return Utils.Create((*Win32.RtlIdentifierAuthoritySid(this)).Value, 6); }
         }
 
         public bool HasAttributes
@@ -293,20 +294,17 @@ namespace ProcessHacker.Native.Security
             }
         }
 
-        public int[] SubAuthorities
+        public unsafe int[] SubAuthorities
         {
             get
             {
-                unsafe
-                {
-                    byte count = *Win32.RtlSubAuthorityCountSid(this);
-                    int[] subAuthorities = new int[count];
+                byte count = *Win32.RtlSubAuthorityCountSid(this);
+                int[] subAuthorities = new int[count];
 
-                    for (int i = 0; i < count; i++)
-                        subAuthorities[i] = *Win32.RtlSubAuthoritySid(this, i);
+                for (int i = 0; i < count; i++)
+                    subAuthorities[i] = *Win32.RtlSubAuthoritySid(this, i);
 
-                    return subAuthorities;
-                }
+                return subAuthorities;
             }
         }
 
@@ -314,8 +312,9 @@ namespace ProcessHacker.Native.Security
         {
             get
             {
-                if (_stringSid == null)
+                if (string.IsNullOrEmpty(_stringSid))
                     _stringSid = this.GetString();
+
                 return _stringSid;
             }
         }
@@ -354,8 +353,8 @@ namespace ProcessHacker.Native.Security
 
                 if (includeDomain && !string.IsNullOrEmpty(this.DomainName))
                     return this.DomainName + "\\" + this.Name;
-                else
-                    return this.Name;
+                
+                return this.Name;
             }
             catch
             {
@@ -404,14 +403,23 @@ namespace ProcessHacker.Native.Security
 
         private string GetString()
         {
-            NtStatus status;
             UnicodeString str = new UnicodeString();
 
-            if ((status = Win32.RtlConvertSidToUnicodeString(ref str, this, true)) >= NtStatus.Error)
-                Win32.Throw(status);
+            NtStatus status = Win32.RtlConvertSidToUnicodeString(ref str, this, true);
 
-            using (str)
+            if (status.IsError())
+            {
+                this.LastError = Win32.Thrown(status);
+            }
+
+            try
+            {
                 return str.Read();
+            }
+            finally
+            {
+                str.Dispose();
+            }
         }
 
         public bool IsValid()
@@ -426,7 +434,7 @@ namespace ProcessHacker.Native.Security
 
         public SidAndAttributes ToSidAndAttributes()
         {
-            return new SidAndAttributes()
+            return new SidAndAttributes
             {
                 Attributes = _attributes,
                 Sid = this

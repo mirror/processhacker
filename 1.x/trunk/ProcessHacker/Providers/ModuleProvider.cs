@@ -51,43 +51,32 @@ namespace ProcessHacker
 
     public class ModuleProvider : Provider<IntPtr, ModuleItem>
     {
-        private ProcessHandle _processHandle;
-        private int _pid;
-        private bool _isWow64 = false;
+        private readonly ProcessHandle _processHandle;
+        private readonly int _pid;
+        private readonly bool _isWow64;
 
         public ModuleProvider(int pid)
-            : base()
         {
-            this.Name = this.GetType().Name;
+            this.Name = "ModuleProvider";
             _pid = pid;
 
-            try
+            _processHandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
+
+            if (_processHandle.LastError != null)
             {
-                _processHandle = new ProcessHandle(_pid,
-                    ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
-            }
-            catch
-            {
-                try
-                {
-                    _processHandle = new ProcessHandle(_pid,
-                        Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
-                }
-                catch
-                { }
+                _processHandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
             }
 
-            if (_processHandle != null && OSVersion.Architecture == OSArch.Amd64)
+            if (OSVersion.Architecture == OSArch.Amd64 && _processHandle != null && _processHandle.LastError != null)
             {
-                try
-                {
-                    _isWow64 = _processHandle.IsWow64();
-                }
-                catch
-                { }
+                _isWow64 = _processHandle.IsWow64;
             }
 
-            this.Disposed += (provider) => { if (_processHandle != null) _processHandle.Dispose(); };
+            this.Disposed += provider =>
+            {
+                if (_processHandle != null)
+                    _processHandle.Dispose();
+            };
         }
 
         protected override void Update()
@@ -98,15 +87,15 @@ namespace ProcessHacker
                 return;
             }
 
-            var modules = new Dictionary<IntPtr, ILoadedModule>();
-            var newdictionary = new Dictionary<IntPtr, ModuleItem>(this.Dictionary);
+            Dictionary<IntPtr, ILoadedModule> modules = new Dictionary<IntPtr, ILoadedModule>();
+            Dictionary<IntPtr, ModuleItem> newdictionary = new Dictionary<IntPtr, ModuleItem>(this.Dictionary);
 
             if (_pid != 4)
             {
                 // Is this a WOW64 process? If it is, get the 32-bit modules.
                 if (!_isWow64)
                 {
-                    _processHandle.EnumModules((module) =>
+                    _processHandle.EnumModules(module =>
                         {
                             if (!modules.ContainsKey(module.BaseAddress))
                                 modules.Add(module.BaseAddress, module);
@@ -149,7 +138,7 @@ namespace ProcessHacker
                 }
 
                 // add mapped files
-                _processHandle.EnumMemory((info) =>
+                _processHandle.EnumMemory(info =>
                 {
                     if (info.Type == MemoryType.Mapped)
                     {
@@ -157,7 +146,7 @@ namespace ProcessHacker
                         {
                             string fileName = _processHandle.GetMappedFileName(info.BaseAddress);
 
-                            if (fileName != null)
+                            if (!string.IsNullOrEmpty(fileName))
                             {
                                 var fi = new System.IO.FileInfo(fileName);
 
@@ -180,7 +169,7 @@ namespace ProcessHacker
             else
             {
                 // Add loaded kernel modules.
-                Windows.EnumKernelModules((module) =>
+                Windows.EnumKernelModules(module =>
                 {
                     if (!modules.ContainsKey(module.BaseAddress))
                         modules.Add(module.BaseAddress, module);

@@ -41,11 +41,11 @@ namespace ProcessHacker.Components
     public partial class ThreadList : UserControl
     {
         private ThreadProvider _provider;
-        private bool _useCycleTime = false;
-        private int _runCount = 0;
-        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
-        private HighlightingContext _highlightingContext;
-        private bool _needsSort = false;
+        private bool _useCycleTime;
+        private int _runCount;
+        private readonly List<ListViewItem> _needsAdd = new List<ListViewItem>();
+        private readonly HighlightingContext _highlightingContext;
+        private bool _needsSort;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -84,11 +84,7 @@ namespace ProcessHacker.Components
                         return (x.Tag as ThreadItem).ContextSwitchesDelta.CompareTo((y.Tag as ThreadItem).ContextSwitchesDelta);
                     }
                 });
-            comparer.CustomSorters.Add(3,
-                (x, y) =>
-                    {
-                        return (x.Tag as ThreadItem).PriorityI.CompareTo((y.Tag as ThreadItem).PriorityI);
-                    });
+            comparer.CustomSorters.Add(3, (x, y) => (x.Tag as ThreadItem).PriorityI.CompareTo((y.Tag as ThreadItem).PriorityI));
             comparer.ColumnSortOrder.Add(0);
             comparer.ColumnSortOrder.Add(2);
             comparer.ColumnSortOrder.Add(3);
@@ -105,18 +101,6 @@ namespace ProcessHacker.Components
             listThreads.ContextMenu = menuThread;
             GenericViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads, null);
             listThreads_SelectedIndexChanged(null, null);
-
-            _dontCalculate = false;
-        }
-
-        private bool _dontCalculate = true;
-
-        protected override void OnResize(EventArgs e)
-        {
-            if (_dontCalculate)
-                return;
-
-            base.OnResize(e);
         }
 
         private void listThreads_MouseUp(object sender, MouseEventArgs e)
@@ -222,20 +206,6 @@ namespace ProcessHacker.Components
 
         #region Properties
 
-        public new bool DoubleBuffered
-        {
-            get
-            {
-                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
-                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listThreads, null);
-            }
-            set
-            {
-                typeof(ListView).GetProperty("DoubleBuffered",
-                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listThreads, value, null);
-            }
-        }
-
         public override bool Focused
         {
             get
@@ -256,7 +226,7 @@ namespace ProcessHacker.Components
             set { listThreads.ContextMenuStrip = value; }
         }
 
-        public ListView List
+        public ExtendedListView List
         {
             get { return listThreads; }
         }

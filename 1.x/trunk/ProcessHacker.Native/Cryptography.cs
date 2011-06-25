@@ -231,7 +231,7 @@ namespace ProcessHacker.Native
 
                 WintrustData trustData = new WintrustData();
 
-                trustData.Size = Marshal.SizeOf(typeof(WintrustData));
+                trustData.Size = WintrustData.SizeOf;
                 trustData.UIChoice = 2; // WTD_UI_NONE
                 trustData.UnionChoice = 1; // WTD_CHOICE_FILE
                 trustData.RevocationChecks = WtdRevocationChecks.None;
@@ -320,7 +320,7 @@ namespace ProcessHacker.Native
 
                 WintrustData trustData = new WintrustData();
 
-                trustData.Size = Marshal.SizeOf(typeof(WintrustData));
+                trustData.Size = WintrustData.SizeOf;
                 trustData.UIChoice = 1;
                 trustData.UnionChoice = 2;
                 trustData.RevocationChecks = WtdRevocationChecks.None;

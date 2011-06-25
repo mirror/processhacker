@@ -183,9 +183,9 @@ namespace ProcessHacker
                 Logging.Log(ex);
             }
 
-            try
+            using (TokenHandle thandle = ProcessHandle.Current.GetToken())
             {
-                using (TokenHandle thandle = ProcessHandle.Current.GetToken())
+                if (thandle.LastError == null)
                 {
                     thandle.TrySetPrivilege("SeDebugPrivilege", SePrivilegeAttributes.Enabled);
                     thandle.TrySetPrivilege("SeIncreaseBasePriorityPrivilege", SePrivilegeAttributes.Enabled);
@@ -198,7 +198,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            ElevationType = thandle.GetElevationType();
+                            ElevationType = thandle.ElevationType;
                         }
                         catch
                         {
@@ -216,15 +216,12 @@ namespace ProcessHacker
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
-            }
+
 
             try
             {
-                if (// Only load KPH if we're on 32-bit and it's enabled.
-                    OSVersion.Architecture == OSArch.I386 && Settings.Instance.EnableKPH && !NoKph &&// Don't load KPH if we're going to install/uninstall it.
+                if ( // Only load KPH if we're on 32-bit and it's enabled.
+                    OSVersion.Architecture == OSArch.I386 && Settings.Instance.EnableKPH && !NoKph && // Don't load KPH if we're going to install/uninstall it.
                     !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph"))
                     KProcessHacker.Instance = new KProcessHacker("KProcessHacker");
             }
@@ -1316,8 +1313,7 @@ namespace ProcessHacker
         {
             if (f.InvokeRequired)
             {
-                f.BeginInvoke(new Action(() => FocusWindow(f)));
-
+                f.BeginInvoke(new Action<Form>(FocusWindow), f);
                 return;
             }
 

@@ -378,19 +378,19 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
-                using (var thandle = phandle.GetToken(TokenAccess.Query))
+                using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                using (TokenHandle thandle = phandle.GetToken(TokenAccess.Query))
                 {
                     sb.AppendLine("User: " + thandle.GetUser().GetFullName(true));
-                    sb.AppendLine("Owner: " + thandle.GetOwner().GetFullName(true));
-                    sb.AppendLine("Primary group: " + thandle.GetPrimaryGroup().GetFullName(true));
+                    sb.AppendLine("Owner: " + thandle.Owner.GetFullName(true));
+                    sb.AppendLine("Primary group: " + thandle.PrimaryGroup.GetFullName(true));
 
                     foreach (var group in thandle.GetGroups())
                     {
                         sb.AppendLine("Group " + group.GetFullName(true));
                     }
 
-                    foreach (var privilege in thandle.GetPrivileges())
+                    foreach (var privilege in thandle.Privileges)
                     {
                         sb.AppendLine("Privilege " + privilege.Name + ": " + privilege.Attributes.ToString());
                     }

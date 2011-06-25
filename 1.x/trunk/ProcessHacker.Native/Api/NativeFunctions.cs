@@ -620,7 +620,7 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtCreateTimer(
             [Out] out IntPtr TimerHandle,
             [In] TimerAccess DesiredAccess,
-            [In, Optional] ObjectAttributes ObjectAttributes,
+            [In, Out, Optional] ref ObjectAttributes ObjectAttributes,
             [In] TimerType TimerType
             );
 
@@ -1022,7 +1022,7 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtOpenDirectoryObject(
             [Out] out IntPtr DirectoryHandle,
             [In] DirectoryAccess DesiredAccess,
-            [In] ObjectAttributes ObjectAttributes
+            [In, Out] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
@@ -1052,7 +1052,7 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtOpenFile(
             [Out] out IntPtr FileHandle,
             [In] FileAccess DesiredAccess,
-            [In] ObjectAttributes ObjectAttributes,
+            [In, Out] ref ObjectAttributes ObjectAttributes,
             [Out] out IoStatusBlock IoStatusBlock,
             [In] FileShareMode ShareAccess,
             [In] FileCreateOptions OpenOptions
@@ -3644,7 +3644,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll")]
         public static extern void RtlFreeUnicodeString(
-            [In] UnicodeString UnicodeString
+            [In, Out] ref UnicodeString UnicodeString
             );
 
         [DllImport("ntdll.dll")]

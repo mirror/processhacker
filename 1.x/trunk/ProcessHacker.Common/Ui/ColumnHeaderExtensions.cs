@@ -49,7 +49,7 @@ namespace ProcessHacker.Common.Ui
                 lvColumn.mask = HDI_FORMAT;
                 SendMessage(columnHeader, HDM_GETITEM, ColumnPtr, ref lvColumn);
 
-                if (!(order == SortOrder.None) && i == column.Index)
+                if (order != SortOrder.None && i == column.Index)
                 {
                     switch (order)
                     {

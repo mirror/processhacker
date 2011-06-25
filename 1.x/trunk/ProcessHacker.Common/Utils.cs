@@ -1315,35 +1315,6 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Enables or disables double buffering for a control.
-        /// </summary>
-        /// <param name="c">The control.</param>
-        /// <param name="t">The type of the control.</param>
-        /// <param name="value">The new setting.</param>
-        public static void SetDoubleBuffered(this Control c, Type t, bool value)
-        {
-            PropertyInfo doubleBufferedProperty = _doubleBufferedProperty;
-
-            if (doubleBufferedProperty == null)
-            {
-                _doubleBufferedProperty = doubleBufferedProperty = t.GetProperty("DoubleBuffered",
-                    BindingFlags.NonPublic | BindingFlags.Instance);
-            }
-
-            doubleBufferedProperty.SetValue(c, value, null);
-        }
-
-        /// <summary>
-        /// Enables or disables double buffering for a control.
-        /// </summary>
-        /// <param name="c">The control to set the property on.</param>
-        /// <param name="value">The new value.</param>
-        public static void SetDoubleBuffered(this Control c, bool value)
-        {
-            c.SetDoubleBuffered(c.GetType(), value);
-        }
-
-        /// <summary>
         /// Shows a file in Windows Explorer.
         /// </summary>
         /// <param name="fileName">The file to show.</param>

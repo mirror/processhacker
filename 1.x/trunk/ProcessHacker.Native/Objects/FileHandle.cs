@@ -38,6 +38,8 @@ namespace ProcessHacker.Native.Objects
         public delegate bool EnumFilesDelegate(FileEntry file);
         public delegate bool EnumStreamsDelegate(FileStreamEntry stream);
 
+        public WindowsException LastError { get; private set; }
+
         public static FileHandle FromFileStream(System.IO.FileStream fileStream)
         {
             return FromHandle(fileStream.SafeFileHandle.DangerousGetHandle());
@@ -237,14 +239,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="shareMode">The share mode to use.</param>
         /// <param name="openOptions">Open options to use.</param>
         /// <param name="access">The desired access to the file.</param>
-        public FileHandle(
-            string fileName,
-            ObjectFlags objectFlags,
-            NativeHandle rootDirectory,
-            FileShareMode shareMode,
-            FileCreateOptions openOptions,
-            FileAccess access
-            )
+        public FileHandle(string fileName, ObjectFlags objectFlags, NativeHandle rootDirectory, FileShareMode shareMode, FileCreateOptions openOptions, FileAccess access)
         {
             ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
             IoStatusBlock isb;
@@ -252,7 +247,12 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                Win32.NtOpenFile(out handle, access, oa, out isb, shareMode, openOptions).ThrowIf();
+                NtStatus result = Win32.NtOpenFile(out handle, access, ref oa, out isb, shareMode, openOptions);
+
+                if (result.IsError())
+                {
+                    this.LastError = result.LastException();
+                }
             }
             finally
             {

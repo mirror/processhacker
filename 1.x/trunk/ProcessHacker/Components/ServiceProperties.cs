@@ -24,6 +24,9 @@ using System;
 using System.Collections.Generic;
 using System.ServiceProcess;
 using System.Windows.Forms;
+
+using Microsoft.Win32;
+
 using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
 using ProcessHacker.Native;
@@ -39,7 +42,7 @@ namespace ProcessHacker.Components
     public partial class ServiceProperties : UserControl
     {
         private QueryServiceConfig _oldConfig;
-        private ServiceProvider _provider;
+        private readonly ServiceProvider _provider;
 
         public event EventHandler NeedsClose;
 
@@ -52,7 +55,7 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             listServices.ListViewItemSorter = new SortedListViewComparer(listServices);
-            listServices.SetTheme("explorer");
+
             ColumnSettings.LoadSettings(Settings.Instance.ServiceMiniListColumns, listServices);
 
             PID = -1;
@@ -74,12 +77,12 @@ namespace ProcessHacker.Components
                     _provider.Dictionary[s].Status.ServiceStatusProcess.CurrentState.ToString() })).Name = s;
             }
 
-            _provider.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(_provider_DictionaryModified);
-            _provider.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(_provider_DictionaryRemoved);
+            _provider.DictionaryModified += this._provider_DictionaryModified;
+            _provider.DictionaryRemoved += this._provider_DictionaryRemoved;
 
-            Utils.Fill(comboErrorControl, typeof(ServiceErrorControl));
-            Utils.Fill(comboStartType, typeof(ServiceStartType));
-            Utils.Fill(comboType, typeof(ProcessHacker.Native.Api.ServiceType));
+            this.comboErrorControl.Fill(typeof(ServiceErrorControl));
+            this.comboStartType.Fill(typeof(ServiceStartType));
+            this.comboType.Fill(typeof(ProcessHacker.Native.Api.ServiceType));
             comboType.Items.Add("Win32OwnProcess, InteractiveProcess");
             comboType.Items.Add("Win32ShareProcess, InteractiveProcess");
 
@@ -95,7 +98,7 @@ namespace ProcessHacker.Components
 
         public int PID { get; set; }
 
-        public ListView List
+        public ExtendedListView List
         {
             get { return listServices; }
         }
@@ -139,41 +142,44 @@ namespace ProcessHacker.Components
             if (!this.IsHandleCreated)
                 return;
 
-            this.BeginInvoke(new MethodInvoker(() =>
+            this.BeginInvoke(new Action(() =>
+            {
+                // update the state of the service
+                if (listServices.Items.ContainsKey(newItem.Status.ServiceName))
+                    listServices.Items[newItem.Status.ServiceName].SubItems[2].Text = newItem.Status.ServiceStatusProcess.CurrentState.ToString();
+
+                // update the start and stop buttons if we have a service selected
+                if (listServices.SelectedItems.Count == 1)
                 {
-                    // update the state of the service
-                    if (listServices.Items.ContainsKey(newItem.Status.ServiceName))
-                        listServices.Items[newItem.Status.ServiceName].SubItems[2].Text =
-                            newItem.Status.ServiceStatusProcess.CurrentState.ToString();
-
-                    // update the start and stop buttons if we have a service selected
-                    if (listServices.SelectedItems.Count == 1)
+                    if (listServices.SelectedItems[0].Name == newItem.Status.ServiceName)
                     {
-                        if (listServices.SelectedItems[0].Name == newItem.Status.ServiceName)
-                        {
-                            buttonStart.Enabled = false;
-                            buttonStop.Enabled = false;
+                        buttonStart.Enabled = false;
+                        buttonStop.Enabled = false;
 
-                            if (newItem.Status.ServiceStatusProcess.CurrentState == ServiceState.Running)
-                                buttonStop.Enabled = true;
-                            else if (newItem.Status.ServiceStatusProcess.CurrentState == ServiceState.Stopped)
-                                buttonStart.Enabled = true;
+                        switch (newItem.Status.ServiceStatusProcess.CurrentState)
+                        {
+                            case ServiceState.Running:
+                                this.buttonStop.Enabled = true;
+                                break;
+                            case ServiceState.Stopped:
+                                this.buttonStart.Enabled = true;
+                                break;
                         }
                     }
+                }
 
-                    // if the service was just started in this process, add it to the list
-                    if (newItem.Status.ServiceStatusProcess.ProcessID == this.PID && oldItem.Status.ServiceStatusProcess.ProcessID == 0)
+                // if the service was just started in this process, add it to the list
+                if (newItem.Status.ServiceStatusProcess.ProcessID == this.PID && oldItem.Status.ServiceStatusProcess.ProcessID == 0)
+                {
+                    if (!listServices.Items.ContainsKey(newItem.Status.ServiceName))
                     {
-                        if (!listServices.Items.ContainsKey(newItem.Status.ServiceName))
+                        listServices.Items.Add(new ListViewItem(new string[]
                         {
-                            listServices.Items.Add(new ListViewItem(new string[] { 
-                                newItem.Status.ServiceName, 
-                                newItem.Status.DisplayName,
-                                newItem.Status.ServiceStatusProcess.CurrentState.ToString() 
-                            })).Name = newItem.Status.ServiceName;
-                        }
+                            newItem.Status.ServiceName, newItem.Status.DisplayName, newItem.Status.ServiceStatusProcess.CurrentState.ToString()
+                        })).Name = newItem.Status.ServiceName;
                     }
-                }));
+                }
+            }));
         }
 
         private void listServices_SelectedIndexChanged(object sender, EventArgs e)
@@ -195,7 +201,7 @@ namespace ProcessHacker.Components
                 buttonPermissions.Enabled = false;
                 comboType.Enabled = false;
                 comboStartType.Enabled = false;
-                comboErrorControl.Enabled = false;         
+                comboErrorControl.Enabled = false;
                 _oldConfig = new QueryServiceConfig();
                 this.ClearControls();
             }
@@ -213,14 +219,13 @@ namespace ProcessHacker.Components
                     comboStartType.Enabled = true;
                     comboErrorControl.Enabled = true;
 
-                    try
+                    using (ServiceHandle shandle = new ServiceHandle(listServices.SelectedItems[0].Name, ServiceAccess.QueryConfig))
                     {
-                        using (var shandle = 
-                            new ServiceHandle(listServices.SelectedItems[0].Name, ServiceAccess.QueryConfig))
-                            _provider.UpdateServiceConfig(listServices.SelectedItems[0].Name, shandle.GetConfig());
+                        if (shandle.LastError == null)
+                        {
+                            _provider.UpdateServiceConfig(listServices.SelectedItems[0].Name, shandle.Config);
+                        }
                     }
-                    catch
-                    { }
 
                     ServiceItem item = _provider.Dictionary[listServices.SelectedItems[0].Name];
 
@@ -230,10 +235,15 @@ namespace ProcessHacker.Components
                     buttonStart.Enabled = true;
                     buttonStop.Enabled = true;
 
-                    if (item.Status.ServiceStatusProcess.CurrentState == ServiceState.Running)
-                        buttonStart.Enabled = false;
-                    else if (item.Status.ServiceStatusProcess.CurrentState == ServiceState.Stopped)
-                        buttonStop.Enabled = false;
+                    switch (item.Status.ServiceStatusProcess.CurrentState)
+                    {
+                        case ServiceState.Running:
+                            this.buttonStart.Enabled = false;
+                            break;
+                        case ServiceState.Stopped:
+                            this.buttonStop.Enabled = false;
+                            break;
+                    }
 
                     if ((item.Status.ServiceStatusProcess.ControlsAccepted & ServiceAccept.Stop) == 0)
                         buttonStop.Enabled = false;
@@ -242,14 +252,19 @@ namespace ProcessHacker.Components
                     labelServiceDisplayName.Text = item.Status.DisplayName;
                     comboType.SelectedItem = item.Config.ServiceType.ToString();
 
-                    if (item.Config.ServiceType ==
-                        (ProcessHacker.Native.Api.ServiceType.Win32OwnProcess |
-                        ProcessHacker.Native.Api.ServiceType.InteractiveProcess))
-                        comboType.SelectedItem = "Win32OwnProcess, InteractiveProcess";
-                    else if (item.Config.ServiceType ==
-                        (ProcessHacker.Native.Api.ServiceType.Win32ShareProcess |
-                        ProcessHacker.Native.Api.ServiceType.InteractiveProcess))
-                        comboType.SelectedItem = "Win32ShareProcess, InteractiveProcess";
+                    switch (item.Config.ServiceType)
+                    {
+                        case (ProcessHacker.Native.Api.ServiceType.Win32OwnProcess | ProcessHacker.Native.Api.ServiceType.InteractiveProcess):
+                            {
+                                this.comboType.SelectedItem = "Win32OwnProcess, InteractiveProcess";
+                                break;
+                            }
+                        case (ProcessHacker.Native.Api.ServiceType.Win32ShareProcess | ProcessHacker.Native.Api.ServiceType.InteractiveProcess):
+                            {
+                                this.comboType.SelectedItem = "Win32ShareProcess, InteractiveProcess";
+                                break;
+                            }
+                    }
 
                     comboStartType.SelectedItem = item.Config.StartType.ToString();
                     comboErrorControl.SelectedItem = item.Config.ErrorControl.ToString();
@@ -257,38 +272,41 @@ namespace ProcessHacker.Components
                     textUserAccount.Text = item.Config.ServiceStartName;
                     textLoadOrderGroup.Text = item.Config.LoadOrderGroup;
 
-                    try
+                    using (ServiceHandle shandle = new ServiceHandle(item.Status.ServiceName, ServiceAccess.QueryConfig))
                     {
-                        using (var shandle
-                            = new ServiceHandle(item.Status.ServiceName, ServiceAccess.QueryConfig))
-                            textDescription.Text = shandle.GetDescription();
-                    }
-                    catch
-                    {
-                        textDescription.Text = "";
+                        if (shandle.LastError == null)
+                        {
+                            textDescription.Text = shandle.Description;
+                        }
+                        else
+                        {
+                            textDescription.Text = string.Empty;
+                        }
                     }
 
-                    textServiceDll.Text = "";
+                    textServiceDll.Text = string.Empty;
 
                     if (item.Config.ServiceType == ProcessHacker.Native.Api.ServiceType.Win32ShareProcess)
                     {
                         try
                         {
-                            using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
-                                "SYSTEM\\CurrentControlSet\\Services\\" + item.Status.ServiceName + "\\Parameters"))
-                                textServiceDll.Text = Environment.ExpandEnvironmentVariables((string)key.GetValue("ServiceDll"));
+                            using (RegistryKey key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Services\\" + item.Status.ServiceName + "\\Parameters"))
+                            {
+                                textServiceDll.Text = Environment.ExpandEnvironmentVariables(key.GetValue("ServiceDll") as string);
+                            }
                         }
                         catch
-                        { }
+                        {
+                        }
                     }
 
                     try
                     {
-                        using (ServiceController controller = new ServiceController(
-                            listServices.SelectedItems[0].Name))
+                        using (ServiceController controller = new ServiceController(listServices.SelectedItems[0].Name))
                         {
                             if (controller.DependentServices.Length == 0)
                                 buttonDependents.Enabled = false;
+
                             if (controller.ServicesDependedOn.Length == 0)
                                 buttonDependencies.Enabled = false;
                         }
@@ -325,90 +343,96 @@ namespace ProcessHacker.Components
 
         private void buttonApply_Click(object sender, EventArgs e)
         {
-            try
+
+            string serviceName = listServices.SelectedItems[0].Name;
+
+            ProcessHacker.Native.Api.ServiceType type;
+
+            switch (this.comboType.SelectedItem.ToString())
             {
-                string serviceName = listServices.SelectedItems[0].Name;
+                case "Win32OwnProcess, InteractiveProcess":
+                    type = ProcessHacker.Native.Api.ServiceType.Win32OwnProcess | ProcessHacker.Native.Api.ServiceType.InteractiveProcess;
+                    break;
+                case "Win32ShareProcess, InteractiveProcess":
+                    type = ProcessHacker.Native.Api.ServiceType.Win32ShareProcess | ProcessHacker.Native.Api.ServiceType.InteractiveProcess;
+                    break;
+                default:
+                    type = (ProcessHacker.Native.Api.ServiceType)Enum.Parse(typeof(ProcessHacker.Native.Api.ServiceType), this.comboType.SelectedItem.ToString());
+                    break;
+            }
 
-                ProcessHacker.Native.Api.ServiceType type;
+            string binaryPath = textServiceBinaryPath.Text;
+            string loadOrderGroup = textLoadOrderGroup.Text;
+            string userAccount = textUserAccount.Text;
+            string password = textPassword.Text;
+            var startType = (ServiceStartType)Enum.Parse(typeof(ServiceStartType), comboStartType.SelectedItem.ToString());
+            var errorControl = (ServiceErrorControl)Enum.Parse(typeof(ServiceErrorControl), comboErrorControl.SelectedItem.ToString());
 
-                if (comboType.SelectedItem.ToString() == "Win32OwnProcess, InteractiveProcess")
-                    type = ProcessHacker.Native.Api.ServiceType.Win32OwnProcess |
-                        ProcessHacker.Native.Api.ServiceType.InteractiveProcess;
-                else if (comboType.SelectedItem.ToString() == "Win32ShareProcess, InteractiveProcess")
-                    type = ProcessHacker.Native.Api.ServiceType.Win32ShareProcess |
-                        ProcessHacker.Native.Api.ServiceType.InteractiveProcess;
-                else
-                    type = (ProcessHacker.Native.Api.ServiceType)
-                        Enum.Parse(typeof(ProcessHacker.Native.Api.ServiceType), 
-                        comboType.SelectedItem.ToString());
+            // Only change the items which the user modified.
+            if (binaryPath == _oldConfig.BinaryPathName)
+                binaryPath = null;
+            if (loadOrderGroup == _oldConfig.LoadOrderGroup)
+                loadOrderGroup = null;
+            if (userAccount == _oldConfig.ServiceStartName)
+                userAccount = null;
+            if (!checkChangePassword.Checked)
+                password = null;
 
-                string binaryPath = textServiceBinaryPath.Text;
-                string loadOrderGroup = textLoadOrderGroup.Text;
-                string userAccount = textUserAccount.Text;
-                string password = textPassword.Text;
-                var startType = (ServiceStartType)
-                    Enum.Parse(typeof(ServiceStartType), comboStartType.SelectedItem.ToString());
-                var errorControl = (ServiceErrorControl)
-                    Enum.Parse(typeof(ServiceErrorControl), comboErrorControl.SelectedItem.ToString());
+            if (type == ProcessHacker.Native.Api.ServiceType.KernelDriver || type == ProcessHacker.Native.Api.ServiceType.FileSystemDriver)
+                userAccount = null;
 
-                // Only change the items which the user modified.
-                if (binaryPath == _oldConfig.BinaryPathName)
-                    binaryPath = null;
-                if (loadOrderGroup == _oldConfig.LoadOrderGroup)
-                    loadOrderGroup = null;
-                if (userAccount == _oldConfig.ServiceStartName)
-                    userAccount = null;
-                if (!checkChangePassword.Checked)
-                    password = null;
-
-                if (type == ProcessHacker.Native.Api.ServiceType.KernelDriver ||
-                    type == ProcessHacker.Native.Api.ServiceType.FileSystemDriver)
-                    userAccount = null;
-
-                if (Program.ElevationType == TokenElevationType.Full)
+            if (Program.ElevationType == TokenElevationType.Full)
+            {
+                using (ServiceHandle shandle = new ServiceHandle(serviceName, ServiceAccess.ChangeConfig))
                 {
-                    using (var shandle = new ServiceHandle(serviceName, ServiceAccess.ChangeConfig))
+                    if (shandle.LastError == null)
                     {
-                        if (!Win32.ChangeServiceConfig(shandle.Handle,
-                            type, startType, errorControl,
-                            binaryPath, loadOrderGroup, IntPtr.Zero, null, userAccount, password, null))
+                        if (!Win32.ChangeServiceConfig(shandle.Handle, type, startType, errorControl, binaryPath, loadOrderGroup, IntPtr.Zero, null, userAccount, password, null))
                             Win32.Throw();
                     }
+                    else
+                    {
+                        PhUtils.ShowException("Unable to change service configuration", shandle.LastError);
+                    }
+                }
+            }
+            else
+            {
+                string args = "-e -type service -action config -obj \"" + serviceName + "\" -hwnd " + this.Handle.ToString();
+
+                args += " -servicetype \"" + this.comboType.SelectedItem + "\"";
+                args += " -servicestarttype \"" + this.comboStartType.SelectedItem + "\"";
+                args += " -serviceerrorcontrol \"" + this.comboErrorControl.SelectedItem + "\"";
+
+                if (binaryPath != null)
+                    args += " -servicebinarypath \"" + binaryPath.Replace("\"", "\\\"") + "\"";
+                if (loadOrderGroup != null)
+                    args += " -serviceloadordergroup \"" + loadOrderGroup.Replace("\"", "\\\"") + "\"";
+                if (userAccount != null)
+                    args += " -serviceuseraccount \"" + userAccount.Replace("\"", "\\\"") + "\"";
+                if (password != null)
+                    args += " -servicepassword \"" + password.Replace("\"", "\\\"") + "\"";
+
+                var result = Program.StartProcessHackerAdminWait(args, this.Handle, 2000);
+
+                if (result == WaitResult.Timeout || result == WaitResult.Abandoned)
+                    return;
+            }
+
+            using (ServiceHandle shandle = new ServiceHandle(serviceName, ServiceAccess.QueryConfig))
+            {
+                if (shandle.LastError == null)
+                {
+                    _provider.UpdateServiceConfig(serviceName, shandle.Config);
                 }
                 else
                 {
-                    string args = "-e -type service -action config -obj \"" + serviceName + "\" -hwnd " +
-                        this.Handle.ToString();
-
-                    args += " -servicetype \"" + comboType.SelectedItem.ToString() + "\"";
-                    args += " -servicestarttype \"" + comboStartType.SelectedItem.ToString() + "\"";
-                    args += " -serviceerrorcontrol \"" + comboErrorControl.SelectedItem.ToString() + "\"";
-
-                    if (binaryPath != null)
-                        args += " -servicebinarypath \"" + binaryPath.Replace("\"", "\\\"") + "\"";
-                    if (loadOrderGroup != null)
-                        args += " -serviceloadordergroup \"" + loadOrderGroup.Replace("\"", "\\\"") + "\"";
-                    if (userAccount != null)
-                        args += " -serviceuseraccount \"" + userAccount.Replace("\"", "\\\"") + "\"";
-                    if (password != null)
-                        args += " -servicepassword \"" + password.Replace("\"", "\\\"") + "\"";
-
-                    var result = Program.StartProcessHackerAdminWait(args, this.Handle, 2000);
-
-                    if (result == WaitResult.Timeout || result == WaitResult.Abandoned)
-                        return;
+                    PhUtils.ShowException("Unable to change service configuration", shandle.LastError);
                 }
-
-                using (var shandle = new ServiceHandle(serviceName, ServiceAccess.QueryConfig))
-                    _provider.UpdateServiceConfig(serviceName, shandle.GetConfig());
-
-                if (listServices.Items.Count == 1)
-                    this.Close();
             }
-            catch (Exception ex)
-            {
-                PhUtils.ShowException("Unable to change service configuration", ex);
-            }
+
+            if (listServices.Items.Count == 1)
+                this.Close();
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
@@ -425,17 +449,17 @@ namespace ProcessHacker.Components
         {
             try
             {
-                using (ServiceController controller = new ServiceController(
-                    listServices.SelectedItems[0].Name))
+                using (ServiceController controller = new ServiceController(listServices.SelectedItems[0].Name))
                 {
                     List<string> dependents = new List<string>();
 
                     foreach (var service in controller.DependentServices)
                         dependents.Add(service.ServiceName);
 
-                    ServiceWindow sw = new ServiceWindow(dependents.ToArray());
-
-                    sw.ShowDialog();
+                    using (ServiceWindow sw = new ServiceWindow(dependents.ToArray()))
+                    {
+                        sw.ShowDialog();
+                    }
                 }
             }
             catch (Exception ex)

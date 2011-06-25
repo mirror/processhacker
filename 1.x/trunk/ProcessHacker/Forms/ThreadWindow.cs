@@ -63,11 +63,6 @@ namespace ProcessHacker
             this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
                 ") - Thread " + _tid.ToString();
 
-            PropertyInfo property = typeof(ListView).GetProperty("DoubleBuffered",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-
-            property.SetValue(listViewCallStack, true, null);
-
             listViewCallStack.ContextMenu = listViewCallStack.GetCopyMenu();
 
             try
@@ -139,7 +134,6 @@ namespace ProcessHacker
 
         private void ThreadWindow_Load(object sender, EventArgs e)
         {
-            listViewCallStack.SetTheme("explorer");
             listViewCallStack.AddShortcuts();
 
             this.Size = Settings.Instance.ThreadWindowSize;
@@ -189,7 +183,7 @@ namespace ProcessHacker
 
                     _thandle.WalkStack(_phandle, this.WalkStackCallback);
 
-                    if (OSVersion.Architecture == OSArch.Amd64 && _phandle.IsWow64())
+                    if (OSVersion.Architecture == OSArch.Amd64 && _phandle.IsWow64)
                     {
                         _thandle.WalkStack(_phandle, this.WalkStackCallback, OSArch.I386);
                     }

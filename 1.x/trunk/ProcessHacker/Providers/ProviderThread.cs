@@ -20,9 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Objects;
@@ -37,16 +35,16 @@ namespace ProcessHacker
 {
     public class ProviderThread : BaseObject, IEnumerable<IProvider>
     {
-        private LinkedListEntry<IProvider> _listHead = new LinkedListEntry<IProvider>();
-        private int _boostCount = 0;
+        private readonly LinkedListEntry<IProvider> _listHead = new LinkedListEntry<IProvider>();
+        private int _boostCount;
 
         private int _count;
         private Thread _thread;
         private ThreadHandle _threadHandle;
         private FastEvent _initializedEvent = new FastEvent(false);
-        private bool _terminating = false;
+        private bool _terminating;
         private int _interval;
-        private TimerHandle _timerHandle;
+        private readonly TimerHandle _timerHandle;
 
         public ProviderThread(int interval)
         {
@@ -55,8 +53,10 @@ namespace ProcessHacker
             _timerHandle = TimerHandle.Create(TimerAccess.All, TimerType.SynchronizationTimer); 
             this.Interval = interval;
 
-            _thread = new Thread(new ThreadStart(this.Update), ProcessHacker.Common.Utils.QuarterStackSize);
-            _thread.IsBackground = true;
+            _thread = new Thread(this.Update, Utils.QuarterStackSize)
+            {
+                IsBackground = true
+            };
             _thread.SetApartmentState(ApartmentState.STA);
             _thread.Start();
             _thread.Priority = ThreadPriority.Lowest;

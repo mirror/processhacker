@@ -93,7 +93,7 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                Win32.LsaOpenPolicy(ref systemNameStr, oa, access, out handle).ThrowIf();
+                Win32.LsaOpenPolicy(ref systemNameStr, ref oa, access, out handle).ThrowIf();
             }
             finally
             {
@@ -335,8 +335,12 @@ namespace ProcessHacker.Native.Objects
                     domainName = null;
                     return null;
                 }
+                //TODO:
+                //Win32.Throw(status);
 
-                Win32.Throw(status);
+                nameUse = SidNameUse.Unknown;
+                domainName = null;
+                return null;
             }
 
             using (var referencedDomainsAlloc = new LsaMemoryAlloc(referencedDomains))
@@ -405,13 +409,19 @@ namespace ProcessHacker.Native.Objects
 
         public Luid LookupPrivilegeValue(string name)
         {
-            using (UnicodeString nameStr = new UnicodeString(name))
+            UnicodeString nameStr = new UnicodeString(name);
+
+            try
             {
                 Luid luid;
 
-                Win32.LsaLookupPrivilegeValue(this, nameStr, out luid).ThrowIf();
+                Win32.LsaLookupPrivilegeValue(this, ref nameStr, out luid).ThrowIf();
 
                 return luid;
+            }
+            finally
+            {
+                nameStr.Dispose();
             }
         }
 

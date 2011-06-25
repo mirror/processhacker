@@ -32,7 +32,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.listMemory = new System.Windows.Forms.ListView();
+            this.listMemory = new ExtendedListView();
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnAddress = new System.Windows.Forms.ColumnHeader();
             this.columnSize = new System.Windows.Forms.ColumnHeader();
@@ -183,7 +183,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ListView listMemory;
+        private ExtendedListView listMemory;
         private System.Windows.Forms.ColumnHeader columnName;
         private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.ColumnHeader columnSize;

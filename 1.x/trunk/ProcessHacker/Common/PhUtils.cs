@@ -44,20 +44,20 @@ namespace ProcessHacker.Common
         };
 
         /// <summary>
-        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ListView.
+        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ExtendedListView.
         /// </summary>
-        /// <param name="lv">The ListView to modify.</param>
-        public static void AddShortcuts(this ListView lv)
+        /// <param name="lv">The ExtendedListView to modify.</param>
+        public static void AddShortcuts(this ExtendedListView lv)
         {
             lv.AddShortcuts(null);
         }
 
         /// <summary>
-        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ListView.
+        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ExtendedListView.
         /// </summary>
-        /// <param name="lv">The ListView to modify.</param>
+        /// <param name="lv">The ExtendedListView to modify.</param>
         /// <param name="retrieveVirtualItem">A virtual item handler, if any.</param>
-        public static void AddShortcuts(this ListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
+        public static void AddShortcuts(this ExtendedListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
         {
             lv.KeyDown +=
                 (sender, e) =>
@@ -93,23 +93,19 @@ namespace ProcessHacker.Common
             if (pid == 4)
                 return true;
 
-            try
+            using (ProcessHandle phandle = new ProcessHandle(pid, OSVersion.MinProcessQueryInfoAccess))
             {
-                using (var phandle = new ProcessHandle(pid, OSVersion.MinProcessQueryInfoAccess))
+                if (phandle.LastError == null)
                 {
                     foreach (string s in DangerousNames)
                     {
-                        if ((Environment.SystemDirectory + "\\" + s).Equals(
-                            FileUtils.GetFileName(FileUtils.GetFileName(phandle.GetImageFileName())),
-                            StringComparison.OrdinalIgnoreCase))
+                        if ((Environment.SystemDirectory + "\\" + s).Equals(FileUtils.GetFileName(FileUtils.GetFileName(phandle.GetImageFileName())), StringComparison.OrdinalIgnoreCase))
                         {
                             return true;
                         }
                     }
                 }
             }
-            catch
-            { }
 
             return false;
         }
@@ -454,20 +450,6 @@ namespace ProcessHacker.Common
         public static void SetShieldIcon(this Button button, bool visible)
         {
             Win32.SendMessage(button.Handle, WindowMessage.BcmSetShield, 0, visible ? 1 : 0);
-        }
-
-        /// <summary>
-        /// Sets the theme of a control.
-        /// </summary>
-        /// <param name="control">The control to modify.</param>
-        /// <param name="theme">A name of a theme.</param>
-        public static void SetTheme(this Control control, string theme)
-        {
-            // Don't set on XP, doesn't look better than without SetWindowTheme.
-            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
-            {
-                Win32.SetWindowTheme(control.Handle, theme, null);
-            }
         }
 
         /// <summary>

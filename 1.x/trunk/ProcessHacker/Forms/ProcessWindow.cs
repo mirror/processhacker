@@ -65,7 +65,9 @@ namespace ProcessHacker
         public ProcessWindow(ProcessItem process)
         {
             this.SetPhParent();
+
             InitializeComponent();
+
             this.AddEscapeToClose();
             this.SetTopMost();
 
@@ -85,8 +87,6 @@ namespace ProcessHacker
                 Program.PWindows.Add(_pid, this);
 
             this.FixTabs();
-
-            _dontCalculate = false;
 
             _selectThreadRun = new ProcessHacker.Common.Threading.ActionSync(this.SelectThreadInternal, 2);
         }
@@ -161,19 +161,9 @@ namespace ProcessHacker
                     break;
             }
 
-            if (!this.IsDisposed)
-                base.WndProc(ref m);
+            base.WndProc(ref m);
         }
 
-        private bool _dontCalculate = true;
-
-        protected override void OnResize(EventArgs e)
-        {
-            if (_dontCalculate)
-                return;
-
-            base.OnResize(e);
-        }
 
         private void FixTabs()
         {
@@ -210,16 +200,7 @@ namespace ProcessHacker
             }
             else
             {
-                try
-                {
-                    using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                    {
-                        // Check if the process is in a job.
-                        if (phandle.GetJobObject(JobObjectAccess.Query) == null)
-                            tabControl.TabPages.Remove(tabJob);
-                    }
-                }
-                catch
+                if (!_processItem.IsInJob)
                 {
                     tabControl.TabPages.Remove(tabJob);
                 }
@@ -247,17 +228,8 @@ namespace ProcessHacker
             // May fail.
             if (_pid > 4)
             {
-                try
-                {
-                    _processHandle = new ProcessHandle(
-                        _pid,
-                        (ProcessAccess)StandardRights.Synchronize |
-                        Program.MinProcessQueryRights |
-                        Program.MinProcessReadMemoryRights
-                        );
-                }
-                catch (WindowsException)
-                { }
+                _processHandle = new ProcessHandle(_pid, (ProcessAccess)StandardRights.Synchronize | Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
+
             }
 
             // Get the shared waiter to wait on the process.
@@ -274,24 +246,21 @@ namespace ProcessHacker
             {
                 this.Text = _processItem.Name;
                 textFileDescription.Text = _processItem.Name;
-                textFileCompany.Text = "";
+                textFileCompany.Text = string.Empty;
             }
             else
             {
                 this.Text = _processItem.Name + " (PID " + _pid.ToString() + ")";
             }
 
-            Application.DoEvents();
-
             // add our handler to the process provider
-            Program.ProcessProvider.Updated +=
-                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+            Program.ProcessProvider.Updated += this.ProcessProvider_Updated;
 
             // Check if window was closed before this began executing, bail out if true.
             if (!this.IsHandleCreated)
                 return;
 
-            this.BeginInvoke(new MethodInvoker(this.LoadStage2));
+            this.BeginInvoke(new Action(this.LoadStage2));
         }
 
         private void LoadStage2()
@@ -409,8 +378,7 @@ namespace ProcessHacker
                 _processImage.Dispose();
             }
 
-            Program.ProcessProvider.Updated -=
-                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+            Program.ProcessProvider.Updated -= this.ProcessProvider_Updated;
 
             Settings.Instance.EnvironmentListViewColumns = ColumnSettings.SaveSettings(listEnvironment);
             Settings.Instance.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
@@ -451,7 +419,7 @@ namespace ProcessHacker
                     return;
                 }
 
-                var info = _processItem.VersionInfo;
+                ImageVersionInfo info = _processItem.VersionInfo;
 
                 textFileDescription.Text = info.FileDescription;
                 textFileCompany.Text = info.CompanyName;
@@ -492,8 +460,8 @@ namespace ProcessHacker
             catch
             {
                 fileImage.Text = _processItem.FileName;
-                textFileDescription.Text = "";
-                textFileCompany.Text = "";
+                textFileDescription.Text = string.Empty;
+                textFileCompany.Text = string.Empty;
             }
 
             // Update WOW64 info.
@@ -509,24 +477,24 @@ namespace ProcessHacker
                 labelProcessType.Visible = true;
                 labelProcessTypeValue.Visible = true;
 
-                try
+                using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
-                    using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    if (phandle.LastError == null)
                     {
-                        labelProcessTypeValue.Text = phandle.IsWow64() ? "32-bit" : "64-bit";
+                        labelProcessTypeValue.Text = phandle.IsWow64 ? "32-bit" : "64-bit";
                     }
-                }
-                catch (Exception ex)
-                {
-                    labelProcessTypeValue.Text = "(" + ex.Message + ")";
+                    else
+                    {
+                        labelProcessTypeValue.Text = "(" + phandle.LastError.Message + ")";
+                    }
                 }
             }
 
             if (_pid <= 0)
                 return;
 
-            if (_processItem.CmdLine != null)
-                textCmdLine.Text = _processItem.CmdLine.Replace("\0", "");
+            if (!string.IsNullOrEmpty(_processItem.CmdLine))
+                textCmdLine.Text = _processItem.CmdLine.Replace("\0", string.Empty);
 
             try
             {
@@ -543,34 +511,32 @@ namespace ProcessHacker
             // The System process doesn't have a current directory or PEB address.
             if (_pid > 4)
             {
-                try
+                using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                 {
-                    using (ProcessHandle phandle
-                        = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                    if (phandle.LastError == null)
                     {
-                        fileCurrentDirectory.Text =
-                            phandle.GetPebString(PebOffset.CurrentDirectoryPath);
+                        fileCurrentDirectory.Text = phandle.GetPebString(PebOffset.CurrentDirectoryPath);
                     }
-
-                    fileCurrentDirectory.Enabled = true;
-                }
-                catch (Exception ex)
-                {
-                    fileCurrentDirectory.Text = "(" + ex.Message + ")";
-                    fileCurrentDirectory.Enabled = false;
-                }
-
-                try
-                {
-                    using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    else
                     {
-                        textPEBAddress.Text = Utils.FormatAddress(phandle.GetBasicInformation().PebBaseAddress);
+                        fileCurrentDirectory.Text = "(" + phandle.LastError.Message + ")";
+                        fileCurrentDirectory.Enabled = false;
                     }
                 }
-                catch (Exception ex)
+
+                fileCurrentDirectory.Enabled = true;
+
+                using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
-                    textPEBAddress.Text = "(" + ex.Message + ")";
-                    buttonInspectPEB.Enabled = false;
+                    if (phandle.LastError == null)
+                    {
+                        textPEBAddress.Text = Utils.FormatAddress(phandle.BasicInformation.PebBaseAddress);
+                    }
+                    else
+                    {
+                        textPEBAddress.Text = "(" + phandle.LastError.Message + ")";
+                        buttonInspectPEB.Enabled = false;
+                    }
                 }
             }
             else
@@ -624,34 +590,30 @@ namespace ProcessHacker
             if (_pid <= 0)
                 _processStats.ClearStatistics();
 
-            try
+            _tokenProps = new TokenProperties(new ProcessHandle(_pid, Program.MinProcessQueryRights))
             {
-                _tokenProps = new TokenProperties(new ProcessHandle(_pid, Program.MinProcessQueryRights));
-                _tokenProps.Dock = DockStyle.Fill;
-                tabToken.Controls.Add(_tokenProps);
-            }
-            catch
-            { }
+                Dock = DockStyle.Fill
+            };
+            tabToken.Controls.Add(_tokenProps);
 
-            try
+            using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
             {
-                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                if (phandle.LastError != null)
                 {
-                    var jhandle = phandle.GetJobObject(JobObjectAccess.Query);
-
-                    if (jhandle != null)
+                    using (JobObjectHandle jhandle = phandle.GetJobObject(JobObjectAccess.Query))
                     {
-                        using (jhandle)
+                        if (jhandle != null)
                         {
-                            _jobProps = new JobProperties(jhandle);
-                            _jobProps.Dock = DockStyle.Fill;
+                            _jobProps = new JobProperties(jhandle)
+                            {
+                                Dock = DockStyle.Fill
+                            };
+
                             tabJob.Controls.Add(_jobProps);
                         }
                     }
                 }
             }
-            catch
-            { }
 
             if (Program.HackerWindow != null)
             {
@@ -659,12 +621,10 @@ namespace ProcessHacker
                 {
                     if (Program.HackerWindow.ProcessServices[_pid].Count > 0)
                     {
-                        _serviceProps = new ServiceProperties(
-                           Program.HackerWindow.ProcessServices.ContainsKey(_pid) ?
-                           Program.HackerWindow.ProcessServices[_pid].ToArray() :
-                           new string[0]);
-                        _serviceProps.Dock = DockStyle.Fill;
-                        _serviceProps.PID = _pid;
+                        _serviceProps = new ServiceProperties(Program.HackerWindow.ProcessServices.ContainsKey(_pid) ? Program.HackerWindow.ProcessServices[_pid].ToArray() : new string[0])
+                        {
+                            Dock = DockStyle.Fill, PID = this._pid
+                        };
                         tabServices.Controls.Add(_serviceProps);
                     }
                 }
@@ -672,19 +632,14 @@ namespace ProcessHacker
 
             if (_processItem.IsDotNet)
             {
-                try
+                _dotNetCounters = new DotNetCounters(_pid, _processItem.Name)
                 {
-                    _dotNetCounters = new DotNetCounters(_pid, _processItem.Name);
-                    _dotNetCounters.Dock = DockStyle.Fill;
-                    tabDotNet.Controls.Add(_dotNetCounters);
-                }
-                catch
-                { }
+                    Dock = DockStyle.Fill
+                };
+                tabDotNet.Controls.Add(_dotNetCounters);
             }
 
             listEnvironment.ListViewItemSorter = new SortedListViewComparer(listEnvironment);
-            listEnvironment.SetDoubleBuffered(true);
-            listEnvironment.SetTheme("explorer");
             listEnvironment.ContextMenu = listEnvironment.GetCopyMenu();
             ColumnSettings.LoadSettings(Settings.Instance.EnvironmentListViewColumns, listEnvironment);
         }
@@ -694,33 +649,28 @@ namespace ProcessHacker
             listThreads.BeginUpdate();
             _threadP = new ThreadProvider(_pid);
             Program.SecondaryProviderThread.Add(_threadP);
-            _threadP.Updated += new ThreadProvider.ProviderUpdateOnce(_threadP_Updated);
+            _threadP.Updated += this._threadP_Updated;
             listThreads.Provider = _threadP;
 
             listModules.BeginUpdate();
             _moduleP = new ModuleProvider(_pid);
             Program.SecondaryProviderThread.Add(_moduleP);
-            _moduleP.Updated += new ModuleProvider.ProviderUpdateOnce(_moduleP_Updated);
+            _moduleP.Updated += this._moduleP_Updated;
             listModules.Provider = _moduleP;
 
             listMemory.BeginUpdate();
             _memoryP = new MemoryProvider(_pid);
             Program.SecondaryProviderThread.Add(_memoryP);
             _memoryP.IgnoreFreeRegions = true;
-            _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
+            _memoryP.Updated += this._memoryP_Updated;
             listMemory.Provider = _memoryP;
 
             listHandles.BeginUpdate();
             _handleP = new HandleProvider(_pid);
             Program.SecondaryProviderThread.Add(_handleP);
             _handleP.HideHandlesWithNoName = Settings.Instance.HideHandlesWithNoName;
-            _handleP.Updated += new HandleProvider.ProviderUpdateOnce(_handleP_Updated);
+            _handleP.Updated += this._handleP_Updated;
             listHandles.Provider = _handleP;
-
-            listThreads.List.SetTheme("explorer");
-            listModules.List.SetTheme("explorer");
-            listMemory.List.SetTheme("explorer");
-            listHandles.List.SetTheme("explorer");
 
             this.InitializeShortcuts();
         }
@@ -741,39 +691,39 @@ namespace ProcessHacker
             listEnvironment.BeginUpdate();
 
             WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
+            {
+                try
                 {
-                    try
+                    using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
                     {
-                        using (ProcessHandle phandle = new ProcessHandle(_pid,
-                            ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
+                        foreach (var pair in phandle.GetEnvironmentVariables())
                         {
-                            foreach (var pair in phandle.GetEnvironmentVariables())
+                            if (!string.IsNullOrEmpty(pair.Key))
                             {
-                                if (pair.Key != "")
+                                if (this.IsHandleCreated)
                                 {
-                                    if (this.IsHandleCreated)
-                                    {
-                                        // Work around delegate variable capturing.
-                                        var localPair = pair;
+                                    // Work around delegate variable capturing.
+                                    var localPair = pair;
 
-                                        this.BeginInvoke(new MethodInvoker(() =>
-                                        {
-                                            listEnvironment.Items.Add(
-                                                new ListViewItem(new string[] { localPair.Key, localPair.Value }));
-                                        }));
-                                    }
+                                    this.BeginInvoke(new Action(() => this.listEnvironment.Items.Add(new ListViewItem(new string[]
+                                    {
+                                        localPair.Key, localPair.Value
+                                    }))));
                                 }
                             }
                         }
                     }
-                    catch
-                    { }
+                }
+                catch
+                {
+                }
 
-                    if (this.IsHandleCreated)
-                    {
-                        this.BeginInvoke(new MethodInvoker(() => listEnvironment.EndUpdate()));
-                    }
-                }), "process-update-environment-variables");
+                if (this.IsHandleCreated)
+                {
+                    this.BeginInvoke(new Action(listEnvironment.EndUpdate));
+                }
+
+            }), "process-update-environment-variables");
         }
 
         public void UpdateProtected()
@@ -1077,32 +1027,27 @@ namespace ProcessHacker
 
         private void buttonInspectPEB_Click(object sender, EventArgs e)
         {
-            try
-            { 
-                if (!Program.Structs.ContainsKey("PEB"))
-                    throw new Exception("The struct 'PEB' has not been loaded. Make sure structs.txt was loaded successfully.");
+            if (!Program.Structs.ContainsKey("PEB"))
+                throw new Exception("The struct 'PEB' has not been loaded. Make sure structs.txt was loaded successfully.");
 
-                using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+            using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+            {
+                if (phandle.LastError == null)
                 {
-                    IntPtr baseAddress = phandle.GetBasicInformation().PebBaseAddress;
+                    IntPtr baseAddress = phandle.BasicInformation.PebBaseAddress;
 
-                    Program.HackerWindow.BeginInvoke(new MethodInvoker(delegate
+                    Program.HackerWindow.BeginInvoke(new Action(() =>
                     {
                         StructWindow sw = new StructWindow(_pid, baseAddress, Program.Structs["PEB"]);
 
-                        try
-                        {
-                            sw.Show();
-                            sw.Activate();
-                        }
-                        catch
-                        { }
+                        sw.Show();
+                        sw.Activate();
                     }));
                 }
-            }
-            catch (Exception ex)
-            {
-                PhUtils.ShowException("Unable to inspect the PEB", ex);
+                else
+                {
+                    PhUtils.ShowException("Unable to inspect the PEB", phandle.LastError);
+                }
             }
         }
 
@@ -1403,27 +1348,27 @@ namespace ProcessHacker
             {
                 if (this.IsHandleCreated)
                 {
-                    this.BeginInvoke(new MethodInvoker(() =>
+                    this.BeginInvoke(new Action(() =>
+                    {
+                        NtStatus exitStatus = _processHandle.ExitStatus;
+                        string exitString = exitStatus.ToString();
+                        long exitLong;
+
+                        // We want "Success" instead of "Wait0" (both are 0x0).
+                        if (string.Equals(exitString, "Wait0", StringComparison.OrdinalIgnoreCase))
+                            exitString = "Success";
+
+                        // If we have a NT status string, display it. 
+                        // Otherwise, display the NT status value in hex.
+                        if (!long.TryParse(exitString, out exitLong))
                         {
-                            NtStatus exitStatus = _processHandle.GetExitStatus();
-                            string exitString = exitStatus.ToString();
-                            long exitLong;
-
-                            // We want "Success" instead of "Wait0" (both are 0x0).
-                            if (exitString == "Wait0")
-                                exitString = "Success";
-
-                            // If we have a NT status string, display it. 
-                            // Otherwise, display the NT status value in hex.
-                            if (!long.TryParse(exitString, out exitLong))
-                            {
-                                this.Text += " (exited with status " + exitString + ")";
-                            }
-                            else
-                            {
-                                this.Text += " (exited with status 0x" + exitLong.ToString("x8") + ")";
-                            }
-                        }));
+                            this.Text += " (exited with status " + exitString + ")";
+                        }
+                        else
+                        {
+                            this.Text += " (exited with status 0x" + exitLong.ToString("x8") + ")";
+                        }
+                    }));
                 }
             }
         }

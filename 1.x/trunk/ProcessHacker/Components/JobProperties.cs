@@ -33,17 +33,15 @@ namespace ProcessHacker.Components
 {
     public partial class JobProperties : UserControl
     {
-        private JobObjectHandle _jobObject;
+        private readonly JobObjectHandle _jobObject;
 
         public JobProperties(JobObjectHandle jobObject)
         {
             InitializeComponent();
 
-            listProcesses.SetTheme("explorer");
             listProcesses.AddShortcuts();
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();
 
-            listLimits.SetTheme("explorer");
             listLimits.AddShortcuts();
             listLimits.ContextMenu = listLimits.GetCopyMenu();
 

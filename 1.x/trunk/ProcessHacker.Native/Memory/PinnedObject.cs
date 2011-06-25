@@ -1,35 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
-using ProcessHacker.Common.Objects;
 
 namespace ProcessHacker.Native
 {
-    public sealed class PinnedObject<T> : BaseObject
+    public sealed class PinnedObject<T> : MemoryRegion
     {
-        private T _object;
         private GCHandle _handle;
+        public T Object { get; private set; }
 
         public PinnedObject(T obj)
         {
-            _object = obj;
+            this.Object = obj;
             _handle = GCHandle.Alloc(obj, GCHandleType.Pinned);
         }
 
-        protected override void DisposeObject(bool disposing)
+        protected override void Free()
         {
-            _handle.Free();
+            this._handle.Free();
         }
 
         public IntPtr Address
         {
             get { return _handle.AddrOfPinnedObject(); }
-        }
-
-        public T Object
-        {
-            get { return _object; }
         }
     }
 }

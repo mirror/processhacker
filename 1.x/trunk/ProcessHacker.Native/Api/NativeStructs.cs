@@ -1015,12 +1015,19 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct IoCounters
     {
+        public static readonly int SizeOf;
+
         public ulong ReadOperationCount;
         public ulong WriteOperationCount;
         public ulong OtherOperationCount;
         public ulong ReadTransferCount;
         public ulong WriteTransferCount;
         public ulong OtherTransferCount;
+
+        static IoCounters()
+        {
+            SizeOf = Marshal.SizeOf(typeof(IoCounters));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1377,8 +1384,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct LdrDataTableEntry
     {
-        public static readonly int LoadCountOffset =
-            Marshal.OffsetOf(typeof(LdrDataTableEntry), "LoadCount").ToInt32();
+        public static readonly int SizeOf;
+        public static readonly int LoadCountOffset;
 
         public ListEntry InLoadOrderLinks;
         public ListEntry InMemoryOrderLinks;
@@ -1395,6 +1402,12 @@ namespace ProcessHacker.Native.Api
         public int TimeDateStamp;
         public IntPtr EntryPointActivationContext;
         public IntPtr PatchInformation;
+
+        static LdrDataTableEntry()
+        {
+            SizeOf = Marshal.SizeOf(typeof(LdrDataTableEntry));
+            LoadCountOffset = Marshal.OffsetOf(typeof(LdrDataTableEntry), "LoadCount").ToInt32();
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1411,7 +1424,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Explicit, Pack = 4)]
     public struct Luid : IEquatable<Luid>, IEquatable<long>
     {
-        public static readonly Luid Empty = new Luid();
+        public static readonly Luid Empty;
         public static readonly Luid System = new Luid(0x3e7, 0);
         public static readonly Luid AnonymousLogon = new Luid(0x3e6, 0);
         public static readonly Luid LocalService = new Luid(0x3e5, 0);
@@ -1573,7 +1586,7 @@ namespace ProcessHacker.Native.Api
             this.RootDirectory = IntPtr.Zero;
             this.ObjectName = IntPtr.Zero;
             this.SecurityDescriptor = IntPtr.Zero;
-            this.SecurityQualityOfService = IntPtr.Zero;
+            this.SecurityQOS = IntPtr.Zero;
 
             // Object name
             if (!string.IsNullOrEmpty(objectName))
@@ -1598,8 +1611,8 @@ namespace ProcessHacker.Native.Api
             // Security QOS
             if (securityQos.HasValue)
             {
-                this.SecurityQualityOfService = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(SecurityQualityOfService)));
-                Marshal.StructureToPtr(securityQos.Value, this.SecurityQualityOfService, false);
+                this.SecurityQOS = Marshal.AllocHGlobal(SecurityQualityOfService.SizeOf);
+                Marshal.StructureToPtr(securityQos.Value, this.SecurityQOS, false);
             }
         }
 
@@ -1608,26 +1621,22 @@ namespace ProcessHacker.Native.Api
         public IntPtr ObjectName;
         public ObjectFlags Attributes;
         public IntPtr SecurityDescriptor;
-        public IntPtr SecurityQualityOfService;
+        public IntPtr SecurityQOS;
 
         public void Dispose()
         {
             // Object name
             if (this.ObjectName != IntPtr.Zero)
             {
-                //UnicodeString unicodeString = (UnicodeString)Marshal.PtrToStructure(this.ObjectName, typeof(UnicodeString));
-
-                //unicodeString.Dispose();
                 Marshal.FreeHGlobal(this.ObjectName);
-
                 this.ObjectName = IntPtr.Zero;
             }
 
             // Security QOS
-            if (this.SecurityQualityOfService != IntPtr.Zero)
+            if (this.SecurityQOS != IntPtr.Zero)
             {
-                Marshal.FreeHGlobal(this.SecurityQualityOfService);
-                this.SecurityQualityOfService = IntPtr.Zero;
+                Marshal.FreeHGlobal(this.SecurityQOS);
+                this.SecurityQOS = IntPtr.Zero;
             }
         }
 
@@ -1807,6 +1816,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct PebLdrData
     {
+        public static readonly int SizeOf;
+
         public int Length;
         [MarshalAs(UnmanagedType.I1)]
         public bool Initialized;
@@ -1814,6 +1825,11 @@ namespace ProcessHacker.Native.Api
         public ListEntry InLoadOrderModuleList;
         public ListEntry InMemoryOrderModuleList;
         public ListEntry InInitializationOrderModuleList;
+
+        static PebLdrData()
+        {
+            SizeOf = Marshal.SizeOf(typeof(PebLdrData));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1867,12 +1883,19 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessBasicInformation
     {
+        public static readonly int SizeOf;
+
         public NtStatus ExitStatus;
         public IntPtr PebBaseAddress;
         public IntPtr AffinityMask;
         public int BasePriority;
         public IntPtr UniqueProcessId;
         public IntPtr InheritedFromUniqueProcessId;
+
+        static ProcessBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ProcessBasicInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2281,6 +2304,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SecurityQualityOfService
     {
+        public static readonly int SizeOf;
+
         public SecurityQualityOfService(
             SecurityImpersonationLevel impersonationLevel,
             bool dynamicTracking,
@@ -2299,6 +2324,11 @@ namespace ProcessHacker.Native.Api
         public bool ContextTrackingMode; // True for dynamic tracking, false for static tracking
         [MarshalAs(UnmanagedType.I1)]
         public bool EffectiveOnly;
+
+        static SecurityQualityOfService()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SecurityQualityOfService));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -3071,7 +3101,7 @@ namespace ProcessHacker.Native.Api
             else
             {
                 this.Length = 0;
-                this.MaximumLength = 0;
+                this.MaximumLength = 2;
                 this.Buffer = IntPtr.Zero;
             }
         }
@@ -3091,7 +3121,7 @@ namespace ProcessHacker.Native.Api
             if (this.Buffer == IntPtr.Zero)
                 return;
 
-            Win32.RtlFreeUnicodeString(this);
+            Win32.RtlFreeUnicodeString(ref this);
             this.Buffer = IntPtr.Zero;
         }
 
@@ -3212,6 +3242,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct VmCounters
     {
+        public static readonly int SizeOf;
+
         public IntPtr PeakVirtualSize;
         public IntPtr VirtualSize;
         public int PageFaultCount;
@@ -3223,6 +3255,11 @@ namespace ProcessHacker.Native.Api
         public IntPtr QuotaNonPagedPoolUsage;
         public IntPtr PagefileUsage;
         public IntPtr PeakPagefileUsage;
+
+        static VmCounters()
+        {
+            SizeOf = Marshal.SizeOf(typeof(VmCounters));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

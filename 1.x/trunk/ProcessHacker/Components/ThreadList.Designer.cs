@@ -33,7 +33,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.listThreads = new System.Windows.Forms.ListView();
+            this.listThreads = new ExtendedListView();
             this.columnThreadID = new System.Windows.Forms.ColumnHeader();
             this.columnContextSwitchesDelta = new System.Windows.Forms.ColumnHeader();
             this.columnStartAddress = new System.Windows.Forms.ColumnHeader();
@@ -580,7 +580,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ListView listThreads;
+        private ExtendedListView listThreads;
         private System.Windows.Forms.ColumnHeader columnThreadID;
         private System.Windows.Forms.ColumnHeader columnContextSwitchesDelta;
         private System.Windows.Forms.ColumnHeader columnStartAddress;

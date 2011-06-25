@@ -47,13 +47,19 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A handle to the timer.</returns>
         public static TimerHandle Create(TimerAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, TimerType type)
         {
-            using (ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory))
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+
+            try
             {
                 IntPtr handle;
 
-                Win32.NtCreateTimer(out handle, access, oa, type).ThrowIf();
+                Win32.NtCreateTimer(out handle, access, ref oa, type).ThrowIf();
 
                 return new TimerHandle(handle, true);
+            }
+            finally
+            {
+                oa.Dispose();
             }
         }
 

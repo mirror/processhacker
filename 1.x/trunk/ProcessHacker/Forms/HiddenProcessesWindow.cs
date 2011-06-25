@@ -47,8 +47,6 @@ namespace ProcessHacker
             listProcesses.ListViewItemSorter = new SortedListViewComparer(listProcesses);
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();
             listProcesses.AddShortcuts();
-            listProcesses.SetDoubleBuffered(true);
-            listProcesses.SetTheme("explorer");
 
             comboMethod.SelectedItem = "CSR Handles";
             labelCount.Text = "";
@@ -84,16 +82,17 @@ namespace ProcessHacker
         {
             string fileName = phandle.GetImageFileName();
 
-            if (fileName != null)
+            if (!string.IsNullOrEmpty(fileName))
                 fileName = FileUtils.GetFileName(fileName);
 
             if (pid == 0)
-                pid = phandle.GetBasicInformation().UniqueProcessId.ToInt32();
+                pid = phandle.BasicInformation.UniqueProcessId.ToInt32();
 
-            var item = listProcesses.Items.Add(new ListViewItem(new string[]
+            var item = listProcesses.Items.Add(
+                new ListViewItem(
+                    new string[]
                     {
-                        fileName,
-                        pid.ToString()
+                        fileName, pid.ToString()
                     }));
 
             // Check if the process has terminated. This is possible because 
@@ -101,8 +100,11 @@ namespace ProcessHacker
             // referenced.
             DateTime exitTime = DateTime.FromFileTime(0);
 
-            try { exitTime = phandle.GetExitTime(); }
-            catch { }
+
+            if (phandle.LastError == null)
+            {
+                exitTime = phandle.ExitTime;
+            }
 
             if (exitTime.ToFileTime() != 0)
             {

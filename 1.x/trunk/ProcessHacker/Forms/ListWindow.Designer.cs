@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.buttonClose = new System.Windows.Forms.Button();
-            this.listView = new System.Windows.Forms.ListView();
+            this.listView = new ProcessHacker.Components.ExtendedListView();
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnValue = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
@@ -88,7 +88,6 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "List";
-            this.Load += new System.EventHandler(this.ListWindow_Load);
             this.ResumeLayout(false);
 
         }
@@ -96,7 +95,7 @@
         #endregion
 
         private System.Windows.Forms.Button buttonClose;
-        private System.Windows.Forms.ListView listView;
+        private ProcessHacker.Components.ExtendedListView listView;
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnValue;
     }

@@ -98,17 +98,16 @@ namespace ProcessHacker
                 {
                     ServiceItem item = new ServiceItem
                     {
-                        RunId = this.RunCount, 
-                        Status = newdictionary[s]
+                        RunId = this.RunCount, Status = newdictionary[s]
                     };
 
-                    try
+                    using (ServiceHandle shandle = new ServiceHandle(s, ServiceAccess.QueryConfig))
                     {
-                        using (var shandle = new ServiceHandle(s, ServiceAccess.QueryConfig))
-                            item.Config = shandle.GetConfig();
+                        if (shandle.LastError == null)
+                        {
+                            item.Config = shandle.Config;
+                        }
                     }
-                    catch
-                    { }
 
                     this.OnDictionaryAdded(item);
                     Dictionary.Add(s, item);

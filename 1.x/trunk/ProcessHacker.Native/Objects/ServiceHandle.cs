@@ -21,7 +21,7 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
+
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 using ProcessHacker.Native.Security.AccessControl;
@@ -33,6 +33,8 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public sealed class ServiceHandle : ServiceBaseHandle<ServiceAccess>
     {
+        public WindowsException LastError { get; private set; }
+
         /// <summary>
         /// Creates a service handle using an existing handle. 
         /// The handle will not be closed automatically.
@@ -96,15 +98,14 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the service.</param>
         public ServiceHandle(string serviceName, ServiceAccess access)
         {
-            using (ServiceManagerHandle manager =
-                new ServiceManagerHandle(ScManagerAccess.Connect))
+            using (ServiceManagerHandle manager = new ServiceManagerHandle(ScManagerAccess.Connect))
             {
                 this.Handle = Win32.OpenService(manager, serviceName, access);
 
                 if (this.Handle == IntPtr.Zero)
                 {
                     this.MarkAsInvalid();
-                    Win32.Throw();
+                    this.LastError = Win32.Thrown();
                 }
             }
         }
@@ -115,7 +116,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="control">The message.</param>
         public void Control(ServiceControl control)
         {
-            ServiceStatus status = new ServiceStatus();
+            ServiceStatus status;
 
             if (!Win32.ControlService(this, control, out status))
                 Win32.Throw();
@@ -133,18 +134,21 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the service's configuration.
         /// </summary>
-        public QueryServiceConfig GetConfig()
+        public QueryServiceConfig Config
         {
-            int requiredSize = 0;
-
-            Win32.QueryServiceConfig(this, IntPtr.Zero, 0, out requiredSize);
-
-            using (MemoryAlloc data = new MemoryAlloc(requiredSize))
+            get
             {
-                if (!Win32.QueryServiceConfig(this, data, data.Size, out requiredSize))
-                    Win32.Throw();
+                int requiredSize;
 
-                return data.ReadStruct<QueryServiceConfig>();
+                Win32.QueryServiceConfig(this, IntPtr.Zero, 0, out requiredSize);
+
+                using (MemoryAlloc data = new MemoryAlloc(requiredSize))
+                {
+                    if (!Win32.QueryServiceConfig(this, data, data.Size, out requiredSize))
+                        Win32.Throw();
+
+                    return data.ReadStruct<QueryServiceConfig>();
+                }
             }
         }
 
@@ -152,18 +156,21 @@ namespace ProcessHacker.Native.Objects
         /// Gets the service's description.
         /// </summary>
         /// <returns>A string.</returns>
-        public string GetDescription()
+        public string Description
         {
-            int retLen;
-
-            Win32.QueryServiceConfig2(this, ServiceInfoLevel.Description, IntPtr.Zero, 0, out retLen);
-
-            using (MemoryAlloc data = new MemoryAlloc(retLen))
+            get
             {
-                if (!Win32.QueryServiceConfig2(this, ServiceInfoLevel.Description, data, retLen, out retLen))
-                    Win32.Throw();
+                int retLen;
 
-                return data.ReadStruct<ServiceDescription>().Description;
+                Win32.QueryServiceConfig2(this, ServiceInfoLevel.Description, IntPtr.Zero, 0, out retLen);
+
+                using (MemoryAlloc data = new MemoryAlloc(retLen))
+                {
+                    if (!Win32.QueryServiceConfig2(this, ServiceInfoLevel.Description, data, retLen, out retLen))
+                        Win32.Throw();
+
+                    return data.ReadStruct<ServiceDescription>().Description;
+                }
             }
         }
 
@@ -176,15 +183,18 @@ namespace ProcessHacker.Native.Objects
         /// Gets the status of the service.
         /// </summary>
         /// <returns>A SERVICE_STATUS_PROCESS structure.</returns>
-        public ServiceStatusProcess GetStatus()
+        public ServiceStatusProcess Status
         {
-            ServiceStatusProcess status;
-            int retLen;
+            get
+            {
+                ServiceStatusProcess status;
+                int retLen;
 
-            if (!Win32.QueryServiceStatusEx(this, 0, out status, Marshal.SizeOf(typeof(ServiceStatusProcess)), out retLen))
-                Win32.Throw();
+                if (!Win32.QueryServiceStatusEx(this, 0, out status, ServiceStatusProcess.SizeOf, out retLen))
+                    Win32.Throw();
 
-            return status;
+                return status;
+            }
         }
 
         public override void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)

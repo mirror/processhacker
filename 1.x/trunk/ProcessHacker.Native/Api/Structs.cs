@@ -296,6 +296,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct MemoryBasicInformation
     {
+        public static readonly int SizeOf;
+
         public IntPtr BaseAddress;
         public IntPtr AllocationBase;
         public MemoryProtection AllocationProtect;
@@ -303,6 +305,11 @@ namespace ProcessHacker.Native.Api
         public MemoryState State;
         public MemoryProtection Protect;
         public MemoryType Type;
+
+        static MemoryBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(MemoryBasicInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 16)]
@@ -702,6 +709,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ServiceStatusProcess
     {
+        public static readonly int SizeOf;
+
         public ServiceType ServiceType;
         public ServiceState CurrentState;
         public ServiceAccept ControlsAccepted;
@@ -711,11 +720,18 @@ namespace ProcessHacker.Native.Api
         public int WaitHint;
         public int ProcessID;
         public ServiceFlags ServiceFlags;
+
+        static ServiceStatusProcess()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ServiceStatusProcess));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct ShellExecuteInfo
     {
+        public static readonly int SizeOf;
+
         public int cbSize;
         public uint fMask;
         public IntPtr hWnd;
@@ -732,6 +748,11 @@ namespace ProcessHacker.Native.Api
         public uint dwHotKey;
         public IntPtr hIcon;
         public IntPtr hProcess;
+
+        static ShellExecuteInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ShellExecuteInfo));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -833,7 +854,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SymbolInfo
     {
-        public static readonly int NameOffset = Marshal.OffsetOf(typeof(SymbolInfo), "Name").ToInt32();
+        public static readonly int SizeOf;
+        public static readonly int NameOffset;
 
         public int SizeOfStruct;
         public int TypeIndex;
@@ -850,6 +872,12 @@ namespace ProcessHacker.Native.Api
         public int NameLen;
         public int MaxNameLen;
         public byte Name;
+
+        static SymbolInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SymbolInfo));
+            NameOffset = Marshal.OffsetOf(typeof(SymbolInfo), "Name").ToInt32();
+        }
     } 
 
     [StructLayout(LayoutKind.Sequential)]
@@ -913,6 +941,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct WintrustData
     {
+        public static readonly int SizeOf;
+
         public int Size;
         public IntPtr PolicyCallbackData;
         public IntPtr SIPClientData;
@@ -925,6 +955,11 @@ namespace ProcessHacker.Native.Api
         public IntPtr URLReference;
         public WtdProvFlags ProvFlags;
         public int UIContext;
+
+        static WintrustData()
+        {
+            SizeOf = Marshal.SizeOf(typeof(WintrustData));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

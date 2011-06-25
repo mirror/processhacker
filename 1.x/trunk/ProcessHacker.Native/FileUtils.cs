@@ -44,7 +44,7 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Used to resolve device prefixes (\Device\Harddisk1) into DOS drive names.
         /// </summary>
-        private static Dictionary<string, string> _fileNamePrefixes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, string> _fileNamePrefixes;
 
         public static string FindFile(string basePath, string fileName)
         {
@@ -188,34 +188,36 @@ namespace ProcessHacker.Native
 
         public static void RefreshFileNamePrefixes()
         {
-            // Just create a new dictionary to avoid having to lock the existing one.
-            Dictionary<string, string> newPrefixes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            for (char c = 'A'; c <= 'Z'; c++)
+            if (_fileNamePrefixes == null)
             {
-                using (var data = new MemoryAlloc(1024))
-                {
-                    int length;
+                // Just create a new dictionary to avoid having to lock the existing one.
+                _fileNamePrefixes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-                    if ((length = Win32.QueryDosDevice(c.ToString() + ":", data, data.Size / 2)) > 2)
+                for (char c = 'A'; c <= 'Z'; c++)
+                {
+                    using (MemoryAlloc data = new MemoryAlloc(1024))
                     {
-                        newPrefixes.Add(data.ReadUnicodeString(0, length - 2), c.ToString() + ":");
+                        int length = Win32.QueryDosDevice(c.ToString() + ":", data, data.Size / 2);
+
+                        if (length > 2)
+                        {
+                            _fileNamePrefixes.Add(data.ReadUnicodeString(0, length - 2), c.ToString() + ":");
+                        }
                     }
                 }
             }
-
-            _fileNamePrefixes = newPrefixes;
         }
 
         public static void ShowProperties(string fileName)
         {
-            ShellExecuteInfo info = new ShellExecuteInfo();
-
-            info.cbSize = Marshal.SizeOf(info);
-            info.lpFile = fileName;
-            info.nShow = ShowWindowType.Show;
-            info.fMask = Win32.SeeMaskInvokeIdList;
-            info.lpVerb = "properties";
+            ShellExecuteInfo info = new ShellExecuteInfo
+            {
+                cbSize = ShellExecuteInfo.SizeOf, 
+                lpFile = fileName, 
+                nShow = ShowWindowType.Show, 
+                fMask = Win32.SeeMaskInvokeIdList, 
+                lpVerb = "properties"
+            };
 
             Win32.ShellExecuteEx(ref info);
         }

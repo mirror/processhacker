@@ -337,7 +337,7 @@ namespace ProcessHacker.Native.Symbols
             }
 
             // Allocate some memory for the symbol information.
-            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + _maxNameLen))
+            using (MemoryAlloc data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + _maxNameLen))
             {
                 var info = new SymbolInfo();
 
@@ -406,7 +406,8 @@ namespace ProcessHacker.Native.Symbols
                     fileName = fi.FullName;
                 }
                 catch
-                { }
+                {
+                }
 
                 // If we have a module name but not a symbol name, 
                 // return a module plus an offset: module+offset.
@@ -422,7 +423,7 @@ namespace ProcessHacker.Native.Symbols
                     }
                     else
                     {
-                        var s = modFileName.Split('\\');
+                        string[] s = modFileName.Split('\\');
 
                         return s[s.Length - 1] + "+0x" + (address - modBase).ToString("x");
                     }
@@ -437,19 +438,20 @@ namespace ProcessHacker.Native.Symbols
 
                 if (displacement == 0)
                     return fi.Name + "!" + name;
-                else
-                    return fi.Name + "!" + name + "+0x" + displacement.ToString("x");
+
+                return fi.Name + "!" + name + "+0x" + displacement.ToString("x");
             }
         }
 
         public SymbolInformation GetSymbolFromName(string symbolName)
         {
-            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + _maxNameLen))
+            using (MemoryAlloc data = new MemoryAlloc(SymbolInfo.SizeOf + _maxNameLen))
             {
-                var info = new SymbolInfo();
-
-                info.SizeOfStruct = Marshal.SizeOf(info);
-                info.MaxNameLen = _maxNameLen - 1;
+                SymbolInfo info = new SymbolInfo
+                {
+                    SizeOfStruct = SymbolInfo.SizeOf, 
+                    MaxNameLen = _maxNameLen - 1
+                };
 
                 Marshal.StructureToPtr(info, data, false);
 

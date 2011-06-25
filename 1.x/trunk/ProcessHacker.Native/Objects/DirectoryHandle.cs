@@ -95,7 +95,7 @@ namespace ProcessHacker.Native.Objects
                 }
                 else
                 {
-                    Win32.NtOpenDirectoryObject(out handle, access, oa).ThrowIf();
+                    Win32.NtOpenDirectoryObject(out handle, access, ref oa).ThrowIf();
                 }
             }
             finally

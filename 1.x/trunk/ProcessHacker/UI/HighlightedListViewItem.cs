@@ -91,7 +91,7 @@ namespace ProcessHacker.UI
             if (!_list.IsHandleCreated)
                 return;
 
-            _list.BeginInvoke(new MethodInvoker(delegate
+            _list.BeginInvoke(new Action(() =>
             {
                 // Execute the queue items.
                 _list.BeginUpdate();
@@ -111,7 +111,7 @@ namespace ProcessHacker.UI
                 {
                     if (_list.IsHandleCreated)
                     {
-                        _list.BeginInvoke(new MethodInvoker(delegate
+                        _list.BeginInvoke(new Action(() =>
                         {
                             _list.BeginUpdate();
 
@@ -172,7 +172,7 @@ namespace ProcessHacker.UI
         { }
 
         public HighlightedListViewItem(HighlightingContext context, bool highlight)
-            : this(context, "", highlight)
+            : this(context, string.Empty, highlight)
         { }
 
         public HighlightedListViewItem(HighlightingContext context, string text)
@@ -190,7 +190,7 @@ namespace ProcessHacker.UI
                 this.ForeColor = PhUtils.GetForeColor(this.BackColor);
                 _state = ListViewItemState.New;
 
-                _context.EnqueuePost(delegate
+                _context.EnqueuePost(() =>
                     {
                         this.BackColor = _normalColor;
                         this.ForeColor = PhUtils.GetForeColor(this.BackColor);
@@ -207,16 +207,13 @@ namespace ProcessHacker.UI
         {
             if (HighlightingContext.StateHighlighting)
             {
-                _context.Enqueue(delegate
-                    {
-                        this.BackColor = HighlightingContext.Colors[ListViewItemState.Removed];
-                        this.ForeColor = PhUtils.GetForeColor(this.BackColor);
+                _context.Enqueue(() =>
+                {
+                    this.BackColor = HighlightingContext.Colors[ListViewItemState.Removed];
+                    this.ForeColor = PhUtils.GetForeColor(this.BackColor);
 
-                        _context.EnqueuePost(delegate
-                        {
-                            this.BaseRemove();
-                        });
-                    });
+                    _context.EnqueuePost(this.BaseRemove);
+                });
             }
             else
             {
@@ -246,13 +243,13 @@ namespace ProcessHacker.UI
 
         public void SetTemporaryState(ListViewItemState state)
         {
-            _context.Enqueue(delegate
+            _context.Enqueue(() =>
             {
                 this.BackColor = HighlightingContext.Colors[state];
                 this.ForeColor = PhUtils.GetForeColor(this.BackColor);
                 _state = state;
 
-                _context.EnqueuePost(delegate
+                _context.EnqueuePost(() =>
                 {
                     this.BackColor = _normalColor;
                     this.ForeColor = PhUtils.GetForeColor(this.BackColor);

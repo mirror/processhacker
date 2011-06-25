@@ -32,9 +32,9 @@ namespace ProcessHacker.Components
 {
     public partial class DotNetCounters : UserControl
     {
-        private int _pid;
-        private bool _initialized = false;
-        private string _name;
+        private readonly int _pid;
+        private bool _initialized;
+        private readonly string _name;
         private string _instanceName;
         private string _categoryName;
         private PerformanceCounter[] _counters;
@@ -43,10 +43,6 @@ namespace ProcessHacker.Components
         {
             InitializeComponent();
 
-            listAppDomains.SetTheme("explorer");
-
-            listValues.SetDoubleBuffered(true);
-            listValues.SetTheme("explorer");
             listValues.ContextMenu = listValues.GetCopyMenu();
             listValues.AddShortcuts();
 

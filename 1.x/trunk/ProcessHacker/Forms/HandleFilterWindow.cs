@@ -44,11 +44,10 @@ namespace ProcessHacker
         public HandleFilterWindow()
         {
             InitializeComponent();
+
             this.AddEscapeToClose();
             this.SetTopMost();
 
-            listHandles.SetDoubleBuffered(true);
-            listHandles.SetTheme("explorer");
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHandles, null);
             listHandles.ContextMenu = menuHandle;
 

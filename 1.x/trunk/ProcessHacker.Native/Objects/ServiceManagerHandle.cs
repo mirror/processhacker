@@ -31,6 +31,8 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public sealed class ServiceManagerHandle : ServiceBaseHandle<ScManagerAccess>
     {
+        public WindowsException LastError { get; private set; }
+
         /// <summary>
         /// Connects to the Windows service manager.
         /// </summary>
@@ -42,33 +44,39 @@ namespace ProcessHacker.Native.Objects
             if (this.Handle == IntPtr.Zero)
             {
                 this.MarkAsInvalid();
-                Win32.Throw();
+                this.LastError = Win32.Thrown();
             }
         }
 
-        public ServiceHandle CreateService(string name, string displayName,
-            ServiceType type, string binaryPath)
+        public ServiceHandle CreateService(string name, string displayName, ServiceType type, string binaryPath)
         {
-            return this.CreateService(name, displayName, type, ServiceStartType.DemandStart,
-                ServiceErrorControl.Ignore, binaryPath, null, null, null);
+            return this.CreateService(name, displayName, type, ServiceStartType.DemandStart, ServiceErrorControl.Ignore, binaryPath, null, null, null);
         }
 
-        public ServiceHandle CreateService(string name, string displayName,
-            ServiceType type, ServiceStartType startType, string binaryPath)
+        public ServiceHandle CreateService(string name, string displayName, ServiceType type, ServiceStartType startType, string binaryPath)
         {
-            return this.CreateService(name, displayName, type, startType,
-                ServiceErrorControl.Ignore, binaryPath, null, null, null);
+            return this.CreateService(name, displayName, type, startType, ServiceErrorControl.Ignore, binaryPath, null, null, null);
         }
 
-        public ServiceHandle CreateService(string name, string displayName,
-            ServiceType type, ServiceStartType startType, ServiceErrorControl errorControl,
-            string binaryPath, string group, string accountName, string password)
+        public ServiceHandle CreateService(string name, string displayName, ServiceType type, ServiceStartType startType, ServiceErrorControl errorControl, string binaryPath, string group, string accountName, string password)
         {
-            IntPtr service;
+            IntPtr service = Win32.CreateService(
+                this, 
+                name, 
+                displayName, 
+                ServiceAccess.All, 
+                type, 
+                startType, 
+                errorControl, 
+                binaryPath, 
+                group, 
+                IntPtr.Zero, 
+                IntPtr.Zero, 
+                accountName, 
+                password
+                );
 
-            if ((service = Win32.CreateService(this, name, displayName, ServiceAccess.All,
-                type, startType, errorControl, binaryPath, group,
-                IntPtr.Zero, IntPtr.Zero, accountName, password)) == IntPtr.Zero)
+            if (service == IntPtr.Zero)
                 Win32.Throw();
 
             return new ServiceHandle(service, true);

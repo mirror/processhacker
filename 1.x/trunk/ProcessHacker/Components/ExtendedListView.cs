@@ -40,7 +40,7 @@ namespace ProcessHacker.Components
 
     public sealed class LinkClickedEventArgs : EventArgs
     {
-        private ListViewGroup _group;
+        private readonly ListViewGroup _group;
 
         public LinkClickedEventArgs(ListViewGroup group)
         {
@@ -53,7 +53,8 @@ namespace ProcessHacker.Components
         }
     }
 
-    public class ExtendedListView : ListView
+    [System.Security.SuppressUnmanagedCodeSecurity]
+    public sealed class ExtendedListView : ListView
     {
         #region Control Variables
 
@@ -66,9 +67,8 @@ namespace ProcessHacker.Components
         private const int LVN_LinkClick = (LVN_First - 84);                              // Notifies a list-view control's parent window that a link has been clicked on.
         private const int WM_LButtonUp = 0x202;                                             // Sent when the user releases the left mouse button while the cursor is in the client area of a window.
         private const int NM_DBLClk = -3;                                                          // Sent when the user double-clicks an item with the left mouse button.
-                
-        private bool _doubleClickChecks = true;
-        private bool _doubleClickCheckHackActive = false;
+
+        private bool _doubleClickCheckHackActive;
 
         public event LinkClickedEventHandler GroupLinkClicked;
 
@@ -79,17 +79,25 @@ namespace ProcessHacker.Components
 
         public ExtendedListView()
         {
+            this.DoubleClickChecks = true;
             this.DoubleBuffered = true;
             //Enable the OnNotifyMessage event so we get a chance to filter out 
             // Windows messages before they get to the form's WndProc.
             this.SetStyle(ControlStyles.EnableNotifyMessage, true);
         }
 
-        public bool DoubleClickChecks
+        protected override void OnHandleCreated(EventArgs e)
         {
-            get { return _doubleClickChecks; }
-            set { _doubleClickChecks = value; }
+            base.OnHandleCreated(e);
+
+            // Don't set on XP, doesn't look better than without SetWindowTheme.
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+            {
+                Win32.SetWindowTheme(this.Handle, "explorer", null);
+            }
         }
+
+        public bool DoubleClickChecks { get; set; }
 
         private void OnGroupLinkClicked(ListViewGroup group)
         {
@@ -125,18 +133,17 @@ namespace ProcessHacker.Components
         {
             int? grpId = null;
             Type grpType = lvGroup.GetType();
-            if (grpType != null)
+
+            PropertyInfo pInfo = grpType.GetProperty("ID", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (pInfo != null)
             {
-                PropertyInfo pInfo = grpType.GetProperty("ID", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (pInfo != null)
+                object tmprtnval = pInfo.GetValue(lvGroup, null);
+                if (tmprtnval != null)
                 {
-                    object tmprtnval = pInfo.GetValue(lvGroup, null);
-                    if (tmprtnval != null)
-                    {
-                        grpId = tmprtnval as int?;
-                    }
+                    grpId = tmprtnval as int?;
                 }
             }
+
             return grpId;
         }
 
@@ -201,7 +208,7 @@ namespace ProcessHacker.Components
             }
             else if (hdr->code == NM_DBLClk)
             {
-                if (!_doubleClickChecks && this.CheckBoxes)
+                if (!this.DoubleClickChecks && this.CheckBoxes)
                 {
                     _doubleClickCheckHackActive = true;
                 }

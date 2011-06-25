@@ -5,17 +5,18 @@
 //	 <version>$Revision: 3165 $</version>
 // </file>
 
+using ProcessHacker.Native.Api;
+
 #pragma warning disable 108, 1591 
 
 namespace Debugger.Interop.CorPub
 {
-	using System;
-	using System.Runtime.CompilerServices;
+    using System.Runtime.CompilerServices;
 	using System.Runtime.InteropServices;
 	using System.Text;
 
 	[ComImport, TypeLibType((short) 2), ClassInterface((short) 0), Guid("047A9A40-657E-11D3-8D5B-00104B35E7EF")]
-	public class CorpubPublishClass : ICorPublish, CorpubPublish, ICorPublishProcess, ICorPublishAppDomain, ICorPublishProcessEnum, ICorPublishAppDomainEnum
+	public class CorpubPublishClass : CorpubPublish, ICorPublishProcess, ICorPublishAppDomain, ICorPublishProcessEnum, ICorPublishAppDomainEnum
 	{
 	    // Methods
 	    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -32,9 +33,11 @@ namespace Debugger.Interop.CorPub
 	    public virtual extern void GetID(out uint puId);
 	    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
 	    public virtual extern void GetName([In] uint cchName, out uint pcchName, [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder szName);
-	    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-	    public virtual extern void GetProcess([In] uint pid, [MarshalAs(UnmanagedType.Interface)] out ICorPublishProcess ppProcess);
-	    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
+	    
+        [PreserveSig, MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
+	    public virtual extern HResult GetProcess([In] uint pid, [MarshalAs(UnmanagedType.Interface)] out ICorPublishProcess ppProcess);
+	    
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
 	    public virtual extern void GetProcessID(out uint pid);
 	    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
 	    public virtual extern void ICorPublishAppDomainEnum_Clone([MarshalAs(UnmanagedType.Interface)] out ICorPublishEnum ppEnum);

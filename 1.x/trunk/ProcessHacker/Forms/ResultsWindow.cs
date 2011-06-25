@@ -50,11 +50,9 @@ namespace ProcessHacker
         public ResultsWindow(int pid)
         {
             InitializeComponent();
+
             this.AddEscapeToClose();
             this.SetTopMost();
-
-            listResults.SetDoubleBuffered(true);
-            listResults.SetTheme("explorer");
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
 

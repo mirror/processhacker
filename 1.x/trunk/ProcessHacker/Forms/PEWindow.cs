@@ -87,38 +87,26 @@ namespace ProcessHacker
 
         private void InitializeLists()
         {
-            listCOFFHeader.SetDoubleBuffered(true);
-            listCOFFHeader.SetTheme("explorer");
             listCOFFHeader.ContextMenu = listCOFFHeader.GetCopyMenu();
             listCOFFHeader.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PECOFFHColumns, listCOFFHeader);
 
-            listCOFFOptionalHeader.SetDoubleBuffered(true);
-            listCOFFOptionalHeader.SetTheme("explorer");
             listCOFFOptionalHeader.ContextMenu = listCOFFOptionalHeader.GetCopyMenu();
             listCOFFOptionalHeader.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PECOFFOHColumns, listCOFFOptionalHeader);
 
-            listImageData.SetDoubleBuffered(true);
-            listImageData.SetTheme("explorer");
             listImageData.ContextMenu = listImageData.GetCopyMenu();
             listImageData.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PEImageDataColumns, listImageData);
 
-            listSections.SetDoubleBuffered(true);
-            listSections.SetTheme("explorer");
             listSections.ContextMenu = listSections.GetCopyMenu();
             listSections.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PESectionsColumns, listSections);
 
-            listExports.SetDoubleBuffered(true);
-            listExports.SetTheme("explorer");
             listExports.ContextMenu = listExports.GetCopyMenu(listExports_RetrieveVirtualItem);
             listExports.AddShortcuts(this.listExports_RetrieveVirtualItem);
             ColumnSettings.LoadSettings(Settings.Instance.PEExportsColumns, listExports);
 
-            listImports.SetDoubleBuffered(true);
-            listImports.SetTheme("explorer");
             listImports.ContextMenu = listImports.GetCopyMenu();
             listImports.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PEImportsColumns, listImports);
@@ -336,17 +324,15 @@ namespace ProcessHacker
 
         private void listImports_GroupLinkClicked(object sender, ProcessHacker.Components.LinkClickedEventArgs e)
         {
-            string fileName;
-
             this.Cursor = Cursors.WaitCursor;
 
             try
             {
-                fileName = FileUtils.FindFile(System.IO.Path.GetDirectoryName(_path), e.Group.Header);
+                string fileName = FileUtils.FindFile(System.IO.Path.GetDirectoryName(_path), e.Group.Header);
 
-                if (fileName != null)
+                if (!string.IsNullOrEmpty(fileName))
                 {
-                    Program.GetPEWindow(fileName, (f) => Program.FocusWindow(f));
+                    Program.GetPEWindow(fileName, Program.FocusWindow);
                 }
                 else
                 {
