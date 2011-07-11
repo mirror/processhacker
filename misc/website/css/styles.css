@@ -1,0 +1,193 @@
+body {
+  font-family: "Lucida Grande", "Verdana", "Tahoma", "Sans-Serif";
+  font-size: 10pt;
+}
+
+a {
+  text-decoration: none;
+  /* border-bottom: dotted 1px #27f; */
+}
+
+a:link {
+  color: #27f;
+}
+
+a:visited {
+  color: #a2a;
+  /* border-bottom: dotted 1px #a2a; */
+}
+
+a:hover {
+  color: #4af;
+}
+
+a:active {
+  color: #fa4;
+  border-bottom: solid 1px #fa4;
+  outline: none;
+}
+
+a img {
+  border: dotted 1px #777;
+  margin: 0 5px 0 5px;
+}
+
+.sf {
+  border: none !important;
+  display: block;
+  width: 125px;
+  margin: 0 auto 0 0 !important;
+}
+
+#header {
+  width: 600px;
+  margin: 5px auto 20px auto;
+}
+
+h1 {
+  font-size: 14pt;
+  color: #111;
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 13pt;
+  color: #333;
+  margin-top: 0;
+}
+
+h3 {
+  font-size: 12pt;
+  color: #555;
+  margin-left: 5px;
+  margin-top: 10px;
+}
+
+.newsdate {
+  font-size: 9pt;
+  color: #222;
+}
+
+dt {
+  color: #555;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+dd {
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+#nav ul {
+  list-style: none;
+  margin: 0 0 5px 0;
+  padding: 0 0 0 0;
+}
+
+#nav ul li {
+  display: inline;
+  margin-right: 10px;
+}
+
+#content {
+  width: auto;
+  margin: -20px auto 0 auto;
+}
+
+#footer {
+  margin: 20px auto 20px 0px;
+  font-size: 10pt;
+}
+
+.downloadbox {
+  clear: right;
+  float: right;
+  height: 150px;
+  width: 220px;
+  border: solid 1px #020;
+  margin: 5px 5px 5px 5px;
+  padding: 5px 5px 5px 5px;
+  background-color: #050;
+  color: #fff;
+}
+
+.downloadbox1 {
+  clear: right;
+  float: right;
+  height: 0px;
+  width: 0px;
+  margin: -110px 95px 1px 1px;
+}
+
+.downloadbox p {
+  margin-top: 2px;
+  margin-bottom: 0;
+}
+
+.downloadbox img {
+  border: none;
+  margin-right: -5px;
+  margin-bottom: -7px;
+}
+
+.downloadbox a {
+  color: #fff;
+  border: none;
+}
+
+.downloadbox a:hover {
+  color: #fff;
+  background-color: #070;
+  border: none;
+}
+
+.downloadbox a:active {
+  color: #fff;
+  background-color: #020;
+  border: none;
+}
+
+.downloadmain {
+  font-size: 10pt;
+}
+
+.downloadalt {
+  font-size: 10pt;
+}
+
+.downloadversion {
+  font-size: 12pt;
+  font-weight: bold;
+  margin-bottom: 10px !important;
+}
+
+.additionalbox {
+  clear: right;
+  float: right;
+  height: 40px;
+  width: 220px;
+  border: solid 1px #442;
+  margin: 20px 5px 5px 5px;
+  padding: 5px 5px 5px 5px;
+  background-color: #ffc;
+  color: #000;
+}
+
+.additionalbox p {
+  margin-top: 2px;
+  margin-bottom: 0;
+}
+
+code {
+  font-family: "Bitstream Vera Sans Mono", "Courier New", "Monospace";
+  font-size: 8pt;
+}
+
+pre {
+  font-family: "Bitstream Vera Sans Mono", "Courier New", "Monospace";
+  font-size: 10pt;
+  border: dotted 1px #037;
+  margin: 5px 20px 5px 30px;
+  padding: 5px 5px 5px 5px;
+}
