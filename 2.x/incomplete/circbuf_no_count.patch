@@ -1,0 +1,373 @@
+Index: phlib/circbuf_i.h
+===================================================================
+--- phlib/circbuf_i.h	(revision 4340)
++++ phlib/circbuf_i.h	(working copy)
+@@ -14,9 +14,9 @@
+     Buffer->Size = Size;
+ #endif
+ 
+-    Buffer->Count = 0;
+     Buffer->Index = 0;
+     Buffer->Data = PhAllocate(sizeof(T) * Buffer->Size);
++    memset(Buffer->Data, 0, sizeof(T) * Buffer->Size);
+ }
+ 
+ VOID T___(PhDeleteCircularBuffer, T)(
+@@ -45,7 +45,7 @@
+ 
+     newData = PhAllocate(sizeof(T) * NewSize);
+     tailSize = (ULONG)(Buffer->Size - Buffer->Index);
+-    headSize = Buffer->Count - tailSize;
++    headSize = (ULONG)Buffer->Index;
+ 
+     if (NewSize > Buffer->Size)
+     {
+@@ -69,10 +69,6 @@
+             memcpy(&newData[tailSize], Buffer->Data, sizeof(T) * (NewSize - tailSize));
+             Buffer->Index = 0;
+         }
+-
+-        // Since we're making the circular buffer smaller, limit the count.
+-        if (Buffer->Count > NewSize)
+-            Buffer->Count = NewSize;
+     }
+ 
+     Buffer->Data = newData;
+@@ -86,8 +82,8 @@
+     __inout T___(PPH_CIRCULAR_BUFFER, T) Buffer
+     )
+ {
+-    Buffer->Count = 0;
+     Buffer->Index = 0;
++    memset(Buffer->Data, 0, sizeof(T) * Buffer->Size);
+ }
+ 
+ VOID T___(PhCopyCircularBuffer, T)(
+@@ -100,11 +96,8 @@
+     ULONG headSize;
+ 
+     tailSize = (ULONG)(Buffer->Size - Buffer->Index);
+-    headSize = Buffer->Count - tailSize;
++    headSize = (ULONG)Buffer->Index;
+ 
+-    if (Count > Buffer->Count)
+-        Count = Buffer->Count;
+-
+     if (tailSize >= Count)
+     {
+         // Copy only a part of the tail.
+Index: phlib/include/circbuf_h.h
+===================================================================
+--- phlib/include/circbuf_h.h	(revision 4340)
++++ phlib/include/circbuf_h.h	(working copy)
+@@ -8,7 +8,6 @@
+ #ifdef PH_CIRCULAR_BUFFER_POWER_OF_TWO_SIZE
+     ULONG SizeMinusOne;
+ #endif
+-    ULONG Count;
+     LONG Index;
+     T *Data;
+ } T___(PH_CIRCULAR_BUFFER, T), *T___(PPH_CIRCULAR_BUFFER, T);
+@@ -97,9 +96,6 @@
+     size = Buffer->Size;
+     Buffer->Data[Buffer->Index = (((Buffer->Index - 1) % size) + size) % size] = Value;
+ #endif
+-
+-    if (Buffer->Count < Buffer->Size)
+-        Buffer->Count++;
+ }
+ 
+ FORCEINLINE T T___(PhAddItemCircularBuffer2, T)(
+@@ -123,9 +119,6 @@
+     oldValue = Buffer->Data[index];
+     Buffer->Data[index] = Value;
+ 
+-    if (Buffer->Count < Buffer->Size)
+-        Buffer->Count++;
+-
+     return oldValue;
+ }
+ 
+Index: ProcessHacker/include/phapp.h
+===================================================================
+--- ProcessHacker/include/phapp.h	(revision 4340)
++++ ProcessHacker/include/phapp.h	(working copy)
+@@ -740,8 +740,9 @@
+ } PH_LOG_ENTRY, *PPH_LOG_ENTRY;
+ 
+ #ifndef PH_LOG_PRIVATE
+-PH_CIRCULAR_BUFFER_PVOID PhLogBuffer;
+-PH_CALLBACK PhLoggedCallback;
++extern PH_CIRCULAR_BUFFER_PVOID PhLogBuffer;
++extern ULONG PhLogCount;
++extern PH_CALLBACK PhLoggedCallback;
+ #endif
+ 
+ VOID PhLogInitialization();
+Index: ProcessHacker/include/providers.h
+===================================================================
+--- ProcessHacker/include/providers.h	(revision 4340)
++++ ProcessHacker/include/providers.h	(working copy)
+@@ -46,6 +46,8 @@
+ extern PH_UINT64_DELTA PhIoWriteDelta;
+ extern PH_UINT64_DELTA PhIoOtherDelta;
+ 
++extern ULONG PhTimeSequenceCount;
++
+ extern PH_CIRCULAR_BUFFER_FLOAT PhCpuKernelHistory;
+ extern PH_CIRCULAR_BUFFER_FLOAT PhCpuUserHistory;
+ //extern PH_CIRCULAR_BUFFER_FLOAT PhCpuOtherHistory;
+@@ -202,6 +204,7 @@
+     ULONG HardFaultCount; // since WIN7
+ 
+     ULONG SequenceNumber;
++    ULONG SequenceCount;
+     PH_CIRCULAR_BUFFER_FLOAT CpuKernelHistory;
+     PH_CIRCULAR_BUFFER_FLOAT CpuUserHistory;
+     PH_CIRCULAR_BUFFER_ULONG64 IoReadHistory;
+Index: ProcessHacker/log.c
+===================================================================
+--- ProcessHacker/log.c	(revision 4340)
++++ ProcessHacker/log.c	(working copy)
+@@ -25,6 +25,7 @@
+ #include <settings.h>
+ 
+ PH_CIRCULAR_BUFFER_PVOID PhLogBuffer;
++ULONG PhLogCount;
+ PHAPPAPI PH_CALLBACK_DECLARE(PhLoggedCallback);
+ 
+ VOID PhLogInitialization()
+@@ -34,7 +35,7 @@
+     entries = PhGetIntegerSetting(L"LogEntries");
+     if (entries > 0x1000) entries = 0x1000;
+     PhInitializeCircularBuffer_PVOID(&PhLogBuffer, entries);
+-    memset(PhLogBuffer.Data, 0, sizeof(PVOID) * PhLogBuffer.Size);
++    PhLogCount = 0;
+ }
+ 
+ PPH_LOG_ENTRY PhpCreateLogEntry(
+@@ -142,6 +143,9 @@
+     if (oldEntry)
+         PhpFreeLogEntry(oldEntry);
+ 
++    if (PhLogCount < PhLogBuffer.Size)
++        PhLogCount++;
++
+     PhInvokeCallback(&PhLoggedCallback, Entry);
+ }
+ 
+@@ -156,7 +160,7 @@
+     }
+ 
+     PhClearCircularBuffer_PVOID(&PhLogBuffer);
+-    memset(PhLogBuffer.Data, 0, sizeof(PVOID) * PhLogBuffer.Size);
++    PhLogCount = 0;
+ }
+ 
+ VOID PhLogProcessEntry(
+Index: ProcessHacker/logwnd.c
+===================================================================
+--- ProcessHacker/logwnd.c	(revision 4340)
++++ ProcessHacker/logwnd.c	(working copy)
+@@ -69,7 +69,7 @@
+ 
+ static VOID PhpUpdateLogList()
+ {
+-    ListViewCount = PhLogBuffer.Count;
++    ListViewCount = PhLogCount;
+     ListView_SetItemCount(ListViewHandle, ListViewCount);
+ 
+     if (ListViewCount >= 2 && Button_GetCheck(GetDlgItem(PhLogWindowHandle, IDC_AUTOSCROLL)) == BST_CHECKED)
+Index: ProcessHacker/notifico.c
+===================================================================
+--- ProcessHacker/notifico.c	(revision 4340)
++++ ProcessHacker/notifico.c	(working copy)
+@@ -191,7 +191,7 @@
+ 
+     // Icon
+ 
+-    lineDataCount = min(9, PhCpuKernelHistory.Count);
++    lineDataCount = min(9, PhTimeSequenceCount);
+     PhCopyCircularBuffer_FLOAT(&PhCpuKernelHistory, lineData1, lineDataCount);
+     PhCopyCircularBuffer_FLOAT(&PhCpuUserHistory, lineData2, lineDataCount);
+ 
+@@ -277,7 +277,7 @@
+ 
+     // Icon
+ 
+-    lineDataCount = min(9, PhIoReadHistory.Count);
++    lineDataCount = min(9, PhTimeSequenceCount);
+     max = 1024 * 1024; // minimum scaling of 1 MB.
+ 
+     for (i = 0; i < lineDataCount; i++)
+@@ -374,7 +374,7 @@
+ 
+     // Icon
+ 
+-    lineDataCount = min(9, PhCommitHistory.Count);
++    lineDataCount = min(9, PhTimeSequenceCount);
+ 
+     for (i = 0; i < lineDataCount; i++)
+         lineData1[i] = (FLOAT)PhGetItemCircularBuffer_ULONG(&PhCommitHistory, i);
+@@ -445,7 +445,7 @@
+ 
+     // Icon
+ 
+-    lineDataCount = min(9, PhCommitHistory.Count);
++    lineDataCount = min(9, PhTimeSequenceCount);
+ 
+     for (i = 0; i < lineDataCount; i++)
+         lineData1[i] = (FLOAT)PhGetItemCircularBuffer_ULONG(&PhPhysicalHistory, i);
+Index: ProcessHacker/procprp.c
+===================================================================
+--- ProcessHacker/procprp.c	(revision 4346)
++++ ProcessHacker/procprp.c	(working copy)
+@@ -1527,7 +1527,7 @@
+                         PhGraphStateGetDrawInfo(
+                             &performanceContext->CpuGraphState,
+                             getDrawInfo,
+-                            processItem->CpuKernelHistory.Count
++                            processItem->SequenceCount
+                             );
+ 
+                         if (!performanceContext->CpuGraphState.Valid)
+@@ -1568,7 +1568,7 @@
+                         PhGraphStateGetDrawInfo(
+                             &performanceContext->PrivateGraphState,
+                             getDrawInfo,
+-                            processItem->PrivateBytesHistory.Count
++                            processItem->SequenceCount
+                             );
+ 
+                         if (!performanceContext->PrivateGraphState.Valid)
+@@ -1626,7 +1626,7 @@
+                         PhGraphStateGetDrawInfo(
+                             &performanceContext->IoGraphState,
+                             getDrawInfo,
+-                            processItem->IoReadHistory.Count
++                            processItem->SequenceCount
+                             );
+ 
+                         if (!performanceContext->IoGraphState.Valid)
+Index: ProcessHacker/procprv.c
+===================================================================
+--- ProcessHacker/procprv.c	(revision 4346)
++++ ProcessHacker/procprv.c	(working copy)
+@@ -209,6 +209,7 @@
+ static BOOLEAN PhProcessStatisticsInitialized = FALSE;
+ static ULONG PhTimeSequenceNumber = 0;
+ static PH_CIRCULAR_BUFFER_ULONG PhTimeHistory;
++ULONG PhTimeSequenceCount = 0;
+ 
+ PH_CIRCULAR_BUFFER_FLOAT PhCpuKernelHistory;
+ PH_CIRCULAR_BUFFER_FLOAT PhCpuUserHistory;
+@@ -1459,6 +1460,9 @@
+     RtlTimeToSecondsSince1980(&systemTime, &secondsSince1980);
+     PhAddItemCircularBuffer_ULONG(&PhTimeHistory, secondsSince1980);
+     PhTimeSequenceNumber++;
++
++    if (PhTimeSequenceCount < PhTimeHistory.Size)
++        PhTimeSequenceCount++;
+ }
+ 
+ /**
+@@ -1489,7 +1493,7 @@
+         // that process' history is not updated anymore.
+         index = PhTimeSequenceNumber - ProcessItem->SequenceNumber + Index;
+ 
+-        if (index >= PhTimeHistory.Count)
++        if (index >= PhTimeSequenceCount)
+         {
+             // The data point is too far into the past.
+             return FALSE;
+@@ -1970,6 +1974,10 @@
+             PhUpdateDelta(&processItem->CycleTimeDelta, process->CycleTime);
+ 
+             processItem->SequenceNumber++;
++
++            if (processItem->SequenceCount < processItem->IoReadHistory.Size)
++                processItem->SequenceCount++;
++
+             PhAddItemCircularBuffer_ULONG64(&processItem->IoReadHistory, processItem->IoReadDelta.Delta);
+             PhAddItemCircularBuffer_ULONG64(&processItem->IoWriteHistory, processItem->IoWriteDelta.Delta);
+             PhAddItemCircularBuffer_ULONG64(&processItem->IoOtherHistory, processItem->IoOtherDelta.Delta);
+@@ -2495,7 +2503,7 @@
+         return;
+ 
+     // Get the oldest statistics time.
+-    PhGetStatisticsTime(NULL, PhTimeHistory.Count - 1, &threshold);
++    PhGetStatisticsTime(NULL, PhTimeSequenceCount - 1, &threshold);
+ 
+     PhAcquireQueuedLockShared(&PhProcessRecordListLock);
+ 
+Index: ProcessHacker/proctree.c
+===================================================================
+--- ProcessHacker/proctree.c	(revision 4342)
++++ ProcessHacker/proctree.c	(working copy)
+@@ -2224,7 +2224,7 @@
+                     PhGetDrawInfoGraphBuffers(
+                         &node->CpuGraphBuffers,
+                         &drawInfo,
+-                        processItem->CpuKernelHistory.Count
++                        processItem->SequenceCount
+                         );
+ 
+                     if (!node->CpuGraphBuffers.Valid)
+@@ -2246,7 +2246,7 @@
+                     PhGetDrawInfoGraphBuffers(
+                         &node->PrivateGraphBuffers,
+                         &drawInfo,
+-                        processItem->PrivateBytesHistory.Count
++                        processItem->SequenceCount
+                         );
+ 
+                     if (!node->PrivateGraphBuffers.Valid)
+@@ -2294,7 +2294,7 @@
+                     PhGetDrawInfoGraphBuffers(
+                         &node->IoGraphBuffers,
+                         &drawInfo,
+-                        processItem->IoReadHistory.Count
++                        processItem->SequenceCount
+                         );
+ 
+                     if (!node->IoGraphBuffers.Valid)
+Index: ProcessHacker/sysinfo.c
+===================================================================
+--- ProcessHacker/sysinfo.c	(revision 4340)
++++ ProcessHacker/sysinfo.c	(working copy)
+@@ -707,7 +707,7 @@
+                         PhGraphStateGetDrawInfo(
+                             &CpuGraphState,
+                             getDrawInfo,
+-                            PhCpuKernelHistory.Count
++                            PhTimeSequenceCount
+                             );
+ 
+                         if (!CpuGraphState.Valid)
+@@ -751,7 +751,7 @@
+                         PhGraphStateGetDrawInfo(
+                             &IoGraphState,
+                             getDrawInfo,
+-                            PhIoReadHistory.Count
++                            PhTimeSequenceCount
+                             );
+ 
+                         if (!IoGraphState.Valid)
+@@ -829,7 +829,7 @@
+                         PhGraphStateGetDrawInfo(
+                             &PhysicalGraphState,
+                             getDrawInfo,
+-                            PhPhysicalHistory.Count
++                            PhTimeSequenceCount
+                             );
+ 
+                         if (!PhysicalGraphState.Valid)
+@@ -890,7 +890,7 @@
+                             PhGraphStateGetDrawInfo(
+                                 &CpusGraphState[i],
+                                 getDrawInfo,
+-                                PhCpusKernelHistory[i].Count
++                                PhTimeSequenceCount
+                                 );
+ 
+                             if (!CpusGraphState[i].Valid)
