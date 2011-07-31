@@ -26,6 +26,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker.Native.Security.AccessControl
 {
@@ -64,8 +65,8 @@ namespace ProcessHacker.Native.Security.AccessControl
 
         private class SeSecurableObjectWrapper : ISecurable
         {
-            private readonly SeObjectType _objectType;
-            private readonly Func<StandardRights, NativeHandle> _openMethod;
+            private SeObjectType _objectType;
+            private Func<StandardRights, NativeHandle> _openMethod;
 
             public SeSecurableObjectWrapper(SeObjectType objectType, Func<StandardRights, NativeHandle> openMethod)
             {
@@ -121,25 +122,27 @@ namespace ProcessHacker.Native.Security.AccessControl
             return new SeSecurableObjectWrapper(objectType, openMethod);
         }
 
-        private bool _disposed;
-        private readonly ISecurable _securable;
-        private readonly List<MemoryAlloc> _pool = new List<MemoryAlloc>();
-        private readonly string _name;
-        private readonly MemoryAlloc _accessRights;
-        private readonly int _accessRightCount;
+        private bool _disposed = false;
+        private ISecurable _securable;
+        private List<MemoryAlloc> _pool = new List<MemoryAlloc>();
+        private string _name;
+        private MemoryAlloc _accessRights;
+        private int _accessRightCount;
 
         internal SecurityEditor(ISecurable securable, string name, IEnumerable<AccessEntry> accessEntries)
         {
+            List<SiAccess> accesses;
+
             _securable = securable;
             _name = name;
 
-            List<SiAccess> accesses = new List<SiAccess>();
+            accesses = new List<SiAccess>();
 
             foreach (var entry in accessEntries)
             {
                 if (entry.Mask != 0)
                 {
-                    accesses.Add(new SiAccess
+                    accesses.Add(new SiAccess()
                     {
                         Guid = IntPtr.Zero,
                         Mask = entry.Mask,
@@ -157,7 +160,7 @@ namespace ProcessHacker.Native.Security.AccessControl
         {
             if (!_disposed)
             {
-                _pool.ForEach(alloc => alloc.Dispose());
+                _pool.ForEach((alloc) => alloc.Dispose());
                 _pool.Clear();
                 _disposed = true;
             }
@@ -202,7 +205,7 @@ namespace ProcessHacker.Native.Security.AccessControl
         {
             MemoryAlloc alloc = new MemoryAlloc(Marshal.SizeOf(typeof(T)));
 
-            alloc.WriteStruct(0, value);
+            alloc.WriteStruct<T>(0, value);
 
             return alloc;
         }
@@ -210,7 +213,7 @@ namespace ProcessHacker.Native.Security.AccessControl
         private MemoryAlloc AllocateStructFromPool<T>(T value)
             where T : struct
         {
-            MemoryAlloc m = this.AllocateStruct(value);
+            MemoryAlloc m = this.AllocateStruct<T>(value);
             _pool.Add(m);
             return m;
         }
@@ -221,7 +224,7 @@ namespace ProcessHacker.Native.Security.AccessControl
             MemoryAlloc alloc = new MemoryAlloc(Marshal.SizeOf(typeof(T)) * value.Length);
 
             for (int i = 0; i < value.Length; i++)
-                alloc.WriteStruct(i, value[i]);
+                alloc.WriteStruct<T>(i, value[i]);
 
             return alloc;
         }
@@ -229,7 +232,7 @@ namespace ProcessHacker.Native.Security.AccessControl
         private MemoryAlloc AllocateStructArrayFromPool<T>(T[] value)
             where T : struct
         {
-            MemoryAlloc m = this.AllocateStructArray(value);
+            MemoryAlloc m = this.AllocateStructArray<T>(value);
             _pool.Add(m);
             return m;
         }
@@ -326,32 +329,41 @@ namespace ProcessHacker.Native.Security.AccessControl
         }
 
         #endregion
-
-
-        public HResult GetAccessRights(Guid ObjectType, SiObjectInfoFlags Flags, out IntPtr Access, out int Accesses, out int DefaultAccess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public HResult MapGeneric(Guid ObjectType, AceFlags AceFlags, int Mask)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public struct AccessEntry
     {
-        public bool General { get; private set; }
-        public int Mask { get; private set; }
-        public string Name { get; private set; }
-        public bool Specific { get; private set; }
+        private bool _general;
+        private int _mask;
+        private string _name;
+        private bool _specific;
 
-        public AccessEntry(string name, object mask, bool general, bool specific) : this()
+        public AccessEntry(string name, object mask, bool general, bool specific)
         {
-            this.Name = name;
-            this.Mask = Convert.ToInt32(mask);
-            this.General = general;
-            this.Specific = specific;
+            _name = name;
+            _mask = Convert.ToInt32(mask);
+            _general = general;
+            _specific = specific;
+        }
+
+        public bool General
+        {
+            get { return _general; }
+        }
+
+        public int Mask
+        {
+            get { return _mask; }
+        }
+
+        public string Name
+        {
+            get { return _name; }
+        }
+
+        public bool Specific
+        {
+            get { return _specific; }
         }
     }
 }

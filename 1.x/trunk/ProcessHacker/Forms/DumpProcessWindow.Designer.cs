@@ -37,7 +37,7 @@
             this.tabToken = new System.Windows.Forms.TabPage();
             this.tabModules = new System.Windows.Forms.TabPage();
             this.tabEnvironment = new System.Windows.Forms.TabPage();
-            this.listEnvironment = new ProcessHacker.Components.ExtendedListView();
+            this.listEnvironment = new System.Windows.Forms.ListView();
             this.columnVarName = new System.Windows.Forms.ColumnHeader();
             this.columnVarValue = new System.Windows.Forms.ColumnHeader();
             this.tabHandles = new System.Windows.Forms.TabPage();
@@ -417,6 +417,7 @@
             // listModules
             // 
             this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listModules.DoubleBuffered = true;
             this.listModules.Location = new System.Drawing.Point(3, 3);
             this.listModules.Name = "listModules";
             this.listModules.Provider = null;
@@ -426,6 +427,7 @@
             // listHandles
             // 
             this.listHandles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listHandles.DoubleBuffered = true;
             this.listHandles.Location = new System.Drawing.Point(3, 3);
             this.listHandles.Name = "listHandles";
             this.listHandles.Provider = null;
@@ -467,7 +469,7 @@
         private System.Windows.Forms.TabPage tabEnvironment;
         private ProcessHacker.Components.ModuleList listModules;
         private ProcessHacker.Components.HandleList listHandles;
-        private ProcessHacker.Components.ExtendedListView listEnvironment;
+        private System.Windows.Forms.ListView listEnvironment;
         private System.Windows.Forms.ColumnHeader columnVarName;
         private System.Windows.Forms.ColumnHeader columnVarValue;
         private System.Windows.Forms.GroupBox groupProcess;

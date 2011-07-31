@@ -40,8 +40,6 @@ namespace ProcessHacker.Native.Objects
             get { return _phTokenSource; }
         }
 
-        public WindowsException LastError { get; private set; }
-
         public static TokenHandle Create(
             TokenAccess access,
             TokenType tokenType,
@@ -104,6 +102,7 @@ namespace ProcessHacker.Native.Objects
             TokenSource source
             )
         {
+            NtStatus status;
             TokenUser tokenUser = new TokenUser(user);
             TokenGroups tokenGroups = new TokenGroups(groups);
             TokenPrivileges tokenPrivileges = new TokenPrivileges(privileges);
@@ -115,21 +114,22 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                Win32.NtCreateToken(
+                if ((status = Win32.NtCreateToken(
                     out handle,
                     access,
                     ref oa,
                     tokenType,
-                    authenticationId,
-                    expirationTime,
-                    tokenUser,
-                    tokenGroups,
-                    tokenPrivileges,
+                    ref authenticationId,
+                    ref expirationTime,
+                    ref tokenUser,
+                    ref tokenGroups,
+                    ref tokenPrivileges,
                     ref tokenOwner,
-                    tokenPrimaryGroup,
+                    ref tokenPrimaryGroup,
                     ref tokenDefaultDacl,
-                    source
-                    ).ThrowIf();
+                    ref source
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -185,9 +185,9 @@ namespace ProcessHacker.Native.Objects
 
         public static TokenHandle OpenSystemToken(TokenAccess access, SecurityImpersonationLevel impersonationLevel, TokenType type)
         {
-            using (ProcessHandle phandle = new ProcessHandle(4, OSVersion.MinProcessQueryInfoAccess))
+            using (var phandle = new ProcessHandle(4, OSVersion.MinProcessQueryInfoAccess))
             {
-                using (TokenHandle thandle = phandle.GetToken(TokenAccess.Duplicate | access))
+                using (var thandle = phandle.GetToken(TokenAccess.Duplicate | access))
                 {
                     return thandle.Duplicate(access, impersonationLevel, type);
                 }
@@ -216,7 +216,7 @@ namespace ProcessHacker.Native.Objects
                 if (!Win32.OpenProcessToken(handle, access, out h))
                 {
                     this.MarkAsInvalid();
-                    this.LastError = Win32.Thrown();
+                    Win32.Throw();
                 }
             }
 
@@ -245,7 +245,7 @@ namespace ProcessHacker.Native.Objects
             if (!Win32.OpenThreadToken(handle, access, openAsSelf, out h))
             {
                 this.MarkAsInvalid();
-                this.LastError = Win32.Thrown();
+                Win32.Throw();
             }
 
             this.Handle = h;
@@ -280,7 +280,7 @@ namespace ProcessHacker.Native.Objects
             NtStatus status;
             bool result;
 
-            using (MemoryAlloc privilegesMemory = privileges.ToMemory())
+            using (var privilegesMemory = privileges.ToMemory())
             {
                 if ((status = Win32.NtPrivilegeCheck(
                     this,
@@ -334,9 +334,9 @@ namespace ProcessHacker.Native.Objects
         /// Gets the elevation type of the token.
         /// </summary>
         /// <returns>A TOKEN_ELEVATION_TYPE enum.</returns>
-        public TokenElevationType ElevationType
+        public TokenElevationType GetElevationType()
         {
-            get { return (TokenElevationType)this.GetInformationInt32(TokenInformationClass.TokenElevationType); }
+            return (TokenElevationType)this.GetInformationInt32(TokenInformationClass.TokenElevationType);
         }
 
         /// <summary>
@@ -376,11 +376,12 @@ namespace ProcessHacker.Native.Objects
         private int GetInformationInt32(TokenInformationClass infoClass)
         {
             NtStatus status;
+            int value;
 
-            int value = this.GetInformationInt32(infoClass, out status);
+            value = this.GetInformationInt32(infoClass, out status);
 
-            if (status.IsError())
-                this.LastError = Win32.Thrown(status);
+            if (status >= NtStatus.Error)
+                Win32.Throw(status);
 
             return value;
         }
@@ -404,11 +405,12 @@ namespace ProcessHacker.Native.Objects
         private IntPtr GetInformationIntPtr(TokenInformationClass infoClass)
         {
             NtStatus status;
+            IntPtr value;
 
-            IntPtr value = this.GetInformationIntPtr(infoClass, out status);
+            value = this.GetInformationIntPtr(infoClass, out status);
 
-            if (status.IsError())
-                this.LastError = Win32.Thrown(status);
+            if (status >= NtStatus.Error)
+                Win32.Throw(status);
 
             return value;
         }
@@ -432,12 +434,12 @@ namespace ProcessHacker.Native.Objects
         public TokenHandle GetLinkedToken()
         {
             NtStatus status;
+            IntPtr handle;
 
-            IntPtr handle = this.GetInformationIntPtr(TokenInformationClass.TokenLinkedToken, out status);
+            handle = this.GetInformationIntPtr(TokenInformationClass.TokenLinkedToken, out status);
 
             if (status == NtStatus.NoSuchLogonSession)
                 return null;
-
             if (status >= NtStatus.Error)
                 Win32.Throw(status);
 
@@ -448,21 +450,19 @@ namespace ProcessHacker.Native.Objects
         /// Gets the token's owner.
         /// </summary>
         /// <returns>A WindowsSID instance.</returns>
-        public Sid Owner
+        public Sid GetOwner()
         {
-            get
+            int retLen;
+
+            Win32.GetTokenInformation(this, TokenInformationClass.TokenOwner, IntPtr.Zero, 0, out retLen);
+
+            using (MemoryAlloc data = new MemoryAlloc(retLen))
             {
-                int retLen;
+                if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenOwner, data,
+                    data.Size, out retLen))
+                    Win32.Throw();
 
-                Win32.GetTokenInformation(this, TokenInformationClass.TokenOwner, IntPtr.Zero, 0, out retLen);
-
-                using (MemoryAlloc data = new MemoryAlloc(retLen))
-                {
-                    if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenOwner, data, data.Size, out retLen))
-                        Win32.Throw();
-
-                    return new Sid(data.ReadIntPtr(0));
-                }
+                return new Sid(data.ReadIntPtr(0));
             }
         }
 
@@ -470,21 +470,19 @@ namespace ProcessHacker.Native.Objects
         /// Gets the token's primary group.
         /// </summary>
         /// <returns>A WindowsSID instance.</returns>
-        public Sid PrimaryGroup
+        public Sid GetPrimaryGroup()
         {
-            get
+            int retLen;
+
+            Win32.GetTokenInformation(this, TokenInformationClass.TokenPrimaryGroup, IntPtr.Zero, 0, out retLen);
+
+            using (MemoryAlloc data = new MemoryAlloc(retLen))
             {
-                int retLen;
+                if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrimaryGroup, data,
+                    data.Size, out retLen))
+                    Win32.Throw();
 
-                Win32.GetTokenInformation(this, TokenInformationClass.TokenPrimaryGroup, IntPtr.Zero, 0, out retLen);
-
-                using (MemoryAlloc data = new MemoryAlloc(retLen))
-                {
-                    if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrimaryGroup, data, data.Size, out retLen))
-                        Win32.Throw();
-
-                    return new Sid(data.ReadIntPtr(0));
-                }
+                return new Sid(data.ReadIntPtr(0));
             }
         }
 
@@ -492,30 +490,28 @@ namespace ProcessHacker.Native.Objects
         /// Gets the token's privileges.
         /// </summary>
         /// <returns>A TOKEN_PRIVILEGES structure.</returns>
-        public Privilege[] Privileges
+        public Privilege[] GetPrivileges()
         {
-            get
+            int retLen;
+
+            Win32.GetTokenInformation(this, TokenInformationClass.TokenPrivileges, IntPtr.Zero, 0, out retLen);
+
+            using (MemoryAlloc data = new MemoryAlloc(retLen))
             {
-                int retLen;
+                if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrivileges, data,
+                    data.Size, out retLen))
+                    Win32.Throw();
 
-                Win32.GetTokenInformation(this, TokenInformationClass.TokenPrivileges, IntPtr.Zero, 0, out retLen);
+                uint count = data.ReadUInt32(0);
+                Privilege[] privileges = new Privilege[count];
 
-                using (MemoryAlloc data = new MemoryAlloc(retLen))
+                for (int i = 0; i < count; i++)
                 {
-                    if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrivileges, data, data.Size, out retLen))
-                        Win32.Throw();
-
-                    uint count = data.ReadUInt32(0);
-                    Privilege[] privileges = new Privilege[count];
-
-                    for (int i = 0; i < count; i++)
-                    {
-                        var laa = data.ReadStruct<LuidAndAttributes>(sizeof(int), i);
-                        privileges[i] = new Privilege(this, laa.Luid, laa.Attributes);
-                    }
-
-                    return privileges;
+                    var laa = data.ReadStruct<LuidAndAttributes>(sizeof(int), i);
+                    privileges[i] = new Privilege(this, laa.Luid, laa.Attributes);
                 }
+
+                return privileges;
             }
         }
 
@@ -620,7 +616,15 @@ namespace ProcessHacker.Native.Objects
 
         private void SetInformationInt32(TokenInformationClass infoClass, int value)
         {
-            Win32.NtSetInformationToken(this, infoClass, value, sizeof(int)).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.NtSetInformationToken(
+                this,
+                infoClass,
+                ref value,
+                sizeof(int)
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -653,7 +657,7 @@ namespace ProcessHacker.Native.Objects
         {
             int value = enabled ? 1 : 0;
 
-            if (!Win32.SetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled, value, 4))
+            if (!Win32.SetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled, ref value, 4))
             {
                 Win32.Throw();
             }
@@ -675,18 +679,17 @@ namespace ProcessHacker.Native.Objects
 
         public bool TrySetPrivilege(Luid privilegeLuid, SePrivilegeAttributes attributes)
         {
-            TokenPrivileges tkp = new TokenPrivileges
-            {
-                Privileges = new LuidAndAttributes[1], 
-                PrivilegeCount = 1
-            };
+            TokenPrivileges tkp = new TokenPrivileges();
 
+            tkp.Privileges = new LuidAndAttributes[1];
+
+            tkp.PrivilegeCount = 1;
             tkp.Privileges[0].Attributes = attributes;
             tkp.Privileges[0].Luid = privilegeLuid;
 
-            NtStatus result = Win32.NtAdjustPrivilegesToken(this, false, ref tkp, 0, IntPtr.Zero, IntPtr.Zero);
+            Win32.AdjustTokenPrivileges(this, false, ref tkp, 0, IntPtr.Zero, IntPtr.Zero);
 
-            if (result.IsError())
+            if (Marshal.GetLastWin32Error() != 0)
                 return false;
 
             return true;

@@ -41,11 +41,11 @@ namespace ProcessHacker.Components
     public partial class ThreadList : UserControl
     {
         private ThreadProvider _provider;
-        private bool _useCycleTime;
-        private int _runCount;
-        private readonly List<ListViewItem> _needsAdd = new List<ListViewItem>();
-        private readonly HighlightingContext _highlightingContext;
-        private bool _needsSort;
+        private bool _useCycleTime = false;
+        private int _runCount = 0;
+        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
+        private HighlightingContext _highlightingContext;
+        private bool _needsSort = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -84,7 +84,11 @@ namespace ProcessHacker.Components
                         return (x.Tag as ThreadItem).ContextSwitchesDelta.CompareTo((y.Tag as ThreadItem).ContextSwitchesDelta);
                     }
                 });
-            comparer.CustomSorters.Add(3, (x, y) => (x.Tag as ThreadItem).PriorityI.CompareTo((y.Tag as ThreadItem).PriorityI));
+            comparer.CustomSorters.Add(3,
+                (x, y) =>
+                    {
+                        return (x.Tag as ThreadItem).PriorityI.CompareTo((y.Tag as ThreadItem).PriorityI);
+                    });
             comparer.ColumnSortOrder.Add(0);
             comparer.ColumnSortOrder.Add(2);
             comparer.ColumnSortOrder.Add(3);
@@ -101,6 +105,18 @@ namespace ProcessHacker.Components
             listThreads.ContextMenu = menuThread;
             GenericViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads, null);
             listThreads_SelectedIndexChanged(null, null);
+
+            _dontCalculate = false;
+        }
+
+        private bool _dontCalculate = true;
+
+        protected override void OnResize(EventArgs e)
+        {
+            if (_dontCalculate)
+                return;
+
+            base.OnResize(e);
         }
 
         private void listThreads_MouseUp(object sender, MouseEventArgs e)
@@ -206,6 +222,20 @@ namespace ProcessHacker.Components
 
         #region Properties
 
+        public new bool DoubleBuffered
+        {
+            get
+            {
+                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listThreads, null);
+            }
+            set
+            {
+                typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listThreads, value, null);
+            }
+        }
+
         public override bool Focused
         {
             get
@@ -226,7 +256,7 @@ namespace ProcessHacker.Components
             set { listThreads.ContextMenuStrip = value; }
         }
 
-        public ExtendedListView List
+        public ListView List
         {
             get { return listThreads; }
         }
@@ -1082,7 +1112,7 @@ namespace ProcessHacker.Components
                                 // dummy
                             }
                             else if (
-                                name.StartsWith("kernel32.dll!sleep", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("kernel32.dll!sleep")
                                 )
                             {
                                 found = true;
@@ -1091,8 +1121,8 @@ namespace ProcessHacker.Components
                                     stackFrame.Params[0].ToInt32().ToString() + " milliseconds");
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!zwdelayexecution", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntdelayexecution", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!zwdelayexecution") ||
+                                name.StartsWith("ntdll.dll!ntdelayexecution")
                                 )
                             {
                                 found = true;
@@ -1114,8 +1144,8 @@ namespace ProcessHacker.Components
                                 }
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!zwdeviceiocontrolfile", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntdeviceiocontrolfile", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!zwdeviceiocontrolfile") ||
+                                name.StartsWith("ntdll.dll!ntdeviceiocontrolfile")
                                 )
                             {
                                 found = true;
@@ -1127,8 +1157,8 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!ntfscontrolfile", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwfscontrolfile", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!ntfscontrolfile") ||
+                                name.StartsWith("ntdll.dll!zwfscontrolfile")
                                 )
                             {
                                 found = true;
@@ -1140,8 +1170,8 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!ntqueryobject", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwqueryobject", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!ntqueryobject") ||
+                                name.StartsWith("ntdll.dll!zwqueryobject")
                                 )
                             {
                                 found = true;
@@ -1157,10 +1187,10 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!zwreadfile", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntreadfile", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwwritefile", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwritefile", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!zwreadfile") ||
+                                name.StartsWith("ntdll.dll!ntreadfile") ||
+                                name.StartsWith("ntdll.dll!zwwritefile") ||
+                                name.StartsWith("ntdll.dll!ntwritefile")
                                 )
                             {
                                 found = true;
@@ -1172,8 +1202,8 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!zwremoveiocompletion", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntremoveiocompletion", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!zwremoveiocompletion") ||
+                                name.StartsWith("ntdll.dll!ntremoveiocompletion")
                                 )
                             {
                                 found = true;
@@ -1185,12 +1215,12 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!zwreplywaitreceiveport", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntreplywaitreceiveport", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwrequestwaitreplyport", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntrequestwaitreplyport", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwalpcsendwaitreceiveport", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntalpcsendwaitreceiveport", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!zwreplywaitreceiveport") ||
+                                name.StartsWith("ntdll.dll!ntreplywaitreceiveport") ||
+                                name.StartsWith("ntdll.dll!zwrequestwaitreplyport") ||
+                                name.StartsWith("ntdll.dll!ntrequestwaitreplyport") ||
+                                name.StartsWith("ntdll.dll!zwalpcsendwaitreceiveport") ||
+                                name.StartsWith("ntdll.dll!ntalpcsendwaitreceiveport")
                                 )
                             {
                                 found = true;
@@ -1203,14 +1233,14 @@ namespace ProcessHacker.Components
                             }
                             else if
                                 (
-                                name.StartsWith("ntdll.dll!zwsethighwaitloweventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntsethighwaitloweventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwsetlowwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntsetlowwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwwaitloweventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitloweventpair", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!zwsethighwaitloweventpair") ||
+                                name.StartsWith("ntdll.dll!ntsethighwaitloweventpair") ||
+                                name.StartsWith("ntdll.dll!zwsetlowwaithigheventpair") ||
+                                name.StartsWith("ntdll.dll!ntsetlowwaithigheventpair") ||
+                                name.StartsWith("ntdll.dll!zwwaithigheventpair") ||
+                                name.StartsWith("ntdll.dll!ntwaithigheventpair") ||
+                                name.StartsWith("ntdll.dll!zwwaitloweventpair") ||
+                                name.StartsWith("ntdll.dll!ntwaitloweventpair")
                                 )
                             {
                                 found = true;
@@ -1226,8 +1256,8 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
-                                name.StartsWith("user32.dll!ntusergetmessage", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("user32.dll!ntuserwaitmessage", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("user32.dll!ntusergetmessage") ||
+                                name.StartsWith("user32.dll!ntuserwaitmessage")
                                 )
                             {
                                 found = true;
@@ -1235,8 +1265,8 @@ namespace ProcessHacker.Components
                                 sb.AppendLine("Thread " + tid.ToString() + " is waiting for a USER message.");
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!zwwaitfordebugevent", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitfordebugevent", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!zwwaitfordebugevent") ||
+                                name.StartsWith("ntdll.dll!ntwaitfordebugevent")
                                 )
                             {
                                 found = true;
@@ -1248,10 +1278,10 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!zwwaitforkeyedevent", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitforkeyedevent", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwreleasekeyedevent", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntreleasekeyedevent", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!zwwaitforkeyedevent") ||
+                                name.StartsWith("ntdll.dll!ntwaitforkeyedevent") ||
+                                name.StartsWith("ntdll.dll!zwreleasekeyedevent") ||
+                                name.StartsWith("ntdll.dll!ntreleasekeyedevent")
                                 )
                             {
                                 found = true;
@@ -1266,9 +1296,9 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!zwwaitformultipleobjects", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitformultipleobjects", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("kernel32.dll!waitformultipleobjects", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!zwwaitformultipleobjects") ||
+                                name.StartsWith("ntdll.dll!ntwaitformultipleobjects") ||
+                                name.StartsWith("kernel32.dll!waitformultipleobjects")
                                 )
                             {
                                 found = true;
@@ -1300,9 +1330,9 @@ namespace ProcessHacker.Components
                                 }
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!zwwaitforsingleobject", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitforsingleobject", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("kernel32.dll!waitforsingleobject", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!zwwaitforsingleobject") ||
+                                name.StartsWith("ntdll.dll!ntwaitforsingleobject") ||
+                                name.StartsWith("kernel32.dll!waitforsingleobject")
                                 )
                             {
                                 found = true;
@@ -1316,8 +1346,8 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!zwwaitforworkviaworkerfactory", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitforworkviaworkerfactory", StringComparison.OrdinalIgnoreCase)
+                                name.StartsWith("ntdll.dll!zwwaitforworkviaworkerfactory") ||
+                                name.StartsWith("ntdll.dll!ntwaitforworkviaworkerfactory")
                                 )
                             {
                                 found = true;

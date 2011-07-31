@@ -43,6 +43,7 @@ namespace ProcessHacker.Components
         {
             InitializeComponent();
 
+            listPrivileges.SetDoubleBuffered(true);
             listPrivileges.ListViewItemSorter = new SortedListViewComparer(listPrivileges);
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listPrivileges, null);
             listPrivileges.ContextMenu = menuPrivileges;
@@ -61,8 +62,8 @@ namespace ProcessHacker.Components
                     {
                         textUser.Text = thandle.GetUser().GetFullName(true);
                         textUserSID.Text = thandle.GetUser().StringSid;
-                        textOwner.Text = thandle.Owner.GetFullName(true);
-                        textPrimaryGroup.Text = thandle.PrimaryGroup.GetFullName(true);
+                        textOwner.Text = thandle.GetOwner().GetFullName(true);
+                        textPrimaryGroup.Text = thandle.GetPrimaryGroup().GetFullName(true);
                     }
                     catch (Exception ex)
                     {
@@ -80,20 +81,14 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        TokenElevationType type = thandle.ElevationType;
+                        var type = thandle.GetElevationType();
 
-                        switch (type)
-                        {
-                            case TokenElevationType.Default:
-                                this.textElevated.Text = "N/A";
-                                break;
-                            case TokenElevationType.Full:
-                                this.textElevated.Text = "True";
-                                break;
-                            case TokenElevationType.Limited:
-                                this.textElevated.Text = "False";
-                                break;
-                        }
+                        if (type == TokenElevationType.Default)
+                            textElevated.Text = "N/A";
+                        else if (type == TokenElevationType.Full)
+                            textElevated.Text = "True";
+                        else if (type == TokenElevationType.Limited)
+                            textElevated.Text = "False";
                     }
                     catch (Exception ex)
                     {
@@ -193,7 +188,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        Privilege[] privileges = thandle.Privileges;
+                        var privileges = thandle.GetPrivileges();
 
                         for (int i = 0; i < privileges.Length; i++)
                         {

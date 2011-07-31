@@ -91,12 +91,20 @@ namespace ProcessHacker.Native.Objects
             ResourceManagerAccess access
             )
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenResourceManager(out handle, access, tmHandle, guid, ref oa).ThrowIf();
+                if ((status = Win32.NtOpenResourceManager(
+                    out handle,
+                    access,
+                    tmHandle,
+                    ref guid,
+                    ref oa
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {

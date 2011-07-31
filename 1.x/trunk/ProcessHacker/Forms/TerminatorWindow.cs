@@ -264,13 +264,18 @@ namespace ProcessHacker
             // Loop through the processes until we find our target process.
             for (int count = 0; count < 1000; count++)
             {
-                phandle = phandle.GetNextProcess(Program.MinProcessQueryRights | ProcessAccess.Terminate);
-
-                if (phandle.ProcessId == _pid)
+                try
                 {
-                    found = true;
-                    break;
+                    phandle = phandle.GetNextProcess(Program.MinProcessQueryRights | ProcessAccess.Terminate);
+
+                    if (phandle.GetProcessId() == _pid)
+                    {
+                        found = true;
+                        break;
+                    }
                 }
+                catch
+                { }
             }
 
             if (found)

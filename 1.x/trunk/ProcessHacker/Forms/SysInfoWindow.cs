@@ -159,7 +159,8 @@ namespace ProcessHacker
             this.UpdateGraphs();
             this.UpdateInfo();
 
-            Program.ProcessProvider.Updated += this.ProcessProvider_Updated;
+            Program.ProcessProvider.Updated +=
+                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
             
             //We need todo this here or TopMost property gets over-rided
             //by AlwaysOnTopCheckbox
@@ -174,7 +175,8 @@ namespace ProcessHacker
                 Settings.Instance.SysInfoWindowSize = this.Size;
             }
             
-            Program.ProcessProvider.Updated -= this.ProcessProvider_Updated;
+            Program.ProcessProvider.Updated -=
+                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
             Settings.Instance.ShowOneGraphPerCPU = checkShowOneGraphPerCPU.Checked;   
         }
 
@@ -268,13 +270,13 @@ namespace ProcessHacker
             var perfInfo = Program.ProcessProvider.Performance;
             var info = new PerformanceInformation();
 
-            Win32.GetPerformanceInfo(out info, PerformanceInformation.SizeOf);
+            Win32.GetPerformanceInfo(out info, System.Runtime.InteropServices.Marshal.SizeOf(info));
 
             SystemCacheInformation cacheInfo;
             int retLen;
 
             Win32.NtQuerySystemInformation(SystemInformationClass.SystemFileCacheInformation,
-                out cacheInfo, SystemCacheInformation.SizeOf, out retLen);
+                out cacheInfo, Marshal.SizeOf(typeof(SystemCacheInformation)), out retLen);
 
             // Totals
             labelTotalsProcesses.Text = ((ulong)info.ProcessCount).ToString("N0");

@@ -34,13 +34,22 @@ namespace ProcessHacker.Native.Objects
     {
         public static SamAliasHandle Create(SamAliasAccess access, SamDomainHandle domainHandle, string name, out int aliasId)
         {
+            NtStatus status;
+            UnicodeString nameStr;
             IntPtr handle;
 
-            UnicodeString nameStr = new UnicodeString(name);
+            nameStr = new UnicodeString(name);
 
             try
             {
-                Win32.SamCreateAliasInDomain(domainHandle, nameStr, access, out handle, out aliasId).ThrowIf();
+                if ((status = Win32.SamCreateAliasInDomain(
+                    domainHandle,
+                    ref nameStr,
+                    access,
+                    out handle,
+                    out aliasId
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {

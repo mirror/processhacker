@@ -21,8 +21,10 @@
  */
 
 using System;
-
+using System.Collections.Generic;
+using System.Text;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Security;
 using ProcessHacker.Native.Security.Authentication;
 
 namespace ProcessHacker.Native.Objects
@@ -31,15 +33,21 @@ namespace ProcessHacker.Native.Objects
     {
         public static LsaAuthHandle Connect(string name)
         {
+            NtStatus status;
+            AnsiString nameStr;
             IntPtr handle;
+            LsaOperationalMode mode;
 
-            AnsiString nameStr = new AnsiString(name);
+            nameStr = new AnsiString(name);
 
             try
             {
-                LsaOperationalMode mode;
-
-                Win32.LsaRegisterLogonProcess(nameStr, out handle, out mode).ThrowIf();
+                if ((status = Win32.LsaRegisterLogonProcess(
+                    ref nameStr,
+                    out handle,
+                    out mode
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -51,9 +59,11 @@ namespace ProcessHacker.Native.Objects
 
         public static LsaAuthHandle ConnectUntrusted()
         {
+            NtStatus status;
             IntPtr handle;
 
-            Win32.LsaConnectUntrusted(out handle).ThrowIf();
+            if ((status = Win32.LsaConnectUntrusted(out handle)) >= NtStatus.Error)
+                Win32.Throw(status);
 
             return new LsaAuthHandle(handle, true);
         }
@@ -99,38 +109,39 @@ namespace ProcessHacker.Native.Objects
             out NtStatus subStatus
             )
         {
+            NtStatus status;
+            AnsiString originNameStr;
             IntPtr profileBuffer;
             int profileBufferLength;
             IntPtr token;
             QuotaLimits quotas;
 
-            AnsiString originNameStr = new AnsiString(originName);
+            originNameStr = new AnsiString(originName);
 
             try
             {
-                using (MemoryRegion logonData = package.GetAuthData())
+                using (var logonData = package.GetAuthData())
                 {
-                    Win32.LsaLogonUser(
+                    if ((status = Win32.LsaLogonUser(
                         this,
-                        originNameStr,
+                        ref originNameStr,
                         logonType,
                         this.LookupAuthenticationPackage(package.PackageName),
                         logonData,
                         logonData.Size,
                         IntPtr.Zero,
-                        source,
+                        ref source,
                         out profileBuffer,
                         out profileBufferLength,
                         out logonId,
                         out token,
                         out quotas,
                         out subStatus
-                        ).ThrowIf();
+                        )) >= NtStatus.Error)
+                        Win32.Throw(status);
 
-                    using (LsaMemoryAlloc profileBufferAlloc = new LsaMemoryAlloc(profileBuffer, true))
-                    {
+                    using (var profileBufferAlloc = new LsaMemoryAlloc(profileBuffer, true))
                         profileData = package.GetProfileData(new MemoryRegion(profileBuffer, 0, profileBufferLength));
-                    }
 
                     return new TokenHandle(token, true);
                 }
@@ -143,13 +154,20 @@ namespace ProcessHacker.Native.Objects
 
         public int LookupAuthenticationPackage(string packageName)
         {
+            NtStatus status;
+            AnsiString packageNameStr;
             int authenticationPackage;
 
-            AnsiString packageNameStr = new AnsiString(packageName);
+            packageNameStr = new AnsiString(packageName);
 
             try
             {
-                Win32.LsaLookupAuthenticationPackage(this, packageNameStr, out authenticationPackage).ThrowIf();
+                if ((status = Win32.LsaLookupAuthenticationPackage(
+                    this,
+                    ref packageNameStr,
+                    out authenticationPackage
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {

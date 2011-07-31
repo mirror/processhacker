@@ -107,12 +107,18 @@ namespace ProcessHacker.Native.Objects
 
         public JobObjectHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, JobObjectAccess access)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenJobObject(out handle, access, oa).ThrowIf();
+                if ((status = Win32.NtOpenJobObject(
+                    out handle,
+                    access,
+                    ref oa
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {

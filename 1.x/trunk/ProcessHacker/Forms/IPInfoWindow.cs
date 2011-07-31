@@ -33,7 +33,7 @@ using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
-    public enum IpAction
+    public enum IpAction : int
     {
         Whois = 0,
         Ping = 1,
@@ -42,13 +42,12 @@ namespace ProcessHacker
 
     public partial class IPInfoWindow : Form
     {
-        private readonly IPAddress _ipAddress;
-        private readonly IpAction _ipAction;
+        private IPAddress _ipAddress;
+        private IpAction _ipAction;
 
         public IPInfoWindow(IPAddress ipAddress, IpAction action)
         {
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
 
@@ -57,42 +56,38 @@ namespace ProcessHacker
 
             listInfo.AddShortcuts();
             listInfo.ContextMenu = listInfo.GetCopyMenu();
+            listInfo.SetTheme("explorer");
+            listInfo.SetDoubleBuffered(true);
         }
 
         private void IPInfoWindow_Load(object sender, EventArgs e)
         {
             Thread t = null;
 
-            switch (this._ipAction)
+            if (_ipAction == IpAction.Whois)
             {
-                case IpAction.Whois:
-                    {
-                        t = new Thread(this.Whois, Utils.SixteenthStackSize);
-                        this.labelInfo.Text = "Whois host infomation for address: " + this._ipAddress;
-                        this.labelStatus.Text = "Checking...";
-                        this.listInfo.Columns.Add("Results");
-                        ColumnSettings.LoadSettings(Settings.Instance.IPInfoWhoIsListViewColumns, this.listInfo);
-                        break;
-                    }
-                case IpAction.Tracert:
-                    {
-                        t = new Thread(this.Tracert, Utils.SixteenthStackSize);
-                        this.labelStatus.Text = "Tracing route...";
-                        this.listInfo.Columns.Add("Count");
-                        this.listInfo.Columns.Add("Reply Time");
-                        this.listInfo.Columns.Add("IP Address");
-                        this.listInfo.Columns.Add("Hostname");
-                        ColumnSettings.LoadSettings(Settings.Instance.IPInfoTracertListViewColumns, this.listInfo);
-                        break;
-                    }
-                case IpAction.Ping:
-                    {
-                        t = new Thread(this.Ping, Utils.SixteenthStackSize);
-                        this.labelStatus.Text = "Pinging...";
-                        this.listInfo.Columns.Add("Results");
-                        ColumnSettings.LoadSettings(Settings.Instance.IPInfoPingListViewColumns, this.listInfo);
-                        break;
-                    }
+                t = new Thread(new ParameterizedThreadStart(Whois), Utils.SixteenthStackSize);
+                labelInfo.Text = "Whois host infomation for address: " + _ipAddress.ToString();
+                labelStatus.Text = "Checking...";
+                listInfo.Columns.Add("Results");
+                ColumnSettings.LoadSettings(Settings.Instance.IPInfoWhoIsListViewColumns, listInfo);
+            }
+            else if (_ipAction == IpAction.Tracert)
+            {
+                t = new Thread(new ParameterizedThreadStart(Tracert), Utils.SixteenthStackSize);
+                labelStatus.Text = "Tracing route...";
+                listInfo.Columns.Add("Count");
+                listInfo.Columns.Add("Reply Time");
+                listInfo.Columns.Add("IP Address");
+                listInfo.Columns.Add("Hostname");
+                ColumnSettings.LoadSettings(Settings.Instance.IPInfoTracertListViewColumns, listInfo);
+            }
+            else if (_ipAction == IpAction.Ping)
+            {
+                t = new Thread(new ParameterizedThreadStart(Ping), Utils.SixteenthStackSize);
+                labelStatus.Text = "Pinging...";
+                listInfo.Columns.Add("Results");
+                ColumnSettings.LoadSettings(Settings.Instance.IPInfoPingListViewColumns, listInfo);
             }
 
             t.IsBackground = true;
@@ -101,18 +96,12 @@ namespace ProcessHacker
 
         private void IPInfoWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            switch (this._ipAction)
-            {
-                case IpAction.Whois:
-                    Settings.Instance.IPInfoWhoIsListViewColumns = ColumnSettings.SaveSettings(this.listInfo);
-                    break;
-                case IpAction.Tracert:
-                    Settings.Instance.IPInfoTracertListViewColumns = ColumnSettings.SaveSettings(this.listInfo);
-                    break;
-                case IpAction.Ping:
-                    Settings.Instance.IPInfoPingListViewColumns = ColumnSettings.SaveSettings(this.listInfo);
-                    break;
-            }
+            if (_ipAction == IpAction.Whois)
+                Settings.Instance.IPInfoWhoIsListViewColumns = ColumnSettings.SaveSettings(listInfo);
+            else if (_ipAction == IpAction.Tracert)
+                Settings.Instance.IPInfoTracertListViewColumns = ColumnSettings.SaveSettings(listInfo);
+            else if (_ipAction == IpAction.Ping)
+                Settings.Instance.IPInfoPingListViewColumns = ColumnSettings.SaveSettings(listInfo);
 
             Settings.Instance.Save();
         }
@@ -127,7 +116,7 @@ namespace ProcessHacker
             using (Ping pingSender = new Ping()) 
             {
                 PingOptions pingOptions = new PingOptions();
-                PingReply pingReply;
+                PingReply pingReply = null;
 
                 IPAddress ipAddress = (IPAddress)ip;
                 int numberOfPings = 4;
@@ -163,11 +152,11 @@ namespace ProcessHacker
                     {
                         if (pingReply.Options != null) //IPv6 ping causes pingReply.Options to become null 
                         {
-                            WriteResult(string.Format("Reply from {0}:  bytes={1}  time={2}ms  TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingReply.Options.Ttl), string.Empty, string.Empty);
+                            WriteResult(string.Format("Reply from {0}:  bytes={1}  time={2}ms  TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingReply.Options.Ttl), "", "");
                         }
                         else
                         {
-                            WriteResult(string.Format("Reply from {0}:  bytes={1}  time={2}ms  TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingOptions.Ttl), string.Empty, string.Empty);
+                            WriteResult(string.Format("Reply from {0}:  bytes={1}  time={2}ms  TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingOptions.Ttl), "", "");
                         }
 
                         if (minPingResponse == 0)
@@ -188,21 +177,19 @@ namespace ProcessHacker
                     }
                     else
                     {
-                        WriteResult(pingReply.Status.ToString(), string.Empty, string.Empty);
+                        WriteResult(pingReply.Status.ToString(), "", "");
                         lostPings++;
                     }
                 }
-
-                WriteResult(string.Empty, string.Empty, string.Empty);
-                WriteResult(string.Format("Ping statistics for {0}:", ipAddress), string.Empty, string.Empty);
-                WriteResult(string.Format("        Packets: Sent = {0}, Received = {1}, Lost = {2}", sentPings, receivedPings, lostPings), string.Empty, string.Empty);
-                WriteResult("Approximate round trip times in milli-seconds:", string.Empty, string.Empty);
-                WriteResult(string.Format("        Minimum = {0}ms, Maximum = {1}ms", minPingResponse, maxPingResponse), string.Empty, string.Empty);
+                WriteResult("", "", "");
+                WriteResult(string.Format("Ping statistics for {0}:", ipAddress), "", "");
+                WriteResult(string.Format("        Packets: Sent = {0}, Received = {1}, Lost = {2}", sentPings, receivedPings, lostPings), "", "");
+                WriteResult("Approximate round trip times in milli-seconds:", "", "");
+                WriteResult(string.Format("        Minimum = {0}ms, Maximum = {1}ms", minPingResponse, maxPingResponse), "", "");
             }
-
             WriteStatus("Ping complete.", false);
         }
-
+         
         private void Tracert(object ip)
         {
             IPAddress ipAddress = (IPAddress)ip;
@@ -240,36 +227,36 @@ namespace ProcessHacker
                         stopWatch.Stop();
                     }
 
-                    WriteResult(string.Format("{0}", i), string.Format("{0} ms", stopWatch.ElapsedMilliseconds), string.Format("{0}", pingReply.Address));
+                    WriteResult(string.Format("{0}" , i), string.Format("{0} ms",  stopWatch.ElapsedMilliseconds), string.Format("{0}", pingReply.Address));
 
                     WorkQueue.GlobalQueueWorkItemTag(new Action<IPAddress, int>((address, hopNumber) =>
-                    {
-                        string hostName;
+                        {
+                            string hostName;
 
-                        try
-                        {
-                            hostName = Dns.GetHostEntry(address).HostName;
-                        }
-                        catch
-                        {
-                            hostName = string.Empty;
-                        }
-
-                        if (this.IsHandleCreated)
-                        {
-                            this.BeginInvoke(new Action(() =>
+                            try
                             {
-                                foreach (ListViewItem item in listInfo.Items)
-                                {
-                                    if (item.Text == hopNumber.ToString())
+                                hostName = Dns.GetHostEntry(address).HostName;
+                            }
+                            catch
+                            {
+                                hostName = "";
+                            }
+
+                            if (this.IsHandleCreated)
+                            {
+                                this.BeginInvoke(new MethodInvoker(() =>
                                     {
-                                        item.SubItems[3].Text = hostName;
-                                        break;
-                                    }
-                                }
-                            }));
-                        }
-                    }), "ipinfowindow-resolveaddress", pingReply.Address, i);
+                                        foreach (ListViewItem item in listInfo.Items)
+                                        {
+                                            if (item.Text == hopNumber.ToString())
+                                            {
+                                                item.SubItems[3].Text = hostName;
+                                                break;
+                                            }
+                                        }
+                                    }));
+                            }
+                        }), "ipinfowindow-resolveaddress", pingReply.Address, i);
 
                     if (pingReply.Status == IPStatus.Success)
                     {
@@ -280,7 +267,6 @@ namespace ProcessHacker
                     pingOptions.Ttl++;
                 }
             }
-
             WriteStatus("Trace complete.", false);
         }
 
@@ -293,7 +279,7 @@ namespace ProcessHacker
                 using (BufferedStream bufferedStreamWhois = new BufferedStream(networkStreamWhois))
                 using (StreamWriter streamWriter = new StreamWriter(bufferedStreamWhois))
                 {
-                    streamWriter.WriteLine(ip.ToString());
+                    streamWriter.WriteLine(((IPAddress)ip).ToString());
                     streamWriter.Flush();
 
                     StreamReader streamReaderReceive = new StreamReader(bufferedStreamWhois);
@@ -301,10 +287,9 @@ namespace ProcessHacker
                     while (!streamReaderReceive.EndOfStream)
                     {
                         string data = streamReaderReceive.ReadLine();
-
                         if (!data.Contains("#") | !data.Contains("?"))
                         {
-                            WriteResult(data, string.Empty, string.Empty);
+                            WriteResult(data, "", "");
                         }
                     }
                 }
@@ -323,7 +308,7 @@ namespace ProcessHacker
 
             if (this.InvokeRequired)
             {
-                this.BeginInvoke(new Action<string, bool>(WriteStatus), info, title);
+                this.BeginInvoke(new MethodInvoker(() => WriteStatus(info, title)));
                 return;
             }
 
@@ -344,14 +329,14 @@ namespace ProcessHacker
 
             if (this.InvokeRequired)
             {
-                this.BeginInvoke(new Action<string, string, string>(this.WriteResult), hop, time, ip);
+                this.BeginInvoke(new MethodInvoker(() => WriteResult(hop, time, ip)));
                 return;
             }
 
             ListViewItem litem = new ListViewItem(hop);
             litem.SubItems.Add(time);
             litem.SubItems.Add(ip);
-            litem.SubItems.Add(string.Empty);
+            litem.SubItems.Add("");
 
             listInfo.Items.Add(litem);
         }

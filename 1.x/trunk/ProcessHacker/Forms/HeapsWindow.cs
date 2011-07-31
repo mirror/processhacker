@@ -36,15 +36,16 @@ namespace ProcessHacker
 {
     public partial class HeapsWindow : Form
     {
-        private readonly int _pid;
+        private int _pid;
 
         public HeapsWindow(int pid, HeapInformation[] heaps)
         {
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
 
+            listHeaps.SetDoubleBuffered(true);
+            listHeaps.SetTheme("explorer");
             listHeaps.AddShortcuts();
             listHeaps.ContextMenu = menuHeap;
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHeaps, null);
@@ -74,13 +75,15 @@ namespace ProcessHacker
 
             IntPtr defaultHeap = IntPtr.Zero;
 
-            using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+            try
             {
-                if (phandle.LastError == null)
-                {
-                    defaultHeap = phandle.DefaultHeap;
-                }
+                using (var phandle = new ProcessHandle(
+                    pid,
+                    Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                    defaultHeap = phandle.GetHeap();
             }
+            catch (WindowsException)
+            { }
 
             long allocatedTotal = 0, committedTotal = 0;
             int entriesTotal = 0, tagsTotal = 0, pseudoTagsTotal = 0;
@@ -90,14 +93,15 @@ namespace ProcessHacker
                 ListViewItem litem = listHeaps.Items.Add(new ListViewItem(
                     new string[]
                     {
-                        Utils.FormatAddress(heap.Address), heap.BytesAllocated.ToString("N0") + " B",
-                        heap.BytesCommitted.ToString("N0") + " B", heap.EntryCount.ToString("N0")
+                        Utils.FormatAddress(heap.Address),
+                        heap.BytesAllocated.ToString("N0") + " B",
+                        heap.BytesCommitted.ToString("N0") + " B",
+                        heap.EntryCount.ToString("N0")
                         //heap.TagCount.ToString("N0"),
                         //heap.PseudoTagCount.ToString("N0")
                     }));
 
                 litem.Tag = heap;
-
                 // Make the default heap bold.
                 if (heap.Address == defaultHeap)
                     litem.Font = new Font(litem.Font, FontStyle.Bold);
@@ -111,7 +115,8 @@ namespace ProcessHacker
             }
 
             // Totals row.
-            listHeaps.Items.Add(new ListViewItem(new string[]
+            listHeaps.Items.Add(new ListViewItem(
+                new string[]
                 {
                     "Totals",
                     allocatedTotal.ToString("N0") + " B",
@@ -132,25 +137,21 @@ namespace ProcessHacker
 
         private void menuHeap_Popup(object sender, EventArgs e)
         {
-            switch (this.listHeaps.SelectedItems.Count)
+            if (listHeaps.SelectedItems.Count == 0)
             {
-                case 0:
-                    this.menuHeap.DisableAll();
-                    break;
-                case 1:
-                    {
-                        this.menuHeap.EnableAll();
+                menuHeap.DisableAll();
+            }
+            else if (listHeaps.SelectedItems.Count == 1)
+            {
+                menuHeap.EnableAll();
 
-                        if (this.listHeaps.SelectedItems[0].Text == "Totals")
-                            this.destroyMenuItem.Enabled = false;
-                    }
-                    break;
-                default:
-                    {
-                        this.menuHeap.DisableAll();
-                        this.copyMenuItem.Enabled = true;
-                        break;
-                    }
+                if (listHeaps.SelectedItems[0].Text == "Totals")
+                    destroyMenuItem.Enabled = false;
+            }
+            else
+            {
+                menuHeap.DisableAll();
+                copyMenuItem.Enabled = true;
             }
         }
 
@@ -164,24 +165,26 @@ namespace ProcessHacker
                 ))
                 return;
 
-            using (ProcessHandle phandle = new ProcessHandle(_pid, 
-                ProcessAccess.CreateThread | ProcessAccess.QueryInformation | ProcessAccess.VmOperation))
+            try
             {
-                if (phandle.LastError == null)
+                using (var phandle = new ProcessHandle(_pid,
+                    ProcessAccess.CreateThread | ProcessAccess.QueryInformation | ProcessAccess.VmOperation))
                 {
                     // Use RtlCreateUserThread to cross session boundaries. RtlDestroyHeap doesn't need 
                     // the Win32 subsystem so we don't have to notify CSR.
-                    phandle.CreateThread(Win32.GetProcAddress(Win32.GetModuleHandle("ntdll.dll"), "RtlDestroyHeap"),
-                        ((HeapInformation)listHeaps.SelectedItems[0].Tag).Address).Dispose();
+                    phandle.CreateThread(
+                        Win32.GetProcAddress(Win32.GetModuleHandle("ntdll.dll"), "RtlDestroyHeap"),
+                        ((HeapInformation)listHeaps.SelectedItems[0].Tag).Address
+                        ).Dispose();
                 }
-                else
-                {
-                    PhUtils.ShowException("Unable to destroy the heap", phandle.LastError);
-                }
-            }
 
-            listHeaps.SelectedItems[0].ForeColor = Color.Red;
-            listHeaps.SelectedItems.Clear();
+                listHeaps.SelectedItems[0].ForeColor = Color.Red;
+                listHeaps.SelectedItems.Clear();
+            }
+            catch (WindowsException ex)
+            {
+                PhUtils.ShowException("Unable to destroy the heap", ex);
+            }
         }
 
         private void checkSizesInBytes_CheckedChanged(object sender, EventArgs e)

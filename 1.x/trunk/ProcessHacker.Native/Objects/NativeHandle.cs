@@ -401,14 +401,18 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public virtual NtStatus SignalAndWait(ISynchronizable waitObject, bool alertable, long timeout, bool relative)
         {
+            NtStatus status;
             long realTimeout = relative ? -timeout : timeout;
 
-            return Win32.NtSignalAndWaitForSingleObject(
+            if ((status = Win32.NtSignalAndWaitForSingleObject(
                 this,
                 waitObject.Handle,
                 alertable,
-                ref realTimeout
-                );
+                ref timeout
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            return status;
         }
 
         /// <summary>
@@ -509,15 +513,19 @@ namespace ProcessHacker.Native.Objects
         /// <param name="relative">Whether the timeout value is relative.</param>
         public virtual NtStatus Wait(bool alertable, long timeout, bool relative)
         {
+            NtStatus status;
             long realTimeout = relative ? -timeout : timeout;
 
-            return Win32.NtWaitForSingleObject(
-                this, 
-                alertable, 
+            if ((status = Win32.NtWaitForSingleObject(
+                this,
+                alertable,
                 ref realTimeout
-                );
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
+
+            return status;
         }
-    }
+}
 
     /// <summary>
     /// Represents a generic Windows handle which acts as a kernel handle by default.
@@ -574,16 +582,8 @@ namespace ProcessHacker.Native.Objects
         {
             IntPtr newHandle;
 
-            Win32.DuplicateObject(
-                processHandle, 
-                handle, 
-                ProcessHandle.Current, 
-                out newHandle,
-                (int)Convert.ChangeType(access, typeof(int)), 
-                0, 
-                0
-                );
-
+            Win32.DuplicateObject(processHandle, handle, ProcessHandle.Current, out newHandle,
+                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             this.Handle = newHandle;
         }
 
@@ -620,6 +620,7 @@ namespace ProcessHacker.Native.Objects
         /// Creates a new, invalid handle. You must set the handle using the Handle property.
         /// </summary>
         protected GenericHandle()
+            : base()
         { }
 
         /// <summary>

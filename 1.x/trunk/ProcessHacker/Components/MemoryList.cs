@@ -104,6 +104,20 @@ namespace ProcessHacker.Components
 
         #region Properties
 
+        public new bool DoubleBuffered
+        {
+            get
+            {
+                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listMemory, null);
+            }
+            set
+            {
+                typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listMemory, value, null);
+            }
+        }
+
         public override bool Focused
         {
             get
@@ -124,7 +138,7 @@ namespace ProcessHacker.Components
             set { listMemory.ContextMenuStrip = value; }
         }
 
-        public ExtendedListView List
+        public ListView List
         {
             get { return listMemory; }
         }
@@ -136,10 +150,10 @@ namespace ProcessHacker.Components
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= this.provider_DictionaryAdded;
-                    _provider.DictionaryModified -= this.provider_DictionaryModified;
-                    _provider.DictionaryRemoved -= this.provider_DictionaryRemoved;
-                    _provider.Updated -= this.provider_Updated;
+                    _provider.DictionaryAdded -= new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified -= new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved -= new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated -= new MemoryProvider.ProviderUpdateOnce(provider_Updated);
                 }
 
                 _provider = value;
@@ -149,10 +163,10 @@ namespace ProcessHacker.Components
 
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded += this.provider_DictionaryAdded;
-                    _provider.DictionaryModified += this.provider_DictionaryModified;
-                    _provider.DictionaryRemoved += this.provider_DictionaryRemoved;
-                    _provider.Updated += this.provider_Updated;
+                    _provider.DictionaryAdded += new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified += new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved += new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated += new MemoryProvider.ProviderUpdateOnce(provider_Updated);
                     _pid = _provider.Pid;
 
                     foreach (MemoryItem item in _provider.Dictionary.Values)
@@ -256,7 +270,7 @@ namespace ProcessHacker.Components
             {
                 if (_needsAdd.Count > 0)
                 {
-                    this.BeginInvoke(new Action(() =>
+                    this.BeginInvoke(new MethodInvoker(() =>
                     {
                         lock (_needsAdd)
                         {
@@ -272,7 +286,7 @@ namespace ProcessHacker.Components
 
             if (_needsSort)
             {
-                this.BeginInvoke(new Action(() =>
+                this.BeginInvoke(new MethodInvoker(() =>
                 {
                     if (_needsSort)
                     {
@@ -314,7 +328,7 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(MemoryItem item)
         {
-            this.BeginInvoke(new Action(() =>
+            this.BeginInvoke(new MethodInvoker(() =>
                 {
                     HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
                         item.RunId > 0 && _runCount > 0);
@@ -333,7 +347,7 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryModified(MemoryItem oldItem, MemoryItem newItem)
         {
-            this.BeginInvoke(new Action(() =>
+            this.BeginInvoke(new MethodInvoker(() =>
                 {
                     lock (listMemory)
                     {
@@ -347,7 +361,7 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryRemoved(MemoryItem item)
         {
-            this.BeginInvoke(new Action(() =>
+            this.BeginInvoke(new MethodInvoker(() =>
                 {
                     lock (listMemory)
                     {

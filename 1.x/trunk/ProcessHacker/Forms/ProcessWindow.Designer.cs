@@ -145,7 +145,7 @@ namespace ProcessHacker
             this.structSearchMenuItem = new System.Windows.Forms.MenuItem();
             this.listMemory = new ProcessHacker.Components.MemoryList();
             this.tabEnvironment = new System.Windows.Forms.TabPage();
-            this.listEnvironment = new ProcessHacker.Components.ExtendedListView();
+            this.listEnvironment = new System.Windows.Forms.ListView();
             this.columnVarName = new System.Windows.Forms.ColumnHeader();
             this.columnVarValue = new System.Windows.Forms.ColumnHeader();
             this.tabHandles = new System.Windows.Forms.TabPage();
@@ -816,6 +816,7 @@ namespace ProcessHacker
             // 
             this.listThreads.Cursor = System.Windows.Forms.Cursors.Default;
             this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listThreads.DoubleBuffered = true;
             this.listThreads.Location = new System.Drawing.Point(0, 0);
             this.listThreads.Size = new System.Drawing.Size(480, 405);
             this.listThreads.TabIndex = 0;
@@ -841,6 +842,7 @@ namespace ProcessHacker
             // listModules
             // 
             this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listModules.DoubleBuffered = true;
             this.listModules.Location = new System.Drawing.Point(0, 0);
             this.listModules.Size = new System.Drawing.Size(480, 405);
             this.listModules.TabIndex = 0;
@@ -941,6 +943,7 @@ namespace ProcessHacker
             this.listMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.listMemory.DoubleBuffered = true;
             this.listMemory.Location = new System.Drawing.Point(6, 59);
             this.listMemory.Size = new System.Drawing.Size(469, 340);
             this.listMemory.TabIndex = 2;
@@ -1008,6 +1011,7 @@ namespace ProcessHacker
             this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHandles.DoubleBuffered = true;
             this.listHandles.Location = new System.Drawing.Point(6, 30);
             this.listHandles.Size = new System.Drawing.Size(469, 351);
             this.listHandles.TabIndex = 1;
@@ -1140,7 +1144,7 @@ namespace ProcessHacker
         private System.Windows.Forms.Button buttonEditProtected;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.TabPage tabEnvironment;
-        private ProcessHacker.Components.ExtendedListView listEnvironment;
+        private System.Windows.Forms.ListView listEnvironment;
         private System.Windows.Forms.ColumnHeader columnVarName;
         private System.Windows.Forms.ColumnHeader columnVarValue;
         private System.Windows.Forms.TabPage tabJob;

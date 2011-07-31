@@ -42,17 +42,19 @@ namespace ProcessHacker.Native.Objects
 
         public static DebugObjectHandle Create(DebugObjectAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, DebugObjectFlags flags)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtCreateDebugObject(
+                if ((status = Win32.NtCreateDebugObject(
                     out handle,
                     access,
                     ref oa,
                     flags
-                    ).ThrowIf();
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -82,7 +84,14 @@ namespace ProcessHacker.Native.Objects
 
         public void Continue(ClientId cid, NtStatus continueStatus)
         {
-            Win32.NtDebugContinue(this, cid, continueStatus).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.NtDebugContinue(
+                this,
+                ref cid,
+                continueStatus
+                )) > NtStatus.Error)
+                Win32.Throw(status);
         }
 
         public void SetFlags(DebugObjectFlags flags)

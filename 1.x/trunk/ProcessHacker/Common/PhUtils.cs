@@ -44,20 +44,20 @@ namespace ProcessHacker.Common
         };
 
         /// <summary>
-        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ExtendedListView.
+        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ListView.
         /// </summary>
-        /// <param name="lv">The ExtendedListView to modify.</param>
-        public static void AddShortcuts(this ExtendedListView lv)
+        /// <param name="lv">The ListView to modify.</param>
+        public static void AddShortcuts(this ListView lv)
         {
             lv.AddShortcuts(null);
         }
 
         /// <summary>
-        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ExtendedListView.
+        /// Adds Ctrl+C and Ctrl+A shortcuts to the specified ListView.
         /// </summary>
-        /// <param name="lv">The ExtendedListView to modify.</param>
+        /// <param name="lv">The ListView to modify.</param>
         /// <param name="retrieveVirtualItem">A virtual item handler, if any.</param>
-        public static void AddShortcuts(this ExtendedListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
+        public static void AddShortcuts(this ListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
         {
             lv.KeyDown +=
                 (sender, e) =>
@@ -93,19 +93,23 @@ namespace ProcessHacker.Common
             if (pid == 4)
                 return true;
 
-            using (ProcessHandle phandle = new ProcessHandle(pid, OSVersion.MinProcessQueryInfoAccess))
+            try
             {
-                if (phandle.LastError == null)
+                using (var phandle = new ProcessHandle(pid, OSVersion.MinProcessQueryInfoAccess))
                 {
                     foreach (string s in DangerousNames)
                     {
-                        if ((Environment.SystemDirectory + "\\" + s).Equals(FileUtils.GetFileName(FileUtils.GetFileName(phandle.GetImageFileName())), StringComparison.OrdinalIgnoreCase))
+                        if ((Environment.SystemDirectory + "\\" + s).Equals(
+                            FileUtils.GetFileName(FileUtils.GetFileName(phandle.GetImageFileName())),
+                            StringComparison.OrdinalIgnoreCase))
                         {
                             return true;
                         }
                     }
                 }
             }
+            catch
+            { }
 
             return false;
         }
@@ -389,13 +393,13 @@ namespace ProcessHacker.Common
             string lastKey = keyName;
 
             // Expand the abbreviations.
-            if (lastKey.StartsWith("hkcu", StringComparison.OrdinalIgnoreCase))
+            if (lastKey.ToLowerInvariant().StartsWith("hkcu"))
                 lastKey = "HKEY_CURRENT_USER" + lastKey.Substring(4);
-            else if (lastKey.StartsWith("hku", StringComparison.OrdinalIgnoreCase))
+            else if (lastKey.ToLowerInvariant().StartsWith("hku"))
                 lastKey = "HKEY_USERS" + lastKey.Substring(3);
-            else if (lastKey.StartsWith("hkcr", StringComparison.OrdinalIgnoreCase))
+            else if (lastKey.ToLowerInvariant().StartsWith("hkcr"))
                 lastKey = "HKEY_CLASSES_ROOT" + lastKey.Substring(4);
-            else if (lastKey.StartsWith("hklm", StringComparison.OrdinalIgnoreCase))
+            else if (lastKey.ToLowerInvariant().StartsWith("hklm"))
                 lastKey = "HKEY_LOCAL_MACHINE" + lastKey.Substring(4);
 
             // Set the last opened key in regedit config. Note that if we are on 
@@ -421,7 +425,7 @@ namespace ProcessHacker.Common
             {
                 Program.StartProgramAdmin(
                     Environment.SystemDirectory + "\\..\\regedit.exe",
-                    string.Empty,
+                    "",
                     null,
                     ShowWindowType.Normal,
                     window != null ? window.Handle : IntPtr.Zero
@@ -450,6 +454,20 @@ namespace ProcessHacker.Common
         public static void SetShieldIcon(this Button button, bool visible)
         {
             Win32.SendMessage(button.Handle, WindowMessage.BcmSetShield, 0, visible ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Sets the theme of a control.
+        /// </summary>
+        /// <param name="control">The control to modify.</param>
+        /// <param name="theme">A name of a theme.</param>
+        public static void SetTheme(this Control control, string theme)
+        {
+            // Don't set on XP, doesn't look better than without SetWindowTheme.
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+            {
+                Win32.SetWindowTheme(control.Handle, theme, null);
+            }
         }
 
         /// <summary>

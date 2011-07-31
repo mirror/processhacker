@@ -151,43 +151,59 @@ namespace ProcessHacker.Native
             if (OSVersion.Architecture != OSArch.I386)
                 throw new NotSupportedException("KProcessHacker does not support 64-bit Windows.");
 
-            _fileHandle = new FileHandle(@"\Device\" + deviceName, 0, FileAccess.GenericRead | FileAccess.GenericWrite);
-
-            if (_fileHandle.LastError != null)
+            try
             {
-                if (_fileHandle.LastError.Status == NtStatus.NoSuchDevice || _fileHandle.LastError.Status == NtStatus.NoSuchFile || _fileHandle.LastError.Status == NtStatus.ObjectNameNotFound)
+                _fileHandle = new FileHandle(
+                    @"\Device\" + deviceName,
+                    0,
+                    FileAccess.GenericRead | FileAccess.GenericWrite
+                    );
+            }
+            catch (WindowsException ex)
+            {
+                if (
+                    ex.Status == NtStatus.NoSuchDevice ||
+                    ex.Status == NtStatus.NoSuchFile ||
+                    ex.Status == NtStatus.ObjectNameNotFound
+                    )
                 {
                     // Attempt to load the driver, then try again.
                     ServiceHandle shandle;
                     bool created = false;
 
-                    using (shandle = new ServiceHandle("KProcessHacker", ServiceAccess.Start))
+                    try
                     {
-                        if (shandle.LastError == null)
+                        using (shandle = new ServiceHandle("KProcessHacker", ServiceAccess.Start))
                         {
                             shandle.Start();
                         }
-                        else
+                    }
+                    catch
+                    {
+                        using (var scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
                         {
-                            using (ServiceManagerHandle scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
-                            {
-                                if (scm.LastError == null)
-                                {
-                                    shandle = scm.CreateService(deviceName, deviceName, ServiceType.KernelDriver, fileName);
-                                    shandle.Start();
-                                    created = true;
-                                }
-                            }
+                            shandle = scm.CreateService(
+                                deviceName,
+                                deviceName,
+                                ServiceType.KernelDriver,
+                                fileName
+                                );
+                            shandle.Start();
+                            created = true;
                         }
                     }
 
                     try
                     {
-                        _fileHandle = new FileHandle(@"\Device\" + deviceName, 0, FileAccess.GenericRead | FileAccess.GenericWrite);
+                        _fileHandle = new FileHandle(
+                            @"\Device\" + deviceName,
+                            0,
+                            FileAccess.GenericRead | FileAccess.GenericWrite
+                            );
                     }
                     finally
                     {
-                        if (shandle != IntPtr.Zero)
+                        if (shandle != null)
                         {
                             if (created)
                             {
@@ -198,6 +214,10 @@ namespace ProcessHacker.Native
                             shandle.Dispose();
                         }
                     }
+                }
+                else
+                {
+                    throw ex;
                 }
             }
 
@@ -213,8 +233,7 @@ namespace ProcessHacker.Native
                 _features = this.GetFeatures();
             }
             catch
-            {
-            }
+            { }
         }
 
         public string DeviceName

@@ -34,15 +34,16 @@ namespace Debugger.Core.Wrappers.CorPub
 		
 		public static ICorPublishProcess Wrap(Debugger.Interop.CorPub.ICorPublishProcess objectToWrap)
 		{
-		    if (objectToWrap != null)
+			if ((objectToWrap != null))
 			{
 				return new ICorPublishProcess(objectToWrap);
+			} else
+			{
+				return null;
 			}
-
-		    return null;
 		}
-
-	    public int ProcessId 
+		
+		public int ProcessId 
 		{
 			get 
 			{

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listGroups = new ExtendedListView();
+            this.listGroups = new System.Windows.Forms.ListView();
             this.columnGroupName = new System.Windows.Forms.ColumnHeader();
             this.columnFlags = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
@@ -73,7 +73,7 @@
 
         #endregion
 
-        private ExtendedListView listGroups;
+        private System.Windows.Forms.ListView listGroups;
         private System.Windows.Forms.ColumnHeader columnGroupName;
         private System.Windows.Forms.ColumnHeader columnFlags;
     }

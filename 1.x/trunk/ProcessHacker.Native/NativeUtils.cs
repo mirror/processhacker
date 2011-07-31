@@ -42,43 +42,59 @@ namespace ProcessHacker.Native
             ref StartupInfo startupInfo
             )
         {
+            UnicodeString imagePathNameStr;
+            UnicodeString dllPathStr;
+            UnicodeString currentDirectoryStr;
+            UnicodeString commandLineStr;
+            UnicodeString windowTitleStr;
+            UnicodeString desktopInfoStr;
+            UnicodeString shellInfoStr;
+            UnicodeString runtimeInfoStr;
+
             // Create the unicode strings.
 
-            UnicodeString imagePathNameStr = new UnicodeString(imagePathName);
-            UnicodeString dllPathStr = new UnicodeString(dllPath);
-            UnicodeString currentDirectoryStr = new UnicodeString(currentDirectory);
-            UnicodeString commandLineStr = new UnicodeString(commandLine);
-            UnicodeString windowTitleStr = new UnicodeString(windowTitle);
-            UnicodeString desktopInfoStr = new UnicodeString(desktopInfo);
-            UnicodeString shellInfoStr = new UnicodeString(shellInfo);
-            UnicodeString runtimeInfoStr = new UnicodeString(runtimeInfo);
+            imagePathNameStr = new UnicodeString(imagePathName);
+            dllPathStr = new UnicodeString(dllPath);
+            currentDirectoryStr = new UnicodeString(currentDirectory);
+            commandLineStr = new UnicodeString(commandLine);
+            windowTitleStr = new UnicodeString(windowTitle);
+            desktopInfoStr = new UnicodeString(desktopInfo);
+            shellInfoStr = new UnicodeString(shellInfo);
+            runtimeInfoStr = new UnicodeString(runtimeInfo);
 
             try
             {
+                NtStatus status;
                 IntPtr processParameters;
 
                 // Create the process parameter block.
 
-                Win32.RtlCreateProcessParameters(
+                status = Win32.RtlCreateProcessParameters(
                     out processParameters,
-                    imagePathNameStr,
-                    dllPathStr,
-                    currentDirectoryStr,
-                    commandLineStr,
+                    ref imagePathNameStr,
+                    ref dllPathStr,
+                    ref currentDirectoryStr,
+                    ref commandLineStr,
                     environment,
-                    windowTitleStr,
-                    desktopInfoStr,
-                    shellInfoStr,
-                    runtimeInfoStr
-                    ).ThrowIf();
+                    ref windowTitleStr,
+                    ref desktopInfoStr,
+                    ref shellInfoStr,
+                    ref runtimeInfoStr
+                    );
+
+                if (status >= NtStatus.Error)
+                    Win32.Throw(status);
 
                 try
                 {
                     // Allocate a new memory region in the remote process for 
                     // the environment block and copy it over.
 
-                    int environmentLength = environment.GetLength();
-                    IntPtr newEnvironment = processHandle.AllocateMemory(
+                    int environmentLength;
+                    IntPtr newEnvironment;
+
+                    environmentLength = environment.GetLength();
+                    newEnvironment = processHandle.AllocateMemory(
                         environmentLength,
                         MemoryProtection.ReadWrite
                         );

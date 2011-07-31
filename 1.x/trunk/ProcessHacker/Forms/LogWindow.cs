@@ -38,6 +38,8 @@ namespace ProcessHacker
             this.AddEscapeToClose();
             this.SetTopMost();
 
+            listLog.SetDoubleBuffered(true);
+            listLog.SetTheme("explorer");
             listLog.ContextMenu = listLog.GetCopyMenu(listLog_RetrieveVirtualItem);
             listLog.AddShortcuts(listLog_RetrieveVirtualItem);
 
@@ -46,7 +48,7 @@ namespace ProcessHacker
             if (listLog.SelectedIndices.Count == 0 && listLog.VirtualListSize > 0)
                 listLog.EnsureVisible(listLog.VirtualListSize - 1);
 
-            Program.HackerWindow.LogUpdated += this.HackerWindow_LogUpdated;
+            Program.HackerWindow.LogUpdated += new HackerWindow.LogUpdatedEventHandler(HackerWindow_LogUpdated);
 
             this.Size = Settings.Instance.LogWindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(
@@ -83,7 +85,7 @@ namespace ProcessHacker
 
             Settings.Instance.LogWindowAutoScroll = checkAutoscroll.Checked;
             
-            Program.HackerWindow.LogUpdated -= this.HackerWindow_LogUpdated;
+            Program.HackerWindow.LogUpdated -= new HackerWindow.LogUpdatedEventHandler(HackerWindow_LogUpdated);
         }
 
         private void buttonClose_Click(object sender, EventArgs e)
@@ -155,10 +157,9 @@ namespace ProcessHacker
 
         private void listLog_DoubleClick(object sender, EventArgs e)
         {
-            using (InformationBox info = new InformationBox(Program.HackerWindow.Log[listLog.SelectedIndices[0]].Value))
-            {
-                info.ShowDialog();
-            }
+            InformationBox info = new InformationBox(Program.HackerWindow.Log[listLog.SelectedIndices[0]].Value);
+
+            info.ShowDialog();
         }
     }
 }

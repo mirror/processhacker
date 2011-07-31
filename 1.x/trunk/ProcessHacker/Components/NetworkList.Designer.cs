@@ -34,7 +34,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NetworkList));
-            this.listNetwork = new ExtendedListView();
+            this.listNetwork = new System.Windows.Forms.ListView();
             this.columnProcess = new System.Windows.Forms.ColumnHeader();
             this.columnLocal = new System.Windows.Forms.ColumnHeader();
             this.columnLocalPort = new System.Windows.Forms.ColumnHeader();
@@ -124,7 +124,7 @@
 
         #endregion
 
-        private ExtendedListView listNetwork;
+        private System.Windows.Forms.ListView listNetwork;
         private System.Windows.Forms.ColumnHeader columnLocal;
         private System.Windows.Forms.ColumnHeader columnRemote;
         private System.Windows.Forms.ColumnHeader columnRemotePort;

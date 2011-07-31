@@ -35,16 +35,16 @@ namespace ProcessHacker.Native
     /// </remarks>
     public class WindowsException : Exception
     {
-        private string _message;
+        private bool _isNtStatus = false;
+        private Win32Error _errorCode = 0;
+        private NtStatus _status;
+        private string _message = null;
 
         /// <summary>
         /// Creates an exception with no error.
         /// </summary>
         public WindowsException()
-        {
-            this.ErrorCode = 0;
-            this.IsNtStatus = false;
-        }
+        { }
 
         /// <summary>
         /// Creates an exception from a Win32 error code.
@@ -52,8 +52,7 @@ namespace ProcessHacker.Native
         /// <param name="errorCode">The Win32 error code.</param>
         public WindowsException(Win32Error errorCode)
         {
-            this.IsNtStatus = false;
-            this.ErrorCode = errorCode;
+            _errorCode = errorCode;
         }
 
         /// <summary>
@@ -62,25 +61,34 @@ namespace ProcessHacker.Native
         /// <param name="status">The NT status value.</param>
         public WindowsException(NtStatus status)
         {
-            this.Status = status;
-            this.ErrorCode = status.ToDosError();
-            this.IsNtStatus = true;
+            _status = status;
+            _errorCode = status.ToDosError();
+            _isNtStatus = true;
         }
 
         /// <summary>
         /// Gets whether the NT status value is valid.
         /// </summary>
-        public bool IsNtStatus { get; private set; }
+        public bool IsNtStatus
+        {
+            get { return _isNtStatus; }
+        }
 
         /// <summary>
         /// Gets a Win32 error code which represents the exception.
         /// </summary>
-        public Win32Error ErrorCode { get; private set; }
+        public Win32Error ErrorCode
+        {
+            get { return _errorCode; }
+        }
 
         /// <summary>
         /// Gets a NT status value which represents the exception.
         /// </summary>
-        public NtStatus Status { get; private set; }
+        public NtStatus Status
+        {
+            get { return _status; }
+        }
 
         /// <summary>
         /// Gets a message describing the exception.
@@ -98,21 +106,21 @@ namespace ProcessHacker.Native
                     // prefer the shorter Win32 error message.
 
                     if (
-                        this.IsNtStatus &&
-                        this.Status != NtStatus.AccessDenied &&
-                        this.Status != NtStatus.AccessViolation
+                        _isNtStatus &&
+                        _status != NtStatus.AccessDenied &&
+                        _status != NtStatus.AccessViolation
                         )
                     {
-                        string message = this.Status.GetMessage();
+                        string message = _status.GetMessage();
 
-                        if (string.IsNullOrEmpty(message))
-                            message = "Could not retrieve the error message (0x" + ((int)this.Status).ToString("x") + ").";
+                        if (message == null)
+                            message = "Could not retrieve the error message (0x" + ((int)_status).ToString("x") + ").";
 
                         _message = message;
                     }
                     else
                     {
-                        _message = this.ErrorCode.GetMessage();
+                        _message = _errorCode.GetMessage();
                     }
                 }
 

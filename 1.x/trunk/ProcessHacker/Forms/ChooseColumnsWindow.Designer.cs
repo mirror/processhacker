@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listColumns = new ProcessHacker.Components.ExtendedListView();
+            this.listColumns = new System.Windows.Forms.ListView();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOK = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -97,7 +97,7 @@
 
         #endregion
 
-        private ProcessHacker.Components.ExtendedListView listColumns;
+        private System.Windows.Forms.ListView listColumns;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonOK;
 

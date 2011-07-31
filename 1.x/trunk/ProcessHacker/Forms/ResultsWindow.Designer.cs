@@ -43,7 +43,7 @@ namespace ProcessHacker
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ResultsWindow));
-            this.listResults = new ProcessHacker.Components.ExtendedListView();
+            this.listResults = new System.Windows.Forms.ListView();
             this.columnAddress = new System.Windows.Forms.ColumnHeader();
             this.columnOffset = new System.Windows.Forms.ColumnHeader();
             this.columnLength = new System.Windows.Forms.ColumnHeader();
@@ -216,7 +216,7 @@ namespace ProcessHacker
 
         #endregion
 
-        private ProcessHacker.Components.ExtendedListView listResults;
+        private System.Windows.Forms.ListView listResults;
         private System.Windows.Forms.ColumnHeader columnAddress;
         private System.Windows.Forms.ColumnHeader columnOffset;
         private System.Windows.Forms.ColumnHeader columnLength;

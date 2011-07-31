@@ -37,6 +37,13 @@ namespace ProcessHacker
     {
         public static void Run(IDictionary<string, string> args)
         {
+            try
+            {
+                ThemingScope.Activate();
+            }
+            catch
+            { }
+
             if (!args.ContainsKey("-type"))
                 throw new Exception("-type switch required.");
 

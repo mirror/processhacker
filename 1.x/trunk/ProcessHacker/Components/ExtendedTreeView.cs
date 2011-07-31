@@ -21,6 +21,8 @@
  * 
  */
 
+using System;
+using System.Runtime.InteropServices;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
@@ -38,13 +40,13 @@ namespace ProcessHacker.Components
 
         protected override void OnHandleCreated(System.EventArgs e)
         {
-            base.OnHandleCreated(e);
-
             if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
             {
                 Win32.SendMessage(this.Handle, (WindowMessage)TVM_SETEXTENDEDSTYLE, 0, TVS_EX_FADEINOUTEXPANDOS);
-                Win32.SetWindowTheme(this.Handle, "explorer", string.Empty);
+                ProcessHacker.Common.PhUtils.SetTheme(this, "explorer");
             }
+
+            base.OnHandleCreated(e);
         }
     }
 }

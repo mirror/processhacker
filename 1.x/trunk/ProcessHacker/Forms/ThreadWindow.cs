@@ -34,11 +34,11 @@ namespace ProcessHacker
 {
     public partial class ThreadWindow : Form
     {
-        private readonly int _pid;
-        private readonly int _tid;
-        private readonly ProcessHandle _phandle;
-        private readonly bool _processHandleOwned = true;
-        private readonly ThreadHandle _thandle;
+        private int _pid;
+        private int _tid;
+        private ProcessHandle _phandle;
+        private bool _processHandleOwned = true;
+        private ThreadHandle _thandle;
         private SymbolProvider _symbols;
 
         public const string DisplayFormat = "0x{0:x}";
@@ -62,6 +62,11 @@ namespace ProcessHacker
 
             this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
                 ") - Thread " + _tid.ToString();
+
+            PropertyInfo property = typeof(ListView).GetProperty("DoubleBuffered",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+
+            property.SetValue(listViewCallStack, true, null);
 
             listViewCallStack.ContextMenu = listViewCallStack.GetCopyMenu();
 
@@ -134,6 +139,7 @@ namespace ProcessHacker
 
         private void ThreadWindow_Load(object sender, EventArgs e)
         {
+            listViewCallStack.SetTheme("explorer");
             listViewCallStack.AddShortcuts();
 
             this.Size = Settings.Instance.ThreadWindowSize;
@@ -183,7 +189,7 @@ namespace ProcessHacker
 
                     _thandle.WalkStack(_phandle, this.WalkStackCallback);
 
-                    if (OSVersion.Architecture == OSArch.Amd64 && _phandle.IsWow64)
+                    if (OSVersion.Architecture == OSArch.Amd64 && _phandle.IsWow64())
                     {
                         _thandle.WalkStack(_phandle, this.WalkStackCallback, OSArch.I386);
                     }
@@ -216,10 +222,12 @@ namespace ProcessHacker
 
                     try
                     {
-                        ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[]
-                        {
-                            Utils.FormatAddress(address), _symbols.GetSymbolFromAddress(address)
-                        }));
+                        ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(
+                            new string[]
+                                {
+                                    Utils.FormatAddress(address),
+                                    _symbols.GetSymbolFromAddress(address)
+                                }));
 
                         newItem.Tag = address;
                     }
@@ -248,10 +256,12 @@ namespace ProcessHacker
 
             try
             {
-                ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[]
-                {
-                    Utils.FormatAddress(address), _symbols.GetSymbolFromAddress(address)
-                }));
+                ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(
+                    new string[]
+                    {
+                        Utils.FormatAddress(address),
+                        _symbols.GetSymbolFromAddress(address)
+                    }));
 
                 newItem.Tag = address;
 
@@ -263,19 +273,18 @@ namespace ProcessHacker
                     foreach (IntPtr arg in stackFrame.Params)
                         newItem.ToolTipText += Utils.FormatAddress(arg) + ", ";
 
-                    if (newItem.ToolTipText.EndsWith(", ", StringComparison.OrdinalIgnoreCase))
+                    if (newItem.ToolTipText.EndsWith(", "))
                         newItem.ToolTipText = newItem.ToolTipText.Remove(newItem.ToolTipText.Length - 2);
 
                     try
                     {
                         string fileAndLine = _symbols.GetLineFromAddress(address);
 
-                        if (!string.IsNullOrEmpty(fileAndLine))
+                        if (fileAndLine != null)
                             newItem.ToolTipText += "\nFile: " + fileAndLine;
                     }
                     catch
-                    {
-                    }
+                    { }
                 }
                 catch (Exception ex2)
                 {
@@ -286,10 +295,10 @@ namespace ProcessHacker
             {
                 Logging.Log(ex);
 
-                ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[]
-                {
-                    Utils.FormatAddress(address), "???"
-                }));
+                ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
+                            Utils.FormatAddress(address),
+                            "???"
+                        }));
 
                 newItem.Tag = address;
             }
@@ -314,7 +323,7 @@ namespace ProcessHacker
             }
             else
             {
-                fileModule.Text = string.Empty;
+                fileModule.Text = "";
                 fileModule.Enabled = false;
             }
         }

@@ -47,20 +47,21 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A handle to the timer.</returns>
         public static TimerHandle Create(TimerAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, TimerType type)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+            IntPtr handle;
 
             try
             {
-                IntPtr handle;
-
-                Win32.NtCreateTimer(out handle, access, ref oa, type).ThrowIf();
-
-                return new TimerHandle(handle, true);
+                if ((status = Win32.NtCreateTimer(out handle, access, ref oa, type)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
                 oa.Dispose();
             }
+
+            return new TimerHandle(handle, true);
         }
 
         public static TimerHandle FromHandle(IntPtr handle)
@@ -76,14 +77,21 @@ namespace ProcessHacker.Native.Objects
 
         public TimerHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, TimerAccess access)
         {
-            using (ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory))
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+            IntPtr handle;
+
+            try
             {
-                IntPtr handle;
-
-                Win32.NtOpenTimer(out handle, access, oa).ThrowIf();
-
-                this.Handle = handle;
+                if ((status = Win32.NtOpenTimer(out handle, access, ref oa)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
+            finally
+            {
+                oa.Dispose();
+            }
+
+            this.Handle = handle;
         }
 
         public TimerHandle(string name, TimerAccess access)
@@ -96,9 +104,11 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The state of the timer (whether it is signaled).</returns>
         public bool Cancel()
         {
+            NtStatus status;
             bool currentState;
 
-            Win32.NtCancelTimer(this, out currentState).ThrowIf();
+            if ((status = Win32.NtCancelTimer(this, out currentState)) >= NtStatus.Error)
+                Win32.Throw(status);
 
             return currentState;
         }
@@ -108,10 +118,13 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public TimerBasicInformation GetBasicInformation()
         {
+            NtStatus status;
             TimerBasicInformation tbi;
             int retLength;
 
-            Win32.NtQueryTimer(this, TimerInformationClass.TimerBasicInformation, out tbi, Marshal.SizeOf(typeof(TimerBasicInformation)), out retLength).ThrowIf();
+            if ((status = Win32.NtQueryTimer(this, TimerInformationClass.TimerBasicInformation,
+                out tbi, Marshal.SizeOf(typeof(TimerBasicInformation)), out retLength)) >= NtStatus.Error)
+                Win32.Throw(status);
 
             return tbi;
         }
@@ -193,13 +206,23 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The state of the timer (whether it is signaled).</returns>
         public bool Set(long dueTime, bool relative, TimerApcRoutine routine, IntPtr context, bool resume, int period)
         {
+            NtStatus status;
             long realDueTime = relative ? -dueTime : dueTime;
             bool previousState;
 
             // Keep the APC routine alive.
             _routine = routine;
 
-            Win32.NtSetTimer(this, ref realDueTime, routine, context, resume, period, out previousState).ThrowIf();
+            if ((status = Win32.NtSetTimer(
+                this,
+                ref realDueTime,
+                routine,
+                context,
+                resume,
+                period,
+                out previousState
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             return previousState;
         }

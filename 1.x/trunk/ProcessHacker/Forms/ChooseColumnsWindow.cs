@@ -102,9 +102,11 @@ namespace ProcessHacker
         private ChooseColumnsWindow()
         {
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
+
+            listColumns.SetDoubleBuffered(true);
+            listColumns.SetTheme("explorer");
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)

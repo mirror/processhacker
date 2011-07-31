@@ -96,25 +96,25 @@ namespace ProcessHacker
             {
                 if (!Dictionary.ContainsKey(s))
                 {
-                    ServiceItem item = new ServiceItem
-                    {
-                        RunId = this.RunCount, Status = newdictionary[s]
-                    };
+                    ServiceItem item = new ServiceItem();
 
-                    using (ServiceHandle shandle = new ServiceHandle(s, ServiceAccess.QueryConfig))
+                    item.RunId = this.RunCount;
+                    item.Status = newdictionary[s];
+
+                    try
                     {
-                        if (shandle.LastError == null)
-                        {
-                            item.Config = shandle.Config;
-                        }
+                        using (var shandle = new ServiceHandle(s, ServiceAccess.QueryConfig))
+                            item.Config = shandle.GetConfig();
                     }
+                    catch
+                    { }
 
                     this.OnDictionaryAdded(item);
                     Dictionary.Add(s, item);
                 }
             }
 
-            Dictionary<string, ServiceItem> toModify = new Dictionary<string, ServiceItem>(StringComparer.OrdinalIgnoreCase);
+            var toModify = new Dictionary<string, ServiceItem>();
 
             // check for modified services
             foreach (ServiceItem service in Dictionary.Values)

@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.listAppDomains = new ExtendedListView();
+            this.listAppDomains = new System.Windows.Forms.ListView();
             this.label2 = new System.Windows.Forms.Label();
             this.comboCategories = new System.Windows.Forms.ComboBox();
-            this.listValues = new ExtendedListView();
+            this.listValues = new System.Windows.Forms.ListView();
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnValue = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
@@ -130,10 +130,10 @@
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private ExtendedListView listAppDomains;
+        private System.Windows.Forms.ListView listAppDomains;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox comboCategories;
-        private ExtendedListView listValues;
+        private System.Windows.Forms.ListView listValues;
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnValue;
     }

@@ -72,7 +72,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.tabGroups = new System.Windows.Forms.TabPage();
             this.tabPrivileges = new System.Windows.Forms.TabPage();
-            this.listPrivileges = new ExtendedListView();
+            this.listPrivileges = new System.Windows.Forms.ListView();
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnStatus = new System.Windows.Forms.ColumnHeader();
             this.columnDesc = new System.Windows.Forms.ColumnHeader();
@@ -612,7 +612,7 @@
         private System.Windows.Forms.TextBox textUser;
         private System.Windows.Forms.TabPage tabGroups;
         private System.Windows.Forms.TabPage tabPrivileges;
-        private ExtendedListView listPrivileges;
+        private System.Windows.Forms.ListView listPrivileges;
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnStatus;
         private System.Windows.Forms.ColumnHeader columnDesc;

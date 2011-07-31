@@ -140,7 +140,7 @@ namespace ProcessHacker
         {
             if (form.InvokeRequired)
             {
-                form.BeginInvoke(new Action(() => PromptWithUpdate(form, bestUpdate, currentVersion, interactive)));
+                form.BeginInvoke(new MethodInvoker(() => PromptWithUpdate(form, bestUpdate, currentVersion, interactive)));
                 return;
             }
 
@@ -213,7 +213,7 @@ namespace ProcessHacker
         {
             if (form.InvokeRequired)  
             {
-                form.BeginInvoke(new Action(() => DownloadUpdate(form, updateItem)));
+                form.BeginInvoke(new MethodInvoker(() => DownloadUpdate(form, updateItem)));
                 return;
             }
 

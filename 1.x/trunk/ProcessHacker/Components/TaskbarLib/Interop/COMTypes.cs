@@ -24,52 +24,68 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-
+using System.Runtime.CompilerServices;
 using ProcessHacker.Native.Api;
 
 namespace TaskbarLib.Interop
 {
     #region "Interface Classes"
 
-    [ComImport, Guid("86C14003-4D6B-4EF3-A7B4-0506663B2E68"), ClassInterface(ClassInterfaceType.None)]
+    [ComImportAttribute()]
+    [GuidAttribute("86C14003-4D6B-4EF3-A7B4-0506663B2E68")]
+    [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CApplicationDestinations { }
 
-    [ComImport, Guid("86BEC222-30F2-47E0-9F25-60D11CD75C28"), ClassInterface(ClassInterfaceType.None)]
+    [ComImportAttribute()]
+    [GuidAttribute("86BEC222-30F2-47E0-9F25-60D11CD75C28")]
+    [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CApplicationDocumentLists { }
 
-    [ComImport, Guid("56FDF344-FD6D-11d0-958A-006097C9A090"), ClassInterface(ClassInterfaceType.None)]
+    [ComImportAttribute()]
+    [GuidAttribute("56FDF344-FD6D-11d0-958A-006097C9A090")]
+    [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CTaskbarList { }
 
-    [ComImport, GuidAttribute("00021401-0000-0000-C000-000000000046"), ClassInterfaceAttribute(ClassInterfaceType.None)]
+    [ComImportAttribute()]
+    [GuidAttribute("00021401-0000-0000-C000-000000000046")]
+    [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CShellLink { }
 
-    [ComImport, GuidAttribute("77F10CF0-3DB5-4966-B520-B7C54FD35ED6"), ClassInterfaceAttribute(ClassInterfaceType.None)]
+    [ComImportAttribute()]
+    [GuidAttribute("77F10CF0-3DB5-4966-B520-B7C54FD35ED6")]
+    [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CDestinationList { }
 
-    [ComImport, GuidAttribute("2D3468C1-36A7-43B6-AC24-D3F02FD9607A"), ClassInterfaceAttribute(ClassInterfaceType.None)]
+    [ComImportAttribute()]
+    [GuidAttribute("2D3468C1-36A7-43B6-AC24-D3F02FD9607A")]
+    [ClassInterfaceAttribute(ClassInterfaceType.None)]
     internal class CEnumerableObjectCollection { }
 
     #endregion
 
     #region "Interfaces"
  
-    [ComImport, GuidAttribute("92CA9DCD-5622-4BBA-A805-5E9F541BD8C9"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImportAttribute()]
+    [GuidAttribute("92CA9DCD-5622-4BBA-A805-5E9F541BD8C9")]
+    [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IObjectArray
     {
         [PreserveSig]
         HResult GetCount(out uint cObjects);
         [PreserveSig]
-        HResult GetAt(uint iIndex, ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppvObject);
+        HResult GetAt(uint iIndex, ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
     }
 
-    [ComImport, Guid(SafeNativeMethods.IID_IObjectCollection), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImportAttribute()]
+    [GuidAttribute(SafeNativeMethods.IID_IObjectCollection)]
+    [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IObjectCollection
     {
         // IObjectArray  
         [PreserveSig]
         HResult GetCount(out uint cObjects);
         [PreserveSig]
-        HResult GetAt(uint iIndex, ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppvObject);
+        HResult GetAt(uint iIndex, ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
 
         // IObjectCollection
         [PreserveSig]
@@ -82,7 +98,9 @@ namespace TaskbarLib.Interop
         HResult Clear();
     }
 
-    [ComImport, Guid("886d8eeb-8cf2-4446-8d02-cdba1dbdcf99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImportAttribute()]
+    [GuidAttribute("886d8eeb-8cf2-4446-8d02-cdba1dbdcf99")]
+    [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IPropertyStore
     {
         [PreserveSig]
@@ -90,20 +108,22 @@ namespace TaskbarLib.Interop
         [PreserveSig]
         HResult GetAt(UInt32 iProp, [MarshalAs(UnmanagedType.Struct)] out PropertyKey pkey);
         [PreserveSig]
-        HResult GetValue([In, MarshalAs(UnmanagedType.Struct)] ref PropertyKey pkey, [Out, MarshalAs(UnmanagedType.Struct)] out PropVariant pv);
+        HResult GetValue([In, MarshalAs(UnmanagedType.Struct)] ref PropertyKey pkey, [Out(), MarshalAs(UnmanagedType.Struct)] out PropVariant pv);
         [PreserveSig]
         HResult SetValue([In, MarshalAs(UnmanagedType.Struct)] ref PropertyKey pkey, [In, MarshalAs(UnmanagedType.Struct)] ref PropVariant pv);
         [PreserveSig]
         HResult Commit();
     }
 
-    [ComImport, Guid("6332DEBF-87B5-4670-90C0-5E57B408A49E"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImportAttribute()]
+    [GuidAttribute("6332DEBF-87B5-4670-90C0-5E57B408A49E")]
+    [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface ICustomDestinationList
     {
         [PreserveSig]
         HResult SetAppID([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
         [PreserveSig]
-        HResult BeginList(out uint cMaxSlots, ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppvObject);
+        HResult BeginList(out uint cMaxSlots, ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
         [PreserveSig]
         HResult AppendCategory([MarshalAs(UnmanagedType.LPWStr)] string pszCategory, [MarshalAs(UnmanagedType.Interface)] IObjectArray poa);
         HResult AppendKnownCategory([MarshalAs(UnmanagedType.I4)] KnownDestCategory category);
@@ -112,14 +132,16 @@ namespace TaskbarLib.Interop
         [PreserveSig]
         HResult CommitList();
         [PreserveSig]
-        HResult GetRemovedDestinations(ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppvObject);
+        HResult GetRemovedDestinations(ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
         [PreserveSig]
         HResult DeleteList([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
         [PreserveSig]
         HResult AbortList();
     }
 
-    [ComImport, Guid("12337D35-94C6-48A0-BCE7-6A9C69D4D600"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImportAttribute()]
+    [GuidAttribute("12337D35-94C6-48A0-BCE7-6A9C69D4D600")]
+    [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IApplicationDestinations
     {
         [PreserveSig]
@@ -130,16 +152,20 @@ namespace TaskbarLib.Interop
         HResult RemoveAllDestinations();
     }
 
-    [ComImport, Guid("3C594F9F-9F30-47A1-979A-C9E83D3D0A06"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImportAttribute()]
+    [GuidAttribute("3C594F9F-9F30-47A1-979A-C9E83D3D0A06")]
+    [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IApplicationDocumentLists
     {
         [PreserveSig]
         HResult SetAppID([MarshalAs(UnmanagedType.LPWStr)] string pszAppID);
         [PreserveSig]
-        HResult GetList([MarshalAs(UnmanagedType.I4)] AppDocListType listtype, uint cItemsDesired, ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppvObject);
+        HResult GetList([MarshalAs(UnmanagedType.I4)] AppDocListType listtype, uint cItemsDesired, ref Guid riid, [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject);
     }
 
-    [ComImport, Guid("ea1afb91-9e28-4b86-90e9-9e9f8a5eefaf"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImportAttribute()]
+    [GuidAttribute("ea1afb91-9e28-4b86-90e9-9e9f8a5eefaf")]
+    [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface ITaskbarList3
     {
         // ITaskbarList
@@ -185,12 +211,14 @@ namespace TaskbarLib.Interop
         HResult SetThumbnailClip(IntPtr hwnd, ref Rect prcClip);
     }
 
-    [ComImport, Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImportAttribute()]
+    [GuidAttribute("43826D1E-E718-42EE-BC55-A1E261C37BFE")]
+    [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IShellItem
     {
         //[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [PreserveSig]
-        HResult BindToHandler([In, MarshalAs(UnmanagedType.Interface)] IntPtr pbc, [In] Guid bhid, [In] Guid riid, out IntPtr ppv);
+        HResult BindToHandler([In, MarshalAs(UnmanagedType.Interface)] IntPtr pbc, [In] ref Guid bhid, [In] ref Guid riid, out IntPtr ppv);
 
         //[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [PreserveSig]
@@ -209,25 +237,27 @@ namespace TaskbarLib.Interop
         HResult Compare([In, MarshalAs(UnmanagedType.Interface)] IShellItem psi, [In] uint hint, out int piOrder);
     }
 
-    [ComImport, Guid("000214F9-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImportAttribute()]
+    [GuidAttribute("000214F9-0000-0000-C000-000000000046")]
+    [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IShellLinkW
     {
         [PreserveSig]
-        HResult GetPath([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile, int cchMaxPath, IntPtr pfd, uint fFlags);
+        HResult GetPath([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile, int cchMaxPath, IntPtr pfd, uint fFlags);
         [PreserveSig]
         HResult GetIDList(out IntPtr ppidl);
         [PreserveSig]
         HResult SetIDList(IntPtr pidl);
         [PreserveSig]
-        HResult GetDescription([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile, int cchMaxName);
+        HResult GetDescription([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile, int cchMaxName);
         [PreserveSig]
         HResult SetDescription([MarshalAs(UnmanagedType.LPWStr)] string pszName);
         [PreserveSig]
-        HResult GetWorkingDirectory([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszDir, int cchMaxPath);
+        HResult GetWorkingDirectory([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszDir, int cchMaxPath);
         [PreserveSig]
         HResult SetWorkingDirectory([MarshalAs(UnmanagedType.LPWStr)] string pszDir);
         [PreserveSig]
-        HResult GetArguments([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszArgs, int cchMaxPath);
+        HResult GetArguments([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszArgs, int cchMaxPath);
         [PreserveSig]
         HResult SetArguments([MarshalAs(UnmanagedType.LPWStr)] string pszArgs);
         [PreserveSig]
@@ -239,7 +269,7 @@ namespace TaskbarLib.Interop
         [PreserveSig]
         HResult SetShowCmd(uint iShowCmd);
         [PreserveSig]
-        HResult GetIconLocation([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszIconPath, int cchIconPath, out int iIcon);
+        HResult GetIconLocation([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszIconPath, int cchIconPath, out int iIcon);
         [PreserveSig]
         HResult SetIconLocation([MarshalAs(UnmanagedType.LPWStr)] string pszIconPath, int iIcon);
         [PreserveSig]

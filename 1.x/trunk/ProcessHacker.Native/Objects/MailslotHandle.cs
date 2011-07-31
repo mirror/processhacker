@@ -66,12 +66,12 @@ namespace ProcessHacker.Native.Objects
                 if ((status = Win32.NtCreateMailslotFile(
                     out handle,
                     access,
-                    oa,
+                    ref oa,
                     out isb,
                     createOptions,
                     quota,
                     maxMessageSize,
-                    readTimeout
+                    ref readTimeout
                     )) >= NtStatus.Error)
                     Win32.Throw(status);
             }

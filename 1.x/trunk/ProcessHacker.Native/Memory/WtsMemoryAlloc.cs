@@ -54,5 +54,14 @@ namespace ProcessHacker.Native
         {
             throw new NotSupportedException();
         }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int Size
+        {
+            get
+            {
+                throw new NotSupportedException();
+            }
+        }
     }
 }

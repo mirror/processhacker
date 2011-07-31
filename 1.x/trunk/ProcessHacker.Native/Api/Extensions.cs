@@ -21,7 +21,7 @@
  */
 
 using System;
-
+using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -30,7 +30,7 @@ namespace ProcessHacker.Native
 {
     public static class NativeExtensions
     {
-        private static bool NphNotAvailable;
+        private static bool NphNotAvailable = false;
 
         public static ObjectBasicInformation GetBasicInfo(this SystemHandleEntry thisHandle)
         {
@@ -42,6 +42,7 @@ namespace ProcessHacker.Native
 
         public static ObjectBasicInformation GetBasicInfo(this SystemHandleEntry thisHandle, ProcessHandle process)
         {
+            NtStatus status = NtStatus.Success;
             IntPtr handle = new IntPtr(thisHandle.Handle);
             IntPtr objectHandleI;
             GenericHandle objectHandle = null;
@@ -50,23 +51,30 @@ namespace ProcessHacker.Native
 
             if (KProcessHacker.Instance == null)
             {
-                Win32.NtDuplicateObject(process, handle, ProcessHandle.Current, out objectHandleI, 0, 0, 0).ThrowIf();
+                if ((status = Win32.NtDuplicateObject(
+                    process, handle, ProcessHandle.Current, out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
+                    Win32.Throw();
 
                 objectHandle = new GenericHandle(objectHandleI);
             }
 
             try
             {
-                using (MemoryAlloc data = new MemoryAlloc(ObjectBasicInformation.SizeOf))
+                using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(ObjectBasicInformation))))
                 {
                     if (KProcessHacker.Instance != null)
                     {
-                        KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectBasicInformation, data, data.Size, out retLength, out baseAddress);
+                        KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectBasicInformation,
+                            data, data.Size, out retLength, out baseAddress);
                     }
                     else
                     {
-                        Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectBasicInformation, data, data.Size, out retLength).ThrowIf();
+                        status = Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectBasicInformation,
+                            data, data.Size, out retLength);
                     }
+
+                    if (status >= NtStatus.Error)
+                        Win32.Throw(status);
 
                     return data.ReadStruct<ObjectBasicInformation>();
                 }
@@ -117,13 +125,8 @@ namespace ProcessHacker.Native
             }
             else
             {
-                Win32.NtQueryObject(
-                    dupHandle, 
-                    ObjectInformationClass.ObjectNameInformation,
-                    IntPtr.Zero, 
-                    0, 
-                    out retLength
-                    );
+                Win32.NtQueryObject(dupHandle, ObjectInformationClass.ObjectNameInformation,
+                    IntPtr.Zero, 0, out retLength);
             }
 
             if (retLength > 0)

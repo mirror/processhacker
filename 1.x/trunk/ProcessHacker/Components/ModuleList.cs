@@ -91,6 +91,20 @@ namespace ProcessHacker.Components
 
         #region Properties
 
+        public new bool DoubleBuffered
+        {
+            get
+            {
+                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listModules, null);
+            }
+            set
+            {
+                typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listModules, value, null);
+            }
+        }
+
         public override bool Focused
         {
             get
@@ -111,7 +125,7 @@ namespace ProcessHacker.Components
             set { listModules.ContextMenuStrip = value; }
         }
 
-        public ExtendedListView List
+        public ListView List
         {
             get { return listModules; }
         }
@@ -228,7 +242,7 @@ namespace ProcessHacker.Components
             {
                 if (_needsAdd.Count > 0)
                 {
-                    this.BeginInvoke(new Action(() =>
+                    this.BeginInvoke(new MethodInvoker(() =>
                     {
                         lock (_needsAdd)
                         {
@@ -296,7 +310,10 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryRemoved(ModuleItem item)
         {
-            this.BeginInvoke(new Action(() => this.listModules.Items[item.BaseAddress.ToString()].Remove()));
+            this.BeginInvoke(new MethodInvoker(() =>
+            {
+                listModules.Items[item.BaseAddress.ToString()].Remove();
+            }));
         }
 
         public void SaveSettings()

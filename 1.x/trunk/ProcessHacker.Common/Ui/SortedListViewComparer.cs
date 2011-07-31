@@ -59,11 +59,11 @@ namespace ProcessHacker.Common.Ui
                 sx = x.SubItems[column].Text.Replace(",", "");
                 sy = y.SubItems[column].Text.Replace(",", "");
 
-                if (!long.TryParse(sx.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? sx.Substring(2) : sx,
-                    sx.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? NumberStyles.AllowHexSpecifier : 0,
+                if (!long.TryParse(sx.StartsWith("0x") ? sx.Substring(2) : sx,
+                    sx.StartsWith("0x") ? NumberStyles.AllowHexSpecifier : 0,
                     null, out ix) ||
-                    !long.TryParse(sy.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? sy.Substring(2) : sy,
-                    sy.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? NumberStyles.AllowHexSpecifier : 0,
+                    !long.TryParse(sy.StartsWith("0x") ? sy.Substring(2) : sy,
+                    sy.StartsWith("0x") ? NumberStyles.AllowHexSpecifier : 0,
                     null, out iy))
                 {
                     cx = x.SubItems[column].Text;
@@ -79,17 +79,17 @@ namespace ProcessHacker.Common.Ui
             }
         }
 
-        private readonly ListView _list;
-        private bool _virtualMode;
+        private ListView _list;
+        private bool _virtualMode = false;
         private RetrieveVirtualItemEventHandler _retrieveVirtualItem;
-        private bool _triState;
+        private bool _triState = false;
         private ISortedListViewComparer _comparer;
         private ISortedListViewComparer _triStateComparer;
         private int _sortColumn;
         private SortOrder _sortOrder;
-        private readonly Dictionary<int, Comparison<ListViewItem>> _customSorters =
+        private Dictionary<int, Comparison<ListViewItem>> _customSorters =
             new Dictionary<int, Comparison<ListViewItem>>();
-        private readonly List<int> _columnSortOrder = new List<int>();
+        private List<int> _columnSortOrder = new List<int>();
 
         /// <summary>
         /// Creates a new sorted list manager.
@@ -98,7 +98,7 @@ namespace ProcessHacker.Common.Ui
         public SortedListViewComparer(ListView list)
         {
             _list = list;
-            _list.ColumnClick += this.list_ColumnClick;
+            _list.ColumnClick += new ColumnClickEventHandler(list_ColumnClick);
             _sortColumn = 0;
             _sortOrder = SortOrder.Ascending;
             _comparer = new DefaultComparer(this);

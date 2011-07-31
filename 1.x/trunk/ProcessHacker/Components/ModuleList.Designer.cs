@@ -33,7 +33,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.listModules = new ExtendedListView();
+            this.listModules = new System.Windows.Forms.ListView();
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnBaseAddress = new System.Windows.Forms.ColumnHeader();
             this.columnSize = new System.Windows.Forms.ColumnHeader();
@@ -216,7 +216,7 @@
 
         #endregion
 
-        private ExtendedListView listModules;
+        private System.Windows.Forms.ListView listModules;
         private System.Windows.Forms.ColumnHeader columnBaseAddress;
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnSize;

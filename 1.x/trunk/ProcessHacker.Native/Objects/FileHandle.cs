@@ -38,8 +38,6 @@ namespace ProcessHacker.Native.Objects
         public delegate bool EnumFilesDelegate(FileEntry file);
         public delegate bool EnumStreamsDelegate(FileStreamEntry stream);
 
-        public WindowsException LastError { get; private set; }
-
         public static FileHandle FromFileStream(System.IO.FileStream fileStream)
         {
             return FromHandle(fileStream.SafeFileHandle.DangerousGetHandle());
@@ -128,13 +126,27 @@ namespace ProcessHacker.Native.Objects
             out FileIoStatus ioStatus
             )
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
             IoStatusBlock isb;
             IntPtr handle;
 
             try
             {
-                Win32.NtCreateFile(out handle, access, oa, out isb, ref allocationSize, attributes, shareMode, creationDisposition, createOptions, IntPtr.Zero, 0).ThrowIf();
+                if ((status = Win32.NtCreateFile(
+                    out handle,
+                    access,
+                    ref oa,
+                    out isb,
+                    ref allocationSize,
+                    attributes,
+                    shareMode,
+                    creationDisposition,
+                    createOptions,
+                    IntPtr.Zero,
+                    0
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
 
                 ioStatus = (FileIoStatus)isb.Information.ToInt32();
             }
@@ -159,7 +171,9 @@ namespace ProcessHacker.Native.Objects
         public static FileHandle CreateWin32(string fileName, FileAccess desiredAccess, FileShareMode shareMode,
             FileCreationDispositionWin32 creationDisposition)
         {
-            IntPtr handle = Win32.CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, IntPtr.Zero);
+            IntPtr handle;
+            
+            handle = Win32.CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, IntPtr.Zero);
 
             if (handle == NativeHandle.MinusOne)
                 Win32.Throw();
@@ -169,11 +183,13 @@ namespace ProcessHacker.Native.Objects
 
         public static void Delete(string fileName, ObjectFlags objectFlags)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, null);
 
             try
             {
-                Win32.NtDeleteFile(oa).ThrowIf();
+                if ((status = Win32.NtDeleteFile(ref oa)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -239,20 +255,31 @@ namespace ProcessHacker.Native.Objects
         /// <param name="shareMode">The share mode to use.</param>
         /// <param name="openOptions">Open options to use.</param>
         /// <param name="access">The desired access to the file.</param>
-        public FileHandle(string fileName, ObjectFlags objectFlags, NativeHandle rootDirectory, FileShareMode shareMode, FileCreateOptions openOptions, FileAccess access)
+        public FileHandle(
+            string fileName,
+            ObjectFlags objectFlags,
+            NativeHandle rootDirectory,
+            FileShareMode shareMode,
+            FileCreateOptions openOptions,
+            FileAccess access
+            )
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
             IoStatusBlock isb;
             IntPtr handle;
 
             try
             {
-                NtStatus result = Win32.NtOpenFile(out handle, access, ref oa, out isb, shareMode, openOptions);
-
-                if (result.IsError())
-                {
-                    this.LastError = result.LastException();
-                }
+                if ((status = Win32.NtOpenFile(
+                    out handle,
+                    access,
+                    ref oa,
+                    out isb,
+                    shareMode,
+                    openOptions
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -456,16 +483,18 @@ namespace ProcessHacker.Native.Objects
 
         public void BeginLock(AsyncIoContext asyncContext, long offset, long length, bool wait, bool exclusive)
         {
+            NtStatus status;
+
             asyncContext.NotifyPreBegin();
 
-            NtStatus status = Win32.NtLockFile(
+            status = Win32.NtLockFile(
                 this,
                 asyncContext.EventHandle ?? IntPtr.Zero,
                 null,
                 asyncContext.Context,
                 asyncContext.StatusMemory,
-                offset,
-                length,
+                ref offset,
+                ref length,
                 0,
                 !wait,
                 exclusive
@@ -1171,7 +1200,7 @@ namespace ProcessHacker.Native.Objects
                 );
         }
 
-        public unsafe int IoControl(
+        public int IoControl(
             int controlCode,
             byte[] inBuffer,
             int inBufferOffset,
@@ -1184,19 +1213,20 @@ namespace ProcessHacker.Native.Objects
             Utils.ValidateBuffer(inBuffer, inBufferOffset, inBufferLength, true);
             Utils.ValidateBuffer(outBuffer, outBufferOffset, outBufferLength, true);
 
-
-            fixed (byte* inBufferPtr = inBuffer)
-            fixed (byte* outBufferPtr = outBuffer)
+            unsafe
             {
-                return this.IoControl(
-                    controlCode, 
-                    &inBufferPtr[inBufferOffset], 
-                    inBuffer != null ? inBuffer.Length : 0, 
-                    &outBufferPtr[outBufferOffset], 
-                    outBuffer != null ? outBuffer.Length : 0
-                    );
+                fixed (byte* inBufferPtr = inBuffer)
+                fixed (byte* outBufferPtr = outBuffer)
+                {
+                    return this.IoControl(
+                        controlCode,
+                        &inBufferPtr[inBufferOffset],
+                        inBuffer != null ? inBuffer.Length : 0,
+                        &outBufferPtr[outBufferOffset],
+                        outBuffer != null ? outBuffer.Length : 0
+                        );
+                }
             }
-
         }
 
         public unsafe int IoControl(
@@ -1326,16 +1356,17 @@ namespace ProcessHacker.Native.Objects
         /// <returns>True if the lock was acquired, otherwise false.</returns>
         public bool Lock(long offset, long length, bool wait, bool exclusive)
         {
+            NtStatus status;
             IoStatusBlock isb;
 
-            NtStatus status = Win32.NtLockFile(
+            status = Win32.NtLockFile(
                 this,
                 IntPtr.Zero,
                 null,
                 IntPtr.Zero,
                 out isb,
-                offset,
-                length,
+                ref offset,
+                ref length,
                 0,
                 !wait,
                 exclusive
@@ -1664,9 +1695,19 @@ namespace ProcessHacker.Native.Objects
         /// <param name="length">The length of the byte range.</param>
         public void Unlock(long offset, long length)
         {
+            NtStatus status;
             IoStatusBlock isb;
 
-            Win32.NtUnlockFile(this, out isb, offset, length, 0).ThrowIf();
+            status = Win32.NtUnlockFile(
+                this,
+                out isb,
+                ref offset,
+                ref length,
+                0
+                );
+
+            if (status >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         /// <summary>
@@ -1876,12 +1917,12 @@ namespace ProcessHacker.Native.Objects
                 return isb.Memory;
             }
 
-            private readonly IoStatusBlock* _ioStatusBlock;
+            private IoStatusBlock* _ioStatusBlock;
 
             public UnmanagedIsb()
             {
                 // Allocate an ISB.
-                _ioStatusBlock = (IoStatusBlock*)MemoryAlloc.PrivateHeap.Allocate(_isbSize);
+                _ioStatusBlock = (IoStatusBlock*)MemoryAlloc.PrivateHeap.Allocate(0, _isbSize);
                 // Zero the ISB.
                 _ioStatusBlock->Pointer = IntPtr.Zero;
                 _ioStatusBlock->Information = IntPtr.Zero;
@@ -1891,7 +1932,7 @@ namespace ProcessHacker.Native.Objects
             protected override void DisposeObject(bool disposing)
             {
                 if (_ioStatusBlock != null)
-                    MemoryAlloc.PrivateHeap.Free(new IntPtr(_ioStatusBlock));
+                    MemoryAlloc.PrivateHeap.Free(0, new IntPtr(_ioStatusBlock));
             }
 
             public IntPtr Information

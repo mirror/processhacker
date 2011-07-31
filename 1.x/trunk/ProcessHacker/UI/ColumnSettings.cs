@@ -23,6 +23,7 @@
 using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
@@ -43,10 +44,15 @@ namespace ProcessHacker.UI
         {
             StringBuilder result = new StringBuilder();
 
-            foreach (ColumnHeader ch in lv.Columns)
+            try
             {
-                result.Append(ch.DisplayIndex.ToString() + "," + ch.Width.ToString() + "|");
+                foreach (ColumnHeader ch in lv.Columns)
+                {
+                    result.Append(ch.DisplayIndex.ToString() + "," + ch.Width.ToString() + "|");
+                }
             }
+            catch
+            { }
 
             if (result.Length > 0)
                 result.Remove(result.Length - 1, 1);
@@ -57,17 +63,23 @@ namespace ProcessHacker.UI
         /// <summary>
         /// Saves the column settings of the specified TreeViewAdv to a string.
         /// </summary>
-        /// <param name="tv"></param>
+        /// <param name="lv"></param>
         /// <returns></returns>
         public static string SaveSettings(TreeViewAdv tv)
         {
             StringBuilder result = new StringBuilder();
 
-            for (int i = 0; i < tv.Columns.Count; i++)
+            try
             {
-                TreeColumn c = tv.Columns[i];
-                result.Append(c.Header + "," + c.Width.ToString() + "," + c.SortOrder.ToString() + "," + c.IsVisible.ToString() + "|");
+                for (int i = 0; i < tv.Columns.Count; i++)
+                {
+                    TreeColumn c = tv.Columns[i];
+                    result.Append(c.Header + "," + c.Width.ToString() + "," + c.SortOrder.ToString() + 
+                        "," + c.IsVisible.ToString() + "|");
+                }
             }
+            catch
+            { }
 
             if (result.Length > 0)
                 result.Remove(result.Length - 1, 1);
@@ -82,12 +94,12 @@ namespace ProcessHacker.UI
         /// <param name="lv"></param>
         public static void LoadSettings(string settings, ListView lv)
         {
-            if (settings.EndsWith("|", StringComparison.OrdinalIgnoreCase))
+            if (settings.EndsWith("|"))
                 settings = settings.Remove(settings.Length - 1, 1);
 
             string[] list = settings.Split('|');
 
-            if (string.IsNullOrEmpty(settings))
+            if (settings == "")
                 return;
 
             // Has the number of columns changed? If so, don't do anything.
@@ -113,7 +125,7 @@ namespace ProcessHacker.UI
         /// <param name="tv"></param>
         public static void LoadSettings(string settings, TreeViewAdv tv)
         {
-            if (settings.EndsWith("|", StringComparison.OrdinalIgnoreCase))
+            if (settings.EndsWith("|"))
                 settings = settings.Remove(settings.Length - 1, 1);
 
             string[] list = settings.Split('|');
@@ -128,19 +140,16 @@ namespace ProcessHacker.UI
                 }
 
                 TreeColumn[] newColumns = new TreeColumn[tv.Columns.Count];
-                Dictionary<string, TreeColumn> newColumnsD = new Dictionary<string, TreeColumn>(StringComparer.OrdinalIgnoreCase);
+                Dictionary<string, TreeColumn> newColumnsD = new Dictionary<string,TreeColumn>();
 
                 for (int i = 0; i < tv.Columns.Count; i++)
                 {
                     string[] s = list[i].Split(',');
 
-                    newColumns[i] = new TreeColumn(s[0], Int32.Parse(s[1]))
-                    {
-                        SortOrder = (SortOrder)Enum.Parse(typeof(SortOrder), s[2]), 
-                        IsVisible = bool.Parse(s[3]), 
-                        MinColumnWidth = 3
-                    };
-
+                    newColumns[i] = new TreeColumn(s[0], Int32.Parse(s[1]));
+                    newColumns[i].SortOrder = (SortOrder)Enum.Parse(typeof(SortOrder), s[2]);
+                    newColumns[i].IsVisible = bool.Parse(s[3]);
+                    newColumns[i].MinColumnWidth = 3;
                     newColumnsD.Add(s[0], newColumns[i]);
                 }
 

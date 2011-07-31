@@ -121,18 +121,13 @@ namespace ProcessHacker.Common.Threading
             public int PeakShrdWtrsCount;
         }
 
-        public struct WaitBlock
+        private unsafe struct WaitBlock
         {
-            public static readonly int SizeOf;
+            public static readonly int Size = Marshal.SizeOf(typeof(WaitBlock));
 
             public WaitBlock* Flink;
             public WaitBlock* Blink;
             public int Flags;
-
-            static WaitBlock()
-            {
-                SizeOf = Marshal.SizeOf(typeof(WaitBlock));
-            }
         }
 
         private enum ListPosition
@@ -246,7 +241,7 @@ namespace ProcessHacker.Common.Threading
             _lock = new SpinLock();
             _spinCount = Environment.ProcessorCount != 1 ? spinCount : 0;
 
-            _waitersListHead = (WaitBlock*)Marshal.AllocHGlobal(WaitBlock.SizeOf);
+            _waitersListHead = (WaitBlock*)Marshal.AllocHGlobal(WaitBlock.Size);
             _waitersListHead->Flink = _waitersListHead;
             _waitersListHead->Blink = _waitersListHead;
             _waitersListHead->Flags = 0;

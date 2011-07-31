@@ -9,9 +9,13 @@
 
 namespace Debugger.Core.Wrappers.CorPub
 {
-    public class ICorPublish
+	using System;
+	using System.Runtime.InteropServices;
+	using Debugger.Wrappers;
+	
+	public partial class ICorPublish
 	{
-		private readonly Debugger.Interop.CorPub.CorpubPublishClass corpubPublishClass;
+		private Debugger.Interop.CorPub.CorpubPublishClass corpubPublishClass;
 
 		public ICorPublish()
 		{

@@ -34,13 +34,22 @@ namespace ProcessHacker.Native.Objects
     {
         public static SamUserHandle Create(SamUserAccess access, SamDomainHandle domainHandle, string name, out int userId)
         {
+            NtStatus status;
+            UnicodeString nameStr;
             IntPtr handle;
 
-            UnicodeString nameStr = new UnicodeString(name);
+            nameStr = new UnicodeString(name);
 
             try
             {
-                Win32.SamCreateUserInDomain(domainHandle, nameStr, access, out handle, out userId).ThrowIf();
+                if ((status = Win32.SamCreateUserInDomain(
+                    domainHandle,
+                    ref nameStr,
+                    access,
+                    out handle,
+                    out userId
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -79,21 +88,37 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the user.</param>
         public SamUserHandle(SamDomainHandle domainHandle, int userId, SamUserAccess access)
         {
+            NtStatus status;
             IntPtr handle;
 
-            Win32.SamOpenUser(domainHandle, access, userId, out handle).ThrowIf();
+            if ((status = Win32.SamOpenUser(
+                domainHandle,
+                access,
+                userId,
+                out handle
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             this.Handle = handle;
         }
 
         public void ChangePassword(string oldPassword, string newPassword)
         {
-            UnicodeString oldPasswordStr = new UnicodeString(oldPassword);
-            UnicodeString newPasswordStr = new UnicodeString(newPassword);
+            NtStatus status;
+            UnicodeString oldPasswordStr;
+            UnicodeString newPasswordStr;
+
+            oldPasswordStr = new UnicodeString(oldPassword);
+            newPasswordStr = new UnicodeString(newPassword);
 
             try
             {
-                Win32.SamChangePasswordUser(this, oldPasswordStr, newPasswordStr).ThrowIf();
+                if ((status = Win32.SamChangePasswordUser(
+                    this,
+                    ref oldPasswordStr,
+                    ref newPasswordStr
+                    )) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -104,7 +129,10 @@ namespace ProcessHacker.Native.Objects
 
         public void Delete()
         {
-            Win32.SamDeleteUser(this).ThrowIf();
+            NtStatus status;
+
+            if ((status = Win32.SamDeleteUser(this)) >= NtStatus.Error)
+                Win32.Throw(status);
         }
 
         public string GetAdminComment()
@@ -120,17 +148,21 @@ namespace ProcessHacker.Native.Objects
         public string GetFullName()
         {
             using (var data = this.GetInformation(UserInformationClass.UserFullNameInformation))
-            {
                 return data.ReadStruct<UserFullNameInformation>().FullName.Read();
-            }
         }
 
         public int[] GetGroups()
         {
+            NtStatus status;
             IntPtr groups;
             int count;
 
-            Win32.SamGetGroupsForUser(this, out groups, out count).ThrowIf();
+            if ((status = Win32.SamGetGroupsForUser(
+                this,
+                out groups,
+                out count
+                )) >= NtStatus.Error)
+                Win32.Throw(status);
 
             using (var groupsAlloc = new SamMemoryAlloc(groups))
             {

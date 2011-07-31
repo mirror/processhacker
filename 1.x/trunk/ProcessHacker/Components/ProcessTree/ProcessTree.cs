@@ -352,24 +352,25 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(ProcessItem item)
         {
-            this.BeginInvoke(new Action(() =>
+            this.BeginInvoke(new MethodInvoker(delegate
             {
-                lock (this._listLock)
+                lock (_listLock)
                 {
-                    this._treeModel.Add(item);
+                    _treeModel.Add(item);
 
                     TreeNodeAdv node = this.FindTreeNode(item.Pid);
 
                     if (node != null)
                     {
-                        if (item.RunId > 0 && this._runCount > 0)
+                        if (item.RunId > 0 && _runCount > 0)
                         {
                             node.State = TreeNodeAdv.NodeState.New;
-                            this.PerformDelayed(Settings.Instance.HighlightingDuration, () =>
+                            this.PerformDelayed(Settings.Instance.HighlightingDuration,
+                                new MethodInvoker(delegate
                             {
                                 node.State = TreeNodeAdv.NodeState.Normal;
-                                this.treeProcesses.Invalidate();
-                            });
+                                treeProcesses.Invalidate();
+                            }));
                         }
 
                         node.BackColor = this.GetProcessColor(item);
@@ -381,7 +382,7 @@ namespace ProcessHacker
 
         private void provider_DictionaryModified(ProcessItem oldItem, ProcessItem newItem)
         {
-            this.BeginInvoke(new Action(() =>
+            this.BeginInvoke(new MethodInvoker(delegate
             {
                 lock (_listLock)
                 {
@@ -399,7 +400,7 @@ namespace ProcessHacker
 
         private void provider_DictionaryRemoved(ProcessItem item)
         {
-            this.BeginInvoke(new Action(() =>
+            this.BeginInvoke(new MethodInvoker(delegate
             {
                 lock (_listLock)
                 {
@@ -409,21 +410,20 @@ namespace ProcessHacker
                     {
                         //if (this.StateHighlighting)
                         //{
-                        node.State = TreeNodeAdv.NodeState.Removed;
-                       
-                        this.PerformDelayed(Settings.Instance.HighlightingDuration, () =>
-                        {
-                            try
+                            node.State = TreeNodeAdv.NodeState.Removed;
+                            this.PerformDelayed(Settings.Instance.HighlightingDuration,
+                                new MethodInvoker(delegate
                             {
-                                this._treeModel.Remove(item);
-                                this.RefreshItems();
-                            }
-                            catch (Exception ex)
-                            {
-                                Logging.Log(ex);
-                            }
-                        });
-
+                                try
+                                {
+                                    _treeModel.Remove(item);
+                                    this.RefreshItems();
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logging.Log(ex);
+                                }
+                            }));
                         //}
                         //else
                         //{

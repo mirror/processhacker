@@ -22,7 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Objects;
 
@@ -91,10 +91,22 @@ namespace ProcessHacker
         /// </summary>
         public event ProviderError Error;
 
+        private string _name = string.Empty;
+        private IDictionary<TKey, TValue> _dictionary;
+
+        private bool _disposing = false;
+        private bool _boosting = false;
+        private bool _busy = false;
+        private bool _enabled = false;
+        private LinkedListEntry<IProvider> _listEntry;
+        private ProviderThread _owner;
+        private int _runCount = 0;
+        private bool _unregistering = false;
+
         /// <summary>
         /// Creates a new instance of the Provider class.
         /// </summary>
-        protected Provider()
+        public Provider()
             : this(new Dictionary<TKey, TValue>())
         { }
 
@@ -102,7 +114,7 @@ namespace ProcessHacker
         /// Creates a new instance of the Provider class, specifying a 
         /// custom equality comparer.
         /// </summary>
-        protected Provider(IEqualityComparer<TKey> comparer)
+        public Provider(IEqualityComparer<TKey> comparer)
             : this(new Dictionary<TKey, TValue>(comparer))
         { }
 
@@ -110,74 +122,119 @@ namespace ProcessHacker
         /// Creates a new instance of the Provider class, specifying a
         /// custom <seealso cref="System.Collections.Generic.IDictionary&lt;TKey, TValue&gt;"/> instance.
         /// </summary>
-        protected Provider(IDictionary<TKey, TValue> dictionary)
+        public Provider(IDictionary<TKey, TValue> dictionary)
         {
-            Name = string.Empty;
-            Boosting = false;
-            Busy = false;
-            Disposing = false;
-            Enabled = false;
-            RunCount = 0;
-            Unregistering = false;
             if (dictionary == null)
                 throw new ArgumentNullException("dictionary");
 
-            this.Dictionary = dictionary;
-            this.ListEntry = new LinkedListEntry<IProvider>();
-            this.ListEntry.Value = this;
+            _dictionary = dictionary;
+            _listEntry = new LinkedListEntry<IProvider>();
+            _listEntry.Value = this;
         }
 
         protected override void DisposeObject(bool disposing)
         {   
-            this.Disposing = true;
+            Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): disposing (" + disposing.ToString() + ")");
+
+            _disposing = true;
 
             if (this.Disposed != null)
             {
-                this.Disposed(this);
+                try
+                {
+                    this.Disposed(this);
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
+            }
+
+            Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): finished disposing (" + disposing.ToString() + ")");
+        }
+
+        public string Name
+        {
+            get { return _name; }
+            protected set
+            {
+                _name = value;
+                if (_name == null)
+                    _name = string.Empty;
             }
         }
 
-        public string Name { get; protected set; }
-
-        public bool Boosting { get; set; }
+        public bool Boosting
+        {
+            get { return _boosting; }
+            set { _boosting = value; }
+        }
 
         /// <summary>
         /// Determines whether the provider is currently updating.
         /// </summary>
-        public bool Busy { get; private set; }
+        public bool Busy
+        {
+            get { return _busy; }
+        }
 
         /// <summary>
         /// Gets whether the provider is shutting down.
         /// </summary>
-        protected bool Disposing { get; private set; }
+        protected bool Disposing
+        {
+            get { return _disposing; }
+        }
 
         /// <summary>
         /// Determines whether the provider should update.
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled
+        {
+            get { return _enabled; }
+            set { _enabled = value; }
+        }
 
-        public LinkedListEntry<IProvider> ListEntry { get; private set; }
+        public LinkedListEntry<IProvider> ListEntry
+        {
+            get { return _listEntry; }
+        }
 
-        public ProviderThread Owner { get; set; }
+        public ProviderThread Owner
+        {
+            get { return _owner; }
+            set { _owner = value; }
+        }
 
         /// <summary>
         /// Gets the number of times this provider has updated.
         /// </summary>
-        public int RunCount { get; private set; }
+        public int RunCount
+        {
+            get { return _runCount; }
+        }
 
-        public bool Unregistering { get; set; }
+        public bool Unregistering
+        {
+            get { return _unregistering; }
+            set { _unregistering = value; }
+        }
 
         /// <summary>
         /// Gets the dictionary.
         /// </summary>
-        public IDictionary<TKey, TValue> Dictionary { get; protected set; }
+        public IDictionary<TKey, TValue> Dictionary
+        {
+            get { return _dictionary; }
+            protected set { _dictionary = value; }
+        }
 
         /// <summary>
         /// Causes the provider to run immediately.
         /// </summary>
         public void Boost()
         {
-            this.Owner.Boost(this);
+            _owner.Boost(this);
         }
 
         /// <summary>
@@ -186,83 +243,85 @@ namespace ProcessHacker
         public void Run()
         {
             // Bail out if we are disposing
-            if (this.Disposing)
+            if (_disposing)
             {
-                Logging.Log(Logging.Importance.Warning, "Provider (" + this.Name + "): RunOnce: currently disposing");
+                Logging.Log(Logging.Importance.Warning, "Provider (" + _name + "): RunOnce: currently disposing");
                 return;
             }
 
-            this.Busy = true;
+            _busy = true;
 
-            try
             {
-                if (this.BeforeUpdate != null)
-                    this.BeforeUpdate();
-            }
-            catch (Exception ex)
-            {
-                if (Error != null)
+                try
                 {
-                    Error(ex);
+                    if (BeforeUpdate != null)
+                        BeforeUpdate();
                 }
-                else
+                catch
+                { }
+
+                try
                 {
-                    Logging.Log(Logging.Importance.Error, ex.ToString());
+                    this.Update();
+                    _runCount++;
                 }
+                catch (Exception ex)
+                {
+                    if (Error != null)
+                    {
+                        try
+                        {
+                            Error(ex);
+                        }
+                        catch
+                        { }
+                    }
+                    else
+                    {
+                        Logging.Log(Logging.Importance.Error, ex.ToString());
+                    }
+                }
+
+                try
+                {
+                    if (Updated != null)
+                        Updated();
+                }
+                catch
+                { }
             }
 
-            try
-            {
-                this.Update();
-                this.RunCount++;
-            }
-            catch (Exception ex)
-            {
-                if (Error != null)
-                {
-                    Error(ex);
-                }
-                else
-                {
-                    Logging.Log(Logging.Importance.Error, ex.ToString());
-                }
-            }
+            _busy = false;
+        }
 
-            try
+        private void CallEvent(Delegate e, params object[] args)
+        {
+            if (e != null)
             {
-                if (this.Updated != null)
-                    this.Updated();
-            }
-            catch (Exception ex)
-            {
-                if (Error != null)
+                try
                 {
-                    Error(ex);
+                    e.DynamicInvoke(args);
                 }
-                else
+                catch (Exception ex)
                 {
-                    Logging.Log(Logging.Importance.Error, ex.ToString());
+                    Logging.Log(ex);
                 }
             }
-            this.Busy = false;
         }
 
         protected void OnDictionaryAdded(TValue item)
         {
-            if (this.DictionaryAdded != null)
-                this.DictionaryAdded(item);
+            this.CallEvent(this.DictionaryAdded, item);
         }
 
         protected void OnDictionaryModified(TValue oldItem, TValue newItem)
         {
-            if (this.DictionaryModified != null)
-                this.DictionaryModified(oldItem, newItem);
+            this.CallEvent(this.DictionaryModified, oldItem, newItem);
         }
 
         protected void OnDictionaryRemoved(TValue item)
         {
-            if (this.DictionaryRemoved != null)
-                this.DictionaryRemoved(item);
+            this.CallEvent(this.DictionaryRemoved, item);
         }
 
         protected virtual void Update()

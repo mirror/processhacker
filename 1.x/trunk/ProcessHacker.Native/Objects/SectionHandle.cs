@@ -135,12 +135,14 @@ namespace ProcessHacker.Native.Objects
 
         public SectionHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, SectionAccess access)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenSection(out handle, access, oa).ThrowIf();
+                if ((status = Win32.NtOpenSection(out handle, access, ref oa)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {

@@ -231,7 +231,7 @@ namespace ProcessHacker.Native
 
                 WintrustData trustData = new WintrustData();
 
-                trustData.Size = WintrustData.SizeOf;
+                trustData.Size = Marshal.SizeOf(typeof(WintrustData));
                 trustData.UIChoice = 2; // WTD_UI_NONE
                 trustData.UnionChoice = 1; // WTD_CHOICE_FILE
                 trustData.RevocationChecks = WtdRevocationChecks.None;
@@ -243,10 +243,10 @@ namespace ProcessHacker.Native
 
                 using (MemoryAlloc mem = new MemoryAlloc(fileInfo.Size))
                 {
-                    mem.WriteStruct(fileInfo);
+                    mem.WriteStruct<WintrustFileInfo>(fileInfo);
                     trustData.UnionData = mem;
 
-                    uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, trustData);
+                    uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, ref trustData);
 
                     result = StatusToVerifyResult(winTrustResult);
 
@@ -263,7 +263,7 @@ namespace ProcessHacker.Native
                     {
                         // Close the state data.
                         trustData.StateAction = WtdStateAction.Close;
-                        Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, trustData);
+                        Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, ref trustData);
                     }
                 }
             }
@@ -320,7 +320,7 @@ namespace ProcessHacker.Native
 
                 WintrustData trustData = new WintrustData();
 
-                trustData.Size = WintrustData.SizeOf;
+                trustData.Size = Marshal.SizeOf(typeof(WintrustData));
                 trustData.UIChoice = 1;
                 trustData.UnionChoice = 2;
                 trustData.RevocationChecks = WtdRevocationChecks.None;
@@ -337,7 +337,7 @@ namespace ProcessHacker.Native
                     {
                         trustData.UnionData = mem;
 
-                        uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, trustData);
+                        uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, ref trustData);
 
                         result = StatusToVerifyResult(winTrustResult);
 
@@ -352,7 +352,7 @@ namespace ProcessHacker.Native
                         {
                             // Close the state data.
                             trustData.StateAction = WtdStateAction.Close;
-                            Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, trustData);
+                            Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, ref trustData);
                         }
                         finally
                         {

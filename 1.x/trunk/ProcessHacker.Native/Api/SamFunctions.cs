@@ -21,12 +21,12 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
-    [System.Security.SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
         [DllImport("samlib.dll")]
@@ -52,16 +52,16 @@ namespace ProcessHacker.Native.Api
         [DllImport("samlib.dll")]
         public static extern NtStatus SamChangePasswordUser(
             [In] IntPtr UserHandle,
-            [In] UnicodeString OldPassword,
-            [In] UnicodeString NewPassword
+            [In] ref UnicodeString OldPassword,
+            [In] ref UnicodeString NewPassword
             );
 
         [DllImport("samlib.dll")]
         public static extern NtStatus SamChangePasswordUser2(
-            [In] UnicodeString ServerName,
-            [In] UnicodeString UserName,
-            [In] UnicodeString OldPassword,
-            [In] UnicodeString NewPassword
+            [In] ref UnicodeString ServerName,
+            [In] ref UnicodeString UserName,
+            [In] ref UnicodeString OldPassword,
+            [In] ref UnicodeString NewPassword
             );
 
         [DllImport("samlib.dll")]
@@ -71,16 +71,16 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("samlib.dll")]
         public static extern NtStatus SamConnect(
-            [In] UnicodeString ServerName,
+            [In] ref UnicodeString ServerName,
             [Out] out IntPtr ServerHandle,
             [In] SamServerAccess DesiredAccess,
-            [In] ObjectAttributes ObjectAttributes
+            [In] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("samlib.dll")]
         public static extern NtStatus SamCreateAliasInDomain(
             [In] IntPtr DomainHandle,
-            [In] UnicodeString AccountName,
+            [In] ref UnicodeString AccountName,
             [In] SamAliasAccess DesiredAccess,
             [Out] out IntPtr AliasHandle,
             [Out] out int RelativeId
@@ -89,7 +89,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("samlib.dll")]
         public static extern NtStatus SamCreateGroupInDomain(
             [In] IntPtr DomainHandle,
-            [In] UnicodeString AccountName,
+            [In] ref UnicodeString AccountName,
             [In] SamGroupAccess DesiredAccess,
             [Out] out IntPtr GroupHandle,
             [Out] out int RelativeId
@@ -98,7 +98,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("samlib.dll")]
         public static extern NtStatus SamCreateUserInDomain(
             [In] IntPtr DomainHandle,
-            [In] UnicodeString AccountName,
+            [In] ref UnicodeString AccountName,
             [In] SamUserAccess DesiredAccess,
             [Out] out IntPtr UserHandle,
             [Out] out int RelativeId
@@ -107,7 +107,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("samlib.dll")]
         public static extern NtStatus SamCreateUser2InDomain(
             [In] IntPtr DomainHandle,
-            [In] UnicodeString AccountName,
+            [In] ref UnicodeString AccountName,
             [In] UserAccountFlags AccountType,
             [In] SamUserAccess DesiredAccess,
             [Out] out IntPtr UserHandle,
@@ -206,7 +206,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("samlib.dll")]
         public static extern NtStatus SamLookupDomainInSamServer(
             [In] IntPtr ServerHandle,
-            [In] UnicodeString Name,
+            [In] ref UnicodeString Name,
             [Out] out IntPtr DomainId // Sid**
             );
 

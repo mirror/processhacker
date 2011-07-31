@@ -75,12 +75,12 @@ namespace ProcessHacker.Native
 
         public bool AreClear(int index, int length)
         {
-            return Win32.RtlAreBitsClear(_bitmap, index, length);
+            return Win32.RtlAreBitsClear(ref _bitmap, index, length);
         }
 
         public bool AreSet(int index, int length)
         {
-            return Win32.RtlAreBitsSet(_bitmap, index, length);
+            return Win32.RtlAreBitsSet(ref _bitmap, index, length);
         }
 
         public int Check(int index)
@@ -90,17 +90,17 @@ namespace ProcessHacker.Native
 
         public void Clear()
         {
-            Win32.RtlClearAllBits(_bitmap);
+            Win32.RtlClearAllBits(ref _bitmap);
         }
 
         public void Clear(int index)
         {
-            Win32.RtlClearBit(_bitmap, index);
+            Win32.RtlClearBit(ref _bitmap, index);
         }
 
         public void Clear(int index, int length)
         {
-            Win32.RtlClearBits(_bitmap, index, length);
+            Win32.RtlClearBits(ref _bitmap, index, length);
         }
 
         public int FindClear(int length)
@@ -110,7 +110,7 @@ namespace ProcessHacker.Native
 
         public int FindClear(int length, int hintIndex)
         {
-            return Win32.RtlFindClearBits(_bitmap, length, hintIndex);
+            return Win32.RtlFindClearBits(ref _bitmap, length, hintIndex);
         }
 
         public int FindClearAndSet(int length)
@@ -120,7 +120,7 @@ namespace ProcessHacker.Native
 
         public int FindClearAndSet(int length, int hintIndex)
         {
-            return Win32.RtlFindClearBitsAndSet(_bitmap, length, hintIndex);
+            return Win32.RtlFindClearBitsAndSet(ref _bitmap, length, hintIndex);
         }
 
         public BitmapRun[] FindClearRuns(int count)
@@ -131,8 +131,9 @@ namespace ProcessHacker.Native
         public BitmapRun[] FindClearRuns(int count, bool locateLongest)
         {
             RtlBitmapRun[] runs = new RtlBitmapRun[count];
+            int numberOfRuns;
 
-            int numberOfRuns = Win32.RtlFindClearRuns(this._bitmap, runs, count, locateLongest);
+            numberOfRuns = Win32.RtlFindClearRuns(ref _bitmap, runs, count, locateLongest);
 
             BitmapRun[] returnRuns = new BitmapRun[numberOfRuns];
 
@@ -145,8 +146,9 @@ namespace ProcessHacker.Native
         public BitmapRun FindBackwardClearRun(int index)
         {
             int startingIndex;
+            int numberOfBits;
 
-            int numberOfBits = Win32.RtlFindLastBackwardRunClear(this._bitmap, index, out startingIndex);
+            numberOfBits = Win32.RtlFindLastBackwardRunClear(ref _bitmap, index, out startingIndex);
 
             return new BitmapRun(startingIndex, numberOfBits);
         }
@@ -154,8 +156,9 @@ namespace ProcessHacker.Native
         public BitmapRun FindFirstClearRun()
         {
             int startingIndex;
+            int numberOfBits;
 
-            int numberOfBits = Win32.RtlFindFirstRunClear(this._bitmap, out startingIndex);
+            numberOfBits = Win32.RtlFindFirstRunClear(ref _bitmap, out startingIndex);
 
             return new BitmapRun(startingIndex, numberOfBits);
         }
@@ -163,8 +166,9 @@ namespace ProcessHacker.Native
         public BitmapRun FindForwardClearRun(int index)
         {
             int startingIndex;
+            int numberOfBits;
 
-            int numberOfBits = Win32.RtlFindNextForwardRunClear(this._bitmap, index, out startingIndex);
+            numberOfBits = Win32.RtlFindNextForwardRunClear(ref _bitmap, index, out startingIndex);
 
             return new BitmapRun(startingIndex, numberOfBits);
         }
@@ -172,8 +176,9 @@ namespace ProcessHacker.Native
         public BitmapRun FindLongestClearRun()
         {
             int startingIndex;
+            int numberOfBits;
 
-            int numberOfBits = Win32.RtlFindLongestRunClear(this._bitmap, out startingIndex);
+            numberOfBits = Win32.RtlFindLongestRunClear(ref _bitmap, out startingIndex);
 
             return new BitmapRun(startingIndex, numberOfBits);
         }
@@ -185,7 +190,7 @@ namespace ProcessHacker.Native
 
         public int FindSet(int length, int hintIndex)
         {
-            return Win32.RtlFindSetBits(_bitmap, length, hintIndex);
+            return Win32.RtlFindSetBits(ref _bitmap, length, hintIndex);
         }
 
         public int FindSetAndClear(int length)
@@ -195,37 +200,37 @@ namespace ProcessHacker.Native
 
         public int FindSetAndClear(int length, int hintIndex)
         {
-            return Win32.RtlFindSetBitsAndClear(_bitmap, length, hintIndex);
+            return Win32.RtlFindSetBitsAndClear(ref _bitmap, length, hintIndex);
         }
 
         public int GetClearCount()
         {
-            return Win32.RtlNumberOfClearBits(_bitmap);
+            return Win32.RtlNumberOfClearBits(ref _bitmap);
         }
 
         public int GetSetCount()
         {
-            return Win32.RtlNumberOfSetBits(_bitmap);
+            return Win32.RtlNumberOfSetBits(ref _bitmap);
         }
 
         public void Set()
         {
-            Win32.RtlSetAllBits(_bitmap);
+            Win32.RtlSetAllBits(ref _bitmap);
         }
 
         public void Set(int index)
         {
-            Win32.RtlSetBit(_bitmap, index);
+            Win32.RtlSetBit(ref _bitmap, index);
         }
 
         public void Set(int index, int length)
         {
-            Win32.RtlSetBits(_bitmap, index, length);
+            Win32.RtlSetBits(ref _bitmap, index, length);
         }
 
         public bool Test(int index)
         {
-            return Win32.RtlTestBit(_bitmap, index);
+            return Win32.RtlTestBit(ref _bitmap, index);
         }
     }
 }

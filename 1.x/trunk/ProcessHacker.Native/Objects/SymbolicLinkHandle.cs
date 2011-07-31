@@ -35,6 +35,7 @@ namespace ProcessHacker.Native.Objects
 
         public static SymbolicLinkHandle Create(SymbolicLinkAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, string linkTarget)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
@@ -44,7 +45,9 @@ namespace ProcessHacker.Native.Objects
 
                 try
                 {
-                    Win32.NtCreateSymbolicLinkObject(out handle, access, oa, linkTargetString).ThrowIf();
+                    if ((status = Win32.NtCreateSymbolicLinkObject(out handle, access,
+                        ref oa, ref linkTargetString)) >= NtStatus.Error)
+                        Win32.Throw(status);
                 }
                 finally
                 {
@@ -65,12 +68,14 @@ namespace ProcessHacker.Native.Objects
 
         public SymbolicLinkHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, SymbolicLinkAccess access)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenSymbolicLinkObject(out handle, access, oa).ThrowIf();
+                if ((status = Win32.NtOpenSymbolicLinkObject(out handle, access, ref oa)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -86,6 +91,8 @@ namespace ProcessHacker.Native.Objects
 
         public string GetTarget()
         {
+            NtStatus status;
+            int retLength;
             UnicodeString str = new UnicodeString();
 
             using (var buffer = new MemoryAlloc(0x200))
@@ -93,9 +100,6 @@ namespace ProcessHacker.Native.Objects
                 str.Length = 0;
                 str.MaximumLength = (ushort)buffer.Size;
                 str.Buffer = buffer;
-
-                NtStatus status;
-                int retLength;
 
                 if ((status = Win32.NtQuerySymbolicLinkObject(this, ref str, out retLength)) >= NtStatus.Error)
                 {

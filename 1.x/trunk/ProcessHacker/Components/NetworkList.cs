@@ -34,11 +34,11 @@ namespace ProcessHacker.Components
     public partial class NetworkList : UserControl
     {
         private NetworkProvider _provider;
-        private int _runCount;
-        private readonly List<ListViewItem> _needsAdd = new List<ListViewItem>();
-        private readonly HighlightingContext _highlightingContext;
-        private bool _needsSort;
-        private bool _needsImageKeyReset;
+        private int _runCount = 0;
+        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
+        private HighlightingContext _highlightingContext;
+        private bool _needsSort = false;
+        private bool _needsImageKeyReset = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseMove;
@@ -51,6 +51,7 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _highlightingContext = new HighlightingContext(listNetwork);
+            listNetwork.SetTheme("explorer");
             listNetwork.ListViewItemSorter = new SortedListViewComparer(listNetwork);
             listNetwork.KeyDown += new KeyEventHandler(NetworkList_KeyDown);
             listNetwork.MouseDown += new MouseEventHandler(listNetwork_MouseDown);
@@ -109,6 +110,20 @@ namespace ProcessHacker.Components
 
         #region Properties
 
+        public new bool DoubleBuffered
+        {
+            get
+            {
+                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listNetwork, null);
+            }
+            set
+            {
+                typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listNetwork, value, null);
+            }
+        }
+
         public override bool Focused
         {
             get
@@ -129,7 +144,7 @@ namespace ProcessHacker.Components
             set { listNetwork.ContextMenuStrip = value; }
         }
 
-        public ExtendedListView List
+        public ListView List
         {
             get { return listNetwork; }
         }
@@ -234,7 +249,7 @@ namespace ProcessHacker.Components
             {
                 if (_needsAdd.Count > 0)
                 {
-                    this.BeginInvoke(new Action(() =>
+                    this.BeginInvoke(new MethodInvoker(() =>
                     {
                         lock (listNetwork)
                         {
@@ -252,26 +267,26 @@ namespace ProcessHacker.Components
 
             if (_needsSort)
             {
-                this.BeginInvoke(new Action(() =>
-                {
-                    if (_needsSort)
+                this.BeginInvoke(new MethodInvoker(() =>
                     {
-                        listNetwork.Sort();
-                        _needsSort = false;
-                    }
-                }));
+                        if (_needsSort)
+                        {
+                            listNetwork.Sort();
+                            _needsSort = false;
+                        }
+                    }));
             }
 
             if (_needsImageKeyReset)
             {
-                this.BeginInvoke(new Action(() =>
-                {
-                    if (_needsImageKeyReset)
+                this.BeginInvoke(new MethodInvoker(() =>
                     {
-                        this.ResetImageKeys();
-                        _needsImageKeyReset = false;
-                    }
-                }));
+                        if (_needsImageKeyReset)
+                        {
+                            this.ResetImageKeys();
+                            _needsImageKeyReset = false;
+                        }
+                    }));
             }
 
             _runCount++;
@@ -439,7 +454,7 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryRemoved(NetworkItem item)
         {
-            this.BeginInvoke(new Action(() =>
+            this.BeginInvoke(new MethodInvoker(() =>
                 {
                     lock (listNetwork)
                     {

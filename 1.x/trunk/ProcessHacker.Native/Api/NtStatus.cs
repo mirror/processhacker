@@ -20,8 +20,6 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-
 namespace ProcessHacker.Native.Api
 {
     /// <summary>
@@ -378,18 +376,20 @@ namespace ProcessHacker.Native.Api
         /// <returns>A message, or null if the message could not be retrieved.</returns>
         public static string GetMessage(this NtStatus status)
         {
-            string message = NativeUtils.GetMessage(
-                Loader.GetDllHandle("ntdll.dll"),
-                0xb,
-                System.Threading.Thread.CurrentThread.CurrentUICulture.LCID,
-                (int)status
-                );
+            string message;
 
-            if (!string.IsNullOrEmpty(message))
+            message = NativeUtils.GetMessage(
+                 Loader.GetDllHandle("ntdll.dll"),
+                 0xb,
+                 System.Threading.Thread.CurrentThread.CurrentUICulture.LCID,
+                 (int)status
+                 );
+
+            if (message != null)
             {
                 // Fix those messages which are formatted like:
                 // {Asdf}\r\nAsdf asdf asdf...
-                if (message.StartsWith("{", StringComparison.OrdinalIgnoreCase))
+                if (message.StartsWith("{"))
                 {
                     string[] split = message.Split('\n');
 
@@ -444,15 +444,6 @@ namespace ProcessHacker.Native.Api
         public static void Throw(this NtStatus status)
         {
             throw new WindowsException(status);
-        }
-
-        /// <summary>
-        /// Throws the NT status value as an exception.
-        /// </summary>
-        /// <param name="status">The NT status value.</param>
-        public static WindowsException LastException(this NtStatus status)
-        {
-            return new WindowsException(status);
         }
 
         /// <summary>

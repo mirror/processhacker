@@ -21,7 +21,8 @@
  */
 
 using System;
-
+using System.Collections.Generic;
+using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 using System.Runtime.InteropServices;
@@ -30,8 +31,6 @@ namespace ProcessHacker.Native.Objects
 {
     public sealed class MutantHandle : NativeHandle<MutantAccess>
     {
-        public WindowsException LastError { get; private set; }
-
         public static MutantHandle Create(MutantAccess access, bool initialOwner)
         {
             return Create(access, null, initialOwner);
@@ -44,13 +43,14 @@ namespace ProcessHacker.Native.Objects
 
         public static MutantHandle Create(MutantAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, bool initialOwner)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                NtStatus status = Win32.NtCreateMutant(out handle, access, ref oa, initialOwner);
-                status.ThrowIf();  
+                if ((status = Win32.NtCreateMutant(out handle, access, ref oa, initialOwner)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {
@@ -71,12 +71,14 @@ namespace ProcessHacker.Native.Objects
 
         public MutantHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, MutantAccess access)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenMutant(out handle, access, oa).ThrowIf();
+                if ((status = Win32.NtOpenMutant(out handle, access, ref oa)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {

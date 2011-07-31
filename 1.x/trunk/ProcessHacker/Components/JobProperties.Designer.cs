@@ -38,10 +38,10 @@
             this.label2 = new System.Windows.Forms.Label();
             this.textJobName = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.listLimits = new ExtendedListView();
+            this.listLimits = new System.Windows.Forms.ListView();
             this.columnLimit = new System.Windows.Forms.ColumnHeader();
             this.columnValue = new System.Windows.Forms.ColumnHeader();
-            this.listProcesses = new ExtendedListView();
+            this.listProcesses = new System.Windows.Forms.ListView();
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnPid = new System.Windows.Forms.ColumnHeader();
             this.tabStatistics = new System.Windows.Forms.TabPage();
@@ -761,11 +761,11 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textJobName;
         private System.Windows.Forms.Label label1;
-        private ExtendedListView listProcesses;
+        private System.Windows.Forms.ListView listProcesses;
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnPid;
         private System.Windows.Forms.Label label3;
-        private ExtendedListView listLimits;
+        private System.Windows.Forms.ListView listLimits;
         private System.Windows.Forms.ColumnHeader columnLimit;
         private System.Windows.Forms.ColumnHeader columnValue;
         private System.Windows.Forms.GroupBox groupGeneral;

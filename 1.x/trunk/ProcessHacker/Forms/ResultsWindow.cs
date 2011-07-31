@@ -50,9 +50,11 @@ namespace ProcessHacker
         public ResultsWindow(int pid)
         {
             InitializeComponent();
-
             this.AddEscapeToClose();
             this.SetTopMost();
+
+            listResults.SetDoubleBuffered(true);
+            listResults.SetTheme("explorer");
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
@@ -387,7 +389,7 @@ namespace ProcessHacker
         {
             // this is a bit complex because the list needs to be sorted as well
             ContextMenu menu = new ContextMenu();
-            Dictionary<string, string> TextToId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, string> TextToId = new Dictionary<string, string>();
             List<string> Texts = new List<string>();
 
             foreach (string s in Program.ResultsWindows.Keys)

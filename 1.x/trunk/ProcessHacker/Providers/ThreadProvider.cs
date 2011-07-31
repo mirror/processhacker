@@ -191,37 +191,33 @@ namespace ProcessHacker
                     SymbolProvider.Options = SymbolOptions.DeferredLoads |
                         (Settings.Instance.DbgHelpUndecorate ? SymbolOptions.UndName : 0);
 
-                    if (!string.IsNullOrEmpty(Settings.Instance.DbgHelpSearchPath))
+                    if (Settings.Instance.DbgHelpSearchPath != "")
                         _symbols.SearchPath = Settings.Instance.DbgHelpSearchPath;
 
                     try
                     {
                         if (_pid > 4)
                         {
-                            using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                            using (var phandle =
+                                new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                             {
-                                if (phandle.LastError == null)
+                                if (OSVersion.Architecture == OSArch.I386 || !phandle.IsWow64())
                                 {
-                                    if (OSVersion.Architecture == OSArch.I386 || !phandle.IsWow64)
-                                    {
-                                        // Load the process' modules.
-                                        _symbols.LoadProcessModules(phandle);
-                                    }
-                                    else
-                                    {
-                                        // Load the process' WOW64 modules.
-                                        _symbols.LoadProcessWow64Modules(_pid);
-                                    }
-
-                                    // If the process is CSRSS we should load kernel modules 
-                                    // due to the presence of kernel-mode threads.
-                                    if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
-                                        this.LoadKernelSymbols(true);
+                                    // Load the process' modules.
+                                    try { _symbols.LoadProcessModules(phandle); }
+                                    catch { }
                                 }
                                 else
                                 {
-                                    throw phandle.LastError;
+                                    // Load the process' WOW64 modules.
+                                    try { _symbols.LoadProcessWow64Modules(_pid); }
+                                    catch { }
                                 }
+
+                                // If the process is CSRSS we should load kernel modules 
+                                // due to the presence of kernel-mode threads.
+                                if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
+                                    this.LoadKernelSymbols(true);
                             }
                         }
                         else
@@ -235,7 +231,7 @@ namespace ProcessHacker
                         // kernel32.dll and ntdll.dll.
                         try
                         {
-                            ProcessHandle.Current.EnumModules(module =>
+                            ProcessHandle.Current.EnumModules((module) =>
                             {
                                 if (
                                     module.BaseName.Equals("kernel32.dll", StringComparison.OrdinalIgnoreCase) ||
@@ -313,7 +309,6 @@ namespace ProcessHacker
                         out flags,
                         out fileName
                         );
-
                     result.FileName = fileName;
                     _messageQueue.Enqueue(result);
                 }
@@ -348,15 +343,17 @@ namespace ProcessHacker
             ulong modBase;
             string fileName = _symbols.GetModuleFromAddress(startAddress, out modBase);
 
-            if (string.IsNullOrEmpty(fileName))
+            if (fileName == null)
             {
                 level = SymbolResolveLevel.Address;
                 return "0x" + startAddress.ToString("x");
             }
-
-            level = SymbolResolveLevel.Module; 
-            
-            return System.IO.Path.GetFileName(fileName) + "+0x" + (startAddress - modBase).ToString("x");
+            else
+            {
+                level = SymbolResolveLevel.Module;
+                return System.IO.Path.GetFileName(fileName) + "+0x" +
+                    (startAddress - modBase).ToString("x");
+            }
         }
 
         protected override void Update()

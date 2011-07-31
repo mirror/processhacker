@@ -23,9 +23,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
-
+using System.Runtime.InteropServices;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Messaging;
 using ProcessHacker.Native;
@@ -61,7 +62,7 @@ namespace ProcessHacker
     {
         public object Clone()
         {
-            return this.MemberwiseClone();
+            return base.MemberwiseClone();
         }
 
         public int RunId;
@@ -167,9 +168,9 @@ namespace ProcessHacker
             get { return _performance; }
         }
 
-        private readonly int _processorPerfArraySize;
-        private readonly MemoryAlloc _processorPerfBuffer;
-        private readonly SystemProcessorPerformanceInformation[] _processorPerfArray;
+        private int _processorPerfArraySize;
+        private MemoryAlloc _processorPerfBuffer;
+        private SystemProcessorPerformanceInformation[] _processorPerfArray;
         public SystemProcessorPerformanceInformation[] ProcessorPerfArray
         {
             get { return _processorPerfArray; }
@@ -216,8 +217,8 @@ namespace ProcessHacker
 
         private delegate ProcessQueryMessage QueryProcessDelegate(int pid, string fileName, bool useCache);
 
-        private readonly MessageQueue _messageQueue = new MessageQueue();
-        private readonly Dictionary<string, VerifyResult> _fileResults = new Dictionary<string, VerifyResult>(StringComparer.OrdinalIgnoreCase);
+        private MessageQueue _messageQueue = new MessageQueue();
+        private Dictionary<string, VerifyResult> _fileResults = new Dictionary<string, VerifyResult>();
 
         private Int64Delta _ioReadDelta;
         private Int64Delta _ioWriteDelta;
@@ -225,31 +226,31 @@ namespace ProcessHacker
         private Int64Delta _cpuKernelDelta;
         private Int64Delta _cpuUserDelta;
         private Int64Delta _cpuOtherDelta;
-        private readonly Int64Delta[] _cpuKernelDeltas;
-        private readonly Int64Delta[] _cpuUserDeltas;
-        private readonly Int64Delta[] _cpuOtherDeltas;
+        private Int64Delta[] _cpuKernelDeltas;
+        private Int64Delta[] _cpuUserDeltas;
+        private Int64Delta[] _cpuOtherDeltas;
 
         private int _historyMaxSize = 100;
-        private readonly CircularBuffer<long> _ioReadHistory;
-        private readonly CircularBuffer<long> _ioWriteHistory;
-        private readonly CircularBuffer<long> _ioOtherHistory;
-        private readonly CircularBuffer<long> _ioReadOtherHistory;
-        private readonly CircularBuffer<float> _cpuKernelHistory;
-        private readonly CircularBuffer<float> _cpuUserHistory;
-        private readonly CircularBuffer<float> _cpuOtherHistory;
-        private readonly CircularBuffer<float>[] _cpusKernelHistory;
-        private readonly CircularBuffer<float>[] _cpusUserHistory;
-        private readonly CircularBuffer<float>[] _cpusOtherHistory;
-        private readonly CircularBuffer<long> _commitHistory;
-        private readonly CircularBuffer<long> _physicalMemoryHistory;
-        private readonly CircularBuffer<DateTime> _timeHistory;
-        private readonly CircularBuffer<string> _cpuMostUsageHistory;
-        private readonly CircularBuffer<string> _ioMostUsageHistory;
+        private CircularBuffer<long> _ioReadHistory;
+        private CircularBuffer<long> _ioWriteHistory;
+        private CircularBuffer<long> _ioOtherHistory;
+        private CircularBuffer<long> _ioReadOtherHistory;
+        private CircularBuffer<float> _cpuKernelHistory;
+        private CircularBuffer<float> _cpuUserHistory;
+        private CircularBuffer<float> _cpuOtherHistory;
+        private CircularBuffer<float>[] _cpusKernelHistory;
+        private CircularBuffer<float>[] _cpusUserHistory;
+        private CircularBuffer<float>[] _cpusOtherHistory;
+        private CircularBuffer<long> _commitHistory;
+        private CircularBuffer<long> _physicalMemoryHistory;
+        private CircularBuffer<DateTime> _timeHistory;
+        private CircularBuffer<string> _cpuMostUsageHistory;
+        private CircularBuffer<string> _ioMostUsageHistory;
 
-        private SystemProcess _dpcs = new SystemProcess
+        private SystemProcess _dpcs = new SystemProcess()
         {
             Name = "DPCs",
-            Process = new SystemProcessInformation
+            Process = new SystemProcessInformation()
             {
                 ProcessId = -2,
                 InheritedFromProcessId = 0,
@@ -257,10 +258,10 @@ namespace ProcessHacker
             }
         };
 
-        private SystemProcess _interrupts = new SystemProcess
+        private SystemProcess _interrupts = new SystemProcess()
         {
             Name = "Interrupts",
-            Process = new SystemProcessInformation
+            Process = new SystemProcessInformation()
             {
                 ProcessId = -3,
                 InheritedFromProcessId = 0,
@@ -269,28 +270,31 @@ namespace ProcessHacker
         };
 
         public ProcessSystemProvider()
+            : base()
         {
-            this.Name = "ProcessSystemProvider";
+            this.Name = this.GetType().Name;
 
             // Add the file processing results listener.
-            _messageQueue.AddListener(new MessageQueueListener<ProcessQueryMessage>(message =>
-            {
-                if (this.Dictionary.ContainsKey(message.Pid))
-                {
-                    ProcessItem item = this.Dictionary[message.Pid];
+            _messageQueue.AddListener(
+                new MessageQueueListener<ProcessQueryMessage>((message) =>
+                    {
+                        if (this.Dictionary.ContainsKey(message.Pid))
+                        {
+                            ProcessItem item = this.Dictionary[message.Pid];
 
-                    this.FillPqResult(item, message);
-                    item.JustProcessed = true;
-                }
-            }));
+                            this.FillPqResult(item, message);
+                            item.JustProcessed = true;
+                        }
+                    }));
 
             SystemBasicInformation basic;
             int retLen;
 
-            Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, out basic, SystemBasicInformation.SizeOf, out retLen);
-
+            Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, out basic,
+                Marshal.SizeOf(typeof(SystemBasicInformation)), out retLen);
             _system = basic;
-            _processorPerfArraySize = SystemProcessorPerformanceInformation.SizeOf * _system.NumberOfProcessors;
+            _processorPerfArraySize = Marshal.SizeOf(typeof(SystemProcessorPerformanceInformation)) *
+                _system.NumberOfProcessors;
             _processorPerfBuffer = new MemoryAlloc(_processorPerfArraySize);
             _processorPerfArray = new SystemProcessorPerformanceInformation[_system.NumberOfProcessors];
 
@@ -300,7 +304,8 @@ namespace ProcessHacker
 
             _cpuKernelDelta = new Int64Delta(this.ProcessorPerf.KernelTime);
             _cpuUserDelta = new Int64Delta(this.ProcessorPerf.UserTime);
-            _cpuOtherDelta = new Int64Delta(this.ProcessorPerf.IdleTime + this.ProcessorPerf.DpcTime + this.ProcessorPerf.InterruptTime);
+            _cpuOtherDelta = new Int64Delta(
+                this.ProcessorPerf.IdleTime + this.ProcessorPerf.DpcTime + this.ProcessorPerf.InterruptTime);
             _ioReadDelta = new Int64Delta(this.Performance.IoReadTransferCount);
             _ioWriteDelta = new Int64Delta(this.Performance.IoWriteTransferCount);
             _ioOtherDelta = new Int64Delta(this.Performance.IoOtherTransferCount);
@@ -334,7 +339,9 @@ namespace ProcessHacker
             {
                 Int64Delta.Update(ref _cpuKernelDeltas[i], this.ProcessorPerfArray[i].KernelTime);
                 Int64Delta.Update(ref _cpuUserDeltas[i], this.ProcessorPerfArray[i].UserTime);
-                Int64Delta.Update(ref _cpuOtherDeltas[i], this.ProcessorPerfArray[i].IdleTime + this.ProcessorPerfArray[i].DpcTime + this.ProcessorPerfArray[i].InterruptTime);
+                Int64Delta.Update(ref _cpuOtherDeltas[i],
+                    this.ProcessorPerfArray[i].IdleTime + this.ProcessorPerfArray[i].DpcTime +
+                    this.ProcessorPerfArray[i].InterruptTime);
 
                 _cpusKernelHistory[i] = new CircularBuffer<float>(_historyMaxSize);
                 _cpusUserHistory[i] = new CircularBuffer<float>(_historyMaxSize);
@@ -364,12 +371,8 @@ namespace ProcessHacker
         {
             int retLen;
 
-            Win32.NtQuerySystemInformation(
-                SystemInformationClass.SystemProcessorPerformanceInformation,
-                _processorPerfBuffer, 
-                _processorPerfArraySize, 
-                out retLen
-                );
+            Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessorPerformanceInformation,
+                _processorPerfBuffer, _processorPerfArraySize, out retLen);
 
             _processorPerf = new SystemProcessorPerformanceInformation();
 
@@ -397,12 +400,8 @@ namespace ProcessHacker
         {
             int retLen;
 
-            Win32.NtQuerySystemInformation(
-                SystemInformationClass.SystemPerformanceInformation,
-                 out _performance, 
-                 SystemPerformanceInformation.SizeOf, 
-                 out retLen
-                 );
+            Win32.NtQuerySystemInformation(SystemInformationClass.SystemPerformanceInformation,
+                 out _performance, SystemPerformanceInformation.Size, out retLen);
         }
 
         private ProcessQueryMessage QueryProcessStage1(int pid, string fileName, bool forced)
@@ -415,53 +414,70 @@ namespace ProcessHacker
         /// </summary>
         private ProcessQueryMessage QueryProcessStage1(int pid, string fileName, bool forced, bool addToQueue)
         {
-            ProcessQueryMessage fpResult = new ProcessQueryMessage
-            {
-                Pid = pid, 
-                Stage = 0x1
-            };
+            ProcessQueryMessage fpResult = new ProcessQueryMessage();
 
-            if (string.IsNullOrEmpty(fileName))
+            fpResult.Pid = pid;
+            fpResult.Stage = 0x1;
+
+            if (fileName == null)
                 fileName = this.GetFileName(pid);
 
-            if (string.IsNullOrEmpty(fileName))
+            if (fileName == null)
                 Logging.Log(Logging.Importance.Warning, "Could not get file name for PID " + pid.ToString());
 
             fpResult.FileName = fileName;
 
-            using (ProcessHandle queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+            try
             {
-                if (queryLimitedHandle.LastError == null)
+                using (var queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                 {
-                    // Get a handle to the process' token and get its 
-                    // elevation type, and integrity.
-                    using (TokenHandle thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
+                    try
                     {
-                        if (thandle.LastError == null)
+                        // Get a handle to the process' token and get its 
+                        // elevation type, and integrity.
+
+                        using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
                         {
-                            fpResult.ElevationType = thandle.ElevationType;
-                            fpResult.IsElevated = thandle.IsElevated();
+                            try { fpResult.ElevationType = thandle.GetElevationType(); }
+                            catch { }
+                            try { fpResult.IsElevated = thandle.IsElevated(); }
+                            catch { }
 
                             // Try to get the integrity level.
-                            fpResult.Integrity = thandle.GetIntegrity(out fpResult.IntegrityLevel);
+                            try
+                            {
+                                fpResult.Integrity = thandle.GetIntegrity(out fpResult.IntegrityLevel);
+                            }
+                            catch
+                            { }
                         }
                     }
+                    catch
+                    { }
 
                     // Is the process running under WOW64?
                     if (OSVersion.Architecture == OSArch.Amd64)
                     {
-                        fpResult.IsWow64 = queryLimitedHandle.IsWow64;
+                        try
+                        {
+                            fpResult.IsWow64 = queryLimitedHandle.IsWow64();
+                        }
+                        catch
+                        { }
                     }
 
                     // Get the process' job if we have KProcessHacker. 
                     // Otherwise, don't do anything.
+
                     if (KProcessHacker.Instance != null)
                     {
                         try
                         {
-                            using (JobObjectHandle jhandle = queryLimitedHandle.GetJobObject(JobObjectAccess.Query))
+                            var jhandle = queryLimitedHandle.GetJobObject(JobObjectAccess.Query);
+
+                            if (jhandle != null)
                             {
-                                if (jhandle != null)
+                                using (jhandle)
                                 {
                                     var limits = jhandle.GetBasicLimitInformation();
 
@@ -485,49 +501,59 @@ namespace ProcessHacker
                     }
                     else
                     {
-                        fpResult.IsInJob = queryLimitedHandle.IsInJob();
+                        try { fpResult.IsInJob = queryLimitedHandle.IsInJob(); }
+                        catch { }
                     }
                 }
             }
+            catch
+            { }
 
-
-            if (!string.IsNullOrEmpty(fileName))
+            if (fileName != null)
             {
-                fpResult.Icon = FileUtils.GetFileIcon(fileName);
-                fpResult.LargeIcon = FileUtils.GetFileIcon(fileName, true);
+                try
+                {
+                    fpResult.Icon = FileUtils.GetFileIcon(fileName);
+                    fpResult.LargeIcon = FileUtils.GetFileIcon(fileName, true);
+                }
+                catch
+                { }
 
-                fpResult.VersionInfo = new ImageVersionInfo(FileVersionInfo.GetVersionInfo(fileName));
+                try
+                {
+                    fpResult.VersionInfo = new ImageVersionInfo(FileVersionInfo.GetVersionInfo(fileName));
+                }
+                catch
+                { }
             }
 
             if (pid > 4)
             {
-                using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                try
                 {
-                    if (phandle.LastError == null)
+                    using (var phandle = new ProcessHandle(pid,
+                        Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                     {
                         fpResult.CmdLine = phandle.GetCommandLine();
                         fpResult.IsPosix = phandle.IsPosix();
                     }
                 }
+                catch
+                { }
             }
 
             if (addToQueue)
                 _messageQueue.Enqueue(fpResult);
 
             WorkQueue.GlobalQueueWorkItemTag(
-                new QueryProcessDelegate(this.QueryProcessStage1a), 
-                "process-stage1a", 
-                pid, 
-                fileName, 
-                forced
+                new QueryProcessDelegate(this.QueryProcessStage1a),
+                "process-stage1a",
+                pid, fileName, forced
                 );
-
             WorkQueue.GlobalQueueWorkItemTag(
-                new QueryProcessDelegate(this.QueryProcessStage2), 
-                "process-stage2", 
-                pid, 
-                fileName, 
-                forced
+                new QueryProcessDelegate(this.QueryProcessStage2),
+                "process-stage2",
+                pid, fileName, forced
                 );
 
             if (this.ProcessQueryComplete != null)
@@ -541,12 +567,10 @@ namespace ProcessHacker
         /// </summary>
         private ProcessQueryMessage QueryProcessStage1a(int pid, string fileName, bool forced)
         {
-            ProcessQueryMessage fpResult = new ProcessQueryMessage
-            {
-                Pid = pid, 
-                Stage = 0x1a
-            };
+            ProcessQueryMessage fpResult = new ProcessQueryMessage();
 
+            fpResult.Pid = pid;
+            fpResult.Stage = 0x1a;
 
             if (pid > 4)
             {
@@ -571,20 +595,19 @@ namespace ProcessHacker
         /// </summary>
         private ProcessQueryMessage QueryProcessStage2(int pid, string fileName, bool forced)
         {
-            ProcessQueryMessage fpResult = new ProcessQueryMessage
-            {
-                Pid = pid, 
-                Stage = 0x2, 
-                IsPacked = false
-            };
+            ProcessQueryMessage fpResult = new ProcessQueryMessage();
 
-            if (string.IsNullOrEmpty(fileName))
+            fpResult.Pid = pid;
+            fpResult.Stage = 0x2;
+            fpResult.IsPacked = false;
+
+            if (fileName == null)
                 return null;
 
             // Don't process the file if it is too big (above 32MB).
             try
             {
-                if ((new System.IO.FileInfo(fileName)).Length > 32 * 1024 * 1024)
+                if ((new global::System.IO.FileInfo(fileName)).Length > 32 * 1024 * 1024)
                     return null;
             }
             catch
@@ -600,7 +623,7 @@ namespace ProcessHacker
             // 1. The function-to-library ratio is lower than 4
             //   (on average less than 4 functions are imported from each library)
             // 2. It references more than 3 libraries but less than 14 libraries.
-            if (Settings.Instance.VerifySignatures || forced)
+            if (fileName != null && (Settings.Instance.VerifySignatures || forced))
             {
                 try
                 {
@@ -635,28 +658,31 @@ namespace ProcessHacker
             {
                 if (Settings.Instance.VerifySignatures || forced)
                 {
-                    string uniName = global::System.IO.Path.GetFullPath(fileName).ToLowerInvariant();
-
-                    // No lock needed; verify results are never removed, only added.
-                    if (!forced && _fileResults.ContainsKey(uniName))
+                    if (fileName != null)
                     {
-                        fpResult.VerifyResult = _fileResults[uniName];
-                    }
-                    else
-                    {
-                        try
-                        {
-                            fpResult.VerifyResult = Cryptography.VerifyFile(fileName, out fpResult.VerifySignerName);
-                        }
-                        catch
-                        {
-                            fpResult.VerifyResult = VerifyResult.NoSignature;
-                        }
+                        string uniName = global::System.IO.Path.GetFullPath(fileName).ToLowerInvariant();
 
-                        if (!_fileResults.ContainsKey(uniName))
-                            _fileResults.Add(uniName, fpResult.VerifyResult);
+                        // No lock needed; verify results are never removed, only added.
+                        if (!forced && _fileResults.ContainsKey(uniName))
+                        {
+                            fpResult.VerifyResult = _fileResults[uniName];
+                        }
                         else
-                            _fileResults[uniName] = fpResult.VerifyResult;
+                        {
+                            try
+                            {
+                                fpResult.VerifyResult = Cryptography.VerifyFile(fileName, out fpResult.VerifySignerName);
+                            }
+                            catch
+                            {
+                                fpResult.VerifyResult = VerifyResult.NoSignature;
+                            }
+
+                            if (!_fileResults.ContainsKey(uniName))
+                                _fileResults.Add(uniName, fpResult.VerifyResult);
+                            else
+                                _fileResults[uniName] = fpResult.VerifyResult;
+                        }
                     }
                 }
             }
@@ -677,9 +703,9 @@ namespace ProcessHacker
 
             if (pid != 4)
             {
-                using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                try
                 {
-                    if (phandle.LastError == null)
+                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                     {
                         // First try to get the native file name, to prevent PEB
                         // file name spoofing.
@@ -688,38 +714,40 @@ namespace ProcessHacker
                             fileName = FileUtils.GetFileName(phandle.GetImageFileName());
                         }
                         catch
-                        {
-                        }
+                        { }
 
                         // If we couldn't get it or we couldn't resolve the \Device prefix,
                         // we'll use the Win32 variant.
-                        if ((string.IsNullOrEmpty(fileName) || fileName.StartsWith("\\", StringComparison.OrdinalIgnoreCase)) && OSVersion.HasWin32ImageFileName)
+                        if ((fileName == null || fileName.StartsWith("\\")) &&
+                            OSVersion.HasWin32ImageFileName)
                         {
                             try
                             {
                                 fileName = phandle.GetImageFileNameWin32();
                             }
                             catch
-                            {
-                            }
+                            { }
                         }
                     }
                 }
+                catch
+                { }
 
-                if (string.IsNullOrEmpty(fileName) || fileName.StartsWith("\\Device\\", StringComparison.OrdinalIgnoreCase))
+                if (fileName == null || fileName.StartsWith("\\Device\\"))
                 {
-                    using (ProcessHandle phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                    try
                     {
-                        if (phandle.LastError == null)
+                        using (var phandle =
+                            new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
                         {
                             // We can try to use the PEB.
                             try
                             {
-                                fileName = FileUtils.GetFileName(FileUtils.GetFileName(phandle.GetPebString(PebOffset.ImagePathName)));
+                                fileName = FileUtils.GetFileName(
+                                    FileUtils.GetFileName(phandle.GetPebString(PebOffset.ImagePathName)));
                             }
                             catch
-                            {
-                            }
+                            { }
 
                             // If all else failed, we get the main module file name.
                             try
@@ -727,10 +755,11 @@ namespace ProcessHacker
                                 fileName = phandle.GetMainModule().FileName;
                             }
                             catch
-                            {
-                            }
+                            { }
                         }
                     }
+                    catch
+                    { }
                 }
             }
             else
@@ -757,45 +786,41 @@ namespace ProcessHacker
 
         private void FillPqResult(ProcessItem item, ProcessQueryMessage result)
         {
-            switch (result.Stage)
+            if (result.Stage == 0x1)
             {
-                case 0x1:
-                    item.FileName = result.FileName;
-                    item.ElevationType = result.ElevationType;
-                    item.IsElevated = result.IsElevated;
-                    item.Integrity = result.Integrity;
-                    item.IntegrityLevel = result.IntegrityLevel;
-                    item.IsWow64 = result.IsWow64;
-                    item.IsInJob = result.IsInJob;
-                    item.JobName = result.JobName;
-                    item.IsInSignificantJob = result.IsInSignificantJob;
-                    item.Icon = result.Icon;
-                    item.LargeIcon = result.LargeIcon;
-                    item.VersionInfo = result.VersionInfo;
-                    item.CmdLine = result.CmdLine;
-                    item.IsPosix = result.IsPosix;
-                    break;
-                case 0x1a:
-                    {
-                        item.IsDotNet = result.IsDotNet;
+                item.FileName = result.FileName;
+                item.ElevationType = result.ElevationType;
+                item.IsElevated = result.IsElevated;
+                item.Integrity = result.Integrity;
+                item.IntegrityLevel = result.IntegrityLevel;
+                item.IsWow64 = result.IsWow64;
+                item.IsInJob = result.IsInJob;
+                item.JobName = result.JobName;
+                item.IsInSignificantJob = result.IsInSignificantJob;
+                item.Icon = result.Icon;
+                item.LargeIcon = result.LargeIcon;
+                item.VersionInfo = result.VersionInfo;
+                item.CmdLine = result.CmdLine;
+                item.IsPosix = result.IsPosix;
+            }
+            else if (result.Stage == 0x1a)
+            {
+                item.IsDotNet = result.IsDotNet;
 
-                        if (item.IsDotNet)
-                            item.IsPacked = false;
-
-                        break;
-                    }
-                case 0x2:
-                    {
-                        item.IsPacked = !(item.IsDotNet || result.IsDotNet) && result.IsPacked;
-                        item.VerifyResult = result.VerifyResult;
-                        item.VerifySignerName = result.VerifySignerName;
-                        item.ImportFunctions = result.ImportFunctions;
-                        item.ImportModules = result.ImportModules;
-                        break;
-                    }
-                default:
-                    Logging.Log(Logging.Importance.Warning, "Unknown stage " + result.Stage.ToString("x"));
-                    break;
+                if (item.IsDotNet)
+                    item.IsPacked = false;
+            }
+            else if (result.Stage == 0x2)
+            {
+                item.IsPacked = (item.IsDotNet || result.IsDotNet) ? false : result.IsPacked;
+                item.VerifyResult = result.VerifyResult;
+                item.VerifySignerName = result.VerifySignerName;
+                item.ImportFunctions = result.ImportFunctions;
+                item.ImportModules = result.ImportModules;
+            }
+            else
+            {
+                Logging.Log(Logging.Importance.Warning, "Unknown stage " + result.Stage.ToString("x"));
             }
 
             if (this.ProcessQueryReceived != null)
@@ -807,7 +832,7 @@ namespace ProcessHacker
             this.UpdatePerformance();
             this.UpdateProcessorPerf();
 
-            if (this.RunCount == 0)
+            if (this.RunCount % 3 == 0)
                 FileUtils.RefreshFileNamePrefixes();
 
             Dictionary<int, IntPtr> tsProcesses = null;
@@ -817,7 +842,8 @@ namespace ProcessHacker
 
             _cpuKernelDelta.Update(_processorPerf.KernelTime);
             _cpuUserDelta.Update(_processorPerf.UserTime);
-            _cpuOtherDelta.Update(_processorPerf.IdleTime + _processorPerf.DpcTime + _processorPerf.InterruptTime);
+            _cpuOtherDelta.Update(
+                _processorPerf.IdleTime + _processorPerf.DpcTime + _processorPerf.InterruptTime);
 
             long sysKernelTime = _cpuKernelDelta.Delta;
             long sysUserTime = _cpuUserDelta.Delta;
@@ -847,15 +873,20 @@ namespace ProcessHacker
             {
                 Int64Delta.Update(ref _cpuKernelDeltas[i], _processorPerfArray[i].KernelTime);
                 Int64Delta.Update(ref _cpuUserDeltas[i], _processorPerfArray[i].UserTime);
-                Int64Delta.Update(ref _cpuOtherDeltas[i], _processorPerfArray[i].IdleTime + _processorPerfArray[i].DpcTime + _processorPerfArray[i].InterruptTime);
+                Int64Delta.Update(ref _cpuOtherDeltas[i],
+                    _processorPerfArray[i].IdleTime + _processorPerfArray[i].DpcTime +
+                    _processorPerfArray[i].InterruptTime);
 
                 long cpuKernelTime = _cpuKernelDeltas[i].Delta;
                 long cpuUserTime = _cpuUserDeltas[i].Delta;
                 long cpuOtherTime = _cpuOtherDeltas[i].Delta;
 
-                UpdateCb(_cpusKernelHistory[i], (float)cpuKernelTime / (cpuKernelTime + cpuUserTime + cpuOtherTime));
-                UpdateCb(_cpusUserHistory[i], (float)cpuUserTime / (cpuKernelTime + cpuUserTime + cpuOtherTime));
-                UpdateCb(_cpusOtherHistory[i], (float)cpuOtherTime / (cpuKernelTime + cpuUserTime + cpuOtherTime));
+                UpdateCb(_cpusKernelHistory[i], 
+                    (float)cpuKernelTime / (cpuKernelTime + cpuUserTime + cpuOtherTime));
+                UpdateCb(_cpusUserHistory[i],
+                    (float)cpuUserTime / (cpuKernelTime + cpuUserTime + cpuOtherTime));
+                UpdateCb(_cpusOtherHistory[i],
+                    (float)cpuOtherTime / (cpuKernelTime + cpuUserTime + cpuOtherTime));
             }
 
             // Prevent a massive spike in the I/O graph when the program is starting.
@@ -870,8 +901,9 @@ namespace ProcessHacker
             UpdateCb(_ioWriteHistory, _ioWriteDelta.Delta);
             UpdateCb(_ioOtherHistory, _ioOtherDelta.Delta);
             UpdateCb(_ioReadOtherHistory, _ioReadDelta.Delta + _ioOtherDelta.Delta);
-            UpdateCb(_commitHistory, this._performance.CommittedPages * _system.PageSize);
-            UpdateCb(_physicalMemoryHistory, (this._system.NumberOfPhysicalPages - this._performance.AvailablePages) * _system.PageSize);
+            UpdateCb(_commitHistory, (long)_performance.CommittedPages * _system.PageSize);
+            UpdateCb(_physicalMemoryHistory,
+                (long)(_system.NumberOfPhysicalPages - _performance.AvailablePages) * _system.PageSize);
 
             // set System Idle Process CPU time
             if (procs.ContainsKey(0))
@@ -918,47 +950,51 @@ namespace ProcessHacker
             // look for new processes
             foreach (int pid in procs.Keys)
             {
-                SystemProcessInformation processInfo = procs[pid].Process;
+                var processInfo = procs[pid].Process;
 
                 if (!Dictionary.ContainsKey(pid))
                 {
-                    ProcessItem item = new ProcessItem
-                    {
-                        RunId = this.RunCount,
-                        Pid = pid,
-                        Process = processInfo,
-                        SessionId = processInfo.SessionId,
-                        ProcessingAttempts = 1,
-                        Name = procs[pid].Name,
-                        CpuKernelDelta = new Int64Delta(processInfo.KernelTime),
-                        CpuUserDelta = new Int64Delta(processInfo.UserTime),
-                        IoReadDelta = new Int64Delta((long)processInfo.IoCounters.ReadTransferCount),
-                        IoWriteDelta = new Int64Delta((long)processInfo.IoCounters.WriteTransferCount),
-                        IoOtherDelta = new Int64Delta((long)processInfo.IoCounters.OtherTransferCount),
-                        CpuKernelHistory = new CircularBuffer<float>(this._historyMaxSize),
-                        CpuUserHistory = new CircularBuffer<float>(this._historyMaxSize),
-                        IoReadHistory = new CircularBuffer<long>(this._historyMaxSize),
-                        IoWriteHistory = new CircularBuffer<long>(this._historyMaxSize),
-                        IoOtherHistory = new CircularBuffer<long>(this._historyMaxSize),
-                        IoReadOtherHistory = new CircularBuffer<long>(this._historyMaxSize),
-                        PrivateMemoryHistory = new CircularBuffer<long>(this._historyMaxSize),
-                        WorkingSetHistory = new CircularBuffer<long>(this._historyMaxSize)
-                    };
+                    ProcessItem item = new ProcessItem();
+
+                    // Set up basic process information.
+                    item.RunId = this.RunCount;
+                    item.Pid = pid;
+                    item.Process = processInfo;
+                    item.SessionId = processInfo.SessionId;
+                    item.ProcessingAttempts = 1;
+
+                    item.Name = procs[pid].Name;
+
+                    // Create the delta and history managers.
+
+                    item.CpuKernelDelta = new Int64Delta(processInfo.KernelTime);
+                    item.CpuUserDelta = new Int64Delta(processInfo.UserTime);
+                    item.IoReadDelta = new Int64Delta((long)processInfo.IoCounters.ReadTransferCount);
+                    item.IoWriteDelta = new Int64Delta((long)processInfo.IoCounters.WriteTransferCount);
+                    item.IoOtherDelta = new Int64Delta((long)processInfo.IoCounters.OtherTransferCount);
+
+                    item.CpuKernelHistory = new CircularBuffer<float>(_historyMaxSize);
+                    item.CpuUserHistory = new CircularBuffer<float>(_historyMaxSize);
+                    item.IoReadHistory = new CircularBuffer<long>(_historyMaxSize);
+                    item.IoWriteHistory = new CircularBuffer<long>(_historyMaxSize);
+                    item.IoOtherHistory = new CircularBuffer<long>(_historyMaxSize);
+                    item.IoReadOtherHistory = new CircularBuffer<long>(_historyMaxSize);
+                    item.PrivateMemoryHistory = new CircularBuffer<long>(_historyMaxSize);
+                    item.WorkingSetHistory = new CircularBuffer<long>(_historyMaxSize);
 
                     // HACK: Shouldn't happen, but it does - sometimes 
                     // the process name is null.
-                    if (string.IsNullOrEmpty(item.Name))
+                    if (item.Name == null)
                     {
-                        using (ProcessHandle phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                        try
                         {
-                            if (phandle.LastError == null)
-                            {
+                            using (var phandle = 
+                                new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
                                 item.Name = phandle.GetMainModule().BaseName;
-                            }
-                            else
-                            {
-                                item.Name = string.Empty;
-                            }
+                        }
+                        catch
+                        {
+                            item.Name = "";
                         }
                     }
 
@@ -970,8 +1006,7 @@ namespace ProcessHacker
                         item.CreateTime = DateTime.FromFileTime(processInfo.CreateTime);
                     }
                     catch
-                    {
-                    }
+                    { }
 
                     if (pid > 0)
                     {
@@ -993,46 +1028,64 @@ namespace ProcessHacker
                         }
 
                         // Get the process' token's username.
-                        using (ProcessHandle queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+
+                        try
                         {
-                            if (queryLimitedHandle.LastError == null)
+                            using (var queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                             {
-                                using (TokenHandle thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
+                                try
                                 {
-                                    if (thandle.LastError == null)
+                                    using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
                                     {
-                                        using (Sid sid = thandle.GetUser())
+                                        try
                                         {
-                                            item.Username = sid.GetFullName(true);
+                                            using (var sid = thandle.GetUser())
+                                                item.Username = sid.GetFullName(true);
                                         }
+                                        catch
+                                        { }
                                     }
                                 }
+                                catch
+                                { }
                             }
                         }
+                        catch
+                        { }
 
                         // Get a process handle with QUERY_INFORMATION access, and 
                         // see if it's being debugged.
-                        item.ProcessQueryHandle = new ProcessHandle(pid, ProcessAccess.QueryInformation);
-                        if (item.ProcessQueryHandle.LastError == null)
+
+                        try
                         {
-                            item.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged;
+                            item.ProcessQueryHandle = new ProcessHandle(pid, ProcessAccess.QueryInformation);
+
+                            try
+                            {
+                                item.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
+                            }
+                            catch
+                            { }
                         }
+                        catch
+                        { }
                     }
 
                     // Update the process name if it's a fake process.
-                    switch (pid)
+
+                    if (pid == 0)
                     {
-                        case 0:
-                            item.Name = "System Idle Process";
-                            break;
-                        case -2:
-                            item.ParentPid = 0;
-                            item.HasParent = true;
-                            break;
-                        case -3:
-                            item.ParentPid = 0;
-                            item.HasParent = true;
-                            break;
+                        item.Name = "System Idle Process";
+                    }
+                    else if (pid == -2)
+                    {
+                        item.ParentPid = 0;
+                        item.HasParent = true;
+                    }
+                    else if (pid == -3)
+                    {
+                        item.ParentPid = 0;
+                        item.HasParent = true;
                     }
 
                     // If this is not the first run, we process the item immediately.
@@ -1044,7 +1097,10 @@ namespace ProcessHacker
                     {
                         if (pid > 0)
                         {
-                            WorkQueue.GlobalQueueWorkItemTag(new QueryProcessDelegate(this.QueryProcessStage1), "process-stage1", pid, item.FileName, false);
+                            WorkQueue.GlobalQueueWorkItemTag(
+                                new QueryProcessDelegate(this.QueryProcessStage1),
+                                "process-stage1",
+                                pid, item.FileName, false);
                         }
                     }
 
@@ -1058,7 +1114,7 @@ namespace ProcessHacker
 
                     // If we didn't get a username, try to use Terminal Services 
                     // to get the SID of the process' token's user.
-                    if (pid > 4 && string.IsNullOrEmpty(item.Username))
+                    if (pid > 4 && item.Username == null)
                     {
                         if (tsProcesses == null)
                         {
@@ -1075,14 +1131,13 @@ namespace ProcessHacker
                             item.Username = Sid.FromPointer(tsProcesses[pid]).GetFullName(true);
                         }
                         catch
-                        {
-                        }
+                        { }
                     }
 
                     newdictionary.Add(pid, item);
                     this.OnDictionaryAdded(item);
                 }
-                    // look for modified processes
+                // look for modified processes
                 else
                 {
                     ProcessItem item = this.Dictionary[pid];
@@ -1096,22 +1151,32 @@ namespace ProcessHacker
                     item.IoWriteDelta.Update((long)processInfo.IoCounters.WriteTransferCount);
                     item.IoOtherDelta.Update((long)processInfo.IoCounters.OtherTransferCount);
 
-                    UpdateCb(item.CpuKernelHistory, (float)item.CpuKernelDelta.Delta / (sysKernelTime + sysUserTime + otherTime));
-                    UpdateCb(item.CpuUserHistory, (float)item.CpuUserDelta.Delta / (sysKernelTime + sysUserTime + otherTime));
+                    UpdateCb(item.CpuKernelHistory,
+                        (float)item.CpuKernelDelta.Delta /
+                        (sysKernelTime + sysUserTime + otherTime));
+                    UpdateCb(item.CpuUserHistory,
+                        (float)item.CpuUserDelta.Delta /
+                        (sysKernelTime + sysUserTime + otherTime));
                     UpdateCb(item.IoReadHistory, item.IoReadDelta.Delta);
                     UpdateCb(item.IoWriteHistory, item.IoWriteDelta.Delta);
                     UpdateCb(item.IoOtherHistory, item.IoOtherDelta.Delta);
-                    UpdateCb(item.IoReadOtherHistory, item.IoReadDelta.Delta + item.IoOtherDelta.Delta);
-                    UpdateCb(item.PrivateMemoryHistory, processInfo.VirtualMemoryCounters.PrivatePageCount.ToInt64());
-                    UpdateCb(item.WorkingSetHistory, processInfo.VirtualMemoryCounters.WorkingSetSize.ToInt64());
+                    UpdateCb(item.IoReadOtherHistory,
+                        item.IoReadDelta.Delta + item.IoOtherDelta.Delta);
+                    UpdateCb(item.PrivateMemoryHistory,
+                        processInfo.VirtualMemoryCounters.PrivatePageCount.ToInt64());
+                    UpdateCb(item.WorkingSetHistory,
+                        processInfo.VirtualMemoryCounters.WorkingSetSize.ToInt64());
 
                     // Update the struct.
                     item.Process = processInfo;
 
                     // Update CPU usage, and update PIDs with most activity.
+
                     try
                     {
-                        item.CpuUsage = (float)(item.CpuUserDelta.Delta + item.CpuKernelDelta.Delta) * 100 / (sysKernelTime + sysUserTime + otherTime);
+                        item.CpuUsage = (float)
+                            (item.CpuUserDelta.Delta + item.CpuKernelDelta.Delta) * 100 /
+                            (sysKernelTime + sysUserTime + otherTime);
 
                         // HACK.
 
@@ -1135,19 +1200,24 @@ namespace ProcessHacker
                         }
                     }
                     catch
-                    {
-                    }
+                    { }
 
                     // Determine whether the process is being debugged.
-                    if (item.ProcessQueryHandle != null && item.ProcessQueryHandle.LastError == null)
-                    {
-                        bool isBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged;
 
-                        if (isBeingDebugged != item.IsBeingDebugged)
+                    if (item.ProcessQueryHandle != null)
+                    {
+                        try
                         {
-                            item.IsBeingDebugged = isBeingDebugged;
-                            fullUpdate = true;
+                            bool isBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
+
+                            if (isBeingDebugged != item.IsBeingDebugged)
+                            {
+                                item.IsBeingDebugged = isBeingDebugged;
+                                fullUpdate = true;
+                            }
                         }
+                        catch
+                        { }
                     }
 
                     // Processes sometimes mistakenly get labeled as packed. 
@@ -1156,7 +1226,11 @@ namespace ProcessHacker
                     {
                         if (item.IsPacked && item.ProcessingAttempts < 3)
                         {
-                            WorkQueue.GlobalQueueWorkItemTag(new QueryProcessDelegate(this.QueryProcessStage2), "process-stage2", pid, item.FileName, true);
+                            WorkQueue.GlobalQueueWorkItemTag(
+                                new QueryProcessDelegate(this.QueryProcessStage2),
+                                "process-stage2",
+                                pid, item.FileName, true
+                                );
                             item.ProcessingAttempts++;
                         }
                     }
@@ -1178,33 +1252,25 @@ namespace ProcessHacker
 
             try
             {
-                UpdateCb(
-                    _cpuMostUsageHistory, 
-                    newdictionary[this.PidWithMostCpuUsage].Name + 
-                    ": " +
-                    newdictionary[this.PidWithMostCpuUsage].CpuUsage.ToString("N2") + 
-                    "%"
-                    );
+                UpdateCb(_cpuMostUsageHistory, newdictionary[this.PidWithMostCpuUsage].Name + ": " +
+                    newdictionary[this.PidWithMostCpuUsage].CpuUsage.ToString("N2") + "%");
             }
             catch
             {
-                UpdateCb(_cpuMostUsageHistory, string.Empty);
+                UpdateCb(_cpuMostUsageHistory, "");
             }
 
             try
             {
-                UpdateCb(_ioMostUsageHistory, 
-                    newdictionary[this.PidWithMostIoActivity].Name + 
-                    ": " + 
-                    "R+O: " + 
-                    Utils.FormatSize(newdictionary[this.PidWithMostIoActivity].IoReadOtherHistory[0]) + 
-                    ", W: " + 
-                    Utils.FormatSize(newdictionary[this.PidWithMostIoActivity].IoWriteHistory[0])
-                    );
+                UpdateCb(_ioMostUsageHistory, newdictionary[this.PidWithMostIoActivity].Name + ": " +
+                    "R+O: " + Utils.FormatSize(
+                    newdictionary[this.PidWithMostIoActivity].IoReadOtherHistory[0]) +
+                    ", W: " + Utils.FormatSize(
+                    newdictionary[this.PidWithMostIoActivity].IoWriteHistory[0]));
             }
             catch
             {
-                UpdateCb(_ioMostUsageHistory, string.Empty);
+                UpdateCb(_ioMostUsageHistory, "");
             }
 
             UpdateCb(_timeHistory, DateTime.Now);

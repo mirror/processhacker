@@ -21,6 +21,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace ProcessHacker
 {
@@ -33,23 +35,19 @@ namespace ProcessHacker
 
         protected override void ProviderUpdated()
         {
-            try
-            {
-                this.LineColor1 = Settings.Instance.PlotterCPUKernelColor;
-                this.LineColor2 = Settings.Instance.PlotterCPUUserColor;
-                this.Update(this.Provider.CurrentCpuKernelUsage, this.Provider.CurrentCpuUserUsage);
-                this.Redraw();
+            this.LineColor1 = Settings.Instance.PlotterCPUKernelColor;
+            this.LineColor2 = Settings.Instance.PlotterCPUUserColor;
+            this.Update(this.Provider.CurrentCpuKernelUsage, this.Provider.CurrentCpuUserUsage);
+            this.Redraw();
 
-                string text = "CPU Usage: " + (this.Provider.CurrentCpuUsage * 100).ToString("F2") + "%";
+            string text = "CPU Usage: " + (this.Provider.CurrentCpuUsage * 100).ToString("F2") + "%";
 
-                string mostCpuText = this.Provider.MostCpuHistory[0];
+            string mostCpuText = this.Provider.MostCpuHistory[0];
 
-                if (text.Length + mostCpuText.Length + 1 < 64) // 1 char for the LF
-                    text += "\n" + mostCpuText;
+            if (text.Length + mostCpuText.Length + 1 < 64) // 1 char for the LF
+                text += "\n" + mostCpuText;
 
-                this.Text = text;
-            }
-            catch (Exception) { }
+            this.Text = text;
         }
     }
 }

@@ -6,7 +6,6 @@
  * Copyright (C) 2009 Uday Shanbhag
  * Copyright (C) 2009 Dean
  * Copyright (C) 2008-2009 wj32
- * Copyright (C) 2011 dmex
  * 
  * This file is part of Process Hacker.
  * 
@@ -36,12 +35,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-
+using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
-    [System.Security.SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
         #region Controls
@@ -191,7 +189,7 @@ namespace ProcessHacker.Native.Api
         public static extern uint WinVerifyTrust(
              [In] IntPtr hWnd,
              [In] [MarshalAs(UnmanagedType.LPStruct)] Guid ActionId,
-             [In] WintrustData WintrustData
+             [In] ref WintrustData WintrustData
             );
 
         [DllImport("wintrust.dll", SetLastError = true)]
@@ -456,7 +454,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("imagehlp.dll", SetLastError = true)]
         public static extern bool UnMapAndLoad(
-            [In]  LoadedImage LoadedImage
+            [In] ref LoadedImage LoadedImage
             );
 
         #endregion
@@ -1090,7 +1088,7 @@ namespace ProcessHacker.Native.Api
             [In] ProcessCreationFlags CreationFlags,
             [In] [Optional] int Environment,
             [In] [Optional] string CurrentDirectory,
-            [In] StartupInfo StartupInfo,
+            [In] ref StartupInfo StartupInfo,
             [Out] out ProcessInformation ProcessInfo
             );
 
@@ -1106,7 +1104,7 @@ namespace ProcessHacker.Native.Api
             [In] ProcessCreationFlags CreationFlags,
             [In] [Optional] IntPtr Environment,
             [In] [Optional] string CurrentDirectory,
-            [In] StartupInfo StartupInfo,
+            [In] ref StartupInfo StartupInfo,
             [Out] out ProcessInformation ProcessInformation
             );
 
@@ -1121,7 +1119,7 @@ namespace ProcessHacker.Native.Api
             [In] ProcessCreationFlags CreationFlags,
             [In] [Optional] IntPtr Environment,
             [In] [Optional] string CurrentDirectory,
-            [In] StartupInfo StartupInfo,
+            [In] ref StartupInfo StartupInfo,
             [Out] out ProcessInformation ProcessInformation
             );
 
@@ -1437,7 +1435,7 @@ namespace ProcessHacker.Native.Api
         public static extern bool SetTokenInformation(
             [In] IntPtr TokenHandle,
             [In] TokenInformationClass TokenInformationClass,
-            [In] int TokenInformation,
+            [In] ref int TokenInformation,
             [In] int TokenInformationLength
             );
 
@@ -1529,7 +1527,7 @@ namespace ProcessHacker.Native.Api
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool LookupPrivilegeName(
             [In] [Optional] string SystemName, 
-            [In] Luid Luid,
+            [In] ref Luid Luid,
             [Out] [Optional] StringBuilder Name, 
             ref int RequiredSize
             );
@@ -2015,7 +2013,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
         public extern static int SetTcpEntry(
-            [In] MibTcpRow TcpRow
+            [In] ref MibTcpRow TcpRow
             );
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
@@ -2291,7 +2289,7 @@ namespace ProcessHacker.Native.Api
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetThreadContext(
             [In] IntPtr ThreadHandle, 
-            [In] Context Context
+            [In] ref Context Context
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -2434,7 +2432,7 @@ namespace ProcessHacker.Native.Api
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetUserObjectSecurity(
             [In] IntPtr Handle,
-            [In] SiRequested SiRequested,
+            [In] ref SiRequested SiRequested,
             [In] IntPtr Sid
             );
 
@@ -2548,7 +2546,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("user32.dll")]
         public static extern bool InvalidateRect(
             [In] IntPtr hWnd,
-            [In] Rect Rect,
+            [In] ref Rect Rect,
             [In] bool Erase
             );
 
@@ -2699,13 +2697,13 @@ namespace ProcessHacker.Native.Api
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool TranslateMessage(
-            [In] Message msg
+            [In] ref Message msg
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern IntPtr DispatchMessage(
-            [In] Message msg
+            [In] ref Message msg
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -2864,7 +2862,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern IntPtr RegisterClass(
-            [In] WindowClass wndClass
+            [In] ref WindowClass wndClass
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]

@@ -70,17 +70,19 @@ namespace ProcessHacker.UI.Actions
 
             foreach (int pid in pids)
             {
-                using (ProcessHandle phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
+                try
                 {
-                    if (phandle.LastError == null)
+                    using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
                     {
-                        if (phandle.IsCritical)
+                        if (phandle.IsCritical())
                         {
                             critical = true;
                             break;
                         }
                     }
                 }
+                catch
+                { }
             }
 
             if (promptOnlyIfDangerous && !dangerous && !critical)
@@ -124,7 +126,7 @@ namespace ProcessHacker.UI.Actions
                         try
                         {
                             using (var phandle = new ProcessHandle(pids[i], ProcessAccess.QueryInformation))
-                                criticalPid = phandle.IsCritical;
+                                criticalPid = phandle.IsCritical();
                         }
                         catch
                         {
@@ -313,20 +315,29 @@ namespace ProcessHacker.UI.Actions
                 result = ElevationAction.NotRequired;
             }
 
-            switch (result)
+            if (result == ElevationAction.Elevate)
             {
-                case ElevationAction.Elevate:
-                    Program.StartProcessHackerAdmin("-v -ip " + pid.ToString(), Program.HackerWindow.Exit, window.Handle);
-                    return false;
-                case ElevationAction.Cancel:
-                    return false;
+                Program.StartProcessHackerAdmin("-v -ip " + pid.ToString(), () =>
+                {
+                    Program.HackerWindow.Exit();
+                }, window.Handle);
+
+                return false;
+            }
+            else if (result == ElevationAction.Cancel)
+            {
+                return false;
             }
 
             if (Program.ProcessProvider.Dictionary.ContainsKey(pid))
             {
                 try
                 {
-                    Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], Program.FocusWindow);
+                    ProcessWindow pForm = Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],
+                        new Program.PWindowInvokeAction(delegate(ProcessWindow f)
+                        {
+                            Program.FocusWindow(f);
+                        }));
                 }
                 catch (Exception ex)
                 {
@@ -357,19 +368,21 @@ namespace ProcessHacker.UI.Actions
 
             for (int i = 0; i < pids.Length; i++)
             {
-                using (ProcessHandle phandle = new ProcessHandle(pids[i], ProcessAccess.Terminate))
+                try
                 {
-                    if (phandle.LastError == null)
-                    {
+                    using (ProcessHandle phandle = 
+                        new ProcessHandle(pids[i], ProcessAccess.Terminate))
                         phandle.Terminate();
-                    }
-                    else
-                    {
-                        allGood = false;
+                }
+                catch (Exception ex)
+                {
+                    allGood = false;
 
-                        if (!PhUtils.ShowContinueMessage("Unable to terminate " + GetName(pids, names, i), phandle.LastError))
-                            return false;
-                    }
+                    if (!PhUtils.ShowContinueMessage(
+                        "Unable to terminate " + GetName(pids, names, i),
+                        ex
+                        ))
+                        return false;
                 }
             }
 

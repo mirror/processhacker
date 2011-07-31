@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HiddenProcessesWindow));
-            this.listProcesses = new ProcessHacker.Components.ExtendedListView();
+            this.listProcesses = new System.Windows.Forms.ListView();
             this.columnProcess = new System.Windows.Forms.ColumnHeader();
             this.columnPID = new System.Windows.Forms.ColumnHeader();
             this.buttonClose = new System.Windows.Forms.Button();
@@ -181,7 +181,7 @@
 
         #endregion
 
-        private ProcessHacker.Components.ExtendedListView listProcesses;
+        private System.Windows.Forms.ListView listProcesses;
         private System.Windows.Forms.ColumnHeader columnProcess;
         private System.Windows.Forms.ColumnHeader columnPID;
         private System.Windows.Forms.Button buttonClose;

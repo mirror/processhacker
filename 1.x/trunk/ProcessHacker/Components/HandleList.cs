@@ -131,10 +131,11 @@ namespace ProcessHacker.Components
                                                                     new GenericHandle(
                                                                         phandle, handle,
                                                                         (int)OSVersion.MinProcessQueryInfoAccess);
-                                                                pid = ProcessHandle.FromHandle(dupHandle).ProcessId;
+                                                                pid = ProcessHandle.FromHandle(dupHandle).GetProcessId();
                                                             }
 
-                                                            Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], Program.FocusWindow);
+                                                            Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],
+                                                                (f) => Program.FocusWindow(f));
                                                         }
                                                         break;
                                                 }
@@ -296,22 +297,35 @@ namespace ProcessHacker.Components
 
             if (!e.Handled)
             {
-                switch (e.KeyCode)
+                if (e.KeyCode == Keys.Enter)
                 {
-                    case Keys.Enter:
-                        this.propertiesHandleMenuItem_Click(null, null);
-                        break;
-                    case Keys.Delete:
-                        if (ConfirmHandleClose())
-                        {
-                            this.closeHandleMenuItem_Click(null, null);
-                        }
-                        break;
+                    propertiesHandleMenuItem_Click(null, null);
+                }
+                else if (e.KeyCode == Keys.Delete)
+                {
+                    if (ConfirmHandleClose())
+                    {
+                        closeHandleMenuItem_Click(null, null);
+                    }
                 }
             }
         }
 
         #region Properties
+
+        public new bool DoubleBuffered
+        {
+            get
+            {
+                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listHandles, null);
+            }
+            set
+            {
+                typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listHandles, value, null);
+            }
+        }
 
         public override bool Focused
         {
@@ -333,7 +347,7 @@ namespace ProcessHacker.Components
             set { listHandles.ContextMenuStrip = value; }
         }
 
-        public ExtendedListView List
+        public ListView List
         {
             get { return listHandles; }
         }
@@ -404,7 +418,7 @@ namespace ProcessHacker.Components
             {
                 if (_needsAdd.Count > 0)
                 {
-                    this.BeginInvoke(new Action(() =>
+                    this.BeginInvoke(new MethodInvoker(() =>
                     {
                         lock (_needsAdd)
                         {
@@ -469,7 +483,7 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryModified(HandleItem oldItem, HandleItem newItem)
         {
-            this.BeginInvoke(new Action(() =>
+            this.BeginInvoke(new MethodInvoker(() =>
                 {
                     lock (_listLock)
                     {
@@ -481,7 +495,7 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryRemoved(HandleItem item)
         {
-            this.BeginInvoke(new Action(() =>
+            this.BeginInvoke(new MethodInvoker(() =>
                 {
                     lock (_listLock)
                         listHandles.Items[item.Handle.Handle.ToString()].Remove();

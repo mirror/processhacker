@@ -93,12 +93,14 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the event pair.</param>
         public EventPairHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, EventPairAccess access)
         {
+            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                Win32.NtOpenEventPair(out handle, access, oa).ThrowIf();
+                if ((status = Win32.NtOpenEventPair(out handle, access, ref oa)) >= NtStatus.Error)
+                    Win32.Throw(status);
             }
             finally
             {

@@ -30,7 +30,7 @@ namespace ProcessHacker.Components
 {
     public partial class ProcessStatistics : UserControl
     {
-        private readonly int _pid;
+        private int _pid;
 
         public ProcessStatistics(int pid)
         {
@@ -46,37 +46,49 @@ namespace ProcessHacker.Components
             {
                 labelCPUCyclesText.Text = "N/A";
             }
+
+            _dontCalculate = false;
+        }
+
+        private bool _dontCalculate = true;
+
+        protected override void OnResize(EventArgs e)
+        {
+            if (_dontCalculate)
+                return;
+
+            base.OnResize(e);
         }
 
         public void ClearStatistics()
         {
-            labelCPUPriority.Text = string.Empty;
-            labelCPUCycles.Text = string.Empty;
-            labelCPUKernelTime.Text = string.Empty;
-            labelCPUUserTime.Text = string.Empty;
-            labelCPUTotalTime.Text = string.Empty;
+            labelCPUPriority.Text = "";
+            labelCPUCycles.Text = "";
+            labelCPUKernelTime.Text = "";
+            labelCPUUserTime.Text = "";
+            labelCPUTotalTime.Text = "";
 
-            labelMemoryPB.Text = string.Empty;
-            labelMemoryWS.Text = string.Empty;
-            labelMemoryPWS.Text = string.Empty;
-            labelMemoryVS.Text = string.Empty;
-            labelMemoryPVS.Text = string.Empty;
-            labelMemoryPU.Text = string.Empty;
-            labelMemoryPPU.Text = string.Empty;
-            labelMemoryPF.Text = string.Empty;
-            labelMemoryPP.Text = string.Empty;
+            labelMemoryPB.Text = "";
+            labelMemoryWS.Text = "";
+            labelMemoryPWS.Text = "";
+            labelMemoryVS.Text = "";
+            labelMemoryPVS.Text = "";
+            labelMemoryPU.Text = "";
+            labelMemoryPPU.Text = "";
+            labelMemoryPF.Text = "";
+            labelMemoryPP.Text = "";
 
-            labelIOReads.Text = string.Empty;
-            labelIOReadBytes.Text = string.Empty;
-            labelIOWrites.Text = string.Empty;
-            labelIOWriteBytes.Text = string.Empty;
-            labelIOOther.Text = string.Empty;
-            labelIOOtherBytes.Text = string.Empty;
-            labelIOPriority.Text = string.Empty;
+            labelIOReads.Text = "";
+            labelIOReadBytes.Text = "";
+            labelIOWrites.Text = "";
+            labelIOWriteBytes.Text = "";
+            labelIOOther.Text = "";
+            labelIOOtherBytes.Text = "";
+            labelIOPriority.Text = "";
 
-            labelOtherHandles.Text = string.Empty;
-            labelOtherGDIHandles.Text = string.Empty;
-            labelOtherUSERHandles.Text = string.Empty;
+            labelOtherHandles.Text = "";
+            labelOtherGDIHandles.Text = "";
+            labelOtherUSERHandles.Text = "";
         }
 
         public void UpdateStatistics()
@@ -111,9 +123,9 @@ namespace ProcessHacker.Components
 
             if (_pid > 0)
             {
-                using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                try
                 {
-                    if (phandle.LastError == null)
+                    using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                     {
                         labelOtherGDIHandles.Text = phandle.GetGuiResources(false).ToString("N0");
                         labelOtherUSERHandles.Text = phandle.GetGuiResources(true).ToString("N0");
@@ -125,11 +137,13 @@ namespace ProcessHacker.Components
 
                         if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
                         {
-                            labelMemoryPP.Text = phandle.PagePriority.ToString();
+                            labelMemoryPP.Text = phandle.GetPagePriority().ToString();
                             labelIOPriority.Text = phandle.GetIoPriority().ToString();
                         }
                     }
                 }
+                catch
+                { }
             }
             else
             {

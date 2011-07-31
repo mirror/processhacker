@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
-
+using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
 using ProcessHacker.Native.Api;
 using ProcessHacker.UI;
@@ -34,7 +34,7 @@ namespace ProcessHacker.Components
     public partial class ServiceList : UserControl
     {
         private ServiceProvider _provider;
-        private int _runCount;
+        private int _runCount = 0;
         private HighlightingContext _highlightingContext;
         private List<ListViewItem> _needsAdd = new List<ListViewItem>();
         private bool _needsSort = false;
@@ -49,6 +49,7 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _highlightingContext = new HighlightingContext(listServices);
+            listServices.SetTheme("explorer");
             listServices.KeyDown += new KeyEventHandler(ServiceList_KeyDown);
             listServices.MouseDown += new MouseEventHandler(listServices_MouseDown);
             listServices.MouseUp += new MouseEventHandler(listServices_MouseUp);
@@ -89,6 +90,20 @@ namespace ProcessHacker.Components
 
         #region Properties
 
+        public new bool DoubleBuffered
+        {
+            get
+            {
+                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listServices, null);
+            }
+            set
+            {
+                typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listServices, value, null);
+            }
+        }
+
         public override bool Focused
         {
             get
@@ -109,7 +124,7 @@ namespace ProcessHacker.Components
             set { listServices.ContextMenuStrip = value; }
         }
 
-        public ExtendedListView List
+        public ListView List
         {
             get { return listServices; }
         }

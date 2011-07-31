@@ -171,9 +171,9 @@ namespace ProcessHacker.Native.Ipc
         public void Write<T>(T s)
             where T : struct
         {
-            using (MemoryAlloc data = new MemoryAlloc(Marshal.SizeOf(typeof(T))))
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(T))))
             {
-                data.WriteStruct(s);
+                data.WriteStruct<T>(s);
                 this.Write((MemoryRegion)data);
             }
         }
