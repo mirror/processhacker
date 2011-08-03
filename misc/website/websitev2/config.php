@@ -1,0 +1,20 @@
+<?php
+	define('LATEST_PH_VERSION', '2.19');
+	define('LATEST_PH_RELEASE_DATE', '27th of July 2011');
+
+	define('LATEST_PH_SETUP_SIZE', '1.6 MB');
+	define('LATEST_PH_SETUP_SHA1', '5c2afe67ba48c535f11746e86c0d68e55164a386');
+	define('LATEST_PH_SETUP_MD5', 'f15e9e93298c5f5d68c84174508a55ea');
+
+	define('LATEST_PH_BIN_SIZE', '1.9 MB');
+	define('LATEST_PH_BIN_SHA1', '0f978a0c60cda0b7130be2befb3c7a69f47fe442');
+	define('LATEST_PH_BIN_MD5', '5f4c1f90f929554f57ed5b79254fac06');
+
+	define('LATEST_PH_SOURCE_SIZE', '2.4 MB');
+	define('LATEST_PH_SOURCE_SHA1', 'a3598bb58f0740ec51c97e71194342abda9ce930');
+	define('LATEST_PH_SOURCE_MD5', '383af77db42f90930353e94e2f5c7a6e');
+
+	define('LATEST_PH_SDK_SIZE', '2.3 MB');
+	define('LATEST_PH_SDK_SHA1', 'de4c213bbf9ef29465641a7098a2772d833b1b46');
+	define('LATEST_PH_SDK_MD5', '0df171a1c2def30b90e481457cd482a8');
+?>
