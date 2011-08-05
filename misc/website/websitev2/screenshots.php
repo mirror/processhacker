@@ -1,8 +1,5 @@
 <?php $pagetitle = "Screenshots"; include("header.php"); ?>
 
-<link rel="stylesheet" media="screen" href="/css/lytebox.css">
-<script type="text/javascript" language="javascript" src="/scripts/lytebox.js"></script>
-
 <div style="max-width: 80em; margin: 0 auto;"> 
 	<div class="yui-d0">
 		<div id="watermark" class="watermark-apps-portlet">

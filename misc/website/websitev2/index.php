@@ -1,103 +1,10 @@
-<?php $pagetitle = "Overview"; include("header.php"); include("config.php");
-
-
-	function time2str($ts)
-	{
-		if(!ctype_digit($ts))
-			$ts = strtotime($ts);
-
-		$diff = time() - $ts;
-		
-		if($diff == 0)
-			return 'now';
-			
-		elseif($diff > 0)
-		{
-			$day_diff = floor($diff / 86400);
-			
-			if($day_diff == 0)
-			{
-				if($diff < 60) 
-					return 'just now';
-					
-				if($diff < 120) 
-					return '1 minute ago';
-					
-				if($diff < 3600) 
-					return floor($diff / 60) . ' minutes ago';
-					
-				if($diff < 7200) 
-					return '1 hour ago';
-					
-				if($diff < 86400) 
-					return floor($diff / 3600) . ' hours ago';
-			}
-			
-			if($day_diff == 1)
-				return 'Yesterday';
-						
-			if($day_diff < 7)
-				return $day_diff . ' days ago';
-				
-			if($day_diff == 7) 
-				return '1 week ago';
-			
-			if($day_diff < 31)
-				return ceil($day_diff / 7) . ' weeks ago';
-			
-			if($day_diff < 60) 
-				return 'last month';
-				
-			return date('F Y', $ts);
-		}
-		else
-		{
-			$diff = abs($diff);
-			$day_diff = floor($diff / 86400);
-			
-			if($day_diff == 0)
-			{
-				if($diff < 120) 
-					return 'in a minute';
-				
-				if($diff < 3600) 
-					return 'in ' . floor($diff / 60) . ' minutes';
-				
-				if($diff < 7200) 
-					return 'in an hour';
-				
-				if($diff < 86400) 
-					return 'in ' . floor($diff / 3600) . ' hours';
-			}
-			
-			if($day_diff == 1) 
-				return 'Tomorrow';
-			
-			if($day_diff < 4) 
-				return date('l', $ts);
-			
-			if($day_diff < 7 + (7 - date('w'))) 
-				return 'next week';
-			
-			if(ceil($day_diff / 7) < 4) 
-				return 'in ' . ceil($day_diff / 7) . ' weeks';
-			
-			if(date('n', $ts) == date('n') + 1) 
-				return 'next month';
-			
-			return date('F Y', $ts);
-		}
-	}
- ?>
-
-<link rel="stylesheet" media="screen" href="/css/lytebox.css">
-<script type="text/javascript" src="/scripts/lytebox.js"></script>
+<?php $pagetitle = "Overview"; include("header.php"); include("config.php"); ?>
 	
 <div style="max-width: 80em; margin: 0 auto;"> 
 	<div class="yui-d0">
 		<div id="watermark" class="watermark-apps-portlet">
 			<div class="flowed-block">
-				<img alt="" width="64" height="64" src="/images/logo.png" />
+				<img alt="" width="64" height="64" src="/images/logo.png">
 			</div>
 			
 			<div class="flowed-block wide">
@@ -147,28 +54,18 @@
 
                     <div class="center">
                         <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
-                            <img alt="Donate" src="/images/donate.gif" />
+                            <img alt="Donate" src="/images/donate.gif">
                         </a>
                     </div>
 				</div>
 
 				<div id="involvement" class="portlet">
 					<ul class="involvement">
-						<li>
-							<a href="/downloads.php">All downloads</a>
-						</li>				  
-						<li>
-							<a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=24">Report a bug</a>
-						</li>
-						<li>
-							<a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=5">Ask a question</a>
-						</li>
-						<li>
-							<a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/">Browse source code</a>
-						</li>
-						<li>
-							<a href="http://processhacker.sourceforge.net/doc">Source code documentation</a>
-						</li>
+						<li><a href="/downloads.php">All downloads</a></li>				  
+						<li><a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=24">Report a bug</a></li>
+						<li><a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=5">Ask a question</a>
+						</li><li><a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/">Browse source code</a></li>
+						<li><a href="http://processhacker.sourceforge.net/doc">Source code documentation</a></li>
 					</ul>
 				</div>
 			</div>
@@ -207,7 +104,7 @@
 
 			<div class="yui-g">
 				<div class="yui-u first">
-					<div class="portlet" id="portlet-latest-faqs">
+					<div class="portlet">
 						<p><strong>Latest News</strong></p>
 
 						<?php
@@ -245,35 +142,33 @@
 										while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
 										{
 											echo  
-											"<tr>
-												<div class=\"ft\">
-													<a href=\"$urlPath/viewtopic.php?f=$row[forum_id]&amp;t=$row[topic_id]&amp;p=$row[post_id]#p$row[post_id]\" target=\"_blank\">".$row["topic_title"]."</a>
-													<span style=\"color:#C0C0C0\">
-														by
-														<a href=\"$urlPath/memberlist.php?mode=viewprofile&amp;u=$row[user_id]\" target=\"_blank\">
-															<span style=\"color:#$row[user_colour]\">".$row["username"]."</span>
-														</a>
-														<li>".date('F jS, Y, g:i a', $row["post_time"])."</li>
-													</span>
-												</div>
-											</tr>";
+											"<div class=\"ft\">
+												<a href=\"$urlPath/viewtopic.php?f=$row[forum_id]&amp;t=$row[topic_id]&amp;p=$row[post_id]#p$row[post_id]\" target=\"_blank\">".$row["topic_title"]."</a>
+												<span style=\"color:#C0C0C0\">
+													by
+													<a href=\"$urlPath/memberlist.php?mode=viewprofile&amp;u=$row[user_id]\" target=\"_blank\">
+														<span style=\"color:#$row[user_colour]\">".$row["username"]."</span>
+													</a>
+													<li>".date('F jS, Y, g:i a', $row["post_time"])."</li>
+												</span>
+											</div>";
 										}
 
 										print "</table>";
 									}
 									else
 									{
-										print "<h2>Query failed.</h2>";
+										print "<p>Query failed.</p>";
 									}
 								}
 								else
 								{
-									print "<h2>Could not select database.</h2>";
+									print "<p>Could not select database.</p>";
 								}
 							}
 							else
 							{
-								print "<h2>Could not connect.</h2>";
+								print "<p>Could not connect.</p>";
 							}
 							
 							mysql_free_result($result);
@@ -283,82 +178,76 @@
 				</div>
 				
 				<div class="yui-g">
-					<div class="portlet" id="portlet-latest-faqs">
+					<div class="portlet">
 						<p><strong>Forum Activity</strong></p>
 
 						<?php
-									// How Many Topics you want to display?
-									$topicnumber = 5;
-									// Change this to your phpBB path
-									$urlPath = "./forums";
-								 
-									// Database Configuration (Where your phpBB config.php file is located)
-									include("./forums/config.php");
-								 
-									$table_topics = $table_prefix. "topics";
-									$table_forums = $table_prefix. "forums";
-									$table_posts = $table_prefix. "posts";
-									$table_users = $table_prefix. "users";
+							// How Many Topics you want to display?
+							$topicnumber = 5;
+							// Change this to your phpBB path
+							$urlPath = "./forums";
+							// Database Configuration (Where your phpBB config.php file is located)
+							include("./forums/config.php");
+							
+							$table_topics = $table_prefix. "topics";
+							$table_forums = $table_prefix. "forums";
+							$table_posts = $table_prefix. "posts";
+							$table_users = $table_prefix. "users";
+							
+							if ($link = mysql_connect("$dbhost", "$dbuser", "$dbpasswd"))
+							{
+								if (mysql_select_db("$dbname"))
+								{
+									$query = "SELECT t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id, p.post_id, p.poster_id, p.post_time, u.user_id, u.username, u.user_colour
+									FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
+									WHERE t.topic_id = p.topic_id AND
+									f.forum_id = t.forum_id AND
+									t.forum_id != 1 AND 
+									t.forum_id != 7 AND 
+									t.topic_status <> 2 AND
+									p.post_id = t.topic_last_post_id AND
+									p.poster_id = u.user_id
+									ORDER BY p.post_id DESC LIMIT $topicnumber";
 									
-									if ($link = mysql_connect("$dbhost", "$dbuser", "$dbpasswd"))
-									{
-										if (mysql_select_db("$dbname"))
+									if ($result = mysql_query($query))
+									{							
+										print "<table width=\"100%\" border=\"1\">";
+										
+										while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
 										{
-											$query = "SELECT t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id, p.post_id, p.poster_id, p.post_time, u.user_id, u.username, u.user_colour
-											FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
-											WHERE t.topic_id = p.topic_id AND
-											f.forum_id = t.forum_id AND
-											t.forum_id != 1 AND 
-											t.forum_id != 7 AND 
-											t.topic_status <> 2 AND
-											p.post_id = t.topic_last_post_id AND
-											p.poster_id = u.user_id
-											ORDER BY p.post_id DESC LIMIT $topicnumber";
-											
-											if ($result = mysql_query($query))
-											{							
-												print "<table width=\"100%\" border=\"1\">";
-												
-												while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
-												{
-													echo  
-													"<tr>
-														<div class=\"ft\">
-															
-															<a href=\"$urlPath/viewtopic.php?f=$row[forum_id]&amp;t=$row[topic_id]&amp;p=$row[post_id]#p$row[post_id]\" target=\"_blank\">".$row["topic_title"]."</a>
-															
-															<span style=\"color:#C0C0C0\">
-																by <a href=\"$urlPath/memberlist.php?mode=viewprofile&amp;u=$row[user_id]\" target=\"_blank\">
-																	<span style=\"color:#$row[user_colour]\">".$row["username"]."</span>
-																</a>
-																<li>"
-																	.time2str($row["post_time"])."
-																</li>
-															</span>
-														</div>
-													</tr>";
-												}
-												
-												print "</table>";
-											}
-											else
-											{
-												print("<h2>Query failed.</h2>");
-											}
+											echo  
+											"<div class=\"ft\">
+												<a href=\"$urlPath/viewtopic.php?f=$row[forum_id]&amp;t=$row[topic_id]&amp;p=$row[post_id]#p$row[post_id]\" target=\"_blank\">".$row["topic_title"]."</a>
+												<span style=\"color:#C0C0C0\">
+													by
+													<a href=\"$urlPath/memberlist.php?mode=viewprofile&amp;u=$row[user_id]\" target=\"_blank\">
+														<span style=\"color:#$row[user_colour]\">".$row["username"]."</span>
+													</a>
+													<li>".date('F jS, Y, g:i a', $row["post_time"])."</li>
+												</span>
+											</div>";
 										}
-										else
-										{
-											print("<h2>Could not select database.</h2>");
-										}
+										
+										print "</table>";
 									}
 									else
 									{
-										print("<h2>Could not connect.</h2>");
+										print("<p>Query failed.</p>");
 									}
-									
-									mysql_free_result($result);
-									mysql_close($link);
-									?>
+								}
+								else
+								{
+									print("<p>Could not select database.</p>");
+								}
+							}
+							else
+							{
+								print("<p>Could not connect.</p>");
+							}
+							
+							mysql_free_result($result);
+							mysql_close($link);
+						?>
 					</div>
 				</div>
 				<div class="yui-u">
@@ -368,34 +257,30 @@
 
 			<div class="yui-g">
 				<div class="yui-u first">
-					<div class="portlet" id="portlet-latest-faqs">
+					<div class="portlet">
 						<p><strong>Screenshots</strong></p>
 						<a href="/images/screenshots/processes_tab_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
 							<img alt"" border="0" width="200" height="107" src="/images/screenshots/processhacker_small.png" />
 						</a>
-				
-							<a href="/images/screenshots/sysinfo_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
-								<img alt"" border="0" width="200" height="107" src="/images/screenshots/sysinfo_small.png" />
-							</a>
-								
-							<h2>
-								<span class="see-all">
-									<a href="./screenshots.php" class="menu-link-list_all sprite info">All Screenshots</a>
-								</span>
-							</h2>
-						</div>	
-					</div>
+
+						<a href="/images/screenshots/sysinfo_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
+							<img alt"" border="0" width="200" height="107" src="/images/screenshots/sysinfo_small.png" />
+						</a>
+
+						<h2>
+							<span class="see-all">
+								<a href="/screenshots.php" class="menu-link-list_all sprite info">All Screenshots</a>
+							</span>
+						</h2>
+					</div>	
+				</div>
 
 				<div class="yui-u">
-						<div class="portlet" id="portlet-latest-questions">
-							<p><strong>Statistics</strong></p>
-							<script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
-						</div>      
-					</div>
-			
-				<div class="yui-u">
-						<div id="structural-subscription-content-box"></div>
-					</div>
+					<div class="portlet" id="portlet-latest-questions">
+						<p><strong>Statistics</strong></p>
+						<script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
+					</div>      
+				</div>
 			</div>	
 		</div>
 	</div>

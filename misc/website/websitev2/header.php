@@ -9,7 +9,10 @@
 		<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
 		
 		<link rel="icon" href="/images/favicon.ico" >
-		<link type="text/css" rel="stylesheet" media="screen, print" href="/css/combo.css" >
+		<link rel="stylesheet" type="text/css" media="screen, print" href="/css/combo.css" >
+		<link rel="stylesheet" type="text/css" media="screen" href="/css/lytebox.css">
+		
+		<script type="text/javascript" language="javascript" src="/scripts/lytebox.js"></script>
 		
 		<title><?php echo $pagetitle ?> - Process Hacker</title>
 	</head>
