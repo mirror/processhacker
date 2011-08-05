@@ -1,6 +1,4 @@
-<?php include("header.php"); ?>
-
-<title>Changelog - Process Hacker</title>
+<?php $pagetitle = "Changelog"; include("header.php"); ?>
 
 <div style="max-width: 80em; margin: 0 auto;"> 
 	<div class="yui-d0">

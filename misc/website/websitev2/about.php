@@ -4,7 +4,7 @@
 	<div class="yui-d0">
 		<div id="watermark" class="watermark-apps-portlet">
 			<div class="flowed-block">
-				<img alt="" width="64" height="64" src="/images/logo.png" />
+				<img alt="" width="64" height="64" src="/images/logo.png">
 			</div>
 			
 			<div class="flowed-block wide">
@@ -24,20 +24,12 @@
 	</div>	
 	
 	<div class="yui-t4">
-		<div class="top-portlet">
-			<!-- <div class="portlet" id="portlet-latest-faqs">
-				<div class="yui-u">
-				</div>
-			<div class="yui-u">
-				<div id="structural-subscription-content-box">
-				</div>
-			</div> -->
-			
+		<div class="top-portlet">			
 			<div class="summary">
                 Process Hacker was started in 2008 as an open source alternative to programs such as Task Manager and 
                 Process Explorer.
 			</div>
-            <br />
+            <br>
 		</div>
 	</div>
 	

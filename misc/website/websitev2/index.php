@@ -1,4 +1,94 @@
-<?php $pagetitle = "Overview"; include("header.php"); include("config.php"); ?>
+<?php $pagetitle = "Overview"; include("header.php"); include("config.php");
+
+
+	function time2str($ts)
+	{
+		if(!ctype_digit($ts))
+			$ts = strtotime($ts);
+
+		$diff = time() - $ts;
+		
+		if($diff == 0)
+			return 'now';
+			
+		elseif($diff > 0)
+		{
+			$day_diff = floor($diff / 86400);
+			
+			if($day_diff == 0)
+			{
+				if($diff < 60) 
+					return 'just now';
+					
+				if($diff < 120) 
+					return '1 minute ago';
+					
+				if($diff < 3600) 
+					return floor($diff / 60) . ' minutes ago';
+					
+				if($diff < 7200) 
+					return '1 hour ago';
+					
+				if($diff < 86400) 
+					return floor($diff / 3600) . ' hours ago';
+			}
+			
+			if($day_diff == 1)
+				return 'Yesterday';
+						
+			if($day_diff < 7)
+				return $day_diff . ' days ago';
+				
+			if($day_diff == 7) 
+				return '1 week ago';
+			
+			if($day_diff < 31)
+				return ceil($day_diff / 7) . ' weeks ago';
+			
+			if($day_diff < 60) 
+				return 'last month';
+				
+			return date('F Y', $ts);
+		}
+		else
+		{
+			$diff = abs($diff);
+			$day_diff = floor($diff / 86400);
+			
+			if($day_diff == 0)
+			{
+				if($diff < 120) 
+					return 'in a minute';
+				
+				if($diff < 3600) 
+					return 'in ' . floor($diff / 60) . ' minutes';
+				
+				if($diff < 7200) 
+					return 'in an hour';
+				
+				if($diff < 86400) 
+					return 'in ' . floor($diff / 3600) . ' hours';
+			}
+			
+			if($day_diff == 1) 
+				return 'Tomorrow';
+			
+			if($day_diff < 4) 
+				return date('l', $ts);
+			
+			if($day_diff < 7 + (7 - date('w'))) 
+				return 'next week';
+			
+			if(ceil($day_diff / 7) < 4) 
+				return 'in ' . ceil($day_diff / 7) . ' weeks';
+			
+			if(date('n', $ts) == date('n') + 1) 
+				return 'next month';
+			
+			return date('F Y', $ts);
+		}
+	}
+ ?>
 
 <link rel="stylesheet" media="screen" href="/css/lytebox.css">
 <script type="text/javascript" language="javascript" src="/scripts/lytebox.js"></script>
@@ -42,11 +132,13 @@
 										Installer
 									</a>
 								</li>
+								
 								<li>
 									<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">
 										Binaries (portable)
 									</a>
 								</li>
+								
 								<li>
 									<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-src.zip/download" title="Source code">
 										Source code
@@ -56,32 +148,32 @@
 								<div class="released">
 									Released <?php echo LATEST_PH_RELEASE_DATE ?>
 								</div>
-                                
-                                <div style="text-align:center;">
-                                    <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
-                                        <img alt="Donate" src="/images/donate.gif" />
-                                    </a>
-                                </div>
 							</div>
+							
+                            <div style="text-align:center;">
+                                <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
+                                    <img alt="Donate" src="/images/donate.gif" />
+                                </a>
+                            </div>
 						</div>
 						
 						<div id="involvement" class="portlet">
-						<ul class="involvement">
-							<li>
-								<a href="/downloads.php">All downloads</a>
-							</li>				  
-							<li>
-								<a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=24">Report a bug</a>
-							</li>
-							<li>
-								<a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=5">Ask a question</a>
-							</li>
-							<li style="margin-top: 1em;">
-								<a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/">Browse source code</a>
-							</li>
-							<li>
-								<a href="http://processhacker.sourceforge.net/doc">Source code documentation</a>
-							</li>
+							<ul class="involvement">
+								<li>
+									<a href="/downloads.php">All downloads</a>
+								</li>				  
+								<li>
+									<a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=24">Report a bug</a>
+								</li>
+								<li>
+									<a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=5">Ask a question</a>
+								</li>
+								<li style="margin-top: 1em;">
+									<a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/">Browse source code</a>
+								</li>
+								<li>
+									<a href="http://processhacker.sourceforge.net/doc">Source code documentation</a>
+								</li>
 							</ul>
 						</div>
 					</div>
@@ -93,7 +185,7 @@
 							<p><strong>System Requirements:</strong></p>
 							<li>&nbsp;•&nbsp;Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
 
-							<li>&nbsp;Intel Itanium Platforms are not supported.</li>
+							<li>&nbsp;•&nbsp;Intel Itanium Platforms are not supported.</li>
 
 							<p><strong>Key features of Process Hacker:</strong></p>
 							<li>&nbsp;•&nbsp;A simple, customizable tree view with highlighting showing you the processes running on your computer.</li>
@@ -131,7 +223,7 @@
 									$urlPath = "./forums";
 								 
 									// Database Configuration (Where your phpBB config.php file is located)
-									include './forums/config.php';
+									include("./forums/config.php");
 								 
 									$table_topics = $table_prefix. "topics";
 									$table_forums = $table_prefix. "forums";
@@ -171,7 +263,7 @@
 																</a>
 															
 																<li>"
-																	.date('F j, Y, g:i a', $row["post_time"])."
+																	.date('F jS, Y, g:i a', $row["post_time"])."
 																</li>
 															</font>
 														</font>
@@ -212,7 +304,7 @@
 									$urlPath = "./forums";
 								 
 									// Database Configuration (Where your phpBB config.php file is located)
-									include './forums/config.php';
+									include("./forums/config.php");
 								 
 									$table_topics = $table_prefix. "topics";
 									$table_forums = $table_prefix. "forums";
@@ -251,7 +343,7 @@
 																	<strong><font color=\"$row[user_colour]\">".$row["username"]."</font></strong>
 																</a>
 																<li>"
-																	.date('F j, Y, g:i a', $row["post_time"])."
+																	.time2str($row["post_time"])."
 																</li>
 															</font>
 														</font>

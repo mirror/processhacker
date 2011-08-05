@@ -1,27 +1,45 @@
 <?php
-
 include('config.php');
+header("Content-Type: text/xml");
 
-echo "<?xml version='1.0' encoding='ISO-8859-1'?>";
+// http://www.go4expert.com/forums/showthread.php?t=3479
 
-echo "<update>";
+// create doctype
+$dom = new DOMDocument("1.0", "UTF-8");
 
-echo "<ver>";
-echo LATEST_PH_VERSION;
-echo "</ver>";
+// create root element
+$root = $dom->createElement("latest");
+$dom->appendChild($root);
 
-echo "<reldate>";
-echo LATEST_PH_RELEASE_DATE;
-echo "</reldate>";
+// create child element
+$item = $dom->createElement("ver");
+$root->appendChild($item);
+// create text node
+$text = $dom->createTextNode(LATEST_PH_VERSION);
+$item->appendChild($text);
 
-echo "<size>";
-echo LATEST_PH_SETUP_SIZE;
-echo "</size>";
+// create child element
+$item = $dom->createElement("reldate");
+$root->appendChild($item);
+// create another text node
+$text = $dom->createTextNode(LATEST_PH_RELEASE_DATE);
+$item->appendChild($text);
 
-echo "<sha>";
-echo LATEST_PH_SETUP_SHA1;
-echo "</sha>";
+// create child element
+$item = $dom->createElement("size");
+$root->appendChild($item);
+// create another text node
+$text = $dom->createTextNode(LATEST_PH_SETUP_SIZE);
+$item->appendChild($text);
 
-echo "</update>";
+// create child element
+$item = $dom->createElement("sha");
+$root->appendChild($item);
+// create another text node
+$text = $dom->createTextNode(LATEST_PH_SETUP_SHA1);
+$item->appendChild($text);
+
+// save and display tree
+echo $dom->saveXML();
 
 ?>
