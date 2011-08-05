@@ -26,21 +26,17 @@
 	<div class="yui-t4">
 		<div class="yui-b side">
 		
-		<div id="involvement" class="portlet" >
-			<h2 style="text-align: center;">Quick Links</h2>
+		<div class="portlet" >
+			<h2 class="center">Quick Links</h2>
 
 			<ul class="involvement">
-				<li>
-					<a href="/changelog.php">Changelog</a>
-				</li>
-				<li>
-					<a href="http://sourceforge.net/projects/processhacker/files/">All Files</a>
-				</li>
+				<li><a href="/changelog.php">Changelog</a></li>
+				<li><a href="http://sourceforge.net/projects/processhacker/files/">All Files</a></li>
 			</ul>
 		</div>
 		
-		<div id="involvement" class="portlet" >
-			<h2 style="text-align: center;">Get Involved</h2>
+		<div class="portlet" >
+			<h2 class="center">Get Involved</h2>
 
 			<ul class="involvement">
 				<li>
@@ -59,30 +55,30 @@
 				<p>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver, so it works on 64-bit systems.</p>
 	
 				<p><strong>System Requirements:</strong></p>
-				<li>&#160;•&#160;Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
-				<li>&#160;•&#160;Intel Itanium Platforms are not supported.</li>
+				<h2>&#160;•&#160;Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</h2>
+				<h2>&#160;•&#160;Intel Itanium Platforms are not supported.</h2>
 
 				<p><strong>Licence:</strong></p>
-				<li>&#160;•&#160;GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></li>	
-				<br />
-				<br />
-				<br />
-				<br />
-				<br />
+				<h2>&#160;•&#160;GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></h2>	
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
 			</div>
 			
 			<div class="yui-g">
 				<div class="yui-u first">
-					<div class="portlet" id="portlet-latest-faqs">
+					<div class="portlet">
 						<p><strong>Setup (recommended)</strong></p>
 
-						<div id="downloads" style="width: 62%;" class="top-portlet downloads">						
+						<ul style="width: 62%;" class="top-portlet downloads">						
 							<li>
 								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">
 									processhacker-<?php echo LATEST_PH_VERSION ?>-setup.exe
 								</a>
 							</li>
-						</div>
+						</ul>
 						
 						<p>Size: <?php echo LATEST_PH_SETUP_SIZE ?></p>
 						<p>SHA1: <?php echo LATEST_PH_SETUP_SHA1 ?></p>
@@ -91,16 +87,16 @@
 				</div>
 
 				<div class="yui-u">
-					<div class="portlet" id="portlet-latest-questions">
+					<div class="portlet">
 						<p><strong>Binaries (portable)</strong></p>
 	
-						<div id="downloads" style="width: 62%;" class="top-portlet downloads">						
+						<ul style="width: 62%;" class="top-portlet downloads">						
 							<li>
 								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">
 									processhacker-<?php echo LATEST_PH_VERSION ?>-bin.zip
 								</a>
 							</li>
-						</div>
+						</ul>
 						
 						<p>Size: <?php echo LATEST_PH_BIN_SIZE ?></p>
 						<p>SHA1: <?php echo LATEST_PH_BIN_SHA1 ?></p>
@@ -115,16 +111,16 @@
 			
 			<div class="yui-g">
 				<div class="yui-u first">
-					<div class="portlet" id="portlet-latest-faqs">
+					<div class="portlet">
 						<p><strong>Source Code</strong></p>
 
-						<div id="downloads" style="width: 62%;" class="top-portlet downloads">						
+						<ul style="width: 62%;" class="top-portlet downloads">						
 							<li>
 								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-src.zip/download" title="Source Code">
 									processhacker-<?php echo LATEST_PH_VERSION ?>-src.zip
 								</a>
 							</li>
-						</div>
+						</ul>
 						
 						<p>Size: <?php echo LATEST_PH_SOURCE_SIZE ?></p>
 						<p>SHA1: <?php echo LATEST_PH_SOURCE_SHA1 ?></p>
@@ -133,24 +129,20 @@
 				</div>
 
 				<div class="yui-u">
-					<div class="portlet" id="portlet-latest-questions">
+					<div class="portlet">
 						<p><strong>Plugins SDK</strong></p>
 
-						<div id="downloads" style="width: 62%;" class="top-portlet downloads">						
+						<ul style="width: 62%;" class="top-portlet downloads">						
 							<li>
 								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-sdk.zip/download" title="Setup (recommended)">
 									processhacker-<?php echo LATEST_PH_VERSION ?>-sdk.zip
 								</a>
 							</li>
-						</div>
+						</ul>
 						
 						<p>Size: <?php echo LATEST_PH_SDK_SIZE ?></p>
 						<p>SHA1: <?php echo LATEST_PH_SDK_SHA1 ?></p>
 						<p>MD5: <?php echo LATEST_PH_SDK_MD5 ?></p>  
-					</div>
-					
-					<div class="yui-u">
-					  <div id="structural-subscription-content-box"></div>
 					</div>
 				</div>	
 

@@ -1,12 +1,10 @@
 
-		<p align="center">
-            <a href="http://sourceforge.net/projects/processhacker/" >
-				<img src="http://sflogo.sourceforge.net/sflogo.php?group_id=242527&amp;type=13" width="120" height="30" alt="Process Hacker is Hosted by SourceForge.net" >
-			</a>
-			<br />	
-			Copyright © 2008-2011 wj32
-			<br />
-		</p>
+		<div class="center">
+			<img src="http://sflogo.sourceforge.net/sflogo.php?group_id=242527&amp;type=13" width="120" height="30" alt="Process Hacker is Hosted by SourceForge.net">
+			
+			<br>
+			Copyright &copy; 2008-2011 wj32
+		</div>
 			
 		<!-- Piwik -->
 		<script type="text/javascript">
@@ -21,9 +19,7 @@
 			piwik_log(piwik_action_name, piwik_idsite, piwik_url);
 		</script>
 		
-		<object>
-			<noscript><p><img src="http://sourceforge.net/apps/piwik/processhacker/piwik.php?idsite=1" alt="piwik" ></p></noscript>
-		</object>
+		<img src="http://sourceforge.net/apps/piwik/processhacker/piwik.php?idsite=1" alt="" >
 		<!-- End Piwik Tag -->
 		
 		<!-- Google Analytics (Async)-->

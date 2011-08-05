@@ -1,7 +1,21 @@
-.info {
+.info 
+{
     background-image: url("icon-sprites");
     background-position: 0 -492px;
     background-repeat: no-repeat;
+}
+
+.ft
+{
+    font-size: 10px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-weight: bold;
+}
+
+.center
+{ 
+	text-align: center; 
 }
 
 blockquote {
@@ -155,39 +169,46 @@ table#packages_list {
     color: #009933;
     cursor: pointer;
 }
+
 #ppa-install-slide-trigger:hover {
     text-decoration: underline;
 }
+
 #ppa-install .widget-body {
     margin: 1em;
 }
+
 #ppa-install .widget-body.lazr-closed {
     display: block;
     height: 0;
     overflow: hidden;
 }
+
 div#slide-trigger {
-    background: url("/@@/ppa-large") no-repeat scroll 0 0 transparent;
     color: #009933;
     cursor: pointer;
     padding: 8px 0 8px 32px;
 }
+
 div#slide-trigger:hover {
     text-decoration: underline;
 }
+
 dl#ppa_packaging dd {
     margin-left: 16px;
 }
+
 #related-ppa-versions .widget-bd {
     margin-left: 2em;
 }
+
 #related-ppa-versions .widget-bd.lazr-closed {
     display: block;
     height: 0;
     overflow: hidden;
 }
+
 form.archive-subscription-activation button {
-    background: url("/@@/info") no-repeat scroll left center transparent;
     border: medium none;
     color: #0033AA;
     cursor: pointer;
@@ -195,20 +216,11 @@ form.archive-subscription-activation button {
     margin: 0;
     padding: 0 0 0 15px;
 }
+
 form.archive-subscription-activation button:hover {
     text-decoration: underline;
 }
-div.logtail {
-    background-color: #F6F6F6;
-    border: 1px solid gray;
-    border-radius: 5px 5px 5px 5px;
-    font-family: "UbuntuBeta Mono","Ubuntu Mono",monospace;
-    margin: 0.5em;
-    padding: 5px;
-}
-div.logtail p {
-    max-width: 100%;
-}
+
 pre.changelog {
     margin: 0.5em;
     padding: 5px;
@@ -216,36 +228,30 @@ pre.changelog {
 a.ppa-icon-inactive {
     color: gray;
 }
+
 span.ppa-icon-inactive {
     text-decoration: line-through;
 }
+
 div.builds_list form {
     padding: 1em 1em 2em 0;
 }
+
 div.ppa-packaging-tmp-actions {
     float: right;
 }
+
 div.ppa-packaging-tmp-actions .portlet {
     border-top: 0 none;
 }
+
 .branch-no-dev-focus {
     background: none repeat scroll 0 0 #FFF59C;
     height: 2.5em;
     text-align: center;
     vertical-align: middle;
 }
-.pending-update {
-    background: none repeat scroll 0 0 #FFF59C;
-    border-radius: 5px 5px 5px 5px;
-    margin: 1em auto;
-    padding: 0.2em 1em;
-    width: 40em;
-}
-.pending-update h3 {
-    font-weight: bold;
-    margin-top: 0.5em;
-    text-align: center;
-}
+
 .mergeproposal p {
     margin: 0.5em 0;
 }
@@ -688,27 +694,7 @@ body {
     text-indent: 100em;
     width: 16px;
 }
-.yui3-skin-sam button.lazr-pos {
-    background-image: url("lazr/build/lazr/assets/skins/sam/positive.png");
-}
-.yui3-skin-sam button.lazr-neg {
-    background-image: url("lazr/build/lazr/assets/skins/sam/negative.png");
-}
-.yui3-skin-sam button.lazr-search {
-    background-image: url("lazr/build/lazr/assets/skins/sam/search.png");
-}
-.yui3-skin-sam button.lazr-prev {
-    background-image: url("lazr/build/lazr/assets/skins/sam/arrowLeft.png");
-}
-.yui3-skin-sam button.lazr-next {
-    background-image: url("lazr/build/lazr/assets/skins/sam/arrowRight.png");
-}
-.yui3-skin-sam button.lazr-prev:disabled {
-    background-image: url("lazr/build/lazr/assets/skins/sam/arrowLeft-inactive.png");
-}
-.yui3-skin-sam button.lazr-next:disabled {
-    background-image: url("lazr/build/lazr/assets/skins/sam/arrowRight-inactive.png");
-}
+
 .yui3-lazr-odd {
     background-color: #F2F2F2;
 }
@@ -719,199 +705,34 @@ body {
     color: inherit;
     font: inherit;
 }
-.yui3-editable_text-trigger:link, .yui3-editable_text-trigger:visited {
-    content: "‌";
-}
-.yui3-skin-sam .yui3-ieditor-errors {
-    color: red;
-    font-family: sans-serif;
-    padding: 0.2em 0 0.5em 0.5em;
-}
-.yui3-skin-sam .yui3-ieditor-in-error {
-    background-color: #FFE4E4;
-    border: 4px solid red;
-    margin: -5px -10px -4px -4px;
-    padding-right: 6px;
-}
-.yui3-skin-sam .yui3-ieditor-in-error .bg-top-label {
-    margin-top: 1px;
-}
-.yui3-skin-sam .yui3-ieditor-waiting .yui3-ieditor-btns button {
-    visibility: hidden;
-}
-.yui3-skin-sam .yui3-ieditor-input {
-    margin-right: 68px;
-    margin-top: 0.5em;
-    width: 100%;
-}
-.yui3-skin-sam .yui3-ieditor-btns {
-    display: block;
-    right: -66px;
-    top: 30%;
-}
-.yui3-skin-sam .yui3-ieditor-singleline .yui3-ieditor-btns {
-    position: absolute;
-    width: 60px;
-}
-.yui3-skin-sam .yui3-ieditor-multiline .yui3-ieditor-btns {
-    clear: both;
-    text-align: right;
-    width: 100%;
-}
-.yui3-skin-sam .yui3-ieditor-multiline .yui3-ieditor-btns div {
-    margin-right: -5px;
-}
-.yui3-skin-sam .yui3-ieditor-multiline .yui3-ieditor-btns .bg-top-label {
-    background-image: url("lazr/build/inlineedit/assets/skins/sam/label-top.png");
-    background-position: right bottom;
-    background-repeat: no-repeat;
-    float: right;
-    height: 29px;
-    line-height: 29px;
-    width: 81px;
-}
-.yui3-skin-sam .yui3-ieditor-multiline .yui3-ieditor-btns .bg-bottom-label {
-    background-image: url("lazr/build/inlineedit/assets/skins/sam/label-bottom.png");
-    background-position: right top;
-    background-repeat: no-repeat;
-    float: right;
-    height: 29px;
-    line-height: 29px;
-    width: 81px;
-}
-.yui3-skin-sam .yui3-ieditor-waiting .yui3-ieditor-btns {
-    background: url("lazr/build/lazr/assets/skins/sam/spinner.gif") no-repeat scroll 0.2em 0 transparent;
-}
-.yui3-skin-sam .yui3-ieditor-content {
+
+.yui3-skin-sam .yui3-ieditor-content 
+{
     left: -4px;
     position: relative;
     top: -4px;
 }
-.lazr-multiline-edit {
-    font-family: sans-serif;
-    font-size: 12px;
-    margin-bottom: 25px;
-    margin-top: -10px;
-}
-.lazr-multiline-edit h2 {
-    bottom: 5px;
-    color: #717171;
-    font-family: sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 0;
-    margin-left: 1.5em;
-    padding-top: 8px;
-    position: relative;
-}
-.lazr-multiline-edit .edit-controls {
-    background-image: url("lazr/build/inlineedit/assets/skins/sam/label-top-white.png");
-    background-position: right top;
-    background-repeat: no-repeat;
-    float: right;
-    height: 29px;
-    line-height: 29px;
-    margin-top: -6px;
-    position: relative;
-    text-align: right;
-    top: 1px;
-    width: 81px;
-    z-index: 1;
-}
-.lazr-multiline-edit .edit-controls-hover, .yui3-editable_text-edit_mode .lazr-multiline-edit .edit-controls {
-    background-image: url("lazr/build/inlineedit/assets/skins/sam/label-top.png");
-    background-position: right top;
-    background-repeat: no-repeat;
-}
-.lazr-multiline-edit .yui3-editable_text-text {
-    border-top: 1px solid #D6D6D6;
-    padding: 5px 10px 3px 20px;
-}
-.lazr-multiline-edit .yui3-editable_text-text-hover {
-    background-color: #FAFAFA !important;
-    border: 1px solid #D6D6D6;
-    padding: 5px 9px 2px 19px;
-}
-.lazr-multiline-edit p {
-    margin-bottom: 1.2em;
-}
-.lazr-multiline-edit .yui3-ieditor-input {
-    -moz-border-bottom-colors: none;
-    -moz-border-image: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
-    border-color: #D6D6D6;
-    border-right: 1px solid #D6D6D6;
-    border-style: groove solid solid groove;
-    border-width: 2px 1px 1px 2px;
-    left: 5px;
-    line-height: 1.2em;
-    padding: 3px 9px 14px 17px;
-    position: relative;
-    top: -6px;
-}
-.yui3-editable_text-edit_mode .lazr-multiline-edit .yui3-ieditor-input {
+
+.yui3-editable_text-edit_mode .lazr-multiline-edit .yui3-ieditor-input 
+{
     background-color: #FAFAFA;
 }
-.lazr-multiline-edit .yui3-ieditor-multiline {
-    border-top: 1px solid #D6D6D6;
-}
-.lazr-multiline-edit .yui3-ieditor-content {
-    left: -5px;
-    top: -29px;
-}
-.lazr-multiline-edit .yui3-ieditor-submit_button {
-    left: -7px;
-    position: relative;
-    top: 1px;
-    z-index: 2;
-}
-.lazr-multiline-edit .yui3-ieditor-cancel_button {
-    left: 16px;
-    margin-right: 8px;
-    position: relative;
-    top: 1px;
-    z-index: 2;
-}
-.lazr-multiline-edit .loading {
-    background: url("lazr/build/lazr/assets/skins/sam/spinner.gif") no-repeat scroll left top transparent;
-    left: -8px;
-    padding: 2px 0 0 18px;
-    position: relative;
-    top: 4px;
-    z-index: 2;
-}
-.lazr-multiline-edit .edit {
-    background: url("lazr/build/inlineedit/assets/skins/sam/edit.png") no-repeat scroll left top transparent;
-    padding: 2px 0 0 18px;
-    position: relative;
-    right: 10px;
-    top: 2px;
-}
-.yui3-autocomplete {
+
+.yui3-autocomplete 
+{
     position: absolute;
     z-index: 1050;
 }
+
 .yui3-autocomplete-hidden {
     display: none;
 }
+
 .yui3-menu .yui3-menu {
     position: absolute;
     z-index: 1;
 }
-.yui3-menu .yui3-shim {
-    border: medium none;
-    height: 100%;
-    left: 0;
-    margin: 0;
-    opacity: 0;
-    padding: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    z-index: -1;
-}
+
 .yui3-menu-hidden {
     left: -10000px;
     top: -10000px;
@@ -1096,18 +917,7 @@ body {
     background: url("lazr/build/autocomplete/assets/skins/sam/horizontal-menu-submenu-toggle.png") no-repeat scroll left center transparent;
     border-color: #7D98B8;
 }
-.blocking-div {
-    border: medium none;
-    height: 100%;
-    left: 0;
-    margin: 0;
-    opacity: 0;
-    padding: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    z-index: 999;
-}
+
 .yui3-pretty-overlay {
     background-color: #FFFFFF;
     border-radius: 5px 5px 5px 5px;
@@ -1172,27 +982,13 @@ body {
     color: #000000;
     font-weight: normal;
 }
-.yui3-pretty-overlay .steps {
-    background: url("lazr/build/overlay/assets/skins/sam/images/bg_steps.gif") repeat-x scroll center bottom #F0F0F0;
-    border-top: 1px solid #E6E6E6;
-    color: #666666;
-    height: 3px;
-    width: 100%;
-}
+
 .yui3-pretty-overlay .contains-steptitle {
     height: 33px;
-}
-.yui3-pretty-overlay .step-on, .yui3-pretty-overlay .step-onb, .yui3-pretty-overlay .step-off, .yui3-pretty-overlay .step-offb {
-    background: url("lazr/build/overlay/assets/skins/sam/images/bg_steps-estatus.gif") repeat-x scroll center top green;
-    height: 3px;
-    width: 100%;
 }
 .yui3-pretty-overlay .step-onb, .yui3-pretty-overlay .step-offb {
     border-bottom: 1px solid #E6E6E6;
     margin-bottom: 15px;
-}
-.yui3-pretty-overlay .step-off, .yui3-pretty-overlay .step-offb {
-    background: url("lazr/build/overlay/assets/skins/sam/images/bg_steps-estatus.gif") repeat-x scroll center bottom gray;
 }
 .yui3-pretty-overlay .yui3-widget-bd {
     margin-left: 1em;
@@ -1243,13 +1039,6 @@ body {
 }
 input.yui3-picker-search {
     width: 100%;
-}
-.yui3-picker-search-box button.lazr-search {
-    float: right;
-    height: 14px;
-}
-.yui3-picker-search-mode button.lazr-search {
-    background: url("lazr/build/lazr/assets/skins/sam/spinner.gif") no-repeat scroll 0.2em 0 transparent;
 }
 .yui3-picker-search-box .lazr-search {
     position: absolute;
@@ -1573,10 +1362,7 @@ pre, code, samp, tt, .console {
     font-family: "UbuntuBeta Mono","Ubuntu Mono",monospace;
     margin-bottom: 0.8em;
 }
-pre.wrap {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
+
 div.left, div.right {
     width: 50%;
 }
@@ -2058,12 +1844,7 @@ div.centered table {
     text-align: left;
     vertical-align: top;
 }
-.results {
-    background-color: #F4F4F4;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    padding: 2px 10px 5px;
-}
+
 form {
     margin-bottom: 1em;
 }
@@ -2415,9 +2196,7 @@ span.see-all {
     display: block;
     left: -9999em;
 }
-.transparent {
-    opacity: 0;
-}
+
 .logo {
     display: inline;
     float: left;
@@ -2570,7 +2349,7 @@ div.watermark-apps-portlet span img {
     padding: 2px 0 0;
 }
 .downloads li a {
-    background: url("http://processhacker.sourceforge.net/beta/images/project-downloads.png") no-repeat scroll right center #4F843C;
+    background: url("/images/project-downloads.png") no-repeat scroll right center #4F843C;
     border-radius: 3px 3px 3px 3px;
     color: #FFFFFF;
     display: block;
@@ -2601,7 +2380,7 @@ div.watermark-apps-portlet span img {
     border-top: 0 none;
 }
 .involvement a {
-    background: url("../images/answers-arrow-right.png") no-repeat scroll right center transparent;
+    background: url("/images/answers-arrow-right.png") no-repeat scroll right center transparent;
     display: block;
     padding: 0.3em;
 }
@@ -2627,7 +2406,7 @@ div.watermark-apps-portlet span img {
 }
 
 .involvement a.bugs, .involvement a.answers, .involvement a.translations, .involvement a.code, .involvement a.blueprints {
-    background: url("../images/answers-arrow-right.png") no-repeat scroll right center transparent;
+    background: url("/images/answers-arrow-right.png") no-repeat scroll right center transparent;
 }
 
 .announcements li {
@@ -2690,9 +2469,7 @@ span.help {
     background: none repeat scroll 0 0 #DDDDDD;
     border: 1px solid #DDDDDD;
 }
-.lowlight {
-    opacity: 0.5;
-}
+
 .questionstatusOPEN {
     color: #000000;
 }
@@ -2961,170 +2738,123 @@ div#edit-description, div#edit-commit_message {
 .yui3-ieditor-multiline .yui3-ieditor-input {
     top: 0;
 }
-.sprite {
+
+.sprite 
+{
     line-height: 18px;
     padding: 0 0 0 18px;
 }
-.sprite-after {
+
+.sprite-after 
+{
     padding: 2px 18px 0 0;
 }
-h1 a.sprite, h2 a.sprite, h3 a.sprite {
+
+h1 a.sprite, h2 a.sprite, h3 a.sprite 
+{
     font-size: 12px;
 }
-.icon-only {
+
+.icon-only 
+{
     border: 0 none;
     padding: 0;
     width: 14px;
 }
-div.icon-only {
+
+div.icon-only 
+{
     height: 14px;
 }
-input.icon-only[type="submit"] {
+
+input.icon-only[type="submit"] 
+{
     background-color: inherit;
     cursor: pointer;
     height: 14px;
 }
-span.icon-only {
+
+span.icon-only 
+{
     line-height: 14px;
     padding-right: 14px;
 }
-.vertical .sprite {
+
+.vertical .sprite 
+{
     display: inline-block;
     min-height: 16px;
     padding-bottom: 0;
     width: 90%;
 }
-.vertical .sprite:first-line {
+
+.vertical .sprite:first-line 
+{
     line-height: 12px;
 }
-body.tab-bugs #portlet-subscribers .sprite {
+
+body.tab-bugs #portlet-subscribers .sprite 
+{
     display: inline;
 }
-body.tab-bugs #duplicate-actions .sprite {
+
+body.tab-bugs #duplicate-actions .sprite 
+{
     display: inline;
 }
-.yui3-picker {
+
+.yui3-picker 
+{
     width: 40%;
 }
-.yui3-picker-results div.badge {
+
+.yui3-picker-results div.badge 
+{
     left: auto;
     position: absolute;
     right: 3px;
     top: 3px;
 }
-.yui3-picker-results div.badge img {
+
+.yui3-picker-results div.badge img 
+{
     padding-left: 3px;
     position: relative;
 }
-body.global-notification-visible {
-    padding-top: 40px;
-}
-body.global-notification-visible .login-logout {
-    top: 45px;
-}
-.global-notification {
-    background-color: rgba(125, 0, 0, 0.9);
-    box-shadow: 0 0 5px #333333;
-    color: #FFFFFF;
-    font-size: 14px;
-    font-weight: bold;
-    left: 0;
-    line-height: 21px;
-    padding: 8px 20px;
-    position: fixed;
-    right: 0;
-    text-shadow: 0 -1px 0 #631616;
-    top: 0;
-    z-index: 10;
-}
-.global-notification .sprite.notification-private {
-    display: inline-block;
-    float: left;
-    height: 21px;
-    margin-right: 10px;
-    padding: 0;
-    width: 20px;
-}
-.global-notification-close, .global-notification-close:active, .global-notification-close:visited {
-    color: #E47A7A;
-}
-.global-notification-close {
-    display: block;
-    font-size: 12px;
-    font-weight: normal;
-    line-height: 14px;
-    position: absolute;
-    right: 20px;
-    top: 11px;
-}
-.global-notification-close .sprite.notification-close {
-    display: block;
-    float: right;
-    height: 9px;
-    margin: 3px 0 0 7px;
-    padding: 0;
-    width: 8px;
-}
-div.yui-timelinegraph-content .yui-timelinegraph-zoom-box {
+
+div.yui-timelinegraph-content .yui-timelinegraph-zoom-box 
+{
     visibility: hidden;
 }
-div.yui-timelinegraph-content:hover .yui-timelinegraph-zoom-box {
+
+div.yui-timelinegraph-content:hover .yui-timelinegraph-zoom-box 
+{
     visibility: visible;
 }
-tr.bug-branch-summary td {
+
+tr.bug-branch-summary td 
+{
     padding: 0 6px;
 }
-tr.bug-branch-summary td.first {
+
+tr.bug-branch-summary td.first 
+{
     padding-left: 0;
 }
-ul.latest-ppa-updates li {
+
+ul.latest-ppa-updates li 
+{
     background-position: right center;
     background-repeat: no-repeat;
     padding: 3px;
 }
-table#packages_list tr.superseded, tr.blacklisted {
+
+table#packages_list tr.superseded, tr.blacklisted 
+{
     background-color: #EEEEEE;
 }
-ul.latest-ppa-updates li:nth-child(2n+1) {
-    background-color: #EEEEFF;
-    border-bottom: 1px solid #DEDEDE;
-    border-top: 1px solid #DEDEDE;
-}
-ul.latest-ppa-updates li.FULLYBUILT {
-    background-image: url("/@@/yes");
-}
-ul.latest-ppa-updates li.FULLYBUILT_PENDING {
-    background-image: url("/@@/build-success-publishing");
-}
-ul.latest-ppa-updates li.NEEDSBUILD {
-    background-image: url("/@@/build-needed");
-}
-ul.latest-ppa-updates li.FAILEDTOBUILD {
-    background-image: url("/@@/build-failed");
-}
-ul.latest-ppa-updates li.BUILDING {
-    background-image: url("/@@/processing");
-}
-.package-diff-status span.COMPLETED {
-    background-image: url("/@@/packagediff-ok");
-    background-position: 0 0;
-    background-repeat: no-repeat;
-}
-.package-diff-status span.PENDING {
-    background-image: url("/@@/packagediff-loading");
-    background-position: 0 0;
-    background-repeat: no-repeat;
-}
-.package-diff-status span.FAILED {
-    background-image: url("/@@/packagediff-failed");
-    background-position: 0 0;
-    background-repeat: no-repeat;
-}
-.package-diff-status span.request-derived-diff {
-    background-image: url("/@@/packagediff-unknown");
-    background-position: 0 0;
-    background-repeat: no-repeat;
-}
+
+
 table.code {
     margin-bottom: 1em;
 }
