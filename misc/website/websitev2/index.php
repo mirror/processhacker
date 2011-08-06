@@ -86,7 +86,7 @@
 					<li>&#160;•&#160;View, edit and control services, including those not shown by the Services console.</li>
 					<li>&#160;•&#160;View and close network connections.</li>
 					<li>&#160;•&#160;Starts up almost instantly, unlike other programs.</li>
-					<li>&#160;•&#160;<a href="./features.php">Many more features</a>...</li>
+					<li>&#160;•&#160;<a href="./features.php">Many more features...</a></li>
 					
 					<p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
 					
