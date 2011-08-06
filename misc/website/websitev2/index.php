@@ -1,4 +1,4 @@
-<?php $pagetitle = "Overview"; include("header.php"); include("config.php"); ?>
+<?php $pagetitle = "Overview"; include("header.php"); include("config.php"); include("./forums/config.php"); ?>
 	
 <div style="max-width: 80em; margin: 0 auto;"> 
 	<div class="yui-d0">
@@ -113,9 +113,6 @@
 							// Change this to your phpBB path
 							$urlPath = "./forums";
 							
-							// Database Configuration (Where your phpBB config.php file is located)
-							include("./forums/config.php");
-							
 							$table_topics = $table_prefix. "topics";
 							$table_forums = $table_prefix. "forums";
 							$table_posts = $table_prefix. "posts";
@@ -137,8 +134,6 @@
 									
 									if ($result = mysql_query($query))
 									{			
-										print "<table width=\"100%\" border=\"1\">";
-									
 										while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
 										{
 											echo  
@@ -153,8 +148,6 @@
 												</span>
 											</div>";
 										}
-
-										print "</table>";
 									}
 									else
 									{
@@ -186,9 +179,7 @@
 							$topicnumber = 5;
 							// Change this to your phpBB path
 							$urlPath = "./forums";
-							// Database Configuration (Where your phpBB config.php file is located)
-							include("./forums/config.php");
-							
+
 							$table_topics = $table_prefix. "topics";
 							$table_forums = $table_prefix. "forums";
 							$table_posts = $table_prefix. "posts";
@@ -211,8 +202,6 @@
 									
 									if ($result = mysql_query($query))
 									{							
-										print "<table width=\"100%\" border=\"1\">";
-										
 										while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
 										{
 											echo  
@@ -227,8 +216,6 @@
 												</span>
 											</div>";
 										}
-										
-										print "</table>";
 									}
 									else
 									{
