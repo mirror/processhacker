@@ -1715,16 +1715,7 @@ table.sortable a.sortheader {
 table.sortable img.sortarrow {
     padding-left: 2px;
 }
-th.ascending {
-    background-image: url("/@@/arrowDown");
-    background-position: right center;
-    background-repeat: no-repeat;
-}
-th.descending {
-    background-image: url("/@@/arrowUp");
-    background-position: right center;
-    background-repeat: no-repeat;
-}
+
 .sortkey, .revsortkey {
     display: none;
 }

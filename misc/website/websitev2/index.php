@@ -64,7 +64,7 @@
 						<li><a href="/downloads.php">All downloads</a></li>				  
 						<li><a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=24">Report a bug</a></li>
 						<li><a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=5">Ask a question</a>
-						</li><li><a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/">Browse source code</a></li>
+						<li><a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/">Browse source code</a></li>
 						<li><a href="http://processhacker.sourceforge.net/doc">Source code documentation</a></li>
 					</ul>
 				</div>
@@ -72,13 +72,16 @@
 
 			<div class="top-portlet" style="width: 70%;">	
 				<div class="summary">
-					<p>Process Hacker is a feature-packed tool for manipulating processes and services on your computer.</p>
 					
+					<p>Process Hacker is a feature-packed tool for manipulating processes and services on your computer.</p>
+						
 					<p><strong>System Requirements:</strong></p>
+					<ul>
 					<li>&#160;•&#160;Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
 					<li>&#160;•&#160;Intel Itanium Platforms are not supported.</li>
-					
+					</ul>
 					<p><strong>Key features of Process Hacker:</strong></p>
+					<ul>
 					<li>&#160;•&#160;A simple, customizable tree view with highlighting showing you the processes running on your computer.</li>
 					<li>&#160;•&#160;Detailed system statistics with graphs.</li>
 					<li>&#160;•&#160;Advanced features not found in other programs, such as detaching from debuggers, viewing GDI handles, viewing heaps, injecting and unloading DLLs, and more.</li>
@@ -87,9 +90,9 @@
 					<li>&#160;•&#160;View and close network connections.</li>
 					<li>&#160;•&#160;Starts up almost instantly, unlike other programs.</li>
 					<li>&#160;•&#160;<a href="./features.php">Many more features...</a></li>
-					
+					</ul>
 					<p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
-					
+					<ul>
 					<li>&#160;•&#160;Implements almost all of the functionality offered by Process Explorer, plus more advanced features.</li>
 					<li>&#160;•&#160;Has advanced string scanning capabilities, as well as regular expression filtering.</li>
 					<li>&#160;•&#160;Allows you to see what a thread is waiting on.</li>
@@ -99,6 +102,7 @@
 					<li>&#160;•&#160;Shows names for transaction manager objects and ETW registration objects.</li>
 					<li>&#160;•&#160;Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
 					<li>&#160;•&#160;Shows information for POSIX processes.</li>
+					</ul>
 				</div>
 			</div>
 
@@ -247,11 +251,11 @@
 					<div class="portlet">
 						<p><strong>Screenshots</strong></p>
 						<a href="/images/screenshots/processes_tab_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
-							<img alt="" border="0" width="200" height="107" src="/images/screenshots/processhacker_small.png" />
+							<img alt="" border="0" width="200" height="107" src="/images/screenshots/processhacker_small.png">
 						</a>
 
 						<a href="/images/screenshots/sysinfo_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
-							<img alt="" border="0" width="200" height="107" src="/images/screenshots/sysinfo_small.png" />
+							<img alt="" border="0" width="200" height="107" src="/images/screenshots/sysinfo_small.png">
 						</a>
 
 						<h2>
