@@ -2845,96 +2845,18 @@ table#packages_list tr.superseded, tr.blacklisted
     background-color: #EEEEEE;
 }
 
-
-table.code {
+table.code 
+{
     margin-bottom: 1em;
 }
-table.code th {
+
+table.code th 
+{
     font-weight: bold;
     text-align: left;
 }
-table.code th, table.code td {
+
+table.code th, table.code td 
+{
     padding-right: 3em;
-}
-form.translations div.fields {
-    padding: 1em;
-}
-form.translations div.actions {
-    clear: both;
-    padding: 1em;
-    text-align: left;
-}
-form.translations input {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-}
-form.translations select {
-    margin-left: 0.5em;
-    padding-right: 0.5em;
-}
-form.translations label {
-    padding-left: 0.5em;
-    padding-right: 1em;
-}
-form.translations .listbox label {
-    padding: 2px 1em 2px 2px;
-}
-form.translations div.alignment .content {
-    float: left;
-}
-form.translations div.alignment .selector {
-    clear: both;
-    float: left;
-    margin-right: 0.5em;
-}
-form.translations div.alignment .content label {
-    font-weight: bold;
-    margin: 0;
-    padding: 0;
-}
-form.translations div.alignment .secondary label {
-    font-weight: normal;
-    padding: 2px 1em 2px 2px;
-}
-.inactive-template td {
-    background-color: #FFEEEE;
-    color: #885555;
-}
-div.translations-legend {
-    padding-bottom: 1em;
-    padding-top: 2em;
-}
-table.translation-stats td {
-    text-align: center;
-}
-table.translation-stats td.template-name {
-    text-align: left;
-}
-table.translation-stats tfoot td, table.translation-stats tfoot th {
-    -moz-border-bottom-colors: none;
-    -moz-border-image: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
-    background-color: #F7F7F7;
-    border-color: #D2D2D2 -moz-use-text-color;
-    border-left: 0 none;
-    border-right: 0 none;
-    border-style: solid none;
-    border-width: 2px 0;
-    font-weight: bold;
-    padding-bottom: 5px;
-    padding-top: 5px;
-}
-table.translation-stats tfoot th {
-    text-align: left;
-}
-table.translation-stats tfoot td {
-    text-align: center;
-}
-div.translation-help-links a {
-    float: right;
-}
-div.translation-help-links div {
-    clear: both;
 }
