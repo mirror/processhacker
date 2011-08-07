@@ -72,7 +72,7 @@
 					<div class="portlet">
 						<p><strong>Setup (recommended)</strong></p>
 
-						<ul style="width: 62%;" class="top-portlet downloads">						
+						<ul style="width: 62%;" class="downloads">						
 							<li>
 								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">
 									processhacker-<?php echo LATEST_PH_VERSION ?>-setup.exe
@@ -90,7 +90,7 @@
 					<div class="portlet">
 						<p><strong>Binaries (portable)</strong></p>
 	
-						<ul style="width: 62%;" class="top-portlet downloads">						
+						<ul style="width: 62%;" class="downloads">						
 							<li>
 								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">
 									processhacker-<?php echo LATEST_PH_VERSION ?>-bin.zip
@@ -114,7 +114,7 @@
 					<div class="portlet">
 						<p><strong>Source Code</strong></p>
 
-						<ul style="width: 62%;" class="top-portlet downloads">						
+						<ul style="width: 62%;" class="downloads">						
 							<li>
 								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-src.zip/download" title="Source Code">
 									processhacker-<?php echo LATEST_PH_VERSION ?>-src.zip
@@ -132,7 +132,7 @@
 					<div class="portlet">
 						<p><strong>Plugins SDK</strong></p>
 
-						<ul style="width: 62%;" class="top-portlet downloads">						
+						<ul style="width: 62%;" class="downloads">						
 							<li>
 								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-sdk.zip/download" title="Setup (recommended)">
 									processhacker-<?php echo LATEST_PH_VERSION ?>-sdk.zip

@@ -331,15 +331,7 @@ dl.reviews dd {
     margin: 0;
     text-align: left;
 }
-#affected-software tr.highlight {
-    background-color: #FFFF99;
-}
-div#sub-unsub-spinner, div#mute-unmute-spinner {
-    background: url("/@@/spinner") no-repeat scroll left center transparent;
-    color: #999999;
-    display: none;
-    padding: 3px 5px 2px 17px;
-}
+
 .unsub-icon, .editsub-icon {
     position: absolute;
     right: 16px;
@@ -357,80 +349,14 @@ div#sub-unsub-spinner, div#mute-unmute-spinner {
 .bug-links td.bugs-link {
     text-align: left;
 }
-.spinner {
-    background: url("/@@/spinner") no-repeat scroll left center transparent;
-}
-button.spinner {
-    background-image: url("/@@/spinner") !important;
-}
-div#mute-link-container a.sprite {
-    width: auto;
-}
-div#current_user_subscription {
-    padding-bottom: 8px;
-}
-div#current_user_subscription a.sprite {
-    display: inline;
-}
-.translation code {
-    font-weight: bold;
-}
-.translation samp {
-    background: url("/@@/translation-space") no-repeat scroll center center transparent;
-    padding: 0 4px;
-    white-space: pre;
-}
-input.translate {
-    max-width: 60em;
-    width: 90%;
-}
+
 .central {
     clear: left;
     margin: 0 auto 1em;
     padding: 0.5em 0;
     width: auto;
 }
-#application-summary, #application-footer, #page-summary {
-    line-height: 1.4em;
-    margin-top: 0;
-}
-#application-footer {
-    border-top: 1px dotted #999999;
-    clear: both;
-    margin-top: 2em;
-    padding-top: 1em;
-}
-img.mugshot {
-    float: right;
-    margin-left: 20px;
-}
-img.mugshot:after {
-    clear: both;
-    content: ".";
-    display: block;
-    height: 0;
-    visibility: hidden;
-}
-img.mugshot {
-    display: inline-table;
-}
-* html img.mugshot {
-    height: 1%;
-}
-img.mugshot {
-    display: block;
-}
-#project-cloud-preview a {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-}
-#project-tags a {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-}
-.lowerCaseText {
-    text-transform: lowercase;
-}
+
 div.popupTitle {
     background: none repeat scroll 0 0 #FFFFDC;
     border: 1px solid black;
@@ -861,12 +787,7 @@ body {
     padding: 0 10px;
     width: auto;
 }
-.yui3-skin-sam .yui3-menu-label, .yui3-skin-sam .yui3-menu .yui3-menu .yui3-menu-label {
-    background: url("lazr/build/autocomplete/assets/skins/sam/vertical-menu-submenu-indicator.png") no-repeat scroll right center transparent;
-}
-.yui3-skin-sam .yui3-menu-horizontal .yui3-menu-label {
-    background: url("lazr/build/assets/skins/sam/sprite.png") repeat-x scroll 0 0 transparent;
-}
+
 .yui3-skin-sam .yui3-menubuttonnav .yui3-menu-label, .yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label {
     background-image: none;
 }
@@ -874,7 +795,7 @@ body {
     padding-right: 0;
 }
 .yui3-skin-sam .yui3-menubuttonnav .yui3-menu-label em {
-    background: url("lazr/build/autocomplete/assets/skins/sam/horizontal-menu-submenu-indicator.png") no-repeat scroll right center transparent;
+
     display: block;
     font-style: normal;
     padding-right: 20px;
@@ -891,7 +812,6 @@ body {
     width: auto;
 }
 .yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label .yui3-menu-toggle {
-    background: url("lazr/build/autocomplete/assets/skins/sam/horizontal-menu-submenu-indicator.png") no-repeat scroll 3px center transparent;
     border-left: 1px solid #CCCCCC;
     overflow: hidden;
     padding: 0;
@@ -920,7 +840,6 @@ body {
     border-color: #808080;
 }
 .yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label-menuvisible .yui3-menu-toggle {
-    background: url("lazr/build/autocomplete/assets/skins/sam/horizontal-menu-submenu-toggle.png") no-repeat scroll left center transparent;
     border-color: #7D98B8;
 }
 
@@ -960,7 +879,6 @@ body {
     padding: 0 5px;
 }
 .yui3-pretty-overlay .close a {
-    background: url("lazr/build/overlay/assets/skins/sam/images/close.gif") repeat scroll 0 0 transparent;
     display: block;
     float: right;
     height: 15px;
@@ -1093,12 +1011,7 @@ ul.yui3-picker-results li {
 .yui3-activator-hidden {
     display: none;
 }
-.yui3-skin-sam button.yui3-activator-act {
-    background: url("lazr/build/activator/assets/skins/sam/edit.png") no-repeat scroll 0 0 transparent;
-}
-.yui3-skin-sam .yui3-activator-processing button.yui3-activator-act {
-    background: url("lazr/build/lazr/assets/skins/sam/spinner.gif") no-repeat scroll 0 0 transparent;
-}
+
 .yui3-activator-message-box {
     background-color: #EEEEEE;
     border: 2px solid #000000;
@@ -1110,7 +1023,6 @@ ul.yui3-picker-results li {
     width: 30em;
 }
 .yui3-skin-sam button.yui3-activator-message-close {
-    background: url("lazr/build/overlay/assets/skins/sam/images/close.gif") no-repeat scroll 0 0 transparent;
     float: right;
     height: 15px;
     margin-right: 1px;
@@ -1254,18 +1166,7 @@ ul.yui3-picker-results li {
     overflow: hidden;
     text-decoration: none;
 }
-.yui3-skin-sam .yui3-accordion-item-iconexpanded-off:hover, .yui3-skin-sam .yui3-accordion-item-iconexpanded-collapsing, .yui3-skin-sam .yui3-accordion-item-iconexpanded, .yui3-skin-sam .yui3-accordion-item-iconexpanded-off {
-    background-image: url("yui3-gallery/gallery-accordion/assets/skins/sam/accordion_sprite.png");
-    background-position: 0 -175px;
-}
-.yui3-skin-sam .yui3-accordion-item-iconexpanded-on:hover, .yui3-skin-sam .yui3-accordion-item-iconexpanded-expanding, .yui3-skin-sam .yui3-accordion-item-iconexpanded-on {
-    background-image: url("yui3-gallery/gallery-accordion/assets/skins/sam/accordion_sprite.png");
-    background-position: 0 -115px;
-}
-.yui3-skin-sam .yui3-accordion-item-iconclose {
-    background-image: url("yui3-gallery/gallery-accordion/assets/skins/sam/accordion_sprite.png");
-    background-position: 0 -235px;
-}
+
 .yui3-skin-sam .yui3-accordion-proxyel-visible {
     background-color: red;
     border-color: blue;
@@ -1821,12 +1722,7 @@ div.centered table {
     background: none no-repeat scroll right center transparent;
     padding-right: 14px;
 }
-.batch-navigation-links .next {
-    background-image: url("/@@/arrowRight");
-}
-.batch-navigation-links .next.inactive {
-    background-image: url("/@@/arrowRight-inactive");
-}
+
 .batch-navigation-links .inactive {
     color: #999EA7;
 }
@@ -2080,36 +1976,10 @@ h1 .yui3-ieditor-errors {
 .error {
     background: none repeat scroll 0 0 #FFE4E4;
 }
-.error .message:before {
-    content: url("/@@/error-large");
-}
-.warning {
-    background: none repeat scroll 0 0 #FFF59C;
-}
-.warning.message:before {
-    content: url("/@@/warning-large");
-}
-.informational {
-    background: url("/+icing/blue-fade-to-grey") repeat scroll 0 0 #D4E8FF;
-}
-.informational.message:before {
-    content: url("/@@/info-large");
-}
 .informational p.last {
     margin-bottom: 0;
 }
-.debugging {
-    background: none repeat scroll 0 0 #666666;
-    color: white;
-}
-.debugging.message:before {
-    content: url("/@@/info-large");
-}
-.error .message {
-    background: url("/@@/error") no-repeat scroll left center transparent;
-    margin-bottom: 0.25em;
-    padding-left: 18px;
-}
+
 table.form .error {
     background: none repeat scroll 0 0 transparent;
 }
@@ -2130,9 +2000,7 @@ table.form .error {
     padding: 5px;
     width: 44em;
 }
-.sml-informational:before {
-    content: url("/@@/info");
-}
+
 .important-notice-popup {
     overflow: hidden;
     padding: 1em 1em 0;
@@ -2225,44 +2093,7 @@ span.see-all {
     right: 1.5em;
     top: 0.5em;
 }
-#rendertime {
-    color: #666666;
-    float: left;
-    font-size: 10px;
-    margin: 0.1em 1.2em 0 0;
-}
-#ajax-time {
-    float: left;
-    margin: 0 1.2em 0 0.2em;
-    position: relative;
-}
-#ajax-time-list {
-    background-color: #F2F2F2;
-    border: 2px solid #FFFFFF;
-    border-radius: 4px 4px 4px 4px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-    position: absolute;
-    right: 0;
-    top: 20px;
-    width: 200px;
-    z-index: 10;
-}
-#ajax-time-list li {
-    border-bottom: 1px solid #E0E0E0;
-    padding: 3px 5px;
-}
-#ajax-time-list li:last-child {
-    border-bottom: medium none;
-}
-#ajax-time-list li span {
-    color: #999999;
-    display: block;
-    font-size: 11px;
-}
-#ajax-time-list strong.warning {
-    background-color: transparent;
-    color: #FF0000;
-}
+
 div.watermark-apps-portlet img {
     margin: 0 1.5em 0 0;
 }
@@ -2331,21 +2162,15 @@ div.watermark-apps-portlet span img {
 .side ul {
     background: none repeat scroll 0 0 #FBFBFB;
 }
-#privacy.private {
-    background: url("/@@/private-bg") repeat-x scroll left top transparent;
-    padding-top: 12px;
-}
-.feature-flag-bugs-private-notification-enabled #privacy.private {
-    background-color: #FBFBFB;
-    background-image: none;
-    padding-top: 0.5em;
-}
-.downloads li {
+
+.downloads li 
+{
     font-weight: bold;
     margin: 0;
     padding: 2px 0 0;
 }
-.downloads li a {
+.downloads li a 
+{
     background: url("/images/project-downloads.png") no-repeat scroll right center #4F843C;
     border-radius: 3px 3px 3px 3px;
     color: #FFFFFF;
@@ -2428,37 +2253,7 @@ div.watermark-apps-portlet span img {
     width: 600px;
     z-index: 11000;
 }
-#help-pane.invisible {
-    display: block;
-    left: 0;
-    position: absolute;
-    top: 0;
-    visibility: hidden;
-}
-#help-body {
-    background: url("/@@/spinner") no-repeat scroll center center transparent;
-}
-#help-pane iframe {
-    border: 0 none;
-    height: 300px;
-    width: 100%;
-}
-#help-pane iframe.invisible {
-    display: block;
-    visibility: hidden;
-}
-#help-footer {
-    border-top: 1px solid #DDDDDD;
-    padding: 3px;
-    text-align: right;
-}
-#help-footer button {
-    margin-bottom: 10px;
-    margin-top: 3px;
-}
-span.help {
-    font-weight: normal;
-}
+
 .exception {
     color: #CC0000;
 }
@@ -2467,114 +2262,6 @@ span.help {
     border: 1px solid #DDDDDD;
 }
 
-.questionstatusOPEN {
-    color: #000000;
-}
-.questionstatusNEEDSINFO {
-    color: #993300;
-}
-.questionstatusANSWERED {
-    color: #336633;
-}
-.questionstatusSOLVED {
-    color: #009900;
-}
-.questionstatusEXPIRED {
-    color: #666666;
-}
-.questionstatusINVALID {
-    color: #CC0000;
-}
-.specstatusAPPROVED, .specstatusAPPROVED a {
-    color: green;
-}
-.specstatusPENDINGAPPROVAL, .specstatusPENDINGAPPROVAL a, .specstatusPENDINGREVIEW, .specstatusPENDINGREVIEW a {
-    color: #FF0099;
-}
-.specstatusDRAFT, .specstatusDRAFT a, .specstatusDISCUSSION, .specstatusDISCUSSION a {
-    color: #993300;
-}
-.specstatusNEW, .specstatusNEW a {
-    color: red;
-}
-.specstatusSUPERSEDED, .specstatusSUPERSEDED a, .specstatusOBSOLETE, .specstatusOBSOLETE a, .specpriorityNOTFORUS, .specpriorityNOTFORUS a, .specpriorityUNDEFINED, .specpriorityUNDEFINED a {
-    color: gray;
-}
-.specpriorityLOW, .specpriorityLOW a {
-    color: black;
-}
-.specpriorityMEDIUM, .specpriorityMEDIUM a {
-    color: #FF6600;
-}
-.specpriorityHIGH, .specpriorityHIGH a, .specpriorityESSENTIAL, .specpriorityESSENTIAL a {
-    color: red;
-}
-.specdeliveryUNKNOWN, .specdeliveryUNKNOWN a, .specdeliveryNOTSTARTED, .specdeliveryNOTSTARTED a {
-    color: gray;
-}
-.specdeliveryDEFERRED, .specdeliveryDEFERRED a, .specdeliveryNEEDSINFRASTUCTURE, .specdeliveryNEEDSINFRASTUCTURE a, .specdeliveryBLOCKED, .specdeliveryBLOCKED a {
-    color: red;
-}
-.specdeliverySTARTED, .specdeliverySTARTED a, .specdeliveryGOOD, .specdeliveryGOOD a {
-    color: blue;
-}
-.specdeliverySLOW, .specdeliverySLOW a {
-    color: red;
-}
-.specdeliveryBETA, .specdeliveryBETA a {
-    color: #FF6600;
-}
-.specdeliveryNEEDSREVIEW, .specdeliveryNEEDSREVIEW a {
-    color: purple;
-}
-.specdeliveryAWAITINGDEPLOYMENT, .specdeliveryAWAITINGDEPLOYMENT a {
-    color: red;
-}
-.specdeliveryIMPLEMENTED, .specdeliveryIMPLEMENTED a, .specdeliveryINFORMATIONAL, .specdeliveryINFORMATIONAL a {
-    color: green;
-}
-.bug-activity {
-    color: #555555;
-}
-.statusNEW, .statusNEW a {
-    color: #993300;
-}
-.statusINCOMPLETE, .statusINCOMPLETE a, .statusCONFIRMED, .statusCONFIRMED a {
-    color: red;
-}
-.statusTRIAGED, .statusTRIAGED a {
-    color: #FF6600;
-}
-.statusINPROGRESS, .statusINPROGRESS a {
-    color: black;
-}
-.statusFIXCOMMITTED, .statusFIXCOMMITTED a {
-    color: #005500;
-}
-.statusFIXRELEASED, .statusFIXRELEASED a {
-    color: green;
-}
-.statusINVALID, .statusINVALID a, .statusWONTFIX, .statusWONTFIX a {
-    color: gray;
-}
-.importanceCRITICAL, .importanceCRITICAL a {
-    color: red;
-}
-.importanceHIGH, .importanceHIGH a {
-    color: #FF6600;
-}
-.importanceMEDIUM, .importanceMEDIUM a {
-    color: green;
-}
-.importanceLOW, .importanceLOW a {
-    color: black;
-}
-.importanceWISHLIST, .importanceWISHLIST a {
-    color: blue;
-}
-.importanceUNDECIDED, .importanceUNDECIDED a {
-    color: #999999;
-}
 .status *:link, .importance *:link {
     text-decoration: none;
 }
@@ -2587,151 +2274,13 @@ a.unofficial-tag {
 .greylink a:link, .greylink a:visited {
     color: gray;
 }
-.stale-diff {
-    color: #FF6600;
-}
-.conflicts-diff {
-    color: red;
-}
-.branchstatusMATURE, .branchstatusMATURE a {
-    color: #009900;
-}
-.branchstatusDEVELOPMENT, .branchstatusDEVELOPMENT a {
-    color: #990000;
-}
-.branchstatusEXPERIMENTAL, .branchstatusEXPERIMENTAL a {
-    color: #993300;
-}
-.branchstatusMERGED, .branchstatusMERGED a, .branchstatusABANDONED, .branchstatusABANDONED a {
-    color: gray;
-}
-.branchstatusNEW, .branchstatusNEW a {
-    color: black;
-}
-.voteAPPROVE {
-    color: green;
-}
-.voteNEEDS_FIXING {
-    color: #993300;
-}
-.voteDISAPPROVE, .voteRESUBMIT {
-    color: red;
-}
-.voteABSTAIN {
-    color: #BEBEBE;
-}
-.votePENDING {
-    color: #FF6600;
-}
-.mergestatusWORK_IN_PROGRESS, .mergestatusWORK_IN_PROGRESS a {
-    color: black;
-}
-.mergestatusNEEDS_REVIEW, .mergestatusNEEDS_REVIEW a {
-    color: #FF6600;
-}
-.mergestatusCODE_APPROVED, .mergestatusCODE_APPROVED a, .mergestatusMERGED, .mergestatusMERGED a {
-    color: green;
-}
-.mergestatusREJECTED, .mergestatusREJECTED a, .mergestatusMERGE_FAILED, .mergestatusMERGE_FAILED a {
-    color: red;
-}
-.mergestatusQUEUED, .mergestatusQUEUED a {
-    color: black;
-}
-.mergestatusSUPERSEDED, .mergestatusSUPERSEDED a {
-    color: #BEBEBE;
-}
-.codeimportNEW {
-    color: #993300;
-}
-.codeimportREVIEWED {
-    color: green;
-}
-.codeimportINVALID, .codeimportSUSPENDED, .codeimportFAILING {
-    color: red;
-}
-.translationimportstatusAPPROVED, .translationimportstatusAPPROVED a {
-    color: #005500;
-}
-.translationimportstatusIMPORTED, .translationimportstatusIMPORTED a {
-    color: green;
-}
-.translationimportstatusDELETED, .translationimportstatusDELETED a {
-    color: black;
-}
-.translationimportstatusFAILED, .translationimportstatusFAILED a {
-    color: red;
-}
-.translationimportstatusNEEDS_REVIEW, .translationimportstatusNEEDS_REVIEW a {
-    color: #FF6600;
-}
-.translationimportstatusBLOCKED, .translationimportstatusBLOCKED a {
-    color: blue;
-}
-.translationimportstatusNEEDS_INFORMATION, .translationimportstatusNEEDS_INFORMATION a {
-    color: maroon;
-}
-.distromirrorstatusUP, .distromirrorstatusONEHOURBEHIND, .distromirrorstatusTWOHOURSBEHIND, .distromirrorstatusFOURHOURSBEHIND, .distromirrorstatusSIXHOURSBEHIND {
-    color: green;
-}
-.distromirrorstatusONEDAYBEHIND {
-    color: #FF6600;
-}
-.distromirrorstatusTWODAYSBEHIND, .distromirrorstatusONEWEEKBEHIND {
-    color: red;
-}
-.distromirrorstatusUNKNOWN {
-    color: #BEBEBE;
-}
-.buildstatusNEEDSBUILD {
-    color: gray;
-}
-.buildstatusBUILDING {
-    color: black;
-}
-.buildstatusFULLYBUILT {
-    color: green;
-}
-.buildstatusFAILEDTOBUILD, .buildstatusMANUALDEPWAIT, .buildstatusCHROOTWAIT, .buildstatusSUPERSEDED, .buildstatusFAILEDTOUPLOAD {
-    color: red;
-}
-.launchpad-gold {
-    color: #F8C300;
-}
 .discreet, .lesser, .duplicate-details {
     font-size: 10px;
 }
 pre.changelog, table.diff, .bug-comment, .bug-activity, .codereviewcomment {
     font-family: "UbuntuBeta Mono","Ubuntu Mono",monospace;
 }
-.cloud-size-smallest {
-    font-size: 10px;
-}
-.cloud-size-small {
-    font-size: 12px;
-}
-.cloud-size-medium {
-    font-size: 14px;
-}
-.cloud-size-large {
-    font-size: 16px;
-}
-.cloud-size-largest {
-    font-size: 18px;
-}
-.cloud-dark {
-    color: #0000FF;
-}
-.cloud-medium {
-    color: #7878FF;
-}
-.cloud-light {
-    color: #B8B8FF;
-}
-div#edit-description, div#edit-commit_message {
-    font-family: "UbuntuBeta Mono","Ubuntu Mono",monospace;
-    margin: 1em 0;
-}
+
 .yui3-ieditor-multiline .yui3-ieditor-input {
     top: 0;
 }
@@ -2817,38 +2366,6 @@ body.tab-bugs #duplicate-actions .sprite
 {
     padding-left: 3px;
     position: relative;
-}
-
-div.yui-timelinegraph-content .yui-timelinegraph-zoom-box 
-{
-    visibility: hidden;
-}
-
-div.yui-timelinegraph-content:hover .yui-timelinegraph-zoom-box 
-{
-    visibility: visible;
-}
-
-tr.bug-branch-summary td 
-{
-    padding: 0 6px;
-}
-
-tr.bug-branch-summary td.first 
-{
-    padding-left: 0;
-}
-
-ul.latest-ppa-updates li 
-{
-    background-position: right center;
-    background-repeat: no-repeat;
-    padding: 3px;
-}
-
-table#packages_list tr.superseded, tr.blacklisted 
-{
-    background-color: #EEEEEE;
 }
 
 table.code 
