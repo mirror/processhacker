@@ -18,6 +18,12 @@
 	text-align: center; 
 }
 
+.page
+{ 
+	max-width: 80em;
+	margin: 0 auto;
+}
+
 blockquote {
     background: none no-repeat scroll 6px 8px #EBEBEB;
     border: 1px solid #DBDBDB;

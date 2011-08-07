@@ -1,8 +1,8 @@
 <?php $pagetitle = "Downloads"; include("header.php"); include("config.php"); ?>
 
-<div style="max-width: 80em; margin: 0 auto;"> 
+<div class="page"> 
 	<div class="yui-d0">
-		<div id="watermark" class="watermark-apps-portlet">
+		<div class="watermark-apps-portlet">
 			<div class="flowed-block">
 				<img alt="" width="64" height="64" src="/images/logo.png">
 			</div>

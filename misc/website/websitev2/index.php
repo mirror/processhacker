@@ -1,8 +1,8 @@
 <?php $pagetitle = "Overview"; include("header.php"); include("config.php"); include("./forums/config.php"); ?>
 	
-<div style="max-width: 80em; margin: 0 auto;"> 
+<div class="page"> 
 	<div class="yui-d0">
-		<div id="watermark" class="watermark-apps-portlet">
+		<div class="watermark-apps-portlet">
 			<div class="flowed-block">
 				<img alt="" width="64" height="64" src="/images/logo.png">
 			</div>
@@ -23,33 +23,41 @@
 		</div>	
 
 		<div class="yui-t4">
-			<div id="side-portlets" class="yui-b side">
+			<div class="yui-b side">
 				<div class="portlet"> 
-					<div id="downloads" class="top-portlet downloads">
-						<h2 class="center">
-							Downloads
-						</h2>
+				
+					<h2 class="center">
+						Downloads
+					</h2>
+					
+					<div class="downloads">
+			
 						<div class="version">
 							Latest version is <?php echo LATEST_PH_VERSION ?>
 						</div>
+						
 						<li>
 							<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">
 								Installer
 							</a>
 						</li>
+						
 						<li>
 							<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">
 								Binaries (portable)
 							</a>
 						</li>
+
 						<li>
 							<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-src.zip/download" title="Source code">
 								Source code
 							</a>
 						</li>
+					
 						<div class="released">
 							Released <?php echo LATEST_PH_RELEASE_DATE ?>
 						</div>
+						
 					</div>
 
                     <div class="center">
@@ -70,7 +78,7 @@
 				</div>
 			</div>
 
-			<div class="top-portlet" style="width: 70%;">	
+			<div class="top-portlet">	
 				<div class="summary">
 					
 					<p>Process Hacker is a feature-packed tool for manipulating processes and services on your computer.</p>
@@ -267,7 +275,7 @@
 				</div>
 
 				<div class="yui-u">
-					<div class="portlet" id="portlet-latest-questions">
+					<div class="portlet">
 						<p><strong>Statistics</strong></p>
 						<script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
 					</div>      
