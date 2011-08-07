@@ -13,6 +13,11 @@
     font-weight: bold;
 }
 
+.summary
+{
+	max-width: 70%;
+}
+
 .center
 { 
 	text-align: center; 
@@ -63,39 +68,29 @@ blockquote + br {
     display: none;
 }
 
-.helpwanted {
+.helpwanted 
+{
     background-color: #FAFCA9;
     border: 1px solid black;
     padding: 0.5em 0.5em 0.5em 3em;
 }
 
-.notforprint {
-    display: none;
-}
-.notforscreen {
-    display: none;
-}
-.debug {
-    background: none repeat scroll 0 0 transparent;
-    color: #FF0099;
-}
-.anchor {
+.anchor 
+{
     display: none;
     height: 1px;
     overflow: hidden;
 }
-.tags-show {
-    display: block;
-}
-.tags-hide {
-    display: none;
-}
-.check, .radio {
+
+.check, .radio 
+{
     background: none repeat scroll 0 0 transparent;
     border: 0 none !important;
     width: auto !important;
 }
-a.bg-image {
+
+a.bg-image 
+{
     background-attachment: scroll;
     background-position: left center;
     background-repeat: no-repeat;
@@ -104,23 +99,13 @@ a.bg-image {
     padding-left: 18px;
     padding-top: 0.5em;
 }
-.report h2 {
+.report h2 
+{
     font-size: 24px;
 }
-.boardComment, .boardCommentSummary {
-    border: 1px solid #DDDDDD;
-}
-.boardComment {
-    margin: 1em 0 1.5em;
-}
-.boardCommentSummary {
-    margin: 0.3em 0;
-}
-.remoteBugComment {
-    background-color: #F6F6F6;
-}
 
-.from-superseded {
+.from-superseded 
+{
     background-color: #FFFFCC;
 }
 
@@ -171,25 +156,6 @@ table#packages_list {
     margin-top: 1em;
 }
 
-#ppa-install-slide-trigger {
-    color: #009933;
-    cursor: pointer;
-}
-
-#ppa-install-slide-trigger:hover {
-    text-decoration: underline;
-}
-
-#ppa-install .widget-body {
-    margin: 1em;
-}
-
-#ppa-install .widget-body.lazr-closed {
-    display: block;
-    height: 0;
-    overflow: hidden;
-}
-
 div#slide-trigger {
     color: #009933;
     cursor: pointer;
@@ -198,20 +164,6 @@ div#slide-trigger {
 
 div#slide-trigger:hover {
     text-decoration: underline;
-}
-
-dl#ppa_packaging dd {
-    margin-left: 16px;
-}
-
-#related-ppa-versions .widget-bd {
-    margin-left: 2em;
-}
-
-#related-ppa-versions .widget-bd.lazr-closed {
-    display: block;
-    height: 0;
-    overflow: hidden;
 }
 
 form.archive-subscription-activation button {
@@ -276,9 +228,7 @@ div.ppa-packaging-tmp-actions .portlet {
 div.diff .horizontal {
     margin: 0;
 }
-#proposal-summary td, #proposal-summary th {
-    padding-bottom: 2px;
-}
+
 table.diff {
     background-color: white;
     margin-bottom: 0.5em;
