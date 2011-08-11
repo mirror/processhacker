@@ -1,52 +1,11 @@
-<?php
-include('config.php');
-header("Content-Type: text/xml");
+<?php include('config.php'); header('Content-Type: text/xml; charset=UTF-8');
 
-// http://www.go4expert.com/forums/showthread.php?t=3479
-
-// create doctype
-$dom = new DOMDocument("1.0", "UTF-8");
-
-// create root element
-$root = $dom->createElement("latest");
-$dom->appendChild($root);
-
-// create child element
-$item = $dom->createElement("ver");
-$root->appendChild($item);
-// create text node
-$text = $dom->createTextNode(LATEST_PH_VERSION);
-$item->appendChild($text);
-
-// create child element
-$item = $dom->createElement("reldate");
-$root->appendChild($item);
-// create another text node
-$text = $dom->createTextNode(LATEST_PH_RELEASE_DATE);
-$item->appendChild($text);
-
-// create child element
-$item = $dom->createElement("size");
-$root->appendChild($item);
-// create another text node
-$text = $dom->createTextNode(LATEST_PH_SETUP_SIZE);
-$item->appendChild($text);
-
-// create child element
-$item = $dom->createElement("sha1");
-$root->appendChild($item);
-// create another text node
-$text = $dom->createTextNode(LATEST_PH_SETUP_SHA1);
-$item->appendChild($text);
-
-// create child element
-$item = $dom->createElement("md5");
-$root->appendChild($item);
-// create another text node
-$text = $dom->createTextNode(LATEST_PH_SETUP_MD5);
-$item->appendChild($text);
-
-// save and display tree
-echo $dom->saveXML();
-
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>".PHP_EOL;
+echo "<latest>".PHP_EOL;
+echo "<ver>".LATEST_PH_VERSION."</ver>".PHP_EOL;
+echo "<reldate>".LATEST_PH_RELEASE_DATE."</reldate>".PHP_EOL;
+echo "<size>".LATEST_PH_SETUP_SIZE."</size>".PHP_EOL;
+echo "<sha1>".LATEST_PH_SETUP_SHA1."</sha1>".PHP_EOL;
+echo "<md5>".LATEST_PH_SETUP_MD5."</md5>".PHP_EOL;
+echo "</latest>".PHP_EOL;
 ?>
