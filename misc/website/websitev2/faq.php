@@ -1,6 +1,6 @@
 <?php $pagetitle = "FAQ"; include("header.php"); ?>
 
-<div style="max-width: 80em; align: center; margin: 0 auto;"> 
+<div class="page">
 	<div class="yui-d0">
 		<div id="watermark" class="watermark-apps-portlet">
 			<div class="flowed-block">
@@ -69,14 +69,6 @@
 							  
 							  <strong>Anti-cheat software reports Process Hacker as a game cheating tool!</strong>
 							  <p>As with anti-virus FUD campaigns, this is similarly ridiculous. Unfortunately there is nothing much that can be done about this.</p>	
-							</div>
-
-							<div class="portlet" id="portlet-latest-faqs">
-								<div class="yui-u">
-								</div>
-							<div class="yui-u">
-								<div style="margin-left: 17px;" id="structural-subscription-content-box">
-								</div>
 							</div>
 				</div>
 			</div>

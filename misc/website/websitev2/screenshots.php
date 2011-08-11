@@ -1,6 +1,6 @@
 <?php $pagetitle = "Screenshots"; include("header.php"); ?>
 
-<div style="max-width: 80em; margin: 0 auto;"> 
+<div class="page">
 	<div class="yui-d0">
 		<div id="watermark" class="watermark-apps-portlet">
 			<div class="flowed-block">
@@ -23,6 +23,8 @@
 	</div>
 	
 	<div class="yui-g">
+		<p><strong>Incomplete.</strong></p>
+	
 		<div class="yui-u first">
 			<div>
 				<p><strong>Main Window</strong></p>

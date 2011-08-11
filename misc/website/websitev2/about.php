@@ -1,8 +1,8 @@
 <?php $pagetitle = "About"; include("header.php"); ?>
 
-<div style="max-width: 80em; align: center; margin: 0 auto;"> 
+<div class="page">
 	<div class="yui-d0">
-		<div id="watermark" class="watermark-apps-portlet">
+		<div class="watermark-apps-portlet">
 			<div class="flowed-block">
 				<img alt="" width="64" height="64" src="/images/logo.png">
 			</div>
@@ -46,7 +46,7 @@
 		</div>
     
 		<div class="yui-u">
-		    <div id="structural-subscription-content-box"></div>
+		    <div id="structural-subscription-content-box">
 			</div>
 		</div>	
 	</div>

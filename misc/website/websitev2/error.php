@@ -30,7 +30,6 @@ $pagetitle = "Error ".$errorcode; include("header.php");
 			
 		<div class="menu">
 			<p><a href="/">Home</a></p>
-			<p><a href="/contact.php">Contact</a></p>
 		</div>
 	
 	</div>

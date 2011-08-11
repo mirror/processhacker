@@ -1,6 +1,6 @@
 <?php $pagetitle = "Features"; include("header.php"); ?>
 
-<center style="max-width: 80em; margin: 0 auto;"> 
+<div class="page">
 	<div class="yui-d0">
 		<div id="watermark" class="watermark-apps-portlet">
 			<div class="flowed-block">
@@ -96,19 +96,6 @@
 						<li>&nbsp;•&nbsp;Use tools such as whois, traceroute and ping</li>
 					</div>
 				</div>
-		
-				<br />
-			</div>
-
-			<div class="portlet" id="portlet-latest-faqs">
-				<div class="yui-u">
-				</div>
-				
-				<div class="yui-u">
-					<div id="structural-subscription-content-box">
-					</div>
-				</div>
-			 
 			</div>
 		</div>
 	</div>

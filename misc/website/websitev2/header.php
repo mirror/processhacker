@@ -12,7 +12,7 @@
 		<link rel="stylesheet" type="text/css" media="screen, print" href="/css/stylesheet.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/css/lytebox.css">
 		
-		<script type="text/javascript" language="javascript" src="/scripts/lytebox.js"></script>
+		<script src="/scripts/lytebox.js"></script>
 		
 		<title><?php echo $pagetitle ?> - Process Hacker</title>
 	</head>

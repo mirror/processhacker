@@ -1,6 +1,6 @@
 <?php $pagetitle = "Downloads"; include("header.php"); include("config.php"); ?>
 
-<div class="page"> 
+<div class="page">
 	<div class="yui-d0">
 		<div class="watermark-apps-portlet">
 			<div class="flowed-block">

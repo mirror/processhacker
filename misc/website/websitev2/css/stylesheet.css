@@ -2082,9 +2082,17 @@ div.watermark-apps-portlet span img {
     font-weight: bold;
     text-decoration: underline;
 }
-.watermark-apps-portlet li a:hover {
+.watermark-apps-portlet li a:hover 
+{
     background-color: #F3F3F3;
     color: #000000;
+	
+	/*border: 1px solid transparent;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	border-color: #CEDFEB;
+	background-color: #F6F8F9;*/
 }
 .watermark-apps-portlet li.disabled-tab {
     color: #747474;
