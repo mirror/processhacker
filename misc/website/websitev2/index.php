@@ -17,7 +17,7 @@
 					<li><a href="/downloads.php">Downloads</a></li>
 					<li><a href="/faq.php">FAQ</a></li>
 					<li><a href="/about.php">About</a></li>
-					<li><a href="/forums/">Forum</a></li>
+					<li><a href="/forums/" target="_blank">Forum</a></li>
 				</ul>
 			</div>
 		</div>	
