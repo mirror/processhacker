@@ -186,67 +186,67 @@
 					<div class="portlet">
 						<p><strong>Forum Activity</strong></p>
 
-						<?php
-							// How Many Topics you want to display?
-							$topicnumber = 5;
-							// Change this to your phpBB path
-							$urlPath = "./forums";
+<?php
+	// How Many Topics you want to display?
+	$topicnumber = 5;
+	// Change this to your phpBB path
+	$urlPath = "./forums";
 
-							$table_topics = $table_prefix. "topics";
-							$table_forums = $table_prefix. "forums";
-							$table_posts = $table_prefix. "posts";
-							$table_users = $table_prefix. "users";
-							
-							if ($link = mysql_connect("$dbhost", "$dbuser", "$dbpasswd"))
-							{								
-								if (mysql_select_db("$dbname"))
-								{
-									$query = "SELECT t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id, p.post_id, p.poster_id, p.post_time, u.user_id, u.username, u.user_colour
-									FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
-									WHERE t.topic_id = p.topic_id AND
-									f.forum_id = t.forum_id AND
-									t.forum_id != 1 AND 
-									t.forum_id != 7 AND 
-									t.topic_status <> 2 AND
-									p.post_id = t.topic_last_post_id AND
-									p.poster_id = u.user_id
-									ORDER BY p.post_id DESC LIMIT $topicnumber";
-									
-									if ($result = mysql_query($query))
-									{							
-										while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
-										{
-											echo  
-											"<div class=\"ft\">
-												<a href=\"$urlPath/viewtopic.php?f=$row[forum_id]&amp;t=$row[topic_id]&amp;p=$row[post_id]#p$row[post_id]\" target=\"_blank\">".$row["topic_title"]."</a>
-												<span style=\"color:#C0C0C0\">
-													by
-													<a href=\"$urlPath/memberlist.php?mode=viewprofile&amp;u=$row[user_id]\" target=\"_blank\">
-														<span style=\"color:#$row[user_colour]\">".$row["username"]."</span>
-													</a>
-													<li>".date('F jS, Y, g:i a', $row["post_time"])."</li>
-												</span>
-											</div>";
-										}
-									}
-									else
-									{
-										echo "<p>Query failed.</p>";
-									}
-								}
-								else
-								{
-									echo "<p>Could not select database.</p>";
-								}
-							}
-							else
-							{
-								echo "<p>Could not connect.</p>";
-							}
-							
-							mysql_free_result($result);
-							mysql_close($link);
-						?>
+	$table_topics = $table_prefix. "topics";
+	$table_forums = $table_prefix. "forums";
+	$table_posts = $table_prefix. "posts";
+	$table_users = $table_prefix. "users";
+ 
+	if ($link = mysql_connect("$dbhost", "$dbuser", "$dbpasswd"))
+	{ 
+		 if (mysql_select_db("$dbname"))
+		 {
+			$query = "SELECT t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id, p.post_id, p.poster_id, p.post_time, u.user_id, u.username, u.user_colour
+			FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
+			WHERE t.topic_id = p.topic_id AND
+			f.forum_id = t.forum_id AND
+			t.forum_id != 1 AND 
+			t.forum_id != 7 AND 
+			t.topic_status <> 2 AND
+			p.post_id = t.topic_last_post_id AND
+			p.poster_id = u.user_id
+			ORDER BY p.post_id DESC LIMIT $topicnumber";
+		 
+			if ($result = mysql_query($query))
+			{ 
+				while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
+				{
+					echo 
+					"<div class=\"ft\">
+						<a href=\"$urlPath/viewtopic.php?f=$row[forum_id]&amp;t=$row[topic_id]&amp;p=$row[post_id]#p$row[post_id]\" target=\"_blank\">".$row["topic_title"]."</a>
+						<span style=\"color:#C0C0C0\">
+							by
+							<a href=\"$urlPath/memberlist.php?mode=viewprofile&amp;u=$row[user_id]\" target=\"_blank\">
+								<span style=\"color:#$row[user_colour]\">".$row["username"]."</span>
+							</a>
+							<li>".date('F jS, Y, g:i a', $row["post_time"])."</li>
+						</span>
+					</div>";
+				}
+			}
+			else
+			{
+				echo "<p>Query failed.</p>";
+			}
+		}
+		else
+		{
+			echo "<p>Could not select database.</p>";
+		}
+	}
+	else
+	{
+		echo "<p>Could not connect.</p>";
+	}
+ 
+	mysql_free_result($result);
+	mysql_close($link);
+?>
 					</div>
 				</div>
 				<div class="yui-u">
