@@ -33,10 +33,17 @@ $text = $dom->createTextNode(LATEST_PH_SETUP_SIZE);
 $item->appendChild($text);
 
 // create child element
-$item = $dom->createElement("sha");
+$item = $dom->createElement("sha1");
 $root->appendChild($item);
 // create another text node
 $text = $dom->createTextNode(LATEST_PH_SETUP_SHA1);
+$item->appendChild($text);
+
+// create child element
+$item = $dom->createElement("md5");
+$root->appendChild($item);
+// create another text node
+$text = $dom->createTextNode(LATEST_PH_SETUP_MD5);
 $item->appendChild($text);
 
 // save and display tree
