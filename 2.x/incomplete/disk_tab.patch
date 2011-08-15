@@ -1,0 +1,739 @@
+Index: etwmon.c
+===================================================================
+--- etwmon.c	(revision 4442)
++++ etwmon.c	(working copy)
+@@ -37,6 +37,7 @@
+ 
+ static GUID SystemTraceControlGuid_I = { 0x9e814aad, 0x3204, 0x11d2, { 0x9a, 0x82, 0x00, 0x60, 0x08, 0xa8, 0x69, 0x39 } };
+ static GUID DiskIoGuid_I = { 0x3d6fa8d4, 0xfe05, 0x11d0, { 0x9d, 0xda, 0x00, 0xc0, 0x4f, 0xd7, 0xba, 0x7c } };
++static GUID FileIoGuid_I = { 0x90cbdc39, 0x4a3e, 0x11d1, { 0x84, 0xf4, 0x00, 0x00, 0xf8, 0x04, 0x64, 0xe3 } };
+ static GUID TcpIpGuid_I = { 0x9a280ac0, 0xc8e0, 0x11d1, { 0x84, 0xe2, 0x00, 0xc0, 0x4f, 0xb9, 0x98, 0xa2 } };
+ static GUID UdpIpGuid_I = { 0xbf3a50c5, 0xa9c9, 0x4988, { 0xa0, 0x05, 0x2d, 0xf0, 0xb7, 0xc8, 0x0f, 0x80 } };
+ 
+@@ -92,7 +93,7 @@
+     EtpTraceProperties->MinimumBuffers = 1;
+     EtpTraceProperties->LogFileMode = EVENT_TRACE_REAL_TIME_MODE;
+     EtpTraceProperties->FlushTimer = 1;
+-    EtpTraceProperties->EnableFlags = EVENT_TRACE_FLAG_DISK_IO | EVENT_TRACE_FLAG_NETWORK_TCPIP;
++    EtpTraceProperties->EnableFlags = EVENT_TRACE_FLAG_DISK_IO | EVENT_TRACE_FLAG_DISK_FILE_IO | EVENT_TRACE_FLAG_NETWORK_TCPIP;
+     EtpTraceProperties->LogFileNameOffset = 0;
+     EtpTraceProperties->LoggerNameOffset = sizeof(EVENT_TRACE_PROPERTIES);
+ 
+@@ -165,6 +166,7 @@
+         ET_ETW_DISK_EVENT diskEvent;
+ 
+         memset(&diskEvent, 0, sizeof(ET_ETW_DISK_EVENT));
++        diskEvent.Type = -1;
+ 
+         switch (EventTrace->Header.Class.Type)
+         {
+@@ -178,7 +180,7 @@
+             break;
+         }
+ 
+-        if (diskEvent.Type != 0)
++        if (diskEvent.Type != -1)
+         {
+             DiskIo_TypeGroup1 *data = EventTrace->MofData;
+ 
+@@ -189,10 +191,43 @@
+             }
+ 
+             diskEvent.TransferSize = data->TransferSize;
++            diskEvent.FileObject = (PVOID)data->FileObject;
++            diskEvent.HighResResponseTime = data->HighResResponseTime;
+ 
+             EtProcessDiskEvent(&diskEvent);
+         }
+     }
++    else if (memcmp(&EventTrace->Header.Guid, &FileIoGuid_I, sizeof(GUID)) == 0)
++    {
++        // FileIo
++
++        ET_ETW_FILE_EVENT fileEvent;
++
++        memset(&fileEvent, 0, sizeof(ET_ETW_FILE_EVENT));
++        fileEvent.Type = -1;
++
++        switch (EventTrace->Header.Class.Type)
++        {
++        case 0: // Name
++            fileEvent.Type = EtEtwFileNameType;
++            break;
++        case 32: // FileCreate
++            fileEvent.Type = EtEtwFileNameType;
++            break;
++        default:
++            break;
++        }
++
++        if (fileEvent.Type != -1)
++        {
++            FileIo_Name *data = EventTrace->MofData;
++
++            fileEvent.FileObject = (PVOID)data->FileObject;
++            PhInitializeStringRef(&fileEvent.FileName, data->FileName);
++
++            EtProcessFileEvent(&fileEvent);
++        }
++    }
+     else if (
+         memcmp(&EventTrace->Header.Guid, &TcpIpGuid_I, sizeof(GUID)) == 0 ||
+         memcmp(&EventTrace->Header.Guid, &UdpIpGuid_I, sizeof(GUID)) == 0
+@@ -203,22 +238,23 @@
+         ET_ETW_NETWORK_EVENT networkEvent;
+ 
+         memset(&networkEvent, 0, sizeof(ET_ETW_NETWORK_EVENT));
++        networkEvent.Type = -1;
+ 
+         switch (EventTrace->Header.Class.Type)
+         {
+-        case 10: // send
++        case EVENT_TRACE_TYPE_SEND: // send
+             networkEvent.Type = EtEtwNetworkSendType;
+             networkEvent.ProtocolType = PH_IPV4_NETWORK_TYPE;
+             break;
+-        case 11: // receive
++        case EVENT_TRACE_TYPE_RECEIVE: // receive
+             networkEvent.Type = EtEtwNetworkReceiveType;
+             networkEvent.ProtocolType = PH_IPV4_NETWORK_TYPE;
+             break;
+-        case 26: // send ipv6
++        case EVENT_TRACE_TYPE_SEND + 16: // send ipv6
+             networkEvent.Type = EtEtwNetworkSendType;
+             networkEvent.ProtocolType = PH_IPV6_NETWORK_TYPE;
+             break;
+-        case 27: // receive ipv6
++        case EVENT_TRACE_TYPE_RECEIVE + 16: // receive ipv6
+             networkEvent.Type = EtEtwNetworkReceiveType;
+             networkEvent.ProtocolType = PH_IPV6_NETWORK_TYPE;
+             break;
+@@ -229,7 +265,7 @@
+         else
+             networkEvent.ProtocolType |= PH_UDP_PROTOCOL_TYPE;
+ 
+-        if (networkEvent.Type != 0)
++        if (networkEvent.Type != -1)
+         {
+             PH_IP_ENDPOINT source;
+             PH_IP_ENDPOINT destination;
+Index: etwmon.h
+===================================================================
+--- etwmon.h	(revision 4442)
++++ etwmon.h	(working copy)
+@@ -3,45 +3,42 @@
+ 
+ #include <evntcons.h>
+ 
+-typedef ULONG wmi_uint32;
+-typedef ULONG wmi_IPAddrV4;
+-typedef IN6_ADDR wmi_IPAddrV6;
+-typedef USHORT wmi_Port;
+-
+ typedef struct
+ {
+-    wmi_uint32 LowPart;
+-    wmi_uint32 HighPart;
+-} wmi_uint64;
++    ULONG DiskNumber;
++    ULONG IrpFlags;
++    ULONG TransferSize;
++    ULONG ResponseTime;
++    ULONG64 ByteOffset;
++    ULONG_PTR FileObject;
++    ULONG_PTR Irp;
++    ULONG64 HighResResponseTime;
++} DiskIo_TypeGroup1;
+ 
+ typedef struct
+ {
+-    wmi_uint32 DiskNumber;
+-    wmi_uint32 IrpFlags;
+-    wmi_uint32 TransferSize;
+-    wmi_uint32 ResponseTime;
+-    wmi_uint64 ByteOffset;
+-    // Other members not included.
+-} DiskIo_TypeGroup1;
++    ULONG_PTR FileObject;
++    WCHAR FileName[1];
++} FileIo_Name;
+ 
+ typedef struct
+ {
+-    wmi_uint32 PID;
+-    wmi_uint32 size;
+-    wmi_IPAddrV4 daddr;
+-    wmi_IPAddrV4 saddr;
+-    wmi_Port dport;
+-    wmi_Port sport;
++    ULONG PID;
++    ULONG size;
++    ULONG daddr;
++    ULONG saddr;
++    USHORT dport;
++    USHORT sport;
+ } TcpIpOrUdpIp_IPV4_Header;
+ 
+ typedef struct
+ {
+-    wmi_uint32 PID;
+-    wmi_uint32 size;
+-    wmi_IPAddrV6 daddr;
+-    wmi_IPAddrV6 saddr;
+-    wmi_Port dport;
+-    wmi_Port sport;
++    ULONG PID;
++    ULONG size;
++    IN6_ADDR daddr;
++    IN6_ADDR saddr;
++    USHORT dport;
++    USHORT sport;
+ } TcpIpOrUdpIp_IPV6_Header;
+ 
+ // etwmon
+@@ -62,6 +59,7 @@
+ {
+     EtEtwDiskReadType = 1,
+     EtEtwDiskWriteType,
++    EtEtwFileNameType,
+     EtEtwNetworkReceiveType,
+     EtEtwNetworkSendType
+ } ET_ETW_EVENT_TYPE;
+@@ -71,8 +69,17 @@
+     ET_ETW_EVENT_TYPE Type;
+     CLIENT_ID ClientId;
+     ULONG TransferSize;
++    PVOID FileObject;
++    ULONG64 HighResResponseTime;
+ } ET_ETW_DISK_EVENT, *PET_ETW_DISK_EVENT;
+ 
++typedef struct _ET_ETW_FILE_EVENT
++{
++    ET_ETW_EVENT_TYPE Type;
++    PVOID FileObject;
++    PH_STRINGREF FileName;
++} ET_ETW_FILE_EVENT, *PET_ETW_FILE_EVENT;
++
+ typedef struct _ET_ETW_NETWORK_EVENT
+ {
+     ET_ETW_EVENT_TYPE Type;
+@@ -87,6 +94,10 @@
+     __in PET_ETW_DISK_EVENT Event
+     );
+ 
++VOID EtProcessFileEvent(
++    __in PET_ETW_FILE_EVENT Event
++    );
++
+ VOID EtProcessNetworkEvent(
+     __in PET_ETW_NETWORK_EVENT Event
+     );
+Index: etwprprp.c
+===================================================================
+--- etwprprp.c	(revision 4442)
++++ etwprprp.c	(working copy)
+@@ -45,7 +45,7 @@
+     __in LPARAM lParam
+     );
+ 
+-VOID EtEtwProcessPropertiesInitializing(
++VOID EtProcessEtwPropertiesInitializing(
+     __in PVOID Parameter
+     )
+ {
+Index: etwstat.c
+===================================================================
+--- etwstat.c	(revision 4442)
++++ etwstat.c	(working copy)
+@@ -23,6 +23,21 @@
+ #include "exttools.h"
+ #include "etwmon.h"
+ 
++typedef struct _ETP_DISK_PACKET
++{
++    SINGLE_LIST_ENTRY ListEntry;
++    ET_ETW_DISK_EVENT Event;
++} ETP_DISK_PACKET, *PETP_DISK_PACKET;
++
++BOOLEAN NTAPI EtpDiskHashtableCompareFunction(
++    __in PVOID Entry1,
++    __in PVOID Entry2
++    );
++
++ULONG NTAPI EtpDiskHashtableHashFunction(
++    __in PVOID Entry
++    );
++
+ VOID NTAPI ProcessesUpdatedCallback(
+     __in_opt PVOID Parameter,
+     __in_opt PVOID Context
+@@ -33,6 +48,8 @@
+     __in_opt PVOID Context
+     );
+ 
++VOID EtpUpdateDiskInformation();
++
+ static PH_CALLBACK_REGISTRATION EtpProcessesUpdatedCallbackRegistration;
+ static PH_CALLBACK_REGISTRATION EtpNetworkItemsUpdatedCallbackRegistration;
+ 
+@@ -58,6 +75,12 @@
+ PH_CIRCULAR_BUFFER_ULONG EtMaxDiskHistory; // ID of max. disk usage process
+ PH_CIRCULAR_BUFFER_ULONG EtMaxNetworkHistory; // ID of max. network usage process
+ 
++BOOLEAN EtDiskEnabled = FALSE;
++PPH_HASHTABLE EtDiskHashtable;
++PH_FREE_LIST EtDiskPacketFreeList;
++SLIST_HEADER EtDiskPacketListHead;
++PPH_HASHTABLE EtFileNameHashtable;
++
+ VOID EtEtwStatisticsInitialization()
+ {
+     EtEtwMonitorInitialization();
+@@ -86,6 +109,16 @@
+             NULL,
+             &EtpNetworkItemsUpdatedCallbackRegistration
+             );
++
++        EtDiskHashtable = PhCreateHashtable(
++            sizeof(PET_DISK_ITEM),
++            EtpDiskHashtableCompareFunction,
++            EtpDiskHashtableHashFunction,
++            128
++            );
++        PhInitializeFreeList(&EtDiskPacketFreeList, sizeof(ETP_DISK_PACKET), 64);
++        RtlInitializeSListHead(&EtDiskPacketListHead);
++        EtFileNameHashtable = PhCreateSimpleHashtable(128);
+     }
+ }
+ 
+@@ -94,6 +127,30 @@
+     EtEtwMonitorUninitialization();
+ }
+ 
++BOOLEAN NTAPI EtpDiskHashtableCompareFunction(
++    __in PVOID Entry1,
++    __in PVOID Entry2
++    )
++{
++    PET_DISK_ITEM diskItem1 = Entry1;
++    PET_DISK_ITEM diskItem2 = Entry2;
++
++    return diskItem1->FileObject == diskItem2->FileObject && diskItem1->ProcessId == diskItem2->ProcessId;
++}
++
++ULONG NTAPI EtpDiskHashtableHashFunction(
++    __in PVOID Entry
++    )
++{
++    PET_DISK_ITEM diskItem = Entry;
++
++#ifdef _M_IX86
++    return PhHashInt32((ULONG)diskItem->FileObject) ^ ((ULONG)diskItem->ProcessId / 4);
++#else
++    return PhHashInt64((ULONG64)diskItem->FileObject) ^ ((ULONG)diskItem->ProcessId / 4);
++#endif
++}
++
+ VOID EtProcessDiskEvent(
+     __in PET_ETW_DISK_EVENT Event
+     )
+@@ -131,6 +188,23 @@
+     }
+ }
+ 
++VOID EtProcessFileEvent(
++    __in PET_ETW_FILE_EVENT Event
++    )
++{
++    if (EtDiskEnabled)
++    {
++        PH_KEY_VALUE_PAIR pair;
++        PPH_KEY_VALUE_PAIR realPair;
++        BOOLEAN added;
++
++        pair.Key = Event->FileObject;
++        pair.Value = NULL;
++        realPair = PhAddEntryHashtableEx(EtFileNameHashtable, &pair, NULL);
++        PhSwapReference2(&realPair->Value, PhCreateStringEx(Event->FileName.Buffer, Event->FileName.Length));
++    }
++}
++
+ VOID EtProcessNetworkEvent(
+     __in PET_ETW_NETWORK_EVENT Event
+     )
+@@ -352,3 +426,20 @@
+         listEntry = listEntry->Flink;
+     }
+ }
++
++VOID EtEnableDiskInformation()
++{
++    EtDiskEnabled = TRUE;
++}
++
++PPH_STRING EtpConsumeFileName(
++    __in PVOID FileObject
++    )
++{
++
++}
++
++VOID EtpUpdateDiskInformation()
++{
++
++}
+Index: etwsys.c
+===================================================================
+--- etwsys.c	(revision 4442)
++++ etwsys.c	(working copy)
+@@ -65,7 +65,7 @@
+ static RECT EtpNormalGraphTextMargin = { 5, 5, 5, 5 };
+ static RECT EtpNormalGraphTextPadding = { 3, 3, 3, 3 };
+ 
+-VOID EtEtwShowSystemDialog()
++VOID EtShowEtwSystemDialog()
+ {
+     if (!EtpEtwSysWindowHandle)
+     {
+Index: ExtendedTools.vcxproj
+===================================================================
+--- ExtendedTools.vcxproj	(revision 4442)
++++ ExtendedTools.vcxproj	(working copy)
+@@ -168,6 +168,7 @@
+     </Link>
+   </ItemDefinitionGroup>
+   <ItemGroup>
++    <ClCompile Include="etwdisk.c" />
+     <ClCompile Include="etwmon.c" />
+     <ClCompile Include="treeext.c" />
+     <ClCompile Include="etwstat.c" />
+Index: ExtendedTools.vcxproj.filters
+===================================================================
+--- ExtendedTools.vcxproj.filters	(revision 4442)
++++ ExtendedTools.vcxproj.filters	(working copy)
+@@ -54,6 +54,9 @@
+     <ClCompile Include="treeext.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
++    <ClCompile Include="etwdisk.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
+   </ItemGroup>
+   <ItemGroup>
+     <ClInclude Include="resource.h">
+Index: exttools.h
+===================================================================
+--- exttools.h	(revision 4442)
++++ exttools.h	(working copy)
+@@ -11,19 +11,46 @@
+ extern HWND NetworkTreeNewHandle;
+ 
+ #define SETTING_PREFIX L"ProcessHacker.ExtendedTools."
++#define SETTING_NAME_DISK_TREE_LIST_COLUMNS (SETTING_PREFIX L"DiskTreeListColumns")
++#define SETTING_NAME_DISK_TREE_LIST_SORT (SETTING_PREFIX L"DiskTreeListSort")
+ #define SETTING_NAME_ENABLE_ETW_MONITOR (SETTING_PREFIX L"EnableEtwMonitor")
+ #define SETTING_NAME_ETWSYS_ALWAYS_ON_TOP (SETTING_PREFIX L"EtwSysAlwaysOnTop")
+ #define SETTING_NAME_ETWSYS_WINDOW_POSITION (SETTING_PREFIX L"EtwSysWindowPosition")
+ #define SETTING_NAME_ETWSYS_WINDOW_SIZE (SETTING_PREFIX L"EtwSysWindowSize")
+ #define SETTING_NAME_MEMORY_LISTS_WINDOW_POSITION (SETTING_PREFIX L"MemoryListsWindowPosition")
+ 
++#define HISTORY_SIZE 60
++
++typedef struct _ET_DISK_ITEM
++{
++    PVOID FileObject;
++    HANDLE ProcessId;
++    PPH_STRING FileName;
++
++    PPH_STRING ProcessName;
++    HICON ProcessIcon;
++    BOOLEAN ProcessIconValid;
++
++    ULONG64 ReadHistory[HISTORY_SIZE];
++    ULONG64 WriteHistory[HISTORY_SIZE];
++    ULONG HistoryCount;
++    ULONG HistoryPosition;
++} ET_DISK_ITEM, *PET_DISK_ITEM;
++
+ // etwmon
+ 
+ extern BOOLEAN EtEtwEnabled;
+ 
++// etwdisk
++
++#define ETDSTNC_NAME 0
++#define ETDSTNC_FILE 1
++
++VOID EtInitializeDiskTab();
++
+ // etwprprp
+ 
+-VOID EtEtwProcessPropertiesInitializing(
++VOID EtProcessEtwPropertiesInitializing(
+     __in PVOID Parameter
+     );
+ 
+@@ -51,11 +78,11 @@
+ #define ETPRTNC_NETWORKTOTALBYTESDELTA 20
+ #define ETPRTNC_MAXIMUM 20
+ 
+-VOID EtEtwProcessTreeNewInitializing(
++VOID EtProcessTreeNewInitializing(
+     __in PVOID Parameter
+     );
+ 
+-VOID EtEtwProcessTreeNewMessage(
++VOID EtProcessTreeNewMessage(
+     __in PVOID Parameter
+     );
+ 
+@@ -72,11 +99,11 @@
+ #define ETNETNC_FIREWALLSTATUS 11
+ #define ETNETNC_MAXIMUM 11
+ 
+-VOID EtEtwNetworkTreeNewInitializing(
++VOID EtNetworkTreeNewInitializing(
+     __in PVOID Parameter
+     );
+ 
+-VOID EtEtwNetworkTreeNewMessage(
++VOID EtNetworkTreeNewMessage(
+     __in PVOID Parameter
+     );
+ 
+@@ -113,13 +140,17 @@
+ extern PH_CIRCULAR_BUFFER_ULONG EtMaxDiskHistory;
+ extern PH_CIRCULAR_BUFFER_ULONG EtMaxNetworkHistory;
+ 
++extern BOOLEAN EtDiskEnabled;
++
+ VOID EtEtwStatisticsInitialization();
+ 
+ VOID EtEtwStatisticsUninitialization();
+ 
++VOID EtEnableDiskInformation();
++
+ // etwsys
+ 
+-VOID EtEtwShowSystemDialog();
++VOID EtShowEtwSystemDialog();
+ 
+ // memlists
+ 
+Index: main.c
+===================================================================
+--- main.c	(revision 4442)
++++ main.c	(working copy)
+@@ -256,6 +256,8 @@
+             {
+                 static PH_SETTING_CREATE settings[] =
+                 {
++                    { StringSettingType, SETTING_NAME_DISK_TREE_LIST_COLUMNS, L"" },
++                    { IntegerPairSettingType, SETTING_NAME_DISK_TREE_LIST_SORT, L"0,1" }, // 0, AscendingSortOrder
+                     { IntegerSettingType, SETTING_NAME_ENABLE_ETW_MONITOR, L"1" },
+                     { IntegerSettingType, SETTING_NAME_ETWSYS_ALWAYS_ON_TOP, L"0" },
+                     { IntegerPairSettingType, SETTING_NAME_ETWSYS_WINDOW_POSITION, L"400,400" },
+@@ -307,7 +309,7 @@
+     {
+     case ID_VIEW_DISKANDNETWORK:
+         {
+-            EtEtwShowSystemDialog();
++            EtShowEtwSystemDialog();
+         }
+         break;
+     case ID_VIEW_MEMORYLISTS:
+@@ -350,9 +352,9 @@
+     PPH_PLUGIN_TREENEW_MESSAGE message = Parameter;
+ 
+     if (message->TreeNewHandle == ProcessTreeNewHandle)
+-        EtEtwProcessTreeNewMessage(Parameter);
++        EtProcessTreeNewMessage(Parameter);
+     else if (message->TreeNewHandle == NetworkTreeNewHandle)
+-        EtEtwNetworkTreeNewMessage(Parameter);
++        EtNetworkTreeNewMessage(Parameter);
+ }
+ 
+ VOID NTAPI MainWindowShowingCallback(
+@@ -367,6 +369,8 @@
+         // This will get inserted before Memory Lists.
+         PhPluginAddMenuItem(PluginInstance, PH_MENU_ITEM_LOCATION_VIEW, L"System Information", ID_VIEW_DISKANDNETWORK, L"Disk and Network", NULL);
+     }
++
++    EtInitializeDiskTab();
+ }
+ 
+ VOID NTAPI ProcessPropertiesInitializingCallback(
+@@ -374,7 +378,7 @@
+     __in_opt PVOID Context
+     )
+ {
+-    EtEtwProcessPropertiesInitializing(Parameter);
++    EtProcessEtwPropertiesInitializing(Parameter);
+ }
+ 
+ VOID NTAPI HandlePropertiesInitializingCallback(
+@@ -491,7 +495,7 @@
+     PPH_PLUGIN_TREENEW_INFORMATION treeNewInfo = Parameter;
+ 
+     ProcessTreeNewHandle = treeNewInfo->TreeNewHandle;
+-    EtEtwProcessTreeNewInitializing(Parameter);
++    EtProcessTreeNewInitializing(Parameter);
+ }
+ 
+ VOID NTAPI NetworkTreeNewInitializingCallback(
+@@ -502,7 +506,7 @@
+     PPH_PLUGIN_TREENEW_INFORMATION treeNewInfo = Parameter;
+ 
+     NetworkTreeNewHandle = treeNewInfo->TreeNewHandle;
+-    EtEtwNetworkTreeNewInitializing(Parameter);
++    EtNetworkTreeNewInitializing(Parameter);
+ }
+ 
+ PET_PROCESS_BLOCK EtGetProcessBlock(
+Index: treeext.c
+===================================================================
+--- treeext.c	(revision 4442)
++++ treeext.c	(working copy)
+@@ -82,7 +82,7 @@
+         );
+ }
+ 
+-VOID EtEtwProcessTreeNewInitializing(
++VOID EtProcessTreeNewInitializing(
+     __in PVOID Parameter
+     )
+ {
+@@ -120,7 +120,7 @@
+     }
+ }
+ 
+-VOID EtEtwProcessTreeNewMessage(
++VOID EtProcessTreeNewMessage(
+     __in PVOID Parameter
+     )
+ {
+@@ -328,7 +328,7 @@
+     return result;
+ }
+ 
+-VOID EtEtwNetworkTreeNewInitializing(
++VOID EtNetworkTreeNewInitializing(
+     __in PVOID Parameter
+     )
+ {
+@@ -368,7 +368,7 @@
+     }
+ }
+ 
+-VOID EtEtwNetworkTreeNewMessage(
++VOID EtNetworkTreeNewMessage(
+     __in PVOID Parameter
+     )
+ {
+Index: etwdisk.c
+===================================================================
+--- etwdisk.c	(revision 0)
++++ etwdisk.c	(revision 0)
+@@ -0,0 +1,102 @@
++/*
++ * Process Hacker Extended Tools - 
++ *   ETW disk tab
++ * 
++ * Copyright (C) 2011 wj32
++ * 
++ * This file is part of Process Hacker.
++ * 
++ * Process Hacker is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * Process Hacker is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "exttools.h"
++
++HWND NTAPI EtpDiskTabCreateFunction(
++    __in PVOID Context
++    );
++
++BOOLEAN NTAPI EtpDiskTreeNewCallback(
++    __in HWND hwnd,
++    __in PH_TREENEW_MESSAGE Message,
++    __in_opt PVOID Parameter1,
++    __in_opt PVOID Parameter2,
++    __in_opt PVOID Context
++    );
++
++static BOOLEAN DiskTreeNewCreated = FALSE;
++static HWND DiskTreeNewHandle;
++
++VOID EtInitializeDiskTab()
++{
++    PH_ADDITIONAL_TAB_PAGE tabPage;
++
++    memset(&tabPage, 0, sizeof(PH_ADDITIONAL_TAB_PAGE));
++    tabPage.Text = L"Disk";
++    tabPage.CreateFunction = EtpDiskTabCreateFunction;
++    tabPage.Index = MAXINT;
++    ProcessHacker_AddTabPage(PhMainWndHandle, &tabPage);
++}
++
++HWND NTAPI EtpDiskTabCreateFunction(
++    __in PVOID Context
++    )
++{
++    HWND hwnd;
++
++    hwnd = CreateWindow(
++        PH_TREENEW_CLASSNAME,
++        NULL,
++        WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_BORDER | TN_STYLE_ICONS | TN_STYLE_DOUBLE_BUFFERED,
++        0,
++        0,
++        3,
++        3,
++        PhMainWndHandle,
++        (HMENU)PhPluginReserveIds(1),
++        PluginInstance->DllBase,
++        NULL
++        );
++
++    if (!hwnd)
++        return NULL;
++
++    DiskTreeNewCreated = TRUE;
++    DiskTreeNewHandle = hwnd;
++    PhAddTreeNewColumn(hwnd, ETDSTNC_NAME, TRUE, L"Name", 100, PH_ALIGN_LEFT, 0, 0);
++    PhAddTreeNewColumn(hwnd, ETDSTNC_FILE, TRUE, L"File", 400, PH_ALIGN_LEFT, 1, 0);
++
++    EtEnableDiskInformation();
++
++    return hwnd;
++}
++
++BOOLEAN NTAPI EtpDiskTreeNewCallback(
++    __in HWND hwnd,
++    __in PH_TREENEW_MESSAGE Message,
++    __in_opt PVOID Parameter1,
++    __in_opt PVOID Parameter2,
++    __in_opt PVOID Context
++    )
++{
++    switch (Message)
++    {
++    case TreeNewGetCellText:
++        {
++
++        }
++        break;
++    }
++
++    return FALSE;
++}
