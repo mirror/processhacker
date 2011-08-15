@@ -67,15 +67,23 @@
                     </div>
 				</div>
 
-				<div id="involvement" class="portlet">
-					<ul class="involvement">
-						<li><a href="/downloads.php">All downloads</a></li>				  
-						<li><a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=24">Report a bug</a></li>
-						<li><a href="http://processhacker.sourceforge.net/forums/viewforum.php?f=5">Ask a question</a>
-						<li><a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/">Browse source code</a></li>
-						<li><a href="http://processhacker.sourceforge.net/doc">Source code documentation</a></li>
-					</ul>
-				</div>
+		<div class="portlet" >
+			<h2 class="center">Quick Links</h2>
+			<ul class="involvement">
+				<li><a href="/downloads.php">All downloads</a></li>
+				<li><a href="http://sourceforge.net/projects/processhacker/">Sourceforge Project Page</a></li>			  
+				<li><a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/">Browse source code</a></li>
+				<li><a href="http://processhacker.sourceforge.net/doc">Source code documentation</a></li>
+			</ul>
+		</div>
+		
+		<div class="portlet" >
+			<h2 class="center">Get Involved</h2>
+			<ul class="involvement">
+				<li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
+				<li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
+			</ul>
+		</div>
 			</div>
 
 			<div class="top-portlet">	
