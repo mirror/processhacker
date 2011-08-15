@@ -1,0 +1,224 @@
+Index: include/tnlist.h
+===================================================================
+--- include/tnlist.h	(revision 0)
++++ include/tnlist.h	(revision 0)
+@@ -0,0 +1,27 @@
++#ifndef _PH_TNLIST_H
++#define _PH_TNLIST_H
++
++#define PH_TN_LIST_USE_BACKCOLOR 0x1
++#define PH_TN_LIST_USE_FORECOLOR 0x2
++#define PH_TN_LIST_AUTO_FORECOLOR 0x4
++
++typedef struct _PH_TN_LIST_ITEM
++{
++    PH_TREENEW_NODE Node;
++    PVOID Context;
++    ULONG Flags;
++    COLORREF BackColor;
++    COLORREF ForeColor;
++    HFONT Font;
++    HICON Icon;
++
++    PPH_STRING TooltipText;
++    PPH_STRING *Text;
++    ULONG TextCount;
++} PH_TN_LIST_ITEM, *PPH_TN_LIST_ITEM;
++
++VOID PhSetTnList(
++    __in HWND TreeNewHandle
++    );
++
++#endif
+Index: tnlist.c
+===================================================================
+--- tnlist.c	(revision 0)
++++ tnlist.c	(revision 0)
+@@ -0,0 +1,187 @@
++/*
++ * Process Hacker - 
++ *   tree new (tree list control)
++ * 
++ * Copyright (C) 2011 wj32
++ * 
++ * This file is part of Process Hacker.
++ * 
++ * Process Hacker is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * Process Hacker is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <phgui.h>
++#include <treenew.h>
++#include <tnlist.h>
++
++typedef struct _PH_TN_LIST_CONTEXT
++{
++    PPH_LIST List;
++} PH_TN_LIST_CONTEXT, *PPH_TN_LIST_CONTEXT;
++
++PPH_TN_LIST_CONTEXT PhpCreateTnListContext(
++    VOID
++    );
++
++VOID PhpDestroyTnListContext(
++    __in PPH_TN_LIST_CONTEXT Context
++    );
++
++BOOLEAN NTAPI PhpTnListTreeNewCallback(
++    __in HWND hwnd,
++    __in PH_TREENEW_MESSAGE Message,
++    __in_opt PVOID Parameter1,
++    __in_opt PVOID Parameter2,
++    __in_opt PVOID Context
++    );
++
++VOID PhSetTnList(
++    __in HWND TreeNewHandle
++    )
++{
++    PPH_TN_LIST_CONTEXT context;
++
++    context = PhpCreateTnListContext();
++    TreeNew_SetCallback(Context, PhpTnListTreeNewCallback, context);
++}
++
++PPH_TN_LIST_CONTEXT PhpCreateTnListContext(
++    VOID
++    )
++{
++    PPH_TN_LIST_CONTEXT context;
++
++    context = PhAllocate(sizeof(PH_TN_LIST_CONTEXT));
++    memset(context, 0, sizeof(PPH_TN_LIST_CONTEXT));
++
++    context->List = PhCreateList(64);
++
++    return context;
++}
++
++VOID PhpDestroyTnListContext(
++    __in PPH_TN_LIST_CONTEXT Context
++    )
++{
++    PhDereferenceObject(Context->List);
++    PhFree(Context);
++}
++
++BOOLEAN NTAPI PhpTnListTreeNewCallback(
++    __in HWND hwnd,
++    __in PH_TREENEW_MESSAGE Message,
++    __in_opt PVOID Parameter1,
++    __in_opt PVOID Parameter2,
++    __in_opt PVOID Context
++    )
++{
++    PPH_TN_LIST_CONTEXT context = Context;
++
++    switch (Message)
++    {
++    case TreeNewGetChildren:
++        {
++            PPH_TREENEW_GET_CHILDREN getChildren = Parameter1;
++
++            if (!getChildren->Node)
++            {
++                getChildren->Children = (PPH_TREENEW_NODE *)context->List;
++                getChildren->NumberOfChildren = context->List->Count;
++            }
++            else
++            {
++                getChildren->Children = NULL;
++                getChildren->NumberOfChildren = 0;
++            }
++        }
++        return TRUE;
++    case TreeNewIsLeaf:
++        {
++            PPH_TREENEW_IS_LEAF isLeaf = Parameter1;
++
++            isLeaf->IsLeaf = TRUE;
++        }
++        return TRUE;
++    case TreeNewGetCellText:
++        {
++            PPH_TREENEW_GET_CELL_TEXT getCellText = Parameter1;
++            PPH_TN_LIST_ITEM item;
++
++            item = (PPH_TN_LIST_ITEM)getCellText->Node;
++
++            if (getCellText->Id < item->TextCount)
++            {
++                if (item->Text[getCellText->Id])
++                    getCellText->Text = item->Text[getCellText->Id]->sr;
++            }
++        }
++        return TRUE;
++    case TreeNewGetNodeColor:
++        {
++            PPH_TREENEW_GET_NODE_COLOR getNodeColor = Parameter1;
++            PPH_TN_LIST_ITEM item;
++
++            item = (PPH_TN_LIST_ITEM)getNodeColor->Node;
++
++            if (item & PH_TN_LIST_USE_BACKCOLOR)
++                getNodeColor->BackColor = item->BackColor;
++            if (item & PH_TN_LIST_USE_FORECOLOR)
++                getNodeColor->ForeColor = item->ForeColor;
++            if (item & PH_TN_LIST_AUTO_FORECOLOR)
++                getNodeColor->Flags |= TN_AUTO_FORECOLOR;
++        }
++        return TRUE;
++    case TreeNewGetNodeFont:
++        {
++            PPH_TREENEW_GET_NODE_FONT getNodeFont = Parameter1;
++            PPH_TN_LIST_ITEM item;
++
++            item = (PPH_TN_LIST_ITEM)getNodeFont->Node;
++
++            if (item->Font)
++                getNodeFont->Font = item->Font;
++        }
++        return TRUE;
++    case TreeNewGetNodeFont:
++        {
++            PPH_TREENEW_GET_NODE_ICON getNodeIcon = Parameter1;
++            PPH_TN_LIST_ITEM item;
++
++            item = (PPH_TN_LIST_ITEM)getNodeIcon->Node;
++
++            if (item->Icon)
++                getNodeIcon->Icon = item->Icon;
++        }
++        return TRUE;
++    case TreeNewGetCellTooltip:
++        {
++            PPH_TREENEW_GET_CELL_TOOLTIP getCellTooltip = Parameter1;
++            PPH_TN_LIST_ITEM item;
++
++            item = (PPH_TN_LIST_ITEM)getCellTooltip->Node;
++
++            if (item->TooltipText && getCellTooltip->Column->DisplayIndex == 0)
++            {
++                getCellTooltip->Text = item->TooltipText->sr;
++                getCellTooltip->Unfolding = FALSE;
++            }
++        }
++        return TRUE;
++    case TreeNewSortChanged:
++        {
++        }
++        return TRUE;
++    }
++
++    return FALSE;
++}
