@@ -25,7 +25,6 @@
 		<div class="yui-t4">
 			<div class="yui-b side">
 				<div class="portlet"> 
-				
 					<h2 class="center">
 						Downloads
 					</h2>
@@ -84,48 +83,46 @@
 				<li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
 			</ul>
 		</div>
-			</div>
+	</div>
 
-			<div class="top-portlet">	
-				<div class="summary">
-					
-					<p>Process Hacker is a feature-packed tool for manipulating processes and services on your computer.</p>
-						
-					<p><strong>System Requirements:</strong></p>
-					<ul>
-					<li>&#160;•&#160;Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
-					<li>&#160;•&#160;Intel Itanium Platforms are not supported.</li>
-					</ul>
-					<p><strong>Key features of Process Hacker:</strong></p>
-					<ul>
-					<li>&#160;•&#160;A simple, customizable tree view with highlighting showing you the processes running on your computer.</li>
-					<li>&#160;•&#160;Detailed system statistics with graphs.</li>
-					<li>&#160;•&#160;Advanced features not found in other programs, such as detaching from debuggers, viewing GDI handles, viewing heaps, injecting and unloading DLLs, and more.</li>
-					<li>&#160;•&#160;Powerful process termination that bypasses security software and rootkits.</li>
-					<li>&#160;•&#160;View, edit and control services, including those not shown by the Services console.</li>
-					<li>&#160;•&#160;View and close network connections.</li>
-					<li>&#160;•&#160;Starts up almost instantly, unlike other programs.</li>
-					<li>&#160;•&#160;<a href="./features.php">Many more features...</a></li>
-					</ul>
-					<p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
-					<ul>
-					<li>&#160;•&#160;Implements almost all of the functionality offered by Process Explorer, plus more advanced features.</li>
-					<li>&#160;•&#160;Has advanced string scanning capabilities, as well as regular expression filtering.</li>
-					<li>&#160;•&#160;Allows you to see what a thread is waiting on.</li>
-					<li>&#160;•&#160;Highlights both relocated and .NET DLLs.</li>
-					<li>&#160;•&#160;Allows you to connect to other sessions, just like Windows Task Manager can.</li>
-					<li>&#160;•&#160;Shows symbolic access masks (e.g. <code>Read, Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
-					<li>&#160;•&#160;Shows names for transaction manager objects and ETW registration objects.</li>
-					<li>&#160;•&#160;Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
-					<li>&#160;•&#160;Shows information for POSIX processes.</li>
-					</ul>
-				</div>
-			</div>
+	<div class="top-portlet">	
+		<div class="summary">
+			<p>Process Hacker is a feature-packed tool for manipulating processes and services on your computer.</p>
+			
+			<p><strong>System Requirements:</strong></p>
+			<ul>
+				<li>&#160;•&#160;Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
+			</ul>
+			<p><strong>Key features of Process Hacker:</strong></p>
+			<ul>
+			<li>&#160;•&#160;A simple, customizable tree view with highlighting showing you the processes running on your computer.</li>
+			<li>&#160;•&#160;Detailed system statistics with graphs.</li>
+			<li>&#160;•&#160;Advanced features not found in other programs, such as detaching from debuggers, viewing GDI handles, viewing heaps, injecting and unloading DLLs, and more.</li>
+			<li>&#160;•&#160;Powerful process termination that bypasses security software and rootkits.</li>
+			<li>&#160;•&#160;View, edit and control services, including those not shown by the Services console.</li>
+			<li>&#160;•&#160;View and close network connections.</li>
+			<li>&#160;•&#160;Starts up almost instantly, unlike other programs.</li>
+			<li>&#160;•&#160;<a href="./features.php">Many more features...</a></li>
+			</ul>
+			<p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
+			<ul>
+			<li>&#160;•&#160;Implements almost all of the functionality offered by Process Explorer, plus more advanced features.</li>
+			<li>&#160;•&#160;Has advanced string scanning capabilities, as well as regular expression filtering.</li>
+			<li>&#160;•&#160;Allows you to see what a thread is waiting on.</li>
+			<li>&#160;•&#160;Highlights both relocated and .NET DLLs.</li>
+			<li>&#160;•&#160;Allows you to connect to other sessions, just like Windows Task Manager can.</li>
+			<li>&#160;•&#160;Shows symbolic access masks (e.g. <code>Read, Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
+			<li>&#160;•&#160;Shows names for transaction manager objects and ETW registration objects.</li>
+			<li>&#160;•&#160;Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
+			<li>&#160;•&#160;Shows information for POSIX processes.</li>
+			</ul>
+		</div>
+	</div>
 
-			<div class="yui-g">
-				<div class="yui-u first">
-					<div class="portlet">
-						<p><strong>Latest News</strong></p>
+	<div class="yui-g">
+		<div class="yui-u first">
+			<div class="portlet">
+				<p><strong>Latest News</strong></p>
 
 <?php
 	// How Many Topics you want to display?
@@ -164,7 +161,7 @@
 							<a href=\"$urlPath/memberlist.php?mode=viewprofile&amp;u=$row[user_id]\" target=\"_blank\">
 								<span style=\"color:#$row[user_colour]\">".$row["username"]."</span>
 							</a>
-							<li>".date('F jS, Y, g:i a', $row["post_time"])."</li>
+							<div class=\"forumdate\">".date('F jS, Y, g:i a', $row["post_time"])."</div>
 						</span>
 					</div>";
 				}
@@ -187,12 +184,12 @@
 	mysql_free_result($result);
 	mysql_close($link);
 ?>
-					</div>
-				</div>
-				
-				<div class="yui-g">
-					<div class="portlet">
-						<p><strong>Forum Activity</strong></p>
+			</div>
+		</div>
+		
+		<div class="yui-g">
+			<div class="portlet">
+				<p><strong>Forum Activity</strong></p>
 
 <?php
 	// How Many Topics you want to display?
@@ -232,7 +229,7 @@
 							<a href=\"$urlPath/memberlist.php?mode=viewprofile&amp;u=$row[user_id]\" target=\"_blank\">
 								<span style=\"color:#$row[user_colour]\">".$row["username"]."</span>
 							</a>
-							<li>".date('F jS, Y, g:i a', $row["post_time"])."</li>
+							<div class=\"forumdate\">".date('F jS, Y, g:i a', $row["post_time"])."</div>
 						</span>
 					</div>";
 				}
@@ -255,42 +252,39 @@
 	mysql_free_result($result);
 	mysql_close($link);
 ?>
-					</div>
-				</div>
-				<div class="yui-u">
-					<div id="structural-subscription-content-box"></div>
-				</div>
 			</div>
-
-			<div class="yui-g">
-				<div class="yui-u first">
-					<div class="portlet">
-						<p><strong>Screenshots</strong></p>
-						<a href="/images/screenshots/processes_tab_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
-							<img alt="" border="0" width="200" height="107" src="/images/screenshots/processhacker_small.png">
-						</a>
-
-						<a href="/images/screenshots/sysinfo_large.png" rel="lytebox[group1]">
-							<img alt="" border="0" width="200" height="107" src="/images/screenshots/sysinfo_small.png">
-						</a>
-
-						<h2>
-							<span class="see-all">
-								<a href="/screenshots.php" class="menu-link-list_all sprite info">All Screenshots</a>
-							</span>
-						</h2>
-					</div>	
-				</div>
-
-				<div class="yui-u">
-					<div class="portlet">
-						<p><strong>Statistics</strong></p>
-						<script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
-					</div>      
-				</div>
-			</div>	
+		</div>
+		<div class="yui-u">
+			<div id="structural-subscription-content-box"></div>
 		</div>
 	</div>
-</div>	
+
+	<div class="yui-g">
+		<div class="yui-u first">
+			<div class="portlet">
+				<p><strong>Screenshots</strong></p>
+				<a href="/images/screenshots/processes_tab_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
+					<img alt="" width="200" height="107" src="/images/screenshots/processhacker_small.png">
+				</a>
+				<a href="/images/screenshots/sysinfo_large.png" rel="lytebox[group1]">
+					<img alt="" width="200" height="107" src="/images/screenshots/sysinfo_small.png">
+				</a>
+
+				<h2>
+					<span class="see-all">
+						<a href="/screenshots.php" class="menu-link-list_all sprite info">All Screenshots</a>
+					</span>
+				</h2>
+			</div>	
+		</div>
+
+		<div class="yui-u">
+			<div class="portlet">
+				<p><strong>Statistics</strong></p>
+				<script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
+			</div>      
+		</div>
+	</div>	
+</div>
 
 <?php include("footer.php"); ?>
