@@ -1,0 +1,610 @@
+Index: CHANGELOG.txt
+===================================================================
+--- CHANGELOG.txt	(revision 4511)
++++ CHANGELOG.txt	(working copy)
+@@ -1,5 +1,6 @@
+ 1.1
+  * Added managed symbol resolution for thread stacks
++ * Added AppDomain column to thread list
+ 
+ 1.0
+  * Initial release
+\ No newline at end of file
+Index: dn.h
+===================================================================
+--- dn.h	(revision 4511)
++++ dn.h	(working copy)
+@@ -9,6 +9,17 @@
+ #define SETTING_PREFIX L"ProcessHacker.DotNetTools."
+ #define SETTING_NAME_ASM_TREE_LIST_COLUMNS (SETTING_PREFIX L"AsmTreeListColumns")
+ 
++typedef struct _THREAD_TREE_CONTEXT;
++
++typedef struct _DN_THREAD_ITEM
++{
++    PPH_THREAD_ITEM ThreadItem;
++    struct _THREAD_TREE_CONTEXT *Context;
++
++    BOOLEAN ClrDataValid;
++    PPH_STRING AppDomainText;
++} DN_THREAD_ITEM, *PDN_THREAD_ITEM;
++
+ // counters
+ 
+ typedef struct _PERF_OBJECT_TYPE_INFO
+@@ -66,4 +77,24 @@
+     __in PPH_PLUGIN_THREAD_STACK_CONTROL Control
+     );
+ 
++// treeext
++
++VOID InitializeTreeNewObjectExtensions(
++    VOID
++    );
++
++VOID DispatchTreeNewMessage(
++    __in PVOID Parameter
++    );
++
++#define DNTHTNC_APPDOMAIN 1
++
++VOID ThreadTreeNewInitializing(
++    __in PVOID Parameter
++    );
++
++VOID ThreadTreeNewUninitializing(
++    __in PVOID Parameter
++    );
++
+ #endif
+Index: DotNetTools.vcxproj
+===================================================================
+--- DotNetTools.vcxproj	(revision 4511)
++++ DotNetTools.vcxproj	(working copy)
+@@ -174,6 +174,7 @@
+     <ClCompile Include="main.c" />
+     <ClCompile Include="perfpage.c" />
+     <ClCompile Include="stackext.c" />
++    <ClCompile Include="treeext.c" />
+   </ItemGroup>
+   <ItemGroup>
+     <ClInclude Include="clretw.h" />
+Index: DotNetTools.vcxproj.filters
+===================================================================
+--- DotNetTools.vcxproj.filters	(revision 4511)
++++ DotNetTools.vcxproj.filters	(working copy)
+@@ -33,6 +33,9 @@
+     <ClCompile Include="stackext.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
++    <ClCompile Include="treeext.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
+   </ItemGroup>
+   <ItemGroup>
+     <ClInclude Include="dn.h">
+Index: main.c
+===================================================================
+--- main.c	(revision 4514)
++++ main.c	(working copy)
+@@ -78,11 +78,33 @@
+     __in_opt PVOID Context
+     );
+ 
++VOID NTAPI ThreadTreeNewInitializingCallback(
++    __in_opt PVOID Parameter,
++    __in_opt PVOID Context
++    );
++
++VOID NTAPI ThreadTreeNewUninitializingCallback(
++    __in_opt PVOID Parameter,
++    __in_opt PVOID Context
++    );
++
+ VOID NTAPI ThreadStackControlCallback(
+     __in_opt PVOID Parameter,
+     __in_opt PVOID Context
+     );
+ 
++VOID NTAPI ThreadItemCreateCallback(
++    __in PVOID Object,
++    __in PH_EM_OBJECT_TYPE ObjectType,
++    __in PVOID Extension
++    );
++
++VOID NTAPI ThreadItemDeleteCallback(
++    __in PVOID Object,
++    __in PH_EM_OBJECT_TYPE ObjectType,
++    __in PVOID Extension
++    );
++
+ PPH_PLUGIN PluginInstance;
+ PH_CALLBACK_REGISTRATION PluginLoadCallbackRegistration;
+ PH_CALLBACK_REGISTRATION PluginUnloadCallbackRegistration;
+@@ -95,6 +117,8 @@
+ PH_CALLBACK_REGISTRATION ThreadMenuInitializingCallbackRegistration;
+ PH_CALLBACK_REGISTRATION ModuleMenuInitializingCallbackRegistration;
+ PH_CALLBACK_REGISTRATION ProcessTreeNewInitializingCallbackRegistration;
++PH_CALLBACK_REGISTRATION ThreadTreeNewInitializingCallbackRegistration;
++PH_CALLBACK_REGISTRATION ThreadTreeNewUninitializingCallbackRegistration;
+ PH_CALLBACK_REGISTRATION ThreadStackControlCallbackRegistration;
+ 
+ LOGICAL DllMain(
+@@ -143,12 +167,12 @@
+             //    NULL,
+             //    &PluginMenuItemCallbackRegistration
+             //    );
+-            //PhRegisterCallback(
+-            //    PhGetPluginCallback(PluginInstance, PluginCallbackTreeNewMessage),
+-            //    TreeNewMessageCallback,
+-            //    NULL,
+-            //    &PluginTreeNewMessageCallbackRegistration
+-            //    );
++            PhRegisterCallback(
++                PhGetPluginCallback(PluginInstance, PluginCallbackTreeNewMessage),
++                TreeNewMessageCallback,
++                NULL,
++                &PluginTreeNewMessageCallbackRegistration
++                );
+ 
+             //PhRegisterCallback(
+             //    PhGetGeneralCallback(GeneralCallbackMainWindowShowing),
+@@ -187,12 +211,33 @@
+             //    &ProcessTreeNewInitializingCallbackRegistration
+             //    );
+             PhRegisterCallback(
++                PhGetGeneralCallback(GeneralCallbackThreadTreeNewInitializing),
++                ThreadTreeNewInitializingCallback,
++                NULL,
++                &ThreadTreeNewInitializingCallbackRegistration
++                );
++            PhRegisterCallback(
++                PhGetGeneralCallback(GeneralCallbackThreadTreeNewUninitializing),
++                ThreadTreeNewUninitializingCallback,
++                NULL,
++                &ThreadTreeNewUninitializingCallbackRegistration
++                );
++            PhRegisterCallback(
+                 PhGetGeneralCallback(GeneralCallbackThreadStackControl),
+                 ThreadStackControlCallback,
+                 NULL,
+                 &ThreadStackControlCallbackRegistration
+                 );
+ 
++            PhPluginSetObjectExtension(
++                PluginInstance,
++                EmThreadItemType,
++                sizeof(DN_THREAD_ITEM),
++                ThreadItemCreateCallback,
++                ThreadItemDeleteCallback
++                );
++            InitializeTreeNewObjectExtensions();
++
+             {
+                 static PH_SETTING_CREATE settings[] =
+                 {
+@@ -252,9 +297,7 @@
+     __in_opt PVOID Context
+     )
+ {
+-    PPH_PLUGIN_TREENEW_MESSAGE message = Parameter;
+-
+-    NOTHING;
++    DispatchTreeNewMessage(Parameter);
+ }
+ 
+ VOID NTAPI MainWindowShowingCallback(
+@@ -313,6 +356,22 @@
+     NOTHING;
+ }
+ 
++VOID NTAPI ThreadTreeNewInitializingCallback(
++    __in_opt PVOID Parameter,
++    __in_opt PVOID Context
++    )
++{
++    ThreadTreeNewInitializing(Parameter);
++}
++
++VOID NTAPI ThreadTreeNewUninitializingCallback(
++    __in_opt PVOID Parameter,
++    __in_opt PVOID Context
++    )
++{
++    ThreadTreeNewUninitializing(Parameter);
++}
++
+ VOID NTAPI ThreadStackControlCallback(
+     __in_opt PVOID Parameter,
+     __in_opt PVOID Context
+@@ -320,3 +379,26 @@
+ {
+     ProcessThreadStackControl(Parameter);
+ }
++
++VOID NTAPI ThreadItemCreateCallback(
++    __in PVOID Object,
++    __in PH_EM_OBJECT_TYPE ObjectType,
++    __in PVOID Extension
++    )
++{
++    PDN_THREAD_ITEM dnThread = Extension;
++
++    memset(dnThread, 0, sizeof(DN_THREAD_ITEM));
++    dnThread->ThreadItem = Object;
++}
++
++VOID NTAPI ThreadItemDeleteCallback(
++    __in PVOID Object,
++    __in PH_EM_OBJECT_TYPE ObjectType,
++    __in PVOID Extension
++    )
++{
++    PDN_THREAD_ITEM dnThread = Extension;
++
++    PhSwapReference(&dnThread->AppDomainText, NULL);
++}
+Index: treeext.c
+===================================================================
+--- treeext.c	(revision 0)
++++ treeext.c	(revision 0)
+@@ -0,0 +1,359 @@
++/*
++ * Process Hacker .NET Tools - 
++ *   thread list extensions
++ * 
++ * Copyright (C) 2011 wj32
++ * 
++ * This file is part of Process Hacker.
++ * 
++ * Process Hacker is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * Process Hacker is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++/*
++ * This code is very messy because of the messy plugin architecture.
++ */
++
++#include "dn.h"
++#include "clrsup.h"
++
++VOID NTAPI ThreadsContextCreateCallback(
++    __in PVOID Object,
++    __in PH_EM_OBJECT_TYPE ObjectType,
++    __in PVOID Extension
++    );
++
++VOID NTAPI ThreadsContextDeleteCallback(
++    __in PVOID Object,
++    __in PH_EM_OBJECT_TYPE ObjectType,
++    __in PVOID Extension
++    );
++
++VOID ThreadTreeNewMessage(
++    __in PVOID Parameter
++    );
++
++LONG ThreadTreeNewSortFunction(
++    __in PVOID Node1,
++    __in PVOID Node2,
++    __in ULONG SubId,
++    __in PVOID Context
++    );
++
++#define THREAD_TREE_CONTEXT_TYPE 1
++
++typedef struct _THREAD_TREE_CONTEXT
++{
++    ULONG Type;
++    HANDLE ProcessId;
++    PH_CALLBACK_REGISTRATION AddedCallbackRegistration;
++    PCLR_PROCESS_SUPPORT Support;
++} THREAD_TREE_CONTEXT, *PTHREAD_TREE_CONTEXT;
++
++static PPH_HASHTABLE ContextHashtable;
++static PH_QUEUED_LOCK ContextHashtableLock = PH_QUEUED_LOCK_INIT;
++static PH_INITONCE ContextHashtableInitOnce = PH_INITONCE_INIT;
++
++VOID InitializeTreeNewObjectExtensions(
++    VOID
++    )
++{
++    PhPluginSetObjectExtension(
++        PluginInstance,
++        EmThreadsContextType,
++        sizeof(THREAD_TREE_CONTEXT),
++        ThreadsContextCreateCallback,
++        ThreadsContextDeleteCallback
++        );
++}
++
++VOID AddTreeNewColumn(
++    __in PPH_PLUGIN_TREENEW_INFORMATION TreeNewInfo,
++    __in ULONG SubId,
++    __in BOOLEAN Visible,
++    __in PWSTR Text,
++    __in ULONG Width,
++    __in ULONG Alignment,
++    __in ULONG TextFlags,
++    __in BOOLEAN SortDescending,
++    __in PPH_PLUGIN_TREENEW_SORT_FUNCTION SortFunction
++    )
++{
++    PH_TREENEW_COLUMN column;
++
++    memset(&column, 0, sizeof(PH_TREENEW_COLUMN));
++    column.Visible = Visible;
++    column.SortDescending = SortDescending;
++    column.Text = Text;
++    column.Width = Width;
++    column.Alignment = Alignment;
++    column.DisplayIndex = TreeNew_GetVisibleColumnCount(TreeNewInfo->TreeNewHandle);
++    column.TextFlags = TextFlags;
++
++    PhPluginAddTreeNewColumn(
++        PluginInstance,
++        TreeNewInfo->CmData,
++        &column,
++        SubId,
++        NULL,
++        SortFunction
++        );
++}
++
++VOID AddTreeContext(
++    __in HWND TreeNewHandle,
++    __in PVOID Context
++    )
++{
++    if (PhBeginInitOnce(&ContextHashtableInitOnce))
++    {
++        ContextHashtable = PhCreateSimpleHashtable(4);
++        PhEndInitOnce(&ContextHashtableInitOnce);
++    }
++
++    PhAcquireQueuedLockExclusive(&ContextHashtableLock);
++    PhAddItemSimpleHashtable(ContextHashtable, TreeNewHandle, Context);
++    PhReleaseQueuedLockExclusive(&ContextHashtableLock);
++}
++
++PVOID FindTreeContext(
++    __in HWND TreeNewHandle
++    )
++{
++    PVOID context;
++    PVOID *item;
++
++    PhAcquireQueuedLockExclusive(&ContextHashtableLock);
++
++    item = PhFindItemSimpleHashtable(ContextHashtable, TreeNewHandle);
++
++    if (item)
++        context = *item;
++    else
++        context = NULL;
++
++    PhReleaseQueuedLockExclusive(&ContextHashtableLock);
++
++    return context;
++}
++
++VOID RemoveTreeContext(
++    __in HWND TreeNewHandle
++    )
++{
++    PhAcquireQueuedLockExclusive(&ContextHashtableLock);
++    PhRemoveItemSimpleHashtable(ContextHashtable, TreeNewHandle);
++    PhReleaseQueuedLockExclusive(&ContextHashtableLock);
++}
++
++VOID DispatchTreeNewMessage(
++    __in PVOID Parameter
++    )
++{
++    PPH_PLUGIN_TREENEW_MESSAGE message = Parameter;
++    PVOID context;
++
++    context = FindTreeContext(message->TreeNewHandle);
++
++    if (context)
++    {
++        switch (*(PULONG)context)
++        {
++        case THREAD_TREE_CONTEXT_TYPE:
++            ThreadTreeNewMessage(Parameter);
++            break;
++        }
++    }
++}
++
++static VOID ThreadAddedHandler(
++    __in_opt PVOID Parameter,
++    __in_opt PVOID Context
++    )
++{
++    PPH_THREAD_ITEM threadItem = Parameter;
++    PDN_THREAD_ITEM dnThread;
++    PTHREAD_TREE_CONTEXT context = Context;
++
++    dnThread = PhPluginGetObjectExtension(PluginInstance, threadItem, EmThreadItemType);
++
++    // Associate the thread item with our context.
++    dnThread->Context = context;
++}
++
++VOID NTAPI ThreadsContextCreateCallback(
++    __in PVOID Object,
++    __in PH_EM_OBJECT_TYPE ObjectType,
++    __in PVOID Extension
++    )
++{
++    PPH_THREADS_CONTEXT threadsContext = Object;
++    PTHREAD_TREE_CONTEXT context = Extension;
++
++    memset(context, 0, sizeof(THREAD_TREE_CONTEXT));
++    context->Type = THREAD_TREE_CONTEXT_TYPE;
++    context->ProcessId = threadsContext->Provider->ProcessId;
++
++    PhRegisterCallback(
++        &threadsContext->Provider->ThreadAddedEvent,
++        ThreadAddedHandler,
++        context,
++        &context->AddedCallbackRegistration
++        );
++}
++
++VOID NTAPI ThreadsContextDeleteCallback(
++    __in PVOID Object,
++    __in PH_EM_OBJECT_TYPE ObjectType,
++    __in PVOID Extension
++    )
++{
++    PPH_THREADS_CONTEXT threadsContext = Object;
++    PTHREAD_TREE_CONTEXT context = Extension;
++
++    PhUnregisterCallback(
++        &threadsContext->Provider->ThreadAddedEvent,
++        &context->AddedCallbackRegistration
++        );
++
++    if (context->Support)
++    {
++        FreeClrProcessSupport(context->Support);
++    }
++}
++
++VOID ThreadTreeNewInitializing(
++    __in PVOID Parameter
++    )
++{
++    PPH_PLUGIN_TREENEW_INFORMATION info = Parameter;
++    PPH_THREADS_CONTEXT threadsContext;
++    PTHREAD_TREE_CONTEXT context;
++    BOOLEAN isDotNet;
++
++    threadsContext = info->SystemContext;
++    context = PhPluginGetObjectExtension(PluginInstance, threadsContext, EmThreadsContextType);
++
++    if (NT_SUCCESS(PhGetProcessIsDotNet(threadsContext->Provider->ProcessId, &isDotNet)) && isDotNet)
++    {
++        PCLR_PROCESS_SUPPORT support;
++
++        support = CreateClrProcessSupport(threadsContext->Provider->ProcessId);
++
++        if (!support)
++            return;
++
++        context->Support = support;
++
++        AddTreeContext(info->TreeNewHandle, context);
++
++        AddTreeNewColumn(info, DNTHTNC_APPDOMAIN, TRUE, L"AppDomain", 120, PH_ALIGN_LEFT, 0, FALSE, ThreadTreeNewSortFunction);
++    }
++}
++
++VOID ThreadTreeNewUninitializing(
++    __in PVOID Parameter
++    )
++{
++    PPH_PLUGIN_TREENEW_INFORMATION info = Parameter;
++
++    RemoveTreeContext(info->TreeNewHandle);
++}
++
++VOID UpdateThreadClrData(
++    __inout PDN_THREAD_ITEM DnThread
++    )
++{
++    if (!DnThread->ClrDataValid)
++    {
++        IXCLRDataProcess *process;
++        IXCLRDataTask *task;
++        IXCLRDataAppDomain *appDomain;
++
++        if (DnThread->Context->Support)
++            process = DnThread->Context->Support->DataProcess;
++
++        if (SUCCEEDED(IXCLRDataProcess_GetTaskByOSThreadID(process, (ULONG)DnThread->ThreadItem->ThreadId, &task)))
++        {
++            if (SUCCEEDED(IXCLRDataTask_GetCurrentAppDomain(task, &appDomain)))
++            {
++                DnThread->AppDomainText = GetNameXClrDataAppDomain(appDomain);
++                IXCLRDataAppDomain_Release(appDomain);
++            }
++
++            IXCLRDataTask_Release(task);
++        }
++
++        DnThread->ClrDataValid = TRUE;
++    }
++}
++
++VOID ThreadTreeNewMessage(
++    __in PVOID Parameter
++    )
++{
++    PPH_PLUGIN_TREENEW_MESSAGE message = Parameter;
++
++    if (message->Message == TreeNewGetCellText)
++    {
++        PPH_TREENEW_GET_CELL_TEXT getCellText = message->Parameter1;
++        PPH_THREAD_NODE threadNode = (PPH_THREAD_NODE)getCellText->Node;
++        PDN_THREAD_ITEM dnThread;
++
++        dnThread = PhPluginGetObjectExtension(PluginInstance, threadNode->ThreadItem, EmThreadItemType);
++
++        if (!dnThread->Context)
++            return;
++
++        switch (message->SubId)
++        {
++        case DNTHTNC_APPDOMAIN:
++            UpdateThreadClrData(dnThread);
++            getCellText->Text = PhGetStringRef(dnThread->AppDomainText);
++            break;
++        }
++    }
++}
++
++LONG ThreadTreeNewSortFunction(
++    __in PVOID Node1,
++    __in PVOID Node2,
++    __in ULONG SubId,
++    __in PVOID Context
++    )
++{
++    LONG result;
++    PPH_THREAD_NODE node1 = Node1;
++    PPH_THREAD_NODE node2 = Node2;
++    PDN_THREAD_ITEM dnThread1;
++    PDN_THREAD_ITEM dnThread2;
++
++    dnThread1 = PhPluginGetObjectExtension(PluginInstance, node1->ThreadItem, EmThreadItemType);
++    dnThread2 = PhPluginGetObjectExtension(PluginInstance, node2->ThreadItem, EmThreadItemType);
++
++    result = 0;
++
++    if (!dnThread1->Context || !dnThread2->Context)
++        return 0;
++
++    switch (SubId)
++    {
++    case DNTHTNC_APPDOMAIN:
++        UpdateThreadClrData(dnThread1);
++        UpdateThreadClrData(dnThread2);
++        result = PhCompareStringWithNull(dnThread1->AppDomainText, dnThread2->AppDomainText, TRUE);
++        break;
++    }
++
++    return result;
++}
