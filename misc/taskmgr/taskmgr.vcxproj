@@ -110,7 +110,7 @@
       <includes>./;.;$(globalIncludes);</includes>
     </Pspec>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\2.x\trunk\sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;..\..\2.x\trunk\sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <UseFullPaths>true</UseFullPaths>
@@ -131,7 +131,7 @@
       <ShowProgress>LinkVerbose</ShowProgress>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>./;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -227,7 +227,7 @@
     <ClCompile Include="trayicon.c" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="taskmgr.rc" />
+    <ResourceCompile Include="resources\taskmgr.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\taskmgr.ico" />

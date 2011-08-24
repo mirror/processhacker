@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="about.c" />
+    <ClCompile Include="affinity.c" />
+    <ClCompile Include="applpage.c" />
+    <ClCompile Include="column.c" />
+    <ClCompile Include="dbgchnl.c" />
+    <ClCompile Include="debug.c" />
+    <ClCompile Include="endproc.c" />
+    <ClCompile Include="graph.c" />
+    <ClCompile Include="graphctl.c" />
+    <ClCompile Include="optnmenu.c" />
+    <ClCompile Include="perfdata.c" />
+    <ClCompile Include="perfpage.c" />
+    <ClCompile Include="priority.c" />
+    <ClCompile Include="proclist.c" />
+    <ClCompile Include="procpage.c" />
+    <ClCompile Include="run.c" />
+    <ClCompile Include="taskmgr.c" />
+    <ClCompile Include="trayicon.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\about.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\affinity.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\applpage.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\column.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\dbgchnl.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\debug.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\endproc.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\proclist.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="procpage.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\perfpage.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\priority.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\perfdata.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\optnmenu.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphctl.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\taskmgr.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\trayicon.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\resource.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graph.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="run.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\taskmgr.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="resources\trayicon.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="resources\traymask.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="resources\window.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="resources\windowsm.ico">
+      <Filter>Resources</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{e91d9381-e312-4b73-b0fc-f9dbaebcdcf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{8bd3edfc-7d1f-4f35-afea-260d7eff2eb6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\taskmgr.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
