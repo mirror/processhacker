@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>taskmgr</ProjectName>
+    <ProjectGuid>{4D9B2FA6-6A57-48E9-B1E1-0BFF7C114B0A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)bin\$(Configuration)$(PlatformArchitecture)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)bin\$(Configuration)$(PlatformArchitecture)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)obj\$(Configuration)$(PlatformArchitecture)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)obj\$(Configuration)$(PlatformArchitecture)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(RootOutDir)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(RootOutDir)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(RootIntDir)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(RootIntDir)\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <s_as_mscpp>
+      <sIncPaths>./;.;$(globalIncludes);</sIncPaths>
+      <sPPDefs>__ASM__</sPPDefs>
+    </s_as_mscpp>
+    <Pspec>
+      <includes>./;.;$(globalIncludes);</includes>
+    </Pspec>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\2.x\trunk\sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN64;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <UseFullPaths>true</UseFullPaths>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <CallingConvention>StdCall</CallingConvention>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <Link>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <AdditionalDependencies>ntdll.lib;advapi32.lib;user32.lib;gdi32.lib;shell32.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\2.x\trunk\lib\lib64;$(RootOutDir)\dll\ntdll\vc9\$(Configuration);$(RootOutDir)\dll\win32\advapi32\vc9\$(Configuration);$(RootOutDir)\dll\win32\user32\vc9\$(Configuration);$(RootOutDir)\dll\win32\gdi32\vc9\$(Configuration);$(RootOutDir)\dll\win32\shell32\vc9\$(Configuration);$(RootOutDir)\dll\win32\comctl32\vc9\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <LargeAddressAware>true</LargeAddressAware>
+      <ShowProgress>LinkVerbose</ShowProgress>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>./;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <s_as_mscpp>
+      <sIncPaths>./;.;$(globalIncludes);</sIncPaths>
+      <sPPDefs>__ASM__</sPPDefs>
+    </s_as_mscpp>
+    <Pspec>
+      <includes>./;.;$(globalIncludes);</includes>
+    </Pspec>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\2.x\trunk\sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <UseFullPaths>true</UseFullPaths>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <CallingConvention>StdCall</CallingConvention>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <Link>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <AdditionalDependencies>ntdll.lib;advapi32.lib;user32.lib;gdi32.lib;shell32.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\2.x\trunk\lib\lib32;$(RootOutDir)\dll\ntdll\vc9\$(Configuration);$(RootOutDir)\dll\win32\advapi32\vc9\$(Configuration);$(RootOutDir)\dll\win32\user32\vc9\$(Configuration);$(RootOutDir)\dll\win32\gdi32\vc9\$(Configuration);$(RootOutDir)\dll\win32\shell32\vc9\$(Configuration);$(RootOutDir)\dll\win32\comctl32\vc9\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <LargeAddressAware>true</LargeAddressAware>
+      <ShowProgress>LinkVerbose</ShowProgress>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>./;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <s_as_mscpp>
+      <sIncPaths>./;.;$(globalIncludes);</sIncPaths>
+      <sPPDefs>__ASM__</sPPDefs>
+    </s_as_mscpp>
+    <Pspec>
+      <includes>./;.;$(globalIncludes);</includes>
+    </Pspec>
+    <ClCompile>
+      <AdditionalIncludeDirectories>./;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_LIB ; ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <RandomizedBaseAddress>
+      </RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <AdditionalDependencies>ntdll.lib;advapi32.lib;user32.lib;gdi32.lib;shell32.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(RootOutDir)\dll\ntdll\vc9\$(Configuration);$(RootOutDir)\dll\win32\advapi32\vc9\$(Configuration);$(RootOutDir)\dll\win32\user32\vc9\$(Configuration);$(RootOutDir)\dll\win32\gdi32\vc9\$(Configuration);$(RootOutDir)\dll\win32\shell32\vc9\$(Configuration);$(RootOutDir)\dll\win32\comctl32\vc9\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)taskmgr.exe</OutputFile>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>./;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <s_as_mscpp>
+      <sIncPaths>./;.;$(globalIncludes);</sIncPaths>
+      <sPPDefs>__ASM__</sPPDefs>
+    </s_as_mscpp>
+    <Pspec>
+      <includes>./;.;$(globalIncludes);</includes>
+    </Pspec>
+    <ClCompile>
+      <AdditionalIncludeDirectories>./;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_LIB ; ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <RandomizedBaseAddress>
+      </RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <AdditionalDependencies>ntdll.lib;advapi32.lib;user32.lib;gdi32.lib;shell32.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(RootOutDir)\dll\ntdll\vc9\$(Configuration);$(RootOutDir)\dll\win32\advapi32\vc9\$(Configuration);$(RootOutDir)\dll\win32\user32\vc9\$(Configuration);$(RootOutDir)\dll\win32\gdi32\vc9\$(Configuration);$(RootOutDir)\dll\win32\shell32\vc9\$(Configuration);$(RootOutDir)\dll\win32\comctl32\vc9\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)taskmgr.exe</OutputFile>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>./;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - ReactOS headers|x64'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <CallingConvention>StdCall</CallingConvention>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - ReactOS headers|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <CallingConvention>StdCall</CallingConvention>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="about.c" />
+    <ClCompile Include="affinity.c" />
+    <ClCompile Include="applpage.c" />
+    <ClCompile Include="column.c" />
+    <ClCompile Include="dbgchnl.c" />
+    <ClCompile Include="debug.c" />
+    <ClCompile Include="endproc.c" />
+    <ClCompile Include="graph.c" />
+    <ClCompile Include="graphctl.c" />
+    <ClCompile Include="optnmenu.c" />
+    <ClCompile Include="perfdata.c" />
+    <ClCompile Include="perfpage.c" />
+    <ClCompile Include="priority.c" />
+    <ClCompile Include="proclist.c" />
+    <ClCompile Include="procpage.c" />
+    <ClCompile Include="run.c" />
+    <ClCompile Include="taskmgr.c" />
+    <ClCompile Include="trayicon.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="taskmgr.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\taskmgr.ico" />
+    <None Include="res\trayicon.bmp" />
+    <None Include="res\traymask.bmp" />
+    <None Include="res\window.ico" />
+    <None Include="res\windowsm.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="about.h" />
+    <ClInclude Include="affinity.h" />
+    <ClInclude Include="applpage.h" />
+    <ClInclude Include="column.h" />
+    <ClInclude Include="dbgchnl.h" />
+    <ClInclude Include="debug.h" />
+    <ClInclude Include="endproc.h" />
+    <ClInclude Include="graph.h" />
+    <ClInclude Include="graphctl.h" />
+    <ClInclude Include="optnmenu.h" />
+    <ClInclude Include="perfdata.h" />
+    <ClInclude Include="perfpage.h" />
+    <ClInclude Include="priority.h" />
+    <ClInclude Include="proclist.h" />
+    <ClInclude Include="procpage.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="run.h" />
+    <ClInclude Include="taskmgr.h" />
+    <ClInclude Include="trayicon.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

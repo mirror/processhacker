@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding = "Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9.00"
+	Name="taskmgr"
+	ProjectGUID="E33E7EE2-DA25-47d7-8108-1827D83D60C0"
+	Keyword="Win32Proj">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<ToolFiles>
+		<ToolFile
+			RelativePath="..\..\..\tools\rbuild\backend\msvc\rules\s_as_mscpp.rules"
+		/>
+		<ToolFile
+			RelativePath="..\..\..\tools\rbuild\backend\msvc\rules\spec.rules"
+		/>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="RosBuild|Win32"
+			OutputDirectory="..\..\..\output-i386\base\applications\taskmgr"
+			IntermediateDirectory="..\..\..\obj-i386\base\applications\taskmgr"
+			ConfigurationType="0"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="..\..\..\rosbuild.bat build taskmgr"
+				ReBuildCommandLine="..\..\..\rosbuild.bat rebuild taskmgr"
+				CleanCommandLine="..\..\..\rosbuild.bat clean taskmgr"
+				Output=""
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug - ReactOS headers|Win32"
+			OutputDirectory="$(RootOutDir)\base\applications\taskmgr"
+			IntermediateDirectory="$(RootIntDir)\base\applications\taskmgr"
+			ConfigurationType="1"
+			InheritedPropertySheets="..\..\..\\Debug - ReactOS headers.vsprops"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="s_as_mscpp"
+				sIncPaths="./;.;$(globalIncludes);"
+				sPPDefs="__ASM__"
+			/>
+			<Tool
+				Name="Pspec"
+				includes="./;.;$(globalIncludes);"
+				sPPDefs="__ASM__"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="./;.;"
+				PreprocessorDefinitions="_LIB ; "
+			/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				RandomizedBaseAddress="0"
+				DataExecutionPrevention="0"
+				AdditionalDependencies="ntdll.lib advapi32.lib user32.lib gdi32.lib shell32.lib comctl32.lib"
+				AdditionalLibraryDirectories="$(RootOutDir)\dll\ntdll\vc9\$(ConfigurationName);$(RootOutDir)\dll\win32\advapi32\vc9\$(ConfigurationName);$(RootOutDir)\dll\win32\user32\vc9\$(ConfigurationName);$(RootOutDir)\dll\win32\gdi32\vc9\$(ConfigurationName);$(RootOutDir)\dll\win32\shell32\vc9\$(ConfigurationName);$(RootOutDir)\dll\win32\comctl32\vc9\$(ConfigurationName)"
+				OutputFile="$(OutDir)/taskmgr.exe"
+				SubSystem="2"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories="./;"/>
+ 			<Tool
+				Name="VCMIDLTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release - ReactOS headers|Win32"
+			OutputDirectory="$(RootOutDir)\base\applications\taskmgr"
+			IntermediateDirectory="$(RootIntDir)\base\applications\taskmgr"
+			ConfigurationType="1"
+			InheritedPropertySheets="..\..\..\\Release - ReactOS headers.vsprops"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="s_as_mscpp"
+				sIncPaths="./;.;$(globalIncludes);"
+				sPPDefs="__ASM__"
+			/>
+			<Tool
+				Name="Pspec"
+				includes="./;.;$(globalIncludes);"
+				sPPDefs="__ASM__"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="./;.;"
+				PreprocessorDefinitions="_LIB ; "
+			/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				RandomizedBaseAddress="0"
+				DataExecutionPrevention="0"
+				AdditionalDependencies="ntdll.lib advapi32.lib user32.lib gdi32.lib shell32.lib comctl32.lib"
+				AdditionalLibraryDirectories="$(RootOutDir)\dll\ntdll\vc9\$(ConfigurationName);$(RootOutDir)\dll\win32\advapi32\vc9\$(ConfigurationName);$(RootOutDir)\dll\win32\user32\vc9\$(ConfigurationName);$(RootOutDir)\dll\win32\gdi32\vc9\$(ConfigurationName);$(RootOutDir)\dll\win32\shell32\vc9\$(ConfigurationName);$(RootOutDir)\dll\win32\comctl32\vc9\$(ConfigurationName)"
+				OutputFile="$(OutDir)/taskmgr.exe"
+				SubSystem="2"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories="./;"/>
+ 			<Tool
+				Name="VCMIDLTool"/>
+		</Configuration>
+	</Configurations>
+	<Files>
+		<Filter
+			Name="Generated Files">
+		</Filter>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;S">
+			<File
+				RelativePath=".\about.c">
+			</File>
+			<File
+				RelativePath=".\affinity.c">
+			</File>
+			<File
+				RelativePath=".\applpage.c">
+			</File>
+			<File
+				RelativePath=".\column.c">
+			</File>
+			<File
+				RelativePath=".\dbgchnl.c">
+			</File>
+			<File
+				RelativePath=".\debug.c">
+			</File>
+			<File
+				RelativePath=".\endproc.c">
+			</File>
+			<File
+				RelativePath=".\graph.c">
+			</File>
+			<File
+				RelativePath=".\graphctl.c">
+			</File>
+			<File
+				RelativePath=".\optnmenu.c">
+			</File>
+			<File
+				RelativePath=".\perfdata.c">
+			</File>
+			<File
+				RelativePath=".\perfpage.c">
+			</File>
+			<File
+				RelativePath=".\priority.c">
+			</File>
+			<File
+				RelativePath=".\proclist.c">
+			</File>
+			<File
+				RelativePath=".\procpage.c">
+			</File>
+			<File
+				RelativePath=".\run.c">
+			</File>
+			<File
+				RelativePath=".\taskmgr.c">
+			</File>
+			<File
+				RelativePath=".\trayicon.c">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl">
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+			<File
+				RelativePath=".\taskmgr.rc">
+			</File>
+		</Filter>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>
