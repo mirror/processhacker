@@ -525,6 +525,12 @@ BOOL OnCreate(HWND hWnd)
     hPerformancePage = CreateDialogW(hInst, MAKEINTRESOURCEW(IDD_PERFORMANCE_PAGE), hTabWnd, PerformancePageWndProc);
 #endif
 
+    //ListView_SetExtendedListViewStyleEx(GetDlgItem(hApplicationPage, IDC_APPLIST), LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, -1);
+    //SetWindowTheme(GetDlgItem(hApplicationPage, IDC_APPLIST), L"explorer", NULL);
+
+    //ListView_SetExtendedListViewStyleEx(GetDlgItem(hProcessPage, IDC_PROCESSLIST), LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, -1);
+    //SetWindowTheme(GetDlgItem(hProcessPage, IDC_PROCESSLIST), L"explorer", NULL);
+
     /* Insert tabs */
     LoadStringW(hInst, IDS_TAB_APPS, szTemp, 256);
     memset(&item, 0, sizeof(TCITEM));
@@ -660,7 +666,7 @@ void OnMove( WPARAM nType, int cx, int cy )
  */
 void OnSize( WPARAM nType, int cx, int cy )
 {
-    int   nParts[3];
+    int nParts[3];
     int   nXDifference;
     int   nYDifference;
     RECT  rc;
@@ -841,7 +847,7 @@ void TaskManager_OnMenuSelect(HWND hWnd, UINT nItemID, UINT nFlags, HMENU hSysMe
 {
     WCHAR str[100];
 
-    wcscpy(str, NULL);
+    wcscpy(str, L"");
 
     if (LoadStringW(hInst, nItemID, str, 100)) 
 	{

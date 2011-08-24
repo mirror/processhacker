@@ -1400,17 +1400,17 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_AUS
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_TASKMANAGER         ICON                    "res/taskmgr.ico"
-IDI_WINDOW              ICON                    "res/window.ico"
-IDI_WINDOWSM            ICON                    "res/windowsm.ico"
+IDI_TASKMANAGER         ICON                    "resources/taskmgr.ico"
+IDI_WINDOW              ICON                    "resources/window.ico"
+IDI_WINDOWSM            ICON                    "resources/windowsm.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDB_TRAYMASK            BITMAP                  "res/traymask.bmp"
-IDB_TRAYICON            BITMAP                  "res/trayicon.bmp"
+IDB_TRAYMASK            BITMAP                  "resources/traymask.bmp"
+IDB_TRAYICON            BITMAP                  "resources/trayicon.bmp"
 #endif    // English (Australia) resources
 /////////////////////////////////////////////////////////////////////////////
 

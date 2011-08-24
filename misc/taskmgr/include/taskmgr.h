@@ -23,6 +23,7 @@
 #pragma once
 
 #pragma comment(lib, "comctl32.lib")
+#pragma comment(lib, "uxtheme.lib")
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 #include <ctype.h>
@@ -53,6 +54,7 @@
 #include "priority.h"
 #include "run.h"
 #include "trayicon.h"
+#include <Uxtheme.h>
 
 #include "ntwin.h"
 #include "phnt.h"
@@ -65,6 +67,9 @@
 #define STATUS_SIZE1	80
 #define STATUS_SIZE2	210
 #define STATUS_SIZE3	400
+
+#define ListView_SetExtendedListViewStyleEx(hwndLV, dwMask, dw)\
+        (DWORD)SNDMSG((hwndLV), LVM_SETEXTENDEDLISTVIEWSTYLE, dwMask, dw)
 
 typedef struct
 {
