@@ -45,9 +45,6 @@
     <ClInclude Include="include\proclist.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="procpage.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="include\perfpage.h">
       <Filter>Headers</Filter>
     </ClInclude>
@@ -69,15 +66,16 @@
     <ClInclude Include="include\trayicon.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="include\resource.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="include\graph.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="run.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="include\procpage.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="resources\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\taskmgr.ico">

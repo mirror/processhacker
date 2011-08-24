@@ -76,7 +76,7 @@
       <includes>./;.;$(globalIncludes);</includes>
     </Pspec>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\2.x\trunk\sdk\include;include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\2.x\trunk\sdk\include;include\;..\taskmgr\resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <CallingConvention>StdCall</CallingConvention>
@@ -97,8 +97,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
+    <ResourceCompile />
     <ResourceCompile>
-      <AdditionalIncludeDirectories>./;include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -251,8 +252,8 @@
     <ClInclude Include="include\perfpage.h" />
     <ClInclude Include="include\priority.h" />
     <ClInclude Include="include\proclist.h" />
-    <ClInclude Include="procpage.h" />
-    <ClInclude Include="include\resource.h" />
+    <ClInclude Include="include\procpage.h" />
+    <ClInclude Include="resources\resource.h" />
     <ClInclude Include="run.h" />
     <ClInclude Include="include\taskmgr.h" />
     <ClInclude Include="include\trayicon.h" />
