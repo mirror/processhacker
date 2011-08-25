@@ -49,9 +49,9 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)obj\$(Configuration)$(PlatformArchitecture)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)obj\$(Configuration)$(PlatformArchitecture)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)bin\$(Configuration)$(PlatformArchitecture)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(RootOutDir)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)bin\$(Configuration)$(PlatformArchitecture)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)obj\$(Configuration)$(PlatformArchitecture)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(RootIntDir)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)obj\$(Configuration)$(PlatformArchitecture)\</IntDir>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
@@ -76,7 +76,7 @@
       <includes>./;.;$(globalIncludes);</includes>
     </Pspec>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\2.x\trunk\sdk\include;include\;..\taskmgr\resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\2.x\trunk\sdk\include;include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <CallingConvention>StdCall</CallingConvention>
@@ -111,9 +111,9 @@
       <includes>./;.;$(globalIncludes);</includes>
     </Pspec>
     <ClCompile>
-      <AdditionalIncludeDirectories>include;..\..\2.x\trunk\sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include\;..\..\2.x\trunk\sdk\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <UseFullPaths>true</UseFullPaths>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>true</MinimalRebuild>
@@ -129,7 +129,6 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
-      <ShowProgress>LinkVerbose</ShowProgress>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -170,7 +169,7 @@
       <includes>./;.;$(globalIncludes);</includes>
     </Pspec>
     <ClCompile>
-      <AdditionalIncludeDirectories>./;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;resources;..\..\2.x\trunk\sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_LIB ; ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -179,12 +178,12 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <AdditionalDependencies>ntdll.lib;advapi32.lib;user32.lib;gdi32.lib;shell32.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(RootOutDir)\dll\ntdll\vc9\$(Configuration);$(RootOutDir)\dll\win32\advapi32\vc9\$(Configuration);$(RootOutDir)\dll\win32\user32\vc9\$(Configuration);$(RootOutDir)\dll\win32\gdi32\vc9\$(Configuration);$(RootOutDir)\dll\win32\shell32\vc9\$(Configuration);$(RootOutDir)\dll\win32\comctl32\vc9\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>$(OutDir)taskmgr.exe</OutputFile>
+      <AdditionalLibraryDirectories>..\..\2.x\trunk\lib\lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SubSystem>Windows</SubSystem>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>./;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - ReactOS headers|x64'">
@@ -253,7 +252,7 @@
     <ClInclude Include="include\priority.h" />
     <ClInclude Include="include\proclist.h" />
     <ClInclude Include="include\procpage.h" />
-    <ClInclude Include="resources\resource.h" />
+    <ClInclude Include="include\resource.h" />
     <ClInclude Include="run.h" />
     <ClInclude Include="include\taskmgr.h" />
     <ClInclude Include="include\trayicon.h" />

@@ -75,7 +75,9 @@
     <ClInclude Include="include\procpage.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="resources\resource.h" />
+    <ClInclude Include="include\resource.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\taskmgr.ico">
