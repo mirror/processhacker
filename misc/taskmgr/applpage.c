@@ -71,15 +71,23 @@ ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         nApplicationPageHeight = rc.bottom;
 
         /* Update window position */
-        SetWindowPos(hDlg, NULL, 15, 30, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
+        //SetWindowPos(hDlg, NULL, 15, 30, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
 
-        /* Get handles to the controls */
+        // Get handles to the controls
         hApplicationPageListCtrl = GetDlgItem(hDlg, IDC_APPLIST);
         hApplicationPageEndTaskButton = GetDlgItem(hDlg, IDC_ENDTASK);
         hApplicationPageSwitchToButton = GetDlgItem(hDlg, IDC_SWITCHTO);
         hApplicationPageNewTaskButton = GetDlgItem(hDlg, IDC_NEWTASK);
-
+     
+        // Set the title.
         SetWindowTextW(hApplicationPageListCtrl, L"Tasks");
+
+        // Set extended window styles for the list control.
+        ListView_SetExtendedListViewStyle(
+            hApplicationPageListCtrl, 
+            ListView_GetExtendedListViewStyle(hApplicationPageListCtrl) | LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER | LVS_EX_HEADERDRAGDROP
+            );
+
 
         /* Initialize the application page's controls */
         column.mask = LVCF_TEXT|LVCF_WIDTH;
@@ -87,15 +95,18 @@ ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         LoadStringW(hInst, IDS_TAB_TASK, szTemp, 256);
         column.pszText = szTemp;
         column.cx = 250;
-        (void)ListView_InsertColumn(hApplicationPageListCtrl, 0, &column);    /* Add the "Task" column */
+       
+        ListView_InsertColumn(hApplicationPageListCtrl, 0, &column);    /* Add the "Task" column */
+
         column.mask = LVCF_TEXT|LVCF_WIDTH;
         LoadStringW(hInst, IDS_TAB_STATUS, szTemp, 256);
         column.pszText = szTemp;
         column.cx = 95;
-        (void)ListView_InsertColumn(hApplicationPageListCtrl, 1, &column);    /* Add the "Status" column */
 
-        (void)ListView_SetImageList(hApplicationPageListCtrl, ImageList_Create(16, 16, GetSystemColorDepth()|ILC_MASK, 0, 1), LVSIL_SMALL);
-        (void)ListView_SetImageList(hApplicationPageListCtrl, ImageList_Create(32, 32, GetSystemColorDepth()|ILC_MASK, 0, 1), LVSIL_NORMAL);
+        ListView_InsertColumn(hApplicationPageListCtrl, 1, &column);    /* Add the "Status" column */
+
+        ListView_SetImageList(hApplicationPageListCtrl, ImageList_Create(16, 16, GetSystemColorDepth()|ILC_MASK, 0, 1), LVSIL_SMALL);
+        ListView_SetImageList(hApplicationPageListCtrl, ImageList_Create(32, 32, GetSystemColorDepth()|ILC_MASK, 0, 1), LVSIL_NORMAL);
 
         UpdateApplicationListControlViewSetting();
 
@@ -219,29 +230,29 @@ DWORD WINAPI ApplicationPageRefreshThread(void *lpParameter)
 
         if (msg.message == WM_TIMER)
         {
-            /*
-             * FIXME:
-             *
-             * Should this be EnumDesktopWindows() instead?
-             */
             noApps = TRUE;
-            EnumWindows(EnumWindowsProc, 0);
-            if (noApps)
-                (void)ListView_DeleteAllItems(hApplicationPageListCtrl);
 
-            /* Get the image lists */
+            EnumDesktopWindows(NULL, EnumWindowsProc, 0);
+           
+            if (noApps)
+                ListView_DeleteAllItems(hApplicationPageListCtrl);
+
+            // Get the image lists
             hImageListLarge = ListView_GetImageList(hApplicationPageListCtrl, LVSIL_NORMAL);
             hImageListSmall = ListView_GetImageList(hApplicationPageListCtrl, LVSIL_SMALL);
 
-            /* Check to see if we need to remove any items from the list */
-            for (i=ListView_GetItemCount(hApplicationPageListCtrl)-1; i>=0; i--)
+            // Check to see if we need to remove any items from the list
+            for (i =ListView_GetItemCount(hApplicationPageListCtrl)-1; i>=0; i--)
             {
                 memset(&item, 0, sizeof(LV_ITEM));
-                item.mask = LVIF_IMAGE|LVIF_PARAM;
+
+                item.mask = LVIF_IMAGE | LVIF_PARAM;
                 item.iItem = i;
-                (void)ListView_GetItem(hApplicationPageListCtrl, &item);
+                
+                ListView_GetItem(hApplicationPageListCtrl, &item);
 
                 pAPLI = (LPAPPLICATION_PAGE_LIST_ITEM)item.lParam;
+
                 if (!IsWindow(pAPLI->hWnd)||
                     (wcslen(pAPLI->szTitle) <= 0) ||
                     !IsWindowVisible(pAPLI->hWnd) ||
@@ -252,7 +263,7 @@ DWORD WINAPI ApplicationPageRefreshThread(void *lpParameter)
                     ImageList_Remove(hImageListLarge, item.iItem);
                     ImageList_Remove(hImageListSmall, item.iItem);
 
-                    (void)ListView_DeleteItem(hApplicationPageListCtrl, item.iItem);
+                    ListView_DeleteItem(hApplicationPageListCtrl, item.iItem);
                     HeapFree(GetProcessHeap(), 0, pAPLI);
                     bItemRemoved = TRUE;
                 }
@@ -413,7 +424,8 @@ void AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung)
         item.pszText = LPSTR_TEXTCALLBACK;
         item.iItem = ListView_GetItemCount(hApplicationPageListCtrl);
         item.lParam = (LPARAM)pAPLI;
-        (void)ListView_InsertItem(hApplicationPageListCtrl, &item);
+        
+        ListView_InsertItem(hApplicationPageListCtrl, &item);
     }
     return;
 }

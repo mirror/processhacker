@@ -1,24 +1,24 @@
 /*
- *  ReactOS Task Manager
- *
- *  perfpage.c
- *
- *  Copyright (C) 1999 - 2001  Brian Palmer  <brianp@reactos.org>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+*  ReactOS Task Manager
+*
+*  perfpage.c
+*
+*  Copyright (C) 1999 - 2001  Brian Palmer  <brianp@reactos.org>
+*
+*  This program is free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or
+*  (at your option) any later version.
+*
+*  This program is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  You should have received a copy of the GNU General Public License along
+*  with this program; if not, write to the Free Software Foundation, Inc.,
+*  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
 
 #include "taskmgr.h"
 
@@ -67,12 +67,16 @@ void AdjustFrameSize(HWND hCntrl, HWND hDlg, int nXDifference, int nYDifference,
     int   cx, cy, sx, sy;
 
     GetClientRect(hCntrl, &rc);
-    MapWindowPoints(hCntrl, hDlg, (LPPOINT)(PRECT)(&rc), (sizeof(RECT)/sizeof(POINT)));
-    if (pos) {
+    MapWindowPoints(hCntrl, hDlg, (LPPOINT)(PRECT)(&rc), (sizeof(RECT) / sizeof(POINT)));
+
+    if (pos) 
+    {
         cx = rc.left;
         cy = rc.top;
         sx = rc.right - rc.left;
-        switch (pos) {
+
+        switch (pos) 
+        {
         case 1:
             break;
         case 2:
@@ -86,14 +90,18 @@ void AdjustFrameSize(HWND hCntrl, HWND hDlg, int nXDifference, int nYDifference,
             sx += nXDifference;
             break;
         }
+
         sy = rc.bottom - rc.top + nYDifference / 2;
         SetWindowPos(hCntrl, NULL, cx, cy, sx, sy, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
-    } else {
+    } 
+    else 
+    {
         cx = rc.left + nXDifference;
         cy = rc.top + nYDifference;
         sx = sy = 0;
         SetWindowPos(hCntrl, NULL, cx, cy, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
     }
+
     InvalidateRect(hCntrl, NULL, TRUE);
 }
 
@@ -107,16 +115,16 @@ static void AdjustCntrlPos(int ctrl_id, HWND hDlg, int nXDifference, int nYDiffe
     AdjustFrameSize(GetDlgItem(hDlg, ctrl_id), hDlg, nXDifference, nYDifference, 0);
 }
 
-INT_PTR CALLBACK
-PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     RECT  rc;
     int   nXDifference;
     int   nYDifference;
-     HDC hdc;
-     PAINTSTRUCT ps;
+    HDC hdc;
+    PAINTSTRUCT ps;
 
-    switch (message) {
+    switch (message) 
+    {
     case WM_DESTROY:
         GraphCtrl_Dispose(&PerformancePageCpuUsageHistoryGraph);
         GraphCtrl_Dispose(&PerformancePageMemUsageHistoryGraph);
@@ -132,11 +140,11 @@ PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         nPerformancePageHeight = rc.bottom;
 
         /*  Update window position */
-        SetWindowPos(hDlg, NULL, 15, 30, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
+        //SetWindowPos(hDlg, NULL, 15, 30, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
 
         /*
-         *  Get handles to all the controls
-         */
+        *  Get handles to all the controls
+        */
         hPerformancePageTotalsFrame = GetDlgItem(hDlg, IDC_TOTALS_FRAME);
         hPerformancePageCommitChargeFrame = GetDlgItem(hDlg, IDC_COMMIT_CHARGE_FRAME);
         hPerformancePageKernelMemoryFrame = GetDlgItem(hDlg, IDC_KERNEL_MEMORY_FRAME);
@@ -170,11 +178,11 @@ PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         GraphCtrl_Create(&PerformancePageCpuUsageHistoryGraph, hPerformancePageCpuUsageHistoryGraph, hDlg, IDC_CPU_USAGE_HISTORY_GRAPH);
         /*  customize the control */
         GraphCtrl_SetRange(&PerformancePageCpuUsageHistoryGraph, 0.0, 100.0, 10);
-/*         PerformancePageCpuUsageHistoryGraph.SetYUnits("Current") ; */
-/*         PerformancePageCpuUsageHistoryGraph.SetXUnits("Samples (Windows Timer: 100 msec)") ; */
-/*         PerformancePageCpuUsageHistoryGraph.SetBackgroundColor(RGB(0, 0, 64)) ; */
-/*         PerformancePageCpuUsageHistoryGraph.SetGridColor(RGB(192, 192, 255)) ; */
-/*         PerformancePageCpuUsageHistoryGraph.SetPlotColor(RGB(255, 255, 255)) ; */
+        /*         PerformancePageCpuUsageHistoryGraph.SetYUnits("Current") ; */
+        /*         PerformancePageCpuUsageHistoryGraph.SetXUnits("Samples (Windows Timer: 100 msec)") ; */
+        /*         PerformancePageCpuUsageHistoryGraph.SetBackgroundColor(RGB(0, 0, 64)) ; */
+        /*         PerformancePageCpuUsageHistoryGraph.SetGridColor(RGB(192, 192, 255)) ; */
+        /*         PerformancePageCpuUsageHistoryGraph.SetPlotColor(RGB(255, 255, 255)) ; */
         GraphCtrl_SetBackgroundColor(&PerformancePageCpuUsageHistoryGraph, RGB(0, 0, 0)) ;
         GraphCtrl_SetGridColor(&PerformancePageCpuUsageHistoryGraph, RGB(0, 128, 64));
 
@@ -188,51 +196,34 @@ PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         GraphCtrl_SetBackgroundColor(&PerformancePageMemUsageHistoryGraph, RGB(0, 0, 0)) ;
         GraphCtrl_SetGridColor(&PerformancePageMemUsageHistoryGraph, RGB(0, 128, 64)) ;
         GraphCtrl_SetPlotColor(&PerformancePageMemUsageHistoryGraph, 0, RGB(255, 255, 0)) ;
-       
+
         /*  Start our refresh thread */
         hPerformanceThread = CreateThread(NULL, 0, PerformancePageRefreshThread, NULL, 0, &dwPerformanceThread);
 
         /*
-         *  Subclass graph buttons
-         */
+        *  Subclass graph buttons
+        */
         OldGraphWndProc = (WNDPROC)(LONG_PTR) SetWindowLongPtrW(hPerformancePageCpuUsageGraph, GWLP_WNDPROC, (LONG_PTR)Graph_WndProc);
         OldGraphCtrlWndProc = (WNDPROC)(LONG_PTR) SetWindowLongPtrW(hPerformancePageMemUsageHistoryGraph, GWLP_WNDPROC, (LONG_PTR)GraphCtrl_WndProc);
-		
-		SetWindowLongPtrW(hPerformancePageMemUsageGraph, GWLP_WNDPROC, (LONG_PTR)Graph_WndProc);
+
+        SetWindowLongPtrW(hPerformancePageMemUsageGraph, GWLP_WNDPROC, (LONG_PTR)Graph_WndProc);
         SetWindowLongPtrW(hPerformancePageCpuUsageHistoryGraph, GWLP_WNDPROC, (LONG_PTR)GraphCtrl_WndProc);
         return TRUE;
 
-    case WM_COMMAND:
-        break;
-
-    //case WM_NCPAINT:
-    //    hdc = GetDC(hDlg);
-    //    GetClientRect(hDlg, &rc);
-    //    Draw3dRect(hdc, rc.left, rc.top, rc.right, rc.top + 2, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT));
-    //    ReleaseDC(hDlg, hdc);
-    //    break;
-
-    //case WM_PAINT:
-    //    hdc = BeginPaint(hDlg, &ps);
-    //    GetClientRect(hDlg, &rc);
-    //    Draw3dRect(hdc, rc.left, rc.top, rc.right, rc.top + 2, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT));
-    //    EndPaint(hDlg, &ps);
-    //    break;
-
     case WM_SIZE:
         do 
-		{
-        int  cx, cy;
+        {
+            int  cx, cy;
 
-        if (wParam == SIZE_MINIMIZED)
-            return 0;
+            if (wParam == SIZE_MINIMIZED)
+                return 0;
 
-        cx = LOWORD(lParam);
-        cy = HIWORD(lParam);
-        nXDifference = cx - nPerformancePageWidth;
-        nYDifference = cy - nPerformancePageHeight;
-        nPerformancePageWidth = cx;
-        nPerformancePageHeight = cy;
+            cx = LOWORD(lParam);
+            cy = HIWORD(lParam);
+            nXDifference = cx - nPerformancePageWidth;
+            nYDifference = cy - nPerformancePageHeight;
+            nPerformancePageWidth = cx;
+            nPerformancePageHeight = cy;
         } while (0);
 
         /*  Reposition the performance page's controls */
@@ -347,8 +338,8 @@ DWORD WINAPI PerformancePageRefreshThread(void *lpParameter)
         if (msg.message == WM_TIMER)
         {
             /*
-             *  Update the commit charge info
-             */
+            *  Update the commit charge info
+            */
             CommitChargeTotal = PerfDataGetCommitChargeTotalK();
             CommitChargeLimit = PerfDataGetCommitChargeLimitK();
             CommitChargePeak = PerfDataGetCommitChargePeakK();
@@ -362,8 +353,8 @@ DWORD WINAPI PerformancePageRefreshThread(void *lpParameter)
             SendMessageW(hStatusWnd, SB_SETTEXT, 2, (LPARAM)Text);
 
             /*
-             *  Update the kernel memory info
-             */
+            *  Update the kernel memory info
+            */
             KernelMemoryTotal = PerfDataGetKernelMemoryTotalK();
             KernelMemoryPaged = PerfDataGetKernelMemoryPagedK();
             KernelMemoryNonPaged = PerfDataGetKernelMemoryNonPagedK();
@@ -375,8 +366,8 @@ DWORD WINAPI PerformancePageRefreshThread(void *lpParameter)
             SetWindowTextW(hPerformancePageKernelMemoryNonPagedEdit, Text);
 
             /*
-             *  Update the physical memory info
-             */
+            *  Update the physical memory info
+            */
             PhysicalMemoryTotal = PerfDataGetPhysicalMemoryTotalK();
             PhysicalMemoryAvailable = PerfDataGetPhysicalMemoryAvailableK();
             PhysicalMemorySystemCache = PerfDataGetPhysicalMemorySystemCacheK();
@@ -388,8 +379,8 @@ DWORD WINAPI PerformancePageRefreshThread(void *lpParameter)
             SetWindowTextW(hPerformancePagePhysicalMemorySystemCacheEdit, Text);
 
             /*
-             *  Update the totals info
-             */
+            *  Update the totals info
+            */
             TotalHandles = PerfDataGetSystemHandleCount();
             TotalThreads = PerfDataGetTotalThreadCount();
             TotalProcesses = PerfDataGetProcessCount();
@@ -401,17 +392,20 @@ DWORD WINAPI PerformancePageRefreshThread(void *lpParameter)
             SetWindowTextW(hPerformancePageTotalsProcessCountEdit, Text);
 
             /*
-             *  Redraw the graphs
-             */
+            *  Redraw the graphs
+            */
             InvalidateRect(hPerformancePageCpuUsageGraph, NULL, FALSE);
             InvalidateRect(hPerformancePageMemUsageGraph, NULL, FALSE);
 
             /*
-             *  Get the CPU usage
-             */
+            *  Get the CPU usage
+            */
             CpuUsage = PerfDataGetProcessorUsage();
-            if (CpuUsage <= 0 )       CpuUsage = 0;
-            if (CpuUsage > 100)       CpuUsage = 100;
+          
+            if (CpuUsage <= 0 )       
+                CpuUsage = 0;
+            if (CpuUsage > 100)       
+                CpuUsage = 100;
 
             if (TaskManagerSettings.ShowKernelTimes)
             {
@@ -424,8 +418,8 @@ DWORD WINAPI PerformancePageRefreshThread(void *lpParameter)
                 CpuKernelUsage = 0;
             }
             /*
-             *  Get the memory usage
-             */
+            *  Get the memory usage
+            */
             CommitChargeTotal = PerfDataGetCommitChargeTotalK();
             CommitChargeLimit = PerfDataGetCommitChargeLimitK();
             nBarsUsed1 = CommitChargeLimit ? ((CommitChargeTotal * 100) / CommitChargeLimit) : 0;

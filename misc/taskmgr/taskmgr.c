@@ -123,11 +123,6 @@ INT WINAPI WinMain(
 /* Message handler for dialog box. */
 INT_PTR CALLBACK TaskManagerWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-#if 0
-    HDC              hdc;
-    PAINTSTRUCT      ps;
-    RECT             rc;
-#endif
     LPRECT           pRC;
     int              idctrl;
     LPNMHDR          pnmh;
@@ -312,21 +307,6 @@ INT_PTR CALLBACK TaskManagerWndProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
             TaskManager_OnTabWndSelChange();
         }
         break;
-#if 0
-    case WM_NCPAINT:
-        hdc = GetDC(hDlg);
-        GetClientRect(hDlg, &rc);
-        Draw3dRect(hdc, rc.left, rc.top, rc.right, rc.top + 2, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT));
-        ReleaseDC(hDlg, hdc);
-        break;
-
-    case WM_PAINT:
-        hdc = BeginPaint(hDlg, &ps);
-        GetClientRect(hDlg, &rc);
-        Draw3dRect(hdc, rc.left, rc.top, rc.right, rc.top + 2, GetSysColor(COLOR_3DSHADOW), GetSysColor(COLOR_3DHILIGHT));
-        EndPaint(hDlg, &ps);
-        break;
-#endif
     case WM_SIZING:
         /* Make sure the user is sizing the dialog */
         /* in an acceptable range */
@@ -518,6 +498,41 @@ BOOL OnCreate(HWND hWnd)
     hProcessPage = CreateDialog(hInst, MAKEINTRESOURCEW(IDD_PROCESS_PAGE), hWnd, ProcessPageWndProc);
     hPerformancePage = CreateDialog(hInst, MAKEINTRESOURCEW(IDD_PERFORMANCE_PAGE), hWnd, PerformancePageWndProc);
 
+    {
+        // HACK HACK HACK ??? (TEMP)
+        // Move pages to correct size and position on TabCtrl
+        RECT lp_rect;
+        GetClientRect(hTabWnd, &lp_rect);
+       
+        // Make some manual adjustments
+        lp_rect.top            += 26;
+        lp_rect.left           += 6;
+        lp_rect.right          += 2;
+        lp_rect.bottom         += 2;
+
+        MoveWindow(hApplicationPage, 
+            lp_rect.left, 
+            lp_rect.top ,
+            lp_rect.right - lp_rect.left, 
+            lp_rect.bottom - lp_rect.top,
+            TRUE
+            );
+        MoveWindow(hProcessPage, 
+            lp_rect.left, 
+            lp_rect.top ,
+            lp_rect.right - lp_rect.left, 
+            lp_rect.bottom - lp_rect.top,
+            TRUE
+            );       
+        MoveWindow(hPerformancePage, 
+            lp_rect.left, 
+            lp_rect.top ,
+            lp_rect.right - lp_rect.left, 
+            lp_rect.bottom - lp_rect.top,
+            TRUE
+            );
+    }
+
     /* Insert tabs */
     LoadString(hInst, IDS_TAB_APPS, szTemp, 256);
     memset(&item, 0, sizeof(TCITEM));
@@ -547,15 +562,21 @@ BOOL OnCreate(HWND hWnd)
 
 #define PAGE_OFFSET_LEFT    17
 #define PAGE_OFFSET_TOP     72
-#define PAGE_OFFSET_WIDTH   (PAGE_OFFSET_LEFT*2)
-#define PAGE_OFFSET_HEIGHT  (PAGE_OFFSET_TOP+32)
+#define PAGE_OFFSET_WIDTH   (PAGE_OFFSET_LEFT * 2)
+#define PAGE_OFFSET_HEIGHT  (PAGE_OFFSET_TOP + 32)
 
-    if ((TaskManagerSettings.Left != 0) ||
-        (TaskManagerSettings.Top != 0) ||
-        (TaskManagerSettings.Right != 0) ||
-        (TaskManagerSettings.Bottom != 0))
+    if (TaskManagerSettings.Left != 0 ||
+        TaskManagerSettings.Top != 0 ||
+        TaskManagerSettings.Right != 0 ||
+        TaskManagerSettings.Bottom != 0)
     {
-        MoveWindow(hWnd, TaskManagerSettings.Left, TaskManagerSettings.Top, TaskManagerSettings.Right - TaskManagerSettings.Left, TaskManagerSettings.Bottom - TaskManagerSettings.Top, TRUE);
+        MoveWindow(hWnd, 
+            TaskManagerSettings.Left, 
+            TaskManagerSettings.Top, 
+            TaskManagerSettings.Right - TaskManagerSettings.Left, 
+            TaskManagerSettings.Bottom - TaskManagerSettings.Top,
+            TRUE
+            );
     }
     if (TaskManagerSettings.Maximized)
         ShowWindow(hWnd, SW_MAXIMIZE);
@@ -732,7 +753,7 @@ void LoadSettings(void)
     TaskManagerSettings.UpdateSpeed = ID_VIEW_UPDATESPEED_NORMAL;
 
     /* Processes page settings */
-    TaskManagerSettings.ShowProcessesFromAllUsers = FALSE; /* Server-only? */
+    TaskManagerSettings.ShowProcessesFromAllUsers = FALSE;
 
     for (i = 0; i < COLUMN_NMAX; i++) 
     {

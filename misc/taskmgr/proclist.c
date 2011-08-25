@@ -23,12 +23,9 @@
 #include "taskmgr.h"
 
 INT_PTR CALLBACK    ProcessListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+WNDPROC OldProcessListWndProc;
 
-WNDPROC             OldProcessListWndProc;
-
-
-INT_PTR CALLBACK
-ProcessListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ProcessListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     HBRUSH  hbrBackground;
     RECT    rcItem;
@@ -112,8 +109,5 @@ ProcessListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return TRUE;
     }
 
-    /*
-     * We pass on all messages except WM_ERASEBKGND
-     */
     return CallWindowProc(OldProcessListWndProc, hWnd, message, wParam, lParam);
 }

@@ -23,27 +23,30 @@
 
 #include "taskmgr.h"
 
-void TaskManager_OnFileNew(void)
+VOID TaskManager_OnFileNew()
 {
-    HMODULE     hShell32;
-    RUNFILEDLG  RunFileDlg;
-    WCHAR       szTitle[40];
-    WCHAR       szText[256];
+    HICON hIcon = NULL;
+    RUNFILEDLG  RunFileDlg = NULL;
+    WCHAR szTitle[40];
+    WCHAR szText[256];
 
     /* Load language strings from resource file */
-    LoadStringW(hInst, IDS_CREATENEWTASK, szTitle, sizeof(szTitle) / sizeof(szTitle[0]));
-    LoadStringW(hInst, IDS_CREATENEWTASK_DESC, szText, sizeof(szText) / sizeof(szText[0]));
+    LoadString(hInst, IDS_CREATENEWTASK, szTitle, sizeof(szTitle) / sizeof(szTitle[0]));
+    LoadString(hInst, IDS_CREATENEWTASK_DESC, szText, sizeof(szText) / sizeof(szText[0]));
 
-    hShell32 = LoadLibraryW(L"SHELL32.DLL");
-    RunFileDlg = (RUNFILEDLG)(FARPROC)GetProcAddress(hShell32, (LPCSTR)0x3D);
+    // Load application icon.
+    hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_TASKMANAGER));
+
+    // Load RunFileDlg export using it's ordinal.
+    RunFileDlg = (RUNFILEDLG)(FARPROC)GetProcAddress(GetModuleHandle(L"SHELL32.dll"), (LPCSTR)0x3D);
 
     /* Show "Run..." dialog */
     if (RunFileDlg)
     {
         /* NOTE - don't check whether running on win 9x or NT, let's just
                   assume that a unicode build only runs on NT */
-        RunFileDlg(hMainWnd, 0, NULL, NULL, szText, RFF_CALCDIRECTORY);
+        RunFileDlg(hMainWnd, hIcon, NULL, NULL, szText, RFF_CALCDIRECTORY);
     }
 
-    FreeLibrary(hShell32);
+    DestroyIcon(hIcon);
 }

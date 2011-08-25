@@ -120,7 +120,7 @@ INT_PTR CALLBACK ProcessPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
         nProcessPageHeight = rc.bottom;
 
         // Update window position
-        SetWindowPos(hDlg, NULL, 15, 30, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
+        //SetWindowPos(hDlg, NULL, 15, 30, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
 
         // Get handles to the controls
         hProcessPageListCtrl = GetDlgItem(hDlg, IDC_PROCESSLIST);
