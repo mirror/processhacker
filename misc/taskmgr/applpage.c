@@ -809,7 +809,7 @@ void ApplicationPage_OnSwitchTo(void)
         typedef void (WINAPI *PROCSWITCHTOTHISWINDOW) (HWND, BOOL);
         PROCSWITCHTOTHISWINDOW SwitchToThisWindow;
 
-        HMODULE hUser32 = GetModuleHandleW(L"USER32");
+        HMODULE hUser32 = GetModuleHandleW(L"USER32.dll");
         SwitchToThisWindow = (PROCSWITCHTOTHISWINDOW)GetProcAddress(hUser32, "SwitchToThisWindow");
         if (SwitchToThisWindow) {
             SwitchToThisWindow(pAPLI->hWnd, TRUE);

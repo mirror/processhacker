@@ -393,19 +393,18 @@ void RefreshProcessPage(void)
 
 DWORD WINAPI ProcessPageRefreshThread(void *lpParameter)
 {
-    ULONG    OldProcessorUsage = 0;
-    ULONG    OldProcessCount = 0;
+    ULONG    OldProcessorUsage = 0, OldProcessCount = 0;
     WCHAR    szCpuUsage[256], szProcesses[256];
     MSG      msg;
 
     LoadString(hInst, IDS_STATUS_CPUUSAGE, szCpuUsage, 256);
     LoadString(hInst, IDS_STATUS_PROCESSES, szProcesses, 256);
 
-    while (1) 
+    while (TRUE) 
     {
         /*  Wait for an the event or application close */
         if (GetMessage(&msg, NULL, 0, 0) <= 0)
-            return 0;
+            return FALSE;
 
         if (msg.message == WM_TIMER) 
         {
@@ -434,7 +433,8 @@ DWORD WINAPI ProcessPageRefreshThread(void *lpParameter)
             }
         }
     }
-    return 0;
+
+    return FALSE;
 }
 
 void UpdateProcesses()

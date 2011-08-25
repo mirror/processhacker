@@ -1067,31 +1067,15 @@ LPWSTR GetLastErrorText(LPWSTR lpszBuf, DWORD dwSize)
     return lpszBuf;
 }
 
-DWORD EndLocalThread(HANDLE *hThread, DWORD dwThread)
+DWORD EndLocalThread(HANDLE hThread, DWORD dwThread)
 {
     DWORD dwExitCodeThread = 0;
 
-    if (*hThread != NULL) 
+    if (hThread != NULL) 
     {
-        PostThreadMessage(dwThread,WM_QUIT,0,0);
+        PostThreadMessage(dwThread, WM_QUIT, 0, 0);
 
-        for (;;) 
-        {
-            MSG msg;
-
-            if (WAIT_OBJECT_0 == WaitForSingleObject(*hThread, 500))
-                break;
-
-            while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) 
-            {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-            }
-        }
-
-        GetExitCodeThread(*hThread, &dwExitCodeThread);
-        CloseHandle(*hThread);
-        *hThread = NULL;
+        CloseHandle(hThread);
     }
 
     return dwExitCodeThread;
