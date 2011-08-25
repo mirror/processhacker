@@ -36,9 +36,10 @@ void ProcessPage_OnEndProcess(void)
     if (dwProcessId == 0)
         return;
 
-    LoadStringW(hInst, IDS_MSG_WARNINGTERMINATING, strErrorText, 256);
-    LoadStringW(hInst, IDS_MSG_TASKMGRWARNING, szTitle, 256);
-    if (MessageBoxW(hMainWnd, strErrorText, szTitle, MB_YESNO|MB_ICONWARNING) != IDYES)
+    LoadString(hInst, IDS_MSG_WARNINGTERMINATING, strErrorText, 256);
+    LoadString(hInst, IDS_MSG_TASKMGRWARNING, szTitle, 256);
+   
+    if (MessageBox(hMainWnd, strErrorText, szTitle, MB_YESNO | MB_ICONWARNING) != IDYES)
         return;
 
     hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, dwProcessId);
@@ -54,8 +55,9 @@ void ProcessPage_OnEndProcess(void)
     if (!TerminateProcess(hProcess, 1))
     {
         GetLastErrorText(strErrorText, 260);
-        LoadStringW(hInst, IDS_MSG_UNABLETERMINATEPRO, szTitle, 256);
-        MessageBoxW(hMainWnd, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
+        
+        LoadString(hInst, IDS_MSG_UNABLETERMINATEPRO, szTitle, 256);
+        MessageBox(hMainWnd, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
     }
 
     CloseHandle(hProcess);

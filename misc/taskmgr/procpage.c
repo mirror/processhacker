@@ -1,25 +1,25 @@
 /*
- *  ReactOS Task Manager
- *
- *  procpage.c
- *
- *  Copyright (C) 1999 - 2001  Brian Palmer  <brianp@reactos.org>
- *  Copyright (C) 2009         Maxime Vernier <maxime.vernier@gmail.com>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- */
+*  ReactOS Task Manager
+*
+*  procpage.c
+*
+*  Copyright (C) 1999 - 2001  Brian Palmer  <brianp@reactos.org>
+*  Copyright (C) 2009         Maxime Vernier <maxime.vernier@gmail.com>
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this library; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 
 #include "taskmgr.h"
 
@@ -40,10 +40,9 @@ HWND hProcessPageShowAllProcessesButton;/* Process Show All Processes checkbox *
 
 static int  nProcessPageWidth;
 static int  nProcessPageHeight;
-#ifdef RUN_PROC_PAGE
+
 static HANDLE   hProcessThread = NULL;
 static DWORD    dwProcessThread;
-#endif
 
 int CALLBACK    ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
 void AddProcess(ULONG Index);
@@ -67,8 +66,11 @@ int ProcGetIndexByProcessId(DWORD dwProcessId)
         memset(&item, 0, sizeof(LV_ITEM));
         item.mask = LVIF_PARAM;
         item.iItem = i;
-        (void)ListView_GetItem(hProcessPageListCtrl, &item);
+
+        ListView_GetItem(hProcessPageListCtrl, &item);
+
         pData = (LPPROCESS_PAGE_LIST_ITEM)item.lParam;
+
         if (pData->ProcessId == dwProcessId)
         {
             return i;
@@ -91,7 +93,7 @@ DWORD GetSelectedProcessId(void)
         lvitem.mask = LVIF_PARAM;
         lvitem.iItem = Index;
 
-        (void)ListView_GetItem(hProcessPageListCtrl, &lvitem);
+        ListView_GetItem(hProcessPageListCtrl, &lvitem);
 
         if (lvitem.lParam)
             return ((LPPROCESS_PAGE_LIST_ITEM)lvitem.lParam)->ProcessId;
@@ -100,68 +102,66 @@ DWORD GetSelectedProcessId(void)
     return 0;
 }
 
-INT_PTR CALLBACK
-ProcessPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ProcessPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     RECT    rc;
     int     nXDifference;
     int     nYDifference;
     int     cx, cy;
 
-    switch (message) {
+    switch (message) 
+    {
     case WM_INITDIALOG:
         /*
-         * Save the width and height
-         */
+        * Save the width and height
+        */
         GetClientRect(hDlg, &rc);
         nProcessPageWidth = rc.right;
         nProcessPageHeight = rc.bottom;
 
-        /* Update window position */
+        // Update window position
         SetWindowPos(hDlg, NULL, 15, 30, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
 
-        /*
-         * Get handles to the controls
-         */
+        // Get handles to the controls
         hProcessPageListCtrl = GetDlgItem(hDlg, IDC_PROCESSLIST);
         hProcessPageHeaderCtrl = ListView_GetHeader(hProcessPageListCtrl);
         hProcessPageEndProcessButton = GetDlgItem(hDlg, IDC_ENDPROCESS);
         hProcessPageShowAllProcessesButton = GetDlgItem(hDlg, IDC_SHOWALLPROCESSES);
 
         /*
-         * Set the title, and extended window styles for the list control
-         */
-        SetWindowTextW(hProcessPageListCtrl, L"Processes");
-        (void)ListView_SetExtendedListViewStyle(hProcessPageListCtrl, ListView_GetExtendedListViewStyle(hProcessPageListCtrl) | LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
+        * Set the title, and extended window styles for the list control
+        */
+        SetWindowText(hProcessPageListCtrl, L"Processes");
+       
+        ListView_SetExtendedListViewStyle(
+            hProcessPageListCtrl, 
+            ListView_GetExtendedListViewStyle(hProcessPageListCtrl) | LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER | LVS_EX_HEADERDRAGDROP
+            );
 
         AddColumns();
 
         /*
-         * Subclass the process list control so we can intercept WM_ERASEBKGND
-         */
-        OldProcessListWndProc = (WNDPROC)(LONG_PTR) SetWindowLongPtrW(hProcessPageListCtrl, GWLP_WNDPROC, (LONG_PTR)ProcessListWndProc);
+        * Subclass the process list control so we can intercept WM_ERASEBKGND
+        */
+        OldProcessListWndProc = (WNDPROC)(LONG_PTR) SetWindowLongPtr(hProcessPageListCtrl, GWLP_WNDPROC, (LONG_PTR)ProcessListWndProc);
 
-#ifdef RUN_PROC_PAGE
         /* Start our refresh thread */
         hProcessThread = CreateThread(NULL, 0, ProcessPageRefreshThread, NULL, 0, &dwProcessThread);
-#endif
         return TRUE;
 
     case WM_DESTROY:
+        SaveColumnSettings();
         /* Close the event handle, this will make the */
         /* refresh thread exit when the wait fails */
-#ifdef RUN_PROC_PAGE
         EndLocalThread(&hProcessThread, dwProcessThread);
-#endif
-        SaveColumnSettings();
         break;
 
     case WM_COMMAND:
         /* Handle the button clicks */
         switch (LOWORD(wParam))
         {
-                case IDC_ENDPROCESS:
-                        ProcessPage_OnEndProcess();
+        case IDC_ENDPROCESS:
+            ProcessPage_OnEndProcess();
         }
         break;
 
@@ -185,14 +185,14 @@ ProcessPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
         GetClientRect(hProcessPageEndProcessButton, &rc);
         MapWindowPoints(hProcessPageEndProcessButton, hDlg, (LPPOINT)(PRECT)(&rc), (sizeof(RECT)/sizeof(POINT)) );
-           cx = rc.left + nXDifference;
+        cx = rc.left + nXDifference;
         cy = rc.top + nYDifference;
         SetWindowPos(hProcessPageEndProcessButton, NULL, cx, cy, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
         InvalidateRect(hProcessPageEndProcessButton, NULL, TRUE);
 
         GetClientRect(hProcessPageShowAllProcessesButton, &rc);
         MapWindowPoints(hProcessPageShowAllProcessesButton, hDlg, (LPPOINT)(PRECT)(&rc), (sizeof(RECT)/sizeof(POINT)) );
-           cx = rc.left;
+        cx = rc.left;
         cy = rc.top + nYDifference;
         SetWindowPos(hProcessPageShowAllProcessesButton, NULL, cx, cy, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
         InvalidateRect(hProcessPageShowAllProcessesButton, NULL, TRUE);
@@ -232,11 +232,11 @@ void ProcessPageOnNotify(WPARAM wParam, LPARAM lParam)
     {
         switch (pnmh->code)
         {
-        #if 0
+#if 0
         case LVN_ITEMCHANGED:
             ProcessPageUpdate();
             break;
-        #endif
+#endif
 
         case LVN_GETDISPINFO:
 
@@ -261,7 +261,6 @@ void ProcessPageOnNotify(WPARAM wParam, LPARAM lParam)
             if (((LPNMLVKEYDOWN)lParam)->wVKey == VK_DELETE)
                 ProcessPage_OnEndProcess();
             break;
-
         }
     }
     else if (pnmh->hwndFrom == hProcessPageHeaderCtrl)
@@ -272,22 +271,15 @@ void ProcessPageOnNotify(WPARAM wParam, LPARAM lParam)
 
             TaskManagerSettings.SortColumn = ColumnDataHints[pnmhdr->iItem];
             TaskManagerSettings.SortAscending = !TaskManagerSettings.SortAscending;
-            (void)ListView_SortItems(hProcessPageListCtrl, ProcessPageCompareFunc, NULL);
-
+            
+            ListView_SortItems(hProcessPageListCtrl, ProcessPageCompareFunc, NULL);
             break;
-
         case HDN_ITEMCHANGED:
-
             UpdateColumnDataHints();
-
             break;
-
         case HDN_ENDDRAG:
-
             UpdateColumnDataHints();
-
             break;
-
         }
     }
 }
@@ -299,11 +291,15 @@ void CommaSeparateNumberString(LPWSTR strNumber, int nMaxCount)
 
     for (i=0,j=0; i<(wcslen(strNumber) % 3); i++, j++)
         temp[j] = strNumber[i];
-    for (k=0; i<wcslen(strNumber); i++,j++,k++) {
+
+    for (k=0; i<wcslen(strNumber); i++,j++,k++) 
+    {
         if ((k % 3 == 0) && (j > 0))
             temp[j++] = L',';
+       
         temp[j] = strNumber[i];
     }
+
     temp[j] = L'\0';
     wcsncpy(strNumber, temp, nMaxCount);
 }
@@ -340,7 +336,8 @@ void ProcessPageShowContextMenu(DWORD dwProcessId)
     if (!DebugChannelsAreSupported())
         RemoveMenu(hSubMenu, ID_PROCESS_PAGE_DEBUGCHANNELS, MF_BYCOMMAND);
 
-    switch (dwProcessPriorityClass)    {
+    switch (dwProcessPriorityClass)    
+    {
     case REALTIME_PRIORITY_CLASS:
         CheckMenuRadioItem(hPriorityMenu, ID_PROCESS_PAGE_SETPRIORITY_REALTIME, ID_PROCESS_PAGE_SETPRIORITY_LOW, ID_PROCESS_PAGE_SETPRIORITY_REALTIME, MF_BYCOMMAND);
         break;
@@ -361,20 +358,26 @@ void ProcessPageShowContextMenu(DWORD dwProcessId)
         break;
     }
 
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Windows NT\\CurrentVersion\\AeDebug", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Windows NT\\CurrentVersion\\AeDebug", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
     {
         dwDebuggerSize = 260;
-        if (RegQueryValueExW(hKey, L"Debugger", NULL, NULL, (LPBYTE)strDebugger, &dwDebuggerSize) == ERROR_SUCCESS)
+
+        if (RegQueryValueEx(hKey, L"Debugger", NULL, NULL, (LPBYTE)strDebugger, &dwDebuggerSize) == ERROR_SUCCESS)
         {
             CharUpper(strDebugger);
+
             if (wcsstr(strDebugger, L"DRWTSN32"))
                 EnableMenuItem(hSubMenu, ID_PROCESS_PAGE_DEBUG, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
         }
         else
+        {
             EnableMenuItem(hSubMenu, ID_PROCESS_PAGE_DEBUG, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
+        }
 
         RegCloseKey(hKey);
-    } else {
+    } 
+    else 
+    {
         EnableMenuItem(hSubMenu, ID_PROCESS_PAGE_DEBUG, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
     }
     TrackPopupMenu(hSubMenu, TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON, pt.x, pt.y, 0, hMainWnd, NULL);
@@ -383,11 +386,9 @@ void ProcessPageShowContextMenu(DWORD dwProcessId)
 
 void RefreshProcessPage(void)
 {
-#ifdef RUN_PROC_PAGE
     /* Signal the event so that our refresh thread */
     /* will wake up and refresh the process page */
     PostThreadMessage(dwProcessThread, WM_TIMER, 0, 0);
-#endif
 }
 
 DWORD WINAPI ProcessPageRefreshThread(void *lpParameter)
@@ -397,31 +398,39 @@ DWORD WINAPI ProcessPageRefreshThread(void *lpParameter)
     WCHAR    szCpuUsage[256], szProcesses[256];
     MSG      msg;
 
-    LoadStringW(hInst, IDS_STATUS_CPUUSAGE, szCpuUsage, 256);
-    LoadStringW(hInst, IDS_STATUS_PROCESSES, szProcesses, 256);
+    LoadString(hInst, IDS_STATUS_CPUUSAGE, szCpuUsage, 256);
+    LoadString(hInst, IDS_STATUS_PROCESSES, szProcesses, 256);
 
-    while (1) {
+    while (1) 
+    {
         /*  Wait for an the event or application close */
         if (GetMessage(&msg, NULL, 0, 0) <= 0)
             return 0;
 
-        if (msg.message == WM_TIMER) {
-            WCHAR    text[260];
+        if (msg.message == WM_TIMER) 
+        {
+            WCHAR text[260];
 
             UpdateProcesses();
 
             if (IsWindowVisible(hProcessPage))
                 InvalidateRect(hProcessPageListCtrl, NULL, FALSE);
 
-            if (OldProcessorUsage != PerfDataGetProcessorUsage()) {
+            if (OldProcessorUsage != PerfDataGetProcessorUsage()) 
+            {
                 OldProcessorUsage = PerfDataGetProcessorUsage();
-                wsprintfW(text, szCpuUsage, OldProcessorUsage);
-                SendMessageW(hStatusWnd, SB_SETTEXT, 1, (LPARAM)text);
+                
+                wsprintf(text, szCpuUsage, OldProcessorUsage);
+                
+                SendMessage(hStatusWnd, SB_SETTEXT, 1, (LPARAM)text);
             }
-            if (OldProcessCount != PerfDataGetProcessCount()) {
+            if (OldProcessCount != PerfDataGetProcessCount()) 
+            {
                 OldProcessCount = PerfDataGetProcessCount();
-                wsprintfW(text, szProcesses, OldProcessCount);
-                SendMessageW(hStatusWnd, SB_SETTEXT, 0, (LPARAM)text);
+               
+                wsprintf(text, szProcesses, OldProcessCount);
+                
+                SendMessage(hStatusWnd, SB_SETTEXT, 0, (LPARAM)text);
             }
         }
     }
@@ -443,11 +452,14 @@ void UpdateProcesses()
         memset(&item, 0, sizeof (LV_ITEM));
         item.mask = LVIF_PARAM;
         item.iItem = i;
-        (void)ListView_GetItem(hProcessPageListCtrl, &item);
+
+        ListView_GetItem(hProcessPageListCtrl, &item);
+
         pData = (LPPROCESS_PAGE_LIST_ITEM)item.lParam;
+
         if (!ProcessRunning(pData->ProcessId))
         {
-            (void)ListView_DeleteItem(hProcessPageListCtrl, i);
+            ListView_DeleteItem(hProcessPageListCtrl, i);
             HeapFree(GetProcessHeap(), 0, pData);
         }
     }
@@ -464,33 +476,32 @@ void UpdateProcesses()
 
     if (TaskManagerSettings.SortColumn != -1)
     {
-        (void)ListView_SortItems(hProcessPageListCtrl, ProcessPageCompareFunc, NULL);
+        ListView_SortItems(hProcessPageListCtrl, ProcessPageCompareFunc, NULL);
     }
 
     SendMessage(hProcessPageListCtrl, WM_SETREDRAW, TRUE, 0);
 }
 
-BOOL ProcessRunning(ULONG ProcessId) 
+BOOL ProcessRunning(ULONG processId) 
 {
-	HANDLE hProcess;
-	DWORD exitCode;
+    HANDLE hProcess = NULL;
+    DWORD exitCode = 0;
 
-	if (ProcessId == 0) {
-		return TRUE;
-	}
-	
-	hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ProcessId);
-	if (hProcess == NULL) {
-		return FALSE;
-	}
+    if (processId == 0) 
+        return TRUE;
 
-	if (GetExitCodeProcess(hProcess, &exitCode)) {
-		CloseHandle(hProcess);
-		return (exitCode == STILL_ACTIVE);
-	}
+    hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processId);
+    if (hProcess == NULL) 
+        return FALSE;
 
-	CloseHandle(hProcess);
-	return FALSE;
+    if (GetExitCodeProcess(hProcess, &exitCode)) 
+    {
+        CloseHandle(hProcess);
+        return (exitCode == STILL_ACTIVE);
+    }
+
+    CloseHandle(hProcess);
+    return FALSE;
 }
 
 void AddProcess(ULONG Index)
@@ -671,41 +682,33 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
     return FALSE;
 }
 
-
 void gethmsfromlargeint(LARGE_INTEGER largeint, DWORD *dwHours, DWORD *dwMinutes, DWORD *dwSeconds)
 {
-#ifdef _MSC_VER
     *dwHours = (DWORD)(largeint.QuadPart / 36000000000L);
     *dwMinutes = (DWORD)((largeint.QuadPart % 36000000000L) / 600000000L);
     *dwSeconds = (DWORD)(((largeint.QuadPart % 36000000000L) % 600000000L) / 10000000L);
-#else
-    *dwHours = (DWORD)(largeint.QuadPart / 36000000000LL);
-    *dwMinutes = (DWORD)((largeint.QuadPart % 36000000000LL) / 600000000LL);
-    *dwSeconds = (DWORD)(((largeint.QuadPart % 36000000000LL) % 600000000LL) / 10000000LL);
-#endif
 }
 
 int largeintcmp(LARGE_INTEGER l1, LARGE_INTEGER l2)
 {
     int ret = 0;
-    DWORD dwHours1;
-    DWORD dwMinutes1;
-    DWORD dwSeconds1;
-    DWORD dwHours2;
-    DWORD dwMinutes2;
-    DWORD dwSeconds2;
+    DWORD dwHours1 = 0, dwMinutes1 = 0, dwSeconds1 = 0, dwHours2 = 0, dwMinutes2 = 0, dwSeconds2 = 0;
 
     gethmsfromlargeint(l1, &dwHours1, &dwMinutes1, &dwSeconds1);
     gethmsfromlargeint(l2, &dwHours2, &dwMinutes2, &dwSeconds2);
+   
     ret = CMP(dwHours1, dwHours2);
+
     if (ret == 0)
     {
         ret = CMP(dwMinutes1, dwMinutes2);
+
         if (ret == 0)
         {
             ret = CMP(dwSeconds1, dwSeconds2);
         }
     }
+
     return ret;
 }
 
@@ -727,47 +730,60 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
     ULONGLONG      ull1;
     ULONGLONG      ull2;
 
-    if (TaskManagerSettings.SortAscending) {
+    if (TaskManagerSettings.SortAscending) 
+    {
         Param1 = (LPPROCESS_PAGE_LIST_ITEM)lParam1;
         Param2 = (LPPROCESS_PAGE_LIST_ITEM)lParam2;
-    } else {
+    } 
+    else 
+    {
         Param1 = (LPPROCESS_PAGE_LIST_ITEM)lParam2;
         Param2 = (LPPROCESS_PAGE_LIST_ITEM)lParam1;
     }
+    
     IndexParam1 = PerfDataGetProcessIndex(Param1->ProcessId);
     IndexParam2 = PerfDataGetProcessIndex(Param2->ProcessId);
 
-    if (TaskManagerSettings.SortColumn == COLUMN_IMAGENAME)
+    switch (TaskManagerSettings.SortColumn)
     {
-        PerfDataGetImageName(IndexParam1, text1, sizeof (text1) / sizeof (*text1));
-        PerfDataGetImageName(IndexParam2, text2, sizeof (text2) / sizeof (*text2));
-        ret = _wcsicmp(text1, text2);
+    case COLUMN_IMAGENAME:
+        {
+            PerfDataGetImageName(IndexParam1, text1, sizeof (text1) / sizeof (*text1));
+            PerfDataGetImageName(IndexParam2, text2, sizeof (text2) / sizeof (*text2));
+            ret = _wcsicmp(text1, text2);
+        }
+        break;
+    case COLUMN_PID:
+        {
+            l1 = Param1->ProcessId;
+            l2 = Param2->ProcessId;
+            ret = CMP(l1, l2);
+        }
+        break;
+    case COLUMN_USERNAME:
+        {
+            PerfDataGetUserName(IndexParam1, text1, sizeof (text1) / sizeof (*text1));
+            PerfDataGetUserName(IndexParam2, text2, sizeof (text2) / sizeof (*text2));
+            ret = _wcsicmp(text1, text2);
+        }
+        break;
+    case COLUMN_SESSIONID:
+        {
+            l1 = PerfDataGetSessionId(IndexParam1);
+            l2 = PerfDataGetSessionId(IndexParam2);
+            ret = CMP(l1, l2);
+        }
+        break;
+    case COLUMN_CPUUSAGE:
+        {
+            l1 = PerfDataGetCPUUsage(IndexParam1);
+            l2 = PerfDataGetCPUUsage(IndexParam2);
+            ret = CMP(l1, l2);
+        }
+        break;
     }
-    else if (TaskManagerSettings.SortColumn == COLUMN_PID)
-    {
-        l1 = Param1->ProcessId;
-        l2 = Param2->ProcessId;
-        ret = CMP(l1, l2);
-    }
-    else if (TaskManagerSettings.SortColumn == COLUMN_USERNAME)
-    {
-        PerfDataGetUserName(IndexParam1, text1, sizeof (text1) / sizeof (*text1));
-        PerfDataGetUserName(IndexParam2, text2, sizeof (text2) / sizeof (*text2));
-        ret = _wcsicmp(text1, text2);
-    }
-    else if (TaskManagerSettings.SortColumn == COLUMN_SESSIONID)
-    {
-        l1 = PerfDataGetSessionId(IndexParam1);
-        l2 = PerfDataGetSessionId(IndexParam2);
-        ret = CMP(l1, l2);
-    }
-    else if (TaskManagerSettings.SortColumn == COLUMN_CPUUSAGE)
-    {
-        l1 = PerfDataGetCPUUsage(IndexParam1);
-        l2 = PerfDataGetCPUUsage(IndexParam2);
-        ret = CMP(l1, l2);
-    }
-    else if (TaskManagerSettings.SortColumn == COLUMN_CPUTIME)
+
+    if (TaskManagerSettings.SortColumn == COLUMN_CPUTIME)
     {
         time1 = PerfDataGetCPUTime(IndexParam1);
         time2 = PerfDataGetCPUTime(IndexParam2);

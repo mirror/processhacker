@@ -253,6 +253,7 @@
     <ClInclude Include="include\proclist.h" />
     <ClInclude Include="include\procpage.h" />
     <ClInclude Include="include\resource.h" />
+    <ClInclude Include="resources\resource.h" />
     <ClInclude Include="run.h" />
     <ClInclude Include="include\taskmgr.h" />
     <ClInclude Include="include\trayicon.h" />

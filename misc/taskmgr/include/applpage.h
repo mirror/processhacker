@@ -42,3 +42,31 @@ void                ApplicationPage_OnWindowsBringToFront(void);
 void                ApplicationPage_OnSwitchTo(void);
 void                ApplicationPage_OnEndTask(void);
 void                ApplicationPage_OnGotoProcess(void);
+
+
+typedef struct
+{
+    HWND    hWnd;
+    WCHAR   szTitle[260];
+    HICON   hIcon;
+    BOOL    bHung;
+} APPLICATION_PAGE_LIST_ITEM, *LPAPPLICATION_PAGE_LIST_ITEM;
+
+HWND            hApplicationPage;               /* Application List Property Page */
+HWND            hApplicationPageListCtrl;       /* Application ListCtrl Window */
+HWND            hApplicationPageEndTaskButton;  /* Application End Task button */
+HWND            hApplicationPageSwitchToButton; /* Application Switch To button */
+HWND            hApplicationPageNewTaskButton;  /* Application New Task button */
+static int      nApplicationPageWidth;
+static int      nApplicationPageHeight;
+static BOOL     bSortAscending = TRUE;
+DWORD WINAPI    ApplicationPageRefreshThread(void *lpParameter);
+BOOL            noApps;
+BOOL CALLBACK   EnumWindowsProc(HWND hWnd, LPARAM lParam);
+void            AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung);
+void            ApplicationPageUpdate(void);
+void            ApplicationPageOnNotify(WPARAM wParam, LPARAM lParam);
+void            ApplicationPageShowContextMenu1(void);
+void            ApplicationPageShowContextMenu2(void);
+int CALLBACK    ApplicationPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
+int             ProcGetIndexByProcessId(DWORD dwProcessId);

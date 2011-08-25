@@ -23,47 +23,12 @@
 
 #include "taskmgr.h"
 
-typedef struct
-{
-    HWND    hWnd;
-    WCHAR   szTitle[260];
-    HICON   hIcon;
-    BOOL    bHung;
-} APPLICATION_PAGE_LIST_ITEM, *LPAPPLICATION_PAGE_LIST_ITEM;
 
-HWND            hApplicationPage;               /* Application List Property Page */
-HWND            hApplicationPageListCtrl;       /* Application ListCtrl Window */
-HWND            hApplicationPageEndTaskButton;  /* Application End Task button */
-HWND            hApplicationPageSwitchToButton; /* Application Switch To button */
-HWND            hApplicationPageNewTaskButton;  /* Application New Task button */
-static int      nApplicationPageWidth;
-static int      nApplicationPageHeight;
-static BOOL     bSortAscending = TRUE;
-DWORD WINAPI    ApplicationPageRefreshThread(void *lpParameter);
-BOOL            noApps;
-BOOL CALLBACK   EnumWindowsProc(HWND hWnd, LPARAM lParam);
-void            AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung);
-void            ApplicationPageUpdate(void);
-void            ApplicationPageOnNotify(WPARAM wParam, LPARAM lParam);
-void            ApplicationPageShowContextMenu1(void);
-void            ApplicationPageShowContextMenu2(void);
-int CALLBACK    ApplicationPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
-int             ProcGetIndexByProcessId(DWORD dwProcessId);
 
-#ifdef RUN_APPS_PAGE
 static HANDLE   hApplicationThread = NULL;
 static DWORD    dwApplicationThread;
-#endif
 
-#if 0
-void SwitchToThisWindow (
-HWND hWnd,   /* Handle to the window that should be activated */
-BOOL bRestore /* Restore the window if it is minimized */
-);
-#endif
-
-static INT
-GetSystemColorDepth(VOID)
+static INT GetSystemColorDepth(VOID)
 {
     DEVMODE pDevMode;
     INT ColorDepth;
@@ -135,16 +100,12 @@ ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         UpdateApplicationListControlViewSetting();
 
         /* Start our refresh thread */
-#ifdef RUN_APPS_PAGE
         hApplicationThread = CreateThread(NULL, 0, ApplicationPageRefreshThread, NULL, 0, &dwApplicationThread);
-#endif
         return TRUE;
 
     case WM_DESTROY:
         /* Close refresh thread */
-#ifdef RUN_APPS_PAGE
         EndLocalThread(&hApplicationThread, dwApplicationThread);
-#endif
         break;
 
     case WM_COMMAND:
@@ -222,16 +183,14 @@ ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 void RefreshApplicationPage(void)
 {
-#ifdef RUN_APPS_PAGE
     /* Signal the event so that our refresh thread */
     /* will wake up and refresh the application page */
     PostThreadMessage(dwApplicationThread, WM_TIMER, 0, 0);
-#endif
 }
 
 void UpdateApplicationListControlViewSetting(void)
 {
-    DWORD  dwStyle = GetWindowLongPtrW(hApplicationPageListCtrl, GWL_STYLE);
+    LONG_PTR dwStyle = GetWindowLongPtr(hApplicationPageListCtrl, GWL_STYLE);
 
     dwStyle &= ~(LVS_REPORT | LVS_ICON | LVS_LIST | LVS_SMALLICON);
 	dwStyle |= LVS_REPORT; 
@@ -422,6 +381,7 @@ void AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung)
             /* Update the structure */
             pAPLI->hIcon = hIcon;
             pAPLI->bHung = bHung;
+           
             wcscpy(pAPLI->szTitle, szTitle);
 
             /* Update the image list */
@@ -442,6 +402,7 @@ void AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung)
         pAPLI->hWnd = hWnd;
         pAPLI->hIcon = hIcon;
         pAPLI->bHung = bHung;
+        
         wcscpy(pAPLI->szTitle, szTitle);
 
         /* Add the item to the list */

@@ -51,10 +51,8 @@ HWND  hPerformancePageTotalsHandleCountEdit;          /*  Total Handles Edit Con
 HWND  hPerformancePageTotalsProcessCountEdit;         /*  Total Processes Edit Control */
 HWND  hPerformancePageTotalsThreadCountEdit;          /*  Total Threads Edit Control */
 
-#ifdef RUN_PERF_PAGE
 static HANDLE hPerformanceThread = NULL;
 static DWORD  dwPerformanceThread;
-#endif
 
 WNDPROC OldGraphWndProc;
 
@@ -122,9 +120,8 @@ PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         GraphCtrl_Dispose(&PerformancePageCpuUsageHistoryGraph);
         GraphCtrl_Dispose(&PerformancePageMemUsageHistoryGraph);
-#ifdef RUN_PERF_PAGE
+
         EndLocalThread(&hPerformanceThread, dwPerformanceThread);
-#endif
         break;
 
     case WM_INITDIALOG:
@@ -191,10 +188,9 @@ PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         GraphCtrl_SetBackgroundColor(&PerformancePageMemUsageHistoryGraph, RGB(0, 0, 0)) ;
         GraphCtrl_SetGridColor(&PerformancePageMemUsageHistoryGraph, RGB(0, 128, 64)) ;
         GraphCtrl_SetPlotColor(&PerformancePageMemUsageHistoryGraph, 0, RGB(255, 255, 0)) ;
+       
         /*  Start our refresh thread */
-#ifdef RUN_PERF_PAGE
         hPerformanceThread = CreateThread(NULL, 0, PerformancePageRefreshThread, NULL, 0, &dwPerformanceThread);
-#endif
 
         /*
          *  Subclass graph buttons
@@ -306,11 +302,9 @@ PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 void RefreshPerformancePage(void)
 {
-#ifdef RUN_PERF_PAGE
     /*  Signal the event so that our refresh thread */
     /*  will wake up and refresh the performance page */
     PostThreadMessage(dwPerformanceThread, WM_TIMER, 0, 0);
-#endif
 }
 
 DWORD WINAPI PerformancePageRefreshThread(void *lpParameter)

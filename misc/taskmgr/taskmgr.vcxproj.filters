@@ -78,6 +78,9 @@
     <ClInclude Include="include\resource.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="resources\resource.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\taskmgr.ico">

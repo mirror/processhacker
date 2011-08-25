@@ -55,13 +55,13 @@ ProcessListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
          * Get the device context and save it's state
          * to be restored after we're done
          */
-        hDC = (HDC) wParam;
-        DcSave = SaveDC(hDC);
+        //hDC = (HDC) wParam;
+        //DcSave = SaveDC(hDC);
 
         /*
          * Get the background brush
          */
-        hbrBackground = (HBRUSH)(LONG_PTR) GetClassLongPtr(hWnd, -10);
+        //hbrBackground = (HBRUSH)(LONG_PTR) GetClassLongPtr(hWnd, -10);
 
         /*
          * Calculate the clip rect by getting the RECT
@@ -71,26 +71,26 @@ ProcessListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
          * subtract it from our clip rect because we don't
          * use icons in this list control.
          */
-        rcClip.left = LVIR_BOUNDS;
+        //rcClip.left = LVIR_BOUNDS;
 
-        SendMessage(hWnd, LVM_GETITEMRECT, 0, (LPARAM)&rcClip);
+        //SendMessage(hWnd, LVM_GETITEMRECT, 0, (LPARAM)&rcClip);
 
-        rcItem.left = LVIR_BOUNDS;
+        //rcItem.left = LVIR_BOUNDS;
        
-		SendMessage(hWnd, LVM_GETITEMRECT, ListView_GetItemCount(hWnd) - 1, (LPARAM)&rcItem);
+		//SendMessage(hWnd, LVM_GETITEMRECT, ListView_GetItemCount(hWnd) - 1, (LPARAM)&rcItem);
         
-		rcClip.bottom = rcItem.bottom;
-		rcClip.right = rcItem.right;
-        rcItem.left = LVIR_ICON;
+		//rcClip.bottom = rcItem.bottom;
+		//rcClip.right = rcItem.right;
+        //rcItem.left = LVIR_ICON;
 
-        SendMessage(hWnd, LVM_GETITEMRECT, 0, (LPARAM)&rcItem);
+        //SendMessage(hWnd, LVM_GETITEMRECT, 0, (LPARAM)&rcItem);
 
-        rcClip.left = rcItem.right;
+        //rcClip.left = rcItem.right;
 
         /*
          * Now exclude the clip rect
          */
-        ExcludeClipRect(hDC, rcClip.left, rcClip.top, rcClip.right, rcClip.bottom);
+        //ExcludeClipRect(hDC, rcClip.left, rcClip.top, rcClip.right, rcClip.bottom);
 
         /*
          * Now erase the background
@@ -100,14 +100,14 @@ ProcessListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
          * pass down the updated HDC and let
          * the default handler do it?
          */
-        GetClientRect(hWnd, &rcItem);
-        FillRect(hDC, &rcItem, hbrBackground);
+        //GetClientRect(hWnd, &rcItem);
+        //FillRect(hDC, &rcItem, hbrBackground);
 
         /*
          * Now restore the DC state that we
          * saved earlier
          */
-        RestoreDC(hDC, DcSave);
+        //RestoreDC(hDC, DcSave);
 
         return TRUE;
     }

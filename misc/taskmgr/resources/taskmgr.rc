@@ -1,6 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "..\include\resource.h"
+#include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -10,7 +10,7 @@
 #define APSTUDIO_HIDDEN_SYMBOLS
 #include "windows.h"
 #undef APSTUDIO_HIDDEN_SYMBOLS
-#include "..\include\resource.h"
+#include "resource.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -965,10 +965,10 @@ IDR_TRAY_POPUP MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
+        MENUITEM "&Always On Top",              ID_OPTIONS_ALWAYSONTOP
+        MENUITEM SEPARATOR
         MENUITEM "&Restore",                    ID_RESTORE
         MENUITEM "&Close",                      ID_FILE_EXIT
-        MENUITEM SEPARATOR
-        MENUITEM "&Always On Top",              ID_OPTIONS_ALWAYSONTOP
     END
 END
 

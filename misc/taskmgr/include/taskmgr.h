@@ -59,10 +59,6 @@
 #include "ntwin.h"
 #include "phnt.h"
 
-#define RUN_APPS_PAGE
-#define RUN_PROC_PAGE
-#define RUN_PERF_PAGE
-
 #define STATUS_WINDOW	2001
 #define STATUS_SIZE1	80
 #define STATUS_SIZE2	210
