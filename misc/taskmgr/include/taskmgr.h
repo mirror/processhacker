@@ -64,9 +64,6 @@
 #define STATUS_SIZE2	210
 #define STATUS_SIZE3	400
 
-#define ListView_SetExtendedListViewStyleEx(hwndLV, dwMask, dw)\
-        (DWORD)SNDMSG((hwndLV), LVM_SETEXTENDEDLISTVIEWSTYLE, dwMask, dw)
-
 typedef struct
 {
 	/* Window size & position settings */
@@ -118,7 +115,6 @@ extern TASKMANAGER_SETTINGS	TaskManagerSettings;
 INT_PTR CALLBACK TaskManagerWndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL OnCreate(HWND hWnd);
 void OnSize(WPARAM nType, int cx, int cy);
-void OnMove(WPARAM nType, int cx, int cy);
 void FillSolidRect(HDC hDC, LPCRECT lpRect, COLORREF clr);
 void FillSolidRect2(HDC hDC, int x, int y, int cx, int cy, COLORREF clr);
 void Draw3dRect(HDC hDC, int x, int y, int cx, int cy, COLORREF clrTopLeft, COLORREF clrBottomRight);

@@ -494,14 +494,11 @@ BOOL ProcessRunning(ULONG processId)
     if (hProcess == NULL) 
         return FALSE;
 
-    if (GetExitCodeProcess(hProcess, &exitCode)) 
-    {
-        CloseHandle(hProcess);
-        return (exitCode == STILL_ACTIVE);
-    }
+    GetExitCodeProcess(hProcess, &exitCode); 
 
     CloseHandle(hProcess);
-    return FALSE;
+    
+    return exitCode == STILL_ACTIVE;
 }
 
 void AddProcess(ULONG Index)
@@ -750,7 +747,7 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
         {
             PerfDataGetImageName(IndexParam1, text1, sizeof (text1) / sizeof (*text1));
             PerfDataGetImageName(IndexParam2, text2, sizeof (text2) / sizeof (*text2));
-            ret = _wcsicmp(text1, text2);
+            ret = wcsicmp(text1, text2);
         }
         break;
     case COLUMN_PID:
@@ -764,7 +761,7 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
         {
             PerfDataGetUserName(IndexParam1, text1, sizeof (text1) / sizeof (*text1));
             PerfDataGetUserName(IndexParam2, text2, sizeof (text2) / sizeof (*text2));
-            ret = _wcsicmp(text1, text2);
+            ret = wcsicmp(text1, text2);
         }
         break;
     case COLUMN_SESSIONID:

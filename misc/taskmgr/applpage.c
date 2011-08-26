@@ -300,10 +300,6 @@ BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
     BOOL    bHung = FALSE;
     HICON*  xhIcon = (HICON*)&hIcon;
 
-    typedef int (FAR __stdcall *IsHungAppWindowProc)(HWND);
-    IsHungAppWindowProc IsHungAppWindow;
-
-
     /* Skip our window */
     if (hWnd == hMainWnd)
         return TRUE;
@@ -325,25 +321,26 @@ BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
     noApps = FALSE;
     /* Get the icon for this window */
     hIcon = NULL;
-    SendMessageTimeoutW(hWnd, WM_GETICON,bLargeIcon ? ICON_BIG /*1*/ : ICON_SMALL /*0*/, 0, 0, 1000, (PDWORD_PTR)xhIcon);
+    SendMessageTimeout(hWnd, WM_GETICON,bLargeIcon ? ICON_BIG /*1*/ : ICON_SMALL /*0*/, 0, 0, 1000, (PDWORD_PTR)xhIcon);
 
     if (!hIcon)
     {
-        hIcon = (HICON)(LONG_PTR)GetClassLongPtrW(hWnd, bLargeIcon ? -14 : -34);
-        if (!hIcon) hIcon = (HICON)(LONG_PTR)GetClassLongPtrW(hWnd, bLargeIcon ? -34 : -14);
-        if (!hIcon) SendMessageTimeoutW(hWnd, WM_QUERYDRAGICON, 0, 0, 0, 1000, (PDWORD_PTR)xhIcon);
-        if (!hIcon) SendMessageTimeoutW(hWnd, WM_GETICON, bLargeIcon ? ICON_SMALL /*0*/ : ICON_BIG /*1*/, 0, 0, 1000, (PDWORD_PTR)xhIcon);
+        hIcon = (HICON)(LONG_PTR)GetClassLongPtr(hWnd, bLargeIcon ? -14 : -34);
+        
+        if (!hIcon) 
+            hIcon = (HICON)(LONG_PTR)GetClassLongPtr(hWnd, bLargeIcon ? -34 : -14);
+       
+        if (!hIcon) 
+            SendMessageTimeout(hWnd, WM_QUERYDRAGICON, 0, 0, 0, 1000, (PDWORD_PTR)xhIcon);
+
+        if (!hIcon)
+            SendMessageTimeout(hWnd, WM_GETICON, bLargeIcon ? ICON_SMALL /*0*/ : ICON_BIG /*1*/, 0, 0, 1000, (PDWORD_PTR)xhIcon);
     }
 
     if (!hIcon)
-        hIcon = LoadIconW(hInst, bLargeIcon ? MAKEINTRESOURCEW(IDI_WINDOW) : MAKEINTRESOURCEW(IDI_WINDOWSM));
+        hIcon = LoadIcon(hInst, bLargeIcon ? MAKEINTRESOURCEW(IDI_WINDOW) : MAKEINTRESOURCEW(IDI_WINDOWSM));
 
-    bHung = FALSE;
-
-    IsHungAppWindow = (IsHungAppWindowProc)(FARPROC)GetProcAddress(GetModuleHandleW(L"USER32.DLL"), "IsHungAppWindow");
-
-    if (IsHungAppWindow)
-        bHung = IsHungAppWindow(hWnd);
+    bHung = IsHungAppWindow(hWnd);
 
     AddOrUpdateHwnd(hWnd, szText, hIcon, bHung);
 
@@ -793,32 +790,26 @@ void ApplicationPage_OnSwitchTo(void)
     LV_ITEM                       item;
     int                           i;
 
-    for (i=0; i<ListView_GetItemCount(hApplicationPageListCtrl); i++) {
+    for (i=0; i<ListView_GetItemCount(hApplicationPageListCtrl); i++) 
+    {
         memset(&item, 0, sizeof(LV_ITEM));
         item.mask = LVIF_STATE|LVIF_PARAM;
         item.iItem = i;
         item.stateMask = (UINT)-1;
-        (void)ListView_GetItem(hApplicationPageListCtrl, &item);
+        
+        ListView_GetItem(hApplicationPageListCtrl, &item);
 
-        if (item.state & LVIS_SELECTED) {
+        if (item.state & LVIS_SELECTED)
+        {
             pAPLI = (LPAPPLICATION_PAGE_LIST_ITEM)item.lParam;
             break;
         }
     }
-    if (pAPLI) {
-        typedef void (WINAPI *PROCSWITCHTOTHISWINDOW) (HWND, BOOL);
-        PROCSWITCHTOTHISWINDOW SwitchToThisWindow;
 
-        HMODULE hUser32 = GetModuleHandleW(L"USER32.dll");
-        SwitchToThisWindow = (PROCSWITCHTOTHISWINDOW)GetProcAddress(hUser32, "SwitchToThisWindow");
-        if (SwitchToThisWindow) {
-            SwitchToThisWindow(pAPLI->hWnd, TRUE);
-        } else {
-            if (IsIconic(pAPLI->hWnd))
-                ShowWindow(pAPLI->hWnd, SW_RESTORE);
-            BringWindowToTop(pAPLI->hWnd);
-            SetForegroundWindow(pAPLI->hWnd);
-        }
+    if (pAPLI) 
+    {
+        SwitchToThisWindow(pAPLI->hWnd, TRUE);
+   
         if (TaskManagerSettings.MinimizeOnUse)
             ShowWindow(hMainWnd, SW_MINIMIZE);
     }
@@ -830,16 +821,22 @@ void ApplicationPage_OnEndTask(void)
     LV_ITEM                       item;
     int                           i;
 
-    for (i=0; i<ListView_GetItemCount(hApplicationPageListCtrl); i++) {
+    for (i=0; i<ListView_GetItemCount(hApplicationPageListCtrl); i++) 
+    {
         memset(&item, 0, sizeof(LV_ITEM));
         item.mask = LVIF_STATE|LVIF_PARAM;
         item.iItem = i;
         item.stateMask = (UINT)-1;
-        (void)ListView_GetItem(hApplicationPageListCtrl, &item);
-        if (item.state & LVIS_SELECTED) {
+    
+        ListView_GetItem(hApplicationPageListCtrl, &item);
+
+        if (item.state & LVIS_SELECTED) 
+        {
             pAPLI = (LPAPPLICATION_PAGE_LIST_ITEM)item.lParam;
-            if (pAPLI) {
-                PostMessageW(pAPLI->hWnd, WM_CLOSE, 0, 0);
+           
+            if (pAPLI) 
+            {
+                PostMessage(pAPLI->hWnd, WM_CLOSE, 0, 0);
             }
         }
     }
@@ -851,18 +848,24 @@ void ApplicationPage_OnGotoProcess(void)
     LV_ITEM                       item;
     int                           i;
 
-    for (i=0; i<ListView_GetItemCount(hApplicationPageListCtrl); i++) {
+    for (i = 0; i < ListView_GetItemCount(hApplicationPageListCtrl); i++)
+    {
         memset(&item, 0, sizeof(LV_ITEM));
         item.mask = LVIF_STATE|LVIF_PARAM;
         item.iItem = i;
         item.stateMask = (UINT)-1;
-        (void)ListView_GetItem(hApplicationPageListCtrl, &item);
-        if (item.state & LVIS_SELECTED) {
+        
+        ListView_GetItem(hApplicationPageListCtrl, &item);
+
+        if (item.state & LVIS_SELECTED)
+        {
             pAPLI = (LPAPPLICATION_PAGE_LIST_ITEM)item.lParam;
             break;
         }
     }
-    if (pAPLI) {
+
+    if (pAPLI) 
+    {
         DWORD   dwProcessId;
 
         GetWindowThreadProcessId(pAPLI->hWnd, &dwProcessId);
@@ -874,15 +877,21 @@ void ApplicationPage_OnGotoProcess(void)
          * Select the process item in the list
          */
         i = ProcGetIndexByProcessId(dwProcessId);
+
         if (i != -1)
         {
-            ListView_SetItemState(hProcessPageListCtrl,
-                                  i,
-                                  LVIS_SELECTED | LVIS_FOCUSED,
-                                  LVIS_SELECTED | LVIS_FOCUSED);
-            (void)ListView_EnsureVisible(hProcessPageListCtrl,
-                                         i,
-                                         FALSE);
+            ListView_SetItemState(
+                hProcessPageListCtrl,         
+                i,              
+                LVIS_SELECTED | LVIS_FOCUSED,
+                LVIS_SELECTED | LVIS_FOCUSED
+                );
+            
+            ListView_EnsureVisible(
+                hProcessPageListCtrl,                   
+                i,                     
+                FALSE
+                );
         }
     }
 }
@@ -892,12 +901,16 @@ int CALLBACK ApplicationPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM l
     LPAPPLICATION_PAGE_LIST_ITEM  Param1;
     LPAPPLICATION_PAGE_LIST_ITEM  Param2;
 
-    if (bSortAscending) {
+    if (bSortAscending) 
+    {
         Param1 = (LPAPPLICATION_PAGE_LIST_ITEM)lParam1;
         Param2 = (LPAPPLICATION_PAGE_LIST_ITEM)lParam2;
-    } else {
+    }
+    else 
+    {
         Param1 = (LPAPPLICATION_PAGE_LIST_ITEM)lParam2;
         Param2 = (LPAPPLICATION_PAGE_LIST_ITEM)lParam1;
     }
+
     return wcscmp(Param1->szTitle, Param2->szTitle);
 }

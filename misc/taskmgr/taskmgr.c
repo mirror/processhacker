@@ -342,12 +342,6 @@ INT_PTR CALLBACK TaskManagerWndProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
         /* Handle the window sizing in it's own function */
         OnSize(wParam, LOWORD(lParam), HIWORD(lParam));
         break;
-
-    case WM_MOVE:
-        /* Handle the window moving in it's own function */
-        OnMove(wParam, LOWORD(lParam), HIWORD(lParam));
-        break;
-
     case WM_DESTROY:
         {
             TrayIcon_ShellRemoveTrayIcon();
@@ -653,19 +647,6 @@ BOOL OnCreate(HWND hWnd)
     return TRUE;
 }
 
-/* OnMove()
-* This function handles all the moving events for the application
-* It moves every child window that needs moving
-*/
-void OnMove( WPARAM nType, int cx, int cy )
-{
-#ifdef __GNUC__TEST__
-    MoveWindow(hApplicationPage, TaskManagerSettings.Left + PAGE_OFFSET_LEFT, TaskManagerSettings.Top + PAGE_OFFSET_TOP, TaskManagerSettings.Right - TaskManagerSettings.Left - PAGE_OFFSET_WIDTH, TaskManagerSettings.Bottom - TaskManagerSettings.Top - PAGE_OFFSET_HEIGHT, FALSE);
-    MoveWindow(hProcessPage, TaskManagerSettings.Left + PAGE_OFFSET_LEFT, TaskManagerSettings.Top + PAGE_OFFSET_TOP, TaskManagerSettings.Right - TaskManagerSettings.Left - PAGE_OFFSET_WIDTH, TaskManagerSettings.Bottom - TaskManagerSettings.Top - PAGE_OFFSET_HEIGHT, FALSE);
-    MoveWindow(hPerformancePage, TaskManagerSettings.Left + PAGE_OFFSET_LEFT, TaskManagerSettings.Top + PAGE_OFFSET_TOP, TaskManagerSettings.Right - TaskManagerSettings.Left - PAGE_OFFSET_WIDTH, TaskManagerSettings.Bottom - TaskManagerSettings.Top - PAGE_OFFSET_HEIGHT, FALSE);
-#endif
-}
-
 /* OnSize()
 * This function handles all the sizing events for the application
 * It re-sizes every window, and child window that needs re-sizing
@@ -935,7 +916,7 @@ void TaskManager_OnTabWndSelChange(void)
 
         if (GetMenuItemCount(hMenu) <= 4) 
         {
-            hSubMenu = LoadMenuW(hInst, MAKEINTRESOURCEW(IDR_WINDOWSMENU));
+            hSubMenu = LoadMenu(hInst, MAKEINTRESOURCEW(IDR_WINDOWSMENU));
 
             LoadString(hInst, IDS_MENU_WINDOWS, szTemp, 256);
             InsertMenu(hMenu, 3, MF_BYPOSITION|MF_POPUP, (UINT_PTR) hSubMenu, szTemp);

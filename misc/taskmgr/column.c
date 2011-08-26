@@ -31,10 +31,10 @@ UINT    ColumnDataHints[COLUMN_NMAX];
 const PresetColumnEntry ColumnPresets[COLUMN_NMAX] = {
     DECLARE_COLUMN_PRESET(IMAGENAME,        105,  TRUE)
     DECLARE_COLUMN_PRESET(PID,               50,  TRUE)
-    DECLARE_COLUMN_PRESET(USERNAME,         107, FALSE)
+    DECLARE_COLUMN_PRESET(USERNAME,         70, TRUE)
     DECLARE_COLUMN_PRESET(SESSIONID,         70, FALSE)
     DECLARE_COLUMN_PRESET(CPUUSAGE,          35,  TRUE)
-    DECLARE_COLUMN_PRESET(CPUTIME,           70,  TRUE)
+    DECLARE_COLUMN_PRESET(CPUTIME,           70,  FALSE)
     DECLARE_COLUMN_PRESET(MEMORYUSAGE,       70,  TRUE)
     DECLARE_COLUMN_PRESET(PEAKMEMORYUSAGE,  100, FALSE)
     DECLARE_COLUMN_PRESET(MEMORYUSAGEDELTA,  70, FALSE)
@@ -65,15 +65,17 @@ void AddColumns(void)
     WCHAR         szTemp[256];
     unsigned int  n;
 
-    for (n=0; n<COLUMN_NMAX; n++) {
-        if (TaskManagerSettings.Columns[n]) {
-            LoadStringW(hInst, ColumnPresets[n].dwIdsName, szTemp, sizeof(szTemp)/sizeof(WCHAR));
+    for (n=0; n<COLUMN_NMAX; n++) 
+    {
+        if (TaskManagerSettings.Columns[n]) 
+        {
+            LoadString(hInst, ColumnPresets[n].dwIdsName, szTemp, sizeof(szTemp) / sizeof(WCHAR));
             InsertColumn(n, szTemp, LVCFMT_LEFT, TaskManagerSettings.ColumnSizeArray[n], -1);
         }
     }
 
-    size = SendMessageW(hProcessPageHeaderCtrl, HDM_GETITEMCOUNT, 0, 0);
-    SendMessageW(hProcessPageHeaderCtrl, HDM_SETORDERARRAY, (WPARAM) size, (LPARAM) &TaskManagerSettings.ColumnOrderArray);
+    size = SendMessage(hProcessPageHeaderCtrl, HDM_GETITEMCOUNT, 0, 0);
+    SendMessage(hProcessPageHeaderCtrl, HDM_SETORDERARRAY, (WPARAM) size, (LPARAM) &TaskManagerSettings.ColumnOrderArray);
 
     UpdateColumnDataHints();
 }
@@ -110,18 +112,20 @@ void SaveColumnSettings(void)
     LRESULT       size;
 
     /* Reset column data */
-    for (i=0; i<COLUMN_NMAX; i++) {
+    for (i=0; i<COLUMN_NMAX; i++) 
+    {
         TaskManagerSettings.ColumnOrderArray[i] = i;
         TaskManagerSettings.Columns[i] = FALSE;
         TaskManagerSettings.ColumnSizeArray[i] = ColumnPresets[i].size;
     }
 
     /* Get header order */
-    size = SendMessageW(hProcessPageHeaderCtrl, HDM_GETITEMCOUNT, 0, 0);
-    SendMessageW(hProcessPageHeaderCtrl, HDM_GETORDERARRAY, (WPARAM) size, (LPARAM) &TaskManagerSettings.ColumnOrderArray);
+    size = SendMessage(hProcessPageHeaderCtrl, HDM_GETITEMCOUNT, 0, 0);
+    SendMessage(hProcessPageHeaderCtrl, HDM_GETORDERARRAY, (WPARAM) size, (LPARAM) &TaskManagerSettings.ColumnOrderArray);
 
     /* Get visible columns */
-    for (i = 0; i < SendMessageW(hProcessPageHeaderCtrl, HDM_GETITEMCOUNT, 0, 0); i++) {
+    for (i = 0; i < SendMessageW(hProcessPageHeaderCtrl, HDM_GETITEMCOUNT, 0, 0); i++) 
+    {
         memset(&hditem, 0, sizeof(HDITEM));
 
         hditem.mask = HDI_TEXT|HDI_WIDTH;
@@ -130,9 +134,11 @@ void SaveColumnSettings(void)
 
         SendMessageW(hProcessPageHeaderCtrl, HDM_GETITEM, i, (LPARAM) &hditem);
 
-        for (n = 0; n < COLUMN_NMAX; n++) {
-            LoadStringW(hInst, ColumnPresets[n].dwIdsName, szTemp, sizeof(szTemp)/sizeof(WCHAR));
-            if (_wcsicmp(text, szTemp) == 0)
+        for (n = 0; n < COLUMN_NMAX; n++) 
+        {
+            LoadString(hInst, ColumnPresets[n].dwIdsName, szTemp, sizeof(szTemp)/sizeof(WCHAR));
+            
+            if (wcsicmp(text, szTemp) == 0)
             {
                 TaskManagerSettings.Columns[n] = TRUE;
                 TaskManagerSettings.ColumnSizeArray[n] = hditem.cxy;
@@ -145,14 +151,15 @@ void ProcessPage_OnViewSelectColumns(void)
 {
     int  i;
 
-    if (DialogBoxW(hInst, MAKEINTRESOURCEW(IDD_COLUMNS_DIALOG), hMainWnd, ColumnsDialogWndProc) == IDOK)
+    if (DialogBox(hInst, MAKEINTRESOURCEW(IDD_COLUMNS_DIALOG), hMainWnd, ColumnsDialogWndProc) == IDOK)
     {
-        for (i=Header_GetItemCount(hProcessPageHeaderCtrl)-1; i>=0; i--)
+        for (i = Header_GetItemCount(hProcessPageHeaderCtrl)-1; i >= 0; i--)
         {
-            (void)ListView_DeleteColumn(hProcessPageListCtrl, i);
+            ListView_DeleteColumn(hProcessPageListCtrl, i);
         }
 
-        for (i=0; i<COLUMN_NMAX; i++) {
+        for (i = 0; i < COLUMN_NMAX; i++) 
+        {
             TaskManagerSettings.ColumnOrderArray[i] = i;
             TaskManagerSettings.ColumnSizeArray[i] = ColumnPresets[i].size;
         }
@@ -161,10 +168,9 @@ void ProcessPage_OnViewSelectColumns(void)
     }
 }
 
-INT_PTR CALLBACK
-ColumnsDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ColumnsDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    unsigned int  i;
+    unsigned int i;
 
     switch (message)
     {
@@ -215,7 +221,7 @@ void UpdateColumnDataHints(void)
         hditem.pszText = text;
         hditem.cchTextMax = 260;
 
-        SendMessageW(hProcessPageHeaderCtrl, HDM_GETITEM, Index, (LPARAM) &hditem);
+        SendMessage(hProcessPageHeaderCtrl, HDM_GETITEM, Index, (LPARAM) &hditem);
 
         for (i=0; i<COLUMN_NMAX; i++) {
             LoadStringW(hInst, ColumnPresets[i].dwIdsName, szTemp, sizeof(szTemp)/sizeof(WCHAR));

@@ -543,15 +543,6 @@ void GraphCtrl_Resize(TGraphCtrl* tGraph)
     tGraph->m_dVerticalFactor = (double)tGraph->m_nPlotHeight / tGraph->m_dRange;
 }
 
-#if 0
-void TGraphCtrl::Reset()
-{
-    /*  to clear the existing data (in the form of a bitmap) */
-    /*  simply invalidate the entire control */
-    InvalidateCtrl();
-}
-#endif
-
 extern TGraphCtrl PerformancePageCpuUsageHistoryGraph;
 extern TGraphCtrl PerformancePageMemUsageHistoryGraph;
 extern HWND hPerformancePageCpuUsageHistoryGraph;
