@@ -89,10 +89,6 @@
 		<div class="summary">
 			<p>Process Hacker is a feature-packed tool for manipulating processes and services on your computer.</p>
 			
-			<p><strong>System Requirements:</strong></p>
-			<ul>
-				<li>&#160;•&#160;Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
-			</ul>
 			<p><strong>Key features of Process Hacker:</strong></p>
 			<ul>
 			<li>&#160;•&#160;A simple, customizable tree view with highlighting showing you the processes running on your computer.</li>
@@ -107,14 +103,17 @@
 			<p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
 			<ul>
 			<li>&#160;•&#160;Implements almost all of the functionality offered by Process Explorer, plus more advanced features.</li>
-			<li>&#160;•&#160;Has advanced string scanning capabilities, as well as regular expression filtering.</li>
+            <li>&#160;•&#160;Performs stack traces correctly for .NET programs on x64.</li>
 			<li>&#160;•&#160;Allows you to see what a thread is waiting on.</li>
+			<li>&#160;•&#160;Has advanced string scanning capabilities, as well as regular expression filtering.</li>
 			<li>&#160;•&#160;Highlights both relocated and .NET DLLs.</li>
-			<li>&#160;•&#160;Allows you to connect to other sessions, just like Windows Task Manager can.</li>
 			<li>&#160;•&#160;Shows symbolic access masks (e.g. <code>Read, Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
 			<li>&#160;•&#160;Shows names for transaction manager objects and ETW registration objects.</li>
 			<li>&#160;•&#160;Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
-			<li>&#160;•&#160;Shows information for POSIX processes.</li>
+			</ul>
+			<p><strong>System Requirements:</strong></p>
+			<ul>
+				<li>&#160;•&#160;Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
 			</ul>
 		</div>
 	</div>
