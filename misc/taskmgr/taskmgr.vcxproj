@@ -76,7 +76,7 @@
       <includes>./;.;$(globalIncludes);</includes>
     </Pspec>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\2.x\trunk\sdk\include;include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\2.x\trunk\sdk\include;include;resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <CallingConvention>StdCall</CallingConvention>
@@ -252,7 +252,6 @@
     <ClInclude Include="include\priority.h" />
     <ClInclude Include="include\proclist.h" />
     <ClInclude Include="include\procpage.h" />
-    <ClInclude Include="include\resource.h" />
     <ClInclude Include="resources\resource.h" />
     <ClInclude Include="run.h" />
     <ClInclude Include="include\taskmgr.h" />
