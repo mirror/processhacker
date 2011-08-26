@@ -76,7 +76,7 @@
       <includes>./;.;$(globalIncludes);</includes>
     </Pspec>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\2.x\trunk\sdk\include;include;resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;resources;..\..\2.x\trunk\sdk\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <CallingConvention>StdCall</CallingConvention>
@@ -111,7 +111,7 @@
       <includes>./;.;$(globalIncludes);</includes>
     </Pspec>
     <ClCompile>
-      <AdditionalIncludeDirectories>include\;..\..\2.x\trunk\sdk\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;resources;..\..\2.x\trunk\sdk\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <UseFullPaths>true</UseFullPaths>
@@ -143,7 +143,7 @@
       <includes>./;.;$(globalIncludes);</includes>
     </Pspec>
     <ClCompile>
-      <AdditionalIncludeDirectories>./;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;resources;..\..\2.x\trunk\sdk\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_LIB ; ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -169,7 +169,7 @@
       <includes>./;.;$(globalIncludes);</includes>
     </Pspec>
     <ClCompile>
-      <AdditionalIncludeDirectories>include;resources;..\..\2.x\trunk\sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;resources;..\..\2.x\trunk\sdk\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_LIB ; ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
