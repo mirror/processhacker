@@ -6,7 +6,8 @@
 			Copyright &copy; 2008-2011 wj32
 		</div>
 			
-		<!-- Piwik -->
+		<!-- Piwik
+		
 		<script type="text/javascript">
 			var pkBaseURL = (("https:" == document.location.protocol) ? "https://sourceforge.net/apps/piwik/processhacker/" : "http://sourceforge.net/apps/piwik/processhacker/");
 			document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
@@ -20,7 +21,8 @@
 		</script>
 		
 		<img src="http://sourceforge.net/apps/piwik/processhacker/piwik.php?idsite=1" alt="" >
-		<!-- End Piwik Tag -->
+		
+		End Piwik Tag -->
 		
 		<!-- Google Analytics (Async)-->
 		<script type="text/javascript">
