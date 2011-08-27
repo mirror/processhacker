@@ -1,3 +1,5 @@
+img { border: 0; }
+
 .info 
 {
     background-image: url("icon-sprites");
@@ -16,6 +18,7 @@
 .summary
 {
 	max-width: 70%;
+	padding-bottom: 3em;
 }
 
 .center
@@ -29,7 +32,13 @@
 	margin: 0 auto;
 }
 
-blockquote {
+.forumdate
+{
+	padding-bottom: 0.5em;
+}
+
+blockquote 
+{
     background: none no-repeat scroll 6px 8px #EBEBEB;
     border: 1px solid #DBDBDB;
     font-size: 0.95em;
