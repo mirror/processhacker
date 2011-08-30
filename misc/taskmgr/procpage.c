@@ -147,8 +147,7 @@ INT_PTR CALLBACK ProcessPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 
         /* Start our refresh thread */
         hProcessThread = CreateThread(NULL, 0, ProcessPageRefreshThread, NULL, 0, &dwProcessThread);
-        return TRUE;
-
+        break;
     case WM_DESTROY:
         SaveColumnSettings();
         /* Close the event handle, this will make the */
@@ -332,9 +331,6 @@ void ProcessPageShowContextMenu(DWORD dwProcessId)
 
     if (si.dwNumberOfProcessors < 2)
         RemoveMenu(hSubMenu, ID_PROCESS_PAGE_SETAFFINITY, MF_BYCOMMAND);
-
-    if (!DebugChannelsAreSupported())
-        RemoveMenu(hSubMenu, ID_PROCESS_PAGE_DEBUGCHANNELS, MF_BYCOMMAND);
 
     switch (dwProcessPriorityClass)    
     {

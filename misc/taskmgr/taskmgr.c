@@ -26,11 +26,11 @@
 #define STATUS_WINDOW   2001
 
 /* Global Variables: */
-HINSTANCE hInst;                 /* current instance */
+HINSTANCE hInst = NULL;                 /* current instance */
 
-HWND hMainWnd;                   /* Main Window */
-HWND hStatusWnd;                 /* Status Bar Window */
-HWND hTabWnd;                    /* Tab Control Window */
+HWND hMainWnd = NULL;                   /* Main Window */
+HWND hStatusWnd = NULL;                 /* Status Bar Window */
+HWND hTabWnd = NULL;                    /* Tab Control Window */
 
 int nMinimumWidth;              /* Minimum width of the dialog (OnSize()'s cx) */
 int nMinimumHeight;             /* Minimum height of the dialog (OnSize()'s cy) */
@@ -40,6 +40,8 @@ int nOldHeight;                 /* Holds the previous client area height */
 BOOL bInMenuLoop = FALSE;        /* Tells us if we are in the menu loop */
 
 TASKMANAGER_SETTINGS TaskManagerSettings;
+
+#define WHITE   RGB(255,255,255)
 
 INT WINAPI WinMain(
     __in HINSTANCE hInstance, 
@@ -53,7 +55,7 @@ INT WINAPI WinMain(
     TOKEN_PRIVILEGES tkp;
     HANDLE hMutex;
 
-    hMutex = CreateMutexW(NULL, TRUE, L"taskmgrros");
+    hMutex = CreateMutex(NULL, TRUE, L"rostaskmgr");
 
     /* check wether we're already running or not */
     if (hMutex && GetLastError() == ERROR_ALREADY_EXISTS)
@@ -104,18 +106,21 @@ INT WINAPI WinMain(
         CloseHandle(hToken);
     }
 
-    /* Load our settings from the registry */
+    // Load our settings from the registry
     LoadSettings();
 
-    /* Initialize perf data */
+    // Initialize perf data
     if (!PerfDataInitialize()) 
         return 1;
 
     DialogBox(hInst, MAKEINTRESOURCE(IDD_TASKMGR_DIALOG), NULL, TaskManagerWndProc);
 
-    /* Save our settings to the registry */
+    // Save our settings to the registry
     SaveSettings();
     PerfDataUninitialize();
+
+    // Close our mutex.
+    CloseHandle(hMutex);
 
     return 0;
 }
@@ -180,7 +185,7 @@ INT_PTR CALLBACK TaskManagerWndProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
             ProcessPage_OnViewSelectColumns();
             break;
         case ID_VIEW_REFRESH:
-            PostMessageW(hDlg, WM_TIMER, 0, 0);
+            PostMessage(hDlg, WM_TIMER, 0, 0);
             break;
         case ID_WINDOWS_TILEHORIZONTALLY:
             ApplicationPage_OnWindowsTile(MDITILE_HORIZONTAL);
@@ -238,9 +243,6 @@ INT_PTR CALLBACK TaskManagerWndProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
             break;
         case ID_PROCESS_PAGE_SETPRIORITY_LOW:
             DoSetPriority(IDLE_PRIORITY_CLASS);
-            break;
-        case ID_PROCESS_PAGE_DEBUGCHANNELS:
-            ProcessPage_OnDebugChannels();
             break;
         case ID_HELP_ABOUT:
             OnAbout();
@@ -434,7 +436,7 @@ void Draw3dRect2(HDC hDC, LPRECT lpRect, COLORREF clrTopLeft, COLORREF clrBottom
 
 static void SetUpdateSpeed(HWND hWnd)
 {
-    // Setup update speed (pause = fall down)
+    // Setup update speed (pause = case default)
     switch (TaskManagerSettings.UpdateSpeed) 
     {
     case ID_VIEW_UPDATESPEED_HIGH:
@@ -491,10 +493,9 @@ BOOL OnCreate(HWND hWnd)
     hApplicationPage = CreateDialog(hInst, MAKEINTRESOURCEW(IDD_APPLICATION_PAGE), hWnd, ApplicationPageWndProc);
     hProcessPage = CreateDialog(hInst, MAKEINTRESOURCEW(IDD_PROCESS_PAGE), hWnd, ProcessPageWndProc);
     hPerformancePage = CreateDialog(hInst, MAKEINTRESOURCEW(IDD_PERFORMANCE_PAGE), hWnd, PerformancePageWndProc);
-
+    
     {
-        // HACK HACK HACK ??? (TEMP)
-        // Move pages to correct size and position on TabCtrl
+        // HACK: Move pages to correct size and position on TabCtrl
         RECT lp_rect;
         GetClientRect(hTabWnd, &lp_rect);
        
@@ -548,6 +549,7 @@ BOOL OnCreate(HWND hWnd)
     item.pszText = szTemp;
 
     TabCtrl_InsertItem(hTabWnd, 2, &item);
+
 
     /* Size everything correctly */
     GetClientRect(hWnd, &rc);
@@ -872,6 +874,8 @@ void TaskManager_OnViewUpdateSpeed(DWORD dwSpeed)
     CheckMenuRadioItem(hUpdateSpeedMenu, ID_VIEW_UPDATESPEED_HIGH, ID_VIEW_UPDATESPEED_PAUSED, dwSpeed, MF_BYCOMMAND);
 
     KillTimer(hMainWnd, 1);
+
+    DeleteTimerQueueTimer(NULL, NULL, NULL);
 
     SetUpdateSpeed(hMainWnd);
 }

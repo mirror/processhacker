@@ -5,7 +5,6 @@
     <ClCompile Include="affinity.c" />
     <ClCompile Include="applpage.c" />
     <ClCompile Include="column.c" />
-    <ClCompile Include="dbgchnl.c" />
     <ClCompile Include="debug.c" />
     <ClCompile Include="endproc.c" />
     <ClCompile Include="graph.c" />

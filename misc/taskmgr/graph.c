@@ -99,7 +99,7 @@ INT_PTR CALLBACK Graph_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 		hdc = BeginPaint(hWnd, &ps);
 
-		WindowId = GetWindowLongPtrW(hWnd, GWL_ID);
+		WindowId = GetWindowLongPtr(hWnd, GWL_ID);
 
 		switch (WindowId)
 		{
@@ -168,7 +168,7 @@ void Graph_DrawCpuUsageGraph(HDC hDC, HWND hWnd)
     crPrevForeground = SetTextColor(hDC, RGB(0, 255, 0));
     hOldFont = SelectObject(hDC, GetStockObject(DEFAULT_GUI_FONT));
    
-	DrawTextW(hDC, Text, -1, &rcText, DT_BOTTOM | DT_CENTER | DT_NOPREFIX | DT_SINGLELINE);
+	DrawText(hDC, Text, -1, &rcText, DT_BOTTOM | DT_CENTER | DT_NOPREFIX | DT_SINGLELINE);
     
 	SelectObject(hDC, hOldFont);
     SetTextColor(hDC, crPrevForeground);
@@ -245,31 +245,31 @@ void Graph_DrawCpuUsageGraph(HDC hDC, HWND hWnd)
         rcBarRight.bottom += 3;
     }
 
-    /*
-     * Draw the last "used" bars
-     */
-    if ((nlastBarsUsed - nBarsUsed) > 0) {
-        for (i=0; i< (nlastBarsUsed - nBarsUsed); i++)
-        {
-            if (nlastBarsUsed > 5000) nlastBarsUsed = 5000;
+    // If you want to show the previous CPU usage then draw the last "used" bars
+    //if ((nlastBarsUsed - nBarsUsed) > 0) 
+    //{
+    //    for (i = 0; i < (nlastBarsUsed - nBarsUsed); i++)
+    //    {
+    //        if (nlastBarsUsed > 5000) 
+    //            nlastBarsUsed = 5000;
 
-            FillSolidRect(hDC, &rcBarLeft, MEDIUM_GREEN);
-            FillSolidRect(hDC, &rcBarRight, MEDIUM_GREEN);
+    //        FillSolidRect(hDC, &rcBarLeft, MEDIUM_GREEN);
+    //        FillSolidRect(hDC, &rcBarRight, MEDIUM_GREEN);
 
-            rcBarLeft.top += 3;
-            rcBarLeft.bottom += 3;
+    //        rcBarLeft.top += 3;
+    //        rcBarLeft.bottom += 3;
 
-            rcBarRight.top += 3;
-            rcBarRight.bottom += 3;
-        }
-    }
-    nlastBarsUsed = nBarsUsed;
-    /*
-     * Draw the "used" bars
-     */
-    for (i=0; i<nBarsUsed; i++)
+    //        rcBarRight.top += 3;
+    //        rcBarRight.bottom += 3;
+    //    }
+    //}
+    //nlastBarsUsed = nBarsUsed;
+
+    // Draw the "used" bars.
+    for (i = 0; i < nBarsUsed; i++)
     {
-        if (nBarsUsed > 5000) nBarsUsed = 5000;
+        if (nBarsUsed > 5000) 
+            nBarsUsed = 5000;
 
         FillSolidRect(hDC, &rcBarLeft, BRIGHT_GREEN);
         FillSolidRect(hDC, &rcBarRight, BRIGHT_GREEN);
@@ -284,16 +284,14 @@ void Graph_DrawCpuUsageGraph(HDC hDC, HWND hWnd)
     /*
      * Draw the "used" kernel bars
      */
-
     rcBarLeft.top -=3;
     rcBarLeft.bottom -=3;
 
     rcBarRight.top -=3;
     rcBarRight.bottom -=3;
 
-    for (i=0; i<nBarsUsedKernel; i++)
+    for (i = 0; i < nBarsUsedKernel; i++)
     {
-
         FillSolidRect(hDC, &rcBarLeft, RED);
         FillSolidRect(hDC, &rcBarRight, RED);
 
@@ -302,7 +300,6 @@ void Graph_DrawCpuUsageGraph(HDC hDC, HWND hWnd)
 
         rcBarRight.top -=3;
         rcBarRight.bottom -=3;
-
     }
 
     SelectObject(hDC, hOldFont);

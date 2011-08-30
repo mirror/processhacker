@@ -24,6 +24,7 @@
 #define IDB_TRAYICON                    153
 #define IDD_DEBUG_CHANNELS_DIALOG       155
 #define IDC_DEBUG_CHANNELS_LIST         156
+#define IDD_NETWORK_PAGE                156
 #define IDS_TAB_APPS                    310
 #define IDS_TAB_PROCESSES               311
 #define IDS_TAB_PERFORMANCE             312
@@ -220,7 +221,10 @@
 #define ID_PROCESS_PAGE_SETPRIORITY_BELOWNORMAL 32813
 #define ID_PROCESS_PAGE_SETPRIORITY_LOW 32814
 #define ID_PROCESS_PAGE_DEBUGCHANNELS   32815
-#define ID_DUMMY_                       32817
+#define ID_DUMMY_OPENFILELOCATION       32818
+#define ID_DUMMY_CREATEDUMPFILE         32819
+#define ID_DUMMY_PROPERTIES             32820
+#define ID_DUMMY_CREATEDUMPFILE32821    32821
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -228,7 +232,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        157
-#define _APS_NEXT_COMMAND_VALUE         32818
+#define _APS_NEXT_COMMAND_VALUE         32822
 #define _APS_NEXT_CONTROL_VALUE         1048
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

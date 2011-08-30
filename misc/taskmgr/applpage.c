@@ -52,8 +52,7 @@ static INT GetSystemColorDepth(VOID)
     return ColorDepth;
 }
 
-INT_PTR CALLBACK
-ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     RECT       rc;
     int        nXDifference;
@@ -62,7 +61,8 @@ ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     WCHAR      szTemp[256];
     int        cx, cy;
 
-    switch (message) {
+    switch (message) 
+    {
     case WM_INITDIALOG:
 
         /* Save the width and height */
@@ -88,9 +88,8 @@ ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
             ListView_GetExtendedListViewStyle(hApplicationPageListCtrl) | LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER | LVS_EX_HEADERDRAGDROP
             );
 
-
         /* Initialize the application page's controls */
-        column.mask = LVCF_TEXT|LVCF_WIDTH;
+        column.mask = LVCF_TEXT | LVCF_WIDTH;
 
         LoadStringW(hInst, IDS_TAB_TASK, szTemp, 256);
         column.pszText = szTemp;
@@ -186,7 +185,6 @@ ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         if (wParam == VK_DELETE)
             ProcessPage_OnEndProcess();
         break;
-
     }
 
   return 0;

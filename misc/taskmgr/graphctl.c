@@ -76,8 +76,8 @@ static void GraphCtrl_Init(TGraphCtrl* tGraph)
 
     /*  background, grid and data colors */
     /*  these are public variables and can be set directly */
-    tGraph->m_crBackColor = RGB(  0,   0,   0);  /*  see also SetBackgroundColor */
-    tGraph->m_crGridColor = RGB(  0, 128, 64);  /*  see also SetGridColor */
+    tGraph->m_crBackColor = RGB(0, 0, 0);  /*  see also SetBackgroundColor */
+    tGraph->m_crGridColor = RGB(0, 128, 64);  /*  see also SetGridColor */
     tGraph->m_crPlotColor[0] = RGB(255, 255, 255);  /*  see also SetPlotColor */
     tGraph->m_crPlotColor[1] = RGB(100, 255, 255);  /*  see also SetPlotColor */
     tGraph->m_crPlotColor[2] = RGB(255, 100, 255);  /*  see also SetPlotColor */
@@ -383,8 +383,6 @@ double GraphCtrl_AppendPoint(TGraphCtrl* tGraph, double dNewPoint0, double dNewP
     tGraph->m_dCurrentPosition[3] = dNewPoint3;
     
 	GraphCtrl_DrawPoint(tGraph);
-
-    /* Invalidate(); */
 
     return dPrevious;
 }

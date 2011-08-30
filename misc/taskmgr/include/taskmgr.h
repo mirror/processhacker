@@ -129,3 +129,5 @@ void TaskManager_OnViewUpdateSpeed(DWORD);
 void TaskManager_OnTabWndSelChange(void);
 LPWSTR GetLastErrorText(LPWSTR lpszBuf, DWORD dwSize);
 DWORD EndLocalThread(HANDLE *hThread, DWORD dwThread);
+
+INT_PTR CALLBACK NetworkPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
