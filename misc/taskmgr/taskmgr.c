@@ -753,12 +753,12 @@ void LoadSettings(void)
     TaskManagerSettings.ShowKernelTimes = FALSE;
 
     /* Open the key */
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, szSubKey, 0, KEY_READ, &hKey) != ERROR_SUCCESS)
+    if (RegOpenKeyEx(HKEY_CURRENT_USER, szSubKey, 0, KEY_READ, &hKey) != ERROR_SUCCESS)
         return;
 
     /* Read the settings */
     dwSize = sizeof(TASKMANAGER_SETTINGS);
-    RegQueryValueExW(hKey, L"Preferences", NULL, NULL, (LPBYTE)&TaskManagerSettings, &dwSize);
+    RegQueryValueEx(hKey, L"Preferences", NULL, NULL, (LPBYTE)&TaskManagerSettings, &dwSize);
 
     /*
     * ATM, the 'ImageName' column is always visible
@@ -784,7 +784,7 @@ void SaveSettings(void)
     RegSetValueEx(hKey, L"Preferences", 0, REG_BINARY, (LPBYTE)&TaskManagerSettings, sizeof(TASKMANAGER_SETTINGS));
    
     /* Close the key */
-    RegCloseKey(hKey);
+    NtClose(hKey);
 }
 
 void TaskManager_OnRestoreMainWindow(void)
@@ -857,7 +857,7 @@ void TaskManager_OnMenuSelect(HWND hWnd, UINT nItemID, UINT nFlags, HMENU hSysMe
             *lpsz = '\0';
     }
 
-    SendMessageW(hStatusWnd, SB_SETTEXT, 0, (LPARAM)str);
+    SendMessage(hStatusWnd, SB_SETTEXT, 0, (LPARAM)str);
 }
 
 void TaskManager_OnViewUpdateSpeed(DWORD dwSpeed)
@@ -874,8 +874,6 @@ void TaskManager_OnViewUpdateSpeed(DWORD dwSpeed)
     CheckMenuRadioItem(hUpdateSpeedMenu, ID_VIEW_UPDATESPEED_HIGH, ID_VIEW_UPDATESPEED_PAUSED, dwSpeed, MF_BYCOMMAND);
 
     KillTimer(hMainWnd, 1);
-
-    DeleteTimerQueueTimer(NULL, NULL, NULL);
 
     SetUpdateSpeed(hMainWnd);
 }
@@ -928,9 +926,7 @@ void TaskManager_OnTabWndSelChange(void)
             DrawMenuBar(hMainWnd);
         }
 
-        /*
-        * Give the application list control focus
-        */
+        // Give the application list control focus.
         SetFocus(hApplicationPageListCtrl);
         break;
 
@@ -1059,8 +1055,6 @@ DWORD EndLocalThread(HANDLE hThread, DWORD dwThread)
     if (hThread != NULL) 
     {
         PostThreadMessage(dwThread, WM_QUIT, 0, 0);
-
-        CloseHandle(hThread);
     }
 
     return dwExitCodeThread;
