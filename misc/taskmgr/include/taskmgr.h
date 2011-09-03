@@ -30,10 +30,12 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <process.h>
 #include <windows.h>
 #include <aclapi.h>
 #include <commctrl.h>
 #include <shellapi.h>
+#include <Uxtheme.h>
 
 #include "resource.h"
 
@@ -54,7 +56,6 @@
 #include "priority.h"
 #include "run.h"
 #include "trayicon.h"
-#include <Uxtheme.h>
 
 #include "ntwin.h"
 #include "phnt.h"
@@ -128,6 +129,5 @@ void TaskManager_OnMenuSelect(HWND hWnd, UINT nItemID, UINT nFlags, HMENU hSysMe
 void TaskManager_OnViewUpdateSpeed(DWORD);
 void TaskManager_OnTabWndSelChange(void);
 LPWSTR GetLastErrorText(LPWSTR lpszBuf, DWORD dwSize);
-DWORD EndLocalThread(HANDLE *hThread, DWORD dwThread);
 
 INT_PTR CALLBACK NetworkPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);

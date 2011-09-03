@@ -51,15 +51,15 @@ HWND  hPerformancePageTotalsHandleCountEdit;          /*  Total Handles Edit Con
 HWND  hPerformancePageTotalsProcessCountEdit;         /*  Total Processes Edit Control */
 HWND  hPerformancePageTotalsThreadCountEdit;          /*  Total Threads Edit Control */
 
-static HANDLE hPerformanceThread = NULL;
-static DWORD  dwPerformanceThread;
+static uintptr_t hPerformanceThread = NULL;
+static UINT dwPerformanceThread = 0;
 
 WNDPROC OldGraphWndProc;
 
-static int     nPerformancePageWidth;
-static int     nPerformancePageHeight;
-static int     lastX, lastY;
-DWORD WINAPI   PerformancePageRefreshThread(void *lpParameter);
+static int nPerformancePageWidth = 0;
+static int nPerformancePageHeight = 0;
+static int lastX = 0, lastY = 0;
+UINT WINAPI PerformancePageRefreshThread(void *lpParameter);
 
 void AdjustFrameSize(HWND hCntrl, HWND hDlg, int nXDifference, int nYDifference, int pos)
 {
@@ -128,8 +128,8 @@ INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
     case WM_DESTROY:
         GraphCtrl_Dispose(&PerformancePageCpuUsageHistoryGraph);
         GraphCtrl_Dispose(&PerformancePageMemUsageHistoryGraph);
-
-        EndLocalThread(&hPerformanceThread, dwPerformanceThread);
+        
+        //EndLocalThread(&hPerformanceThread, dwPerformanceThread);
         break;
 
     case WM_INITDIALOG:
@@ -198,16 +198,14 @@ INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
         GraphCtrl_SetPlotColor(&PerformancePageMemUsageHistoryGraph, 0, RGB(255, 255, 0)) ;
 
         /*  Start our refresh thread */
-        hPerformanceThread = CreateThread(NULL, 0, PerformancePageRefreshThread, NULL, 0, &dwPerformanceThread);
+        hPerformanceThread = _beginthreadex(NULL, 0, PerformancePageRefreshThread, NULL, 0, &dwPerformanceThread);
 
-        /*
-        *  Subclass graph buttons
-        */
-        OldGraphWndProc = (WNDPROC)(LONG_PTR) SetWindowLongPtrW(hPerformancePageCpuUsageGraph, GWLP_WNDPROC, (LONG_PTR)Graph_WndProc);
-        OldGraphCtrlWndProc = (WNDPROC)(LONG_PTR) SetWindowLongPtrW(hPerformancePageMemUsageHistoryGraph, GWLP_WNDPROC, (LONG_PTR)GraphCtrl_WndProc);
+        // Subclass graph buttons.
+        OldGraphWndProc = (WNDPROC)(LONG_PTR)SetWindowLongPtr(hPerformancePageCpuUsageGraph, GWLP_WNDPROC, (LONG_PTR)Graph_WndProc);
+        OldGraphCtrlWndProc = (WNDPROC)(LONG_PTR)SetWindowLongPtr(hPerformancePageMemUsageHistoryGraph, GWLP_WNDPROC, (LONG_PTR)GraphCtrl_WndProc);
 
-        SetWindowLongPtrW(hPerformancePageMemUsageGraph, GWLP_WNDPROC, (LONG_PTR)Graph_WndProc);
-        SetWindowLongPtrW(hPerformancePageCpuUsageHistoryGraph, GWLP_WNDPROC, (LONG_PTR)GraphCtrl_WndProc);
+        SetWindowLongPtr(hPerformancePageMemUsageGraph, GWLP_WNDPROC, (LONG_PTR)Graph_WndProc);
+        SetWindowLongPtr(hPerformancePageCpuUsageHistoryGraph, GWLP_WNDPROC, (LONG_PTR)GraphCtrl_WndProc);
         return TRUE;
 
     case WM_SIZE:
@@ -287,6 +285,7 @@ INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
                     lastY--;
                 }
             }
+
             AdjustFrameSize(hPerformancePageCpuUsageFrame, hDlg, nXDifference, nYDifference, 1);
             AdjustFrameSize(hPerformancePageMemUsageFrame, hDlg, nXDifference, nYDifference, 2);
             AdjustFrameSize(hPerformancePageCpuUsageHistoryFrame, hDlg, nXDifference, nYDifference, 3);
@@ -308,7 +307,7 @@ void RefreshPerformancePage(void)
     PostThreadMessage(dwPerformanceThread, WM_TIMER, 0, 0);
 }
 
-DWORD WINAPI PerformancePageRefreshThread(void *lpParameter)
+UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
 {
     ULONG  CommitChargeTotal;
     ULONG  CommitChargeLimit;

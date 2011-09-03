@@ -1040,7 +1040,7 @@ LPWSTR GetLastErrorText(LPWSTR lpszBuf, DWORD dwSize)
     } 
     else 
     {
-        lpszTemp[lstrlenW(lpszTemp)-2] = L'\0';  /*remove cr and newline character */
+        lpszTemp[wcslen(lpszTemp)-2] = L'\0';  /*remove cr and newline character */
 
         wsprintf(lpszBuf, L"%s (0x%x)", lpszTemp, (int)GetLastError());
     }

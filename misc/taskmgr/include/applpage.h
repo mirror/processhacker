@@ -61,7 +61,7 @@ HWND            hApplicationPageNewTaskButton;  /* Application New Task button *
 static int      nApplicationPageWidth;
 static int      nApplicationPageHeight;
 static BOOL     bSortAscending = TRUE;
-DWORD WINAPI    ApplicationPageRefreshThread(void *lpParameter);
+UINT WINAPI    ApplicationPageRefreshThread(void *lpParameter);
 BOOL            noApps;
 BOOL CALLBACK   EnumWindowsProc(HWND hWnd, LPARAM lParam);
 void            AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung);

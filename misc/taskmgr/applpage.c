@@ -23,15 +23,13 @@
 
 #include "taskmgr.h"
 
-
-
-static HANDLE   hApplicationThread = NULL;
-static DWORD    dwApplicationThread;
+static uintptr_t hApplicationThread = NULL;
+static UINT dwApplicationThread = NULL;
 
 static INT GetSystemColorDepth(VOID)
 {
-    DEVMODE pDevMode;
-    INT ColorDepth;
+    DEVMODE pDevMode = { 0 };
+    INT ColorDepth = 0;
 
     pDevMode.dmSize = sizeof(DEVMODE);
     pDevMode.dmDriverExtra = 0;
@@ -41,12 +39,24 @@ static INT GetSystemColorDepth(VOID)
 
     switch (pDevMode.dmBitsPerPel)
     {
-        case 32: ColorDepth = ILC_COLOR32; break;
-        case 24: ColorDepth = ILC_COLOR24; break;
-        case 16: ColorDepth = ILC_COLOR16; break;
-        case  8: ColorDepth = ILC_COLOR8;  break;
-        case  4: ColorDepth = ILC_COLOR4;  break;
-        default: ColorDepth = ILC_COLOR;   break;
+        case 32: 
+            ColorDepth = ILC_COLOR32; 
+            break;
+        case 24: 
+            ColorDepth = ILC_COLOR24; 
+            break;
+        case 16: 
+            ColorDepth = ILC_COLOR16; 
+            break;
+        case  8: 
+            ColorDepth = ILC_COLOR8;  
+            break;
+        case  4: 
+            ColorDepth = ILC_COLOR4;  
+            break;
+        default: 
+            ColorDepth = ILC_COLOR;   
+            break;
     }
 
     return ColorDepth;
@@ -110,14 +120,8 @@ INT_PTR CALLBACK ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
         UpdateApplicationListControlViewSetting();
 
         /* Start our refresh thread */
-        hApplicationThread = CreateThread(NULL, 0, ApplicationPageRefreshThread, NULL, 0, &dwApplicationThread);
+        hApplicationThread = _beginthreadex(NULL, 0, ApplicationPageRefreshThread, NULL, 0, &dwApplicationThread);
         return TRUE;
-
-    case WM_DESTROY:
-        /* Close refresh thread */
-        EndLocalThread(&hApplicationThread, dwApplicationThread);
-        break;
-
     case WM_COMMAND:
 
         /* Handle the button clicks */
@@ -209,7 +213,7 @@ void UpdateApplicationListControlViewSetting(void)
     RefreshApplicationPage();
 }
 
-DWORD WINAPI ApplicationPageRefreshThread(void *lpParameter)
+UINT WINAPI ApplicationPageRefreshThread(void *lpParameter)
 {
     MSG msg;
     INT i;

@@ -257,7 +257,7 @@ void PerfDataRefresh(void)
     memcpy(&SystemHandleInfo, SysHandleInfoData, sizeof(SYSTEM_HANDLE_INFORMATION));
     HeapFree(GetProcessHeap(), 0, SysHandleInfoData);
 
-    for (CurrentKernelTime=0, Idx=0; Idx<(ULONG)SystemBasicInfo.NumberOfProcessors; Idx++) 
+    for (CurrentKernelTime = 0, Idx = 0; Idx < (ULONG)SystemBasicInfo.NumberOfProcessors; Idx++) 
     {
         CurrentKernelTime += Li2Double(SystemProcessorTimeInfo[Idx].KernelTime);
         CurrentKernelTime += Li2Double(SystemProcessorTimeInfo[Idx].DpcTime);
@@ -321,7 +321,7 @@ void PerfDataRefresh(void)
         /* so that we can establish delta values */
         pPDOld = NULL;
 
-        for (Idx2=0; Idx2<ProcessCountOld; Idx2++) 
+        for (Idx2 = 0; Idx2 < ProcessCountOld; Idx2++) 
         {
             if (pPerfDataOld[Idx2].ProcessId == pSPI->UniqueProcessId) 
             {
@@ -330,11 +330,14 @@ void PerfDataRefresh(void)
             }
         }
 
-        if (pSPI->ImageName.Buffer) {
-            /* Don't assume a UNICODE_STRING Buffer is zero terminated: */
+        if (pSPI->ImageName.Buffer) 
+        {
+            // Don't assume a UNICODE_STRING Buffer is zero terminated:
             int len = pSPI->ImageName.Length / 2;
-            /* Check against max size and allow for terminating zero (already zeroed): */
-            if(len >= MAX_PATH)len=MAX_PATH - 1;
+            // Check against max size and allow for terminating zero (already zeroed):
+            if(len >= MAX_PATH)
+                len=MAX_PATH - 1;
+            
             wcsncpy(pPerfData[Idx].ImageName, pSPI->ImageName.Buffer, len);
         } 
         else 
@@ -389,9 +392,9 @@ void PerfDataRefresh(void)
 
             if (hProcess) 
             {
-                /* don't query the information of the system process. It's possible but
-                returns Administrators as the owner of the process instead of SYSTEM */
-                if (pSPI->UniqueProcessId != (HANDLE)0x4)
+                //TODO: don't query the information of the system process??? 
+                // It's possible but returns Administrators as the owner of the process instead of SYSTEM
+                //if (pSPI->UniqueProcessId != (HANDLE)0x4)
                 {
                     if (OpenProcessToken(hProcess, TOKEN_QUERY, &hProcessToken))
                     {
