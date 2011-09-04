@@ -60,7 +60,6 @@ HWND            hApplicationPageSwitchToButton; /* Application Switch To button 
 HWND            hApplicationPageNewTaskButton;  /* Application New Task button */
 static int      nApplicationPageWidth;
 static int      nApplicationPageHeight;
-static BOOL     bSortAscending = TRUE;
 UINT WINAPI    ApplicationPageRefreshThread(void *lpParameter);
 BOOL            noApps;
 BOOL CALLBACK   EnumWindowsProc(HWND hWnd, LPARAM lParam);

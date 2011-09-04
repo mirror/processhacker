@@ -131,3 +131,19 @@ void TaskManager_OnTabWndSelChange(void);
 LPWSTR GetLastErrorText(LPWSTR lpszBuf, DWORD dwSize);
 
 INT_PTR CALLBACK NetworkPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+
+
+// Sorting
+
+typedef enum _PH_SORT_ORDER
+{
+    NoSortOrder = 0,
+    AscendingSortOrder,
+    DescendingSortOrder
+} PH_SORT_ORDER, *PPH_SORT_ORDER;
+
+VOID PhSetHeaderSortIcon(
+    __in HWND hwnd,
+    __in INT Index,
+    __in PH_SORT_ORDER Order
+    );
