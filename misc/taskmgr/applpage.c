@@ -391,7 +391,7 @@ void AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung)
             pAPLI->hIcon = hIcon;
             pAPLI->bHung = bHung;
            
-            wcscpy(pAPLI->szTitle, szTitle);
+            wcscpy_s(pAPLI->szTitle, MAX_PATH, szTitle);
 
             /* Update the image list */
             //ImageList_ReplaceIcon(hImageListLarge, item.iItem, hIcon);
@@ -412,15 +412,14 @@ void AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung)
         pAPLI->hIcon = hIcon;
         pAPLI->bHung = bHung;
         
-        wcscpy(pAPLI->szTitle, szTitle);
+        wcscpy_s(pAPLI->szTitle, MAX_PATH, szTitle);
 
         /* Add the item to the list */
         memset(&item, 0, sizeof(LV_ITEM));
         item.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
-        //ImageList_AddIcon(hImageListLarge, hIcon);
         item.iImage = ImageList_AddIcon(hImageListSmall, hIcon);
-        item.pszText = LPSTR_TEXTCALLBACK;
         item.iItem = ListView_GetItemCount(hApplicationPageListCtrl);
+        item.pszText = LPSTR_TEXTCALLBACK;
         item.lParam = (LPARAM)pAPLI;
         
         ListView_InsertItem(hApplicationPageListCtrl, &item);
@@ -492,7 +491,7 @@ void ApplicationPageUpdate(void)
     }
 }
 
-PH_SORT_ORDER     bSortAscending = NoSortOrder;
+PH_SORT_ORDER bSortAscending = NoSortOrder;
 
 void ApplicationPageOnNotify(WPARAM wParam, LPARAM lParam)
 {
@@ -516,33 +515,30 @@ void ApplicationPageOnNotify(WPARAM wParam, LPARAM lParam)
         case LVN_ITEMCHANGED:
             ApplicationPageUpdate();
             break;
-
         case LVN_GETDISPINFO:
-            pAPLI = (LPAPPLICATION_PAGE_LIST_ITEM)pnmdi->item.lParam;
-
-            /* Update the item text */
-            if (pnmdi->item.iSubItem == 0)
             {
-                wcsncpy(pnmdi->item.pszText, pAPLI->szTitle, pnmdi->item.cchTextMax);
-            }
-
-            /* Update the item status */
-            else if (pnmdi->item.iSubItem == 1)
-            {
-                if (pAPLI->bHung)
+                pAPLI = (LPAPPLICATION_PAGE_LIST_ITEM)pnmdi->item.lParam;
+                /* Update the item text */
+                if (pnmdi->item.iSubItem == 0)
                 {
-                    LoadString(NULL, IDS_Not_Responding , szMsg, sizeof(szMsg) / sizeof(szMsg[0]));
+                    wcsncpy_s(pnmdi->item.pszText, 260, pAPLI->szTitle, pnmdi->item.cchTextMax);
                 }
-                else
+                /* Update the item status */
+                else if (pnmdi->item.iSubItem == 1)
                 {
-                    LoadString(NULL, IDS_Running, (LPWSTR) szMsg, sizeof(szMsg) / sizeof(szMsg[0]));
+                    if (pAPLI->bHung)
+                    {
+                        LoadString(NULL, IDS_Not_Responding , szMsg, sizeof(szMsg) / sizeof(szMsg[0]));
+                    }
+                    else
+                    {
+                        LoadString(NULL, IDS_Running, (LPWSTR) szMsg, sizeof(szMsg) / sizeof(szMsg[0]));
+                    }
+
+                    wcsncpy_s(pnmdi->item.pszText, 256, szMsg, pnmdi->item.cchTextMax);
                 }
-
-                wcsncpy(pnmdi->item.pszText, szMsg, pnmdi->item.cchTextMax);
             }
-
             break;
-
         case NM_RCLICK:
 
             if (ListView_GetSelectedCount(hApplicationPageListCtrl) < 1)
