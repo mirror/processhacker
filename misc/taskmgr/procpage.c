@@ -281,7 +281,7 @@ void ProcessPageOnNotify(WPARAM wParam, LPARAM lParam)
 void CommaSeparateNumberString(LPWSTR strNumber, int nMaxCount)
 {
     WCHAR temp[MAX_PATH];
-    SIZE_T i = 0;
+    size_t i = 0;
     UINT j = 0, k = 0;
 
     for (i = 0, j = 0; i < (wcslen(strNumber) % 3); i++, j++)
@@ -530,159 +530,175 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
     IO_COUNTERS iocounters;
     LARGE_INTEGER time;
 
-    if (ColumnDataHints[ColumnIndex] == COLUMN_IMAGENAME)
-        PerfDataGetImageName(Index, lpText, nMaxCount);
-    
-    if (ColumnDataHints[ColumnIndex] == COLUMN_PID)
-        wsprintf(lpText, TEXT("%d"), PerfDataGetProcessId(Index));
-   
-    if (ColumnDataHints[ColumnIndex] == COLUMN_USERNAME)
-        PerfDataGetUserName(Index, lpText, nMaxCount);
-    
-    if (ColumnDataHints[ColumnIndex] == COLUMN_SESSIONID)
-        wsprintf(lpText, TEXT("%d"), PerfDataGetSessionId(Index));
-    
-    if (ColumnDataHints[ColumnIndex] == COLUMN_CPUUSAGE)
-        wsprintf(lpText, TEXT("%02d"), PerfDataGetCPUUsage(Index));
-    
-    if (ColumnDataHints[ColumnIndex] == COLUMN_CPUTIME)
+    switch (ColumnDataHints[ColumnIndex])
     {
-        DWORD dwHours;
-        DWORD dwMinutes;
-        DWORD dwSeconds;
+    case COLUMN_IMAGENAME:
+        {
+            PerfDataGetImageName(Index, lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_PID:
+        {
+            wsprintf(lpText, TEXT("%d"), PerfDataGetProcessId(Index));
+        }
+        break;
+    case COLUMN_USERNAME:
+        {
+            PerfDataGetUserName(Index, lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_SESSIONID:
+        {
+            wsprintf(lpText, TEXT("%d"), PerfDataGetSessionId(Index));
+        }
+        break;
+    case COLUMN_CPUUSAGE:
+        {
+            wsprintf(lpText, TEXT("%02d"), PerfDataGetCPUUsage(Index));
+        }
+        break;
+    case COLUMN_CPUTIME:
+        {
+            DWORD dwHours;
+            DWORD dwMinutes;
+            DWORD dwSeconds;
 
-        time = PerfDataGetCPUTime(Index);
-        gethmsfromlargeint(time, &dwHours, &dwMinutes, &dwSeconds);
-        wsprintf(lpText, TEXT("%d:%02d:%02d"), dwHours, dwMinutes, dwSeconds);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_MEMORYUSAGE)
-    {
-        wsprintf(lpText, TEXT("%d"), PerfDataGetWorkingSetSizeBytes(Index) / 1024);
-        CommaSeparateNumberString(lpText, nMaxCount);
-        wcscat(lpText, TEXT(" K"));
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_PEAKMEMORYUSAGE)
-    {
-        wsprintf(lpText, TEXT("%d"), PerfDataGetPeakWorkingSetSizeBytes(Index) / 1024);
-        CommaSeparateNumberString(lpText, nMaxCount);
-        wcscat(lpText, TEXT(" K"));
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_MEMORYUSAGEDELTA)
-    {
-        wsprintf(lpText, TEXT("%d"), PerfDataGetWorkingSetSizeDelta(Index) / 1024);
-        CommaSeparateNumberString(lpText, nMaxCount);
-        wcscat(lpText, TEXT(" K"));
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_PAGEFAULTS)
-    {
-        wsprintf(lpText, TEXT("%d"), PerfDataGetPageFaultCount(Index));
-        CommaSeparateNumberString(lpText, nMaxCount);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_PAGEFAULTSDELTA)
-    {
-        wsprintf(lpText, TEXT("%d"), PerfDataGetPageFaultCountDelta(Index));
-        CommaSeparateNumberString(lpText, nMaxCount);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_VIRTUALMEMORYSIZE)
-    {
-        wsprintf(lpText, TEXT("%d"), PerfDataGetVirtualMemorySizeBytes(Index) / 1024);
-        CommaSeparateNumberString(lpText, nMaxCount);
-        wcscat(lpText, TEXT(" K"));
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_PAGEDPOOL)
-    {
-        wsprintf(lpText, TEXT("%d"), PerfDataGetPagedPoolUsagePages(Index) / 1024);
-        CommaSeparateNumberString(lpText, nMaxCount);
-        wcscat(lpText, TEXT(" K"));
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_NONPAGEDPOOL)
-    {
-        wsprintf(lpText, TEXT("%d"), (int)(PerfDataGetNonPagedPoolUsagePages(Index) / 1024));
-        CommaSeparateNumberString(lpText, nMaxCount);
-        wcscat(lpText, TEXT(" K"));
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_BASEPRIORITY)
-        wsprintf(lpText, TEXT("%d"), (int)PerfDataGetBasePriority(Index));
-    
-    if (ColumnDataHints[ColumnIndex] == COLUMN_HANDLECOUNT)
-    {
-        wsprintf(lpText, TEXT("%d"), (int)PerfDataGetHandleCount(Index));
-        CommaSeparateNumberString(lpText, nMaxCount);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_THREADCOUNT)
-    {
-        wsprintf(lpText, TEXT("%d"), PerfDataGetThreadCount(Index));
-        CommaSeparateNumberString(lpText, nMaxCount);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_USEROBJECTS)
-    {
-        wsprintf(lpText, TEXT("%d"), (int)PerfDataGetUSERObjectCount(Index));
-        CommaSeparateNumberString(lpText, nMaxCount);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_GDIOBJECTS)
-    {
-        wsprintf(lpText, TEXT("%d"), (int)PerfDataGetGDIObjectCount(Index));
-        CommaSeparateNumberString(lpText, nMaxCount);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_IOREADS)
-    {
-        PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.ReadOperationCount); */
-        _ui64tow(iocounters.ReadOperationCount, lpText, 10);
-        CommaSeparateNumberString(lpText, nMaxCount);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_IOWRITES)
-    {
-        PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.WriteOperationCount); */
-        _ui64tow(iocounters.WriteOperationCount, lpText, 10);
-        CommaSeparateNumberString(lpText, nMaxCount);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_IOOTHER)
-    {
-        PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.OtherOperationCount); */
-        _ui64tow(iocounters.OtherOperationCount, lpText, 10);
-        CommaSeparateNumberString(lpText, nMaxCount);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_IOREADBYTES)
-    {
-        PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.ReadTransferCount); */
-        _ui64tow(iocounters.ReadTransferCount, lpText, 10);
-        CommaSeparateNumberString(lpText, nMaxCount);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_IOWRITEBYTES)
-    {
-        PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.WriteTransferCount); */
-        _ui64tow(iocounters.WriteTransferCount, lpText, 10);
-        CommaSeparateNumberString(lpText, nMaxCount);
-    }
-
-    if (ColumnDataHints[ColumnIndex] == COLUMN_IOOTHERBYTES)
-    {
-        PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.OtherTransferCount); */
-        _ui64tow(iocounters.OtherTransferCount, lpText, 10);
-        CommaSeparateNumberString(lpText, nMaxCount);
+            time = PerfDataGetCPUTime(Index);
+            gethmsfromlargeint(time, &dwHours, &dwMinutes, &dwSeconds);
+            wsprintf(lpText, TEXT("%d:%02d:%02d"), dwHours, dwMinutes, dwSeconds);
+        }
+        break;
+    case COLUMN_MEMORYUSAGE:
+        {
+            wsprintf(lpText, TEXT("%d"), PerfDataGetWorkingSetSizeBytes(Index) / 1024);
+            CommaSeparateNumberString(lpText, nMaxCount);
+            wcscat(lpText, TEXT(" K"));
+        }
+        break;
+    case COLUMN_PEAKMEMORYUSAGE:
+        {
+            wsprintf(lpText, TEXT("%d"), PerfDataGetPeakWorkingSetSizeBytes(Index) / 1024);
+            CommaSeparateNumberString(lpText, nMaxCount);
+            wcscat(lpText, TEXT(" K"));
+        }
+        break;
+    case COLUMN_MEMORYUSAGEDELTA:
+        {
+            wsprintf(lpText, TEXT("%d"), PerfDataGetWorkingSetSizeDelta(Index) / 1024);
+            CommaSeparateNumberString(lpText, nMaxCount);
+            wcscat(lpText, TEXT(" K"));
+        }
+        break;
+    case COLUMN_PAGEFAULTS:
+        {
+            wsprintf(lpText, TEXT("%d"), PerfDataGetPageFaultCount(Index));
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_PAGEFAULTSDELTA:
+        {
+            wsprintf(lpText, TEXT("%d"), PerfDataGetPageFaultCountDelta(Index));
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_VIRTUALMEMORYSIZE:
+        {
+            wsprintf(lpText, TEXT("%d"), PerfDataGetVirtualMemorySizeBytes(Index) / 1024);
+            CommaSeparateNumberString(lpText, nMaxCount);
+            wcscat(lpText, TEXT(" K"));
+        }
+        break;
+    case COLUMN_PAGEDPOOL:
+        {
+            wsprintf(lpText, TEXT("%d"), PerfDataGetPagedPoolUsagePages(Index) / 1024);
+            CommaSeparateNumberString(lpText, nMaxCount);
+            wcscat(lpText, TEXT(" K"));
+        }
+        break;
+    case COLUMN_NONPAGEDPOOL:
+        {
+            wsprintf(lpText, TEXT("%d"), (int)(PerfDataGetNonPagedPoolUsagePages(Index) / 1024));
+            CommaSeparateNumberString(lpText, nMaxCount);
+            wcscat(lpText, TEXT(" K"));
+        }
+        break;
+    case COLUMN_BASEPRIORITY:
+        {
+            wsprintf(lpText, TEXT("%d"), (int)PerfDataGetBasePriority(Index));
+        }
+        break;
+    case COLUMN_HANDLECOUNT:
+        {
+            wsprintf(lpText, TEXT("%d"), (int)PerfDataGetHandleCount(Index));
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_THREADCOUNT:
+        {
+            wsprintf(lpText, TEXT("%d"), PerfDataGetThreadCount(Index));
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_USEROBJECTS:
+        {
+            wsprintf(lpText, TEXT("%d"), (int)PerfDataGetUSERObjectCount(Index));
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_GDIOBJECTS:
+        {
+            wsprintf(lpText, TEXT("%d"), (int)PerfDataGetGDIObjectCount(Index));
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_IOREADS:
+        {
+            PerfDataGetIOCounters(Index, &iocounters);
+            /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.ReadOperationCount); */
+            _ui64tow(iocounters.ReadOperationCount, lpText, 10);
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_IOWRITES:
+        {
+            PerfDataGetIOCounters(Index, &iocounters);
+            /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.WriteOperationCount); */
+            _ui64tow(iocounters.WriteOperationCount, lpText, 10);
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_IOOTHER:
+        {
+            PerfDataGetIOCounters(Index, &iocounters);
+            /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.OtherOperationCount); */
+            _ui64tow(iocounters.OtherOperationCount, lpText, 10);
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_IOREADBYTES:
+        {
+            PerfDataGetIOCounters(Index, &iocounters);
+            /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.ReadTransferCount); */
+            _ui64tow(iocounters.ReadTransferCount, lpText, 10);
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_IOWRITEBYTES:
+        {
+            PerfDataGetIOCounters(Index, &iocounters);
+            /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.WriteTransferCount); */
+            _ui64tow(iocounters.WriteTransferCount, lpText, 10);
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
+    case COLUMN_IOOTHERBYTES:
+        {
+            PerfDataGetIOCounters(Index, &iocounters);
+            /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.OtherTransferCount); */
+            _ui64tow(iocounters.OtherTransferCount, lpText, 10);
+            CommaSeparateNumberString(lpText, nMaxCount);
+        }
+        break;
     }
 
     return FALSE;
