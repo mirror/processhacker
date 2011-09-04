@@ -128,9 +128,4 @@ void TaskManager_OnOptionsShow16BitTasks(void)
         CheckMenuItem(hOptionsMenu, ID_OPTIONS_SHOW16BITTASKS, MF_BYCOMMAND|MF_CHECKED);
         TaskManagerSettings.Show16BitTasks = TRUE;
     }
-
-    /*
-     * Refresh the list of processes.
-     */
-    RefreshProcessPage();
 }

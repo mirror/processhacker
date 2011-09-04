@@ -281,7 +281,8 @@ void ProcessPageOnNotify(WPARAM wParam, LPARAM lParam)
 void CommaSeparateNumberString(LPWSTR strNumber, int nMaxCount)
 {
     WCHAR temp[MAX_PATH];
-    UINT i = 0, j = 0, k = 0;
+    SIZE_T i = 0;
+    UINT j = 0, k = 0;
 
     for (i = 0, j = 0; i < (wcslen(strNumber) % 3); i++, j++)
         temp[j] = strNumber[i];
@@ -376,54 +377,39 @@ void ProcessPageShowContextMenu(DWORD dwProcessId)
     DestroyMenu(hMenu);
 }
 
-void RefreshProcessPage(void)
-{
-    /* Signal the event so that our refresh thread */
-    /* will wake up and refresh the process page */
-    PostThreadMessage(dwProcessThread, WM_TIMER, 0, 0);
-}
-
 UINT WINAPI ProcessPageRefreshThread(void *lpParameter)
 {
-    ULONG    OldProcessorUsage = 0, OldProcessCount = 0;
-    WCHAR    szCpuUsage[256], szProcesses[256];
-    MSG      msg;
+    ULONG OldProcessorUsage = 0, OldProcessCount = 0;
+    WCHAR szCpuUsage[256], szProcesses[256], text[MAX_PATH];
 
     LoadString(hInst, IDS_STATUS_CPUUSAGE, szCpuUsage, 256);
     LoadString(hInst, IDS_STATUS_PROCESSES, szProcesses, 256);
 
     while (TRUE) 
     {
-        /*  Wait for an the event or application close */
-        if (GetMessage(&msg, NULL, 0, 0) <= 0)
-            return FALSE;
+        UpdateProcesses();
 
-        if (msg.message == WM_TIMER) 
+        if (IsWindowVisible(hProcessPage))
+            InvalidateRect(hProcessPageListCtrl, NULL, FALSE);
+
+        if (OldProcessorUsage != PerfDataGetProcessorUsage()) 
         {
-            WCHAR text[MAX_PATH];
+            OldProcessorUsage = PerfDataGetProcessorUsage();
 
-            UpdateProcesses();
+            wsprintf(text, szCpuUsage, OldProcessorUsage);
 
-            if (IsWindowVisible(hProcessPage))
-                InvalidateRect(hProcessPageListCtrl, NULL, FALSE);
-
-            if (OldProcessorUsage != PerfDataGetProcessorUsage()) 
-            {
-                OldProcessorUsage = PerfDataGetProcessorUsage();
-                
-                wsprintf(text, szCpuUsage, OldProcessorUsage);
-                
-                SendMessage(hStatusWnd, SB_SETTEXT, 1, (LPARAM)text);
-            }
-            if (OldProcessCount != PerfDataGetProcessCount()) 
-            {
-                OldProcessCount = PerfDataGetProcessCount();
-               
-                wsprintf(text, szProcesses, OldProcessCount);
-                
-                SendMessage(hStatusWnd, SB_SETTEXT, 0, (LPARAM)text);
-            }
+            SendMessage(hStatusWnd, SB_SETTEXT, 1, (LPARAM)text);
         }
+        if (OldProcessCount != PerfDataGetProcessCount()) 
+        {
+            OldProcessCount = PerfDataGetProcessCount();
+
+            wsprintf(text, szProcesses, OldProcessCount);
+
+            SendMessage(hStatusWnd, SB_SETTEXT, 0, (LPARAM)text);
+        }
+
+        Sleep(1000);
     }
 
     return FALSE;

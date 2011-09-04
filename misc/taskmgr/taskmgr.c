@@ -368,12 +368,9 @@ INT_PTR CALLBACK TaskManagerWndProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
     case WM_TIMER:
         /* Refresh the performance data */
         PerfDataRefresh();
-        RefreshApplicationPage();
-        RefreshProcessPage();
-        RefreshPerformancePage();
+
         TrayIcon_ShellUpdateTrayIcon();
         break;
-
     case WM_ENTERMENULOOP:
         TaskManager_OnEnterMenuLoop(hDlg);
         break;
@@ -639,10 +636,6 @@ BOOL OnCreate(HWND hWnd)
     // Sample it twice so we can establish the delta values & cpu usage.
     PerfDataRefresh();
     PerfDataRefresh();
-
-    RefreshApplicationPage();
-    RefreshProcessPage();
-    RefreshPerformancePage();
 
     TrayIcon_ShellAddTrayIcon();
 
@@ -1046,17 +1039,5 @@ LPWSTR GetLastErrorText(LPWSTR lpszBuf, DWORD dwSize)
     }
 
     return lpszBuf;
-}
-
-DWORD EndLocalThread(HANDLE hThread, DWORD dwThread)
-{
-    DWORD dwExitCodeThread = 0;
-
-    if (hThread != NULL) 
-    {
-        PostThreadMessage(dwThread, WM_QUIT, 0, 0);
-    }
-
-    return dwExitCodeThread;
 }
 

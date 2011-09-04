@@ -294,150 +294,132 @@ INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
     return 0;
 }
 
-void RefreshPerformancePage(void)
-{
-    /*  Signal the event so that our refresh thread */
-    /*  will wake up and refresh the performance page */
-    PostThreadMessage(dwPerformanceThread, WM_TIMER, 0, 0);
-}
-
 UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
 {
-    ULONG  CommitChargeTotal;
-    ULONG  CommitChargeLimit;
-    ULONG  CommitChargePeak;
+    ULONG CommitChargeTotal = 0, 
+          CommitChargeLimit = 0,  
+          CommitChargePeak = 0,  
+          CpuUsage = 0, 
+          CpuKernelUsage = 0,  
+          KernelMemoryTotal = 0,  
+          KernelMemoryPaged = 0, 
+          KernelMemoryNonPaged = 0,  
+          PhysicalMemoryTotal = 0, 
+          PhysicalMemoryAvailable = 0, 
+          PhysicalMemorySystemCache = 0, 
+          TotalHandles = 0, 
+          TotalThreads = 0, 
+          TotalProcesses = 0;
 
-    ULONG  CpuUsage;
-    ULONG  CpuKernelUsage;
-
-    ULONG  KernelMemoryTotal;
-    ULONG  KernelMemoryPaged;
-    ULONG  KernelMemoryNonPaged;
-
-    ULONG  PhysicalMemoryTotal;
-    ULONG  PhysicalMemoryAvailable;
-    ULONG  PhysicalMemorySystemCache;
-
-    ULONG  TotalHandles;
-    ULONG  TotalThreads;
-    ULONG  TotalProcesses;
-
-    WCHAR  Text[MAX_PATH];
-    WCHAR  szMemUsage[256];
-
-    MSG    msg;
+    WCHAR Text[MAX_PATH], szMemUsage[256];
 
     LoadString(hInst, IDS_STATUS_MEMUSAGE, szMemUsage, 256);
 
-    while (1)
+    while (TRUE)
     {
         int nBarsUsed1;
         int nBarsUsed2;
 
-        /*  Wait for an the event or application close */
-        if (GetMessage(&msg, NULL, 0, 0) <= 0)
-            return 0;
+        /*
+        *  Update the commit charge info
+        */
+        CommitChargeTotal = PerfDataGetCommitChargeTotalK();
+        CommitChargeLimit = PerfDataGetCommitChargeLimitK();
+        CommitChargePeak = PerfDataGetCommitChargePeakK();
+        _ultow(CommitChargeTotal, Text, 10);
+        SetWindowText(hPerformancePageCommitChargeTotalEdit, Text);
+        _ultow(CommitChargeLimit, Text, 10);
+        SetWindowText(hPerformancePageCommitChargeLimitEdit, Text);
+        _ultow(CommitChargePeak, Text, 10);
+        SetWindowText(hPerformancePageCommitChargePeakEdit, Text);
+        wsprintf(Text, szMemUsage, CommitChargeTotal, CommitChargeLimit);
+        SendMessage(hStatusWnd, SB_SETTEXT, 2, (LPARAM)Text);
 
-        if (msg.message == WM_TIMER)
+        /*
+        *  Update the kernel memory info
+        */
+        KernelMemoryTotal = PerfDataGetKernelMemoryTotalK();
+        KernelMemoryPaged = PerfDataGetKernelMemoryPagedK();
+        KernelMemoryNonPaged = PerfDataGetKernelMemoryNonPagedK();
+        _ultow(KernelMemoryTotal, Text, 10);
+        SetWindowText(hPerformancePageKernelMemoryTotalEdit, Text);
+        _ultow(KernelMemoryPaged, Text, 10);
+        SetWindowText(hPerformancePageKernelMemoryPagedEdit, Text);
+        _ultow(KernelMemoryNonPaged, Text, 10);
+        SetWindowText(hPerformancePageKernelMemoryNonPagedEdit, Text);
+
+        /*
+        *  Update the physical memory info
+        */
+        PhysicalMemoryTotal = PerfDataGetPhysicalMemoryTotalK();
+        PhysicalMemoryAvailable = PerfDataGetPhysicalMemoryAvailableK();
+        PhysicalMemorySystemCache = PerfDataGetPhysicalMemorySystemCacheK();
+        _ultow(PhysicalMemoryTotal, Text, 10);
+        SetWindowText(hPerformancePagePhysicalMemoryTotalEdit, Text);
+        _ultow(PhysicalMemoryAvailable, Text, 10);
+        SetWindowText(hPerformancePagePhysicalMemoryAvailableEdit, Text);
+        _ultow(PhysicalMemorySystemCache, Text, 10);
+        SetWindowText(hPerformancePagePhysicalMemorySystemCacheEdit, Text);
+
+        /*
+        *  Update the totals info
+        */
+        TotalHandles = PerfDataGetSystemHandleCount();
+        TotalThreads = PerfDataGetTotalThreadCount();
+        TotalProcesses = PerfDataGetProcessCount();
+        _ultow(TotalHandles, Text, 10);
+        SetWindowText(hPerformancePageTotalsHandleCountEdit, Text);
+        _ultow(TotalThreads, Text, 10);
+        SetWindowText(hPerformancePageTotalsThreadCountEdit, Text);
+        _ultow(TotalProcesses, Text, 10);
+        SetWindowText(hPerformancePageTotalsProcessCountEdit, Text);
+
+        /*
+        *  Redraw the graphs
+        */
+        InvalidateRect(hPerformancePageCpuUsageGraph, NULL, FALSE);
+        InvalidateRect(hPerformancePageMemUsageGraph, NULL, FALSE);
+
+        /*
+        *  Get the CPU usage
+        */
+        CpuUsage = PerfDataGetProcessorUsage();
+
+        if (CpuUsage <= 0 )       
+            CpuUsage = 0;
+        if (CpuUsage > 100)       
+            CpuUsage = 100;
+
+        if (TaskManagerSettings.ShowKernelTimes)
         {
-            /*
-            *  Update the commit charge info
-            */
-            CommitChargeTotal = PerfDataGetCommitChargeTotalK();
-            CommitChargeLimit = PerfDataGetCommitChargeLimitK();
-            CommitChargePeak = PerfDataGetCommitChargePeakK();
-            _ultow(CommitChargeTotal, Text, 10);
-            SetWindowText(hPerformancePageCommitChargeTotalEdit, Text);
-            _ultow(CommitChargeLimit, Text, 10);
-            SetWindowText(hPerformancePageCommitChargeLimitEdit, Text);
-            _ultow(CommitChargePeak, Text, 10);
-            SetWindowText(hPerformancePageCommitChargePeakEdit, Text);
-            wsprintf(Text, szMemUsage, CommitChargeTotal, CommitChargeLimit);
-            SendMessage(hStatusWnd, SB_SETTEXT, 2, (LPARAM)Text);
-
-            /*
-            *  Update the kernel memory info
-            */
-            KernelMemoryTotal = PerfDataGetKernelMemoryTotalK();
-            KernelMemoryPaged = PerfDataGetKernelMemoryPagedK();
-            KernelMemoryNonPaged = PerfDataGetKernelMemoryNonPagedK();
-            _ultow(KernelMemoryTotal, Text, 10);
-            SetWindowText(hPerformancePageKernelMemoryTotalEdit, Text);
-            _ultow(KernelMemoryPaged, Text, 10);
-            SetWindowText(hPerformancePageKernelMemoryPagedEdit, Text);
-            _ultow(KernelMemoryNonPaged, Text, 10);
-            SetWindowText(hPerformancePageKernelMemoryNonPagedEdit, Text);
-
-            /*
-            *  Update the physical memory info
-            */
-            PhysicalMemoryTotal = PerfDataGetPhysicalMemoryTotalK();
-            PhysicalMemoryAvailable = PerfDataGetPhysicalMemoryAvailableK();
-            PhysicalMemorySystemCache = PerfDataGetPhysicalMemorySystemCacheK();
-            _ultow(PhysicalMemoryTotal, Text, 10);
-            SetWindowText(hPerformancePagePhysicalMemoryTotalEdit, Text);
-            _ultow(PhysicalMemoryAvailable, Text, 10);
-            SetWindowText(hPerformancePagePhysicalMemoryAvailableEdit, Text);
-            _ultow(PhysicalMemorySystemCache, Text, 10);
-            SetWindowText(hPerformancePagePhysicalMemorySystemCacheEdit, Text);
-
-            /*
-            *  Update the totals info
-            */
-            TotalHandles = PerfDataGetSystemHandleCount();
-            TotalThreads = PerfDataGetTotalThreadCount();
-            TotalProcesses = PerfDataGetProcessCount();
-            _ultow(TotalHandles, Text, 10);
-            SetWindowText(hPerformancePageTotalsHandleCountEdit, Text);
-            _ultow(TotalThreads, Text, 10);
-            SetWindowText(hPerformancePageTotalsThreadCountEdit, Text);
-            _ultow(TotalProcesses, Text, 10);
-            SetWindowText(hPerformancePageTotalsProcessCountEdit, Text);
-
-            /*
-            *  Redraw the graphs
-            */
-            InvalidateRect(hPerformancePageCpuUsageGraph, NULL, FALSE);
-            InvalidateRect(hPerformancePageMemUsageGraph, NULL, FALSE);
-
-            /*
-            *  Get the CPU usage
-            */
-            CpuUsage = PerfDataGetProcessorUsage();
-          
-            if (CpuUsage <= 0 )       
-                CpuUsage = 0;
-            if (CpuUsage > 100)       
-                CpuUsage = 100;
-
-            if (TaskManagerSettings.ShowKernelTimes)
-            {
-                CpuKernelUsage = PerfDataGetProcessorSystemUsage();
-                if (CpuKernelUsage <= 0)   CpuKernelUsage = 0;
-                if (CpuKernelUsage > 100) CpuKernelUsage = 100;
-            }
-            else
-            {
-                CpuKernelUsage = 0;
-            }
-            /*
-            *  Get the memory usage
-            */
-            CommitChargeTotal = PerfDataGetCommitChargeTotalK();
-            CommitChargeLimit = PerfDataGetCommitChargeLimitK();
-            nBarsUsed1 = CommitChargeLimit ? ((CommitChargeTotal * 100) / CommitChargeLimit) : 0;
-
-            PhysicalMemoryTotal = PerfDataGetPhysicalMemoryTotalK();
-            PhysicalMemoryAvailable = PerfDataGetPhysicalMemoryAvailableK();
-            nBarsUsed2 = PhysicalMemoryTotal ? ((PhysicalMemoryAvailable * 100) / PhysicalMemoryTotal) : 0;
-
-            GraphCtrl_AppendPoint(&PerformancePageCpuUsageHistoryGraph, CpuUsage, CpuKernelUsage, 0.0, 0.0);
-            GraphCtrl_AppendPoint(&PerformancePageMemUsageHistoryGraph, nBarsUsed1, nBarsUsed2, 0.0, 0.0);
-            /* PerformancePageMemUsageHistoryGraph.SetRange(0.0, 100.0, 10) ; */
-            InvalidateRect(hPerformancePageMemUsageHistoryGraph, NULL, FALSE);
-            InvalidateRect(hPerformancePageCpuUsageHistoryGraph, NULL, FALSE);
+            CpuKernelUsage = PerfDataGetProcessorSystemUsage();
+            if (CpuKernelUsage <= 0)   CpuKernelUsage = 0;
+            if (CpuKernelUsage > 100) CpuKernelUsage = 100;
         }
+        else
+        {
+            CpuKernelUsage = 0;
+        }
+        /*
+        *  Get the memory usage
+        */
+        CommitChargeTotal = PerfDataGetCommitChargeTotalK();
+        CommitChargeLimit = PerfDataGetCommitChargeLimitK();
+        nBarsUsed1 = CommitChargeLimit ? ((CommitChargeTotal * 100) / CommitChargeLimit) : 0;
+
+        PhysicalMemoryTotal = PerfDataGetPhysicalMemoryTotalK();
+        PhysicalMemoryAvailable = PerfDataGetPhysicalMemoryAvailableK();
+        nBarsUsed2 = PhysicalMemoryTotal ? ((PhysicalMemoryAvailable * 100) / PhysicalMemoryTotal) : 0;
+
+        GraphCtrl_AppendPoint(&PerformancePageCpuUsageHistoryGraph, CpuUsage, CpuKernelUsage, 0.0, 0.0);
+        GraphCtrl_AppendPoint(&PerformancePageMemUsageHistoryGraph, nBarsUsed1, nBarsUsed2, 0.0, 0.0);
+        /* PerformancePageMemUsageHistoryGraph.SetRange(0.0, 100.0, 10) ; */
+        InvalidateRect(hPerformancePageMemUsageHistoryGraph, NULL, FALSE);
+        InvalidateRect(hPerformancePageCpuUsageHistoryGraph, NULL, FALSE);
+
+        Sleep(1000);
     }
+
     return 0;
 }
 
@@ -460,8 +442,6 @@ void PerformancePage_OnViewShowKernelTimes(void)
         CheckMenuItem(hViewMenu, ID_VIEW_SHOWKERNELTIMES, MF_BYCOMMAND|MF_CHECKED);
         TaskManagerSettings.ShowKernelTimes = TRUE;
     }
-
-    RefreshPerformancePage();
 }
 
 void PerformancePage_OnViewCPUHistoryOneGraphAll(void)

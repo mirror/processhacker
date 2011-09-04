@@ -22,27 +22,23 @@
 
 #pragma once
 
-extern    HWND        hApplicationPage;                /* Application List Property Page */
+extern HWND hApplicationPage;                /* Application List Property Page */
+extern HWND hApplicationPageListCtrl;        /* Application ListCtrl Window */
+extern HWND hApplicationPageEndTaskButton;    /* Application End Task button */
+extern HWND hApplicationPageSwitchToButton;    /* Application Switch To button */
+extern HWND hApplicationPageNewTaskButton;    /* Application New Task button */
 
-extern    HWND        hApplicationPageListCtrl;        /* Application ListCtrl Window */
-extern    HWND        hApplicationPageEndTaskButton;    /* Application End Task button */
-extern    HWND        hApplicationPageSwitchToButton;    /* Application Switch To button */
-extern    HWND        hApplicationPageNewTaskButton;    /* Application New Task button */
-
-INT_PTR CALLBACK    ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
-void                RefreshApplicationPage(void);
-void                UpdateApplicationListControlViewSetting(void);
-
-void                ApplicationPage_OnView(DWORD);
-void                ApplicationPage_OnWindowsTile(DWORD);
-void                ApplicationPage_OnWindowsMinimize(void);
-void                ApplicationPage_OnWindowsMaximize(void);
-void                ApplicationPage_OnWindowsCascade(void);
-void                ApplicationPage_OnWindowsBringToFront(void);
-void                ApplicationPage_OnSwitchTo(void);
-void                ApplicationPage_OnEndTask(void);
-void                ApplicationPage_OnGotoProcess(void);
-
+INT_PTR CALLBACK ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+void UpdateApplicationListControlViewSetting(void);
+void ApplicationPage_OnView(DWORD);
+void ApplicationPage_OnWindowsTile(DWORD);
+void ApplicationPage_OnWindowsMinimize(void);
+void ApplicationPage_OnWindowsMaximize(void);
+void ApplicationPage_OnWindowsCascade(void);
+void ApplicationPage_OnWindowsBringToFront(void);
+void ApplicationPage_OnSwitchTo(void);
+void ApplicationPage_OnEndTask(void);
+void ApplicationPage_OnGotoProcess(void);
 
 typedef struct
 {
@@ -60,7 +56,6 @@ HWND            hApplicationPageSwitchToButton; /* Application Switch To button 
 HWND            hApplicationPageNewTaskButton;  /* Application New Task button */
 static int      nApplicationPageWidth;
 static int      nApplicationPageHeight;
-UINT WINAPI    ApplicationPageRefreshThread(void *lpParameter);
 BOOL            noApps;
 BOOL CALLBACK   EnumWindowsProc(HWND hWnd, LPARAM lParam);
 void            AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung);

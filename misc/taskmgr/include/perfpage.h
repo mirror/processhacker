@@ -20,19 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#pragma once
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern	HWND		hPerformancePage;		/* Performance Property Page */
-INT_PTR CALLBACK	PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
-void	RefreshPerformancePage(void);
-void	PerformancePage_OnViewShowKernelTimes(void);
-void	PerformancePage_OnViewCPUHistoryOneGraphAll(void);
-void	PerformancePage_OnViewCPUHistoryOneGraphPerCPU(void);
-
-#ifdef __cplusplus
-};
-#endif
+extern HWND	hPerformancePage; /* Performance Property Page */
+INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+void PerformancePage_OnViewShowKernelTimes(void);
+void PerformancePage_OnViewCPUHistoryOneGraphAll(void);
+void PerformancePage_OnViewCPUHistoryOneGraphPerCPU(void);

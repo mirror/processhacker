@@ -24,12 +24,11 @@
 
 WNDPROC OldProcessListWndProc;
 
-extern	HWND		hProcessPage;				/* Process List Property Page */
-extern	HWND		hProcessPageListCtrl;			/* Process ListCtrl Window */
-extern	HWND		hProcessPageHeaderCtrl;			/* Process Header Control */
-extern	HWND		hProcessPageEndProcessButton;		/* Process End Process button */
-extern	HWND		hProcessPageShowAllProcessesButton;	/* Process Show All Processes checkbox */
+extern HWND	hProcessPage;				/* Process List Property Page */
+extern HWND	hProcessPageListCtrl;			/* Process ListCtrl Window */
+extern HWND	hProcessPageHeaderCtrl;			/* Process Header Control */
+extern HWND	hProcessPageEndProcessButton;		/* Process End Process button */
+extern HWND	hProcessPageShowAllProcessesButton;	/* Process Show All Processes checkbox */
 
-INT_PTR CALLBACK	ProcessPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
-void				RefreshProcessPage(void);
-DWORD               GetSelectedProcessId(void);
+INT_PTR CALLBACK ProcessPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+DWORD GetSelectedProcessId(void);
