@@ -101,7 +101,7 @@ void PerfDataUninitialize(void)
 static void SidToUserName(PSID Sid, LPWSTR szBuffer, DWORD BufferSize)
 {
     static WCHAR szDomainNameUnused[255];
-    DWORD DomainNameLen = sizeof(szDomainNameUnused) / sizeof(szDomainNameUnused[0]);
+    DWORD DomainNameLen = NUMBER_OF_ITEMS_IN_ARRAY(szDomainNameUnused);
     SID_NAME_USE Use;
 
     if (Sid != NULL)
@@ -197,6 +197,7 @@ void PerfDataRefresh(void)
     {
         if (SysProcessorTimeInfo != NULL)
             HeapFree(GetProcessHeap(), 0, SysProcessorTimeInfo);
+        
         return;
     }
 
@@ -342,7 +343,7 @@ void PerfDataRefresh(void)
         } 
         else 
         {
-            LoadString(hInst, IDS_IDLE_PROCESS, pPerfData[Idx].ImageName, sizeof(pPerfData[Idx].ImageName) / sizeof(pPerfData[Idx].ImageName[0]));
+            LoadString(hInst, IDS_IDLE_PROCESS, pPerfData[Idx].ImageName, NUMBER_OF_ITEMS_IN_ARRAY(pPerfData[Idx].ImageName));
         }
 
         pPerfData[Idx].ProcessId = pSPI->UniqueProcessId;
@@ -437,7 +438,7 @@ ClearInfo:
             ZeroMemory(&pPerfData[Idx].IOCounters, sizeof(IO_COUNTERS));
         }
 
-        cwcUserName = sizeof(pPerfData[0].UserName) / sizeof(pPerfData[0].UserName[0]);
+        cwcUserName = NUMBER_OF_ITEMS_IN_ARRAY(pPerfData[0].UserName);
         CachedGetUserFromSid(ProcessUser, pPerfData[Idx].UserName, &cwcUserName);
 
         if (ProcessSD != NULL)

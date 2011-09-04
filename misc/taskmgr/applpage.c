@@ -528,11 +528,11 @@ void ApplicationPageOnNotify(WPARAM wParam, LPARAM lParam)
                 {
                     if (pAPLI->bHung)
                     {
-                        LoadString(NULL, IDS_Not_Responding , szMsg, sizeof(szMsg) / sizeof(szMsg[0]));
+                        LoadString(NULL, IDS_Not_Responding , szMsg, NUMBER_OF_ITEMS_IN_ARRAY(szMsg));
                     }
                     else
                     {
-                        LoadString(NULL, IDS_Running, (LPWSTR) szMsg, sizeof(szMsg) / sizeof(szMsg[0]));
+                        LoadString(NULL, IDS_Running, (LPWSTR) szMsg, NUMBER_OF_ITEMS_IN_ARRAY(szMsg));
                     }
 
                     wcsncpy_s(pnmdi->item.pszText, 256, szMsg, pnmdi->item.cchTextMax);

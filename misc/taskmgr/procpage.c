@@ -731,8 +731,6 @@ int largeintcmp(LARGE_INTEGER l1, LARGE_INTEGER l2)
     return ret;
 }
 
-#define NUMBER_OF_ITEMS_IN_ARRAY(array) (sizeof array / sizeof array[0])
-
 int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
     int ret = 0;

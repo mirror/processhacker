@@ -65,6 +65,8 @@
 #define STATUS_SIZE2	210
 #define STATUS_SIZE3	400
 
+#define NUMBER_OF_ITEMS_IN_ARRAY(array) (sizeof array / sizeof array[0])
+
 typedef struct
 {
 	/* Window size & position settings */

@@ -31,8 +31,8 @@ VOID TaskManager_OnFileNew()
     WCHAR szText[256];
 
     /* Load language strings from resource file */
-    LoadString(hInst, IDS_CREATENEWTASK, szTitle, sizeof(szTitle) / sizeof(szTitle[0]));
-    LoadString(hInst, IDS_CREATENEWTASK_DESC, szText, sizeof(szText) / sizeof(szText[0]));
+    LoadString(hInst, IDS_CREATENEWTASK, szTitle, NUMBER_OF_ITEMS_IN_ARRAY(szTitle));
+    LoadString(hInst, IDS_CREATENEWTASK_DESC, szText, NUMBER_OF_ITEMS_IN_ARRAY(szText));
 
     // Load application icon.
     hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_TASKMANAGER));
