@@ -128,8 +128,6 @@ INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
     case WM_DESTROY:
         GraphCtrl_Dispose(&PerformancePageCpuUsageHistoryGraph);
         GraphCtrl_Dispose(&PerformancePageMemUsageHistoryGraph);
-        
-        //EndLocalThread(&hPerformanceThread, dwPerformanceThread);
         break;
 
     case WM_INITDIALOG:
@@ -138,9 +136,6 @@ INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
         GetClientRect(hDlg, &rc);
         nPerformancePageWidth = rc.right;
         nPerformancePageHeight = rc.bottom;
-
-        /*  Update window position */
-        //SetWindowPos(hDlg, NULL, 15, 30, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
 
         /*
         *  Get handles to all the controls
@@ -178,17 +173,16 @@ INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
         GraphCtrl_Create(&PerformancePageCpuUsageHistoryGraph, hPerformancePageCpuUsageHistoryGraph, hDlg, IDC_CPU_USAGE_HISTORY_GRAPH);
         /*  customize the control */
         GraphCtrl_SetRange(&PerformancePageCpuUsageHistoryGraph, 0.0, 100.0, 10);
-        /*         PerformancePageCpuUsageHistoryGraph.SetYUnits("Current") ; */
-        /*         PerformancePageCpuUsageHistoryGraph.SetXUnits("Samples (Windows Timer: 100 msec)") ; */
-        /*         PerformancePageCpuUsageHistoryGraph.SetBackgroundColor(RGB(0, 0, 64)) ; */
-        /*         PerformancePageCpuUsageHistoryGraph.SetGridColor(RGB(192, 192, 255)) ; */
-        /*         PerformancePageCpuUsageHistoryGraph.SetPlotColor(RGB(255, 255, 255)) ; */
+        /*PerformancePageCpuUsageHistoryGraph.SetYUnits("Current") ; */
+        /*PerformancePageCpuUsageHistoryGraph.SetXUnits("Samples (Windows Timer: 100 msec)") ; */
+        /*PerformancePageCpuUsageHistoryGraph.SetBackgroundColor(RGB(0, 0, 64)) ; */
+        /*PerformancePageCpuUsageHistoryGraph.SetGridColor(RGB(192, 192, 255)) ; */
+        /*PerformancePageCpuUsageHistoryGraph.SetPlotColor(RGB(255, 255, 255)) ; */
         GraphCtrl_SetBackgroundColor(&PerformancePageCpuUsageHistoryGraph, RGB(0, 0, 0)) ;
         GraphCtrl_SetGridColor(&PerformancePageCpuUsageHistoryGraph, RGB(0, 128, 64));
 
         GraphCtrl_SetPlotColor(&PerformancePageCpuUsageHistoryGraph, 0, RGB(0, 255, 0)) ;
         GraphCtrl_SetPlotColor(&PerformancePageCpuUsageHistoryGraph, 1, RGB(255, 0, 0)) ;
-
 
         GetClientRect(hPerformancePageMemUsageHistoryGraph, &rc);
         GraphCtrl_Create(&PerformancePageMemUsageHistoryGraph, hPerformancePageMemUsageHistoryGraph, hDlg, IDC_MEM_USAGE_HISTORY_GRAPH);
@@ -328,12 +322,12 @@ UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
     ULONG  TotalThreads;
     ULONG  TotalProcesses;
 
-    WCHAR  Text[260];
+    WCHAR  Text[MAX_PATH];
     WCHAR  szMemUsage[256];
 
     MSG    msg;
 
-    LoadStringW(hInst, IDS_STATUS_MEMUSAGE, szMemUsage, 256);
+    LoadString(hInst, IDS_STATUS_MEMUSAGE, szMemUsage, 256);
 
     while (1)
     {
@@ -353,13 +347,13 @@ UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
             CommitChargeLimit = PerfDataGetCommitChargeLimitK();
             CommitChargePeak = PerfDataGetCommitChargePeakK();
             _ultow(CommitChargeTotal, Text, 10);
-            SetWindowTextW(hPerformancePageCommitChargeTotalEdit, Text);
+            SetWindowText(hPerformancePageCommitChargeTotalEdit, Text);
             _ultow(CommitChargeLimit, Text, 10);
-            SetWindowTextW(hPerformancePageCommitChargeLimitEdit, Text);
+            SetWindowText(hPerformancePageCommitChargeLimitEdit, Text);
             _ultow(CommitChargePeak, Text, 10);
-            SetWindowTextW(hPerformancePageCommitChargePeakEdit, Text);
-            wsprintfW(Text, szMemUsage, CommitChargeTotal, CommitChargeLimit);
-            SendMessageW(hStatusWnd, SB_SETTEXT, 2, (LPARAM)Text);
+            SetWindowText(hPerformancePageCommitChargePeakEdit, Text);
+            wsprintf(Text, szMemUsage, CommitChargeTotal, CommitChargeLimit);
+            SendMessage(hStatusWnd, SB_SETTEXT, 2, (LPARAM)Text);
 
             /*
             *  Update the kernel memory info
@@ -368,11 +362,11 @@ UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
             KernelMemoryPaged = PerfDataGetKernelMemoryPagedK();
             KernelMemoryNonPaged = PerfDataGetKernelMemoryNonPagedK();
             _ultow(KernelMemoryTotal, Text, 10);
-            SetWindowTextW(hPerformancePageKernelMemoryTotalEdit, Text);
+            SetWindowText(hPerformancePageKernelMemoryTotalEdit, Text);
             _ultow(KernelMemoryPaged, Text, 10);
-            SetWindowTextW(hPerformancePageKernelMemoryPagedEdit, Text);
+            SetWindowText(hPerformancePageKernelMemoryPagedEdit, Text);
             _ultow(KernelMemoryNonPaged, Text, 10);
-            SetWindowTextW(hPerformancePageKernelMemoryNonPagedEdit, Text);
+            SetWindowText(hPerformancePageKernelMemoryNonPagedEdit, Text);
 
             /*
             *  Update the physical memory info
@@ -381,11 +375,11 @@ UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
             PhysicalMemoryAvailable = PerfDataGetPhysicalMemoryAvailableK();
             PhysicalMemorySystemCache = PerfDataGetPhysicalMemorySystemCacheK();
             _ultow(PhysicalMemoryTotal, Text, 10);
-            SetWindowTextW(hPerformancePagePhysicalMemoryTotalEdit, Text);
+            SetWindowText(hPerformancePagePhysicalMemoryTotalEdit, Text);
             _ultow(PhysicalMemoryAvailable, Text, 10);
-            SetWindowTextW(hPerformancePagePhysicalMemoryAvailableEdit, Text);
+            SetWindowText(hPerformancePagePhysicalMemoryAvailableEdit, Text);
             _ultow(PhysicalMemorySystemCache, Text, 10);
-            SetWindowTextW(hPerformancePagePhysicalMemorySystemCacheEdit, Text);
+            SetWindowText(hPerformancePagePhysicalMemorySystemCacheEdit, Text);
 
             /*
             *  Update the totals info
@@ -394,11 +388,11 @@ UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
             TotalThreads = PerfDataGetTotalThreadCount();
             TotalProcesses = PerfDataGetProcessCount();
             _ultow(TotalHandles, Text, 10);
-            SetWindowTextW(hPerformancePageTotalsHandleCountEdit, Text);
+            SetWindowText(hPerformancePageTotalsHandleCountEdit, Text);
             _ultow(TotalThreads, Text, 10);
-            SetWindowTextW(hPerformancePageTotalsThreadCountEdit, Text);
+            SetWindowText(hPerformancePageTotalsThreadCountEdit, Text);
             _ultow(TotalProcesses, Text, 10);
-            SetWindowTextW(hPerformancePageTotalsProcessCountEdit, Text);
+            SetWindowText(hPerformancePageTotalsProcessCountEdit, Text);
 
             /*
             *  Redraw the graphs

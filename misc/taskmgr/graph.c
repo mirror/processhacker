@@ -119,7 +119,7 @@ INT_PTR CALLBACK Graph_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 		return 0;
 	}
 
-	return CallWindowProcW((WNDPROC)OldGraphWndProc, hWnd, message, wParam, lParam);
+	return CallWindowProc(OldGraphWndProc, hWnd, message, wParam, lParam);
 }
 
 void Graph_DrawCpuUsageGraph(HDC hDC, HWND hWnd)
@@ -129,7 +129,7 @@ void Graph_DrawCpuUsageGraph(HDC hDC, HWND hWnd)
     RECT      rcBarRight;
     RECT      rcText;
     COLORREF  crPrevForeground;
-    WCHAR     Text[260];
+    WCHAR     Text[MAX_PATH];
     HFONT     hOldFont;
     ULONG     CpuUsage;
     ULONG     CpuKernelUsage;
@@ -157,7 +157,7 @@ void Graph_DrawCpuUsageGraph(HDC hDC, HWND hWnd)
     if (CpuUsage > 100) 
 		CpuUsage = 100;
 
-    wsprintfW(Text, L"%d%%", (int)CpuUsage);
+    wsprintf(Text, TEXT("%d%%"), (int)CpuUsage);
 
     /*
      * Draw the font text onto the graph
@@ -312,7 +312,7 @@ void Graph_DrawMemUsageGraph(HDC hDC, HWND hWnd)
     RECT       rcBarRight;
     RECT       rcText;
     COLORREF   crPrevForeground;
-    WCHAR      Text[260];
+    WCHAR      Text[MAX_PATH];
     HFONT      hOldFont;
     ULONGLONG  CommitChargeTotal;
     ULONGLONG  CommitChargeLimit;
@@ -340,9 +340,9 @@ void Graph_DrawMemUsageGraph(HDC hDC, HWND hWnd)
     CommitChargeLimit = (ULONGLONG)PerfDataGetCommitChargeLimitK();
 
     if (CommitChargeTotal > 1024)
-        wsprintfW(Text, L"%d MB", (int)(CommitChargeTotal / 1024));
+        wsprintf(Text, TEXT("%d MB"), (int)(CommitChargeTotal / 1024));
     else
-        wsprintfW(Text, L"%d K", (int)CommitChargeTotal);
+        wsprintf(Text, TEXT("%d K"), (int)CommitChargeTotal);
     /*
      * Draw the font text onto the graph
      */
@@ -350,7 +350,7 @@ void Graph_DrawMemUsageGraph(HDC hDC, HWND hWnd)
     InflateRect(&rcText, -2, -2);
     crPrevForeground = SetTextColor(hDC, RGB(0, 255, 0));
     hOldFont = SelectObject(hDC, GetStockObject(DEFAULT_GUI_FONT));
-    DrawTextW(hDC, Text, -1, &rcText, DT_BOTTOM | DT_CENTER | DT_NOPREFIX | DT_SINGLELINE);
+    DrawText(hDC, Text, -1, &rcText, DT_BOTTOM | DT_CENTER | DT_NOPREFIX | DT_SINGLELINE);
     SelectObject(hDC, hOldFont);
     SetTextColor(hDC, crPrevForeground);
 

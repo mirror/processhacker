@@ -29,7 +29,7 @@ void ProcessPage_OnEndProcess(void)
     DWORD   dwProcessId;
     HANDLE  hProcess;
     WCHAR   szTitle[256];
-    WCHAR   strErrorText[260];
+    WCHAR   strErrorText[MAX_PATH];
 
     dwProcessId = GetSelectedProcessId();
 
@@ -46,21 +46,21 @@ void ProcessPage_OnEndProcess(void)
 
     if (!hProcess)
     {
-        GetLastErrorText(strErrorText, 260);
-        LoadStringW(hInst, IDS_MSG_UNABLETERMINATEPRO, szTitle, 256);
-        MessageBoxW(hMainWnd, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
+        GetLastErrorText(strErrorText, MAX_PATH);
+        LoadString(hInst, IDS_MSG_UNABLETERMINATEPRO, szTitle, 256);
+        MessageBox(hMainWnd, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
         return;
     }
 
     if (!TerminateProcess(hProcess, 1))
     {
-        GetLastErrorText(strErrorText, 260);
+        GetLastErrorText(strErrorText, MAX_PATH);
         
         LoadString(hInst, IDS_MSG_UNABLETERMINATEPRO, szTitle, 256);
         MessageBox(hMainWnd, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
     }
 
-    CloseHandle(hProcess);
+    NtClose(hProcess);
 }
 
 void ProcessPage_OnEndProcessTree(void)
@@ -68,34 +68,34 @@ void ProcessPage_OnEndProcessTree(void)
     DWORD   dwProcessId;
     HANDLE  hProcess;
     WCHAR   szTitle[256];
-    WCHAR   strErrorText[260];
+    WCHAR   strErrorText[MAX_PATH];
 
     dwProcessId = GetSelectedProcessId();
 
     if (dwProcessId == 0)
         return;
 
-    LoadStringW(hInst, IDS_MSG_WARNINGTERMINATING, strErrorText, 256);
-    LoadStringW(hInst, IDS_MSG_TASKMGRWARNING, szTitle, 256);
-    if (MessageBoxW(hMainWnd, strErrorText, szTitle, MB_YESNO|MB_ICONWARNING) != IDYES)
+    LoadString(hInst, IDS_MSG_WARNINGTERMINATING, strErrorText, 256);
+    LoadString(hInst, IDS_MSG_TASKMGRWARNING, szTitle, 256);
+    if (MessageBox(hMainWnd, strErrorText, szTitle, MB_YESNO|MB_ICONWARNING) != IDYES)
         return;
 
     hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, dwProcessId);
 
     if (!hProcess)
     {
-        GetLastErrorText(strErrorText, 260);
-        LoadStringW(hInst, IDS_MSG_UNABLETERMINATEPRO, szTitle, 256);
-        MessageBoxW(hMainWnd, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
+        GetLastErrorText(strErrorText, MAX_PATH);
+        LoadString(hInst, IDS_MSG_UNABLETERMINATEPRO, szTitle, 256);
+        MessageBox(hMainWnd, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
         return;
     }
 
     if (!TerminateProcess(hProcess, 0))
     {
-        GetLastErrorText(strErrorText, 260);
-        LoadStringW(hInst, IDS_MSG_UNABLETERMINATEPRO, szTitle, 256);
-        MessageBoxW(hMainWnd, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
+        GetLastErrorText(strErrorText, MAX_PATH);
+        LoadString(hInst, IDS_MSG_UNABLETERMINATEPRO, szTitle, 256);
+        MessageBox(hMainWnd, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
     }
 
-    CloseHandle(hProcess);
+    NtClose(hProcess);
 }

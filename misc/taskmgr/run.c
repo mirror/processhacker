@@ -38,7 +38,7 @@ VOID TaskManager_OnFileNew()
     hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_TASKMANAGER));
 
     // Load RunFileDlg export using it's ordinal.
-    RunFileDlg = (RUNFILEDLG)(FARPROC)GetProcAddress(GetModuleHandle(L"SHELL32.dll"), (LPCSTR)0x3D);
+    RunFileDlg = (RUNFILEDLG)(FARPROC)GetProcAddress(GetModuleHandle(TEXT("SHELL32.dll")), (LPCSTR)0x3D);
 
     /* Show "Run..." dialog */
     if (RunFileDlg)

@@ -38,11 +38,11 @@ HWND hProcessPageHeaderCtrl;            /* Process Header Control */
 HWND hProcessPageEndProcessButton;        /* Process End Process button */
 HWND hProcessPageShowAllProcessesButton;/* Process Show All Processes checkbox */
 
-static int  nProcessPageWidth = NULL;
-static int  nProcessPageHeight = NULL;
+static int nProcessPageWidth = 0;
+static int nProcessPageHeight = 0;
 
 static uintptr_t hProcessThread = NULL;
-static UINT dwProcessThread = NULL;
+static UINT dwProcessThread = 0;
 
 int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
 void AddProcess(ULONG Index);
@@ -131,7 +131,7 @@ INT_PTR CALLBACK ProcessPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
         /*
         * Set the title, and extended window styles for the list control
         */
-        SetWindowText(hProcessPageListCtrl, L"Processes");
+        SetWindowText(hProcessPageListCtrl, TEXT("Processes"));
        
         ListView_SetExtendedListViewStyle(
             hProcessPageListCtrl, 
@@ -280,7 +280,7 @@ void ProcessPageOnNotify(WPARAM wParam, LPARAM lParam)
 
 void CommaSeparateNumberString(LPWSTR strNumber, int nMaxCount)
 {
-    WCHAR temp[260];
+    WCHAR temp[MAX_PATH];
     UINT i = 0, j = 0, k = 0;
 
     for (i = 0, j = 0; i < (wcslen(strNumber) % 3); i++, j++)
@@ -307,7 +307,7 @@ void ProcessPageShowContextMenu(DWORD dwProcessId)
     SYSTEM_INFO  si;
     HANDLE       hProcess;
     DWORD        dwProcessPriorityClass;
-    WCHAR        strDebugger[260];
+    WCHAR        strDebugger[MAX_PATH];
     DWORD        dwDebuggerSize;
     HKEY         hKey;
 
@@ -316,13 +316,13 @@ void ProcessPageShowContextMenu(DWORD dwProcessId)
     GetCursorPos(&pt);
     GetSystemInfo(&si);
 
-    hMenu = LoadMenuW(hInst, MAKEINTRESOURCEW(IDR_PROCESS_PAGE_CONTEXT));
+    hMenu = LoadMenu(hInst, MAKEINTRESOURCE(IDR_PROCESS_PAGE_CONTEXT));
     hSubMenu = GetSubMenu(hMenu, 0);
     hPriorityMenu = GetSubMenu(hSubMenu, 4);
 
     hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, dwProcessId);
     dwProcessPriorityClass = GetPriorityClass(hProcess);
-    CloseHandle(hProcess);
+    NtClose(hProcess);
 
     if (si.dwNumberOfProcessors < 2)
         RemoveMenu(hSubMenu, ID_PROCESS_PAGE_SETAFFINITY, MF_BYCOMMAND);
@@ -349,29 +349,30 @@ void ProcessPageShowContextMenu(DWORD dwProcessId)
         break;
     }
 
-    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Windows NT\\CurrentVersion\\AeDebug", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT("Software\\Microsoft\\Windows NT\\CurrentVersion\\AeDebug"), 0, KEY_READ, &hKey) == ERROR_SUCCESS)
     {
-        dwDebuggerSize = 260;
+        dwDebuggerSize = MAX_PATH;
 
-        if (RegQueryValueEx(hKey, L"Debugger", NULL, NULL, (LPBYTE)strDebugger, &dwDebuggerSize) == ERROR_SUCCESS)
+        if (RegQueryValueEx(hKey, TEXT("Debugger"), NULL, NULL, (LPBYTE)strDebugger, &dwDebuggerSize) == ERROR_SUCCESS)
         {
             CharUpper(strDebugger);
 
-            if (wcsstr(strDebugger, L"DRWTSN32"))
-                EnableMenuItem(hSubMenu, ID_PROCESS_PAGE_DEBUG, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
+            if (wcsstr(strDebugger, TEXT("DRWTSN32")))
+                EnableMenuItem(hSubMenu, ID_PROCESS_PAGE_DEBUG, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
         }
         else
         {
-            EnableMenuItem(hSubMenu, ID_PROCESS_PAGE_DEBUG, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
+            EnableMenuItem(hSubMenu, ID_PROCESS_PAGE_DEBUG, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
         }
 
         RegCloseKey(hKey);
     } 
     else 
     {
-        EnableMenuItem(hSubMenu, ID_PROCESS_PAGE_DEBUG, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
+        EnableMenuItem(hSubMenu, ID_PROCESS_PAGE_DEBUG, MF_BYCOMMAND | MF_DISABLED| MF_GRAYED);
     }
-    TrackPopupMenu(hSubMenu, TPM_LEFTALIGN|TPM_TOPALIGN|TPM_LEFTBUTTON, pt.x, pt.y, 0, hMainWnd, NULL);
+
+    TrackPopupMenu(hSubMenu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_LEFTBUTTON, pt.x, pt.y, 0, hMainWnd, NULL);
     DestroyMenu(hMenu);
 }
 
@@ -399,7 +400,7 @@ UINT WINAPI ProcessPageRefreshThread(void *lpParameter)
 
         if (msg.message == WM_TIMER) 
         {
-            WCHAR text[260];
+            WCHAR text[MAX_PATH];
 
             UpdateProcesses();
 
@@ -430,7 +431,7 @@ UINT WINAPI ProcessPageRefreshThread(void *lpParameter)
 
 void UpdateProcesses()
 {
-    int i;
+    INT i = 0;
     ULONG l;
     LV_ITEM item;
     LPPROCESS_PAGE_LIST_ITEM pData;
@@ -487,7 +488,7 @@ BOOL ProcessRunning(ULONG processId)
 
     GetExitCodeProcess(hProcess, &exitCode); 
 
-    CloseHandle(hProcess);
+    NtClose(hProcess);
     
     return exitCode == STILL_ACTIVE;
 }
@@ -611,49 +612,49 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
 
     if (ColumnDataHints[ColumnIndex] == COLUMN_PAGEDPOOL)
     {
-        wsprintfW(lpText, TEXT("%d"), PerfDataGetPagedPoolUsagePages(Index) / 1024);
+        wsprintf(lpText, TEXT("%d"), PerfDataGetPagedPoolUsagePages(Index) / 1024);
         CommaSeparateNumberString(lpText, nMaxCount);
         wcscat(lpText, TEXT(" K"));
     }
 
     if (ColumnDataHints[ColumnIndex] == COLUMN_NONPAGEDPOOL)
     {
-        wsprintf(lpText, TEXT("%d"), PerfDataGetNonPagedPoolUsagePages(Index) / 1024);
+        wsprintf(lpText, TEXT("%d"), (int)(PerfDataGetNonPagedPoolUsagePages(Index) / 1024));
         CommaSeparateNumberString(lpText, nMaxCount);
         wcscat(lpText, TEXT(" K"));
     }
 
     if (ColumnDataHints[ColumnIndex] == COLUMN_BASEPRIORITY)
-        wsprintf(lpText, TEXT("%d"), PerfDataGetBasePriority(Index));
+        wsprintf(lpText, TEXT("%d"), (int)PerfDataGetBasePriority(Index));
     
     if (ColumnDataHints[ColumnIndex] == COLUMN_HANDLECOUNT)
     {
-        wsprintf(lpText, TEXT("%d"), PerfDataGetHandleCount(Index));
+        wsprintf(lpText, TEXT("%d"), (int)PerfDataGetHandleCount(Index));
         CommaSeparateNumberString(lpText, nMaxCount);
     }
 
     if (ColumnDataHints[ColumnIndex] == COLUMN_THREADCOUNT)
     {
-        wsprintfW(lpText, TEXT("%d"), PerfDataGetThreadCount(Index));
+        wsprintf(lpText, TEXT("%d"), PerfDataGetThreadCount(Index));
         CommaSeparateNumberString(lpText, nMaxCount);
     }
 
     if (ColumnDataHints[ColumnIndex] == COLUMN_USEROBJECTS)
     {
-        wsprintfW(lpText, TEXT("%d"), PerfDataGetUSERObjectCount(Index));
+        wsprintf(lpText, TEXT("%d"), (int)PerfDataGetUSERObjectCount(Index));
         CommaSeparateNumberString(lpText, nMaxCount);
     }
 
     if (ColumnDataHints[ColumnIndex] == COLUMN_GDIOBJECTS)
     {
-        wsprintfW(lpText, TEXT("%d"), PerfDataGetGDIObjectCount(Index));
+        wsprintf(lpText, TEXT("%d"), (int)PerfDataGetGDIObjectCount(Index));
         CommaSeparateNumberString(lpText, nMaxCount);
     }
 
     if (ColumnDataHints[ColumnIndex] == COLUMN_IOREADS)
     {
         PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintfW(pnmdi->item.pszText, L"%d", iocounters.ReadOperationCount); */
+        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.ReadOperationCount); */
         _ui64tow(iocounters.ReadOperationCount, lpText, 10);
         CommaSeparateNumberString(lpText, nMaxCount);
     }
@@ -661,7 +662,7 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
     if (ColumnDataHints[ColumnIndex] == COLUMN_IOWRITES)
     {
         PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintfW(pnmdi->item.pszText, L"%d", iocounters.WriteOperationCount); */
+        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.WriteOperationCount); */
         _ui64tow(iocounters.WriteOperationCount, lpText, 10);
         CommaSeparateNumberString(lpText, nMaxCount);
     }
@@ -669,7 +670,7 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
     if (ColumnDataHints[ColumnIndex] == COLUMN_IOOTHER)
     {
         PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintfW(pnmdi->item.pszText, L"%d", iocounters.OtherOperationCount); */
+        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.OtherOperationCount); */
         _ui64tow(iocounters.OtherOperationCount, lpText, 10);
         CommaSeparateNumberString(lpText, nMaxCount);
     }
@@ -677,7 +678,7 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
     if (ColumnDataHints[ColumnIndex] == COLUMN_IOREADBYTES)
     {
         PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintfW(pnmdi->item.pszText, L"%d", iocounters.ReadTransferCount); */
+        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.ReadTransferCount); */
         _ui64tow(iocounters.ReadTransferCount, lpText, 10);
         CommaSeparateNumberString(lpText, nMaxCount);
     }
@@ -685,7 +686,7 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
     if (ColumnDataHints[ColumnIndex] == COLUMN_IOWRITEBYTES)
     {
         PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintfW(pnmdi->item.pszText, L"%d", iocounters.WriteTransferCount); */
+        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.WriteTransferCount); */
         _ui64tow(iocounters.WriteTransferCount, lpText, 10);
         CommaSeparateNumberString(lpText, nMaxCount);
     }
@@ -693,7 +694,7 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
     if (ColumnDataHints[ColumnIndex] == COLUMN_IOOTHERBYTES)
     {
         PerfDataGetIOCounters(Index, &iocounters);
-        /* wsprintfW(pnmdi->item.pszText, L"%d", iocounters.OtherTransferCount); */
+        /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.OtherTransferCount); */
         _ui64tow(iocounters.OtherTransferCount, lpText, 10);
         CommaSeparateNumberString(lpText, nMaxCount);
     }
@@ -736,7 +737,7 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
     int ret = 0;
     LPPROCESS_PAGE_LIST_ITEM Param1, Param2;
     ULONG IndexParam1, IndexParam2;
-    WCHAR text1[260], text2[260];
+    WCHAR text1[MAX_PATH], text2[MAX_PATH];
     ULONG l1, l2;
     LARGE_INTEGER time1, time2;
     IO_COUNTERS iocounters1, iocounters2;

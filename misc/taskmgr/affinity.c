@@ -41,7 +41,7 @@ static INT_PTR CALLBACK AffinityDialogWndProc(HWND hDlg, UINT message, WPARAM wP
 void ProcessPage_OnSetAffinity(void)
 {
     DWORD dwProcessId = 0;
-    WCHAR strErrorText[260];
+    WCHAR strErrorText[MAX_PATH];
     WCHAR szTitle[256];
 
     dwProcessId = GetSelectedProcessId();
@@ -71,7 +71,7 @@ void ProcessPage_OnSetAffinity(void)
 INT_PTR CALLBACK AffinityDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     DWORD_PTR dwProcessAffinityMask = 0, dwSystemAffinityMask = 0;
-    WCHAR strErrorText[260], szTitle[256];
+    WCHAR strErrorText[MAX_PATH], szTitle[256];
     BYTE nCpu;
 
     switch (message) 
@@ -103,7 +103,7 @@ INT_PTR CALLBACK AffinityDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, L
              * has affinity with
              */
             if (dwProcessAffinityMask & (1 << nCpu))
-                SendMessageW(GetDlgItem(hDlg, dwCpuTable[nCpu]), BM_SETCHECK, BST_CHECKED, 0);
+                SendMessage(GetDlgItem(hDlg, dwCpuTable[nCpu]), BM_SETCHECK, BST_CHECKED, 0);
         }
 
         return TRUE;

@@ -80,9 +80,6 @@ INT_PTR CALLBACK ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
         nApplicationPageWidth = rc.right;
         nApplicationPageHeight = rc.bottom;
 
-        /* Update window position */
-        //SetWindowPos(hDlg, NULL, 15, 30, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
-
         // Get handles to the controls
         hApplicationPageListCtrl = GetDlgItem(hDlg, IDC_APPLIST);
         hApplicationPageEndTaskButton = GetDlgItem(hDlg, IDC_ENDTASK);
@@ -90,7 +87,7 @@ INT_PTR CALLBACK ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
         hApplicationPageNewTaskButton = GetDlgItem(hDlg, IDC_NEWTASK);
      
         // Set the title.
-        SetWindowTextW(hApplicationPageListCtrl, L"Tasks");
+        SetWindowText(hApplicationPageListCtrl, TEXT("Tasks"));
 
         // Set extended window styles for the list control.
         ListView_SetExtendedListViewStyle(
@@ -101,14 +98,14 @@ INT_PTR CALLBACK ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
         /* Initialize the application page's controls */
         column.mask = LVCF_TEXT | LVCF_WIDTH;
 
-        LoadStringW(hInst, IDS_TAB_TASK, szTemp, 256);
+        LoadString(hInst, IDS_TAB_TASK, szTemp, 256);
         column.pszText = szTemp;
         column.cx = 250;
        
         ListView_InsertColumn(hApplicationPageListCtrl, 0, &column);    /* Add the "Task" column */
 
         column.mask = LVCF_TEXT|LVCF_WIDTH;
-        LoadStringW(hInst, IDS_TAB_STATUS, szTemp, 256);
+        LoadString(hInst, IDS_TAB_STATUS, szTemp, 256);
         column.pszText = szTemp;
         column.cx = 95;
 
@@ -134,7 +131,7 @@ INT_PTR CALLBACK ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
             ApplicationPage_OnSwitchTo();
             break;
         case IDC_NEWTASK:
-            SendMessageW(hMainWnd, WM_COMMAND, MAKEWPARAM(ID_FILE_NEW, 0), 0);
+            SendMessage(hMainWnd, WM_COMMAND, MAKEWPARAM(ID_FILE_NEW, 0), 0);
             break;
         }
 
@@ -208,7 +205,7 @@ void UpdateApplicationListControlViewSetting(void)
     dwStyle &= ~(LVS_REPORT | LVS_ICON | LVS_LIST | LVS_SMALLICON);
 	dwStyle |= LVS_REPORT; 
 
-    SetWindowLongPtrW(hApplicationPageListCtrl, GWL_STYLE, dwStyle);
+    SetWindowLongPtr(hApplicationPageListCtrl, GWL_STYLE, dwStyle);
 
     RefreshApplicationPage();
 }
@@ -297,7 +294,7 @@ UINT WINAPI ApplicationPageRefreshThread(void *lpParameter)
 BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
 {
     HICON   hIcon;
-    WCHAR   szText[260];
+    WCHAR   szText[MAX_PATH];
     BOOL    bLargeIcon;
     BOOL    bHung = FALSE;
     HICON*  xhIcon = (HICON*)&hIcon;
@@ -308,14 +305,14 @@ BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
 
     bLargeIcon = FALSE;//(TaskManagerSettings.ViewMode == ID_VIEW_LARGE);
 
-    GetWindowTextW(hWnd, szText, 260); /* Get the window text */
+    GetWindowText(hWnd, szText, MAX_PATH); /* Get the window text */
 
     /* Check and see if this is a top-level app window */
     if ((wcslen(szText) <= 0) ||
         !IsWindowVisible(hWnd) ||
         (GetParent(hWnd) != NULL) ||
         (GetWindow(hWnd, GW_OWNER) != NULL) ||
-        (GetWindowLongPtrW(hWnd, GWL_EXSTYLE) & WS_EX_TOOLWINDOW))
+        (GetWindowLongPtr(hWnd, GWL_EXSTYLE) & WS_EX_TOOLWINDOW))
     {
         return TRUE; /* Skip this window */
     }
@@ -340,7 +337,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
     }
 
     if (!hIcon)
-        hIcon = LoadIcon(hInst, bLargeIcon ? MAKEINTRESOURCEW(IDI_WINDOW) : MAKEINTRESOURCEW(IDI_WINDOWSM));
+        hIcon = LoadIcon(hInst, bLargeIcon ? MAKEINTRESOURCE(IDI_WINDOW) : MAKEINTRESOURCE(IDI_WINDOWSM));
 
     bHung = IsHungAppWindow(hWnd);
 
@@ -521,7 +518,7 @@ void ApplicationPageOnNotify(WPARAM wParam, LPARAM lParam)
                 /* Update the item text */
                 if (pnmdi->item.iSubItem == 0)
                 {
-                    wcsncpy_s(pnmdi->item.pszText, 260, pAPLI->szTitle, pnmdi->item.cchTextMax);
+                    wcsncpy_s(pnmdi->item.pszText, MAX_PATH, pAPLI->szTitle, pnmdi->item.cchTextMax);
                 }
                 /* Update the item status */
                 else if (pnmdi->item.iSubItem == 1)
@@ -680,7 +677,7 @@ void ApplicationPageShowContextMenu1(void)
 
     GetCursorPos(&pt);
 
-    hMenu = LoadMenu(hInst, MAKEINTRESOURCEW(IDR_APPLICATION_PAGE_CONTEXT1));
+    hMenu = LoadMenu(hInst, MAKEINTRESOURCE(IDR_APPLICATION_PAGE_CONTEXT1));
     hSubMenu = GetSubMenu(hMenu, 0);
 
     TrackPopupMenu(hSubMenu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_LEFTBUTTON, pt.x, pt.y, 0, hMainWnd, NULL);
@@ -696,37 +693,37 @@ void ApplicationPageShowContextMenu2(void)
 
     GetCursorPos(&pt);
 
-    hMenu = LoadMenu(hInst, MAKEINTRESOURCEW(IDR_APPLICATION_PAGE_CONTEXT2));
+    hMenu = LoadMenu(hInst, MAKEINTRESOURCE(IDR_APPLICATION_PAGE_CONTEXT2));
     hSubMenu = GetSubMenu(hMenu, 0);
 
     selectedCount = ListView_GetSelectedCount(hApplicationPageListCtrl);
 
     if (selectedCount == 1)
     {
-        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEHORIZONTALLY, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEVERTICALLY, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_MINIMIZE, MF_BYCOMMAND|MF_ENABLED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_MAXIMIZE, MF_BYCOMMAND|MF_ENABLED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_CASCADE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_BRINGTOFRONT, MF_BYCOMMAND|MF_ENABLED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEHORIZONTALLY, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEVERTICALLY, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_MINIMIZE, MF_BYCOMMAND | MF_ENABLED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_MAXIMIZE, MF_BYCOMMAND | MF_ENABLED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_CASCADE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_BRINGTOFRONT, MF_BYCOMMAND | MF_ENABLED);
     }
     else if (selectedCount > 1)
     {
-        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEHORIZONTALLY, MF_BYCOMMAND|MF_ENABLED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEVERTICALLY, MF_BYCOMMAND|MF_ENABLED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_MINIMIZE, MF_BYCOMMAND|MF_ENABLED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_MAXIMIZE, MF_BYCOMMAND|MF_ENABLED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_CASCADE, MF_BYCOMMAND|MF_ENABLED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_BRINGTOFRONT, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEHORIZONTALLY, MF_BYCOMMAND | MF_ENABLED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEVERTICALLY, MF_BYCOMMAND | MF_ENABLED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_MINIMIZE, MF_BYCOMMAND | MF_ENABLED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_MAXIMIZE, MF_BYCOMMAND | MF_ENABLED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_CASCADE, MF_BYCOMMAND | MF_ENABLED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_BRINGTOFRONT, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
     }
     else
     {
-        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEHORIZONTALLY, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEVERTICALLY, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_MINIMIZE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_MAXIMIZE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_CASCADE, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
-        EnableMenuItem(hSubMenu, ID_WINDOWS_BRINGTOFRONT, MF_BYCOMMAND|MF_DISABLED|MF_GRAYED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEHORIZONTALLY, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_TILEVERTICALLY, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_MINIMIZE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_MAXIMIZE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_CASCADE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+        EnableMenuItem(hSubMenu, ID_WINDOWS_BRINGTOFRONT, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
     }
 
     SetMenuDefaultItem(hSubMenu, ID_APPLICATION_PAGE_SWITCHTO, MF_BYCOMMAND);

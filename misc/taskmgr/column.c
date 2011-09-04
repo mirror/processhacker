@@ -108,7 +108,7 @@ void SaveColumnSettings(void)
 {
     HDITEM        hditem;
     int           i, n;
-    WCHAR         text[260];
+    WCHAR         text[MAX_PATH];
     WCHAR         szTemp[256];
     LRESULT       size;
 
@@ -122,16 +122,16 @@ void SaveColumnSettings(void)
 
     /* Get header order */
     size = SendMessage(hProcessPageHeaderCtrl, HDM_GETITEMCOUNT, 0, 0);
-    SendMessage(hProcessPageHeaderCtrl, HDM_GETORDERARRAY, (WPARAM) size, (LPARAM) &TaskManagerSettings.ColumnOrderArray);
+    SendMessage(hProcessPageHeaderCtrl, HDM_GETORDERARRAY, (WPARAM)size, (LPARAM) &TaskManagerSettings.ColumnOrderArray);
 
     /* Get visible columns */
-    for (i = 0; i < SendMessageW(hProcessPageHeaderCtrl, HDM_GETITEMCOUNT, 0, 0); i++) 
+    for (i = 0; i < size; i++) 
     {
         memset(&hditem, 0, sizeof(HDITEM));
 
         hditem.mask = HDI_TEXT|HDI_WIDTH;
         hditem.pszText = text;
-        hditem.cchTextMax = 260;
+        hditem.cchTextMax = MAX_PATH;
 
         SendMessage(hProcessPageHeaderCtrl, HDM_GETITEM, i, (LPARAM) &hditem);
 
@@ -150,9 +150,9 @@ void SaveColumnSettings(void)
 
 void ProcessPage_OnViewSelectColumns(void)
 {
-    int  i;
+    INT i = 0;
 
-    if (DialogBox(hInst, MAKEINTRESOURCEW(IDD_COLUMNS_DIALOG), hMainWnd, ColumnsDialogWndProc) == IDOK)
+    if (DialogBox(hInst, MAKEINTRESOURCE(IDD_COLUMNS_DIALOG), hMainWnd, ColumnsDialogWndProc) == IDOK)
     {
         for (i = Header_GetItemCount(hProcessPageHeaderCtrl)-1; i >= 0; i--)
         {
@@ -180,7 +180,7 @@ INT_PTR CALLBACK ColumnsDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, LP
         for (i = 0; i < COLUMN_NMAX; i++) 
         {
             if (TaskManagerSettings.Columns[i])
-                SendMessageW(GetDlgItem(hDlg, ColumnPresets[i].dwIdcCtrl), BM_SETCHECK, BST_CHECKED, 0);
+                SendMessage(GetDlgItem(hDlg, ColumnPresets[i].dwIdcCtrl), BM_SETCHECK, BST_CHECKED, 0);
         }
         return TRUE;
 
@@ -210,7 +210,7 @@ INT_PTR CALLBACK ColumnsDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, LP
 void UpdateColumnDataHints(void)
 {
     HDITEM hditem;
-    WCHAR text[260];
+    WCHAR text[MAX_PATH];
     ULONG Index;
     WCHAR szTemp[256];
     UINT i = 0;
@@ -221,7 +221,7 @@ void UpdateColumnDataHints(void)
 
         hditem.mask = HDI_TEXT;
         hditem.pszText = text;
-        hditem.cchTextMax = 260;
+        hditem.cchTextMax = MAX_PATH;
 
         SendMessage(hProcessPageHeaderCtrl, HDM_GETITEM, Index, (LPARAM) &hditem);
 

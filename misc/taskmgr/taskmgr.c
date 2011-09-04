@@ -55,7 +55,7 @@ INT WINAPI WinMain(
     TOKEN_PRIVILEGES tkp;
     HANDLE hMutex;
 
-    hMutex = CreateMutex(NULL, TRUE, L"rostaskmgr");
+    hMutex = CreateMutex(NULL, TRUE, TEXT("rosTaskmgr"));
 
     /* check wether we're already running or not */
     if (hMutex && GetLastError() == ERROR_ALREADY_EXISTS)
@@ -87,7 +87,7 @@ INT WINAPI WinMain(
     /* Change our priority class to HIGH */
     hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
     SetPriorityClass(hProcess, HIGH_PRIORITY_CLASS);
-    CloseHandle(hProcess);
+    NtClose(hProcess);
 
     // Now lets get the SE_DEBUG_NAME privilege so that we can debug processes.
 
@@ -95,7 +95,7 @@ INT WINAPI WinMain(
     if (OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) 
     {
         // Get the LUID for the debug privilege.
-        LookupPrivilegeValueW(NULL, SE_DEBUG_NAME, &tkp.Privileges[0].Luid);
+        LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &tkp.Privileges[0].Luid);
 
         tkp.PrivilegeCount = 1;  /* one privilege to set */
         tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
@@ -103,7 +103,7 @@ INT WINAPI WinMain(
         // Get the debug privilege for this process.
         AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
 
-        CloseHandle(hToken);
+        NtClose(hToken);
     }
 
     // Load our settings from the registry
@@ -120,7 +120,7 @@ INT WINAPI WinMain(
     PerfDataUninitialize();
 
     // Close our mutex.
-    CloseHandle(hMutex);
+    NtClose(hMutex);
 
     return 0;
 }
@@ -266,7 +266,7 @@ INT_PTR CALLBACK TaskManagerWndProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 
                 OnTop = ((GetWindowLongPtr(hMainWnd, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0);
 
-                hMenu = LoadMenu(hInst, MAKEINTRESOURCEW(IDR_TRAY_POPUP));
+                hMenu = LoadMenu(hInst, MAKEINTRESOURCE(IDR_TRAY_POPUP));
                 hPopupMenu = GetSubMenu(hMenu, 0);
 
                 if(IsWindowVisible(hMainWnd))
@@ -397,7 +397,7 @@ INT_PTR CALLBACK TaskManagerWndProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 void FillSolidRect(HDC hDC, LPCRECT lpRect, COLORREF clr)
 {
     SetBkColor(hDC, clr);
-    ExtTextOutW(hDC, 0, 0, ETO_OPAQUE, lpRect, NULL, 0, NULL);
+    ExtTextOut(hDC, 0, 0, ETO_OPAQUE, lpRect, NULL, 0, NULL);
 }
 
 void FillSolidRect2(HDC hDC, int x, int y, int cx, int cy, COLORREF clr)
@@ -466,7 +466,7 @@ BOOL OnCreate(HWND hWnd)
     WCHAR   szTemp[256];
     TCITEM  item;
 
-    SendMessage(hMainWnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIconW(hInst, MAKEINTRESOURCEW(IDI_TASKMANAGER)));
+    SendMessage(hMainWnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(hInst, MAKEINTRESOURCEW(IDI_TASKMANAGER)));
 
     /* Initialize the Windows Common Controls DLL */
     InitCommonControls();
@@ -485,14 +485,14 @@ BOOL OnCreate(HWND hWnd)
     nParts[0] = STATUS_SIZE1;
     nParts[1] = STATUS_SIZE2;
     nParts[2] = STATUS_SIZE3;
-    SendMessageW(hStatusWnd, SB_SETPARTS, 3, (LPARAM) (LPINT) nParts);
+    SendMessage(hStatusWnd, SB_SETPARTS, 3, (LPARAM) (LPINT) nParts);
 
     /* Create tab pages */
     hTabWnd = GetDlgItem(hWnd, IDC_TAB);
 
-    hApplicationPage = CreateDialog(hInst, MAKEINTRESOURCEW(IDD_APPLICATION_PAGE), hWnd, ApplicationPageWndProc);
-    hProcessPage = CreateDialog(hInst, MAKEINTRESOURCEW(IDD_PROCESS_PAGE), hWnd, ProcessPageWndProc);
-    hPerformancePage = CreateDialog(hInst, MAKEINTRESOURCEW(IDD_PERFORMANCE_PAGE), hWnd, PerformancePageWndProc);
+    hApplicationPage = CreateDialog(hInst, MAKEINTRESOURCE(IDD_APPLICATION_PAGE), hWnd, ApplicationPageWndProc);
+    hProcessPage = CreateDialog(hInst, MAKEINTRESOURCE(IDD_PROCESS_PAGE), hWnd, ProcessPageWndProc);
+    hPerformancePage = CreateDialog(hInst, MAKEINTRESOURCE(IDD_PERFORMANCE_PAGE), hWnd, PerformancePageWndProc);
     
     {
         // HACK: Move pages to correct size and position on TabCtrl
@@ -711,10 +711,10 @@ void OnSize( WPARAM nType, int cx, int cy )
 
 void LoadSettings(void)
 {
-    HKEY   hKey;
-    WCHAR  szSubKey[] = L"Software\\ReactOS\\TaskManager";
-    int    i;
-    DWORD  dwSize;
+    HKEY hKey;
+    WCHAR szSubKey[] = TEXT("Software\\ReactOS\\TaskManager");
+    INT i = 0;
+    DWORD dwSize = 0;
 
     /* Window size & position settings */
     TaskManagerSettings.Maximized = FALSE;
@@ -758,7 +758,7 @@ void LoadSettings(void)
 
     /* Read the settings */
     dwSize = sizeof(TASKMANAGER_SETTINGS);
-    RegQueryValueEx(hKey, L"Preferences", NULL, NULL, (LPBYTE)&TaskManagerSettings, &dwSize);
+    RegQueryValueEx(hKey, TEXT("Preferences"), NULL, NULL, (LPBYTE)&TaskManagerSettings, &dwSize);
 
     /*
     * ATM, the 'ImageName' column is always visible
@@ -774,14 +774,14 @@ void LoadSettings(void)
 void SaveSettings(void)
 {
     HKEY hKey;
-    WCHAR szSubKey[] = L"Software\\ReactOS\\TaskManager";
+    WCHAR szSubKey[] = TEXT("Software\\ReactOS\\TaskManager");
 
     /* Open (or create) the key */
     if (RegCreateKeyEx(HKEY_CURRENT_USER, szSubKey, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) != ERROR_SUCCESS)
         return;
     
     /* Save the settings */
-    RegSetValueEx(hKey, L"Preferences", 0, REG_BINARY, (LPBYTE)&TaskManagerSettings, sizeof(TASKMANAGER_SETTINGS));
+    RegSetValueEx(hKey, TEXT("Preferences"), 0, REG_BINARY, (LPBYTE)&TaskManagerSettings, sizeof(TASKMANAGER_SETTINGS));
    
     /* Close the key */
     NtClose(hKey);
@@ -794,7 +794,7 @@ void TaskManager_OnRestoreMainWindow(void)
 
     hMenu = GetMenu(hMainWnd);
     hOptionsMenu = GetSubMenu(hMenu, OPTIONS_MENU_INDEX);
-    OnTop = ((GetWindowLongPtrW(hMainWnd, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0);
+    OnTop = ((GetWindowLongPtr(hMainWnd, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0);
 
     OpenIcon(hMainWnd);
     SetForegroundWindow(hMainWnd);
@@ -809,18 +809,18 @@ void TaskManager_OnEnterMenuLoop(HWND hWnd)
     nParts = -1;
     SendMessage(hStatusWnd, SB_SETPARTS, 1, (LPARAM) (LPINT)&nParts);
     bInMenuLoop = TRUE;
-    SendMessage(hStatusWnd, SB_SETTEXT, (WPARAM)0, (LPARAM)L"");
+    SendMessage(hStatusWnd, SB_SETTEXT, (WPARAM)0, (LPARAM)TEXT(""));
 }
 
 void TaskManager_OnExitMenuLoop(HWND hWnd)
 {
     RECT   rc;
     int    nParts[3];
-    WCHAR  text[260];
+    WCHAR  text[MAX_PATH];
     WCHAR  szCpuUsage[256], szProcesses[256];
 
-    LoadStringW(hInst, IDS_STATUS_CPUUSAGE, szCpuUsage, 256);
-    LoadStringW(hInst, IDS_STATUS_PROCESSES, szProcesses, 256);
+    LoadString(hInst, IDS_STATUS_CPUUSAGE, szCpuUsage, 256);
+    LoadString(hInst, IDS_STATUS_PROCESSES, szProcesses, 256);
 
     bInMenuLoop = FALSE;
     /* Update the status bar pane sizes */
@@ -829,8 +829,8 @@ void TaskManager_OnExitMenuLoop(HWND hWnd)
     nParts[1] = STATUS_SIZE2;
     nParts[2] = rc.right;
    
-    SendMessage(hStatusWnd, SB_SETPARTS, 3, (LPARAM) (LPINT) nParts);
-    SendMessage(hStatusWnd, SB_SETTEXT, 0, (LPARAM)L"");
+    SendMessage(hStatusWnd, SB_SETPARTS, 3, (LPARAM)(LPINT)nParts);
+    SendMessage(hStatusWnd, SB_SETTEXT, 0, (LPARAM)TEXT(""));
    
     wsprintf(text, szCpuUsage, PerfDataGetProcessorUsage());
     SendMessage(hStatusWnd, SB_SETTEXT, 1, (LPARAM)text);
@@ -843,9 +843,9 @@ void TaskManager_OnMenuSelect(HWND hWnd, UINT nItemID, UINT nFlags, HMENU hSysMe
 {
     WCHAR str[100];
 
-    wcscpy(str, L"");
+    wcscpy(str, TEXT(""));
 
-    if (LoadStringW(hInst, nItemID, str, 100)) 
+    if (LoadString(hInst, nItemID, str, 100)) 
     {
         /* load appropriate string */
         LPWSTR lpsz = str;
@@ -918,10 +918,10 @@ void TaskManager_OnTabWndSelChange(void)
 
         if (GetMenuItemCount(hMenu) <= 4) 
         {
-            hSubMenu = LoadMenu(hInst, MAKEINTRESOURCEW(IDR_WINDOWSMENU));
+            hSubMenu = LoadMenu(hInst, MAKEINTRESOURCE(IDR_WINDOWSMENU));
 
             LoadString(hInst, IDS_MENU_WINDOWS, szTemp, 256);
-            InsertMenu(hMenu, 3, MF_BYPOSITION|MF_POPUP, (UINT_PTR) hSubMenu, szTemp);
+            InsertMenu(hMenu, 3, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hSubMenu, szTemp);
 
             DrawMenuBar(hMainWnd);
         }
@@ -1036,13 +1036,13 @@ LPWSTR GetLastErrorText(LPWSTR lpszBuf, DWORD dwSize)
     /* supplied buffer is not long enough */
     if (!dwRet || ( (long)dwSize < (long)dwRet+14)) 
     {
-        lpszBuf[0] = L'\0';
+        lpszBuf[0] = TEXT('\0');
     } 
     else 
     {
-        lpszTemp[wcslen(lpszTemp)-2] = L'\0';  /*remove cr and newline character */
+        lpszTemp[wcslen(lpszTemp)-2] = TEXT('\0');  /*remove cr and newline character */
 
-        wsprintf(lpszBuf, L"%s (0x%x)", lpszTemp, (int)GetLastError());
+        wsprintf(lpszBuf, TEXT("%s (0x%x)"), lpszTemp, (int)GetLastError());
     }
 
     return lpszBuf;

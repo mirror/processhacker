@@ -47,7 +47,7 @@ void                ApplicationPage_OnGotoProcess(void);
 typedef struct
 {
     HWND    hWnd;
-    WCHAR   szTitle[260];
+    WCHAR   szTitle[MAX_PATH];
     HICON   hIcon;
     BOOL    bHung;
 } APPLICATION_PAGE_LIST_ITEM, *LPAPPLICATION_PAGE_LIST_ITEM;
