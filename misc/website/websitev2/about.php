@@ -25,11 +25,22 @@
 	
 	<div class="yui-t4">
 		<div class="top-portlet">			
-			<div class="summary">
+			<p>
                 Process Hacker was started in 2008 as an open source alternative to programs such as Task Manager and 
                 Process Explorer.
+			</p>
+		
+			<div id="owner">
+				<p><strong>Maintainers:</strong></p>
+				<li><a style="color:#AA0000" href="/forums/memberlist.php?mode=email&u=2"><strong>wj32</strong></a></li>
+				<li><a style="color:#AA0000" href="/forums/memberlist.php?mode=email&u=54"><strong>dmex</strong></a></li>
 			</div>
-            <br>
+
+			<div id="members">
+				<p><strong>Contributors:</strong></p>
+				<li><a style="color:#0000FF" href="/forums/memberlist.php?mode=email&u=293"><strong>XhmikosR</strong></a></li>
+			</div>
+			<br>
 		</div>
 	</div>
 	
