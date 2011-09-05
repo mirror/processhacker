@@ -34,7 +34,7 @@ INT_PTR CALLBACK Graph_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
-	LONG WindowId;
+	LONG_PTR WindowId;
 
     switch (message)
     {

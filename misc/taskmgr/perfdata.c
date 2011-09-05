@@ -123,7 +123,7 @@ VOID WINAPI CachedGetUserFromSid(PSID pSid, LPWSTR pUserName, PULONG pcwcUserNam
 
         if (EqualSid((PSID)&pEntry->Data, pSid))
         {
-            wcsncpy(pUserName, pEntry->pszName, cwcUserName);
+            wcsncpy_s(pUserName, cwcUserName, pEntry->pszName, cwcUserName);
             *pcwcUserName = cwcUserName;
             return;
         }
@@ -154,25 +154,24 @@ VOID WINAPI CachedGetUserFromSid(PSID pSid, LPWSTR pUserName, PULONG pcwcUserNam
 
 void PerfDataRefresh(void)
 {
-    ULONG                                      ulSize;
-    NTSTATUS                                   status;
-    LPBYTE                                     pBuffer;
-    ULONG                                      BufferSize;
-    PSYSTEM_PROCESS_INFORMATION                pSPI;
-    PPERFDATA                                  pPDOld;
-    ULONG                                      Idx, Idx2;
-    HANDLE                                     hProcess;
-    HANDLE                                     hProcessToken;
-    SYSTEM_PERFORMANCE_INFORMATION             SysPerfInfo;
-    SYSTEM_TIMEOFDAY_INFORMATION               SysTimeInfo;
-    SYSTEM_FILECACHE_INFORMATION               SysCacheInfo;
-    LPBYTE                                     SysHandleInfoData;
+    SIZE_T ulSize;
+    SIZE_T BufferSize;
+    NTSTATUS status;
+    LPBYTE pBuffer;
+    PSYSTEM_PROCESS_INFORMATION pSPI;
+    PPERFDATA pPDOld;
+    ULONG Idx, Idx2;
+    HANDLE hProcess, hProcessToken;
+    SYSTEM_PERFORMANCE_INFORMATION SysPerfInfo;
+    SYSTEM_TIMEOFDAY_INFORMATION SysTimeInfo;
+    SYSTEM_FILECACHE_INFORMATION SysCacheInfo;
+    LPBYTE SysHandleInfoData;
     PSYSTEM_PROCESSOR_PERFORMANCE_INFORMATION  SysProcessorTimeInfo;
-    double                                     CurrentKernelTime;
-    PSECURITY_DESCRIPTOR                       ProcessSD;
-    PSID                                       ProcessUser;
-    ULONG                                      Buffer[64]; /* must be 4 bytes aligned! */
-    ULONG                                      cwcUserName;
+    double CurrentKernelTime;
+    PSECURITY_DESCRIPTOR ProcessSD;
+    PSID ProcessUser;
+    ULONG Buffer[64]; /* must be 4 bytes aligned! */
+    ULONG cwcUserName;
 
     /* Get new system time */
     status = NtQuerySystemInformation(SystemTimeOfDayInformation, &SysTimeInfo, sizeof(SysTimeInfo), NULL);
@@ -497,7 +496,7 @@ ULONG PerfDataGetProcessorSystemUsage(void)
 
 BOOL PerfDataGetImageName(ULONG Index, LPWSTR lpImageName, int nMaxCount)
 {
-    BOOL  bSuccessful;
+    BOOL bSuccessful = FALSE;
 
     EnterCriticalSection(&PerfDataCriticalSection);
 
@@ -599,9 +598,9 @@ LARGE_INTEGER PerfDataGetCPUTime(ULONG Index)
     return CpuTime;
 }
 
-ULONG PerfDataGetWorkingSetSizeBytes(ULONG Index)
+SIZE_T PerfDataGetWorkingSetSizeBytes(ULONG Index)
 {
-    ULONG WorkingSetSizeBytes = 0;
+    SIZE_T WorkingSetSizeBytes = 0;
 
     EnterCriticalSection(&PerfDataCriticalSection);
 
@@ -615,9 +614,9 @@ ULONG PerfDataGetWorkingSetSizeBytes(ULONG Index)
     return WorkingSetSizeBytes;
 }
 
-ULONG PerfDataGetPeakWorkingSetSizeBytes(ULONG Index)
+SIZE_T PerfDataGetPeakWorkingSetSizeBytes(ULONG Index)
 {
-    ULONG PeakWorkingSetSizeBytes = 0;
+    SIZE_T PeakWorkingSetSizeBytes = 0;
 
     EnterCriticalSection(&PerfDataCriticalSection);
 
@@ -647,9 +646,9 @@ ULONG PerfDataGetWorkingSetSizeDelta(ULONG Index)
     return WorkingSetSizeDelta;
 }
 
-ULONG PerfDataGetPageFaultCount(ULONG Index)
+SIZE_T PerfDataGetPageFaultCount(ULONG Index)
 {
-    ULONG PageFaultCount = 0;
+    SIZE_T PageFaultCount = 0;
 
     EnterCriticalSection(&PerfDataCriticalSection);
 
@@ -695,9 +694,9 @@ ULONG PerfDataGetVirtualMemorySizeBytes(ULONG Index)
     return VirtualMemorySizeBytes;
 }
 
-ULONG PerfDataGetPagedPoolUsagePages(ULONG Index)
+SIZE_T PerfDataGetPagedPoolUsagePages(ULONG Index)
 {
-    ULONG PagedPoolUsage = 0;
+    SIZE_T PagedPoolUsage = 0;
 
     EnterCriticalSection(&PerfDataCriticalSection);
 
@@ -711,9 +710,9 @@ ULONG PerfDataGetPagedPoolUsagePages(ULONG Index)
     return PagedPoolUsage;
 }
 
-ULONG PerfDataGetNonPagedPoolUsagePages(ULONG Index)
+SIZE_T PerfDataGetNonPagedPoolUsagePages(ULONG Index)
 {
-    ULONG NonPagedPoolUsage = 0;
+    SIZE_T NonPagedPoolUsage = 0;
 
     EnterCriticalSection(&PerfDataCriticalSection);
 

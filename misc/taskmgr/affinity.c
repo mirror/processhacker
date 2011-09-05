@@ -93,16 +93,15 @@ INT_PTR CALLBACK AffinityDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, L
 
         for (nCpu = 0; nCpu < NUMBER_OF_ITEMS_IN_ARRAY(dwCpuTable); nCpu++)
         {
-            /*
-             * Enable a checkbox for each processor present in the system
-             */
-            if (dwSystemAffinityMask & (1 << nCpu))
+            // Enable a checkbox for each processor present in the system
+            if (dwSystemAffinityMask & (1i64 << nCpu))
                 EnableWindow(GetDlgItem(hDlg, dwCpuTable[nCpu]), TRUE);
+            
             /*
              * Check each checkbox that the current process
              * has affinity with
              */
-            if (dwProcessAffinityMask & (1 << nCpu))
+            if (dwProcessAffinityMask & (1i64 << nCpu))
                 SendMessage(GetDlgItem(hDlg, dwCpuTable[nCpu]), BM_SETCHECK, BST_CHECKED, 0);
         }
 
@@ -130,7 +129,7 @@ INT_PTR CALLBACK AffinityDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, L
             {
                 // First we have to create a mask out of each checkbox that the user checked.
                 if (SendMessage(GetDlgItem(hDlg, dwCpuTable[nCpu]), BM_GETCHECK, 0, 0))
-                    dwProcessAffinityMask |= (1 << nCpu);
+                    dwProcessAffinityMask |= (1i64 << nCpu);
             }
 
             /*

@@ -203,7 +203,6 @@ void UpdateApplicationListControlViewSetting(void)
 
 UINT WINAPI ApplicationPageRefreshThread(void *lpParameter)
 {
-    MSG msg;
     INT i;
     BOOL                            bItemRemoved = FALSE;
     LV_ITEM                         item;
@@ -374,7 +373,7 @@ void AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung)
             pAPLI->hIcon = hIcon;
             pAPLI->bHung = bHung;
            
-            wcscpy_s(pAPLI->szTitle, MAX_PATH, szTitle);
+            wcscpy_s(pAPLI->szTitle, _countof(pAPLI->szTitle), szTitle);
 
             /* Update the image list */
             //ImageList_ReplaceIcon(hImageListLarge, item.iItem, hIcon);
@@ -395,7 +394,7 @@ void AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung)
         pAPLI->hIcon = hIcon;
         pAPLI->bHung = bHung;
         
-        wcscpy_s(pAPLI->szTitle, MAX_PATH, szTitle);
+        wcscpy_s(pAPLI->szTitle, _countof(pAPLI->szTitle), szTitle);
 
         /* Add the item to the list */
         memset(&item, 0, sizeof(LV_ITEM));
@@ -504,7 +503,7 @@ void ApplicationPageOnNotify(WPARAM wParam, LPARAM lParam)
                 /* Update the item text */
                 if (pnmdi->item.iSubItem == 0)
                 {
-                    wcsncpy_s(pnmdi->item.pszText, MAX_PATH, pAPLI->szTitle, pnmdi->item.cchTextMax);
+                    wcsncpy_s(pnmdi->item.pszText, _countof(pAPLI->szTitle), pAPLI->szTitle, pnmdi->item.cchTextMax);
                 }
                 /* Update the item status */
                 else if (pnmdi->item.iSubItem == 1)
@@ -515,10 +514,10 @@ void ApplicationPageOnNotify(WPARAM wParam, LPARAM lParam)
                     }
                     else
                     {
-                        LoadString(NULL, IDS_Running, (LPWSTR) szMsg, NUMBER_OF_ITEMS_IN_ARRAY(szMsg));
+                        LoadString(NULL, IDS_Running, (LPWSTR)szMsg, NUMBER_OF_ITEMS_IN_ARRAY(szMsg));
                     }
 
-                    wcsncpy_s(pnmdi->item.pszText, 256, szMsg, pnmdi->item.cchTextMax);
+                    wcsncpy_s(pnmdi->item.pszText, _countof(szMsg), szMsg, pnmdi->item.cchTextMax);
                 }
             }
             break;

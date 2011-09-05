@@ -51,7 +51,7 @@ HWND  hPerformancePageTotalsHandleCountEdit;          /*  Total Handles Edit Con
 HWND  hPerformancePageTotalsProcessCountEdit;         /*  Total Processes Edit Control */
 HWND  hPerformancePageTotalsThreadCountEdit;          /*  Total Threads Edit Control */
 
-static uintptr_t hPerformanceThread = NULL;
+static uintptr_t hPerformanceThread = 0;
 static UINT dwPerformanceThread = 0;
 
 WNDPROC OldGraphWndProc;
@@ -117,12 +117,9 @@ static void AdjustCntrlPos(int ctrl_id, HWND hDlg, int nXDifference, int nYDiffe
 
 INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    RECT  rc;
-    int   nXDifference;
-    int   nYDifference;
-    HDC hdc;
-    PAINTSTRUCT ps;
-
+    RECT rc = { 0 };
+    int nXDifference = 0, nYDifference = 0;
+    
     switch (message) 
     {
     case WM_DESTROY:
@@ -131,15 +128,12 @@ INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
         break;
 
     case WM_INITDIALOG:
-
-        /*  Save the width and height */
+        // Save the width and height.
         GetClientRect(hDlg, &rc);
         nPerformancePageWidth = rc.right;
         nPerformancePageHeight = rc.bottom;
 
-        /*
-        *  Get handles to all the controls
-        */
+        // Get handles to all the controls.
         hPerformancePageTotalsFrame = GetDlgItem(hDlg, IDC_TOTALS_FRAME);
         hPerformancePageCommitChargeFrame = GetDlgItem(hDlg, IDC_COMMIT_CHARGE_FRAME);
         hPerformancePageKernelMemoryFrame = GetDlgItem(hDlg, IDC_KERNEL_MEMORY_FRAME);
@@ -291,6 +285,7 @@ INT_PTR CALLBACK PerformancePageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
         }
         break;
     }
+
     return 0;
 }
 
@@ -425,34 +420,27 @@ UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
 
 void PerformancePage_OnViewShowKernelTimes(void)
 {
-    HMENU  hMenu;
-    HMENU  hViewMenu;
-
-    hMenu = GetMenu(hMainWnd);
-    hViewMenu = GetSubMenu(hMenu, 2);
+    HMENU hMenu = GetMenu(hMainWnd);
+    HMENU hViewMenu = GetSubMenu(hMenu, 2);
 
     /*  Check or uncheck the show 16-bit tasks menu item */
     if (GetMenuState(hViewMenu, ID_VIEW_SHOWKERNELTIMES, MF_BYCOMMAND) & MF_CHECKED)
     {
-        CheckMenuItem(hViewMenu, ID_VIEW_SHOWKERNELTIMES, MF_BYCOMMAND|MF_UNCHECKED);
+        CheckMenuItem(hViewMenu, ID_VIEW_SHOWKERNELTIMES, MF_BYCOMMAND | MF_UNCHECKED);
         TaskManagerSettings.ShowKernelTimes = FALSE;
     }
     else
     {
-        CheckMenuItem(hViewMenu, ID_VIEW_SHOWKERNELTIMES, MF_BYCOMMAND|MF_CHECKED);
+        CheckMenuItem(hViewMenu, ID_VIEW_SHOWKERNELTIMES, MF_BYCOMMAND | MF_CHECKED);
         TaskManagerSettings.ShowKernelTimes = TRUE;
     }
 }
 
 void PerformancePage_OnViewCPUHistoryOneGraphAll(void)
 {
-    HMENU  hMenu;
-    HMENU  hViewMenu;
-    HMENU  hCPUHistoryMenu;
-
-    hMenu = GetMenu(hMainWnd);
-    hViewMenu = GetSubMenu(hMenu, 2);
-    hCPUHistoryMenu = GetSubMenu(hViewMenu, 3);
+    HMENU hMenu = GetMenu(hMainWnd);
+    HMENU hViewMenu = GetSubMenu(hMenu, 2);
+    HMENU hCPUHistoryMenu = GetSubMenu(hViewMenu, 3);
 
     TaskManagerSettings.CPUHistory_OneGraphPerCPU = FALSE;
     CheckMenuRadioItem(hCPUHistoryMenu, ID_VIEW_CPUHISTORY_ONEGRAPHALL, ID_VIEW_CPUHISTORY_ONEGRAPHPERCPU, ID_VIEW_CPUHISTORY_ONEGRAPHALL, MF_BYCOMMAND);
@@ -460,13 +448,9 @@ void PerformancePage_OnViewCPUHistoryOneGraphAll(void)
 
 void PerformancePage_OnViewCPUHistoryOneGraphPerCPU(void)
 {
-    HMENU  hMenu;
-    HMENU  hViewMenu;
-    HMENU  hCPUHistoryMenu;
-
-    hMenu = GetMenu(hMainWnd);
-    hViewMenu = GetSubMenu(hMenu, 2);
-    hCPUHistoryMenu = GetSubMenu(hViewMenu, 3);
+    HMENU hMenu = GetMenu(hMainWnd);
+    HMENU hViewMenu = GetSubMenu(hMenu, 2);
+    HMENU hCPUHistoryMenu = GetSubMenu(hViewMenu, 3);
 
     TaskManagerSettings.CPUHistory_OneGraphPerCPU = TRUE;
     CheckMenuRadioItem(hCPUHistoryMenu, ID_VIEW_CPUHISTORY_ONEGRAPHALL, ID_VIEW_CPUHISTORY_ONEGRAPHPERCPU, ID_VIEW_CPUHISTORY_ONEGRAPHPERCPU, MF_BYCOMMAND);

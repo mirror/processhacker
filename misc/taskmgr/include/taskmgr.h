@@ -26,6 +26,8 @@
 #pragma comment(lib, "uxtheme.lib")
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
+#define WIN32_NO_STATUS
+
 #include <ctype.h>
 #include <math.h>
 #include <stdlib.h>
@@ -37,8 +39,9 @@
 #include <shellapi.h>
 #include <Uxtheme.h>
 
-#include "resource.h"
+#include <ntndk.h>
 
+#include "resource.h"
 #include "column.h"
 #include "perfdata.h"
 #include "perfpage.h"
@@ -56,9 +59,6 @@
 #include "priority.h"
 #include "run.h"
 #include "trayicon.h"
-
-#include "ntwin.h"
-#include "phnt.h"
 
 #define STATUS_WINDOW	2001
 #define STATUS_SIZE1	80
@@ -114,8 +114,6 @@ extern int nOldWidth;					/* Holds the previous client area width */
 extern int nOldHeight;					/* Holds the previous client area height */
 extern TASKMANAGER_SETTINGS	TaskManagerSettings;
 
-// Foward declarations of functions included in this code module:
-INT_PTR CALLBACK TaskManagerWndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL OnCreate(HWND hWnd);
 void OnSize(WPARAM nType, int cx, int cy);
 void FillSolidRect(HDC hDC, LPCRECT lpRect, COLORREF clr);
@@ -134,8 +132,20 @@ LPWSTR GetLastErrorText(LPWSTR lpszBuf, DWORD dwSize);
 
 UINT WINAPI ApplicationPageRefreshThread(void *lpParameter);
 
-// Sorting
+INT_PTR CALLBACK TaskManagerWndProc(HWND, UINT, WPARAM, LPARAM);
 
+INT_PTR CALLBACK ProcessListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+WNDPROC OldProcessListWndProc;
+
+
+
+
+
+
+
+
+// Sorting
 typedef enum _PH_SORT_ORDER
 {
     NoSortOrder = 0,

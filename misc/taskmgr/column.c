@@ -139,7 +139,7 @@ void SaveColumnSettings(void)
         {
             LoadString(hInst, ColumnPresets[n].dwIdsName, szTemp, sizeof(szTemp)/sizeof(WCHAR));
             
-            if (wcsicmp(text, szTemp) == 0)
+            if (_wcsicmp(text, szTemp) == 0)
             {
                 TaskManagerSettings.Columns[n] = TRUE;
                 TaskManagerSettings.ColumnSizeArray[n] = hditem.cxy;

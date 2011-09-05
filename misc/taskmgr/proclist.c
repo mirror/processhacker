@@ -22,17 +22,8 @@
 
 #include "taskmgr.h"
 
-INT_PTR CALLBACK ProcessListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-WNDPROC OldProcessListWndProc;
-
 INT_PTR CALLBACK ProcessListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    HBRUSH  hbrBackground;
-    RECT    rcItem;
-    RECT    rcClip;
-    HDC     hDC;
-    int     DcSave;
-
     switch (message)
     {
     case WM_ERASEBKGND:

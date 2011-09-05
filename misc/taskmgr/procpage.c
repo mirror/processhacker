@@ -41,7 +41,7 @@ HWND hProcessPageShowAllProcessesButton;/* Process Show All Processes checkbox *
 static int nProcessPageWidth = 0;
 static int nProcessPageHeight = 0;
 
-static uintptr_t hProcessThread = NULL;
+static uintptr_t hProcessThread = 0;
 static UINT dwProcessThread = 0;
 
 int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
@@ -296,7 +296,8 @@ void CommaSeparateNumberString(LPWSTR strNumber, int nMaxCount)
     }
 
     temp[j] = L'\0';
-    wcsncpy(strNumber, temp, nMaxCount);
+
+    wcsncpy_s(strNumber, MAX_PATH, temp, nMaxCount);
 }
 
 void ProcessPageShowContextMenu(DWORD dwProcessId)
@@ -765,7 +766,7 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
         {
             PerfDataGetImageName(IndexParam1, text1, NUMBER_OF_ITEMS_IN_ARRAY(text1));
             PerfDataGetImageName(IndexParam2, text2, NUMBER_OF_ITEMS_IN_ARRAY(text2));
-            ret = wcsicmp(text1, text2);
+            ret = _wcsicmp(text1, text2);
         }
         break;
     case COLUMN_PID:
@@ -779,7 +780,7 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
         {
             PerfDataGetUserName(IndexParam1, text1, NUMBER_OF_ITEMS_IN_ARRAY(text1));
             PerfDataGetUserName(IndexParam2, text2, NUMBER_OF_ITEMS_IN_ARRAY(text2));
-            ret = wcsicmp(text1, text2);
+            ret = _wcsicmp(text1, text2);
         }
         break;
     case COLUMN_SESSIONID:
@@ -805,15 +806,15 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
         break;
     case COLUMN_MEMORYUSAGE:     
         {
-            l1 = PerfDataGetWorkingSetSizeBytes(IndexParam1);
-            l2 = PerfDataGetWorkingSetSizeBytes(IndexParam2);
+            SIZE_T l1 = PerfDataGetWorkingSetSizeBytes(IndexParam1);
+            SIZE_T l2 = PerfDataGetWorkingSetSizeBytes(IndexParam2);
             ret = CMP(l1, l2);
         }
         break;
     case COLUMN_PEAKMEMORYUSAGE:
         {
-            l1 = PerfDataGetPeakWorkingSetSizeBytes(IndexParam1);
-            l2 = PerfDataGetPeakWorkingSetSizeBytes(IndexParam2);
+            SIZE_T l1 = PerfDataGetPeakWorkingSetSizeBytes(IndexParam1);
+            SIZE_T l2 = PerfDataGetPeakWorkingSetSizeBytes(IndexParam2);
             ret = CMP(l1, l2);
         }
         break;
@@ -826,8 +827,8 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
         break; 
     case COLUMN_PAGEFAULTS:
         {
-            l1 = PerfDataGetPageFaultCount(IndexParam1);
-            l2 = PerfDataGetPageFaultCount(IndexParam2);
+            SIZE_T l1 = PerfDataGetPageFaultCount(IndexParam1);
+            SIZE_T l2 = PerfDataGetPageFaultCount(IndexParam2);
             ret = CMP(l1, l2);
         }
         break;
@@ -847,15 +848,15 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
         break;
     case COLUMN_PAGEDPOOL:
         {
-            l1 = PerfDataGetPagedPoolUsagePages(IndexParam1);
-            l2 = PerfDataGetPagedPoolUsagePages(IndexParam2);
+            SIZE_T l1 = PerfDataGetPagedPoolUsagePages(IndexParam1);
+            SIZE_T l2 = PerfDataGetPagedPoolUsagePages(IndexParam2);
             ret = CMP(l1, l2);
         }
         break;
     case COLUMN_NONPAGEDPOOL:
         {
-            l1 = PerfDataGetNonPagedPoolUsagePages(IndexParam1);
-            l2 = PerfDataGetNonPagedPoolUsagePages(IndexParam2);
+            SIZE_T l1 = PerfDataGetNonPagedPoolUsagePages(IndexParam1);
+            SIZE_T l2 = PerfDataGetNonPagedPoolUsagePages(IndexParam2);
             ret = CMP(l1, l2);
         }
         break;

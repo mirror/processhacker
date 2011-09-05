@@ -22,10 +22,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define Li2Double(x) ((double)((x).HighPart) * 4.294967296E9 + (double)((x).LowPart))
 
 typedef struct _PERFDATA
@@ -36,14 +32,14 @@ typedef struct _PERFDATA
 	ULONG				SessionId;
 	ULONG				CPUUsage;
 	LARGE_INTEGER		CPUTime;
-	ULONG				WorkingSetSizeBytes;
-	ULONG				PeakWorkingSetSizeBytes;
+	SIZE_T				WorkingSetSizeBytes;
+	SIZE_T				PeakWorkingSetSizeBytes;
 	ULONG				WorkingSetSizeDelta;
-	ULONG				PageFaultCount;
+	SIZE_T				PageFaultCount;
 	ULONG				PageFaultCountDelta;
 	ULONG				VirtualMemorySizeBytes;
-	ULONG				PagedPoolUsagePages;
-	ULONG				NonPagedPoolUsagePages;
+	SIZE_T				PagedPoolUsagePages;
+	SIZE_T				NonPagedPoolUsagePages;
 	ULONG				BasePriority;
 	ULONG				HandleCount;
 	ULONG				ThreadCount;
@@ -55,54 +51,45 @@ typedef struct _PERFDATA
 	LARGE_INTEGER		KernelTime;
 } PERFDATA, *PPERFDATA;
 
-BOOL	PerfDataInitialize(void);
-void	PerfDataUninitialize(void);
-void	PerfDataRefresh(void);
+LARGE_INTEGER PerfDataGetCPUTime(ULONG Index);
 
-BOOL    PerfDataGet(ULONG Index, PPERFDATA *lppData);
-ULONG   PerfDataGetProcessIndex(ULONG pid);
-ULONG	PerfDataGetProcessCount(void);
-ULONG	PerfDataGetProcessorUsage(void);
-ULONG	PerfDataGetProcessorSystemUsage(void);
+void PerfDataUninitialize(void);
+void PerfDataRefresh(void);
 
-BOOL	PerfDataGetImageName(ULONG Index, LPTSTR lpImageName, int nMaxCount);
-ULONG	PerfDataGetProcessId(ULONG Index);
-BOOL	PerfDataGetUserName(ULONG Index, LPTSTR lpUserName, int nMaxCount);
-ULONG	PerfDataGetSessionId(ULONG Index);
-ULONG	PerfDataGetCPUUsage(ULONG Index);
-LARGE_INTEGER	PerfDataGetCPUTime(ULONG Index);
-ULONG	PerfDataGetWorkingSetSizeBytes(ULONG Index);
-ULONG	PerfDataGetPeakWorkingSetSizeBytes(ULONG Index);
-ULONG	PerfDataGetWorkingSetSizeDelta(ULONG Index);
-ULONG	PerfDataGetPageFaultCount(ULONG Index);
-ULONG	PerfDataGetPageFaultCountDelta(ULONG Index);
-ULONG	PerfDataGetVirtualMemorySizeBytes(ULONG Index);
-ULONG	PerfDataGetPagedPoolUsagePages(ULONG Index);
-ULONG	PerfDataGetNonPagedPoolUsagePages(ULONG Index);
-ULONG	PerfDataGetBasePriority(ULONG Index);
-ULONG	PerfDataGetHandleCount(ULONG Index);
-ULONG	PerfDataGetThreadCount(ULONG Index);
-ULONG	PerfDataGetUSERObjectCount(ULONG Index);
-ULONG	PerfDataGetGDIObjectCount(ULONG Index);
-BOOL	PerfDataGetIOCounters(ULONG Index, PIO_COUNTERS pIoCounters);
+BOOL PerfDataInitialize(void);
+BOOL PerfDataGet(ULONG Index, PPERFDATA *lppData);
+BOOL PerfDataGetImageName(ULONG Index, LPTSTR lpImageName, int nMaxCount);
+BOOL PerfDataGetUserName(ULONG Index, LPTSTR lpUserName, int nMaxCount);
+BOOL PerfDataGetIOCounters(ULONG Index, PIO_COUNTERS pIoCounters);
 
-ULONG	PerfDataGetCommitChargeTotalK(void);
-ULONG	PerfDataGetCommitChargeLimitK(void);
-ULONG	PerfDataGetCommitChargePeakK(void);
-
-ULONG	PerfDataGetKernelMemoryTotalK(void);
-ULONG	PerfDataGetKernelMemoryPagedK(void);
-ULONG	PerfDataGetKernelMemoryNonPagedK(void);
-
-ULONG	PerfDataGetPhysicalMemoryTotalK(void);
-ULONG	PerfDataGetPhysicalMemoryAvailableK(void);
-ULONG	PerfDataGetPhysicalMemorySystemCacheK(void);
-
-ULONG	PerfDataGetSystemHandleCount(void);
-
-ULONG	PerfDataGetTotalThreadCount(void);
-
-
-#ifdef __cplusplus
-};
-#endif
+ULONG PerfDataGetProcessIndex(ULONG pid);
+ULONG PerfDataGetProcessCount(void);
+ULONG PerfDataGetProcessorUsage(void);
+ULONG PerfDataGetProcessorSystemUsage(void);
+ULONG PerfDataGetProcessId(ULONG Index);
+ULONG PerfDataGetSessionId(ULONG Index);
+ULONG PerfDataGetCPUUsage(ULONG Index);
+SIZE_T PerfDataGetWorkingSetSizeBytes(ULONG Index);
+SIZE_T PerfDataGetPeakWorkingSetSizeBytes(ULONG Index);
+ULONG PerfDataGetWorkingSetSizeDelta(ULONG Index);
+SIZE_T PerfDataGetPageFaultCount(ULONG Index);
+ULONG PerfDataGetPageFaultCountDelta(ULONG Index);
+ULONG PerfDataGetVirtualMemorySizeBytes(ULONG Index);
+SIZE_T PerfDataGetPagedPoolUsagePages(ULONG Index);
+SIZE_T PerfDataGetNonPagedPoolUsagePages(ULONG Index);
+ULONG PerfDataGetBasePriority(ULONG Index);
+ULONG PerfDataGetHandleCount(ULONG Index);
+ULONG PerfDataGetThreadCount(ULONG Index);
+ULONG PerfDataGetUSERObjectCount(ULONG Index);
+ULONG PerfDataGetGDIObjectCount(ULONG Index);
+ULONG PerfDataGetCommitChargeTotalK(void);
+ULONG PerfDataGetCommitChargeLimitK(void);
+ULONG PerfDataGetCommitChargePeakK(void);
+ULONG PerfDataGetKernelMemoryTotalK(void);
+ULONG PerfDataGetKernelMemoryPagedK(void);
+ULONG PerfDataGetKernelMemoryNonPagedK(void);
+ULONG PerfDataGetPhysicalMemoryTotalK(void);
+ULONG PerfDataGetPhysicalMemoryAvailableK(void);
+ULONG PerfDataGetPhysicalMemorySystemCacheK(void);
+ULONG PerfDataGetSystemHandleCount(void);
+ULONG PerfDataGetTotalThreadCount(void);
