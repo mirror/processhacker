@@ -231,11 +231,11 @@
     <ClInclude Include="wt\verifyp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="wt\guisupp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lc\basesup.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="lc\basesupa.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -360,6 +360,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="kph\kph.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\basesup.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

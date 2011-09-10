@@ -216,6 +216,7 @@
     <ClInclude Include="lc\handlep.h" />
     <ClInclude Include="lc\iosupp.h" />
     <ClInclude Include="lc\refp.h" />
+    <ClInclude Include="wt\guisupp.h" />
     <ClInclude Include="wt\hexeditp.h" />
     <ClInclude Include="wt\seceditp.h" />
     <ClInclude Include="wt\treenewp.h" />

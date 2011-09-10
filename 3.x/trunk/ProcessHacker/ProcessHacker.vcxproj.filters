@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="phlib">
-      <UniqueIdentifier>{e7aa1e43-4773-4453-a20c-473c48e66901}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headers">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
@@ -25,128 +22,11 @@
     <Filter Include="phsvc">
       <UniqueIdentifier>{84a3be0b-42cf-42ae-bcd3-16f165caa0db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="wtlib">
+      <UniqueIdentifier>{e7aa1e43-4773-4453-a20c-473c48e66901}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\phlib\basesup.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\basesupa.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\basesupx.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\circbuf.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\collect.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\colorbox.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\data.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\dspick.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\emenu.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\error.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\extlv.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\fastlock.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\format.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\global.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\graph.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\guisup.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\handle.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\hexedit.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\hndlinfo.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\icotobmp.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\iosup.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\kph.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\lsa.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\mapimg.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\maplib.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\md5.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\native.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\ntimport.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\provider.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\queuedlock.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\ref.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\secdata.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\secedit.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\sha.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\support.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\svcsup.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\symprv.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\sync.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\verify.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\workqueue.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
     <ClCompile Include="about.c">
       <Filter>Process Hacker</Filter>
     </ClCompile>
@@ -309,69 +189,6 @@
     <ClCompile Include="tokprp.c">
       <Filter>Process Hacker</Filter>
     </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_chartables.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_compile.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_config.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_dfa_exec.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_exec.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_fullinfo.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_get.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_globals.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_info.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_maketables.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_newline.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_ord2utf8.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_refcount.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_study.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_tables.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_try_flipped.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_ucd.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_valid_utf8.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_version.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcre_xclass.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\pcre\pcreposix.c">
-      <Filter>PCRE</Filter>
-    </ClCompile>
     <ClCompile Include="mxml\mxml-attr.c">
       <Filter>Mini-XML</Filter>
     </ClCompile>
@@ -429,15 +246,6 @@
     <ClCompile Include="sessshad.c">
       <Filter>Process Hacker</Filter>
     </ClCompile>
-    <ClCompile Include="..\phlib\cpysave.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\filepool.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\phlib\treenew.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
     <ClCompile Include="colmgr.c">
       <Filter>Process Hacker</Filter>
     </ClCompile>
@@ -453,14 +261,200 @@
     <ClCompile Include="hndllist.c">
       <Filter>Process Hacker</Filter>
     </ClCompile>
+    <ClCompile Include="..\wtlib\kph\kph.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\basesup.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\basesupa.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\basesupx.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\circbuf.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\collect.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\data.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\error.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\fastlock.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\filepool.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\format.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\global.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\handle.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\hndlinfo.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\iosup.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\lsa.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\mapimg.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\maplib.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\md5.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\native.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\ntimport.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\provider.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\queuedlock.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\ref.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\sha.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\sync.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\lc\workqueue.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\colorbox.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\cpysave.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\dspick.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\emenu.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\extlv.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\graph.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\guisup.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\hexedit.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\icotobmp.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\secdata.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\secedit.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\support.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\svcsup.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\symprv.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\treenew.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\wtlib\wt\verify.c">
+      <Filter>wtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_chartables.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcreposix.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_compile.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_config.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_dfa_exec.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_exec.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_fullinfo.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_get.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_globals.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_info.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_maketables.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_newline.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_ord2utf8.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_refcount.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_study.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_tables.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_try_flipped.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_ucd.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_valid_utf8.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_version.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
+    <ClCompile Include="pcre\pcre_xclass.c">
+      <Filter>PCRE</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\phlib\circbuf_i.h">
-      <Filter>phlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\phlib\format_i.h">
-      <Filter>phlib</Filter>
-    </ClInclude>
     <ClInclude Include="mxml\config.h">
       <Filter>Headers</Filter>
     </ClInclude>
@@ -530,6 +524,51 @@
     <ClInclude Include="include\extmgri.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="pcre\config.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pcre\pcre.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pcre\pcre_internal.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pcre\pcreposix.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="pcre\ucp.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wtlib\lc\circbuf_i.h">
+      <Filter>wtlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wtlib\lc\filepoolp.h">
+      <Filter>wtlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wtlib\lc\format_i.h">
+      <Filter>wtlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wtlib\lc\handlep.h">
+      <Filter>wtlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wtlib\lc\iosupp.h">
+      <Filter>wtlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wtlib\lc\refp.h">
+      <Filter>wtlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wtlib\wt\hexeditp.h">
+      <Filter>wtlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wtlib\wt\seceditp.h">
+      <Filter>wtlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wtlib\wt\treenewp.h">
+      <Filter>wtlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wtlib\wt\verifyp.h">
+      <Filter>wtlib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\application.bmp">
@@ -584,9 +623,6 @@
       <Filter>Resources</Filter>
     </None>
     <None Include="resources\cog_go.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include="TODO.txt">
       <Filter>Resources</Filter>
     </None>
   </ItemGroup>
