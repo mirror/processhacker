@@ -5,7 +5,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{2758DC86
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProcessHacker", "ProcessHacker\ProcessHacker.vcxproj", "{0271DD27-6707-4290-8DFE-285702B7115D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phlib", "phlib\phlib.vcxproj", "{477D0215-F252-41A1-874B-F27E3EA1ED17}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wtlib", "wtlib\wtlib.vcxproj", "{477D0215-F252-41A1-874B-F27E3EA1ED17}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fixlib", "tools\fixlib\fixlib.vcxproj", "{31F4AA06-7ED5-4A6D-B901-19AD4BD16175}"
 EndProject
