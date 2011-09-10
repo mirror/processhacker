@@ -218,5 +218,11 @@
     <ClCompile Include="lc\string.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lc\ref.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\queuedlock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

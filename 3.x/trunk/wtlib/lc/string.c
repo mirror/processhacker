@@ -22,4 +22,35 @@
 
 #include <lc.h>
 
+PLC_OBJECT_TYPE LcStringType;
 
+BOOLEAN PhStringInitialization(
+    VOID
+    )
+{
+    if (!NT_SUCCESS(LcCreateObjectType(
+        &LcStringType,
+        L"String",
+        0,
+        NULL
+        )))
+        return FALSE;
+}
+
+PLC_STRING LcCreateString(
+    __in PWSTR Buffer
+    )
+{
+    return LcCreateStringEx(String, Buffer, wcslen(Buffer) * sizeof(WCHAR));
+}
+
+PLC_STRING LcCreateStringEx(
+    __in_opt PWSTR Buffer,
+    __in SIZE_T Length
+    )
+{
+    String->Length = Length;
+    String->Buffer = Buffer;
+    String->Flags = 0;
+    String->Data = NULL;
+}

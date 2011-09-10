@@ -216,6 +216,8 @@
     <ClInclude Include="lc\refp.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="lc\queuedlock.c" />
+    <ClCompile Include="lc\ref.c" />
     <ClCompile Include="lc\string.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
