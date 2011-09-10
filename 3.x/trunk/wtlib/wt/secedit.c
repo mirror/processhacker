@@ -21,7 +21,7 @@
  */
 
 #include <phgui.h>
-#include <seceditp.h>
+#include "seceditp.h"
 
 static ISecurityInformationVtbl PhSecurityInformation_VTable =
 {

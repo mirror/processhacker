@@ -23,7 +23,7 @@
 #define _PH_REF_PRIVATE
 #include <phbase.h>
 #include <phintrnl.h>
-#include <refp.h>
+#include "refp.h"
 
 /** The type object type. */
 PPH_OBJECT_TYPE PhObjectTypeObject = NULL;

@@ -20,8 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{477D0215-F252-41A1-874B-F27E3EA1ED17}</ProjectGuid>
-    <RootNamespace>phlib</RootNamespace>
+    <RootNamespace>wtlib</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>wtlib</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -73,7 +74,7 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include/sys;include/lc;include/wt;include/kph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -94,7 +95,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include/sys;include/lc;include/wt;include/kph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -110,7 +111,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include/sys;include/lc;include/wt;include/kph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -133,7 +134,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include/sys;include/lc;include/wt;include/kph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -147,152 +148,123 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="basesup.c" />
-    <ClCompile Include="basesupa.c" />
-    <ClCompile Include="basesupx.c" />
-    <ClCompile Include="circbuf.c" />
-    <ClCompile Include="collect.c" />
-    <ClCompile Include="colorbox.c" />
-    <ClCompile Include="cpysave.c" />
-    <ClCompile Include="data.c" />
-    <ClCompile Include="dspick.c" />
-    <ClCompile Include="emenu.c" />
-    <ClCompile Include="error.c" />
-    <ClCompile Include="extlv.c" />
-    <ClCompile Include="fastlock.c" />
-    <ClCompile Include="filepool.c" />
-    <ClCompile Include="format.c" />
-    <ClCompile Include="global.c" />
-    <ClCompile Include="graph.c" />
-    <ClCompile Include="guisup.c" />
-    <ClCompile Include="handle.c" />
-    <ClCompile Include="hexedit.c" />
-    <ClCompile Include="hndlinfo.c" />
-    <ClCompile Include="icotobmp.c" />
-    <ClCompile Include="iosup.c" />
-    <ClCompile Include="kph.c" />
-    <ClCompile Include="lsa.c" />
-    <ClCompile Include="mapimg.c" />
-    <ClCompile Include="maplib.c" />
-    <ClCompile Include="md5.c" />
-    <ClCompile Include="native.c" />
-    <ClCompile Include="ntimport.c" />
-    <ClCompile Include="pcre\pcre_chartables.c" />
-    <ClCompile Include="pcre\pcre_compile.c" />
-    <ClCompile Include="pcre\pcre_config.c" />
-    <ClCompile Include="pcre\pcre_dfa_exec.c" />
-    <ClCompile Include="pcre\pcre_exec.c" />
-    <ClCompile Include="pcre\pcre_fullinfo.c" />
-    <ClCompile Include="pcre\pcre_get.c" />
-    <ClCompile Include="pcre\pcre_globals.c" />
-    <ClCompile Include="pcre\pcre_info.c" />
-    <ClCompile Include="pcre\pcre_maketables.c" />
-    <ClCompile Include="pcre\pcre_newline.c" />
-    <ClCompile Include="pcre\pcre_ord2utf8.c" />
-    <ClCompile Include="pcre\pcre_refcount.c" />
-    <ClCompile Include="pcre\pcre_study.c" />
-    <ClCompile Include="pcre\pcre_tables.c" />
-    <ClCompile Include="pcre\pcre_try_flipped.c" />
-    <ClCompile Include="pcre\pcre_ucd.c" />
-    <ClCompile Include="pcre\pcre_valid_utf8.c" />
-    <ClCompile Include="pcre\pcre_version.c" />
-    <ClCompile Include="pcre\pcre_xclass.c" />
-    <ClCompile Include="pcre\pcreposix.c" />
-    <ClCompile Include="provider.c" />
-    <ClCompile Include="queuedlock.c" />
-    <ClCompile Include="ref.c" />
-    <ClCompile Include="secdata.c" />
-    <ClCompile Include="secedit.c" />
-    <ClCompile Include="sha.c" />
-    <ClCompile Include="support.c" />
-    <ClCompile Include="svcsup.c" />
-    <ClCompile Include="symprv.c" />
-    <ClCompile Include="sync.c" />
-    <ClCompile Include="treenew.c" />
-    <ClCompile Include="verify.c" />
-    <ClCompile Include="workqueue.c" />
+    <ClInclude Include="include\kph\kphapi.h" />
+    <ClInclude Include="include\kph\kphuser.h" />
+    <ClInclude Include="include\lc\circbuf.h" />
+    <ClInclude Include="include\lc\circbuf_h.h" />
+    <ClInclude Include="include\lc\dltmgr.h" />
+    <ClInclude Include="include\lc\fastlock.h" />
+    <ClInclude Include="include\lc\filepool.h" />
+    <ClInclude Include="include\lc\phbase.h" />
+    <ClInclude Include="include\lc\phintrnl.h" />
+    <ClInclude Include="include\lc\phnatinl.h" />
+    <ClInclude Include="include\lc\phnet.h" />
+    <ClInclude Include="include\lc\phnt.h" />
+    <ClInclude Include="include\lc\phsup.h" />
+    <ClInclude Include="include\lc\phsync.h" />
+    <ClInclude Include="include\lc\queuedlock.h" />
+    <ClInclude Include="include\lc\ref.h" />
+    <ClInclude Include="include\lc\templ.h" />
+    <ClInclude Include="include\sys\md5.h" />
+    <ClInclude Include="include\sys\ntbasic.h" />
+    <ClInclude Include="include\sys\ntcm.h" />
+    <ClInclude Include="include\sys\ntdbg.h" />
+    <ClInclude Include="include\sys\ntexapi.h" />
+    <ClInclude Include="include\sys\ntgdi.h" />
+    <ClInclude Include="include\sys\ntimport.h" />
+    <ClInclude Include="include\sys\ntioapi.h" />
+    <ClInclude Include="include\sys\ntkeapi.h" />
+    <ClInclude Include="include\sys\ntldr.h" />
+    <ClInclude Include="include\sys\ntlpcapi.h" />
+    <ClInclude Include="include\sys\ntlsa.h" />
+    <ClInclude Include="include\sys\ntmisc.h" />
+    <ClInclude Include="include\sys\ntmmapi.h" />
+    <ClInclude Include="include\sys\ntnls.h" />
+    <ClInclude Include="include\sys\ntobapi.h" />
+    <ClInclude Include="include\sys\ntpebteb.h" />
+    <ClInclude Include="include\sys\ntpfapi.h" />
+    <ClInclude Include="include\sys\ntpnpapi.h" />
+    <ClInclude Include="include\sys\ntpoapi.h" />
+    <ClInclude Include="include\sys\ntpsapi.h" />
+    <ClInclude Include="include\sys\ntregapi.h" />
+    <ClInclude Include="include\sys\ntrtl.h" />
+    <ClInclude Include="include\sys\ntsam.h" />
+    <ClInclude Include="include\sys\ntseapi.h" />
+    <ClInclude Include="include\sys\nttmapi.h" />
+    <ClInclude Include="include\sys\nttp.h" />
+    <ClInclude Include="include\sys\ntwin.h" />
+    <ClInclude Include="include\sys\ntwow64.h" />
+    <ClInclude Include="include\sys\ntxcapi.h" />
+    <ClInclude Include="include\sys\ntzwapi.h" />
+    <ClInclude Include="include\sys\sha.h" />
+    <ClInclude Include="include\sys\winmisc.h" />
+    <ClInclude Include="include\sys\winsta.h" />
+    <ClInclude Include="include\wt\colorbox.h" />
+    <ClInclude Include="include\wt\cpysave.h" />
+    <ClInclude Include="include\wt\dspick.h" />
+    <ClInclude Include="include\wt\emenu.h" />
+    <ClInclude Include="include\wt\graph.h" />
+    <ClInclude Include="include\wt\guisupp.h" />
+    <ClInclude Include="include\wt\hexedit.h" />
+    <ClInclude Include="include\wt\ph.h" />
+    <ClInclude Include="include\wt\phgui.h" />
+    <ClInclude Include="include\wt\symprv.h" />
+    <ClInclude Include="include\wt\treenew.h" />
+    <ClInclude Include="lc\circbuf_i.h" />
+    <ClInclude Include="lc\filepoolp.h" />
+    <ClInclude Include="lc\format_i.h" />
+    <ClInclude Include="lc\handlep.h" />
+    <ClInclude Include="lc\iosupp.h" />
+    <ClInclude Include="lc\refp.h" />
+    <ClInclude Include="wt\hexeditp.h" />
+    <ClInclude Include="wt\seceditp.h" />
+    <ClInclude Include="wt\treenewp.h" />
+    <ClInclude Include="wt\verifyp.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\cpysave.h" />
-    <ClInclude Include="include\filepool.h" />
-    <ClInclude Include="include\filepoolp.h" />
-    <ClInclude Include="include\kphapi.h" />
-    <ClInclude Include="include\ntpfapi.h" />
-    <ClInclude Include="include\ntzwapi.h" />
-    <ClInclude Include="include\phintrnl.h" />
-    <ClInclude Include="include\phnatinl.h" />
-    <ClInclude Include="include\phsync.h" />
-    <ClInclude Include="include\circbuf.h" />
-    <ClInclude Include="include\circbuf_h.h" />
-    <ClInclude Include="circbuf_i.h" />
-    <ClInclude Include="include\colorbox.h" />
-    <ClInclude Include="include\treenew.h" />
-    <ClInclude Include="include\treenewp.h" />
-    <ClInclude Include="pcre\config.h" />
-    <ClInclude Include="include\dltmgr.h" />
-    <ClInclude Include="include\dspick.h" />
-    <ClInclude Include="include\emenu.h" />
-    <ClInclude Include="include\fastlock.h" />
-    <ClInclude Include="format_i.h" />
-    <ClInclude Include="include\graph.h" />
-    <ClInclude Include="include\guisupp.h" />
-    <ClInclude Include="include\handlep.h" />
-    <ClInclude Include="include\hexedit.h" />
-    <ClInclude Include="include\hexeditp.h" />
-    <ClInclude Include="include\iosupp.h" />
-    <ClInclude Include="include\kphuser.h" />
-    <ClInclude Include="include\md5.h" />
-    <ClInclude Include="include\ntbasic.h" />
-    <ClInclude Include="include\ntcm.h" />
-    <ClInclude Include="include\ntdbg.h" />
-    <ClInclude Include="include\ntexapi.h" />
-    <ClInclude Include="include\ntgdi.h" />
-    <ClInclude Include="include\ntimport.h" />
-    <ClInclude Include="include\ntioapi.h" />
-    <ClInclude Include="include\ntkeapi.h" />
-    <ClInclude Include="include\ntldr.h" />
-    <ClInclude Include="include\ntlpcapi.h" />
-    <ClInclude Include="include\ntlsa.h" />
-    <ClInclude Include="include\ntmisc.h" />
-    <ClInclude Include="include\ntmmapi.h" />
-    <ClInclude Include="include\ntnls.h" />
-    <ClInclude Include="include\ntobapi.h" />
-    <ClInclude Include="include\ntpebteb.h" />
-    <ClInclude Include="include\ntpnpapi.h" />
-    <ClInclude Include="include\ntpoapi.h" />
-    <ClInclude Include="include\ntpsapi.h" />
-    <ClInclude Include="include\ntregapi.h" />
-    <ClInclude Include="include\ntrtl.h" />
-    <ClInclude Include="include\ntsam.h" />
-    <ClInclude Include="include\ntseapi.h" />
-    <ClInclude Include="include\nttmapi.h" />
-    <ClInclude Include="include\nttp.h" />
-    <ClInclude Include="include\ntwin.h" />
-    <ClInclude Include="include\ntwow64.h" />
-    <ClInclude Include="include\ntxcapi.h" />
-    <ClInclude Include="pcre\pcre.h" />
-    <ClInclude Include="pcre\pcre_internal.h" />
-    <ClInclude Include="pcre\pcreposix.h" />
-    <ClInclude Include="include\ph.h" />
-    <ClInclude Include="include\phbase.h" />
-    <ClInclude Include="include\phgui.h" />
-    <ClInclude Include="include\phnet.h" />
-    <ClInclude Include="include\phnt.h" />
-    <ClInclude Include="include\phsup.h" />
-    <ClInclude Include="include\queuedlock.h" />
-    <ClInclude Include="include\ref.h" />
-    <ClInclude Include="include\refp.h" />
-    <ClInclude Include="include\winmisc.h" />
-    <ClInclude Include="include\seceditp.h" />
-    <ClInclude Include="include\sha.h" />
-    <ClInclude Include="include\symprv.h" />
-    <ClInclude Include="include\templ.h" />
-    <ClInclude Include="pcre\ucp.h" />
-    <ClInclude Include="include\verifyp.h" />
-    <ClInclude Include="include\winsta.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="pcre\pcre_printint.src" />
+    <ClCompile Include="kph\kph.c" />
+    <ClCompile Include="lc\basesup.c" />
+    <ClCompile Include="lc\basesupa.c" />
+    <ClCompile Include="lc\basesupx.c" />
+    <ClCompile Include="lc\circbuf.c" />
+    <ClCompile Include="lc\collect.c" />
+    <ClCompile Include="lc\data.c" />
+    <ClCompile Include="lc\error.c" />
+    <ClCompile Include="lc\fastlock.c" />
+    <ClCompile Include="lc\filepool.c" />
+    <ClCompile Include="lc\format.c" />
+    <ClCompile Include="lc\global.c" />
+    <ClCompile Include="lc\handle.c" />
+    <ClCompile Include="lc\hndlinfo.c" />
+    <ClCompile Include="lc\iosup.c" />
+    <ClCompile Include="lc\lsa.c" />
+    <ClCompile Include="lc\mapimg.c" />
+    <ClCompile Include="lc\maplib.c" />
+    <ClCompile Include="lc\md5.c" />
+    <ClCompile Include="lc\native.c" />
+    <ClCompile Include="lc\ntimport.c" />
+    <ClCompile Include="lc\provider.c" />
+    <ClCompile Include="lc\queuedlock.c" />
+    <ClCompile Include="lc\ref.c" />
+    <ClCompile Include="lc\sha.c" />
+    <ClCompile Include="lc\sync.c" />
+    <ClCompile Include="lc\workqueue.c" />
+    <ClCompile Include="wt\colorbox.c" />
+    <ClCompile Include="wt\cpysave.c" />
+    <ClCompile Include="wt\dspick.c" />
+    <ClCompile Include="wt\emenu.c" />
+    <ClCompile Include="wt\extlv.c" />
+    <ClCompile Include="wt\graph.c" />
+    <ClCompile Include="wt\guisup.c" />
+    <ClCompile Include="wt\hexedit.c" />
+    <ClCompile Include="wt\icotobmp.c" />
+    <ClCompile Include="wt\secdata.c" />
+    <ClCompile Include="wt\secedit.c" />
+    <ClCompile Include="wt\support.c" />
+    <ClCompile Include="wt\svcsup.c" />
+    <ClCompile Include="wt\symprv.c" />
+    <ClCompile Include="wt\treenew.c" />
+    <ClCompile Include="wt\verify.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -22,7 +22,7 @@
 
 #include <phgui.h>
 #include <hexedit.h>
-#include <hexeditp.h>
+#include "hexeditp.h"
 
 // Code originally from http://www.codeguru.com/Cpp/controls/editctrl/article.php/c539
 

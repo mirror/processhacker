@@ -21,7 +21,7 @@
  */
 
 #include <phbase.h>
-#include <handlep.h>
+#include "handlep.h"
 
 static PH_FREE_LIST PhHandleTableLevel0FreeList;
 static PH_FREE_LIST PhHandleTableLevel1FreeList;

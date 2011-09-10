@@ -80,7 +80,7 @@
 
 #include <ph.h>
 #include <filepool.h>
-#include <filepoolp.h>
+#include "filepoolp.h"
 
 /**
  * Creates or opens a file pool.

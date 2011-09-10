@@ -21,7 +21,7 @@
  */
 
 #include <ph.h>
-#include <verifyp.h>
+#include "verifyp.h"
 
 _CryptCATAdminCalcHashFromFileHandle CryptCATAdminCalcHashFromFileHandle;
 _CryptCATAdminAcquireContext CryptCATAdminAcquireContext;

@@ -22,7 +22,7 @@
 
 #define _PH_IOSUP_PRIVATE
 #include <ph.h>
-#include <iosupp.h>
+#include "iosupp.h"
 
 PPH_OBJECT_TYPE PhFileStreamType;
 

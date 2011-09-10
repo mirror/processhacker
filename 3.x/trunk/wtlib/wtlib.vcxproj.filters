@@ -1,0 +1,366 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\sys\md5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntbasic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntcm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntdbg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntexapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntgdi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntimport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntioapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntkeapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntldr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntlpcapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntlsa.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntmisc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntmmapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntnls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntobapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntpebteb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntpfapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntpnpapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntpoapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntpsapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntregapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntrtl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntsam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntseapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\nttmapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\nttp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntwin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntwow64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntxcapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\ntzwapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\sha.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\winmisc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys\winsta.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lc\circbuf_i.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lc\format_i.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kph\kphapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kph\kphuser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\circbuf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\circbuf_h.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\dltmgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\fastlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\filepool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\phbase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\phintrnl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\phnatinl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\phnet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\phnt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\phsup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\phsync.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\queuedlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\ref.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lc\templ.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wt\colorbox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wt\cpysave.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wt\dspick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wt\emenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wt\graph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wt\guisupp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wt\hexedit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wt\ph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wt\phgui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wt\symprv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wt\treenew.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lc\filepoolp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lc\handlep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lc\iosupp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lc\refp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wt\seceditp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wt\hexeditp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wt\treenewp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wt\verifyp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lc\basesup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\basesupa.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\basesupx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\circbuf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\collect.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\data.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\error.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\fastlock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\filepool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\format.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\global.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\handle.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\hndlinfo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\iosup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\lsa.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\mapimg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\maplib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\md5.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\native.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\ntimport.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\provider.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\queuedlock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\ref.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\sha.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\sync.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lc\workqueue.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\colorbox.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\cpysave.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\dspick.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\emenu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\extlv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\graph.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\guisup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\hexedit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\icotobmp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\secdata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\secedit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\support.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\svcsup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\symprv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\treenew.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wt\verify.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="kph\kph.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

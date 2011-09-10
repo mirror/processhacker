@@ -48,7 +48,7 @@
 #include <windowsx.h>
 #include <vssym32.h>
 #include <treenew.h>
-#include <treenewp.h>
+#include "treenewp.h"
 
 static PVOID ComCtl32Handle;
 static LONG SmallIconWidth;
