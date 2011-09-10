@@ -3,7 +3,7 @@
 
 // Boot graphics
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSCALLAPI
 NTSTATUS
@@ -59,7 +59,7 @@ NtTraceEvent(
     __in PVOID Fields
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSCALLAPI
 NTSTATUS

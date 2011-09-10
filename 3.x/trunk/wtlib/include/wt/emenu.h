@@ -40,7 +40,7 @@ typedef struct _PH_EMENU_ITEM
 
 typedef struct _PH_EMENU_ITEM PH_EMENU, *PPH_EMENU;
 
-PHLIBAPI
+LCLIBAPI
 PPH_EMENU_ITEM PhCreateEMenuItem(
     __in ULONG Flags,
     __in ULONG Id,
@@ -49,7 +49,7 @@ PPH_EMENU_ITEM PhCreateEMenuItem(
     __in_opt PVOID Context
     );
 
-PHLIBAPI
+LCLIBAPI
 VOID PhDestroyEMenuItem(
     __in PPH_EMENU_ITEM Item
     );
@@ -58,7 +58,7 @@ VOID PhDestroyEMenuItem(
 #define PH_EMENU_FIND_STARTSWITH 0x2
 #define PH_EMENU_FIND_LITERAL 0x4
 
-PHLIBAPI
+LCLIBAPI
 PPH_EMENU_ITEM PhFindEMenuItem(
     __in PPH_EMENU_ITEM Item,
     __in ULONG Flags,
@@ -66,37 +66,37 @@ PPH_EMENU_ITEM PhFindEMenuItem(
     __in_opt ULONG Id
     );
 
-PHLIBAPI
+LCLIBAPI
 ULONG PhIndexOfEMenuItem(
     __in PPH_EMENU_ITEM Parent,
     __in PPH_EMENU_ITEM Item
     );
 
-PHLIBAPI
+LCLIBAPI
 VOID PhInsertEMenuItem(
     __inout PPH_EMENU_ITEM Parent,
     __inout PPH_EMENU_ITEM Item,
     __in ULONG Index
     );
 
-PHLIBAPI
+LCLIBAPI
 BOOLEAN PhRemoveEMenuItem(
     __inout_opt PPH_EMENU_ITEM Parent,
     __in_opt PPH_EMENU_ITEM Item,
     __in_opt ULONG Index
     );
 
-PHLIBAPI
+LCLIBAPI
 VOID PhRemoveAllEMenuItems(
     __inout PPH_EMENU_ITEM Parent
     );
 
-PHLIBAPI
+LCLIBAPI
 PPH_EMENU PhCreateEMenu(
     VOID
     );
 
-PHLIBAPI
+LCLIBAPI
 VOID PhDestroyEMenu(
     __in PPH_EMENU Menu
     );
@@ -127,7 +127,7 @@ VOID PhPopupMenuToEMenuItem(
     __in HMENU PopupMenu
     );
 
-PHLIBAPI
+LCLIBAPI
 VOID PhLoadResourceEMenuItem(
     __inout PPH_EMENU_ITEM MenuItem,
     __in HINSTANCE InstanceHandle,
@@ -138,7 +138,7 @@ VOID PhLoadResourceEMenuItem(
 #define PH_EMENU_SHOW_NONOTIFY 0x1
 #define PH_EMENU_SHOW_LEFTRIGHT 0x2
 
-PHLIBAPI
+LCLIBAPI
 PPH_EMENU_ITEM PhShowEMenu(
     __in PPH_EMENU Menu,
     __in HWND WindowHandle,
@@ -150,7 +150,7 @@ PPH_EMENU_ITEM PhShowEMenu(
 
 // Convenience functions
 
-PHLIBAPI
+LCLIBAPI
 BOOLEAN PhSetFlagsEMenuItem(
     __in PPH_EMENU_ITEM Item,
     __in ULONG Id,
@@ -167,7 +167,7 @@ FORCEINLINE BOOLEAN PhEnableEMenuItem(
     return PhSetFlagsEMenuItem(Item, Id, PH_EMENU_DISABLED, Enable ? 0 : PH_EMENU_DISABLED);
 }
 
-PHLIBAPI
+LCLIBAPI
 VOID PhSetFlagsAllEMenuItems(
     __in PPH_EMENU_ITEM Item,
     __in ULONG Mask,

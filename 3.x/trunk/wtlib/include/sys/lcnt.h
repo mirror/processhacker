@@ -1,5 +1,5 @@
-#ifndef _PH_PHNT_H
-#define _PH_PHNT_H
+#ifndef _LCNT_H
+#define _LCNT_H
 
 // This header file provides access to NT APIs.
 
@@ -21,48 +21,49 @@
 // 5. rev.
 
 // Mode
-#define PHNT_MODE_KERNEL 0
-#define PHNT_MODE_USER 1
+#define LCNT_MODE_KERNEL 0
+#define LCNT_MODE_USER 1
 
 // Version
-#define PHNT_WIN2K 50
-#define PHNT_WINXP 51
-#define PHNT_WS03 52
-#define PHNT_VISTA 60
-#define PHNT_WIN7 61
+#define LCNT_WIN2K 50
+#define LCNT_WINXP 51
+#define LCNT_WS03 52
+#define LCNT_VISTA 60
+#define LCNT_WIN7 61
 
-#ifndef PHNT_MODE
-#define PHNT_MODE PHNT_MODE_USER
+#ifndef LCNT_MODE
+#define LCNT_MODE LCNT_MODE_USER
 #endif
 
-#ifndef PHNT_VERSION
-#define PHNT_VERSION PHNT_WINXP
+#ifndef LCNT_VERSION
+#define LCNT_VERSION LCNT_WINXP
 #endif
 
 // Options
 
-//#define PHNT_NO_INLINE_INIT_STRING
+//#define LCNT_NO_INLINE_INIT_STRING
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 #include <ntbasic.h>
+#include <ntstatus.h>
 #include <ntnls.h>
 #include <ntkeapi.h>
 #endif
 
 #include <ntexapi.h>
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 #include <ntmmapi.h>
 #endif
 
 #include <ntobapi.h>
 #include <ntpsapi.h>
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 #include <ntcm.h>
 #include <ntdbg.h>
 #include <ntioapi.h>
@@ -75,7 +76,7 @@ extern "C" {
 
 #include <ntrtl.h>
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 #include <ntseapi.h>
 #include <nttmapi.h>

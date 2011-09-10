@@ -3,7 +3,7 @@
 
 #include <ntkeapi.h>
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 // Thread execution
 
@@ -325,7 +325,7 @@ typedef enum _TIMER_SET_INFORMATION_CLASS
     MaxTimerInfoClass
 } TIMER_SET_INFORMATION_CLASS;
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 struct _COUNTED_REASON_CONTEXT;
 
 typedef struct _TIMER_SET_COALESCABLE_TIMER_INFO
@@ -372,7 +372,7 @@ NtSetTimer(
     __out_opt PBOOLEAN PreviousState
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 NTSYSCALLAPI
 NTSTATUS
 NTAPI
@@ -423,7 +423,7 @@ NtCreateProfile(
     __in KAFFINITY Affinity
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSCALLAPI
 NTSTATUS
@@ -587,7 +587,7 @@ typedef struct _WORKER_FACTORY_BASIC_INFORMATION
     NTSTATUS LastThreadCreationStatus;
 } WORKER_FACTORY_BASIC_INFORMATION, *PWORKER_FACTORY_BASIC_INFORMATION;
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 NTSYSCALLAPI
 NTSTATUS
@@ -737,7 +737,7 @@ NtAllocateUuids(
 
 // System Information
 
-#endif // (PHNT_MODE != PHNT_MODE_KERNEL)
+#endif // (LCNT_MODE != LCNT_MODE_KERNEL)
 
 // rev
 // private
@@ -1695,7 +1695,7 @@ typedef struct _SYSTEM_QUERY_PERFORMANCE_COUNTER_INFORMATION
 
 // end_msdn
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 NTSYSCALLAPI
 NTSTATUS
@@ -1707,7 +1707,7 @@ NtQuerySystemInformation(
     __out_opt PULONG ReturnLength
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSCALLAPI
 NTSTATUS
@@ -2123,7 +2123,7 @@ C_ASSERT(FIELD_OFFSET(KUSER_SHARED_DATA, XState) == 0x3e0);
 #define USER_SHARED_DATA ((KUSER_SHARED_DATA * const)0x7ffe0000)
 #endif
 
-#if (PHNT_VERSION >= PHNT_WS03)
+#if (LCNT_VERSION >= LCNT_WS03)
 
 FORCEINLINE ULONGLONG NtGetTickCount64()
 {
@@ -2206,7 +2206,7 @@ NtQueryInstallUILanguage(
     __out LANGID *InstallUILanguageId
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSCALLAPI
 NTSTATUS
@@ -2231,7 +2231,7 @@ NtSetDefaultUILanguage(
     __in LANGID DefaultUILanguageId
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSCALLAPI
 NTSTATUS
@@ -2245,9 +2245,9 @@ NtIsUILanguageComitted(
 
 // begin_private
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 NTSYSCALLAPI
 NTSTATUS
 NTAPI
@@ -2279,7 +2279,7 @@ NtGetNlsSectionPtr(
     __out PULONG SectionSize
     );
 
-#if (PHNT_VERSION < PHNT_WIN7)
+#if (LCNT_VERSION < LCNT_WIN7)
 
 NTSYSCALLAPI
 NTSTATUS
@@ -2491,6 +2491,6 @@ NtDisplayString(
     __in PUNICODE_STRING String
     );
 
-#endif // (PHNT_MODE != PHNT_MODE_KERNEL)
+#endif // (LCNT_MODE != LCNT_MODE_KERNEL)
 
 #endif

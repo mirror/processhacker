@@ -1,13 +1,12 @@
 #ifndef _NTWIN_H
 #define _NTWIN_H
 
-// This header file provides access to Win32, plus NTSTATUS values.
+// This header file provides access to Win32, without NTSTATUS values.
 
 #define WIN32_LEAN_AND_MEAN
 #define WIN32_NO_STATUS
 #include <windows.h>
 #undef WIN32_NO_STATUS
-#include <ntstatus.h>
 
 #include <winioctl.h>
 #include <shellapi.h>

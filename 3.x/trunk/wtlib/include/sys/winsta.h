@@ -715,7 +715,7 @@ WinStationGetProcessSid(
 
 // Services isolation
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 // rev
 BOOLEAN

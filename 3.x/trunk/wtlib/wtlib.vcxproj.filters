@@ -129,12 +129,6 @@
     <ClInclude Include="include\kph\kphuser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\lc\circbuf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\lc\circbuf_h.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\lc\dltmgr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -144,9 +138,6 @@
     <ClInclude Include="include\lc\filepool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\lc\phbase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\lc\phintrnl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -154,9 +145,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\lc\phnet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\lc\phnt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\lc\phsup.h">
@@ -219,150 +207,15 @@
     <ClInclude Include="lc\refp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="wt\seceditp.h">
+    <ClInclude Include="include\lc\lc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="wt\hexeditp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="wt\treenewp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="wt\verifyp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="wt\guisupp.h">
+    <ClInclude Include="include\sys\lcnt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lc\basesupa.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\basesupx.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\circbuf.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\collect.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\data.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\error.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\fastlock.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\filepool.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\format.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\global.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\handle.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\hndlinfo.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\iosup.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\lsa.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\mapimg.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\maplib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\md5.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\native.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\ntimport.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\provider.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\queuedlock.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\ref.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\sha.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\sync.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\workqueue.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\colorbox.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\cpysave.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\dspick.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\emenu.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\extlv.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\graph.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\guisup.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\hexedit.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\icotobmp.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\secdata.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\secedit.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\support.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\svcsup.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\symprv.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\treenew.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="wt\verify.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="kph\kph.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lc\basesup.c">
+    <ClCompile Include="lc\string.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

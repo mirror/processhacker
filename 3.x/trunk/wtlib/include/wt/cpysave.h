@@ -26,13 +26,13 @@ VOID PhMapDisplayIndexTreeNew(
     __out PULONG NumberOfColumns
     );
 
-PHLIBAPI
+LCLIBAPI
 PPH_FULL_STRING PhGetTreeNewText(
     __in HWND TreeNewHandle,
     __in ULONG MaximumNumberOfColumns
     );
 
-PHLIBAPI
+LCLIBAPI
 PPH_LIST PhGetGenericTreeNewLines(
     __in HWND TreeNewHandle,
     __in ULONG Mode

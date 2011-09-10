@@ -1,7 +1,7 @@
 #ifndef _NTPEBTEB_H
 #define _NTPEBTEB_H
 
-#if (PHNT_MODE == PHNT_MODE_KERNEL)
+#if (LCNT_MODE == LCNT_MODE_KERNEL)
 typedef PVOID *PPVOID;
 #endif
 

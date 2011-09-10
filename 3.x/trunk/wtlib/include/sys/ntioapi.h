@@ -32,7 +32,7 @@
 #define FILE_OPEN_BY_FILE_ID 0x00002000
 #define FILE_OPEN_FOR_BACKUP_INTENT 0x00004000
 #define FILE_NO_COMPRESSION 0x00008000
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 #define FILE_OPEN_REQUIRING_OPLOCK 0x00010000
 #define FILE_DISALLOW_EXCLUSIVE 0x00020000
 #endif
@@ -1016,7 +1016,7 @@ NtCancelIoFile(
     __out PIO_STATUS_BLOCK IoStatusBlock
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // rev
 NTSYSCALLAPI
 NTSTATUS
@@ -1028,7 +1028,7 @@ NtCancelIoFileEx(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // rev
 NTSYSCALLAPI
 NTSTATUS
@@ -1261,7 +1261,7 @@ NtSetIoCompletion(
     __in ULONG_PTR IoStatusInformation
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSCALLAPI
 NTSTATUS
@@ -1287,7 +1287,7 @@ NtRemoveIoCompletion(
     __in_opt PLARGE_INTEGER Timeout
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSCALLAPI
 NTSTATUS
@@ -1304,7 +1304,7 @@ NtRemoveIoCompletionEx(
 
 // Misc.
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSCALLAPI
 NTSTATUS
@@ -1314,7 +1314,7 @@ NtEnableLastKnownGood(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSCALLAPI
 NTSTATUS

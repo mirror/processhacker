@@ -15,24 +15,24 @@ typedef struct _PH_DSPICK_OBJECTS
     PH_DSPICK_OBJECT Objects[1];
 } PH_DSPICK_OBJECTS, *PPH_DSPICK_OBJECTS;
 
-PHLIBAPI
+LCLIBAPI
 VOID PhFreeDsObjectPickerDialog(
     __in PVOID PickerDialog
     );
 
-PHLIBAPI
+LCLIBAPI
 PVOID PhCreateDsObjectPickerDialog(
     __in ULONG Flags
     );
 
-PHLIBAPI
+LCLIBAPI
 BOOLEAN PhShowDsObjectPickerDialog(
     __in HWND hWnd,
     __in PVOID PickerDialog,
     __out PPH_DSPICK_OBJECTS *Objects
     );
 
-PHLIBAPI
+LCLIBAPI
 VOID PhFreeDsObjectPickerObjects(
     __in PPH_DSPICK_OBJECTS Objects
     );

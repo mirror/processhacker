@@ -1,7 +1,7 @@
 #ifndef _NTPSAPI_H
 #define _NTPSAPI_H
 
-#if (PHNT_MODE == PHNT_MODE_KERNEL)
+#if (LCNT_MODE == LCNT_MODE_KERNEL)
 #define PROCESS_TERMINATE 0x0001
 #define PROCESS_CREATE_THREAD 0x0002
 #define PROCESS_SET_SESSIONID 0x0004
@@ -21,7 +21,7 @@
 #endif
 #endif
 
-#if (PHNT_MODE == PHNT_MODE_KERNEL)
+#if (LCNT_MODE == LCNT_MODE_KERNEL)
 #define THREAD_QUERY_INFORMATION 0x0040
 #define THREAD_SET_THREAD_TOKEN 0x0080
 #define THREAD_IMPERSONATE 0x0100
@@ -32,7 +32,7 @@
 #endif
 #endif
 
-#if (PHNT_MODE == PHNT_MODE_KERNEL)
+#if (LCNT_MODE == LCNT_MODE_KERNEL)
 #define JOB_OBJECT_ASSIGN_PROCESS 0x0001
 #define JOB_OBJECT_SET_ATTRIBUTES 0x0002
 #define JOB_OBJECT_QUERY 0x0004
@@ -94,7 +94,7 @@ typedef struct _WOW64_PROCESS
 
 // source:http://www.microsoft.com/whdc/system/Sysinternals/MoreThan64proc.mspx
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 typedef enum _PROCESS_INFORMATION_CLASS
 {
     ProcessBasicInformation, // 0, q: PROCESS_BASIC_INFORMATION, PROCESS_EXTENDED_BASIC_INFORMATION
@@ -152,7 +152,7 @@ typedef enum _PROCESS_INFORMATION_CLASS
 } PROCESS_INFORMATION_CLASS;
 #endif
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 typedef enum _THREAD_INFORMATION_CLASS
 {
     ThreadBasicInformation, // q: THREAD_BASIC_INFORMATION
@@ -193,7 +193,7 @@ typedef enum _THREAD_INFORMATION_CLASS
 } THREAD_INFORMATION_CLASS;
 #endif
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 // Use with both ProcessPagePriority and ThreadPagePriority
 typedef struct _PAGE_PRIORITY_INFORMATION
 {
@@ -203,7 +203,7 @@ typedef struct _PAGE_PRIORITY_INFORMATION
 
 // Process information structures
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 typedef struct _PROCESS_BASIC_INFORMATION
 {
@@ -326,7 +326,7 @@ typedef struct _PROCESS_FOREGROUND_BACKGROUND
     BOOLEAN Foreground;
 } PROCESS_FOREGROUND_BACKGROUND, *PPROCESS_FOREGROUND_BACKGROUND;
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 typedef struct _PROCESS_SESSION_INFORMATION
 {
@@ -490,7 +490,7 @@ typedef struct _THREAD_PROFILING_INFORMATION
 
 // Processes
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 NTSYSCALLAPI
 NTSTATUS
@@ -581,7 +581,7 @@ NtQueryInformationProcess(
     __out_opt PULONG ReturnLength
     );
 
-#if (PHNT_VERSION >= PHNT_WS03)
+#if (LCNT_VERSION >= LCNT_WS03)
 NTSYSCALLAPI
 NTSTATUS
 NTAPI
@@ -594,7 +594,7 @@ NtGetNextProcess(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WS03)
+#if (LCNT_VERSION >= LCNT_WS03)
 NTSYSCALLAPI
 NTSTATUS
 NTAPI
@@ -629,7 +629,7 @@ NtQueryPortInformationProcess(
 
 // Threads
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 NTSYSCALLAPI
 NTSTATUS
@@ -794,7 +794,7 @@ NtQueueApcThread(
 
 // User processes and threads
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 // Attributes
 
@@ -1023,7 +1023,7 @@ typedef struct _PS_CREATE_INFO
 #define PROCESS_CREATE_FLAGS_INHERIT_FROM_PARENT 0x00000100
 // end_rev
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSCALLAPI
 NTSTATUS
@@ -1052,7 +1052,7 @@ NtCreateUserProcess(
 #define THREAD_CREATE_FLAGS_INITIAL_THREAD 0x00000080
 // end_rev
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSCALLAPI
 NTSTATUS
@@ -1076,7 +1076,7 @@ NtCreateThreadEx(
 
 // Reserve objects
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 // private
 typedef enum _MEMORY_RESERVE_TYPE
@@ -1088,7 +1088,7 @@ typedef enum _MEMORY_RESERVE_TYPE
 
 // begin_rev
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 NTSYSCALLAPI
 NTSTATUS
 NTAPI
@@ -1099,7 +1099,7 @@ NtAllocateReserveObject(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 NTSYSCALLAPI
 NTSTATUS
 NTAPI
@@ -1119,7 +1119,7 @@ NtQueueApcThreadEx(
 
 // Job Objects
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 NTSYSCALLAPI
 NTSTATUS

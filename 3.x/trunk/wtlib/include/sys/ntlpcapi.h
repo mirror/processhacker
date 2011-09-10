@@ -502,7 +502,7 @@ typedef enum _ALPC_MESSAGE_INFORMATION_CLASS
 
 // begin_private
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 // System calls
 
@@ -793,7 +793,7 @@ AlpcUnregisterCompletionList(
     __in HANDLE PortHandle
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSAPI
 NTSTATUS

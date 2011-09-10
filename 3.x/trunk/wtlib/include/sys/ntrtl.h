@@ -3,7 +3,7 @@
 
 #include <ntldr.h>
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 // Linked lists
 
@@ -600,7 +600,7 @@ typedef struct _RTL_DYNAMIC_HASH_TABLE
     PVOID Directory;
 } RTL_DYNAMIC_HASH_TABLE, *PRTL_DYNAMIC_HASH_TABLE;
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 
 FORCEINLINE
 VOID
@@ -875,7 +875,7 @@ RtlSetCriticalSectionSpinCount(
     __in ULONG SpinCount
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 HANDLE
@@ -966,7 +966,7 @@ RtlConvertExclusiveToShared(
 
 // Slim reader-writer locks, condition variables, and barriers
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 // winbase:InitializeSRWLock
 NTSYSAPI
@@ -1024,7 +1024,7 @@ RtlTryAcquireSRWLockShared(
     __inout PRTL_SRWLOCK SRWLock
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSAPI
 VOID
@@ -1036,7 +1036,7 @@ RtlAcquireReleaseSRWLockExclusive(
 
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 // winbase:InitializeConditionVariable
 NTSYSAPI
@@ -1103,7 +1103,7 @@ typedef struct _RTL_BARRIER
 
 // begin_private
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 NTSYSAPI
 NTSTATUS
@@ -1143,14 +1143,14 @@ RtlBarrierForDelete(
 
 // Strings
 
-#ifndef PHNT_NO_INLINE_INIT_STRING
+#ifndef LCNT_NO_INLINE_INIT_STRING
 FORCEINLINE VOID RtlInitString(
     __out PSTRING DestinationString,
     __in_opt PSTR SourceString
     )
 {
     if (SourceString)
-        DestinationString->MaximumLength = DestinationString->Length = (USHORT)strlen(SourceString);
+        DestinationString->MaximumLength = (DestinationString->Length = (USHORT)strlen(SourceString)) + sizeof(CHAR);
     else
         DestinationString->MaximumLength = DestinationString->Length = 0;
 
@@ -1166,14 +1166,14 @@ RtlInitString(
     );
 #endif
 
-#ifndef PHNT_NO_INLINE_INIT_STRING
+#ifndef LCNT_NO_INLINE_INIT_STRING
 FORCEINLINE VOID RtlInitAnsiString(
     __out PANSI_STRING DestinationString,
     __in_opt PSTR SourceString
     )
 {
     if (SourceString)
-        DestinationString->MaximumLength = DestinationString->Length = (USHORT)strlen(SourceString);
+        DestinationString->MaximumLength = (DestinationString->Length = (USHORT)strlen(SourceString)) + sizeof(CHAR);
     else
         DestinationString->MaximumLength = DestinationString->Length = 0;
 
@@ -1277,15 +1277,14 @@ RtlUpperString(
     __in PSTRING SourceString
     );
 
-#ifndef PHNT_NO_INLINE_INIT_STRING
+#ifndef LCNT_NO_INLINE_INIT_STRING
 FORCEINLINE VOID RtlInitUnicodeString(
     __out PUNICODE_STRING DestinationString,
     __in_opt PWSTR SourceString
     )
 {
-    // MaximumLength should really be Length + sizeof(WCHAR), but it doesn't matter too much.
     if (SourceString)
-        DestinationString->MaximumLength = DestinationString->Length = (USHORT)(wcslen(SourceString) * sizeof(WCHAR));
+        DestinationString->MaximumLength = (DestinationString->Length = (USHORT)(wcslen(SourceString) * sizeof(WCHAR))) + sizeof(WCHAR);
     else
         DestinationString->MaximumLength = DestinationString->Length = 0;
 
@@ -1375,7 +1374,7 @@ RtlCompareUnicodeString(
     __in BOOLEAN CaseInSensitive
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 LONG
@@ -1659,7 +1658,7 @@ RtlConsoleMultiByteToUnicodeN(
     __out PULONG pdwSpecialChar
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 NTSYSAPI
 NTSTATUS
 NTAPI
@@ -1672,7 +1671,7 @@ RtlUTF8ToUnicodeN(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 NTSYSAPI
 NTSTATUS
 NTAPI
@@ -1771,7 +1770,7 @@ typedef enum _RTL_NORM_FORM
     NormIdnaDisallowUnassigned = 0x10d
 } RTL_NORM_FORM;
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 NTSYSAPI
 NTSTATUS
 NTAPI
@@ -1784,7 +1783,7 @@ RtlNormalizeString(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 NTSYSAPI
 NTSTATUS
 NTAPI
@@ -1796,7 +1795,7 @@ RtlIsNormalizedString(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // ntifs:FsRtlIsNameInExpression
 NTSYSAPI
 BOOLEAN
@@ -1850,7 +1849,7 @@ RtlGUIDFromString(
     __out PGUID Guid
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 NTSYSAPI
 LONG
 NTAPI
@@ -1862,7 +1861,7 @@ RtlCompareAltitudes(
 
 // Locale
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 // private
 NTSYSAPI
@@ -1945,7 +1944,7 @@ RtlCleanUpTEBLangLists(
 
 #endif
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 
 // rev
 NTSYSAPI
@@ -1975,7 +1974,7 @@ RtlReleasePebLock(
     VOID
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 LOGICAL
@@ -2095,7 +2094,7 @@ RtlCreateProcessParameters(
     __in_opt PUNICODE_STRING RuntimeData
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -2162,7 +2161,7 @@ RtlCreateUserProcess(
     __out PRTL_USER_PROCESS_INFORMATION ProcessInformation
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 DECLSPEC_NORETURN
 NTSYSAPI
 VOID
@@ -2184,7 +2183,7 @@ FORCEINLINE VOID RtlExitUserProcess_R(
 
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 // begin_rev
 #define RTL_CLONE_PROCESS_FLAGS_CREATE_SUSPENDED 0x00000001
@@ -2229,7 +2228,7 @@ typedef struct _RTLP_PROCESS_REFLECTION_REFLECTION_INFORMATION
     CLIENT_ID ReflectionClientId;
 } RTLP_PROCESS_REFLECTION_REFLECTION_INFORMATION, *PRTLP_PROCESS_REFLECTION_REFLECTION_INFORMATION;
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSAPI
 NTSTATUS
@@ -2286,7 +2285,7 @@ RtlCreateUserThread(
     __out_opt PCLIENT_ID ClientId
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA) // should be PHNT_WINXP, but is PHNT_VISTA for consistency with RtlExitUserProcess
+#if (LCNT_VERSION >= LCNT_VISTA) // should be LCNT_WINXP, but is LCNT_VISTA for consistency with RtlExitUserProcess
 DECLSPEC_NORETURN
 NTSYSAPI
 VOID
@@ -2308,7 +2307,7 @@ FORCEINLINE VOID RtlExitUserThread_R(
 
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -2500,7 +2499,7 @@ RtlCreateEnvironment(
 #define RTL_CREATE_ENVIRONMENT_EMPTY 0x4 // create empty environment block
 // end_rev
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -2527,7 +2526,7 @@ RtlSetCurrentEnvironment(
     __out_opt PVOID *PreviousEnvironment
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -2550,7 +2549,7 @@ RtlSetEnvironmentVariable(
     __in PUNICODE_STRING Value
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -2574,7 +2573,7 @@ RtlQueryEnvironmentVariable_U(
     __out PUNICODE_STRING Value
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -2654,7 +2653,7 @@ RtlGetFullPathName_U(
     __out_opt PWSTR *FilePart
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSAPI
 NTSTATUS
@@ -2668,7 +2667,7 @@ RtlGetFullPathName_UEx(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WS03)
+#if (LCNT_VERSION >= LCNT_WS03)
 NTSYSAPI
 NTSTATUS
 NTAPI
@@ -2716,7 +2715,7 @@ RtlDosPathNameToNtPathName_U(
     __out_opt PRTL_RELATIVE_NAME_U RelativeName
     );
 
-#if (PHNT_VERSION >= PHNT_WS03)
+#if (LCNT_VERSION >= LCNT_WS03)
 NTSYSAPI
 NTSTATUS
 NTAPI
@@ -2728,7 +2727,7 @@ RtlDosPathNameToNtPathName_U_WithStatus(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WS03)
+#if (LCNT_VERSION >= LCNT_WS03)
 NTSYSAPI
 BOOLEAN
 NTAPI
@@ -2740,7 +2739,7 @@ RtlDosPathNameToRelativeNtPathName_U(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WS03)
+#if (LCNT_VERSION >= LCNT_WS03)
 NTSYSAPI
 NTSTATUS
 NTAPI
@@ -2752,7 +2751,7 @@ RtlDosPathNameToRelativeNtPathName_U_WithStatus(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WS03)
+#if (LCNT_VERSION >= LCNT_WS03)
 NTSYSAPI
 VOID
 NTAPI
@@ -3242,7 +3241,7 @@ RtlMultipleFreeHeap(
     __in PVOID *Array
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 NTSYSAPI
 VOID
 NTAPI
@@ -3271,7 +3270,7 @@ typedef struct _RTL_MEMORY_ZONE
     PRTL_MEMORY_ZONE_SEGMENT FirstSegment;
 } RTL_MEMORY_ZONE, *PRTL_MEMORY_ZONE;
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 NTSYSAPI
 NTSTATUS
@@ -3327,7 +3326,7 @@ RtlUnlockMemoryZone(
 
 // begin_private
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 NTSYSAPI
 NTSTATUS
@@ -3399,7 +3398,7 @@ RtlUnlockMemoryBlockLookaside(
 
 // Transactions
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 HANDLE
@@ -3409,7 +3408,7 @@ RtlGetCurrentTransaction(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 LOGICAL
@@ -3531,7 +3530,7 @@ RtlDestroyQueryDebugBuffer(
     __in PRTL_DEBUG_INFORMATION Buffer
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 // private
 NTSYSAPI
@@ -3710,7 +3709,7 @@ RtlSetThreadErrorMode(
 
 // Windows Error Reporting
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -3722,7 +3721,7 @@ RtlReportException(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -3735,7 +3734,7 @@ RtlWerpReportException(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSAPI
 NTSTATUS
@@ -4302,7 +4301,7 @@ RtlFindLastBackwardRunClear(
     __out PULONG StartingRunIndex
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 
 // rev
 NTSYSAPI
@@ -4476,7 +4475,7 @@ RtlQueryAtomInAtomTable(
     __inout_opt PULONG AtomNameLength
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // rev
 NTSYSAPI
 BOOLEAN
@@ -4585,7 +4584,7 @@ RtlCopySid(
     __in PSID SourceSid
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 NTSYSAPI
 NTSTATUS
 NTAPI
@@ -4596,7 +4595,7 @@ RtlCreateServiceSid(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -4608,7 +4607,7 @@ RtlSidDominates(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -4620,7 +4619,7 @@ RtlSidEqualLevel(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -4632,7 +4631,7 @@ RtlSidIsHigherLevel(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 NTSYSAPI
 NTSTATUS
 NTAPI
@@ -4644,7 +4643,7 @@ RtlCreateVirtualAccountSid(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 NTSYSAPI
 NTSTATUS
 NTAPI
@@ -4667,7 +4666,7 @@ RtlConvertSidToUnicodeString(
     __in BOOLEAN AllocateDestinationString
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -4679,7 +4678,7 @@ RtlSidHashInitialize(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 PSID_AND_ATTRIBUTES
@@ -4998,7 +4997,7 @@ RtlFirstFreeAce(
     __out PVOID *FirstFree
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 PVOID
@@ -5010,7 +5009,7 @@ RtlFindAceByType(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 BOOLEAN
@@ -5140,7 +5139,7 @@ RtlAddCompoundAce(
     __in PSID ClientSid
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -5300,7 +5299,7 @@ RtlImpersonateSelf(
     __in SECURITY_IMPERSONATION_LEVEL ImpersonationLevel
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -5342,7 +5341,7 @@ RtlReleasePrivilege(
     __in PVOID StatePointer
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -5356,7 +5355,7 @@ RtlRemovePrivileges(
 
 // Private namespaces
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 // begin_private
 
@@ -5383,7 +5382,7 @@ RtlAddSIDToBoundaryDescriptor(
     __in PSID RequiredSid
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSAPI
 NTSTATUS
@@ -5744,7 +5743,7 @@ DbgPrompt(
 
 // Thread profiling
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 
 // begin_rev
 
@@ -5853,7 +5852,7 @@ typedef union _RTL_ELEVATION_FLAGS
     };
 } RTL_ELEVATION_FLAGS, *PRTL_ELEVATION_FLAGS;
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 NTSYSAPI
 NTSTATUS
 NTAPI
@@ -5864,7 +5863,7 @@ RtlQueryElevationFlags(
 
 // end_private
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -5874,7 +5873,7 @@ RtlRegisterThreadWithCsrss(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -5884,7 +5883,7 @@ RtlLockCurrentThread(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -5894,7 +5893,7 @@ RtlUnlockCurrentThread(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -5904,7 +5903,7 @@ RtlLockModuleSection(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -5935,7 +5934,7 @@ RtlGetUnloadEventTrace(
     VOID
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 NTSYSAPI
 VOID
 NTAPI
@@ -5948,6 +5947,6 @@ RtlGetUnloadEventTraceEx(
 
 // end_msdn
 
-#endif // (PHNT_MODE != PHNT_MODE_KERNEL)
+#endif // (LCNT_MODE != LCNT_MODE_KERNEL)
 
 #endif

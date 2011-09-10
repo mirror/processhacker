@@ -73,7 +73,7 @@ typedef BOOLEAN (NTAPI *PDLL_INIT_ROUTINE)(
     __in_opt PCONTEXT Context
     );
 
-#if (PHNT_MODE != PHNT_MODE_KERNEL)
+#if (LCNT_MODE != LCNT_MODE_KERNEL)
 
 NTSYSAPI
 NTSTATUS
@@ -116,7 +116,7 @@ LdrGetDllHandleEx(
     __out_opt PVOID *DllHandle
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSAPI
 NTSTATUS
@@ -127,7 +127,7 @@ LdrGetDllHandleByMapping(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSAPI
 NTSTATUS
@@ -162,7 +162,7 @@ LdrGetProcedureAddress(
 // rev
 #define LDR_GET_PROCEDURE_ADDRESS_DONT_RECORD_FORWARDER 0x00000001
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -286,7 +286,7 @@ typedef struct _LDR_VERIFY_IMAGE_INFO
     USHORT ImageCharacteristics;
 } LDR_VERIFY_IMAGE_INFO, *PLDR_VERIFY_IMAGE_INFO;
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -297,7 +297,7 @@ LdrVerifyImageMatchesChecksumEx(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 // private
 NTSYSAPI
 NTSTATUS
@@ -344,7 +344,7 @@ typedef VOID (NTAPI *PLDR_DLL_NOTIFICATION_FUNCTION)(
     __in_opt PVOID Context
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 NTSYSAPI
 NTSTATUS
@@ -369,7 +369,7 @@ LdrUnregisterDllNotification(
 
 // Load as data table
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 // private
 NTSYSAPI
@@ -404,7 +404,7 @@ LdrGetFileNameFromLoadAsDataTable(
 
 #endif
 
-#endif // (PHNT_MODE != PHNT_MODE_KERNEL)
+#endif // (LCNT_MODE != LCNT_MODE_KERNEL)
 
 // Module information
 

@@ -52,20 +52,20 @@ BOOLEAN PhGraphControlInitialization(
     VOID
     );
 
-PHLIBAPI
+LCLIBAPI
 VOID PhDrawGraph(
     __in HDC hdc,
     __in PPH_GRAPH_DRAW_INFO DrawInfo
     );
 
-PHLIBAPI
+LCLIBAPI
 VOID PhDrawGraphDirect(
     __in HDC hdc,
     __in PVOID Bits,
     __in PPH_GRAPH_DRAW_INFO DrawInfo
     );
 
-PHLIBAPI
+LCLIBAPI
 VOID PhSetGraphText(
     __in HDC hdc,
     __inout PPH_GRAPH_DRAW_INFO DrawInfo,
@@ -183,17 +183,17 @@ typedef struct _PH_GRAPH_STATE
     ULONG TooltipIndex; // indicates the tooltip text is valid for this index
 } PH_GRAPH_STATE, *PPH_GRAPH_STATE;
 
-PHLIBAPI
+LCLIBAPI
 VOID PhInitializeGraphState(
     __out PPH_GRAPH_STATE State
     );
 
-PHLIBAPI
+LCLIBAPI
 VOID PhDeleteGraphState(
     __inout PPH_GRAPH_STATE State
     );
 
-PHLIBAPI
+LCLIBAPI
 VOID PhGraphStateGetDrawInfo(
     __inout PPH_GRAPH_STATE State,
     __in PPH_GRAPH_GETDRAWINFO GetDrawInfo,

@@ -168,7 +168,7 @@ PVOID __stdcall PhFunctionTableAccess64(
     __in DWORD64 AddrBase
     );
 
-PHLIBAPI
+LCLIBAPI
 BOOLEAN
 NTAPI
 PhStackWalk(
@@ -183,7 +183,7 @@ PhStackWalk(
     __in_opt PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress
     );
 
-PHLIBAPI
+LCLIBAPI
 BOOLEAN
 NTAPI
 PhWriteMiniDumpProcess(

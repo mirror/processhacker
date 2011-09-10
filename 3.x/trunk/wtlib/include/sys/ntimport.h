@@ -10,7 +10,7 @@
 // Only functions appearing in Windows XP and below may be
 // imported normally. The other functions are imported here.
 
-#if !(PHNT_VERSION >= PHNT_WS03)
+#if !(LCNT_VERSION >= LCNT_WS03)
 
 typedef NTSTATUS (NTAPI *_NtGetNextProcess)(
     __in HANDLE ProcessHandle,
@@ -33,7 +33,7 @@ EXT _NtGetNextProcess NtGetNextProcess;
 EXT _NtGetNextThread NtGetNextThread;
 #endif
 
-#if !(PHNT_VERSION >= PHNT_VISTA)
+#if !(LCNT_VERSION >= LCNT_VISTA)
 
 typedef NTSTATUS (NTAPI *_NtQueryInformationEnlistment)(
     __in HANDLE EnlistmentHandle,

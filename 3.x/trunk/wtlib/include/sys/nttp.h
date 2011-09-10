@@ -20,7 +20,7 @@ typedef VOID (NTAPI *PTP_ALPC_CALLBACK_EX)(
     __in PVOID ApcContext
     );
 
-#if (PHNT_VERSION >= PHNT_VISTA)
+#if (LCNT_VERSION >= LCNT_VISTA)
 
 // private
 __checkReturn
@@ -58,7 +58,7 @@ TpSetPoolMinThreads(
     __in LONG MinThreads
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSAPI
 NTSTATUS
@@ -69,7 +69,7 @@ TpQueryPoolStackInformation(
     );
 #endif
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSAPI
 NTSTATUS
@@ -371,7 +371,7 @@ TpAllocAlpcCompletion(
     __in_opt PTP_CALLBACK_ENVIRON CallbackEnviron
     );
 
-#if (PHNT_VERSION >= PHNT_WIN7)
+#if (LCNT_VERSION >= LCNT_WIN7)
 // rev
 NTSYSAPI
 NTSTATUS
