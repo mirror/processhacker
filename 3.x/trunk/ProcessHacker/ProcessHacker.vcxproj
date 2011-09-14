@@ -209,7 +209,6 @@
     <ClCompile Include="..\phlib\maplib.c" />
     <ClCompile Include="..\phlib\md5.c" />
     <ClCompile Include="..\phlib\native.c" />
-    <ClCompile Include="..\phlib\ntimport.c" />
     <ClCompile Include="..\phlib\provider.c" />
     <ClCompile Include="..\phlib\queuedlock.c" />
     <ClCompile Include="..\phlib\ref.c" />
@@ -260,7 +259,6 @@
     <ClCompile Include="modprv.c" />
     <ClCompile Include="netlist.c" />
     <ClCompile Include="netprv.c" />
-    <ClCompile Include="netstk.c" />
     <ClCompile Include="notifico.c" />
     <ClCompile Include="ntobjprp.c" />
     <ClCompile Include="options.c" />

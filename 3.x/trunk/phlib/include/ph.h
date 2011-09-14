@@ -466,21 +466,9 @@ NTSTATUS PhSetFileSize(
     );
 
 PHLIBAPI
-NTSTATUS PhGetTransactionManagerBasicInformation(
-    __in HANDLE TransactionManagerHandle,
-    __out PTRANSACTIONMANAGER_BASIC_INFORMATION BasicInformation
-    );
-
-PHLIBAPI
 NTSTATUS PhGetTransactionManagerLogFileName(
     __in HANDLE TransactionManagerHandle,
     __out PPH_STRING *LogFileName
-    );
-
-PHLIBAPI
-NTSTATUS PhGetTransactionBasicInformation(
-    __in HANDLE TransactionHandle,
-    __out PTRANSACTION_BASIC_INFORMATION BasicInformation
     );
 
 PHLIBAPI
@@ -496,12 +484,6 @@ NTSTATUS PhGetResourceManagerBasicInformation(
     __in HANDLE ResourceManagerHandle,
     __out_opt PGUID Guid,
     __out_opt PPH_STRING *Description
-    );
-
-PHLIBAPI
-NTSTATUS PhGetEnlistmentBasicInformation(
-    __in HANDLE EnlistmentHandle,
-    __out PENLISTMENT_BASIC_INFORMATION BasicInformation
     );
 
 PHLIBAPI

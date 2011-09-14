@@ -233,9 +233,6 @@ PH_CIRCULAR_BUFFER_ULONG64 PhMaxIoWriteHistory;
 
 static PPH_IS_DOT_NET_CONTEXT PhpIsDotNetContext = NULL;
 
-static PTS_ALL_PROCESSES_INFO PhpTsProcesses = NULL;
-static ULONG PhpTsNumberOfProcesses;
-
 #ifdef PH_ENABLE_VERIFY_CACHE
 static PH_AVL_TREE PhpVerifyCacheSet = PH_AVL_TREE_INIT(PhpVerifyCacheCompareFunction);
 static PH_QUEUED_LOCK PhpVerifyCacheLock = PH_QUEUED_LOCK_INIT;
@@ -873,32 +870,29 @@ VOID PhpProcessQueryStage1(
     // Token information
     if (processHandleLimited)
     {
-        if (WINDOWS_HAS_UAC)
+        HANDLE tokenHandle;
+
+        status = PhOpenProcessToken(&tokenHandle, TOKEN_QUERY, processHandleLimited);
+
+        if (NT_SUCCESS(status))
         {
-            HANDLE tokenHandle;
-
-            status = PhOpenProcessToken(&tokenHandle, TOKEN_QUERY, processHandleLimited);
-
-            if (NT_SUCCESS(status))
+            // Elevation
+            if (NT_SUCCESS(PhGetTokenElevationType(
+                tokenHandle,
+                &Data->ElevationType
+                )))
             {
-                // Elevation
-                if (NT_SUCCESS(PhGetTokenElevationType(
-                    tokenHandle,
-                    &Data->ElevationType
-                    )))
-                {
-                    Data->IsElevated = Data->ElevationType == TokenElevationTypeFull;
-                }
-
-                // Integrity
-                PhGetTokenIntegrityLevel(
-                    tokenHandle,
-                    &Data->IntegrityLevel,
-                    &Data->IntegrityString
-                    );
-
-                NtClose(tokenHandle);
+                Data->IsElevated = Data->ElevationType == TokenElevationTypeFull;
             }
+
+            // Integrity
+            PhGetTokenIntegrityLevel(
+                tokenHandle,
+                &Data->IntegrityLevel,
+                &Data->IntegrityString
+                );
+
+            NtClose(tokenHandle);
         }
 
 #ifdef _M_X64
@@ -1212,35 +1206,6 @@ VOID PhpFillProcessItem(
         {
             PhReferenceObject(PhLocalSystemName);
             ProcessItem->UserName = PhLocalSystemName;
-        }
-    }
-
-    if (!ProcessItem->UserName && WindowsVersion <= WINDOWS_XP)
-    {
-        // In some cases we can get the user SID using WTS (only works on XP and below).
-
-        if (!PhpTsProcesses)
-        {
-            WinStationGetAllProcesses(
-                NULL,
-                0,
-                &PhpTsNumberOfProcesses,
-                &PhpTsProcesses
-                );
-        }
-
-        if (PhpTsProcesses)
-        {
-            ULONG i;
-
-            for (i = 0; i < PhpTsNumberOfProcesses; i++)
-            {
-                if (UlongToHandle(PhpTsProcesses[i].pTsProcessInfo->UniqueProcessId) == ProcessItem->ProcessId)
-                {
-                    ProcessItem->UserName = PhGetSidFullName(PhpTsProcesses[i].pSid, TRUE, NULL);
-                    break;
-                }
-            }
         }
     }
 
@@ -2229,12 +2194,6 @@ VOID PhProcessProviderUpdate(
         PhFree(PhProcessInformation);
 
     PhProcessInformation = processes;
-
-    if (PhpTsProcesses)
-    {
-        WinStationFreeGAPMemory(0, PhpTsProcesses, PhpTsNumberOfProcesses);
-        PhpTsProcesses = NULL;
-    }
 
     // History cannot be updated on the first run because the deltas are invalid.
     // For example, the I/O "deltas" will be huge because they are currently the

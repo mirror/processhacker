@@ -96,9 +96,6 @@
     <ClCompile Include="native.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ntimport.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="provider.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -210,9 +207,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ntgdi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ntimport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ntioapi.h">
@@ -377,8 +371,5 @@
     <ClInclude Include="include\phsync.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="pcre\pcre_printint.src" />
   </ItemGroup>
 </Project>

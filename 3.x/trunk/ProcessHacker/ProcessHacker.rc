@@ -372,7 +372,6 @@ BEGIN
     POPUP "Network"
     BEGIN
         MENUITEM "&Go to Process\aEnter",       ID_NETWORK_GOTOPROCESS
-        MENUITEM "View &Stack",                 ID_NETWORK_VIEWSTACK
         MENUITEM "C&lose",                      ID_NETWORK_CLOSE
         MENUITEM SEPARATOR
         MENUITEM "&Copy\aCtrl+C",               ID_NETWORK_COPY

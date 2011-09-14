@@ -739,6 +739,48 @@ FORCEINLINE NTSTATUS PhGetTokenIsVirtualizationEnabled(
     return status;
 }
 
+FORCEINLINE NTSTATUS PhGetTransactionManagerBasicInformation(
+    __in HANDLE TransactionManagerHandle,
+    __out PTRANSACTIONMANAGER_BASIC_INFORMATION BasicInformation
+    )
+{
+    return NtQueryInformationTransactionManager(
+        TransactionManagerHandle,
+        TransactionManagerBasicInformation,
+        BasicInformation,
+        sizeof(TRANSACTIONMANAGER_BASIC_INFORMATION),
+        NULL
+        );
+}
+
+FORCEINLINE NTSTATUS PhGetTransactionBasicInformation(
+    __in HANDLE TransactionHandle,
+    __out PTRANSACTION_BASIC_INFORMATION BasicInformation
+    )
+{
+    return NtQueryInformationTransaction(
+        TransactionHandle,
+        TransactionBasicInformation,
+        BasicInformation,
+        sizeof(TRANSACTION_BASIC_INFORMATION),
+        NULL
+        );
+}
+
+FORCEINLINE NTSTATUS PhGetEnlistmentBasicInformation(
+    __in HANDLE EnlistmentHandle,
+    __out PENLISTMENT_BASIC_INFORMATION BasicInformation
+    )
+{
+    return NtQueryInformationEnlistment(
+        EnlistmentHandle,
+        EnlistmentBasicInformation,
+        BasicInformation,
+        sizeof(ENLISTMENT_BASIC_INFORMATION),
+        NULL
+        );
+}
+
 FORCEINLINE NTSTATUS PhGetEventBasicInformation(
     __in HANDLE EventHandle,
     __out PEVENT_BASIC_INFORMATION BasicInformation

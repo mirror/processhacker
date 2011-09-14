@@ -1353,13 +1353,6 @@ VOID PhShowMemoryStringDialog(
     __in PPH_PROCESS_ITEM ProcessItem
     );
 
-// netstk
-
-VOID PhShowNetworkStackDialog(
-    __in HWND ParentWindowHandle,
-    __in PPH_NETWORK_ITEM NetworkItem
-    );
-
 // ntobjprp
 
 HPROPSHEETPAGE PhCreateEventPage(

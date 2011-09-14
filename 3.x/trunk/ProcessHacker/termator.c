@@ -106,11 +106,7 @@ static PVOID GetExitProcessFunction(
     VOID
     )
 {
-    // Vista and above export.
-    if (WindowsVersion >= WINDOWS_VISTA)
-        return PhGetProcAddress(L"ntdll.dll", "RtlExitUserProcess");
-    else
-        return PhGetProcAddress(L"kernel32.dll", "ExitProcess");
+    return PhGetProcAddress(L"ntdll.dll", "RtlExitUserProcess");
 }
 
 static NTSTATUS NTAPI TerminatorTP1(
@@ -288,9 +284,6 @@ static NTSTATUS NTAPI TerminatorTP1a(
     HANDLE processHandle = NtCurrentProcess();
     ULONG i;
 
-    if (!NtGetNextProcess)
-        return STATUS_NOT_SUPPORTED;
-
     if (!NT_SUCCESS(status = NtGetNextProcess(
         NtCurrentProcess(),
         ProcessQueryAccess | PROCESS_TERMINATE,
@@ -343,9 +336,6 @@ static NTSTATUS NTAPI TerminatorTT1a(
     HANDLE processHandle;
     HANDLE threadHandle;
     ULONG i;
-
-    if (!NtGetNextThread)
-        return STATUS_NOT_SUPPORTED;
 
     if (NT_SUCCESS(status = PhOpenProcess(
         &processHandle,

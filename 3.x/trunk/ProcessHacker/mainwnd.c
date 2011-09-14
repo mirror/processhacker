@@ -178,8 +178,7 @@ BOOLEAN PhMainWndInitialization(
         windowRectangle.Width, windowRectangle.Height, FALSE);
 
     // Allow WM_PH_ACTIVATE to pass through UIPI.
-    if (WINDOWS_HAS_UAC)
-        ChangeWindowMessageFilter_I(WM_PH_ACTIVATE, MSGFLT_ADD);
+    ChangeWindowMessageFilter(WM_PH_ACTIVATE, MSGFLT_ADD);
 
     // Create the window title.
     {
@@ -196,7 +195,7 @@ BOOLEAN PhMainWndInitialization(
             if (KphIsConnected()) PhAppendCharStringBuilder(&stringBuilder, '+');
         }
 
-        if (WINDOWS_HAS_UAC && PhElevationType == TokenElevationTypeFull)
+        if (PhElevationType == TokenElevationTypeFull)
             PhAppendStringBuilder2(&stringBuilder, L" (Administrator)");
 
         SetWindowText(PhMainWndHandle, stringBuilder.String->Buffer);
@@ -1672,18 +1671,6 @@ VOID PhMwpOnCommand(
                     SetFocus(ProcessTreeListHandle);
                     PhSelectAndEnsureVisibleProcessNode(processNode);
                 }
-            }
-        }
-        break;
-    case ID_NETWORK_VIEWSTACK:
-        {
-            PPH_NETWORK_ITEM networkItem = PhGetSelectedNetworkItem();
-
-            if (networkItem)
-            {
-                PhReferenceObject(networkItem);
-                PhShowNetworkStackDialog(PhMainWndHandle, networkItem);
-                PhDereferenceObject(networkItem);
             }
         }
         break;
@@ -3189,24 +3176,16 @@ VOID PhMwpAddIconProcesses(
             processItem->ProcessId
             );
 
-        // Menu icons only work properly on Vista and above.
-        if (WindowsVersion >= WINDOWS_VISTA)
+        if (processItem->SmallIcon)
         {
-            if (processItem->SmallIcon)
-            {
-                iconBitmap = PhIconToBitmap(processItem->SmallIcon, PhSmallIconSize.X, PhSmallIconSize.Y);
-            }
-            else
-            {
-                HICON icon;
-
-                PhGetStockApplicationIcon(&icon, NULL);
-                iconBitmap = PhIconToBitmap(icon, PhSmallIconSize.X, PhSmallIconSize.Y);
-            }
+            iconBitmap = PhIconToBitmap(processItem->SmallIcon, PhSmallIconSize.X, PhSmallIconSize.Y);
         }
         else
         {
-            iconBitmap = NULL;
+            HICON icon;
+
+            PhGetStockApplicationIcon(&icon, NULL);
+            iconBitmap = PhIconToBitmap(icon, PhSmallIconSize.X, PhSmallIconSize.Y);
         }
 
         subMenu->Bitmap = iconBitmap;
@@ -3583,7 +3562,7 @@ VOID PhMwpSetProcessMenuPriorityChecks(
             NtQueryInformationProcess(processHandle, ProcessPriorityClass, &priorityClass, sizeof(PROCESS_PRIORITY_CLASS), NULL);
         }
 
-        if (SetIoPriority && WindowsVersion >= WINDOWS_VISTA)
+        if (SetIoPriority)
         {
             if (!NT_SUCCESS(PhGetProcessIoPriority(
                 processHandle,
@@ -3594,7 +3573,7 @@ VOID PhMwpSetProcessMenuPriorityChecks(
             }
         }
 
-        if (SetPagePriority && WindowsVersion >= WINDOWS_VISTA)
+        if (SetPagePriority)
         {
             if (!NT_SUCCESS(PhGetProcessPagePriority(
                 processHandle,
@@ -3780,18 +3759,6 @@ VOID PhMwpInitializeProcessMenu(
         }
     }
 
-    // Remove irrelevant menu items.
-
-    if (WindowsVersion < WINDOWS_VISTA)
-    {
-        // Remove I/O priority.
-        if (item = PhFindEMenuItem(Menu, PH_EMENU_FIND_DESCEND, L"I/O Priority", 0))
-            PhDestroyEMenuItem(item);
-        // Remove page priority.
-        if (item = PhFindEMenuItem(Menu, PH_EMENU_FIND_DESCEND, L"Page Priority", 0))
-            PhDestroyEMenuItem(item);
-    }
-
     // Virtualization
     if (NumberOfProcesses == 1)
     {
@@ -3863,14 +3830,6 @@ VOID PhMwpInitializeProcessMenu(
         {
             item->Flags |= PH_EMENU_DISABLED;
         }
-    }
-
-    // Remove irrelevant menu items (continued)
-
-    if (!WINDOWS_HAS_UAC)
-    {
-        if (item = PhFindEMenuItem(Menu, 0, NULL, ID_PROCESS_VIRTUALIZATION))
-            PhDestroyEMenuItem(item);
     }
 }
 
@@ -4416,7 +4375,6 @@ VOID PhMwpInitializeNetworkMenu(
     )
 {
     ULONG i;
-    PPH_EMENU_ITEM item;
 
     if (NumberOfNetworkItems == 0)
     {
@@ -4432,12 +4390,6 @@ VOID PhMwpInitializeNetworkMenu(
         PhSetFlagsAllEMenuItems(Menu, PH_EMENU_DISABLED, PH_EMENU_DISABLED);
         PhEnableEMenuItem(Menu, ID_NETWORK_CLOSE, TRUE);
         PhEnableEMenuItem(Menu, ID_NETWORK_COPY, TRUE);
-    }
-
-    if (WindowsVersion >= WINDOWS_VISTA)
-    {
-        if (item = PhFindEMenuItem(Menu, 0, NULL, ID_NETWORK_VIEWSTACK))
-            PhDestroyEMenuItem(item);
     }
 
     // Close

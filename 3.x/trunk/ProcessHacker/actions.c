@@ -155,7 +155,7 @@ BOOLEAN PhpShowErrorAndElevateAction(
         ))
         return FALSE;
 
-    if (!WINDOWS_HAS_UAC || PhElevated)
+    if (PhElevated)
         return FALSE;
 
     elevationLevel = PhGetIntegerSetting(L"ElevationLevel");
@@ -248,7 +248,7 @@ BOOLEAN PhpShowErrorAndConnectToPhSvc(
         ))
         return FALSE;
 
-    if (!WINDOWS_HAS_UAC || PhElevated)
+    if (PhElevated)
         return FALSE;
 
     elevationLevel = PhGetIntegerSetting(L"ElevationLevel");
@@ -3251,36 +3251,18 @@ BOOLEAN PhUiDestroyHeap(
         ProcessId
         )))
     {
-        if (WindowsVersion >= WINDOWS_VISTA)
-        {
-            status = RtlCreateUserThread(
-                processHandle,
-                NULL,
-                FALSE,
-                0,
-                0,
-                0,
-                (PUSER_THREAD_START_ROUTINE)PhGetProcAddress(L"ntdll.dll", "RtlDestroyHeap"),
-                HeapHandle,
-                &threadHandle,
-                NULL
-                );
-        }
-        else
-        {
-            if (!(threadHandle = CreateRemoteThread(
-                processHandle,
-                NULL,
-                0,
-                (PTHREAD_START_ROUTINE)PhGetProcAddress(L"ntdll.dll", "RtlDestroyHeap"),
-                HeapHandle,
-                0,
-                NULL
-                )))
-            {
-                status = PhGetLastWin32ErrorAsNtStatus();
-            }
-        }
+        status = RtlCreateUserThread(
+            processHandle,
+            NULL,
+            FALSE,
+            0,
+            0,
+            0,
+            (PUSER_THREAD_START_ROUTINE)PhGetProcAddress(L"ntdll.dll", "RtlDestroyHeap"),
+            HeapHandle,
+            &threadHandle,
+            NULL
+            );
 
         if (NT_SUCCESS(status))
             NtClose(threadHandle);

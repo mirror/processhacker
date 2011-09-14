@@ -833,6 +833,7 @@ VOID PhpThreadProviderUpdate(
 
         if (!threadItem)
         {
+            ULONG64 cycles;
             PVOID startAddress = NULL;
 
             threadItem = PhCreateThreadItem(thread->ClientId.UniqueThread);
@@ -862,18 +863,13 @@ VOID PhpThreadProviderUpdate(
             }
 
             // Get the cycle count.
-            if (WINDOWS_HAS_CYCLE_TIME)
+            if (NT_SUCCESS(PhpGetThreadCycleTime(
+                threadProvider,
+                threadItem,
+                &cycles
+                )))
             {
-                ULONG64 cycles;
-
-                if (NT_SUCCESS(PhpGetThreadCycleTime(
-                    threadProvider,
-                    threadItem,
-                    &cycles
-                    )))
-                {
-                    PhUpdateDelta(&threadItem->CyclesDelta, cycles);
-                }
+                PhUpdateDelta(&threadItem->CyclesDelta, cycles);
             }
 
             // Initialize the CPU time deltas.
@@ -1026,7 +1022,6 @@ VOID PhpThreadProviderUpdate(
             }
 
             // Update the cycle count.
-            if (WINDOWS_HAS_CYCLE_TIME)
             {
                 ULONG64 cycles;
                 ULONG64 oldDelta;
@@ -1054,7 +1049,7 @@ VOID PhpThreadProviderUpdate(
 
             // Update the CPU usage.
             // If the cycle time isn't available, we'll fall back to using the CPU time.
-            if (WINDOWS_HAS_CYCLE_TIME && PhEnableCycleCpuUsage && (threadProvider->ProcessId == SYSTEM_IDLE_PROCESS_ID || threadItem->ThreadHandle))
+            if (PhEnableCycleCpuUsage && (threadProvider->ProcessId == SYSTEM_IDLE_PROCESS_ID || threadItem->ThreadHandle))
             {
                 threadItem->CpuUsage = (FLOAT)threadItem->CyclesDelta.Delta / PhCpuTotalCycleDelta;
             }

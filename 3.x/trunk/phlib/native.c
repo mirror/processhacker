@@ -2763,9 +2763,6 @@ NTSTATUS PhpQueryTransactionManagerVariableSize(
     PVOID buffer;
     ULONG bufferSize = 0x100;
 
-    if (!NtQueryInformationTransactionManager)
-        return STATUS_NOT_SUPPORTED;
-
     buffer = PhAllocate(bufferSize);
 
     while (TRUE)
@@ -2806,27 +2803,6 @@ NTSTATUS PhpQueryTransactionManagerVariableSize(
     return status;
 }
 
-NTSTATUS PhGetTransactionManagerBasicInformation(
-    __in HANDLE TransactionManagerHandle,
-    __out PTRANSACTIONMANAGER_BASIC_INFORMATION BasicInformation
-    )
-{
-    if (NtQueryInformationTransactionManager)
-    {
-        return NtQueryInformationTransactionManager(
-            TransactionManagerHandle,
-            TransactionManagerBasicInformation,
-            BasicInformation,
-            sizeof(TRANSACTIONMANAGER_BASIC_INFORMATION),
-            NULL
-            );
-    }
-    else
-    {
-        return STATUS_NOT_SUPPORTED;
-    }
-}
-
 NTSTATUS PhGetTransactionManagerLogFileName(
     __in HANDLE TransactionManagerHandle,
     __out PPH_STRING *LogFileName
@@ -2862,9 +2838,6 @@ NTSTATUS PhpQueryTransactionVariableSize(
     NTSTATUS status;
     PVOID buffer;
     ULONG bufferSize = 0x100;
-
-    if (!NtQueryInformationTransaction)
-        return STATUS_NOT_SUPPORTED;
 
     buffer = PhAllocate(bufferSize);
 
@@ -2904,27 +2877,6 @@ NTSTATUS PhpQueryTransactionVariableSize(
     }
 
     return status;
-}
-
-NTSTATUS PhGetTransactionBasicInformation(
-    __in HANDLE TransactionHandle,
-    __out PTRANSACTION_BASIC_INFORMATION BasicInformation
-    )
-{
-    if (NtQueryInformationTransaction)
-    {
-        return NtQueryInformationTransaction(
-            TransactionHandle,
-            TransactionBasicInformation,
-            BasicInformation,
-            sizeof(TRANSACTION_BASIC_INFORMATION),
-            NULL
-            );
-    }
-    else
-    {
-        return STATUS_NOT_SUPPORTED;
-    }
 }
 
 NTSTATUS PhGetTransactionPropertiesInformation(
@@ -2978,9 +2930,6 @@ NTSTATUS PhpQueryResourceManagerVariableSize(
     NTSTATUS status;
     PVOID buffer;
     ULONG bufferSize = 0x100;
-
-    if (!NtQueryInformationResourceManager)
-        return STATUS_NOT_SUPPORTED;
 
     buffer = PhAllocate(bufferSize);
 
@@ -3056,27 +3005,6 @@ NTSTATUS PhGetResourceManagerBasicInformation(
     PhFree(basicInfo);
 
     return status;
-}
-
-NTSTATUS PhGetEnlistmentBasicInformation(
-    __in HANDLE EnlistmentHandle,
-    __out PENLISTMENT_BASIC_INFORMATION BasicInformation
-    )
-{
-    if (NtQueryInformationEnlistment)
-    {
-        return NtQueryInformationEnlistment(
-            EnlistmentHandle,
-            EnlistmentBasicInformation,
-            BasicInformation,
-            sizeof(ENLISTMENT_BASIC_INFORMATION),
-            NULL
-            );
-    }
-    else
-    {
-        return STATUS_NOT_SUPPORTED;
-    }
 }
 
 typedef struct _OPEN_DRIVER_BY_BASE_ADDRESS_CONTEXT

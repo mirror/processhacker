@@ -33,7 +33,6 @@ for %%a in (
     ntdbg.h
     ntexapi.h
     ntgdi.h
-    ntimport.h
     ntioapi.h
     ntkeapi.h
     ntldr.h

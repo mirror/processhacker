@@ -176,7 +176,6 @@
     <ClCompile Include="maplib.c" />
     <ClCompile Include="md5.c" />
     <ClCompile Include="native.c" />
-    <ClCompile Include="ntimport.c" />
     <ClCompile Include="provider.c" />
     <ClCompile Include="queuedlock.c" />
     <ClCompile Include="ref.c" />
@@ -226,7 +225,6 @@
     <ClInclude Include="include\ntdbg.h" />
     <ClInclude Include="include\ntexapi.h" />
     <ClInclude Include="include\ntgdi.h" />
-    <ClInclude Include="include\ntimport.h" />
     <ClInclude Include="include\ntioapi.h" />
     <ClInclude Include="include\ntkeapi.h" />
     <ClInclude Include="include\ntldr.h" />
@@ -269,9 +267,6 @@
     <ClInclude Include="pcre\ucp.h" />
     <ClInclude Include="include\verifyp.h" />
     <ClInclude Include="include\winsta.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="pcre\pcre_printint.src" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

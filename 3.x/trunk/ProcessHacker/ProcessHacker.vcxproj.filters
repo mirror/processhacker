@@ -108,9 +108,6 @@
     <ClCompile Include="..\phlib\native.c">
       <Filter>phlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\phlib\ntimport.c">
-      <Filter>phlib</Filter>
-    </ClCompile>
     <ClCompile Include="..\phlib\provider.c">
       <Filter>phlib</Filter>
     </ClCompile>
@@ -241,9 +238,6 @@
       <Filter>Process Hacker</Filter>
     </ClCompile>
     <ClCompile Include="netprv.c">
-      <Filter>Process Hacker</Filter>
-    </ClCompile>
-    <ClCompile Include="netstk.c">
       <Filter>Process Hacker</Filter>
     </ClCompile>
     <ClCompile Include="notifico.c">

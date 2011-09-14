@@ -364,34 +364,26 @@ INT_PTR CALLBACK PhpTokenPageProc(
                 if (NT_SUCCESS(PhGetTokenSessionId(tokenHandle, &sessionId)))
                     SetDlgItemInt(hwndDlg, IDC_SESSIONID, sessionId, FALSE);
 
-                if (WINDOWS_HAS_UAC)
-                {
-                    if (NT_SUCCESS(PhGetTokenElevationType(tokenHandle, &elevationType)))
-                        SetDlgItemText(hwndDlg, IDC_ELEVATED, PhGetElevationTypeString(elevationType));
+                if (NT_SUCCESS(PhGetTokenElevationType(tokenHandle, &elevationType)))
+                    SetDlgItemText(hwndDlg, IDC_ELEVATED, PhGetElevationTypeString(elevationType));
 
-                    if (NT_SUCCESS(PhGetTokenIsVirtualizationAllowed(tokenHandle, &isVirtualizationAllowed)))
+                if (NT_SUCCESS(PhGetTokenIsVirtualizationAllowed(tokenHandle, &isVirtualizationAllowed)))
+                {
+                    if (isVirtualizationAllowed)
                     {
-                        if (isVirtualizationAllowed)
+                        if (NT_SUCCESS(PhGetTokenIsVirtualizationEnabled(tokenHandle, &isVirtualizationEnabled)))
                         {
-                            if (NT_SUCCESS(PhGetTokenIsVirtualizationEnabled(tokenHandle, &isVirtualizationEnabled)))
-                            {
-                                SetDlgItemText(
-                                    hwndDlg,
-                                    IDC_VIRTUALIZED,
-                                    isVirtualizationEnabled ? L"Yes" : L"No"
-                                    );
-                            }
-                        }
-                        else
-                        {
-                            SetDlgItemText(hwndDlg, IDC_VIRTUALIZED, L"Not Allowed");
+                            SetDlgItemText(
+                                hwndDlg,
+                                IDC_VIRTUALIZED,
+                                isVirtualizationEnabled ? L"Yes" : L"No"
+                                );
                         }
                     }
-                }
-                else
-                {
-                    SetDlgItemText(hwndDlg, IDC_ELEVATED, L"N/A");
-                    SetDlgItemText(hwndDlg, IDC_VIRTUALIZED, L"N/A");
+                    else
+                    {
+                        SetDlgItemText(hwndDlg, IDC_VIRTUALIZED, L"Not Allowed");
+                    }
                 }
 
                 // Groups
@@ -836,27 +828,24 @@ INT_PTR CALLBACK PhpTokenGeneralPageProc(
 
                 PhGetTokenSessionId(tokenHandle, &tokenSessionId);
 
-                if (WINDOWS_HAS_UAC)
+                if (NT_SUCCESS(PhGetTokenElevationType(tokenHandle, &elevationType)))
                 {
-                    if (NT_SUCCESS(PhGetTokenElevationType(tokenHandle, &elevationType)))
-                    {
-                        tokenElevated = PhGetElevationTypeString(elevationType);
-                        hasLinkedToken = elevationType != TokenElevationTypeDefault;
-                    }
+                    tokenElevated = PhGetElevationTypeString(elevationType);
+                    hasLinkedToken = elevationType != TokenElevationTypeDefault;
+                }
 
-                    if (NT_SUCCESS(PhGetTokenIsVirtualizationAllowed(tokenHandle, &isVirtualizationAllowed)))
+                if (NT_SUCCESS(PhGetTokenIsVirtualizationAllowed(tokenHandle, &isVirtualizationAllowed)))
+                {
+                    if (isVirtualizationAllowed)
                     {
-                        if (isVirtualizationAllowed)
+                        if (NT_SUCCESS(PhGetTokenIsVirtualizationEnabled(tokenHandle, &isVirtualizationEnabled)))
                         {
-                            if (NT_SUCCESS(PhGetTokenIsVirtualizationEnabled(tokenHandle, &isVirtualizationEnabled)))
-                            {
-                                tokenVirtualization = isVirtualizationEnabled ? L"Enabled" : L"Disabled";
-                            }
+                            tokenVirtualization = isVirtualizationEnabled ? L"Enabled" : L"Disabled";
                         }
-                        else
-                        {
-                            tokenVirtualization = L"Not Allowed";
-                        }
+                    }
+                    else
+                    {
+                        tokenVirtualization = L"Not Allowed";
                     }
                 }
 

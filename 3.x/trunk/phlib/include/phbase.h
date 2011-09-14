@@ -31,11 +31,11 @@
 #define PHLIBAPI
 #endif
 
+#define PHNT_VERSION PHNT_VISTA
 #include <ntwin.h>
 #include <ntbasic.h>
 #include <phnt.h>
 #include <phsup.h>
-#include <ntimport.h>
 #include <ref.h>
 #include <fastlock.h>
 #include <queuedlock.h>
@@ -159,8 +159,7 @@ extern WCHAR *PhKWaitReasonNames[MaximumWaitReason];
 
 // Imports
 
-/** Needed to use supplied dynamically imported functions from ntdll.dll. */
-#define PHLIB_INIT_MODULE_NTIMPORTS 0x1
+#define PHLIB_INIT_MODULE_RESERVED1 0x1
 /** Needed to use fast locks. */
 #define PHLIB_INIT_MODULE_FAST_LOCK 0x2
 /** Needed to use work queues. */

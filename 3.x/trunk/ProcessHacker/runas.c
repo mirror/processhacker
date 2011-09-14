@@ -346,9 +346,6 @@ INT_PTR CALLBACK PhpRunAsDlgProc(
 
             //if (!PhElevated)
             //    SendMessage(GetDlgItem(hwndDlg, IDOK), BCM_SETSHIELD, 0, TRUE);
-
-            if (!WINDOWS_HAS_UAC)
-                ShowWindow(GetDlgItem(hwndDlg, IDC_TOGGLEELEVATION), SW_HIDE);
         }
         break;
     case WM_DESTROY:
@@ -410,10 +407,7 @@ INT_PTR CALLBACK PhpRunAsDlgProc(
                     sessionId = GetDlgItemInt(hwndDlg, IDC_SESSIONID, NULL, FALSE);
                     desktopName = PHA_GET_DLGITEM_TEXT(hwndDlg, IDC_DESKTOP);
 
-                    if (WINDOWS_HAS_UAC)
-                        useLinkedToken = Button_GetCheck(GetDlgItem(hwndDlg, IDC_TOGGLEELEVATION)) == BST_CHECKED;
-                    else
-                        useLinkedToken = FALSE;
+                    useLinkedToken = Button_GetCheck(GetDlgItem(hwndDlg, IDC_TOGGLEELEVATION)) == BST_CHECKED;
 
                     if (PhFindIntegerSiKeyValuePairs(
                         PhpLogonTypePairs,
@@ -446,8 +440,7 @@ INT_PTR CALLBACK PhpRunAsDlgProc(
                             createInfo.Password = PhGetStringOrEmpty(password);
 
                             // Whenever we can, try not to set the desktop name; it breaks a lot of things.
-                            // Note that on XP we must set it, otherwise the program doesn't display correctly.
-                            if (WindowsVersion < WINDOWS_VISTA || (desktopName->Length != 0 && !PhEqualString2(desktopName, L"WinSta0\\Default", TRUE)))
+                            if (desktopName->Length != 0 && !PhEqualString2(desktopName, L"WinSta0\\Default", TRUE))
                                 createInfo.DesktopName = desktopName->Buffer;
 
                             PhSetDesktopWinStaAccess();
@@ -548,19 +541,7 @@ INT_PTR CALLBACK PhpRunAsDlgProc(
                         if (IsServiceAccount(userName))
                         {
                             EnableWindow(GetDlgItem(hwndDlg, IDC_PASSWORD), FALSE);
-
-                            // Hack for Windows XP
-                            if (
-                                PhEqualString2(userName, L"NT AUTHORITY\\SYSTEM", TRUE) &&
-                                WindowsVersion <= WINDOWS_XP
-                                )
-                            {
-                                ComboBox_SelectString(GetDlgItem(hwndDlg, IDC_TYPE), -1, L"New credentials");
-                            }
-                            else
-                            {
-                                ComboBox_SelectString(GetDlgItem(hwndDlg, IDC_TYPE), -1, L"Service");
-                            }
+                            ComboBox_SelectString(GetDlgItem(hwndDlg, IDC_TYPE), -1, L"Service");
                         }
                         else
                         {

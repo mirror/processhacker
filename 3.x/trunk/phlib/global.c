@@ -97,12 +97,6 @@ NTSTATUS PhInitializePhLibEx(
 
     PhInitializeWindowsVersion();
 
-    if (Flags & PHLIB_INIT_MODULE_NTIMPORTS)
-    {
-        if (!PhInitializeImports())
-            return STATUS_UNSUCCESSFUL;
-    }
-
     PhInitializeSystemInformation();
 
     if (!PhQueuedLockInitialization())

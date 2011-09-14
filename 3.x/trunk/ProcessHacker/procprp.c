@@ -1187,18 +1187,14 @@ VOID PhpUpdateProcessStatistics(
             gdiHandles = PhaFormatUInt64(GetGuiResources(ProcessItem->QueryHandle, GR_GDIOBJECTS), TRUE); // GDI handles
             userHandles = PhaFormatUInt64(GetGuiResources(ProcessItem->QueryHandle, GR_USEROBJECTS), TRUE); // USER handles
 
-            if (WINDOWS_HAS_CYCLE_TIME &&
-                NT_SUCCESS(PhGetProcessCycleTime(ProcessItem->QueryHandle, &cycleTime)))
+            if (NT_SUCCESS(PhGetProcessCycleTime(ProcessItem->QueryHandle, &cycleTime)))
             {
                 cycles = PhaFormatUInt64(cycleTime, TRUE);
                 gotCycles = TRUE;
             }
 
-            if (WindowsVersion >= WINDOWS_VISTA)
-            {
-                PhGetProcessPagePriority(ProcessItem->QueryHandle, &pagePriority);
-                PhGetProcessIoPriority(ProcessItem->QueryHandle, &ioPriority);
-            }
+            PhGetProcessPagePriority(ProcessItem->QueryHandle, &pagePriority);
+            PhGetProcessIoPriority(ProcessItem->QueryHandle, &ioPriority);
         }
 
         if (Context->ProcessHandle)
@@ -1229,26 +1225,17 @@ VOID PhpUpdateProcessStatistics(
 
         SetDlgItemText(hwndDlg, IDC_ZGDIHANDLES_V, PhGetStringOrDefault(gdiHandles, L"Unknown"));
         SetDlgItemText(hwndDlg, IDC_ZUSERHANDLES_V, PhGetStringOrDefault(userHandles, L"Unknown"));
-        SetDlgItemText(hwndDlg, IDC_ZCYCLES_V,
-            PhGetStringOrDefault(cycles, WINDOWS_HAS_CYCLE_TIME ? L"Unknown" : L"N/A"));
+        SetDlgItemText(hwndDlg, IDC_ZCYCLES_V, PhGetStringOrDefault(cycles, L"Unknown"));
 
-        if (WindowsVersion >= WINDOWS_VISTA)
-        {
-            if (pagePriority != -1)
-                SetDlgItemInt(hwndDlg, IDC_ZPAGEPRIORITY_V, pagePriority, FALSE);
-            else
-                SetDlgItemText(hwndDlg, IDC_ZPAGEPRIORITY_V, L"Unknown");
-
-            if (ioPriority != -1 && ioPriority < MaxIoPriorityTypes)
-                SetDlgItemText(hwndDlg, IDC_ZIOPRIORITY_V, PhIoPriorityHintNames[ioPriority]);
-            else
-                SetDlgItemText(hwndDlg, IDC_ZIOPRIORITY_V, L"Unknown");
-        }
+        if (pagePriority != -1)
+            SetDlgItemInt(hwndDlg, IDC_ZPAGEPRIORITY_V, pagePriority, FALSE);
         else
-        {
-            SetDlgItemText(hwndDlg, IDC_ZPAGEPRIORITY_V, L"N/A");
-            SetDlgItemText(hwndDlg, IDC_ZIOPRIORITY_V, L"N/A");
-        }
+            SetDlgItemText(hwndDlg, IDC_ZPAGEPRIORITY_V, L"Unknown");
+
+        if (ioPriority != -1 && ioPriority < MaxIoPriorityTypes)
+            SetDlgItemText(hwndDlg, IDC_ZIOPRIORITY_V, PhIoPriorityHintNames[ioPriority]);
+        else
+            SetDlgItemText(hwndDlg, IDC_ZIOPRIORITY_V, L"Unknown");
 
         SetDlgItemText(hwndDlg, IDC_ZPRIVATEWS_V, PhGetStringOrDefault(privateWs, L"Unknown"));
         SetDlgItemText(hwndDlg, IDC_ZSHAREABLEWS_V, PhGetStringOrDefault(shareableWs, L"Unknown"));
@@ -1947,18 +1934,6 @@ VOID PhpInitializeThreadMenu(
         }
     }
 
-    // Remove irrelevant menu items.
-
-    if (WindowsVersion < WINDOWS_VISTA)
-    {
-        // Remove I/O priority.
-        if (item = PhFindEMenuItem(Menu, 0, L"I/O Priority", 0))
-            PhDestroyEMenuItem(item);
-        // Remove page priority.
-        if (item = PhFindEMenuItem(Menu, 0, L"Page Priority", 0))
-            PhDestroyEMenuItem(item);
-    }
-
 #ifndef _M_X64
     if (!KphIsConnected())
     {
@@ -1999,23 +1974,20 @@ VOID PhpInitializeThreadMenu(
         {
             threadPriority = GetThreadPriority(threadHandle);
 
-            if (WindowsVersion >= WINDOWS_VISTA)
+            if (!NT_SUCCESS(PhGetThreadIoPriority(
+                threadHandle,
+                &ioPriority
+                )))
             {
-                if (!NT_SUCCESS(PhGetThreadIoPriority(
-                    threadHandle,
-                    &ioPriority
-                    )))
-                {
-                    ioPriority = -1;
-                }
+                ioPriority = -1;
+            }
 
-                if (!NT_SUCCESS(PhGetThreadPagePriority(
-                    threadHandle,
-                    &pagePriority
-                    )))
-                {
-                    pagePriority = -1;
-                }
+            if (!NT_SUCCESS(PhGetThreadPagePriority(
+                threadHandle,
+                &pagePriority
+                )))
+            {
+                pagePriority = -1;
             }
 
             // Token
@@ -2203,9 +2175,7 @@ VOID PhpUpdateThreadDetails(
         PhPrintTimeSpan(userTime, threadItem->UserTime.QuadPart, PH_TIMESPAN_HMSM);
 
         contextSwitches = PhaFormatUInt64(threadItem->ContextSwitchesDelta.Value, TRUE);
-
-        if (WINDOWS_HAS_CYCLE_TIME)
-            cycles = PhaFormatUInt64(threadItem->CyclesDelta.Value, TRUE);
+        cycles = PhaFormatUInt64(threadItem->CyclesDelta.Value, TRUE);
 
         if (threadItem->State != Waiting)
         {
@@ -2413,7 +2383,6 @@ INT_PTR CALLBACK PhpProcessThreadsDlgProc(
             // Use Cycles instead of Context Switches on Vista and above, but only when we can
             // open the process, since cycle time information requires sufficient access to the
             // threads.
-            if (WINDOWS_HAS_CYCLE_TIME)
             {
                 HANDLE processHandle;
                 PROCESS_EXTENDED_BASIC_INFORMATION extendedBasicInfo;
