@@ -50,7 +50,7 @@ AppSupportURL=http://sourceforge.net/projects/processhacker/support
 AppUpdatesURL=http://processhacker.sourceforge.net/
 UninstallDisplayName=Process Hacker {#simple_app_version}
 DefaultDirName={pf}\Process Hacker 2
-DefaultGroupName=Process Hacker 2
+DefaultGroupName=Process Hacker 3
 VersionInfoCompany=wj32
 VersionInfoCopyright=Licensed under the GNU GPL, v3.
 VersionInfoDescription=Process Hacker Setup
@@ -59,7 +59,7 @@ VersionInfoProductTextVersion={#simple_app_version}
 VersionInfoProductVersion={#simple_app_version}
 VersionInfoTextVersion={#simple_app_version}
 VersionInfoVersion={#simple_app_version}
-MinVersion=0,5.01.2600sp2
+MinVersion=0,6.00
 LicenseFile=..\..\LICENSE.txt
 InfoAfterFile=..\..\CHANGELOG.txt
 SetupIconFile=..\..\ProcessHacker\ProcessHacker.ico
@@ -111,7 +111,7 @@ Name: "plugins";                       Description: "Plugins";                 T
 Name: "plugins\dotnettools";           Description: ".NET Tools";              Types: full custom;         Flags: disablenouninstallwarning
 Name: "plugins\extendednotifications"; Description: "Extended Notifications";  Types: full custom;         Flags: disablenouninstallwarning
 Name: "plugins\extendedservices";      Description: "Extended Services";       Types: full custom;         Flags: disablenouninstallwarning
-Name: "plugins\extendedtools";         Description: "Extended Tools";          Types: full custom;         Flags: disablenouninstallwarning;   MinVersion: 0,6.00
+Name: "plugins\extendedtools";         Description: "Extended Tools";          Types: full custom;         Flags: disablenouninstallwarning
 Name: "plugins\networktools";          Description: "Network Tools";           Types: full custom;         Flags: disablenouninstallwarning
 Name: "plugins\onlinechecks";          Description: "Online Checks";           Types: full custom;         Flags: disablenouninstallwarning
 Name: "plugins\sbiesupport";           Description: "Sandboxie Support";       Types: full custom;         Flags: disablenouninstallwarning
@@ -180,20 +180,20 @@ Source: Icons\uninstall.ico;                                      DestDir: {app}
 
 [Icons]
 Name: {group}\PE Viewer;        Filename: {app}\peview.exe;        WorkingDir: {app}; Comment: PE Viewer; IconFilename: {app}\peview.exe; IconIndex: 0; Components: peview; Flags: excludefromshowinnewinstall
-Name: {group}\Process Hacker 2; Filename: {app}\ProcessHacker.exe; WorkingDir: {app}; Comment: Process Hacker {#simple_app_version}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
+Name: {group}\Process Hacker 3; Filename: {app}\ProcessHacker.exe; WorkingDir: {app}; Comment: Process Hacker {#simple_app_version}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 Name: {group}\{cm:sm_Help}\{cm:sm_Changelog}; Filename: {app}\CHANGELOG.txt;    WorkingDir: {app}; Comment: {cm:sm_com_Changelog}
-Name: {group}\{cm:sm_Help}\{cm:ProgramOnTheWeb,Process Hacker 2}; Filename: http://processhacker.sourceforge.net/; Comment: {cm:ProgramOnTheWeb,Process Hacker 2}
-Name: {group}\{cm:UninstallProgram,Process Hacker 2};             Filename: {uninstallexe}; WorkingDir: {app};     Comment: {cm:UninstallProgram,Process Hacker 2}; IconFilename: {app}\uninstall.ico
+Name: {group}\{cm:sm_Help}\{cm:ProgramOnTheWeb,Process Hacker 3}; Filename: http://processhacker.sourceforge.net/; Comment: {cm:ProgramOnTheWeb,Process Hacker 3}
+Name: {group}\{cm:UninstallProgram,Process Hacker 3};             Filename: {uninstallexe}; WorkingDir: {app};     Comment: {cm:UninstallProgram,Process Hacker 3}; IconFilename: {app}\uninstall.ico
 
-Name: {commondesktop}\Process Hacker 2; Filename: {app}\ProcessHacker.exe;      WorkingDir: {app}; Comment: Process Hacker {#simple_app_version}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0; Tasks: desktopicon\common
-Name: {userdesktop}\Process Hacker 2;   Filename: {app}\ProcessHacker.exe;      WorkingDir: {app}; Comment: Process Hacker {#simple_app_version}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0; Tasks: desktopicon\user
-Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker 2;  Filename: {app}\ProcessHacker.exe; WorkingDir: {app}; Comment: Process Hacker {#simple_app_version}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0; Tasks: quicklaunchicon
+Name: {commondesktop}\Process Hacker 3; Filename: {app}\ProcessHacker.exe;      WorkingDir: {app}; Comment: Process Hacker {#simple_app_version}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0; Tasks: desktopicon\common
+Name: {userdesktop}\Process Hacker 3;   Filename: {app}\ProcessHacker.exe;      WorkingDir: {app}; Comment: Process Hacker {#simple_app_version}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0; Tasks: desktopicon\user
+Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker 3;  Filename: {app}\ProcessHacker.exe; WorkingDir: {app}; Comment: Process Hacker {#simple_app_version}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0; Tasks: quicklaunchicon
 
 
 [InstallDelete]
-Type: files;      Name: {userdesktop}\Process Hacker 2.lnk;          Check: NOT IsTaskSelected('desktopicon\user')   AND IsUpdate()
-Type: files;      Name: {commondesktop}\Process Hacker 2.lnk;        Check: NOT IsTaskSelected('desktopicon\common') AND IsUpdate()
-Type: files;      Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker 2.lnk; Check: NOT IsTaskSelected('quicklaunchicon') AND IsUpdate()
+Type: files;      Name: {userdesktop}\Process Hacker 3.lnk;          Check: NOT IsTaskSelected('desktopicon\user')   AND IsUpdate()
+Type: files;      Name: {commondesktop}\Process Hacker 3.lnk;        Check: NOT IsTaskSelected('desktopicon\common') AND IsUpdate()
+Type: files;      Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker 3.lnk; Check: NOT IsTaskSelected('quicklaunchicon') AND IsUpdate()
 Type: files;      Name: {group}\Help and Support\Process Hacker Help.lnk; Check: IsUpdate()
 
 Type: files;      Name: {userappdata}\Process Hacker 2\settings.xml; Tasks: reset_settings
@@ -226,7 +226,7 @@ Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Exec
 
 
 [Run]
-Filename: {app}\ProcessHacker.exe;               Description: {cm:LaunchProgram,Process Hacker 2}; Flags: nowait postinstall skipifsilent runascurrentuser
+Filename: {app}\ProcessHacker.exe;               Description: {cm:LaunchProgram,Process Hacker 3}; Flags: nowait postinstall skipifsilent runascurrentuser
 Filename: http://processhacker.sourceforge.net/; Description: {cm:run_VisitWebsite};               Flags: nowait postinstall skipifsilent shellexec runascurrentuser unchecked
 
 
