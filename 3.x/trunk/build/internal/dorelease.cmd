@@ -10,7 +10,7 @@ rem Source distribution
 if exist "%SVNBIN%\svn.exe". (
     if exist %2\ProcessHacker3 rmdir /S /Q %2\ProcessHacker3
     "%SVNBIN%\svn.exe" export %1 %2\ProcessHacker3
-    if exist "%SEVENZIPBIN%\7z.exe" "%SEVENZIPBIN%\7z.exe" a -mx9 %2\processhacker-3.%MINORVERSION%-src.zip %2\ProcessHacker2\*
+    if exist "%SEVENZIPBIN%\7z.exe" "%SEVENZIPBIN%\7z.exe" a -mx9 %2\processhacker-3.%MINORVERSION%-src.zip %2\ProcessHacker3\*
     )
 
 rem SDK distribution

@@ -10,7 +10,7 @@ type". You cannot run the 32-bit version of Process Hacker on a
 
 == System requirements ==
 
-Windows XP SP2 or higher, 32-bit or 64-bit.
+Windows Vista or higher, 32-bit or 64-bit.
 
 == Settings ==
 
@@ -40,11 +40,6 @@ Plugins can be configured from Hacker > Plugins.
 
 If you experience any crashes involving plugins, make sure they
 are up to date.
-
-The ExtendedTools plugin is only available for Windows Vista and
-above. Disk and Network information provided by this plugin is
-only available when running Process Hacker with administrative
-rights.
 
 == KProcessHacker ==
 
