@@ -670,7 +670,7 @@ static BOOLEAN PhpFormatInt32GroupDigits(
         if (String)
         {
             String->Buffer = Buffer;
-            String->Length = (USHORT)(returnLength - sizeof(WCHAR));
+            String->Length = returnLength - sizeof(WCHAR);
         }
 
         return TRUE;
@@ -1846,7 +1846,7 @@ BOOLEAN NTAPI PhpProcessTreeNewCallback(
                         if (PhFormatToBuffer(&format, 1, node->CpuUsageText, sizeof(node->CpuUsageText), &returnLength))
                         {
                             getCellText->Text.Buffer = node->CpuUsageText;
-                            getCellText->Text.Length = (USHORT)(returnLength - sizeof(WCHAR)); // minus null terminator
+                            getCellText->Text.Length = returnLength - sizeof(WCHAR); // minus null terminator
                         }
                     }
                     else if (cpuUsage != 0 && PhCsShowCpuBelow001)
@@ -1860,7 +1860,7 @@ BOOLEAN NTAPI PhpProcessTreeNewCallback(
                         if (PhFormatToBuffer(format, 2, node->CpuUsageText, sizeof(node->CpuUsageText), &returnLength))
                         {
                             getCellText->Text.Buffer = node->CpuUsageText;
-                            getCellText->Text.Length = (USHORT)(returnLength - sizeof(WCHAR));
+                            getCellText->Text.Length = returnLength - sizeof(WCHAR);
                         }
                     }
                 }
@@ -3129,7 +3129,7 @@ VOID PhCopyProcessTree(
     VOID
     )
 {
-    PPH_FULL_STRING text;
+    PPH_STRING text;
 
     text = PhGetTreeNewText(ProcessTreeListHandle, PHPRTLC_MAXIMUM);
     PhSetClipboardStringEx(ProcessTreeListHandle, text->Buffer, text->Length);

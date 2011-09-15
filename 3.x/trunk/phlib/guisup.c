@@ -276,11 +276,11 @@ BOOLEAN PhLoadListViewColumnSettings(
     )
 {
 #define ORDER_LIMIT 50
-    ULONG i;
-    ULONG length;
+    SIZE_T i;
+    SIZE_T length;
     ULONG columnIndex;
-    ULONG indexOfComma;
-    ULONG indexOfPipe;
+    ULONG_PTR indexOfComma;
+    ULONG_PTR indexOfPipe;
     PH_STRINGREF stringRef;
     ULONG64 integer;
     LVCOLUMN lvColumn;
@@ -292,7 +292,7 @@ BOOLEAN PhLoadListViewColumnSettings(
         return FALSE;
 
     i = 0;
-    length = (ULONG)Settings->Length / 2;
+    length = Settings->Length / 2;
     columnIndex = 0;
     lvColumn.mask = LVCF_WIDTH;
 
@@ -314,7 +314,7 @@ BOOLEAN PhLoadListViewColumnSettings(
         // Order
 
         stringRef.Buffer = &Settings->Buffer[i];
-        stringRef.Length = (USHORT)((indexOfComma - i) * 2);
+        stringRef.Length = (indexOfComma - i) * 2;
 
         if (!PhStringToInteger64(&stringRef, 10, &integer))
             return FALSE;
@@ -332,7 +332,7 @@ BOOLEAN PhLoadListViewColumnSettings(
         // Width
 
         stringRef.Buffer = &Settings->Buffer[indexOfComma + 1];
-        stringRef.Length = (USHORT)((indexOfPipe - indexOfComma - 1) * 2);
+        stringRef.Length = (indexOfPipe - indexOfComma - 1) * 2;
 
         if (!PhStringToInteger64(&stringRef, 10, &integer))
             return FALSE;
@@ -430,7 +430,7 @@ PPH_STRING PhGetWindowText(
 
     string = PhCreateStringEx(NULL, length * 2);
 
-    if (GetWindowText(hwnd, string->Buffer, string->Length / 2 + 1))
+    if (GetWindowText(hwnd, string->Buffer, (ULONG)string->Length / 2 + 1))
     {
         return string;
     }

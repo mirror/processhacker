@@ -299,7 +299,7 @@ PPH_STRING PhGetNtMessage(
     // {Asdf}\r\nAsdf asdf asdf...
     if (message->Buffer[0] == '{')
     {
-        ULONG indexOfNewLine = PhFindCharInString(message, 0, '\n');
+        ULONG_PTR indexOfNewLine = PhFindCharInString(message, 0, '\n');
 
         if (indexOfNewLine != -1)
         {
@@ -843,7 +843,7 @@ PPH_STRING PhEllipsisStringPath(
     __in ULONG DesiredCount
     )
 {
-    ULONG secondPartIndex;
+    ULONG_PTR secondPartIndex;
 
     secondPartIndex = PhFindLastCharInString(String, 0, L'\\');
 
@@ -853,7 +853,7 @@ PPH_STRING PhEllipsisStringPath(
         return PhEllipsisString(String, DesiredCount);
 
     if (
-        (ULONG)String->Length / 2 <= DesiredCount ||
+        String->Length / 2 <= DesiredCount ||
         DesiredCount < 3
         )
     {
@@ -863,8 +863,8 @@ PPH_STRING PhEllipsisStringPath(
     else
     {
         PPH_STRING string;
-        ULONG firstPartCopyLength;
-        ULONG secondPartCopyLength;
+        ULONG_PTR firstPartCopyLength;
+        ULONG_PTR secondPartCopyLength;
 
         string = PhCreateStringEx(NULL, DesiredCount * 2);
         secondPartCopyLength = String->Length / 2 - secondPartIndex;
@@ -997,8 +997,8 @@ PPH_STRING PhEscapeStringForMenuPrefix(
     )
 {
     PH_STRING_BUILDER stringBuilder;
-    ULONG i;
-    ULONG length;
+    SIZE_T i;
+    SIZE_T length;
     PWCHAR runStart;
     ULONG runLength;
 
@@ -1990,30 +1990,31 @@ PPH_STRING PhExpandEnvironmentStrings(
 {
     NTSTATUS status;
     PPH_STRING string;
-    ULONG bufferLength;
+    SIZE_T returnLength;
 
-    bufferLength = 0x40;
-    string = PhCreateStringEx(NULL, bufferLength);
-    string->us.Length = 0;
+    string = PhCreateStringEx(NULL, 0x40);
 
-    status = RtlExpandEnvironmentStrings_U(
+    status = RtlExpandEnvironmentStrings(
         NULL,
-        &String->us,
-        &string->us,
-        &bufferLength
+        String->Buffer,
+        String->Length / sizeof(WCHAR),
+        string->Buffer,
+        string->Length / sizeof(WCHAR) + 1,
+        &returnLength
         );
 
     if (status == STATUS_BUFFER_TOO_SMALL)
     {
         PhDereferenceObject(string);
-        string = PhCreateStringEx(NULL, bufferLength);
-        string->us.Length = 0;
+        string = PhCreateStringEx(NULL, (returnLength - 1) * sizeof(WCHAR));
 
-        status = RtlExpandEnvironmentStrings_U(
+        status = RtlExpandEnvironmentStrings(
             NULL,
-            &String->us,
-            &string->us,
-            &bufferLength
+            String->Buffer,
+            String->Length / sizeof(WCHAR),
+            string->Buffer,
+            string->Length / sizeof(WCHAR) + 1,
+            &returnLength
             );
     }
 
@@ -2023,8 +2024,8 @@ PPH_STRING PhExpandEnvironmentStrings(
         return NULL;
     }
 
-    string->Buffer[string->Length / 2] = 0; // make sure there is a null terminator
-    string->us.MaximumLength = string->us.Length;
+    string->Buffer[returnLength - 1] = 0; // make sure there is a null terminator
+    string->Length = (returnLength - 1) * sizeof(WCHAR);
 
     return string;
 }
@@ -2038,7 +2039,7 @@ PPH_STRING PhGetBaseName(
     __in PPH_STRING FileName
     )
 {
-    ULONG lastIndexOfBackslash;
+    ULONG_PTR lastIndexOfBackslash;
 
     lastIndexOfBackslash = PhFindLastCharInString(FileName, 0, '\\');
 
@@ -2160,6 +2161,8 @@ PLDR_DATA_TABLE_ENTRY PhFindLoaderEntry(
 {
     PLDR_DATA_TABLE_ENTRY result = NULL;
     PLDR_DATA_TABLE_ENTRY entry;
+    PH_STRINGREF fullDllName;
+    PH_STRINGREF baseDllName;
     PLIST_ENTRY listHead;
     PLIST_ENTRY listEntry;
 
@@ -2169,11 +2172,13 @@ PLDR_DATA_TABLE_ENTRY PhFindLoaderEntry(
     while (listEntry != listHead)
     {
         entry = CONTAINING_RECORD(listEntry, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
+        PhUnicodeStringToStringRef(&entry->FullDllName, &fullDllName);
+        PhUnicodeStringToStringRef(&entry->BaseDllName, &baseDllName);
 
         if (
             (!DllBase || entry->DllBase == DllBase) &&
-            (!FullDllName || RtlEqualUnicodeString(&entry->FullDllName, &FullDllName->us, TRUE)) &&
-            (!BaseDllName || RtlEqualUnicodeString(&entry->BaseDllName, &BaseDllName->us, TRUE))
+            (!FullDllName || PhEqualStringRef(&fullDllName, FullDllName, TRUE)) &&
+            (!BaseDllName || PhEqualStringRef(&baseDllName, BaseDllName, TRUE))
             )
         {
             result = entry;
@@ -2204,7 +2209,7 @@ PPH_STRING PhGetDllFileName(
     PLDR_DATA_TABLE_ENTRY entry;
     PPH_STRING fileName;
     PPH_STRING newFileName;
-    ULONG indexOfFileName;
+    ULONG_PTR indexOfFileName;
 
     RtlEnterCriticalSection(NtCurrentPeb()->LoaderLock);
 
@@ -2233,7 +2238,7 @@ PPH_STRING PhGetDllFileName(
         else
             indexOfFileName = -1;
 
-        *IndexOfFileName = indexOfFileName;
+        *IndexOfFileName = (ULONG)indexOfFileName;
     }
 
     return fileName;
@@ -2310,7 +2315,7 @@ PPH_STRING PhGetKnownLocation(
         if (AppendPath)
         {
             memcpy(&path->Buffer[path->Length / 2], AppendPath, appendPathLength + 2); // +2 for null terminator
-            path->Length += (USHORT)appendPathLength;
+            path->Length += appendPathLength;
         }
 
         return path;
@@ -2437,6 +2442,8 @@ NTSTATUS PhCreateProcess(
     RTL_USER_PROCESS_INFORMATION processInfo;
     PRTL_USER_PROCESS_PARAMETERS parameters;
     UNICODE_STRING fileName;
+    UNICODE_STRING commandLine;
+    UNICODE_STRING currentDirectory;
     PUNICODE_STRING windowTitle;
     PUNICODE_STRING desktopInfo;
 
@@ -2448,10 +2455,22 @@ NTSTATUS PhCreateProcess(
         ))
         return STATUS_OBJECT_NAME_NOT_FOUND;
 
+    if (CommandLine)
+    {
+        if (!PhStringRefToUnicodeString(CommandLine, &commandLine))
+            return STATUS_NAME_TOO_LONG;
+    }
+
+    if (CurrentDirectory)
+    {
+        if (!PhStringRefToUnicodeString(CurrentDirectory, &currentDirectory))
+            return STATUS_NAME_TOO_LONG;
+    }
+
     if (Information)
     {
-        windowTitle = (PUNICODE_STRING)Information->WindowTitle;
-        desktopInfo = (PUNICODE_STRING)Information->DesktopInfo;
+        windowTitle = Information->WindowTitle;
+        desktopInfo = Information->DesktopInfo;
     }
     else
     {
@@ -2468,14 +2487,14 @@ NTSTATUS PhCreateProcess(
     status = RtlCreateProcessParameters(
         &parameters,
         &fileName,
-        Information ? (PUNICODE_STRING)Information->DllPath : NULL,
-        (PUNICODE_STRING)CurrentDirectory,
-        CommandLine ? &CommandLine->us : &fileName,
+        Information ? Information->DllPath : NULL,
+        CurrentDirectory ? &currentDirectory : NULL,
+        CommandLine ? &commandLine : &fileName,
         Environment,
         windowTitle,
         desktopInfo,
-        Information ? (PUNICODE_STRING)Information->ShellInfo : NULL,
-        Information ? (PUNICODE_STRING)Information->RuntimeData : NULL
+        Information ? Information->ShellInfo : NULL,
+        Information ? Information->RuntimeData : NULL
         );
 
     if (NT_SUCCESS(status))
@@ -3492,7 +3511,7 @@ VOID PhShellOpenKey(
     }
 
     RtlInitUnicodeString(&valueName, L"LastKey");
-    NtSetValueKey(regeditKeyHandle, &valueName, 0, REG_SZ, lastKey->Buffer, lastKey->Length + 2);
+    NtSetValueKey(regeditKeyHandle, &valueName, 0, REG_SZ, lastKey->Buffer, (ULONG)lastKey->Length + 2);
     PhDereferenceObject(lastKey);
     NtClose(regeditKeyHandle);
 
@@ -4549,12 +4568,12 @@ BOOLEAN PhFinalHash(
 
 PPH_STRING PhParseCommandLinePart(
     __in PPH_STRINGREF CommandLine,
-    __inout PULONG Index
+    __inout PULONG_PTR Index
     )
 {
     PH_STRING_BUILDER stringBuilder;
-    ULONG length;
-    ULONG i;
+    SIZE_T length;
+    SIZE_T i;
 
     ULONG numberOfBackslashes;
     BOOLEAN inQuote;
@@ -4649,9 +4668,9 @@ BOOLEAN PhParseCommandLine(
     __in_opt PVOID Context
     )
 {
-    ULONG i;
-    ULONG j;
-    ULONG length;
+    SIZE_T i;
+    SIZE_T j;
+    SIZE_T length;
     BOOLEAN cont;
     BOOLEAN wasFirst;
 
@@ -4692,8 +4711,8 @@ BOOLEAN PhParseCommandLine(
         }
         else if (CommandLine->Buffer[i] == '-')
         {
-            ULONG originalIndex;
-            ULONG optionNameLength;
+            ULONG_PTR originalIndex;
+            SIZE_T optionNameLength;
 
             // Read the option (only alphanumeric characters allowed).
 
@@ -4711,7 +4730,7 @@ BOOLEAN PhParseCommandLine(
             optionNameLength = i - originalIndex;
 
             optionName.Buffer = &CommandLine->Buffer[originalIndex];
-            optionName.Length = (USHORT)(optionNameLength * 2);
+            optionName.Length = optionNameLength * 2;
 
             // Find the option descriptor.
 
@@ -4790,7 +4809,7 @@ PPH_STRING PhEscapeCommandLinePart(
 
     ULONG numberOfBackslashes;
 
-    length = String->Length / 2;
+    length = (ULONG)String->Length / 2;
     PhInitializeStringBuilder(&stringBuilder, String->Length / 2 * 3);
     numberOfBackslashes = 0;
 

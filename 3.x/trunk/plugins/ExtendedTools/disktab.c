@@ -743,7 +743,7 @@ VOID EtCopyDiskList(
     VOID
     )
 {
-    PPH_FULL_STRING text;
+    PPH_STRING text;
 
     text = PhGetTreeNewText(DiskTreeNewHandle, ETDSTNC_MAXIMUM);
     PhSetClipboardStringEx(DiskTreeNewHandle, text->Buffer, text->Length);

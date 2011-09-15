@@ -1677,7 +1677,7 @@ VOID PhProcessProviderUpdate(
         {
             PH_PLUGIN_IS_DOT_NET_DIRECTORY_NAMES directoryNames;
 
-            PhInitializeStringRef(&directoryNames.DirectoryNames[0], L"\\BaseNamedObjects");
+            RtlInitUnicodeString(&directoryNames.DirectoryNames[0], L"\\BaseNamedObjects");
             directoryNames.NumberOfDirectoryNames = 1;
 
             PhInvokeCallback(PhGetGeneralCallback(GeneralCallbackGetIsDotNetDirectoryNames), &directoryNames);

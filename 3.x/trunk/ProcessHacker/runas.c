@@ -200,7 +200,7 @@ static PPH_STRING GetCurrentWinStaName(
         GetProcessWindowStation(),
         UOI_NAME,
         string->Buffer,
-        string->Length + 2,
+        (ULONG)string->Length + 2,
         NULL
         ))
     {
@@ -768,6 +768,7 @@ NTSTATUS PhExecuteRunAsCommand(
     SC_HANDLE scManagerHandle;
     SC_HANDLE serviceHandle;
     PPH_STRING portName;
+    UNICODE_STRING portNameUs;
     ULONG attempts;
     LARGE_INTEGER interval;
 
@@ -808,13 +809,14 @@ NTSTATUS PhExecuteRunAsCommand(
     DeleteService(serviceHandle);
 
     portName = PhConcatStrings2(L"\\BaseNamedObjects\\", Parameters->ServiceName);
+    PhStringRefToUnicodeString(&portName->sr, &portNameUs);
     attempts = 10;
 
     // Try to connect several times because the server may take
     // a while to initialize.
     do
     {
-        status = PhSvcConnectToServer(&portName->us, 0);
+        status = PhSvcConnectToServer(&portNameUs, 0);
 
         if (NT_SUCCESS(status))
             break;
@@ -881,6 +883,7 @@ NTSTATUS PhExecuteRunAsCommand2(
     PH_RUNAS_SERVICE_PARAMETERS parameters;
     WCHAR serviceName[32];
     PPH_STRING portName;
+    UNICODE_STRING portNameUs;
 
     memset(&parameters, 0, sizeof(PH_RUNAS_SERVICE_PARAMETERS));
     parameters.ProcessId = (ULONG)ProcessIdWithToken;
@@ -898,8 +901,9 @@ NTSTATUS PhExecuteRunAsCommand2(
         PhAcquireQueuedLockExclusive(&RunAsOldServiceLock);
 
         portName = PhConcatStrings2(L"\\BaseNamedObjects\\", RunAsOldServiceName);
+        PhStringRefToUnicodeString(&portName->sr, &portNameUs);
 
-        if (NT_SUCCESS(PhSvcConnectToServer(&portName->us, 0)))
+        if (NT_SUCCESS(PhSvcConnectToServer(&portNameUs, 0)))
         {
             parameters.ServiceName = RunAsOldServiceName;
             status = PhSvcCallInvokeRunAsService(&parameters);
@@ -952,7 +956,7 @@ static VOID PhpSplitUserName(
     )
 {
     PH_STRINGREF userName;
-    ULONG indexOfBackslash;
+    ULONG_PTR indexOfBackslash;
 
     PhInitializeStringRef(&userName, UserName);
     indexOfBackslash = PhFindCharInStringRef(&userName, 0, '\\');
@@ -1008,6 +1012,7 @@ static VOID WINAPI RunAsServiceMain(
     )
 {
     PPH_STRING portName;
+    UNICODE_STRING portNameUs;
     LARGE_INTEGER timeout;
 
     memset(&RunAsServiceStop, 0, sizeof(PHSVC_STOP));
@@ -1015,10 +1020,11 @@ static VOID WINAPI RunAsServiceMain(
     SetRunAsServiceStatus(SERVICE_RUNNING);
 
     portName = PhConcatStrings2(L"\\BaseNamedObjects\\", RunAsServiceName->Buffer);
+    PhStringRefToUnicodeString(&portName->sr, &portNameUs);
     // Use a shorter timeout value to reduce the time spent running as SYSTEM.
     timeout.QuadPart = -5 * PH_TIMEOUT_SEC;
 
-    PhSvcMain(&portName->sr, &timeout, &RunAsServiceStop);
+    PhSvcMain(&portNameUs, &timeout, &RunAsServiceStop);
 
     SetRunAsServiceStatus(SERVICE_STOPPED);
 }

@@ -743,7 +743,7 @@ VOID PhCopyNetworkList(
     VOID
     )
 {
-    PPH_FULL_STRING text;
+    PPH_STRING text;
 
     text = PhGetTreeNewText(NetworkTreeListHandle, PHNETLC_MAXIMUM);
     PhSetClipboardStringEx(NetworkTreeListHandle, text->Buffer, text->Length);

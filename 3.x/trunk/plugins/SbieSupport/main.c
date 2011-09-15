@@ -402,6 +402,7 @@ VOID NTAPI GetIsDotNetDirectoryNamesCallback(
 {
     PPH_PLUGIN_IS_DOT_NET_DIRECTORY_NAMES isDotNetDirectoryNames = Parameter;
     ULONG i;
+    UNICODE_STRING us;
 
     PhAcquireQueuedLockShared(&BoxedProcessesLock);
 
@@ -415,8 +416,8 @@ VOID NTAPI GetIsDotNetDirectoryNamesCallback(
         if (isDotNetDirectoryNames->NumberOfDirectoryNames <
             sizeof(isDotNetDirectoryNames->DirectoryNames) / sizeof(PH_STRINGREF))
         {
-            isDotNetDirectoryNames->DirectoryNames[isDotNetDirectoryNames->NumberOfDirectoryNames++] =
-                BoxInfo[i].IsDotNetDirectoryName->sr;
+            PhStringRefToUnicodeString(&BoxInfo[i].IsDotNetDirectoryName->sr, &us);
+            isDotNetDirectoryNames->DirectoryNames[isDotNetDirectoryNames->NumberOfDirectoryNames++] = us;
         }
         else
         {

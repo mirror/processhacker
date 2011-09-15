@@ -315,7 +315,7 @@ VOID UpdateCounterData(
                 if (instance->NameLength != 0)
                 {
                     instanceName.Buffer = (PWSTR)((PCHAR)instance + instance->NameOffset);
-                    instanceName.Length = (USHORT)(instance->NameLength - sizeof(WCHAR));
+                    instanceName.Length = instance->NameLength - sizeof(WCHAR);
 
                     counterBlock = (PPERF_COUNTER_BLOCK)((PCHAR)instance + instance->ByteLength);
 
@@ -441,7 +441,7 @@ INT_PTR CALLBACK DotNetPerfPageDlgProc(
     {
     case WM_INITDIALOG:
         {
-            ULONG indexOfLastDot;
+            ULONG_PTR indexOfLastDot;
             HWND appDomainsLv;
             HWND countersLv;
             HWND categoriesHandle;

@@ -3331,7 +3331,7 @@ BOOLEAN PhTnpGetCellParts(
 
                 SelectObject(hdc, font);
 
-                if (GetTextExtentPoint32(hdc, text.Buffer, text.Length / sizeof(WCHAR), &textSize))
+                if (GetTextExtentPoint32(hdc, text.Buffer, (ULONG)text.Length / sizeof(WCHAR), &textSize))
                 {
                     Parts->Flags |= TN_PART_TEXT;
                     Parts->TextRect.left = currentX;
@@ -4389,7 +4389,7 @@ VOID PhTnpProcessSearchKey(
     searchEvent.String.Buffer = Context->SearchString;
 
     if (!Context->SearchSingleCharMode)
-        searchEvent.String.Length = (USHORT)(Context->SearchStringCount * sizeof(WCHAR));
+        searchEvent.String.Length = Context->SearchStringCount * sizeof(WCHAR);
     else
         searchEvent.String.Length = sizeof(WCHAR);
 
@@ -5314,7 +5314,7 @@ VOID PhTnpDrawCell(
         DrawText(
             hdc,
             text.Buffer,
-            text.Length / 2,
+            (ULONG)text.Length / 2,
             &textRect,
             textFlags
             );

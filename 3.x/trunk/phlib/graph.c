@@ -343,7 +343,7 @@ VOID PhDrawGraph(
         // Draw the text.
         SetTextColor(hdc, DrawInfo->TextColor);
         SetBkMode(hdc, TRANSPARENT);
-        DrawText(hdc, DrawInfo->Text.Buffer, DrawInfo->Text.Length / 2, &DrawInfo->TextRect, DT_NOCLIP);
+        DrawText(hdc, DrawInfo->Text.Buffer, (ULONG)DrawInfo->Text.Length / 2, &DrawInfo->TextRect, DT_NOCLIP);
     }
 }
 
@@ -669,7 +669,7 @@ VOID PhDrawGraphDirect(
         // Draw the text.
         SetTextColor(hdc, DrawInfo->TextColor);
         SetBkMode(hdc, TRANSPARENT);
-        DrawText(hdc, DrawInfo->Text.Buffer, DrawInfo->Text.Length / 2, &DrawInfo->TextRect, DT_NOCLIP);
+        DrawText(hdc, DrawInfo->Text.Buffer, (ULONG)DrawInfo->Text.Length / 2, &DrawInfo->TextRect, DT_NOCLIP);
     }
 }
 
@@ -699,7 +699,7 @@ VOID PhSetGraphText(
     PH_RECTANGLE textRectangle;
 
     DrawInfo->Text = *Text;
-    GetTextExtentPoint32(hdc, Text->Buffer, Text->Length / 2, &textSize);
+    GetTextExtentPoint32(hdc, Text->Buffer, (ULONG)Text->Length / 2, &textSize);
 
     // Calculate the box rectangle.
 

@@ -45,7 +45,7 @@ typedef BOOLEAN (NTAPI *PPHP_ENUM_PROCESS_MODULES32_CALLBACK)(
 
 static PH_INITONCE PhDevicePrefixesInitOnce = PH_INITONCE_INIT;
 
-static PH_STRINGREF PhDevicePrefixes[26];
+static UNICODE_STRING PhDevicePrefixes[26];
 static PH_QUEUED_LOCK PhDevicePrefixesLock = PH_QUEUED_LOCK_INIT;
 
 static PPH_STRING PhDeviceMupPrefixes[PH_DEVICE_MUP_PREFIX_MAX_COUNT] = { 0 };
@@ -53,11 +53,11 @@ static ULONG PhDeviceMupPrefixesCount = 0;
 static PH_QUEUED_LOCK PhDeviceMupPrefixesLock = PH_QUEUED_LOCK_INIT;
 
 static PH_INITONCE PhPredefineKeyInitOnce = PH_INITONCE_INIT;
-static PH_STRINGREF PhPredefineKeyNames[PH_KEY_MAXIMUM_PREDEFINE] =
+static UNICODE_STRING PhPredefineKeyNames[PH_KEY_MAXIMUM_PREDEFINE] =
 {
-    PH_STRINGREF_INIT(L"\\Registry\\Machine"),
-    PH_STRINGREF_INIT(L"\\Registry\\User"),
-    PH_STRINGREF_INIT(L"\\Registry\\Machine\\Software\\Classes"),
+    RTL_CONSTANT_STRING(L"\\Registry\\Machine"),
+    RTL_CONSTANT_STRING(L"\\Registry\\User"),
+    RTL_CONSTANT_STRING(L"\\Registry\\Machine\\Software\\Classes"),
     { 0, 0, NULL }
 };
 static HANDLE PhPredefineKeyHandles[PH_KEY_MAXIMUM_PREDEFINE] = { 0 };
@@ -1246,9 +1246,9 @@ BOOLEAN PhEnumProcessEnvironmentVariables(
     *EnumerationKey = currentIndex;
 
     Variable->Name.Buffer = name;
-    Variable->Name.Length = (USHORT)(nameLength * sizeof(WCHAR));
+    Variable->Name.Length = nameLength * sizeof(WCHAR);
     Variable->Value.Buffer = value;
-    Variable->Value.Length = (USHORT)(valueLength * sizeof(WCHAR));
+    Variable->Value.Length = valueLength * sizeof(WCHAR);
 
     return TRUE;
 }
@@ -3025,14 +3025,22 @@ BOOLEAN NTAPI PhpOpenDriverByBaseAddressCallback(
     NTSTATUS status;
     POPEN_DRIVER_BY_BASE_ADDRESS_CONTEXT context = Context;
     PPH_STRING driverName;
+    UNICODE_STRING driverNameUs;
     OBJECT_ATTRIBUTES objectAttributes;
     HANDLE driverHandle;
     DRIVER_BASIC_INFORMATION basicInfo;
 
     driverName = PhConcatStringRef2(&driverDirectoryName, &Name->sr);
+
+    if (!PhStringRefToUnicodeString(&driverName->sr, &driverNameUs))
+    {
+        PhDereferenceObject(driverName);
+        return TRUE;
+    }
+
     InitializeObjectAttributes(
         &objectAttributes,
-        &driverName->us,
+        &driverNameUs,
         0,
         NULL,
         NULL
@@ -3229,10 +3237,17 @@ NTSTATUS PhpUnloadDriver(
 
     NTSTATUS status;
     PPH_STRING fullServiceKeyName;
+    UNICODE_STRING fullServiceKeyNameUs;
     HANDLE serviceKeyHandle;
     ULONG disposition;
 
     fullServiceKeyName = PhConcatStringRef2(&fullServicesKeyName, &ServiceKeyName->sr);
+
+    if (!PhStringRefToUnicodeString(&fullServiceKeyName->sr, &fullServiceKeyNameUs))
+    {
+        PhDereferenceObject(fullServiceKeyName);
+        return STATUS_NAME_TOO_LONG;
+    }
 
     if (NT_SUCCESS(status = PhCreateKey(
         &serviceKeyHandle,
@@ -3246,7 +3261,7 @@ NTSTATUS PhpUnloadDriver(
     {
         if (disposition == REG_CREATED_NEW_KEY)
         {
-            static PH_STRINGREF imagePath = PH_STRINGREF_INIT(L"\\SystemRoot\\system32\\drivers\\ntfs.sys");
+            static UNICODE_STRING imagePath = RTL_CONSTANT_STRING(L"\\SystemRoot\\system32\\drivers\\ntfs.sys");
 
             UNICODE_STRING valueName;
             ULONG dword;
@@ -3265,7 +3280,7 @@ NTSTATUS PhpUnloadDriver(
             NtSetValueKey(serviceKeyHandle, &valueName, 0, REG_SZ, imagePath.Buffer, imagePath.Length + 2);
         }
 
-        status = NtUnloadDriver(&fullServiceKeyName->us);
+        status = NtUnloadDriver(&fullServiceKeyNameUs);
 
         if (disposition == REG_CREATED_NEW_KEY)
         {
@@ -3970,7 +3985,7 @@ static BOOLEAN PhpGetProcedureAddressRemoteCallback(
     PGET_PROCEDURE_ADDRESS_REMOTE_CONTEXT context = Context;
     PH_STRINGREF fullDllName;
 
-    fullDllName.us = Module->FullDllName;
+    PhUnicodeStringToStringRef(&Module->FullDllName, &fullDllName);
 
     if (PhEqualStringRef(&fullDllName, &context->FileName, TRUE))
     {
@@ -4786,7 +4801,7 @@ BOOLEAN NTAPI PhpCreateIsDotNetContextCallback(
 
 NTSTATUS PhCreateIsDotNetContext(
     __out PPH_IS_DOT_NET_CONTEXT *IsDotNetContext,
-    __in_opt PPH_STRINGREF DirectoryNames,
+    __in_opt PUNICODE_STRING DirectoryNames,
     __in ULONG NumberOfDirectoryNames
     )
 {
@@ -4794,7 +4809,7 @@ NTSTATUS PhCreateIsDotNetContext(
     PPH_IS_DOT_NET_CONTEXT isDotNetContext;
     OBJECT_ATTRIBUTES oa;
     HANDLE directoryHandle;
-    PH_STRINGREF defaultDirectoryName;
+    UNICODE_STRING defaultDirectoryName;
     ULONG i;
 
     isDotNetContext = PhAllocate(sizeof(PH_IS_DOT_NET_CONTEXT));
@@ -4805,7 +4820,7 @@ NTSTATUS PhCreateIsDotNetContext(
 
     if (!DirectoryNames || NumberOfDirectoryNames == 0)
     {
-        PhInitializeStringRef(&defaultDirectoryName, L"\\BaseNamedObjects");
+        RtlInitUnicodeString(&defaultDirectoryName, L"\\BaseNamedObjects");
         DirectoryNames = &defaultDirectoryName;
         NumberOfDirectoryNames = 1;
     }
@@ -4814,7 +4829,7 @@ NTSTATUS PhCreateIsDotNetContext(
     {
         InitializeObjectAttributes(
             &oa,
-            &DirectoryNames[i].us,
+            &DirectoryNames[i],
             OBJ_CASE_INSENSITIVE,
             NULL,
             NULL
@@ -4995,7 +5010,7 @@ NTSTATUS PhEnumDirectoryObjects(
 
 NTSTATUS PhEnumDirectoryFile(
     __in HANDLE FileHandle,
-    __in_opt PPH_STRINGREF SearchPattern,
+    __in_opt PUNICODE_STRING SearchPattern,
     __in PPH_ENUM_DIRECTORY_FILE Callback,
     __in_opt PVOID Context
     )
@@ -5026,7 +5041,7 @@ NTSTATUS PhEnumDirectoryFile(
                 bufferSize,
                 FileDirectoryInformation,
                 FALSE,
-                SearchPattern ? &SearchPattern->us : NULL,
+                SearchPattern,
                 firstTime
                 );
 
@@ -5128,7 +5143,7 @@ VOID PhInitializeDevicePrefixes(
     for (i = 0; i < 26; i++)
     {
         PhDevicePrefixes[i].Length = 0;
-        PhDevicePrefixes[i].us.MaximumLength = PH_DEVICE_PREFIX_LENGTH * sizeof(WCHAR);
+        PhDevicePrefixes[i].MaximumLength = PH_DEVICE_PREFIX_LENGTH * sizeof(WCHAR);
         PhDevicePrefixes[i].Buffer = (PWSTR)buffer;
         buffer += PH_DEVICE_PREFIX_LENGTH * sizeof(WCHAR);
     }
@@ -5270,7 +5285,7 @@ VOID PhUpdateDosDevicePrefixes(
 
             if (!NT_SUCCESS(NtQuerySymbolicLinkObject(
                 linkHandle,
-                &PhDevicePrefixes[i].us,
+                &PhDevicePrefixes[i],
                 NULL
                 )))
             {
@@ -5317,19 +5332,19 @@ PPH_STRING PhResolveDevicePrefix(
     for (i = 0; i < 26; i++)
     {
         BOOLEAN isPrefix = FALSE;
-        ULONG prefixLength;
+        PH_STRINGREF prefix;
 
         PhAcquireQueuedLockShared(&PhDevicePrefixesLock);
 
-        prefixLength = PhDevicePrefixes[i].Length;
+        PhUnicodeStringToStringRef(&PhDevicePrefixes[i], &prefix);
 
-        if (prefixLength != 0)
+        if (prefix.Length != 0)
         {
-            if (PhStartsWithStringRef(&Name->sr, &PhDevicePrefixes[i], TRUE))
+            if (PhStartsWithStringRef(&Name->sr, &prefix, TRUE))
             {
                 // To ensure we match the longest prefix, make sure the next character is a backslash or
                 // the path is equal to the prefix.
-                if (Name->Length == prefixLength || Name->Buffer[prefixLength / sizeof(WCHAR)] == '\\')
+                if (Name->Length == prefix.Length || Name->Buffer[prefix.Length / sizeof(WCHAR)] == '\\')
                 {
                     isPrefix = TRUE;
                 }
@@ -5341,13 +5356,13 @@ PPH_STRING PhResolveDevicePrefix(
         if (isPrefix)
         {
             // <letter>:path
-            newName = PhCreateStringEx(NULL, 2 * sizeof(WCHAR) + Name->Length - prefixLength);
+            newName = PhCreateStringEx(NULL, 2 * sizeof(WCHAR) + Name->Length - prefix.Length);
             newName->Buffer[0] = (WCHAR)('A' + i);
             newName->Buffer[1] = ':';
             memcpy(
                 &newName->Buffer[2],
-                &Name->Buffer[prefixLength / sizeof(WCHAR)],
-                Name->Length - prefixLength
+                &Name->Buffer[prefix.Length / sizeof(WCHAR)],
+                Name->Length - prefix.Length
                 );
 
             break;
@@ -5363,7 +5378,7 @@ PPH_STRING PhResolveDevicePrefix(
         for (i = 0; i < PhDeviceMupPrefixesCount; i++)
         {
             BOOLEAN isPrefix = FALSE;
-            ULONG prefixLength;
+            SIZE_T prefixLength;
 
             prefixLength = PhDeviceMupPrefixes[i]->Length;
 
@@ -5972,14 +5987,14 @@ VOID PhpInitializePredefineKeys(
     VOID
     )
 {
-    static PH_STRINGREF currentUserPrefix = PH_STRINGREF_INIT(L"\\Registry\\User\\");
+    static UNICODE_STRING currentUserPrefix = RTL_CONSTANT_STRING(L"\\Registry\\User\\");
 
     NTSTATUS status;
     HANDLE tokenHandle;
     PTOKEN_USER tokenUser;
     UNICODE_STRING stringSid;
     WCHAR stringSidBuffer[MAX_UNICODE_STACK_BUFFER_LENGTH];
-    PPH_STRINGREF currentUserKeyName;
+    PUNICODE_STRING currentUserKeyName;
 
     // Get the string SID of the current user.
     if (NT_SUCCESS(status = NtOpenProcessToken(NtCurrentProcess(), TOKEN_QUERY, &tokenHandle)))
@@ -6033,13 +6048,17 @@ NTSTATUS PhpInitializeKeyObjectAttributes(
     )
 {
     NTSTATUS status;
+    UNICODE_STRING objectName;
     ULONG predefineIndex;
     HANDLE predefineHandle;
     OBJECT_ATTRIBUTES predefineObjectAttributes;
 
+    if (!PhStringRefToUnicodeString(ObjectName, &objectName))
+        return STATUS_NAME_TOO_LONG;
+
     InitializeObjectAttributes(
         ObjectAttributes,
-        &ObjectName->us,
+        &objectName,
         Attributes | OBJ_CASE_INSENSITIVE,
         RootDirectory,
         NULL
@@ -6070,7 +6089,7 @@ NTSTATUS PhpInitializeKeyObjectAttributes(
 
                 InitializeObjectAttributes(
                     &predefineObjectAttributes,
-                    &PhPredefineKeyNames[predefineIndex].us,
+                    &PhPredefineKeyNames[predefineIndex],
                     OBJ_CASE_INSENSITIVE,
                     NULL,
                     NULL

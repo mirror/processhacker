@@ -1150,7 +1150,7 @@ FORCEINLINE VOID RtlInitString(
     )
 {
     if (SourceString)
-        DestinationString->MaximumLength = DestinationString->Length = (USHORT)strlen(SourceString);
+        DestinationString->MaximumLength = (DestinationString->Length = (USHORT)strlen(SourceString)) + 1;
     else
         DestinationString->MaximumLength = DestinationString->Length = 0;
 
@@ -1173,7 +1173,7 @@ FORCEINLINE VOID RtlInitAnsiString(
     )
 {
     if (SourceString)
-        DestinationString->MaximumLength = DestinationString->Length = (USHORT)strlen(SourceString);
+        DestinationString->MaximumLength = (DestinationString->Length = (USHORT)strlen(SourceString)) + 1;
     else
         DestinationString->MaximumLength = DestinationString->Length = 0;
 
@@ -1283,9 +1283,8 @@ FORCEINLINE VOID RtlInitUnicodeString(
     __in_opt PWSTR SourceString
     )
 {
-    // MaximumLength should really be Length + sizeof(WCHAR), but it doesn't matter too much.
     if (SourceString)
-        DestinationString->MaximumLength = DestinationString->Length = (USHORT)(wcslen(SourceString) * sizeof(WCHAR));
+        DestinationString->MaximumLength = (DestinationString->Length = (USHORT)(wcslen(SourceString) * sizeof(WCHAR))) + sizeof(WCHAR);
     else
         DestinationString->MaximumLength = DestinationString->Length = 0;
 
@@ -2535,9 +2534,9 @@ NTAPI
 RtlSetEnvironmentVar(
     __in_opt PWSTR *Environment,
     __in_ecount(NameLength) PWSTR Name,
-    __in ULONG NameLength,
+    __in SIZE_T NameLength,
     __in_ecount(ValueLength) PWSTR Value,
-    __in ULONG ValueLength
+    __in SIZE_T ValueLength
     );
 #endif
 
@@ -2558,10 +2557,10 @@ NTAPI
 RtlQueryEnvironmentVariable(
     __in_opt PVOID Environment,
     __in_ecount(NameLength) PWSTR Name,
-    __in ULONG NameLength,
+    __in SIZE_T NameLength,
     __out_ecount(ValueLength) PWSTR Value,
-    __in ULONG ValueLength,
-    __out PULONG ReturnLength
+    __in SIZE_T ValueLength,
+    __out PSIZE_T ReturnLength
     );
 #endif
 
@@ -2582,10 +2581,10 @@ NTAPI
 RtlExpandEnvironmentStrings(
     __in_opt PVOID Environment,
     __in_ecount(SrcLength) PWSTR Src,
-    __in ULONG SrcLength,
+    __in SIZE_T SrcLength,
     __out_ecount(DstLength) PWSTR Dst,
-    __in ULONG DstLength,
-    __out_opt PULONG ReturnLength
+    __in SIZE_T DstLength,
+    __out_opt PSIZE_T ReturnLength
     );
 #endif
 
