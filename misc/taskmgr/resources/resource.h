@@ -7,6 +7,7 @@
 #define IDS_APP_TITLE                   103
 #define IDD_APPLICATION_PAGE            106
 #define IDC_TASKMGR                     109
+#define IDS_STRING110                   110
 #define IDR_TASKMANAGER                 130
 #define IDD_PROCESS_PAGE                133
 #define IDD_PERFORMANCE_PAGE            134

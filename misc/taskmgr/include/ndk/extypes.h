@@ -1090,13 +1090,13 @@ typedef struct _SYSTEM_VDM_INSTEMUL_INFO
 // Class 21
 typedef struct _SYSTEM_FILECACHE_INFORMATION
 {
-    ULONG CurrentSize;
-    ULONG PeakSize;
+    SIZE_T CurrentSize;
+    SIZE_T PeakSize;
     ULONG PageFaultCount;
-    ULONG MinimumWorkingSet;
-    ULONG MaximumWorkingSet;
-    ULONG CurrentSizeIncludingTransitionInPages;
-    ULONG PeakSizeIncludingTransitionInPages;
+    SIZE_T MinimumWorkingSet;
+    SIZE_T MaximumWorkingSet;
+    SIZE_T CurrentSizeIncludingTransitionInPages;
+    SIZE_T PeakSizeIncludingTransitionInPages;
     ULONG TransitionRePurposeCount;
     ULONG Flags;
 } SYSTEM_FILECACHE_INFORMATION, *PSYSTEM_FILECACHE_INFORMATION;

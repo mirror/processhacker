@@ -1231,6 +1231,7 @@ BEGIN
     IDS_IDLE_PROCESS        "System Idle Process"
     IDS_APP_TITLE           "Task Manager"
     IDC_TASKMGR             "Task Manager"
+    IDS_STRING110           "PID"
 END
 
 STRINGTABLE

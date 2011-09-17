@@ -96,20 +96,23 @@ INT_PTR CALLBACK ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
             );
 
         /* Initialize the application page's controls */
+        LoadString(hInst, IDS_TAB_TASK, szTemp, NUMBER_OF_ITEMS_IN_ARRAY(szTemp));
         column.mask = LVCF_TEXT | LVCF_WIDTH;
-
-        LoadString(hInst, IDS_TAB_TASK, szTemp, 256);
         column.pszText = szTemp;
         column.cx = 250;
-       
         ListView_InsertColumn(hApplicationPageListCtrl, 0, &column);    /* Add the "Task" column */
-
-        column.mask = LVCF_TEXT|LVCF_WIDTH;
-        LoadString(hInst, IDS_TAB_STATUS, szTemp, 256);
+        
+        LoadString(hInst, IDS_TAB_STATUS, szTemp, NUMBER_OF_ITEMS_IN_ARRAY(szTemp));
+        column.mask = LVCF_TEXT | LVCF_WIDTH;
         column.pszText = szTemp;
-        column.cx = 95;
-
+        column.cx = 55;
         ListView_InsertColumn(hApplicationPageListCtrl, 1, &column);    /* Add the "Status" column */
+
+        LoadString(hInst, IDS_STRING110, szTemp, NUMBER_OF_ITEMS_IN_ARRAY(szTemp));
+        column.mask = LVCF_TEXT | LVCF_WIDTH;
+        column.pszText = szTemp;
+        column.cx = 40;
+        ListView_InsertColumn(hApplicationPageListCtrl, 2, &column);    /* Add the "Status" column */
 
         ListView_SetImageList(hApplicationPageListCtrl, ImageList_Create(16, 16, GetSystemColorDepth() | ILC_MASK, 0, 1), LVSIL_SMALL);
         //ListView_SetImageList(hApplicationPageListCtrl, ImageList_Create(32, 32, GetSystemColorDepth() | ILC_MASK, 0, 1), LVSIL_NORMAL);

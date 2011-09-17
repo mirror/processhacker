@@ -138,12 +138,9 @@ INT_PTR CALLBACK ProcessListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 
 WNDPROC OldProcessListWndProc;
 
-
-
-
-
-
-
+VOID TmInitializeCommonControls(
+    VOID
+    );
 
 // Sorting
 typedef enum _PH_SORT_ORDER

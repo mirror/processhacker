@@ -84,6 +84,10 @@ INT WINAPI WinMain(
     /* Initialize global variables */
     hInst = hInstance;
 
+	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+
+	TmInitializeCommonControls();
+
     /* Change our priority class to HIGH */
     hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
     SetPriorityClass(hProcess, HIGH_PRIORITY_CLASS);
@@ -390,6 +394,24 @@ INT_PTR CALLBACK TaskManagerWndProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 
     return 0;
 }
+
+VOID TmInitializeCommonControls(
+    VOID
+    )
+{
+    INITCOMMONCONTROLSEX icex;
+
+    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+    icex.dwICC =
+        ICC_LINK_CLASS |
+        ICC_LISTVIEW_CLASSES |
+        ICC_PROGRESS_CLASS |
+        ICC_TAB_CLASSES
+        ;
+
+    InitCommonControlsEx(&icex);
+}
+
 
 void FillSolidRect(HDC hDC, LPCRECT lpRect, COLORREF clr)
 {
