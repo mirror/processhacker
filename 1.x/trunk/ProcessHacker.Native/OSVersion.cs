@@ -60,6 +60,11 @@ namespace ProcessHacker.Native
         Seven = 61,
 
         /// <summary>
+        /// Windows 8.
+        /// </summary>
+        Eight = 62,
+
+        /// <summary>
         /// An unknown version of Windows.
         /// </summary>
         Unknown = int.MinValue
@@ -102,7 +107,9 @@ namespace ProcessHacker.Native
             else if (version.Major == 6 && version.Minor == 0)
                 _windowsVersion = WindowsVersion.Vista;
             else if (version.Major == 6 && version.Minor == 1)
-                _windowsVersion = WindowsVersion.Seven;
+                _windowsVersion = WindowsVersion.Seven;  
+            else if (version.Major == 6 && version.Minor == 2)
+                _windowsVersion = WindowsVersion.Eight;
             else
                 _windowsVersion = WindowsVersion.Unknown;
 

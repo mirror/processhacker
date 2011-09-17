@@ -126,7 +126,7 @@ namespace ProcessHacker
             }
 
             // Check OS support.
-            if (OSVersion.IsBelow(WindowsVersion.TwoThousand) || OSVersion.IsAbove(WindowsVersion.Seven))
+            if (OSVersion.IsBelow(WindowsVersion.TwoThousand) || OSVersion.IsAbove(WindowsVersion.Eight))
             {
                 PhUtils.ShowWarning("Your operating system is not supported by Process Hacker.");
             }
