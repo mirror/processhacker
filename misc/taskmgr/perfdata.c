@@ -44,7 +44,7 @@ typedef struct _SIDTOUSERNAME
 {
     LIST_ENTRY List;
     LPWSTR pszName;
-    BYTE Data[0];
+    BYTE Data[1];
 } SIDTOUSERNAME, *PSIDTOUSERNAME;
 
 static LIST_ENTRY SidToUserNameHead = {&SidToUserNameHead, &SidToUserNameHead};
@@ -101,7 +101,7 @@ void PerfDataUninitialize(void)
 static void SidToUserName(PSID Sid, LPWSTR szBuffer, DWORD BufferSize)
 {
     static WCHAR szDomainNameUnused[255];
-    DWORD DomainNameLen = NUMBER_OF_ITEMS_IN_ARRAY(szDomainNameUnused);
+    DWORD DomainNameLen = _countof(szDomainNameUnused);
     SID_NAME_USE Use;
 
     if (Sid != NULL)
@@ -133,7 +133,7 @@ VOID WINAPI CachedGetUserFromSid(PSID pSid, LPWSTR pUserName, PULONG pcwcUserNam
     SidToUserName(pSid, pUserName, cwcUserName);
 
     /* Allocate a new entry */
-    *pcwcUserName = wcslen(pUserName);
+    *pcwcUserName = (ULONG)wcslen(pUserName);
     cwcUserName = *pcwcUserName + 1;
     cbSid = GetLengthSid(pSid);
     pEntry = HeapAlloc(GetProcessHeap(), 0, sizeof(SIDTOUSERNAME) + cbSid + cwcUserName * sizeof(WCHAR));
@@ -141,7 +141,7 @@ VOID WINAPI CachedGetUserFromSid(PSID pSid, LPWSTR pUserName, PULONG pcwcUserNam
     /* Copy the Sid and name to our entry */
     CopySid(cbSid, (PSID)&pEntry->Data, pSid);
     pEntry->pszName = (LPWSTR)(pEntry->Data + cbSid);
-    wcsncpy(pEntry->pszName, pUserName, cwcUserName);
+    wcsncpy_s(pEntry->pszName, cwcUserName, pUserName, cwcUserName);
 
     /* Insert the new entry */
     pEntry->List.Flink = &SidToUserNameHead;
@@ -338,11 +338,11 @@ void PerfDataRefresh(void)
             if(len >= MAX_PATH)
                 len=MAX_PATH - 1;
             
-            wcsncpy(pPerfData[Idx].ImageName, pSPI->ImageName.Buffer, len);
+            wcsncpy_s(pPerfData[Idx].ImageName, _countof(pPerfData[Idx].ImageName), pSPI->ImageName.Buffer, len);
         } 
         else 
         {
-            LoadString(hInst, IDS_IDLE_PROCESS, pPerfData[Idx].ImageName, NUMBER_OF_ITEMS_IN_ARRAY(pPerfData[Idx].ImageName));
+            LoadString(hInst, IDS_IDLE_PROCESS, pPerfData[Idx].ImageName, _countof(pPerfData[Idx].ImageName));
         }
 
         pPerfData[Idx].ProcessId = pSPI->UniqueProcessId;
@@ -437,7 +437,7 @@ ClearInfo:
             ZeroMemory(&pPerfData[Idx].IOCounters, sizeof(IO_COUNTERS));
         }
 
-        cwcUserName = NUMBER_OF_ITEMS_IN_ARRAY(pPerfData[0].UserName);
+        cwcUserName = _countof(pPerfData[0].UserName);
         CachedGetUserFromSid(ProcessUser, pPerfData[Idx].UserName, &cwcUserName);
 
         if (ProcessSD != NULL)
@@ -473,7 +473,7 @@ ULONG PerfDataGetProcessIndex(ULONG pid)
 
     if (idx == ProcessCount)
     {
-        return -1;
+        return 0; //TODO -1
     }
 
     return idx;
@@ -502,7 +502,7 @@ BOOL PerfDataGetImageName(ULONG Index, LPWSTR lpImageName, int nMaxCount)
 
     if (Index < ProcessCount) 
     {
-        wcsncpy(lpImageName, pPerfData[Index].ImageName, nMaxCount);
+		wcsncpy_s(lpImageName, _countof(pPerfData[Index].ImageName), pPerfData[Index].ImageName, nMaxCount);
         bSuccessful = TRUE;
     }
     else 
@@ -539,7 +539,8 @@ BOOL PerfDataGetUserName(ULONG Index, LPWSTR lpUserName, int nMaxCount)
 
     if (Index < ProcessCount)
     {
-        wcsncpy(lpUserName, pPerfData[Index].UserName, nMaxCount);
+		wcsncpy_s(lpUserName, _countof(pPerfData[Index].UserName), pPerfData[Index].UserName, nMaxCount);
+
         bSuccessful = TRUE;
     } 
     else 
@@ -949,9 +950,9 @@ ULONG PerfDataGetPhysicalMemoryAvailableK(void)
     return Available;
 }
 
-ULONG PerfDataGetPhysicalMemorySystemCacheK(void)
+SIZE_T PerfDataGetPhysicalMemorySystemCacheK(void)
 {
-    ULONG SystemCache = 0;
+    SIZE_T SystemCache = 0;
 
     EnterCriticalSection(&PerfDataCriticalSection);
 

@@ -31,14 +31,16 @@ VOID TaskManager_OnFileNew()
     WCHAR szText[256];
 
     /* Load language strings from resource file */
-    LoadString(hInst, IDS_CREATENEWTASK, szTitle, NUMBER_OF_ITEMS_IN_ARRAY(szTitle));
-    LoadString(hInst, IDS_CREATENEWTASK_DESC, szText, NUMBER_OF_ITEMS_IN_ARRAY(szText));
+    LoadString(hInst, IDS_CREATENEWTASK, szTitle, _countof(szTitle));
+    LoadString(hInst, IDS_CREATENEWTASK_DESC, szText, _countof(szText));
 
     // Load application icon.
     hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_TASKMANAGER));
 
+#pragma warning(disable:4306)
     // Load RunFileDlg export using it's ordinal.
     RunFileDlg = (RUNFILEDLG)(FARPROC)GetProcAddress(GetModuleHandle(TEXT("SHELL32.dll")), (LPCSTR)0x3D);
+#pragma warning(default:4306)
 
     /* Show "Run..." dialog */
     if (RunFileDlg)
@@ -50,3 +52,5 @@ VOID TaskManager_OnFileNew()
 
     DestroyIcon(hIcon);
 }
+
+

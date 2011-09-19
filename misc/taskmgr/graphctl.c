@@ -91,8 +91,8 @@ static void GraphCtrl_Init(TGraphCtrl* tGraph)
     tGraph->m_brushBack = CreateSolidBrush(tGraph->m_crBackColor);
 
     /*  public member variables, can be set directly  */
-    strcpy(tGraph->m_strXUnitsString, "Samples");  /*  can also be set with SetXUnits */
-    strcpy(tGraph->m_strYUnitsString, "Y units");  /*  can also be set with SetYUnits */
+    strcpy_s(tGraph->m_strXUnitsString, _countof("Samples"), "Samples");  /*  can also be set with SetXUnits */
+    strcpy_s(tGraph->m_strYUnitsString, _countof("Samples"), "Samples");  /*  can also be set with SetYUnits */
 
     /*  protected bitmaps to restore the memory DC's */
     tGraph->m_bitmapOldGrid = NULL;
@@ -134,6 +134,8 @@ void GraphCtrl_Dispose(TGraphCtrl* tGraph)
 BOOL GraphCtrl_Create(TGraphCtrl* tGraph, HWND hWnd, HWND hParentWnd, UINT nID)
 {
     BOOL result = 0;
+
+	UNREFERENCED_PARAMETER(nID);
 
     GraphCtrl_Init(tGraph);
 
@@ -393,6 +395,8 @@ void GraphCtrl_Paint(TGraphCtrl* tGraph, HWND hWnd, HDC dc)
     HBITMAP memBitmap;
     HBITMAP oldBitmap; /*  bitmap originally found in CMemDC */
 
+	UNREFERENCED_PARAMETER(hWnd);
+
 /*   RECT rcClient; */
 /*   GetClientRect(hWnd, &rcClient); */
 /*   FillSolidRect(dc, &rcClient, RGB(255, 0, 255)); */
@@ -417,11 +421,12 @@ void GraphCtrl_Paint(TGraphCtrl* tGraph, HWND hWnd, HDC dc)
         BitBlt(memDC, 0, 0, tGraph->m_nClientWidth, tGraph->m_nClientHeight, tGraph->m_dcPlot, 0, 0, SRCPAINT);  /* SRCPAINT */
         /*  finally send the result to the display */
         BitBlt(dc, 0, 0, tGraph->m_nClientWidth, tGraph->m_nClientHeight, memDC, 0, 0, SRCCOPY);
+
+        SelectObject(memDC, oldBitmap);
+        DeleteDC(memDC);
     }
 
-    SelectObject(memDC, oldBitmap);
     DeleteObject(memBitmap);
-    DeleteDC(memDC);
 }
 
 void GraphCtrl_DrawPoint(TGraphCtrl* tGraph)

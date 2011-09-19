@@ -301,16 +301,18 @@ UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
           KernelMemoryNonPaged = 0,  
           PhysicalMemoryTotal = 0, 
           PhysicalMemoryAvailable = 0, 
-          PhysicalMemorySystemCache = 0, 
           TotalHandles = 0, 
           TotalThreads = 0, 
           TotalProcesses = 0;
-
+	SIZE_T PhysicalMemorySystemCache = 0;
     WCHAR Text[MAX_PATH], szMemUsage[256];
+    BOOL refresh = TRUE;
+
+	UNREFERENCED_PARAMETER(lpParameter);
 
     LoadString(hInst, IDS_STATUS_MEMUSAGE, szMemUsage, 256);
 
-    while (TRUE)
+    while (refresh)
     {
         int nBarsUsed1;
         int nBarsUsed2;
@@ -321,11 +323,11 @@ UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
         CommitChargeTotal = PerfDataGetCommitChargeTotalK();
         CommitChargeLimit = PerfDataGetCommitChargeLimitK();
         CommitChargePeak = PerfDataGetCommitChargePeakK();
-        _ultow(CommitChargeTotal, Text, 10);
+        _ultow_s(CommitChargeTotal, Text, _countof(Text), 10);
         SetWindowText(hPerformancePageCommitChargeTotalEdit, Text);
-        _ultow(CommitChargeLimit, Text, 10);
+        _ultow_s(CommitChargeLimit, Text, _countof(Text), 10);
         SetWindowText(hPerformancePageCommitChargeLimitEdit, Text);
-        _ultow(CommitChargePeak, Text, 10);
+        _ultow_s(CommitChargePeak, Text, _countof(Text), 10);
         SetWindowText(hPerformancePageCommitChargePeakEdit, Text);
         wsprintf(Text, szMemUsage, CommitChargeTotal, CommitChargeLimit);
         SendMessage(hStatusWnd, SB_SETTEXT, 2, (LPARAM)Text);
@@ -336,11 +338,11 @@ UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
         KernelMemoryTotal = PerfDataGetKernelMemoryTotalK();
         KernelMemoryPaged = PerfDataGetKernelMemoryPagedK();
         KernelMemoryNonPaged = PerfDataGetKernelMemoryNonPagedK();
-        _ultow(KernelMemoryTotal, Text, 10);
+        _ultow_s(KernelMemoryTotal, Text, _countof(Text), 10);
         SetWindowText(hPerformancePageKernelMemoryTotalEdit, Text);
-        _ultow(KernelMemoryPaged, Text, 10);
+        _ultow_s(KernelMemoryPaged, Text, _countof(Text), 10);
         SetWindowText(hPerformancePageKernelMemoryPagedEdit, Text);
-        _ultow(KernelMemoryNonPaged, Text, 10);
+        _ultow_s(KernelMemoryNonPaged, Text, _countof(Text), 10);
         SetWindowText(hPerformancePageKernelMemoryNonPagedEdit, Text);
 
         /*
@@ -349,11 +351,11 @@ UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
         PhysicalMemoryTotal = PerfDataGetPhysicalMemoryTotalK();
         PhysicalMemoryAvailable = PerfDataGetPhysicalMemoryAvailableK();
         PhysicalMemorySystemCache = PerfDataGetPhysicalMemorySystemCacheK();
-        _ultow(PhysicalMemoryTotal, Text, 10);
+        _ultow_s(PhysicalMemoryTotal, Text, _countof(Text), 10);
         SetWindowText(hPerformancePagePhysicalMemoryTotalEdit, Text);
-        _ultow(PhysicalMemoryAvailable, Text, 10);
+        _ultow_s(PhysicalMemoryAvailable, Text, _countof(Text), 10);
         SetWindowText(hPerformancePagePhysicalMemoryAvailableEdit, Text);
-        _ultow(PhysicalMemorySystemCache, Text, 10);
+        _ultow_s(PhysicalMemorySystemCache, Text, _countof(Text), 10);
         SetWindowText(hPerformancePagePhysicalMemorySystemCacheEdit, Text);
 
         /*
@@ -362,11 +364,11 @@ UINT WINAPI PerformancePageRefreshThread(void *lpParameter)
         TotalHandles = PerfDataGetSystemHandleCount();
         TotalThreads = PerfDataGetTotalThreadCount();
         TotalProcesses = PerfDataGetProcessCount();
-        _ultow(TotalHandles, Text, 10);
+        _ultow_s(TotalHandles, Text, _countof(Text), 10);
         SetWindowText(hPerformancePageTotalsHandleCountEdit, Text);
-        _ultow(TotalThreads, Text, 10);
+        _ultow_s(TotalThreads, Text, _countof(Text), 10);
         SetWindowText(hPerformancePageTotalsThreadCountEdit, Text);
-        _ultow(TotalProcesses, Text, 10);
+        _ultow_s(TotalProcesses, Text, _countof(Text), 10);
         SetWindowText(hPerformancePageTotalsProcessCountEdit, Text);
 
         /*

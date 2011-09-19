@@ -53,8 +53,8 @@ void ProcessPage_OnSetAffinity(void)
    
     if (!hProcessAffinityHandle) 
     {
-        GetLastErrorText(strErrorText,  NUMBER_OF_ITEMS_IN_ARRAY(strErrorText));
-        LoadString(hInst, IDS_MSG_ACCESSPROCESSAFF, szTitle, NUMBER_OF_ITEMS_IN_ARRAY(szTitle));
+        GetLastErrorText(strErrorText, _countof(strErrorText));
+        LoadString(hInst, IDS_MSG_ACCESSPROCESSAFF, szTitle, _countof(szTitle));
         MessageBox(hMainWnd, strErrorText, szTitle, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -74,6 +74,8 @@ INT_PTR CALLBACK AffinityDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, L
     WCHAR strErrorText[MAX_PATH], szTitle[256];
     BYTE nCpu;
 
+	UNREFERENCED_PARAMETER(lParam);
+
     switch (message) 
     {
     case WM_INITDIALOG:
@@ -84,14 +86,14 @@ INT_PTR CALLBACK AffinityDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, L
          */
         if (!GetProcessAffinityMask(hProcessAffinityHandle, &dwProcessAffinityMask, &dwSystemAffinityMask))   
         {
-            GetLastErrorText(strErrorText, NUMBER_OF_ITEMS_IN_ARRAY(strErrorText));
+            GetLastErrorText(strErrorText, _countof(strErrorText));
             EndDialog(hDlg, 0);
 
-            LoadString(hInst, IDS_MSG_ACCESSPROCESSAFF, szTitle, NUMBER_OF_ITEMS_IN_ARRAY(szTitle));
+            LoadString(hInst, IDS_MSG_ACCESSPROCESSAFF, szTitle, _countof(szTitle));
             MessageBox(hMainWnd, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
         }
 
-        for (nCpu = 0; nCpu < NUMBER_OF_ITEMS_IN_ARRAY(dwCpuTable); nCpu++)
+        for (nCpu = 0; nCpu < _countof(dwCpuTable); nCpu++)
         {
             // Enable a checkbox for each processor present in the system
             if (dwSystemAffinityMask & (1i64 << nCpu))
@@ -125,7 +127,7 @@ INT_PTR CALLBACK AffinityDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, L
          */
         if (LOWORD(wParam) == IDOK) 
         {
-            for (nCpu = 0; nCpu < NUMBER_OF_ITEMS_IN_ARRAY(dwCpuTable); nCpu++) 
+            for (nCpu = 0; nCpu < _countof(dwCpuTable); nCpu++) 
             {
                 // First we have to create a mask out of each checkbox that the user checked.
                 if (SendMessage(GetDlgItem(hDlg, dwCpuTable[nCpu]), BM_GETCHECK, 0, 0))
@@ -140,8 +142,8 @@ INT_PTR CALLBACK AffinityDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, L
              */
             if (!dwProcessAffinityMask) 
             {
-                LoadString(hInst, IDS_MSG_PROCESSONEPRO, strErrorText, NUMBER_OF_ITEMS_IN_ARRAY(strErrorText));
-                LoadString(hInst, IDS_MSG_INVALIDOPTION, szTitle, NUMBER_OF_ITEMS_IN_ARRAY(szTitle));
+                LoadString(hInst, IDS_MSG_PROCESSONEPRO, strErrorText, _countof(strErrorText));
+                LoadString(hInst, IDS_MSG_INVALIDOPTION, szTitle, _countof(szTitle));
                 MessageBox(hDlg, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
                 return TRUE;
             }
@@ -151,9 +153,9 @@ INT_PTR CALLBACK AffinityDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, L
              */
             if (!SetProcessAffinityMask(hProcessAffinityHandle, dwProcessAffinityMask)) 
             {
-                GetLastErrorText(strErrorText, NUMBER_OF_ITEMS_IN_ARRAY(strErrorText));
+                GetLastErrorText(strErrorText, _countof(strErrorText));
                 EndDialog(hDlg, LOWORD(wParam));
-                LoadString(hInst, IDS_MSG_ACCESSPROCESSAFF, szTitle, NUMBER_OF_ITEMS_IN_ARRAY(szTitle));
+                LoadString(hInst, IDS_MSG_ACCESSPROCESSAFF, szTitle, _countof(szTitle));
                 MessageBox(hMainWnd, strErrorText, szTitle, MB_OK|MB_ICONSTOP);
             }
 

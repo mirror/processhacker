@@ -382,11 +382,14 @@ UINT WINAPI ProcessPageRefreshThread(void *lpParameter)
 {
     ULONG OldProcessorUsage = 0, OldProcessCount = 0;
     WCHAR szCpuUsage[256], szProcesses[256], text[MAX_PATH];
+    BOOL refresh = TRUE;
+
+    UNREFERENCED_PARAMETER(lpParameter);
 
     LoadString(hInst, IDS_STATUS_CPUUSAGE, szCpuUsage, 256);
     LoadString(hInst, IDS_STATUS_PROCESSES, szProcesses, 256);
 
-    while (TRUE) 
+    while (refresh) 
     {
         UpdateProcesses();
 
@@ -444,7 +447,7 @@ void UpdateProcesses()
     }
 
     /* Check for difference in listview process and performance process counts */
-    if (ListView_GetItemCount(hProcessPageListCtrl) != PerfDataGetProcessCount())
+    if (ListView_GetItemCount(hProcessPageListCtrl) != (INT)PerfDataGetProcessCount())
     {
         /* Add new processes by checking against the current items */
         for (l = 0; l < PerfDataGetProcessCount(); l++)
@@ -517,8 +520,11 @@ void AddProcess(ULONG Index)
         /* Add the item to the list */
         memset(&item, 0, sizeof(LV_ITEM));
 
-        item.mask = LVIF_TEXT|LVIF_PARAM;
+#pragma warning(disable:4306)
         item.pszText = LPSTR_TEXTCALLBACK;
+#pragma warning(default:4306)
+
+        item.mask = LVIF_TEXT | LVIF_PARAM;
         item.iItem = itemCount;
         item.lParam = (LPARAM)pData;
 
@@ -573,21 +579,21 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
         {
             wsprintf(lpText, TEXT("%d"), PerfDataGetWorkingSetSizeBytes(Index) / 1024);
             CommaSeparateNumberString(lpText, nMaxCount);
-            wcscat(lpText, TEXT(" K"));
+			//wcscat_s(lpText, _countof(" K"), TEXT(" K"));
         }
         break;
     case COLUMN_PEAKMEMORYUSAGE:
         {
             wsprintf(lpText, TEXT("%d"), PerfDataGetPeakWorkingSetSizeBytes(Index) / 1024);
             CommaSeparateNumberString(lpText, nMaxCount);
-            wcscat(lpText, TEXT(" K"));
+			wcscat_s(lpText, _countof(" K"), TEXT(" K"));
         }
         break;
     case COLUMN_MEMORYUSAGEDELTA:
         {
             wsprintf(lpText, TEXT("%d"), PerfDataGetWorkingSetSizeDelta(Index) / 1024);
             CommaSeparateNumberString(lpText, nMaxCount);
-            wcscat(lpText, TEXT(" K"));
+			//wcscat_s(lpText, _countof(" K"), TEXT(" K"));
         }
         break;
     case COLUMN_PAGEFAULTS:
@@ -606,21 +612,21 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
         {
             wsprintf(lpText, TEXT("%d"), PerfDataGetVirtualMemorySizeBytes(Index) / 1024);
             CommaSeparateNumberString(lpText, nMaxCount);
-            wcscat(lpText, TEXT(" K"));
+			//wcscat_s(lpText, _countof(" K"), TEXT(" K"));
         }
         break;
     case COLUMN_PAGEDPOOL:
         {
             wsprintf(lpText, TEXT("%d"), PerfDataGetPagedPoolUsagePages(Index) / 1024);
             CommaSeparateNumberString(lpText, nMaxCount);
-            wcscat(lpText, TEXT(" K"));
+			wcscat_s(lpText, _countof(" K"), TEXT(" K"));
         }
         break;
     case COLUMN_NONPAGEDPOOL:
         {
             wsprintf(lpText, TEXT("%d"), (int)(PerfDataGetNonPagedPoolUsagePages(Index) / 1024));
             CommaSeparateNumberString(lpText, nMaxCount);
-            wcscat(lpText, TEXT(" K"));
+            wcscat_s(lpText, _countof(" K"), TEXT(" K"));
         }
         break;
     case COLUMN_BASEPRIORITY:
@@ -656,7 +662,7 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
         {
             PerfDataGetIOCounters(Index, &iocounters);
             /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.ReadOperationCount); */
-            _ui64tow(iocounters.ReadOperationCount, lpText, 10);
+            _ui64tow_s(iocounters.ReadOperationCount, lpText, NUMBER_OF_ITEMS_IN_ARRAY(lpText), 10);
             CommaSeparateNumberString(lpText, nMaxCount);
         }
         break;
@@ -664,7 +670,7 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
         {
             PerfDataGetIOCounters(Index, &iocounters);
             /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.WriteOperationCount); */
-            _ui64tow(iocounters.WriteOperationCount, lpText, 10);
+            _ui64tow_s(iocounters.WriteOperationCount, lpText, NUMBER_OF_ITEMS_IN_ARRAY(lpText), 10);
             CommaSeparateNumberString(lpText, nMaxCount);
         }
         break;
@@ -672,7 +678,7 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
         {
             PerfDataGetIOCounters(Index, &iocounters);
             /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.OtherOperationCount); */
-            _ui64tow(iocounters.OtherOperationCount, lpText, 10);
+            _ui64tow_s(iocounters.OtherOperationCount, lpText, NUMBER_OF_ITEMS_IN_ARRAY(lpText), 10);
             CommaSeparateNumberString(lpText, nMaxCount);
         }
         break;
@@ -680,7 +686,7 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
         {
             PerfDataGetIOCounters(Index, &iocounters);
             /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.ReadTransferCount); */
-            _ui64tow(iocounters.ReadTransferCount, lpText, 10);
+            _ui64tow_s(iocounters.ReadTransferCount, lpText, NUMBER_OF_ITEMS_IN_ARRAY(lpText),  10);
             CommaSeparateNumberString(lpText, nMaxCount);
         }
         break;
@@ -688,7 +694,7 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
         {
             PerfDataGetIOCounters(Index, &iocounters);
             /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.WriteTransferCount); */
-            _ui64tow(iocounters.WriteTransferCount, lpText, 10);
+            _ui64tow_s(iocounters.WriteTransferCount, lpText, NUMBER_OF_ITEMS_IN_ARRAY(lpText),  10);
             CommaSeparateNumberString(lpText, nMaxCount);
         }
         break;
@@ -696,7 +702,7 @@ BOOL PerfDataGetText(ULONG Index, ULONG ColumnIndex, LPTSTR lpText, int nMaxCoun
         {
             PerfDataGetIOCounters(Index, &iocounters);
             /* wsprintf(pnmdi->item.pszText, L"%d", iocounters.OtherTransferCount); */
-            _ui64tow(iocounters.OtherTransferCount, lpText, 10);
+            _ui64tow_s(iocounters.OtherTransferCount, lpText, NUMBER_OF_ITEMS_IN_ARRAY(lpText), 10);
             CommaSeparateNumberString(lpText, nMaxCount);
         }
         break;
@@ -746,6 +752,8 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
     IO_COUNTERS iocounters1, iocounters2;
     ULONGLONG ull1, ull2;
 
+	UNREFERENCED_PARAMETER(lParamSort);
+
     if (TaskManagerSettings.SortAscending) 
     {
         Param1 = (LPPROCESS_PAGE_LIST_ITEM)lParam1;
@@ -764,8 +772,8 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
     {
     case COLUMN_IMAGENAME:
         {
-            PerfDataGetImageName(IndexParam1, text1, NUMBER_OF_ITEMS_IN_ARRAY(text1));
-            PerfDataGetImageName(IndexParam2, text2, NUMBER_OF_ITEMS_IN_ARRAY(text2));
+            PerfDataGetImageName(IndexParam1, text1, _countof(text1));
+            PerfDataGetImageName(IndexParam2, text2, _countof(text2));
             ret = _wcsicmp(text1, text2);
         }
         break;
@@ -778,8 +786,8 @@ int CALLBACK ProcessPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lPara
         break;
     case COLUMN_USERNAME:
         {
-            PerfDataGetUserName(IndexParam1, text1, NUMBER_OF_ITEMS_IN_ARRAY(text1));
-            PerfDataGetUserName(IndexParam2, text2, NUMBER_OF_ITEMS_IN_ARRAY(text2));
+            PerfDataGetUserName(IndexParam1, text1, _countof(text1));
+            PerfDataGetUserName(IndexParam2, text2, _countof(text2));
             ret = _wcsicmp(text1, text2);
         }
         break;

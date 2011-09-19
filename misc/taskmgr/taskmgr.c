@@ -55,6 +55,10 @@ INT WINAPI WinMain(
     TOKEN_PRIVILEGES tkp;
     HANDLE hMutex;
 
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
+    UNREFERENCED_PARAMETER(nCmdShow);
+
     hMutex = CreateMutex(NULL, TRUE, TEXT("rosTaskmgr"));
 
     /* check wether we're already running or not */
@@ -606,13 +610,17 @@ BOOL OnCreate(HWND hWnd)
     /* Check or uncheck the always on top menu item */
     if (TaskManagerSettings.AlwaysOnTop) 
     {
-        CheckMenuItem(hEditMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND|MF_CHECKED);
-        SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
+        CheckMenuItem(hEditMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND | MF_CHECKED);
+#pragma warning(disable:4306)
+        SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+#pragma warning(default:4306)
     } 
     else 
     {
-        CheckMenuItem(hEditMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND|MF_UNCHECKED);
-        SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
+        CheckMenuItem(hEditMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND | MF_UNCHECKED);
+#pragma warning(disable:4306)
+        SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+#pragma warning(default:4306)
     }
 
     /* Check or uncheck the minimize on use menu item */
@@ -813,13 +821,16 @@ void TaskManager_OnRestoreMainWindow(void)
 
     OpenIcon(hMainWnd);
     SetForegroundWindow(hMainWnd);
-    SetWindowPos(hMainWnd, (OnTop ? HWND_TOPMOST : HWND_TOP), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW);
+    
+#pragma warning(disable:4306)
+    SetWindowPos(hMainWnd, OnTop ? HWND_TOPMOST : HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW);
+#pragma warning(default:4306)
 }
 
 void TaskManager_OnEnterMenuLoop(HWND hWnd)
 {
     int nParts;
-
+	UNREFERENCED_PARAMETER(hWnd);
     /* Update the status bar pane sizes */
     nParts = -1;
     SendMessage(hStatusWnd, SB_SETPARTS, 1, (LPARAM) (LPINT)&nParts);
@@ -858,7 +869,11 @@ void TaskManager_OnMenuSelect(HWND hWnd, UINT nItemID, UINT nFlags, HMENU hSysMe
 {
     WCHAR str[100];
 
-    wcscpy(str, TEXT(""));
+	UNREFERENCED_PARAMETER(hWnd);
+    UNREFERENCED_PARAMETER(nFlags);
+	UNREFERENCED_PARAMETER(hSysMenu);
+
+    wcscpy_s(str, _countof(TEXT("")), TEXT(""));
 
     if (LoadString(hInst, nItemID, str, 100)) 
     {

@@ -96,19 +96,19 @@ INT_PTR CALLBACK ApplicationPageWndProc(HWND hDlg, UINT message, WPARAM wParam, 
             );
 
         /* Initialize the application page's controls */
-        LoadString(hInst, IDS_TAB_TASK, szTemp, NUMBER_OF_ITEMS_IN_ARRAY(szTemp));
+        LoadString(hInst, IDS_TAB_TASK, szTemp, _countof(szTemp));
         column.mask = LVCF_TEXT | LVCF_WIDTH;
         column.pszText = szTemp;
         column.cx = 250;
         ListView_InsertColumn(hApplicationPageListCtrl, 0, &column);    /* Add the "Task" column */
         
-        LoadString(hInst, IDS_TAB_STATUS, szTemp, NUMBER_OF_ITEMS_IN_ARRAY(szTemp));
+        LoadString(hInst, IDS_TAB_STATUS, szTemp, _countof(szTemp));
         column.mask = LVCF_TEXT | LVCF_WIDTH;
         column.pszText = szTemp;
         column.cx = 55;
         ListView_InsertColumn(hApplicationPageListCtrl, 1, &column);    /* Add the "Status" column */
 
-        LoadString(hInst, IDS_STRING110, szTemp, NUMBER_OF_ITEMS_IN_ARRAY(szTemp));
+        LoadString(hInst, IDS_STRING110, szTemp, _countof(szTemp));
         column.mask = LVCF_TEXT | LVCF_WIDTH;
         column.pszText = szTemp;
         column.cx = 40;
@@ -206,15 +206,16 @@ void UpdateApplicationListControlViewSetting(void)
 
 UINT WINAPI ApplicationPageRefreshThread(void *lpParameter)
 {
-    INT i;
-    BOOL                            bItemRemoved = FALSE;
-    LV_ITEM                         item;
-    LPAPPLICATION_PAGE_LIST_ITEM    pAPLI = NULL;
-    HIMAGELIST                      hImageListLarge;
-    HIMAGELIST                      hImageListSmall;
+    INT i = 0;
+    LV_ITEM item;
+    BOOL bItemRemoved = FALSE, refresh = TRUE;
+    LPAPPLICATION_PAGE_LIST_ITEM pAPLI = NULL;
+    HIMAGELIST hImageListLarge, hImageListSmall;
+
+    UNREFERENCED_PARAMETER(lpParameter);
 
     /* If we couldn't create the event then exit the thread */
-    while (TRUE)
+    while (refresh)
     {
         noApps = TRUE;
 
@@ -277,6 +278,8 @@ UINT WINAPI ApplicationPageRefreshThread(void *lpParameter)
 
         Sleep(1000);
     }
+
+    return FALSE;
 }
 
 BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
@@ -286,6 +289,8 @@ BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
     BOOL    bLargeIcon;
     BOOL    bHung = FALSE;
     HICON*  xhIcon = (HICON*)&hIcon;
+
+	UNREFERENCED_PARAMETER(lParam);
 
     /* Skip our window */
     if (hWnd == hMainWnd)
@@ -404,7 +409,11 @@ void AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung)
         item.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
         item.iImage = ImageList_AddIcon(hImageListSmall, hIcon);
         item.iItem = ListView_GetItemCount(hApplicationPageListCtrl);
+        
+#pragma warning(disable:4306)
         item.pszText = LPSTR_TEXTCALLBACK;
+#pragma warning(default:4306)
+
         item.lParam = (LPARAM)pAPLI;
         
         ListView_InsertItem(hApplicationPageListCtrl, &item);
@@ -513,11 +522,11 @@ void ApplicationPageOnNotify(WPARAM wParam, LPARAM lParam)
                 {
                     if (pAPLI->bHung)
                     {
-                        LoadString(NULL, IDS_Not_Responding , szMsg, NUMBER_OF_ITEMS_IN_ARRAY(szMsg));
+                        LoadString(NULL, IDS_Not_Responding , szMsg, _countof(szMsg));
                     }
                     else
                     {
-                        LoadString(NULL, IDS_Running, (LPWSTR)szMsg, NUMBER_OF_ITEMS_IN_ARRAY(szMsg));
+                        LoadString(NULL, IDS_Running, (LPWSTR)szMsg, _countof(szMsg));
                     }
 
                     wcsncpy_s(pnmdi->item.pszText, _countof(szMsg), szMsg, pnmdi->item.cchTextMax);
@@ -620,8 +629,8 @@ VOID PhSetHeaderSortIcon(
     __in PH_SORT_ORDER Order
     )
 {
-    ULONG count;
-    ULONG i;
+    INT count;
+    INT i;
 
     count = Header_GetItemCount(hwnd);
 
@@ -990,6 +999,8 @@ int CALLBACK ApplicationPageCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM l
 {
     LPAPPLICATION_PAGE_LIST_ITEM Param1;
     LPAPPLICATION_PAGE_LIST_ITEM Param2;
+
+	UNREFERENCED_PARAMETER(lParamSort);
 
     if (bSortAscending == AscendingSortOrder) 
     {

@@ -134,7 +134,7 @@ BOOL TrayIcon_ShellAddTrayIcon(void)
 	nid.hWnd = hMainWnd;
     nid.hIcon = hIcon;
 
-    LoadString(NULL, IDS_MSG_TRAYICONCPUUSAGE, szMsg, NUMBER_OF_ITEMS_IN_ARRAY(szMsg));
+    LoadString(NULL, IDS_MSG_TRAYICONCPUUSAGE, szMsg, _countof(szMsg));
     
 	wsprintf(nid.szTip, szMsg, PerfDataGetProcessorUsage());
 
@@ -179,7 +179,7 @@ BOOL TrayIcon_ShellUpdateTrayIcon(void)
 	nid.hWnd = hMainWnd; 
     nid.hIcon = hIcon;
 
-    LoadString(hInst, IDS_MSG_TRAYICONCPUUSAGE, szTemp, NUMBER_OF_ITEMS_IN_ARRAY(szTemp));
+    LoadString(hInst, IDS_MSG_TRAYICONCPUUSAGE, szTemp, _countof(szTemp));
    
 	wsprintf(nid.szTip, szTemp, PerfDataGetProcessorUsage());
 

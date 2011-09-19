@@ -94,6 +94,7 @@ void ProcessPage_OnDebug(void)
         LoadString(hInst, IDS_MSG_UNABLEDEBUGPROCESS, szTemp, 256);
         MessageBox(hMainWnd, strErrorText, szTemp, MB_OK | MB_ICONSTOP);
     }
-
+	
+	NtClose(pi.hThread);
     NtClose(hDebugEvent);
 }

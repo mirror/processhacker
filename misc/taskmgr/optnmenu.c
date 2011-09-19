@@ -42,15 +42,19 @@ void TaskManager_OnOptionsAlwaysOnTop(void)
      */
     if ((GetWindowLongPtr(hMainWnd, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0)
     {
-        CheckMenuItem(hOptionsMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND|MF_UNCHECKED);
+        CheckMenuItem(hOptionsMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND | MF_UNCHECKED);
         TaskManagerSettings.AlwaysOnTop = FALSE;
-        SetWindowPos(hMainWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
+#pragma warning(disable:4306)
+        SetWindowPos(hMainWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+#pragma warning(default:4306)
     }
     else
     {
-        CheckMenuItem(hOptionsMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND|MF_CHECKED);
+        CheckMenuItem(hOptionsMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND | MF_CHECKED);
         TaskManagerSettings.AlwaysOnTop = TRUE;
-        SetWindowPos(hMainWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
+#pragma warning(disable:4306)
+        SetWindowPos(hMainWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+#pragma warning(default:4306)
     }
 }
 

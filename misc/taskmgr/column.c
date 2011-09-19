@@ -70,7 +70,7 @@ void AddColumns(void)
     {
         if (TaskManagerSettings.Columns[n]) 
         {
-            LoadString(hInst, ColumnPresets[n].dwIdsName, szTemp, NUMBER_OF_ITEMS_IN_ARRAY(szTemp));
+            LoadString(hInst, ColumnPresets[n].dwIdsName, szTemp, _countof(szTemp));
             InsertColumn(n, szTemp, LVCFMT_LEFT, TaskManagerSettings.ColumnSizeArray[n], -1);
         }
     }
@@ -171,7 +171,9 @@ void ProcessPage_OnViewSelectColumns(void)
 
 INT_PTR CALLBACK ColumnsDialogWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    unsigned int i;
+    UINT i = 0;
+
+	UNREFERENCED_PARAMETER(lParam);
 
     switch (message)
     {
@@ -227,7 +229,7 @@ void UpdateColumnDataHints(void)
 
         for (i = 0; i < COLUMN_NMAX; i++) 
         {
-            LoadString(hInst, ColumnPresets[i].dwIdsName, szTemp, NUMBER_OF_ITEMS_IN_ARRAY(szTemp));
+            LoadString(hInst, ColumnPresets[i].dwIdsName, szTemp, _countof(szTemp));
             
             if (_wcsicmp(text, szTemp) == 0)
                 ColumnDataHints[Index] = i;
