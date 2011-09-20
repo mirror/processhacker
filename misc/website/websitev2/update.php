@@ -1,18 +1,13 @@
 <?php include('config.php'); 
 
-//header("Pragma: public");
-header('Pragma: no-cache');
-header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-header('Cache-Control: post-check=0, pre-check=0', FALSE); 
-header('Cache-Control: no-store, no-cache, must-revalidate');
-//header('Cache-Control: max-age=28800');
+// output the config.php modification date as a cache control helper.
+header("last-modified: ".gmdate("D, d M Y H:i:s", filemtime('config.php'))." GMT");
 
-//calc an offset of 24 hours
-//$offset = 3600 * 24;
-//calc the string in GMT not localtime and add the offset
-//$expire = "Cache-Control: Expires: " . gmdate("D, d M Y H:i:s", time() + offset) . " GMT";
-//output the HTTP header
-//header($expire);
+//calc the expires string in GMT not localtime and add the offset for two hours using php.
+$expires = "Expires: ".gmdate("D, d M Y H:i:s", strtotime('+2 days'))." GMT";
+
+header($expires);
+header("Cache-Control: {$expires}");
 header('Content-Type: text/xml; charset=UTF-8');
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>".PHP_EOL;

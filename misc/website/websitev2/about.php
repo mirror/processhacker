@@ -29,37 +29,36 @@
                 Process Hacker was started in 2008 as an open source alternative to programs such as Task Manager and 
                 Process Explorer.
 			</p>
-		
-			<div id="owner">
-				<p><strong>Maintainers:</strong></p>
-				<li><a style="color:#AA0000" href="/forums/memberlist.php?mode=email&u=2"><strong>wj32</strong></a></li>
-				<li><a style="color:#AA0000" href="/forums/memberlist.php?mode=email&u=54"><strong>dmex</strong></a></li>
+
+			<p><strong>Maintainers:</strong></p>
+			<div class="yui-g" style="width: 80em;">
+				<div class="yui-u first">
+					<li><a style="color:#AA0000" href="http://sourceforge.net/users/wj32/"><strong>wj32</strong></a></li>
+					<div class="portlet">
+					</div>
+				</div>
+			</div>
+				
+			<div class="yui-g" style="width: 80em;">
+				<div class="yui-u first">
+					<li><a style="color:#AA0000" href="http://sourceforge.net/users/dmex/"><strong>dmex</strong></a></li>
+						<div class="portlet">
+					</div>
+				</div>
 			</div>
 
-			<div id="members">
-				<p><strong>Contributors:</strong></p>
-				<li><a style="color:#0000FF" href="/forums/memberlist.php?mode=email&u=293"><strong>XhmikosR</strong></a></li>
+			<div class="yui-g" style="width: 80em;">
+				<div class="yui-u first">
+					<li><a style="color:#0000FF" href="http://sourceforge.net/users/xhmikosr/"><strong>XhmikosR</strong></a></li>
+					<div class="portlet">
+					</div>
+				</div>
 			</div>
-			<br>
 		</div>
 	</div>
 	
-	<div class="yui-g">
-		<div class="yui-u first">
-			<div class="portlet" id="portlet-latest-faqs">
-				<p>This Website uses code based on the <a href="https://launchpad.net/launchpad-project">Launchpad project</a>, Available under the <a href="https://dev.launchpad.net/LaunchpadLicense">GNU Affero General Public License v3 (AGPLv3).</a></p>
-			</div>	
-		</div>
-
-		<div class="yui-u">
-			<div class="portlet" id="portlet-latest-questions">
-			</div>      
-		</div>
-    
-		<div class="yui-u">
-		    <div id="structural-subscription-content-box">
-			</div>
-		</div>	
+	<div class="center">
+	<p>This Website uses code based on the <a href="https://launchpad.net/launchpad-project">Launchpad project</a>, Available under the <a href="https://dev.launchpad.net/LaunchpadLicense">GNU Affero General Public License v3 (AGPLv3).</a></p>
 	</div>
 
 <?php include("footer.php"); ?>

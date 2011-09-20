@@ -1,8 +1,10 @@
-<?php ob_start("ob_gzhandler"); header('Content-Type: text/html; charset=UTF-8'); ?>
-<!DOCTYPE html> <!-- <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> -->
+<?php header('Content-Type: text/html; charset=UTF-8'); ?>
+<!DOCTYPE html> 
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> -->
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">-->
 <html lang="en">
 	<head>
-		<meta name="description" content="A free and open source process viewer with powerful process termination and memory searching/editing capabilities." >
+		<meta name="description" content="A free and open source process viewer with powerful process termination and memory searching/editing capabilities.">
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<meta charset="utf-8">
 		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->

@@ -1,0 +1,23 @@
+RewriteEngine On
+
+ErrorDocument 403 /error.php
+ErrorDocument 404 /error.php
+
+<Files "config.php">
+Order Allow,Deny
+Deny from All
+</Files>
+
+# 2 DAYS
+<FilesMatch "\.(xml|txt|css|js)$">
+Header set Cache-Control "max-age=172800, proxy-revalidate"
+
+ExpiresActive On
+ExpiresDefault "access plus 4 hours"
+ExpiresByType application/javascript A900
+ExpiresByType application/x-javascript A900
+ExpiresByType text/javascript A900
+ExpiresByType text/xml A90
+</FilesMatch>
+
+php_value output_handler ob_gzhandler
