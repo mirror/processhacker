@@ -647,7 +647,7 @@ namespace ProcessHacker
             {
                 var entry = file.Exports.GetEntry(i);
 
-                if (!entry.Name.StartsWith("Nt") || entry.Name.StartsWith("Ntdll"))
+                if (!entry.Name.StartsWith("Nt", StringComparison.OrdinalIgnoreCase) || entry.Name.StartsWith("Ntdll", StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 byte[] fileData = new byte[5];
@@ -821,7 +821,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                if (command.StartsWith("http://"))
+                if (command.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
                 {
                     if (ex is System.ComponentModel.Win32Exception)
                     {
@@ -842,7 +842,7 @@ namespace ProcessHacker
 
             foreach (string s in args)
             {
-                if (s.StartsWith("-"))
+                if (s.StartsWith("-", StringComparison.OrdinalIgnoreCase))
                 {
                     if (dict.ContainsKey(s))
                         throw new Exception("Option already specified.");

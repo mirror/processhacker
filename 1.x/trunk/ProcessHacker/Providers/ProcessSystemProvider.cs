@@ -718,7 +718,7 @@ namespace ProcessHacker
 
                         // If we couldn't get it or we couldn't resolve the \Device prefix,
                         // we'll use the Win32 variant.
-                        if ((fileName == null || fileName.StartsWith("\\")) &&
+                        if ((string.IsNullOrEmpty(fileName) || fileName.StartsWith("\\", StringComparison.OrdinalIgnoreCase)) &&
                             OSVersion.HasWin32ImageFileName)
                         {
                             try
@@ -733,7 +733,7 @@ namespace ProcessHacker
                 catch
                 { }
 
-                if (fileName == null || fileName.StartsWith("\\Device\\"))
+                if (string.IsNullOrEmpty(fileName) || fileName.StartsWith("\\Device\\", StringComparison.OrdinalIgnoreCase))
                 {
                     try
                     {

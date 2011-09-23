@@ -74,7 +74,7 @@ namespace ProcessHacker.Common
             if (b > 70)
                 return 0;
 
-            if (number == "")
+            if (string.IsNullOrEmpty(number))
                 return 0;
 
             bool negative = number[0] == '-';
@@ -95,8 +95,8 @@ namespace ProcessHacker.Common
 
             if (negative)
                 return -result;
-            else
-                return result;
+            
+            return result;
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace ProcessHacker.Common
         /// <returns></returns>
         public static decimal ToNumberParse(string number, bool allowNonStandardExts)
         {                              
-            if (number == "")
+            if (string.IsNullOrEmpty(number))
                 return 0;
 
             bool negative = number[0] == '-';

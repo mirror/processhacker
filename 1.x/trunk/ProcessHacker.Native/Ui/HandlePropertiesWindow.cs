@@ -53,8 +53,10 @@ namespace ProcessHacker.Native.Ui
             var handleInfo = handle.GetHandleInfo();
 
             textName.Text = _name = handleInfo.BestName;
-            if (textName.Text == "")
+           
+            if (string.IsNullOrEmpty(textName.Text))
                 textName.Text = "(unnamed object)";
+
             textType.Text = _typeName = handleInfo.TypeName;
             textAddress.Text = "0x" + handle.Object.ToString("x");
             textGrantedAccess.Text = "0x" + handle.GrantedAccess.ToString("x");

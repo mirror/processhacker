@@ -67,7 +67,7 @@ namespace Aga.Controls.Tree
 
 			foreach (string label in IterateNodeLabels(node))
 			{
-				if (label.StartsWith(_searchString))
+                if (label.StartsWith(_searchString, StringComparison.OrdinalIgnoreCase))
 				{
 					_tree.SelectedNode = _currentNode;
 					return;
@@ -78,7 +78,7 @@ namespace Aga.Controls.Tree
 		public virtual void EndSearch()
 		{
 			_currentNode = null;
-			_searchString = "";
+			_searchString = string.Empty;
 		}
 
 		protected IEnumerable<string> IterateNodeLabels(TreeNodeAdv start)
@@ -127,7 +127,7 @@ namespace Aga.Controls.Tree
 				{
 					foreach (string label in IterateNodeLabels(node))
 					{
-						if (label.StartsWith(_searchString))
+                        if (label.StartsWith(_searchString, StringComparison.OrdinalIgnoreCase))
 						{
 							found = true;
 							_tree.SelectedNode = _currentNode;

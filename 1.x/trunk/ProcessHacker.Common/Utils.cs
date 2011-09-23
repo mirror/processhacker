@@ -593,7 +593,7 @@ namespace ProcessHacker.Common
                 str = "a very short time";
 
             // Turn 1 into "a", e.g. 1 minute -> a minute
-            if (str.StartsWith("1 "))
+            if (str.StartsWith("1 ", StringComparison.OrdinalIgnoreCase))
             {
                 // Special vowel case: a hour -> an hour
                 if (str[2] != 'h')
@@ -1059,7 +1059,7 @@ namespace ProcessHacker.Common
 
             foreach (string s in args)
             {
-                if (s.StartsWith("-"))
+                if (s.StartsWith("-", StringComparison.OrdinalIgnoreCase))
                 {
                     if (dict.ContainsKey(s))
                         throw new ArgumentException("Option already specified.");

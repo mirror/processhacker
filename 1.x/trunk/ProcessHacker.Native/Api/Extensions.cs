@@ -510,7 +510,7 @@ namespace ProcessHacker.Native
             }
             catch
             {
-                if (info.OrigName != null && info.OrigName != "")
+                if (!string.IsNullOrEmpty(info.OrigName))
                 {
                     info.BestName = info.OrigName;
                 }

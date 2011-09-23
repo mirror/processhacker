@@ -330,7 +330,7 @@ namespace ProcessHacker.Native.Api
 
                 string str = currentString.ToString();
 
-                if (str == "")
+                if (string.IsNullOrEmpty(str))
                 {
                     break;
                 }

@@ -146,20 +146,20 @@ namespace ProcessHacker.Native
                 alreadyCanonicalized = true;
             }
             // If the path starts with "\??\", we can remove it and we will have the path.
-            else if (fileName.StartsWith("\\??\\"))
+            else if (fileName.StartsWith("\\??\\", StringComparison.OrdinalIgnoreCase))
             {
                 fileName = fileName.Substring(4);
             }
 
             // If the path still starts with a backslash, we probably need to 
             // resolve any native object name to a DOS drive letter.
-            if (fileName.StartsWith("\\"))
+            if (fileName.StartsWith("\\", StringComparison.OrdinalIgnoreCase))
             {
                 var prefixes = _fileNamePrefixes;
 
                 foreach (var pair in prefixes)
                 {
-                    if (fileName.StartsWith(pair.Key + "\\"))
+                    if (fileName.StartsWith(pair.Key + "\\", StringComparison.OrdinalIgnoreCase))
                     {
                         fileName = pair.Value + "\\" + fileName.Substring(pair.Key.Length + 1);
                         break;

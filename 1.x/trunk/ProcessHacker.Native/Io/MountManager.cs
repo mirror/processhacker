@@ -362,7 +362,7 @@ namespace ProcessHacker.Native.Io
         {
             if (
                 path.Length == 14 &&
-                path.StartsWith(@"\DosDevices\") &&
+                path.StartsWith(@"\DosDevices\", StringComparison.OrdinalIgnoreCase) &&
                 path[12] >= 'A' && path[12] <= 'Z' &&
                 path[13] == ':'
                 )
@@ -375,7 +375,7 @@ namespace ProcessHacker.Native.Io
         {
             if (
                 (path.Length == 48 || (path.Length == 49 && path[48] == '\\')) &&
-                (path.StartsWith(@"\??\Volume") || path.StartsWith(@"\\?\Volume")) &&
+                (path.StartsWith(@"\??\Volume", StringComparison.OrdinalIgnoreCase) || path.StartsWith(@"\\?\Volume", StringComparison.OrdinalIgnoreCase)) &&
                 path[10] == '{' &&
                 path[19] == '-' &&
                 path[24] == '-' &&

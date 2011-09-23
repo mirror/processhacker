@@ -56,13 +56,13 @@ namespace ProcessHacker.Common.Ui
                 long ix, iy;
                 IComparable cx, cy;
 
-                sx = x.SubItems[column].Text.Replace(",", "");
-                sy = y.SubItems[column].Text.Replace(",", "");
+                sx = x.SubItems[column].Text.Replace(",", string.Empty);
+                sy = y.SubItems[column].Text.Replace(",", string.Empty);
 
-                if (!long.TryParse(sx.StartsWith("0x") ? sx.Substring(2) : sx,
+                if (!long.TryParse(sx.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? sx.Substring(2) : sx,
                     sx.StartsWith("0x") ? NumberStyles.AllowHexSpecifier : 0,
                     null, out ix) ||
-                    !long.TryParse(sy.StartsWith("0x") ? sy.Substring(2) : sy,
+                    !long.TryParse(sy.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? sy.Substring(2) : sy,
                     sy.StartsWith("0x") ? NumberStyles.AllowHexSpecifier : 0,
                     null, out iy))
                 {

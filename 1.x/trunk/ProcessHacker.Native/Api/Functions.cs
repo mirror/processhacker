@@ -442,7 +442,7 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr ImageBase
             );
 
-        [DllImport("imagehlp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        [DllImport("imagehlp.dll", SetLastError = true, BestFitMapping = false, ThrowOnUnmappableChar = true, CharSet = CharSet.Ansi)]
         public static extern bool MapAndLoad(
             [In] string ImageName,
             [In] [Optional] string DllPath,

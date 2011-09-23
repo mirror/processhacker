@@ -115,13 +115,15 @@ namespace ProcessHacker
 
         private void SetDepStatusNoKph()
         {
-            if (comboStatus.SelectedItem.ToString().StartsWith("Enabled"))
+            if (comboStatus.SelectedItem.ToString().StartsWith("Enabled", StringComparison.OrdinalIgnoreCase))
+            {
                 if (!PhUtils.ShowConfirmMessage(
                     "set",
                     "the DEP status",
                     "Enabling DEP in a process is a permanent action.",
                     false))
                     return;
+            }
 
             DepFlags flags = DepFlags.Enable;
 
