@@ -176,7 +176,7 @@ namespace ProcessHacker.Components
                         new string[] 
                     {
                         _counters[i].CounterName,
-                        ""
+                        string.Empty
                     }));
                 }
             }

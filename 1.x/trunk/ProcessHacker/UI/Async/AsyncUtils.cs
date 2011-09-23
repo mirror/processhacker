@@ -44,72 +44,72 @@ namespace ProcessHacker.FormHelper
 
         public AsyncOperation(ISynchronizeInvoke target)
         {
-            isiTarget = target;
-            isRunning = false;
+            this.isiTarget = target;
+            this.isRunning = false;
         }
 
         public void Start()
         {
-            lock (_asyncLock)
+            lock (this._asyncLock)
             {
-                if (isRunning)
+                if (this.isRunning)
                 {
                     throw new AlreadyRunningException();
                 }
-                isRunning = true;
+                this.isRunning = true;
             }
 
-            _asyncThread = new Thread(InternalStart, ProcessHacker.Common.Utils.SixteenthStackSize);
-            _asyncThread.Start();
+            this._asyncThread = new Thread(this.InternalStart, ProcessHacker.Common.Utils.SixteenthStackSize);
+            this._asyncThread.Start();
         }
 
         public void Cancel()
         {
-            lock (_asyncLock)
+            lock (this._asyncLock)
             {
-                cancelledFlag = true;
+                this.cancelledFlag = true;
             }
         }
 
         public bool CancelAndWait()
         {
-            lock (_asyncLock)
-            {               
-                cancelledFlag = true;
+            lock (this._asyncLock)
+            {
+                this.cancelledFlag = true;
 
-                while (!IsDone)
+                while (!this.IsDone)
                 {
-                    Monitor.Wait(_asyncLock, 1000);
+                    Monitor.Wait(this._asyncLock, 1000);
                 }
             }
 
-            return !HasCompleted;
+            return !this.HasCompleted;
         }
 
         public bool WaitUntilDone()
         {
-            lock (_asyncLock)
+            lock (this._asyncLock)
             {
                 // Wait for either completion or cancellation.  As with
                 // CancelAndWait, we don't sleep forever - to reduce the
                 // chances of deadlock in obscure race conditions, we wake
                 // up every second to check we didn't miss a Pulse.
-                while (!IsDone)
+                while (!this.IsDone)
                 {
-                    Monitor.Wait(_asyncLock, 1000);
+                    Monitor.Wait(this._asyncLock, 1000);
                 }
             }
 
-            return HasCompleted;
+            return this.HasCompleted;
         }
 
         public bool IsDone
         {
             get
             {
-                lock (_asyncLock)
+                lock (this._asyncLock)
                 {
-                    return completeFlag || cancelAcknowledgedFlag || failedFlag;
+                    return this.completeFlag || this.cancelAcknowledgedFlag || this.failedFlag;
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace ProcessHacker.FormHelper
         private ISynchronizeInvoke isiTarget;
         protected ISynchronizeInvoke Target
         {
-            get { return isiTarget; }
+            get { return this.isiTarget; }
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace ProcessHacker.FormHelper
         {
             get
             {
-                lock (_asyncLock) { return cancelledFlag; }
+                lock (this._asyncLock) { return this.cancelledFlag; }
             }
         }
 
@@ -143,18 +143,21 @@ namespace ProcessHacker.FormHelper
         {
             get
             {
-                lock (_asyncLock) { return completeFlag; }
+                lock (this._asyncLock) { return this.completeFlag; }
             }
         }
 
         protected void AcknowledgeCancel()
         {
-            lock (_asyncLock)
+            lock (this._asyncLock)
             {
-                cancelAcknowledgedFlag = true;
-                isRunning = false;
-                Monitor.Pulse(_asyncLock);
-                FireAsync(Cancelled, this, EventArgs.Empty);
+                this.cancelAcknowledgedFlag = true;
+                this.isRunning = false;
+
+                Monitor.Pulse(this._asyncLock);
+
+                if (this.Cancelled != null)
+                    this.Cancelled(this, EventArgs.Empty);
             }
         }
 
@@ -165,21 +168,21 @@ namespace ProcessHacker.FormHelper
         private bool isRunning;
 
         private void InternalStart()
-        {            
-            cancelledFlag = false;
-            completeFlag = false;
-            cancelAcknowledgedFlag = false;
-            failedFlag = false; 
+        {
+            this.cancelledFlag = false;
+            this.completeFlag = false;
+            this.cancelAcknowledgedFlag = false;
+            this.failedFlag = false; 
           
             try
             {
-                DoWork();
+                this.DoWork();
             }
             catch (Exception e)
             {                
                 try
                 {
-                    FailOperation(e);
+                    this.FailOperation(e);
                 }
                 catch
                 { }  
@@ -190,43 +193,41 @@ namespace ProcessHacker.FormHelper
                 }
             }
 
-            lock (_asyncLock)
+            lock (this._asyncLock)
             {
                 // raise the Completion event 
-                if (!cancelAcknowledgedFlag && !failedFlag)
+                if (!this.cancelAcknowledgedFlag && !this.failedFlag)
                 {
-                    CompleteOperation();
+                    this.CompleteOperation();
                 }
             }
         } 
 
         private void CompleteOperation()
         {
-            lock (_asyncLock)
+            lock (this._asyncLock)
             {
-                completeFlag = true;
-                isRunning = false;
-                Monitor.Pulse(_asyncLock);                
-                FireAsync(Completed, this, EventArgs.Empty);
+                this.completeFlag = true;
+                this.isRunning = false;
+
+                Monitor.Pulse(this._asyncLock);
+
+                if (this.Completed != null)
+                    this.Completed(this, EventArgs.Empty);
             }
         }
 
         private void FailOperation(Exception e)
         {
-            lock (_asyncLock)
+            lock (this._asyncLock)
             {
-                failedFlag = true;
-                isRunning = false;
-                Monitor.Pulse(_asyncLock);
-                FireAsync(Failed, this, new ThreadExceptionEventArgs(e));
-            }
-        }
+                this.failedFlag = true;
+                this.isRunning = false;
 
-        protected void FireAsync(Delegate dlg, params object[] pList)
-        {
-            if (dlg != null)
-            {
-                Target.BeginInvoke(dlg, pList);
+                Monitor.Pulse(this._asyncLock);
+
+                if (this.Failed != null)
+                    this.Failed(this, new ThreadExceptionEventArgs(e));
             }
         }
     }

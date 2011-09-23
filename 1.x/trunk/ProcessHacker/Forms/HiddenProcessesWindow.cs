@@ -51,7 +51,7 @@ namespace ProcessHacker
             listProcesses.SetTheme("explorer");
 
             comboMethod.SelectedItem = "CSR Handles";
-            labelCount.Text = "";
+            labelCount.Text = string.Empty;
         }
 
         private void HiddenProcessesWindow_Load(object sender, EventArgs e)

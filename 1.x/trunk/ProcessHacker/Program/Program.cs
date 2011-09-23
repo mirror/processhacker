@@ -304,7 +304,7 @@ namespace ProcessHacker
                 "-t n\tShows the specified tab. 0 is Processes, 1 is Services and 2 is Network.\n" +
                 "-uninstallkph\tUninstalls the KProcessHacker service.\n" +
                 "-v\tStarts Process Hacker visible.\n" +
-                ""
+                string.Empty
                 );
         }
 
@@ -600,8 +600,8 @@ namespace ProcessHacker
                 return true;
             }
 
-            if (pArgs.ContainsKey(""))
-                if (pArgs[""].Replace("\"", "").Trim().EndsWith("taskmgr.exe", StringComparison.OrdinalIgnoreCase))
+            if (pArgs.ContainsKey(string.Empty))
+                if (pArgs[string.Empty].Replace("\"", string.Empty).Trim().EndsWith("taskmgr.exe", StringComparison.OrdinalIgnoreCase))
                     StartVisible = true;
 
             if (pArgs.ContainsKey("-m"))
@@ -745,7 +745,7 @@ namespace ProcessHacker
 
         public static void StartProcessHackerAdmin()
         {
-            StartProcessHackerAdmin("", null, IntPtr.Zero);
+            StartProcessHackerAdmin(string.Empty, null, IntPtr.Zero);
         }
 
         public static void StartProcessHackerAdmin(string args, MethodInvoker successAction)
@@ -847,7 +847,7 @@ namespace ProcessHacker
                     if (dict.ContainsKey(s))
                         throw new Exception("Option already specified.");
 
-                    dict.Add(s, "");
+                    dict.Add(s, string.Empty);
                     argPending = s;
                 }
                 else
@@ -867,8 +867,8 @@ namespace ProcessHacker
                         //if (dict.ContainsKey(""))
                         //    throw new Exception("Input file already specified.");
 
-                        if (!dict.ContainsKey(""))
-                            dict.Add("", s);
+                        if (!dict.ContainsKey(string.Empty))
+                            dict.Add(string.Empty, s);
                     }
                 }
             }
@@ -1168,7 +1168,7 @@ namespace ProcessHacker
         public static ResultsWindow GetResultsWindow(int PID, ResultsWindowInvokeAction action)
         {
             ResultsWindow rw = null;
-            string id = "";
+            string id = string.Empty;
 
             if (ResultsWindowsThreaded)
             {
@@ -1189,7 +1189,9 @@ namespace ProcessHacker
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
 
-                while (id == "") Thread.Sleep(1);
+                while (string.IsNullOrEmpty(id)) 
+                    Thread.Sleep(1);
+
                 Program.ResultsThreads.Add(id, t);
             }
             else

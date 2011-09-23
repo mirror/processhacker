@@ -116,7 +116,7 @@ namespace ProcessHacker
                     }
 
                     StringBuilder sdata = new StringBuilder();
-                    string sdata2 = "";
+                    string sdata2 = string.Empty;
 
                     for (int i = 0; i < data.Length; i++)
                         sdata.Append((char)data[i]);

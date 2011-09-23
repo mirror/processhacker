@@ -131,8 +131,8 @@ namespace ProcessHacker
             else
             {
                 textFileDescription.Text = _item.Name;
-                textFileCompany.Text = "";
-                textFileVersion.Text = "";
+                textFileCompany.Text = string.Empty;
+                textFileVersion.Text = string.Empty;
             }
 
             textFileName.Text = _item.FileName;

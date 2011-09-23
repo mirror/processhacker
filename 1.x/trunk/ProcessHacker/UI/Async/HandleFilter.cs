@@ -268,7 +268,11 @@ namespace ProcessHacker.FormHelper
             if (item == null)
             {
                 if (listViewItemContainer.Count > 0)
-                    FireAsync(MatchListView, listViewItemContainer);
+                {
+                    if (MatchListView != null)
+                        MatchListView(listViewItemContainer);
+                }
+
                 return;
             }
 
@@ -278,14 +282,17 @@ namespace ProcessHacker.FormHelper
             {
                 List<ListViewItem> items = listViewItemContainer;
 
-                FireAsync(MatchListView, items);
+                if (MatchListView != null)
+                    MatchListView(items);
+
                 listViewItemContainer = new List<ListViewItem>(BufferSize);
             }
         }
 
         private void OnMatchProgress(int currentValue, int allValue)
         {
-            FireAsync(MatchProgress, currentValue, allValue);
+            if (MatchProgress != null)
+                MatchProgress(currentValue, allValue);
         }
     }
 }

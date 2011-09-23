@@ -385,7 +385,7 @@ namespace ProcessHacker.Components
 
         private void copyFileNameMenuItem_Click(object sender, EventArgs e)
         {
-            string text = "";
+            string text = string.Empty;
 
             for (int i = 0; i < listModules.SelectedItems.Count; i++)
             {

@@ -251,7 +251,7 @@ namespace ProcessHacker.Components
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
                 item.Config.StartType.ToString()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
-                item.Status.ServiceStatusProcess.ProcessID == 0 ? "" :
+                item.Status.ServiceStatusProcess.ProcessID == 0 ? string.Empty :
                 item.Status.ServiceStatusProcess.ProcessID.ToString()));
 
             if ((item.Status.ServiceStatusProcess.ServiceType & ServiceType.InteractiveProcess) != 0)
@@ -287,7 +287,7 @@ namespace ProcessHacker.Components
                 litem.SubItems[2].Text = newItem.Status.ServiceStatusProcess.ServiceType.ToString();
                 litem.SubItems[3].Text = newItem.Status.ServiceStatusProcess.CurrentState.ToString();
                 litem.SubItems[4].Text = newItem.Config.StartType.ToString();
-                litem.SubItems[5].Text = newItem.Status.ServiceStatusProcess.ProcessID == 0 ? "" :
+                litem.SubItems[5].Text = newItem.Status.ServiceStatusProcess.ProcessID == 0 ? string.Empty :
                     newItem.Status.ServiceStatusProcess.ProcessID.ToString();
                 _needsSort = true;
             }

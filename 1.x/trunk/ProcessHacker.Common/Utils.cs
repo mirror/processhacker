@@ -724,7 +724,7 @@ namespace ProcessHacker.Common
         // <returns>The last write time of the assembly, or DateTime.MaxValue if an exception occurred.</returns>
         public static DateTime GetAssemblyLastWriteTime(Assembly assembly)
         {
-            if (assembly.Location == null || assembly.Location == "")
+            if (string.IsNullOrEmpty(assembly.Location))
                 return DateTime.MaxValue;
 
             try

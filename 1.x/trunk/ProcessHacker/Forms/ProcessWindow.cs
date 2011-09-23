@@ -77,9 +77,9 @@ namespace ProcessHacker
             else
                 this.Icon = Program.HackerWindow.Icon;
 
-            textFileDescription.Text = "";
-            textFileCompany.Text = "";
-            textFileVersion.Text = "";
+            textFileDescription.Text = string.Empty;
+            textFileCompany.Text = string.Empty;
+            textFileVersion.Text = string.Empty;
 
             if (!Program.PWindows.ContainsKey(_pid))
                 Program.PWindows.Add(_pid, this);
@@ -185,7 +185,7 @@ namespace ProcessHacker
                 buttonInspectParent.Enabled = false;
                 buttonInspectPEB.Enabled = false;
 
-                if (fileCurrentDirectory.Text != "")
+                if (fileCurrentDirectory.Text != string.Empty)
                     fileCurrentDirectory.Enabled = false;
 
                 if (_pid != 4)
@@ -274,7 +274,7 @@ namespace ProcessHacker
             {
                 this.Text = _processItem.Name;
                 textFileDescription.Text = _processItem.Name;
-                textFileCompany.Text = "";
+                textFileCompany.Text = string.Empty;
             }
             else
             {
@@ -473,7 +473,7 @@ namespace ProcessHacker
                     textFileCompany.Text = _processItem.VerifySignerName;
 
                 if (verifyResult == VerifyResult.Unknown)
-                    textFileCompany.Text += "";
+                    textFileCompany.Text += string.Empty;
                 else if (verifyResult == VerifyResult.Trusted)
                     textFileCompany.Text += " (verified)";
                 else if (verifyResult == VerifyResult.NoSignature)
@@ -492,8 +492,8 @@ namespace ProcessHacker
             catch
             {
                 fileImage.Text = _processItem.FileName;
-                textFileDescription.Text = "";
-                textFileCompany.Text = "";
+                textFileDescription.Text = string.Empty;
+                textFileCompany.Text = string.Empty;
             }
 
             // Update WOW64 info.
@@ -526,7 +526,7 @@ namespace ProcessHacker
                 return;
 
             if (_processItem.CmdLine != null)
-                textCmdLine.Text = _processItem.CmdLine.Replace("\0", "");
+                textCmdLine.Text = _processItem.CmdLine.Replace("\0", string.Empty);
 
             try
             {
@@ -749,7 +749,7 @@ namespace ProcessHacker
                         {
                             foreach (var pair in phandle.GetEnvironmentVariables())
                             {
-                                if (pair.Key != "")
+                                if (pair.Key != string.Empty)
                                 {
                                     if (this.IsHandleCreated)
                                     {
@@ -838,7 +838,7 @@ namespace ProcessHacker
             {
                 labelDEP.Enabled = false;
                 textDEP.Enabled = false;
-                textDEP.Text = "";
+                textDEP.Text = string.Empty;
                 //textDEP.Text = "(This feature is not supported on your version of Windows)";
                 buttonEditDEP.Enabled = false;
             }

@@ -47,7 +47,7 @@ namespace ProcessHacker
             if (pNode != null)
                 return pNode.GetTooltipText(this);
             else
-                return "";
+                return string.Empty;
         }
 
         public string GetToolTip(ProcessNode pNode)
@@ -55,9 +55,9 @@ namespace ProcessHacker
             try
             {
                 string cmdText = (pNode.ProcessItem.CmdLine != null ?
-                        (Utils.CreateEllipsis(pNode.ProcessItem.CmdLine.Replace("\0", ""), 100) + "\n") : "");
+                        (Utils.CreateEllipsis(pNode.ProcessItem.CmdLine.Replace("\0", string.Empty), 100) + "\n") : string.Empty);
 
-                string fileText = "";
+                string fileText = string.Empty;
 
                 try
                 {
@@ -75,7 +75,7 @@ namespace ProcessHacker
                         fileText = "File:\n    " + pNode.ProcessItem.FileName;
                 }
 
-                string runDllText = "";
+                string runDllText = string.Empty;
 
                 if (pNode.ProcessItem.FileName != null &&
                     pNode.ProcessItem.FileName.EndsWith("\\rundll32.exe",
@@ -103,7 +103,7 @@ namespace ProcessHacker
                     }
                 }
 
-                string dllhostText = "";
+                string dllhostText = string.Empty;
 
                 if (pNode.ProcessItem.FileName != null &&
                     pNode.ProcessItem.FileName.EndsWith("\\dllhost.exe",
@@ -118,8 +118,8 @@ namespace ProcessHacker
                         {
                             using (var inprocServer32 = key.OpenSubKey("InprocServer32"))
                             {
-                                string name = key.GetValue("") as string;
-                                string fileName = inprocServer32.GetValue("") as string;
+                                string name = key.GetValue(string.Empty) as string;
+                                string fileName = inprocServer32.GetValue(string.Empty) as string;
 
                                 FileVersionInfo info = FileVersionInfo.GetVersionInfo(Environment.ExpandEnvironmentVariables(fileName));
 
@@ -135,7 +135,7 @@ namespace ProcessHacker
                     }
                 }
 
-                string servicesText = "";
+                string servicesText = string.Empty;
 
                 try
                 {
@@ -159,7 +159,7 @@ namespace ProcessHacker
                         {
                             if (services.ContainsKey(service))
                             {
-                                if (services[service].Status.DisplayName != "")
+                                if (services[service].Status.DisplayName != string.Empty)
                                     servicesText += "    " + service + " (" +
                                     services[service].Status.DisplayName + ")\n";
                                 else
@@ -179,7 +179,7 @@ namespace ProcessHacker
                     Logging.Log(ex);
                 }
 
-                string otherNotes = "";
+                string otherNotes = string.Empty;
 
                 try
                 {
@@ -202,7 +202,7 @@ namespace ProcessHacker
                         else if (pNode.ProcessItem.VerifyResult == VerifyResult.Unknown &&
                             !Settings.Instance.VerifySignatures)
                         {
-                            otherNotes += "";
+                            otherNotes += string.Empty;
                         }
                         else if (pNode.ProcessItem.VerifyResult == VerifyResult.Unknown &&
                             Settings.Instance.VerifySignatures && !_tree.DumpMode)
@@ -231,7 +231,7 @@ namespace ProcessHacker
                     if (pNode.ProcessItem.IsWow64)
                         otherNotes += "\n    Process is 32-bit (running under WOW64).";
 
-                    if (otherNotes != "")
+                    if (otherNotes != string.Empty)
                         otherNotes = "\nNotes:" + otherNotes;
                 }
                 catch (Exception ex)

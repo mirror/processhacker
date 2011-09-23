@@ -133,9 +133,9 @@ namespace ProcessHacker.UI.Actions
                             criticalPid = false;
                         }
 
-                        td.ExpandedInformation += names[i] + " (PID " + pids[i].ToString() + ")" + 
-                            (dangerousPid ? " (system process) " : "") +
-                            (criticalPid ? " (CRITICAL) " : "") +
+                        td.ExpandedInformation += names[i] + " (PID " + pids[i].ToString() + ")" +
+                            (dangerousPid ? " (system process) " : string.Empty) +
+                            (criticalPid ? " (CRITICAL) " : string.Empty) +
                             "\r\n";
                     }
 

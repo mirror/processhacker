@@ -321,7 +321,7 @@ namespace ProcessHacker
                         function.ForwardedName != null ? entry.Name + " > " + function.ForwardedName : entry.Name,
                         function.ForwardedName == null ? 
                         "0x" + function.Function.Decrement(new IntPtr(_mappedImage.Memory)).ToString("x") :
-                        ""
+                        string.Empty
                     });
             }
         }

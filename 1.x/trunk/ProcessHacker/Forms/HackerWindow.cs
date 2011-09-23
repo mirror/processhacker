@@ -465,7 +465,7 @@ namespace ProcessHacker
                 try
                 {
                     var result = Cryptography.VerifyFile(ofd.FileName);
-                    string message = "";
+                    string message = string.Empty;
 
                     switch (result)
                     {
@@ -1976,7 +1976,7 @@ namespace ProcessHacker
         public void processP_DictionaryAdded(ProcessItem item)
         {
             ProcessItem parent = null;
-            string parentText = "";
+            string parentText = string.Empty;
 
             if (item.HasParent && Program.ProcessProvider.Dictionary.ContainsKey(item.ParentPid))
             {
@@ -1997,8 +1997,8 @@ namespace ProcessHacker
             if (NPMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "New Process",
                     "The process " + item.Name + " (" + item.Pid.ToString() +
-                    ") was started" + ((parentText != "") ? " by " +
-                    parent.Name + " (" + parent.Pid.ToString() + ")" : "") + ".", ToolTipIcon.Info);
+                    ") was started" + ((parentText != string.Empty) ? " by " +
+                    parent.Name + " (" + parent.Pid.ToString() + ")" : string.Empty) + ".", ToolTipIcon.Info);
         }
 
         public void processP_DictionaryRemoved(ProcessItem item)
@@ -2034,9 +2034,9 @@ namespace ProcessHacker
         {
             this.QueueMessage("New Service: " + item.Status.ServiceName +
                 " (" + item.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
-                ((item.Status.DisplayName != "") ?
+                ((item.Status.DisplayName != string.Empty) ?
                 " (" + item.Status.DisplayName + ")" :
-                ""));
+                string.Empty));
 
             if (NSMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "New Service",
@@ -2066,9 +2066,9 @@ namespace ProcessHacker
             {
                 this.QueueMessage("Service Started: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
-                    ((newItem.Status.DisplayName != "") ?
+                    ((newItem.Status.DisplayName != string.Empty) ?
                     " (" + newItem.Status.DisplayName + ")" :
-                    ""));
+                    string.Empty));
 
                 if (startedSMenuItem.Checked)
                     this.GetFirstIcon().ShowBalloonTip(2000, "Service Started",
@@ -2080,18 +2080,18 @@ namespace ProcessHacker
                 newState == ServiceState.Paused)
                 this.QueueMessage("Service Paused: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
-                    ((newItem.Status.DisplayName != "") ?
+                    ((newItem.Status.DisplayName != string.Empty) ?
                     " (" + newItem.Status.DisplayName + ")" :
-                    ""));
+                    string.Empty));
 
             if (oldState == ServiceState.Running &&
                 newState == ServiceState.Stopped)
             {
                 this.QueueMessage("Service Stopped: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
-                    ((newItem.Status.DisplayName != "") ?
+                    ((newItem.Status.DisplayName != string.Empty) ?
                     " (" + newItem.Status.DisplayName + ")" :
-                    ""));
+                    string.Empty));
 
                 if (stoppedSMenuItem.Checked)
                     this.GetFirstIcon().ShowBalloonTip(2000, "Service Stopped",
@@ -2132,9 +2132,9 @@ namespace ProcessHacker
         {
             this.QueueMessage("Deleted Service: " + item.Status.ServiceName +
                 " (" + item.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
-                ((item.Status.DisplayName != "") ?
+                ((item.Status.DisplayName != string.Empty) ?
                 " (" + item.Status.DisplayName + ")" :
-                ""));
+                string.Empty));
 
             if (DSMenuItem.Checked)
                 this.GetFirstIcon().ShowBalloonTip(2000, "Service Deleted",
@@ -3417,7 +3417,7 @@ namespace ProcessHacker
             {
                 using (var thandle = ProcessHandle.Current.GetToken(TokenAccess.Query))
                 using (var sid = thandle.GetUser())
-                    this.Text += " [" + sid.GetFullName(true) + (KProcessHacker.Instance != null ? "+" : "") + "]";
+                    this.Text += " [" + sid.GetFullName(true) + (KProcessHacker.Instance != null ? "+" : string.Empty) + "]";
             }
             catch
             { }

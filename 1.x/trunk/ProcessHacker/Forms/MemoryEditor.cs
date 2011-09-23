@@ -188,7 +188,7 @@ namespace ProcessHacker
 
         private void buttonValues_Click(object sender, EventArgs e)
         {
-            string values = "";
+            string values = string.Empty;
             InformationBox valuesForm;
             long addr = hexBoxMemory.SelectionStart;
             long space = hexBoxMemory.ByteProvider.Length - hexBoxMemory.SelectionStart;

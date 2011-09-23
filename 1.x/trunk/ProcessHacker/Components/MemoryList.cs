@@ -208,7 +208,7 @@ namespace ProcessHacker.Components
             string protectStr;
 
             if (protect == MemoryProtection.AccessDenied)
-                protectStr = "";
+                protectStr = string.Empty;
             else if ((protect & MemoryProtection.Execute) != 0)
                 protectStr = "X";
             else if ((protect & MemoryProtection.ExecuteRead) != 0)
@@ -335,9 +335,9 @@ namespace ProcessHacker.Components
 
                     litem.Name = item.Address.ToString();
 
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
 
                     this.FillMemoryListViewItem(litem, item);
 

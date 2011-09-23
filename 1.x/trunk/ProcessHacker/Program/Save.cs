@@ -216,8 +216,8 @@ namespace ProcessHacker
                         // Fill in the cell.
                         str[i + 1][columnIndex] = 
                             // If this is the first column in the row, add some indentation.
-                            (columnIndex == 0 ? (new string(' ', (node.Level - 1) * 2)) : "") + 
-                            (text != null ? text : "");
+                            (columnIndex == 0 ? (new string(' ', (node.Level - 1) * 2)) : string.Empty) +
+                            (text != null ? text : string.Empty);
                     }
 
                     i++;

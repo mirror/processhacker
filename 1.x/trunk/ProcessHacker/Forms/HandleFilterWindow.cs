@@ -324,7 +324,7 @@ namespace ProcessHacker
 
         private void textFilter_TextChanged(object sender, EventArgs e)
         {
-            if (textFilter.Text == "")
+            if (textFilter.Text == string.Empty)
                 buttonFind.Enabled = false;
             else
                 buttonFind.Enabled = true;

@@ -58,8 +58,12 @@ namespace ProcessHacker.Components
                 _struct.Structs = Program.Structs;
                 values = _struct.Read();
 
-                _model.Nodes.Add(new StructNode(new FieldValue() 
-                { Name = "Struct", FieldType = FieldType.StringUTF16, Value = "" }));
+                _model.Nodes.Add(new StructNode(new FieldValue
+                { 
+                    Name = "Struct", 
+                    FieldType = FieldType.StringUTF16, 
+                    Value = string.Empty 
+                }));
 
                 foreach (FieldValue val in values)
                     this.AddNode(_model.Nodes[0], val);

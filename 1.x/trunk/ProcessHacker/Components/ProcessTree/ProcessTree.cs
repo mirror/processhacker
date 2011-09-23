@@ -262,7 +262,7 @@ namespace ProcessHacker
             {
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
-                    if (_treeModel.GetSortColumn() != "")
+                    if (_treeModel.GetSortColumn() != string.Empty)
                     {
                         _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
                     }

@@ -215,7 +215,7 @@ namespace ProcessHacker
 
         public string Name
         {
-            get { return _pitem.Name ?? ""; }
+            get { return _pitem.Name ?? string.Empty; }
         }
 
         public string DisplayPid
@@ -225,7 +225,7 @@ namespace ProcessHacker
                 if (_pitem.Pid >= 0)
                     return _pitem.Pid.ToString();
                 else
-                    return "";
+                    return string.Empty;
             }
         }
 
@@ -344,7 +344,7 @@ namespace ProcessHacker
             get
             {
                 if (_pitem.CpuUsage == 0)
-                    return "";
+                    return string.Empty;
                 else
                     return _pitem.CpuUsage.ToString("F2");
             }
@@ -360,7 +360,7 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return "";
+                    return string.Empty;
                 else
                     return _pitem.SessionId.ToString();
             }
@@ -377,7 +377,7 @@ namespace ProcessHacker
                 }
                 catch
                 {
-                    return "";
+                    return string.Empty;
                 }
             }
         }
@@ -387,7 +387,7 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return "";
+                    return string.Empty;
                 else
                     return _pitem.Process.BasePriority.ToString();
             }
@@ -406,7 +406,7 @@ namespace ProcessHacker
                 else if (_pitem.VersionInfo != null && _pitem.VersionInfo.FileDescription != null)
                     return _pitem.VersionInfo.FileDescription;
                 else
-                    return "";
+                    return string.Empty;
             }
         }
 
@@ -417,7 +417,7 @@ namespace ProcessHacker
                 if (_pitem.VersionInfo != null && _pitem.VersionInfo.CompanyName != null)
                     return _pitem.VersionInfo.CompanyName;
                 else
-                    return "";
+                    return string.Empty;
             }
         }
 
@@ -426,7 +426,7 @@ namespace ProcessHacker
             get
             {
                 if (_pitem.FileName == null)
-                    return "";
+                    return string.Empty;
                 else
                     return _pitem.FileName;
             }
@@ -437,9 +437,9 @@ namespace ProcessHacker
             get
             {
                 if (_pitem.CmdLine == null)
-                    return "";
+                    return string.Empty;
                 else
-                    return _pitem.CmdLine.Replace("\0", "");
+                    return _pitem.CmdLine.Replace("\0", string.Empty);
             }
         }
 
@@ -448,7 +448,7 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return "";
+                    return string.Empty;
                 else
                     return _pitem.Process.NumberOfThreads.ToString();
             }
@@ -459,7 +459,7 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return "";
+                    return string.Empty;
                 else
                     return _pitem.Process.HandleCount.ToString();
             }
@@ -486,13 +486,13 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return "";
+                    return string.Empty;
                 else
                 {
                     int number = this.GdiHandlesNumber;
 
                     if (number == 0)
-                        return "";
+                        return string.Empty;
                     else
                         return number.ToString();
                 }
@@ -520,13 +520,13 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4)
-                    return "";
+                    return string.Empty;
                 else
                 {
                     int number = this.UserHandlesNumber;
 
                     if (number == 0)
-                        return "";
+                        return string.Empty;
                     else
                         return number.ToString();
                 }
@@ -547,7 +547,7 @@ namespace ProcessHacker
             get
             {
                 if (this.IoTotalNumber == 0)
-                    return "";
+                    return string.Empty;
                 else
                     return Utils.FormatSize(this.IoTotalNumber) + "/s";
             }
@@ -567,7 +567,7 @@ namespace ProcessHacker
             get
             {
                 if (this.IoReadOtherNumber == 0)
-                    return "";
+                    return string.Empty;
                 else
                     return Utils.FormatSize(this.IoReadOtherNumber) + "/s";
             }
@@ -587,7 +587,7 @@ namespace ProcessHacker
             get
             {
                 if (this.IoWriteNumber == 0)
-                    return "";
+                    return string.Empty;
                 else
                     return Utils.FormatSize(this.IoWriteNumber) + "/s";
             }
@@ -643,7 +643,7 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4 || _pitem.CreateTime.Year == 1)
-                    return "";
+                    return string.Empty;
                 else
                     return _pitem.CreateTime.ToString();
             }
@@ -654,7 +654,7 @@ namespace ProcessHacker
             get
             {
                 if (Pid < 4 || _pitem.CreateTime.Year == 1)
-                    return "";
+                    return string.Empty;
                 else
                     return Utils.FormatRelativeDateTime(_pitem.CreateTime);
             }
@@ -677,12 +677,12 @@ namespace ProcessHacker
 
         public string VerificationStatus
         {
-            get { return _pitem.VerifyResult == VerifyResult.Trusted ? "Verified" : ""; }
+            get { return _pitem.VerifyResult == VerifyResult.Trusted ? "Verified" : string.Empty; }
         }
 
         public string VerifiedSigner
         {
-            get { return _pitem.VerifyResult == VerifyResult.Trusted ? _pitem.VerifySignerName : ""; }
+            get { return _pitem.VerifyResult == VerifyResult.Trusted ? _pitem.VerifySignerName : string.Empty; }
         }
     }
 }

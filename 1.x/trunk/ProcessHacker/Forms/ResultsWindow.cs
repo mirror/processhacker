@@ -253,7 +253,7 @@ namespace ProcessHacker
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            string filename = "";
+            string filename = string.Empty;
             DialogResult dr = DialogResult.Cancel;
             ResultsWindow rw = this;
 
@@ -269,10 +269,10 @@ namespace ProcessHacker
 
                 foreach (string[] s in _so.Searcher.Results)
                 {
-                    sw.Write("0x{0:x} ({1}){2}\r\n", Int32.Parse(s[0].Replace("0x", ""),
-                        System.Globalization.NumberStyles.HexNumber) + Int32.Parse(s[1].Replace("0x", ""),
+                    sw.Write("0x{0:x} ({1}){2}\r\n", Int32.Parse(s[0].Replace("0x", string.Empty),
+                        System.Globalization.NumberStyles.HexNumber) + Int32.Parse(s[1].Replace("0x", string.Empty),
                         System.Globalization.NumberStyles.HexNumber), Int32.Parse(s[2]),
-                        s[3] != "" ? (": " + s[3]) : "");
+                        s[3] != string.Empty ? (": " + s[3]) : string.Empty);
                 }
 
                 sw.Close();

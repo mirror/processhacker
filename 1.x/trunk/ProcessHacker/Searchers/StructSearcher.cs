@@ -97,7 +97,7 @@ namespace ProcessHacker
 
                             // read succeeded, add it to the results
                             Results.Add(new string[] { Utils.FormatAddress(info.BaseAddress),
-                                String.Format("0x{0:x}", i), structLen, "" });
+                                String.Format("0x{0:x}", i), structLen, string.Empty });
                             count++;
                         }
                         catch

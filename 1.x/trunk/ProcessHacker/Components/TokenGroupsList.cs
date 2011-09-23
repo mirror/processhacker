@@ -71,7 +71,7 @@ namespace ProcessHacker.Components
 
         private string GetAttributeString(SidAttributes Attributes)
         {
-            string text = "";
+            string text = string.Empty;
 
             if ((Attributes & SidAttributes.Integrity) != 0)
             {

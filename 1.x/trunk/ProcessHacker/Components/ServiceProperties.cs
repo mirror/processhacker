@@ -265,10 +265,10 @@ namespace ProcessHacker.Components
                     }
                     catch
                     {
-                        textDescription.Text = "";
+                        textDescription.Text = string.Empty;
                     }
 
-                    textServiceDll.Text = "";
+                    textServiceDll.Text = string.Empty;
 
                     if (item.Config.ServiceType == ProcessHacker.Native.Api.ServiceType.Win32ShareProcess)
                     {
@@ -310,17 +310,17 @@ namespace ProcessHacker.Components
 
         private void ClearControls()
         {
-            labelServiceName.Text = "";
-            labelServiceDisplayName.Text = "";
-            comboType.Text = "";
-            comboStartType.Text = "";
-            comboErrorControl.Text = "";
-            textServiceBinaryPath.Text = "";
-            textUserAccount.Text = "";
+            labelServiceName.Text = string.Empty;
+            labelServiceDisplayName.Text = string.Empty;
+            comboType.Text = string.Empty;
+            comboStartType.Text = string.Empty;
+            comboErrorControl.Text = string.Empty;
+            textServiceBinaryPath.Text = string.Empty;
+            textUserAccount.Text = string.Empty;
             textPassword.Text = "password";
-            textLoadOrderGroup.Text = "";
-            textDescription.Text = "";
-            textServiceDll.Text = "";
+            textLoadOrderGroup.Text = string.Empty;
+            textDescription.Text = string.Empty;
+            textServiceDll.Text = string.Empty;
         }
 
         private void buttonApply_Click(object sender, EventArgs e)

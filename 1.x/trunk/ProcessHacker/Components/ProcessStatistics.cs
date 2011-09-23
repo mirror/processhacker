@@ -62,33 +62,33 @@ namespace ProcessHacker.Components
 
         public void ClearStatistics()
         {
-            labelCPUPriority.Text = "";
-            labelCPUCycles.Text = "";
-            labelCPUKernelTime.Text = "";
-            labelCPUUserTime.Text = "";
-            labelCPUTotalTime.Text = "";
+            labelCPUPriority.Text = string.Empty;
+            labelCPUCycles.Text = string.Empty;
+            labelCPUKernelTime.Text = string.Empty;
+            labelCPUUserTime.Text = string.Empty;
+            labelCPUTotalTime.Text = string.Empty;
 
-            labelMemoryPB.Text = "";
-            labelMemoryWS.Text = "";
-            labelMemoryPWS.Text = "";
-            labelMemoryVS.Text = "";
-            labelMemoryPVS.Text = "";
-            labelMemoryPU.Text = "";
-            labelMemoryPPU.Text = "";
-            labelMemoryPF.Text = "";
-            labelMemoryPP.Text = "";
+            labelMemoryPB.Text = string.Empty;
+            labelMemoryWS.Text = string.Empty;
+            labelMemoryPWS.Text = string.Empty;
+            labelMemoryVS.Text = string.Empty;
+            labelMemoryPVS.Text = string.Empty;
+            labelMemoryPU.Text = string.Empty;
+            labelMemoryPPU.Text = string.Empty;
+            labelMemoryPF.Text = string.Empty;
+            labelMemoryPP.Text = string.Empty;
 
-            labelIOReads.Text = "";
-            labelIOReadBytes.Text = "";
-            labelIOWrites.Text = "";
-            labelIOWriteBytes.Text = "";
-            labelIOOther.Text = "";
-            labelIOOtherBytes.Text = "";
-            labelIOPriority.Text = "";
+            labelIOReads.Text = string.Empty;
+            labelIOReadBytes.Text = string.Empty;
+            labelIOWrites.Text = string.Empty;
+            labelIOWriteBytes.Text = string.Empty;
+            labelIOOther.Text = string.Empty;
+            labelIOOtherBytes.Text = string.Empty;
+            labelIOPriority.Text = string.Empty;
 
-            labelOtherHandles.Text = "";
-            labelOtherGDIHandles.Text = "";
-            labelOtherUSERHandles.Text = "";
+            labelOtherHandles.Text = string.Empty;
+            labelOtherGDIHandles.Text = string.Empty;
+            labelOtherUSERHandles.Text = string.Empty;
         }
 
         public void UpdateStatistics()

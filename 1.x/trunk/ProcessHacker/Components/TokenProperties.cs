@@ -217,10 +217,10 @@ namespace ProcessHacker.Components
             {
                 labelElevated.Enabled = false;
                 textElevated.Enabled = false;
-                textElevated.Text = "";
+                textElevated.Text = string.Empty;
                 labelVirtualization.Enabled = false;
                 textVirtualized.Enabled = false;
-                textVirtualized.Text = "";
+                textVirtualized.Text = string.Empty;
             }
 
             if (tabControl.TabPages[Settings.Instance.TokenWindowTab] != null)

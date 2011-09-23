@@ -186,16 +186,16 @@ namespace ProcessHacker.Components
             }
             else
             {
-                fileModule.Text = "";
+                fileModule.Text = string.Empty;
                 fileModule.Enabled = false;
-                labelState.Text = "";
-                labelKernelTime.Text = "";
-                labelUserTime.Text = "";
-                labelTotalTime.Text = "";
-                labelTEBAddress.Text = "";
-                labelPriority.Text = "";
-                labelBasePriority.Text = "";
-                labelContextSwitches.Text = "";
+                labelState.Text = string.Empty;
+                labelKernelTime.Text = string.Empty;
+                labelUserTime.Text = string.Empty;
+                labelTotalTime.Text = string.Empty;
+                labelTEBAddress.Text = string.Empty;
+                labelPriority.Text = string.Empty;
+                labelBasePriority.Text = string.Empty;
+                labelContextSwitches.Text = string.Empty;
             }
 
             if (this.SelectedIndexChanged != null)
@@ -411,7 +411,7 @@ namespace ProcessHacker.Components
 
             litem.Name = item.Tid.ToString();
             litem.Text = item.Tid.ToString();
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
             litem.Tag = item;
@@ -435,14 +435,14 @@ namespace ProcessHacker.Components
                         if (!_useCycleTime)
                         {
                             if (newItem.ContextSwitchesDelta == 0)
-                                litem.SubItems[1].Text = "";
+                                litem.SubItems[1].Text = string.Empty;
                             else
                                 litem.SubItems[1].Text = newItem.ContextSwitchesDelta.ToString("N0");
                         }
                         else
                         {
                             if (newItem.CyclesDelta == 0)
-                                litem.SubItems[1].Text = "";
+                                litem.SubItems[1].Text = string.Empty;
                             else
                                 litem.SubItems[1].Text = newItem.CyclesDelta.ToString("N0");
                         }
@@ -795,7 +795,7 @@ namespace ProcessHacker.Components
                 }
                 catch
                 {
-                    string objects = "";
+                    string objects = string.Empty;
 
                     foreach (ListViewItem item in listThreads.SelectedItems)
                         objects += item.SubItems[0].Text + ",";
@@ -883,7 +883,7 @@ namespace ProcessHacker.Components
                 }
                 catch
                 {
-                    string objects = "";
+                    string objects = string.Empty;
 
                     foreach (ListViewItem item in listThreads.SelectedItems)
                         objects += item.SubItems[0].Text + ",";
@@ -941,7 +941,7 @@ namespace ProcessHacker.Components
                 }
                 catch
                 {
-                    string objects = "";
+                    string objects = string.Empty;
 
                     foreach (ListViewItem item in listThreads.SelectedItems)
                         objects += item.SubItems[0].Text + ",";

@@ -237,7 +237,7 @@ namespace ProcessHacker.Components
                 {
                     string t = lvItem.ImageKey;
 
-                    lvItem.ImageKey = "";
+                    lvItem.ImageKey = string.Empty;
                     lvItem.ImageKey = t;
                 }
             }
@@ -408,8 +408,8 @@ namespace ProcessHacker.Components
             }
             else
             {
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
             }
 
             if (item.Connection.Remote != null && !item.Connection.Remote.IsEmpty())
@@ -419,14 +419,14 @@ namespace ProcessHacker.Components
             }
             else
             {
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
             }
 
             this.FillNetworkItemAddresses(litem, item);
 
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.Protocol.ToString().ToUpper()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.State != 0 ? item.Connection.State.ToString() : ""));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Connection.State != 0 ? item.Connection.State.ToString() : string.Empty));
 
             lock (_needsAdd)
                 _needsAdd.Add(litem);
@@ -446,7 +446,7 @@ namespace ProcessHacker.Components
 
                         this.FillNetworkItemAddresses(litem, newItem);
 
-                        litem.SubItems[6].Text = newItem.Connection.State != 0 ? newItem.Connection.State.ToString() : "";
+                        litem.SubItems[6].Text = newItem.Connection.State != 0 ? newItem.Connection.State.ToString() : string.Empty;
                         _needsSort = true;
                     }
                 }));

@@ -171,7 +171,7 @@ namespace ProcessHacker
             }
             else
             {
-                return "";
+                return string.Empty;
             }
         }
 
@@ -185,7 +185,7 @@ namespace ProcessHacker
             }
             else
             {
-                return "";
+                return string.Empty;
             }
         }
 
@@ -199,7 +199,7 @@ namespace ProcessHacker
             }
             else
             {
-                return "";
+                return string.Empty;
             }
         }
 

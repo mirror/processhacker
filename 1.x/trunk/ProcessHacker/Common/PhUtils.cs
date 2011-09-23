@@ -125,9 +125,9 @@ namespace ProcessHacker.Common
         private static string FormatException(string operation, Exception ex)
         {
             if (!string.IsNullOrEmpty(operation))
-                return operation + ": " + ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : "");
+                return operation + ": " + ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : string.Empty);
             else
-                return ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : "");
+                return ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : string.Empty);
         }
 
         public static string FormatFileInfo(
@@ -187,14 +187,14 @@ namespace ProcessHacker.Common
                     return "Realtime";
                 case ProcessPriorityClass.Unknown:
                 default:
-                    return "";
+                    return string.Empty;
             }
         }
 
         public static string GetBestUserName(string userName, bool includeDomain)
         {
             if (userName == null)
-                return "";
+                return string.Empty;
 
             if (!userName.Contains("\\"))
                 return userName;
@@ -248,7 +248,7 @@ namespace ProcessHacker.Common
             {
                 if ((groups[i].Attributes & SidAttributes.IntegrityEnabled) != 0)
                 {
-                    integrity = groups[i].GetFullName(false).Replace(" Mandatory Level", "");
+                    integrity = groups[i].GetFullName(false).Replace(" Mandatory Level", string.Empty);
 
                     if (integrity == "Untrusted")
                         integrityLevel = 0;
@@ -425,7 +425,7 @@ namespace ProcessHacker.Common
             {
                 Program.StartProgramAdmin(
                     Environment.SystemDirectory + "\\..\\regedit.exe",
-                    "",
+                    string.Empty,
                     null,
                     ShowWindowType.Normal,
                     window != null ? window.Handle : IntPtr.Zero

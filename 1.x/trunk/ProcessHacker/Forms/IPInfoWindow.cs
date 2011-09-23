@@ -152,11 +152,11 @@ namespace ProcessHacker
                     {
                         if (pingReply.Options != null) //IPv6 ping causes pingReply.Options to become null 
                         {
-                            WriteResult(string.Format("Reply from {0}:  bytes={1}  time={2}ms  TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingReply.Options.Ttl), "", "");
+                            WriteResult(string.Format("Reply from {0}:  bytes={1}  time={2}ms  TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingReply.Options.Ttl), string.Empty, string.Empty);
                         }
                         else
                         {
-                            WriteResult(string.Format("Reply from {0}:  bytes={1}  time={2}ms  TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingOptions.Ttl), "", "");
+                            WriteResult(string.Format("Reply from {0}:  bytes={1}  time={2}ms  TTL={3}", ipAddress, byteSize, pingReply.RoundtripTime, pingOptions.Ttl), string.Empty, string.Empty);
                         }
 
                         if (minPingResponse == 0)
@@ -177,15 +177,15 @@ namespace ProcessHacker
                     }
                     else
                     {
-                        WriteResult(pingReply.Status.ToString(), "", "");
+                        WriteResult(pingReply.Status.ToString(), string.Empty, string.Empty);
                         lostPings++;
                     }
                 }
-                WriteResult("", "", "");
-                WriteResult(string.Format("Ping statistics for {0}:", ipAddress), "", "");
-                WriteResult(string.Format("        Packets: Sent = {0}, Received = {1}, Lost = {2}", sentPings, receivedPings, lostPings), "", "");
-                WriteResult("Approximate round trip times in milli-seconds:", "", "");
-                WriteResult(string.Format("        Minimum = {0}ms, Maximum = {1}ms", minPingResponse, maxPingResponse), "", "");
+                WriteResult(string.Empty, string.Empty, string.Empty);
+                WriteResult(string.Format("Ping statistics for {0}:", ipAddress), string.Empty, string.Empty);
+                WriteResult(string.Format("        Packets: Sent = {0}, Received = {1}, Lost = {2}", sentPings, receivedPings, lostPings), string.Empty, string.Empty);
+                WriteResult("Approximate round trip times in milli-seconds:", string.Empty, string.Empty);
+                WriteResult(string.Format("        Minimum = {0}ms, Maximum = {1}ms", minPingResponse, maxPingResponse), string.Empty, string.Empty);
             }
             WriteStatus("Ping complete.", false);
         }
@@ -239,7 +239,7 @@ namespace ProcessHacker
                             }
                             catch
                             {
-                                hostName = "";
+                                hostName = string.Empty;
                             }
 
                             if (this.IsHandleCreated)
@@ -289,7 +289,7 @@ namespace ProcessHacker
                         string data = streamReaderReceive.ReadLine();
                         if (!data.Contains("#") | !data.Contains("?"))
                         {
-                            WriteResult(data, "", "");
+                            WriteResult(data, string.Empty, string.Empty);
                         }
                     }
                 }
@@ -336,7 +336,7 @@ namespace ProcessHacker
             ListViewItem litem = new ListViewItem(hop);
             litem.SubItems.Add(time);
             litem.SubItems.Add(ip);
-            litem.SubItems.Add("");
+            litem.SubItems.Add(string.Empty);
 
             listInfo.Items.Add(litem);
         }

@@ -154,9 +154,9 @@ namespace ProcessHacker
 
                 mailslotName = "ProcessHackerAssistant" + Utils.CreateRandomString(8);
                 binPath = "\"" + Application.ExecutablePath + "\" -assistant " +
-                    (omitUserAndType ? "" :
+                    (omitUserAndType ? string.Empty :
                     ("-u \"" + comboUsername.Text + "\" -t " + comboType.SelectedItem.ToString().ToLowerInvariant() + " ")) +
-                    (_pid != -1 ? ("-P " + _pid.ToString() + " ") : "") + "-p \"" +
+                    (_pid != -1 ? ("-P " + _pid.ToString() + " ") : string.Empty) + "-p \"" +
                     textPassword.Text.Replace("\"", "\\\"") + "\" -s " + textSessionID.Text + " -c \"" +
                     textCmdLine.Text.Replace("\"", "\\\"") + "\" -E " + mailslotName;
 
@@ -259,7 +259,7 @@ namespace ProcessHacker
                 string displayName = session.SessionId.ToString();
 
                 if (!string.IsNullOrEmpty(session.Name))
-                    displayName += ": " + session.Name + (userName != "\\" ? (" (" + userName + ")") : "");
+                    displayName += ": " + session.Name + (userName != "\\" ? (" (" + userName + ")") : string.Empty);
                 else if (userName != "\\")
                     displayName += ": " + userName;
 

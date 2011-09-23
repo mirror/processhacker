@@ -164,7 +164,7 @@ namespace ProcessHacker
             if (node == null)
                 return TreePath.Empty;
 
-            if (this.GetSortColumn() != "")
+            if (this.GetSortColumn() != string.Empty)
             {
                 return new TreePath(node);
             }
@@ -203,7 +203,7 @@ namespace ProcessHacker
                 if (column.SortOrder != SortOrder.None)
                     return column.Header.ToLowerInvariant();
 
-            return "";
+            return string.Empty;
         }
 
         public SortOrder GetSortOrder()
@@ -227,7 +227,7 @@ namespace ProcessHacker
 
         public System.Collections.IEnumerable GetChildren(TreePath treePath)
         {
-            if (this.GetSortColumn() != "")
+            if (this.GetSortColumn() != string.Empty)
             {
                 List<ProcessNode> nodes = new List<ProcessNode>();
                 string sortC = this.GetSortColumn();
@@ -357,7 +357,7 @@ namespace ProcessHacker
         public bool IsLeaf(TreePath treePath)
         {
             // When we're sorting the whole tree is a flat list, so there are no children.
-            if (this.GetSortColumn() != "")
+            if (this.GetSortColumn() != string.Empty)
                 return true;
 
             if (treePath.IsEmpty())
