@@ -60,19 +60,19 @@ $table_sessions = $table_prefix. "sessions";
 					
 					<div class="downloads">
 						<div class="version">
-							Latest version is <?php echo LATEST_PH_VERSION ?>
+							Latest version is <?php echo $LATEST_PH_VERSION ?>
 						</div>
 						<li>
-							<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">Installer</a>
+							<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">Installer</a>
 						</li>
 						<li>
-							<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">Binaries (portable)</a>
+							<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">Binaries (portable)</a>
 						</li>
 						<li>
-							<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-src.zip/download" title="Source code">Source code</a>
+							<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download" title="Source code">Source code</a>
 						</li>
 						<div class="released">
-							Released <?php echo LATEST_PH_RELEASE_DATE ?>
+							Released <?php echo $LATEST_PH_RELEASE_DATE ?>
 						</div>
 					</div>
 
@@ -112,7 +112,7 @@ $table_sessions = $table_prefix. "sessions";
 					<p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
 					<ul>
 						<li>&#160;•&#160;Implements almost all of the functionality offered by Process Explorer, plus more advanced features.</li>
-						<li>&#160;•&#160;Performs stack traces correctly for .NET programs on x64.</li>
+						<li>&#160;•&#160;Performs full stack traces correctly for .NET process threads.</li>
 						<li>&#160;•&#160;Allows you to see what a thread is waiting on.</li>
 						<li>&#160;•&#160;Has advanced string scanning capabilities, as well as regular expression filtering.</li>
 						<li>&#160;•&#160;Highlights both relocated and .NET DLLs.</li>
@@ -153,7 +153,6 @@ $table_sessions = $table_prefix. "sessions";
 								WHERE t.topic_id = p.topic_id AND
 								f.forum_id = t.forum_id AND
 								t.forum_id = 1 AND
-								t.forum_id != 7 AND 
 								t.topic_status <> 2 AND
 								p.post_id = t.topic_last_post_id AND
 								p.poster_id = u.user_id

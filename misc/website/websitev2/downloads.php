@@ -24,7 +24,7 @@ include("config.php");
 					<li class="overview active"><a href="/downloads.php">Downloads</a></li>
 					<li><a href="/faq.php">FAQ</a></li>
 					<li><a href="/about.php">About</a></li>
-					<li><a href="/forums/" target="_blank">Forum</a></li>
+					<li><a href="/forums/">Forum</a></li>
 				</ul>
 			</div>
 		</div>
@@ -58,7 +58,7 @@ include("config.php");
 		
 		<div class="top-portlet">
 			<div class="summary">
-				<p>The latest stable version of Process Hacker is <strong><?php echo LATEST_PH_VERSION ?></strong></p>
+				<p>The latest stable version of Process Hacker is <strong><?php echo $LATEST_PH_VERSION ?></strong></p>
 				<p>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver, so it works on 64-bit systems.</p>
 	
 				<p><strong>System Requirements:</strong></p>
@@ -75,33 +75,33 @@ include("config.php");
 					<div class="portlet">
 						<ul style="width: 150px; float:right" class="downloads">		
 							<li>
-								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">
+								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">
 									Download
 								</a>
 							</li>
 						</ul>	
 						
 						<p><strong>Setup (recommended)</strong></p>
-						<p>processhacker-<?php echo LATEST_PH_VERSION ?>-setup.exe</p>		
-						<p>Size: <?php echo LATEST_PH_SETUP_SIZE ?></p>
-						<p>SHA1: <?php echo LATEST_PH_SETUP_SHA1 ?></p>
-						<p>MD5: <?php echo LATEST_PH_SETUP_MD5 ?></p>
+						<p>processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe</p>		
+						<p>Size: <?php echo $LATEST_PH_SETUP_SIZE ?></p>
+						<p>SHA1: <?php echo $LATEST_PH_SETUP_SHA1 ?></p>
+						<p>MD5: <?php echo $LATEST_PH_SETUP_MD5 ?></p>
 					</div>	
 		
 					<div class="portlet">
 						<ul style="width: 150px; float:right" class="downloads">						
 							<li>
-								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">
+								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">
 									Download
 								</a>
 							</li>
 						</ul>
 						
 						<p><strong>Binaries (portable)</strong></p>
-						<p>processhacker-<?php echo LATEST_PH_VERSION ?>-bin.zip</p>
-						<p>Size: <?php echo LATEST_PH_BIN_SIZE ?></p>
-						<p>SHA1: <?php echo LATEST_PH_BIN_SHA1 ?></p>
-						<p>MD5: <?php echo LATEST_PH_BIN_MD5 ?></p>
+						<p>processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip</p>
+						<p>Size: <?php echo $LATEST_PH_BIN_SIZE ?></p>
+						<p>SHA1: <?php echo $LATEST_PH_BIN_SHA1 ?></p>
+						<p>MD5: <?php echo $LATEST_PH_BIN_MD5 ?></p>
 					</div>      
 				</div>
     
@@ -115,33 +115,33 @@ include("config.php");
 					<div class="portlet">
 						<ul style="width: 150px; float:right" class="downloads">						
 							<li>
-								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-src.zip/download" title="Source Code">
+								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download" title="Source Code">
 									Download
 								</a>
 							</li>
 						</ul>
 						
 						<p><strong>Source Code</strong></p>
-						<p>processhacker-<?php echo LATEST_PH_VERSION ?>-src.zip</p>
-						<p>Size: <?php echo LATEST_PH_SOURCE_SIZE ?></p>
-						<p>SHA1: <?php echo LATEST_PH_SOURCE_SHA1 ?></p>
-						<p>MD5: <?php echo LATEST_PH_SOURCE_MD5 ?></p>
+						<p>processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip</p>
+						<p>Size: <?php echo $LATEST_PH_SOURCE_SIZE ?></p>
+						<p>SHA1: <?php echo $LATEST_PH_SOURCE_SHA1 ?></p>
+						<p>MD5: <?php echo $LATEST_PH_SOURCE_MD5 ?></p>
 					</div>	
 
 					<div class="portlet">
 						<ul style="width: 150px; float:right" class="downloads">						
 							<li>
-								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo LATEST_PH_VERSION ?>-sdk.zip/download" title="Setup (recommended)">
+								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-sdk.zip/download" title="Setup (recommended)">
 									Download
 								</a>
 							</li>
 						</ul>
 						
 						<p><strong>Plugins SDK</strong></p>
-						<p>processhacker-<?php echo LATEST_PH_VERSION ?>-sdk.zip</p>
-						<p>Size: <?php echo LATEST_PH_SDK_SIZE ?></p>
-						<p>SHA1: <?php echo LATEST_PH_SDK_SHA1 ?></p>
-						<p>MD5: <?php echo LATEST_PH_SDK_MD5 ?></p>  
+						<p>processhacker-<?php echo $LATEST_PH_VERSION ?>-sdk.zip</p>
+						<p>Size: <?php echo $LATEST_PH_SDK_SIZE ?></p>
+						<p>SHA1: <?php echo $LATEST_PH_SDK_SHA1 ?></p>
+						<p>MD5: <?php echo $LATEST_PH_SDK_MD5 ?></p>  
 					</div>
 				</div>	
 

@@ -17,7 +17,7 @@
 					<li><a href="/downloads.php">Downloads</a></li>
 					<li><a href="/faq.php">FAQ</a></li>
 					<li class="overview active"><a href="/about.php">About</a></li>
-					<li><a href="/forums/" target="_blank">Forum</a></li>
+					<li><a href="/forums/">Forum</a></li>
 				</ul>
 			</div>
 		</div>
@@ -33,14 +33,16 @@
 			<p><strong>Maintainers:</strong></p>
 			<div class="yui-g" style="width: 80em;">
 				<div class="yui-u first">
+					<img style="float: left; margin: 0 10px 5px 0;" src="./forums/download/file.php?avatar=2_1295726184.jpg" width="128" height="128" alt="User avatar">
 					<li><a style="color:#AA0000" href="http://sourceforge.net/users/wj32/"><strong>wj32</strong></a></li>
 					<div class="portlet">
 					</div>
 				</div>
 			</div>
 				
-			<div class="yui-g" style="width: 80em;">
+			<div class="yui-g" style="width: 80em;">	
 				<div class="yui-u first">
+					<img style="float: left; margin: 0 10px 5px 0;" src="./forums/download/file.php?avatar=54_1314248802.jpg" width="150" height="115" alt="User avatar">
 					<li><a style="color:#AA0000" href="http://sourceforge.net/users/dmex/"><strong>dmex</strong></a></li>
 						<div class="portlet">
 					</div>
@@ -56,9 +58,5 @@
 			</div>
 		</div>
 	</div>
-	
-	<div class="center">
-	<p>This Website uses code based on the <a href="https://launchpad.net/launchpad-project">Launchpad project</a>, Available under the <a href="https://dev.launchpad.net/LaunchpadLicense">GNU Affero General Public License v3 (AGPLv3).</a></p>
-	</div>
-
+</div>
 <?php include("footer.php"); ?>

@@ -18,7 +18,6 @@ img { border: 0; }
 .summary
 {
 	max-width: 70%;
-	padding-bottom: 3em;
 }
 
 .center
@@ -34,7 +33,11 @@ img { border: 0; }
 
 .forumdate
 {
-	padding-bottom: 0.5em;
+	padding: 0;
+	padding-top: 0px;
+	padding-right: 0px;
+	padding-bottom: 5px;
+	padding-left: 0px;
 }
 
 blockquote 
