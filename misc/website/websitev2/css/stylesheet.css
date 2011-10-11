@@ -1694,10 +1694,15 @@ div.centered table {
 .batch-navigation-links .first, .batch-navigation-links .previous, .batch-navigation-links .next {
     margin-right: 0.25em;
 }
-.flowed-block {
+.flowed-block 
+{
     display: inline-block;
     text-align: left;
     vertical-align: top;
+	
+	/* For IE 7 */
+	zoom: 1;
+	*display: inline;
 }
 
 form {
@@ -2092,7 +2097,7 @@ div.watermark-apps-portlet span img {
 }
 .watermark-apps-portlet li.active a, .watermark-apps-portlet li.active span {
     font-weight: bold;
-    text-decoration: underline;
+    /*text-decoration: underline;*/
 }
 .watermark-apps-portlet li a:hover 
 {

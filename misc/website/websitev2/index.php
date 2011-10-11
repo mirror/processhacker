@@ -30,8 +30,8 @@ $table_users = $table_prefix. "users";
 $table_sessions = $table_prefix. "sessions";
 
 ?>
-	
-<div class="page"> 
+
+<div class="page">
 	<div class="yui-d0">
 		<div class="watermark-apps-portlet">
 			<div class="flowed-block">
@@ -111,8 +111,8 @@ $table_sessions = $table_prefix. "sessions";
 					</ul>
 					<p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
 					<ul>
-						<li>&#160;•&#160;Implements almost all of the functionality offered by Process Explorer, plus more advanced features.</li>
-						<li>&#160;•&#160;Performs full stack traces correctly for .NET process threads.</li>
+						<li>&#160;•&#160;Implements all of the functionality offered by Process Explorer, plus more advanced features.</li>
+						<li>&#160;•&#160;Performs full stack traces correctly for .NET based application theads.</li>
 						<li>&#160;•&#160;Allows you to see what a thread is waiting on.</li>
 						<li>&#160;•&#160;Has advanced string scanning capabilities, as well as regular expression filtering.</li>
 						<li>&#160;•&#160;Highlights both relocated and .NET DLLs.</li>
@@ -120,26 +120,10 @@ $table_sessions = $table_prefix. "sessions";
 						<li>&#160;•&#160;Shows names for transaction manager objects and ETW registration objects.</li>
 						<li>&#160;•&#160;Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
 					</ul>
-					
-					<div class="yui-g" style="width: 80em;">
-						<div class="yui-u first">
-							<div class="portlet">
-							</div>
-
-							<!-- AddThis Button BEGIN <p><strong>Social:</strong></p>-->
-							<div class="addthis_toolbox addthis_default_style ">
-									<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
-									<a class="addthis_button_tweet"></a>
-									<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
-									<a class="addthis_counter addthis_pill_style"></a>
-							</div>
-							<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=dmex"></script>
-							<!-- AddThis Button END -->	
-						</div>
-					</div>
 				</div>
+				
 			</div>
-	<br>
+			
 			<div class="yui-g">
 				<div class="yui-u first">
 					<div class="portlet">
@@ -282,19 +266,13 @@ $table_sessions = $table_prefix. "sessions";
 			<div class="yui-g">
 				<div class="yui-u first">
 					<div class="portlet">
-						<p><strong>Screenshots</strong></p>
+						<a href="/screenshots.php"><p><strong>Screenshots</strong></p></a>
 						<a href="/images/screenshots/processes_tab_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
 							<img alt="" width="200" height="107" src="/images/screenshots/processhacker_small.png">
 						</a>
 						<a href="/images/screenshots/sysinfo_large.png" rel="lytebox[group1]">
 							<img alt="" width="200" height="107" src="/images/screenshots/sysinfo_small.png">
 						</a>
-
-						<h2>
-							<span class="see-all">
-								<a href="/screenshots.php" class="menu-link-list_all sprite info">All Screenshots</a>
-							</span>
-						</h2>
 					</div>	
 				</div>
 
@@ -304,8 +282,9 @@ $table_sessions = $table_prefix. "sessions";
 						<script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
 					</div>      
 				</div>
-			</div>
+			</div>		
 		</div>
+	</div>
 </div>
 
 <?php include("footer.php"); ?>

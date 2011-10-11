@@ -29,7 +29,11 @@
                 Process Hacker was started in 2008 as an open source alternative to programs such as Task Manager and 
                 Process Explorer.
 			</p>
-
+			
+			<p>
+				Licenced under the GNU GPL, v3
+			</p>
+			
 			<p><strong>Maintainers:</strong></p>
 			<div class="yui-g" style="width: 80em;">
 				<div class="yui-u first">
