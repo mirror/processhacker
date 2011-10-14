@@ -112,7 +112,7 @@ $table_sessions = $table_prefix. "sessions";
 					<p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
 					<ul>
 						<li>&#160;•&#160;Implements all of the functionality offered by Process Explorer, plus more advanced features.</li>
-						<li>&#160;•&#160;Performs full stack traces correctly for .NET based application theads.</li>
+						<li>&#160;•&#160;Performs stack traces correctly for .NET programs, with managed symbol resolution.</li>
 						<li>&#160;•&#160;Allows you to see what a thread is waiting on.</li>
 						<li>&#160;•&#160;Has advanced string scanning capabilities, as well as regular expression filtering.</li>
 						<li>&#160;•&#160;Highlights both relocated and .NET DLLs.</li>

@@ -31,7 +31,7 @@
 			</p>
 			
 			<p>
-				Licenced under the GNU GPL, v3
+				Process Hacker is licensed under the GNU GPL, v3.
 			</p>
 			
 			<p><strong>Maintainers:</strong></p>
