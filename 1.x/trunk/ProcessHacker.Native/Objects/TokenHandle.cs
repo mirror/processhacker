@@ -687,12 +687,7 @@ namespace ProcessHacker.Native.Objects
             tkp.Privileges[0].Attributes = attributes;
             tkp.Privileges[0].Luid = privilegeLuid;
 
-            Win32.AdjustTokenPrivileges(this, false, ref tkp, 0, IntPtr.Zero, IntPtr.Zero);
-
-            if (Marshal.GetLastWin32Error() != 0)
-                return false;
-
-            return true;
+            return Win32.NtAdjustPrivilegesToken(this, false, ref tkp, 0, IntPtr.Zero, IntPtr.Zero) == NtStatus.Success;
         }
     }
 }
