@@ -1616,17 +1616,12 @@ namespace ProcessHacker.Native.Api
             // Object name
             if (this.ObjectName != IntPtr.Zero)
             {
-                UnicodeString unicodeString =
-                    (UnicodeString)Marshal.PtrToStructure(this.ObjectName, typeof(UnicodeString));
-
-                unicodeString.Dispose();
                 Marshal.FreeHGlobal(this.ObjectName);
-
                 this.ObjectName = IntPtr.Zero;
             }
 
             // Security QOS
-            if (this.SecurityQualityOfService != null)
+            if (this.SecurityQualityOfService != IntPtr.Zero)
             {
                 Marshal.FreeHGlobal(this.SecurityQualityOfService);
                 this.SecurityQualityOfService = IntPtr.Zero;
