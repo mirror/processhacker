@@ -419,22 +419,21 @@ namespace ProcessHacker.Components
         {
             try
             {
-                PEWindow pw = Program.GetPEWindow(this.GetItemFileName(listModules.SelectedItems[0]),
-                    new Program.PEWindowInvokeAction(delegate(PEWindow f)
+                PEWindow pw = Program.GetPEWindow(this.GetItemFileName(listModules.SelectedItems[0]), new Program.PEWindowInvokeAction(f =>
+                {
+                    if (!f.IsDisposed)
                     {
-                        if (!f.IsDisposed)
+                        try
                         {
-                            try
-                            {
-                                f.Show();
-                                f.Activate();
-                            }
-                            catch (Exception ex)
-                            {
-                                Logging.Log(ex);
-                            }
+                            f.Show();
+                            f.Activate();
                         }
-                    }));
+                        catch (Exception ex)
+                        {
+                            Logging.Log(ex);
+                        }
+                    }
+                }));
             }
             catch (Exception ex)
             {
@@ -444,23 +443,25 @@ namespace ProcessHacker.Components
 
         private void getFuncAddressMenuItem_Click(object sender, EventArgs e)
         {
-            GetProcAddressWindow gpaWindow = new GetProcAddressWindow(
-                this.GetItemFileName(listModules.SelectedItems[0]));
-
-            gpaWindow.ShowDialog();
+            using (GetProcAddressWindow gpaWindow = new GetProcAddressWindow(this.GetItemFileName(listModules.SelectedItems[0])))
+            {
+                gpaWindow.ShowDialog();
+            }
         }
 
         private void changeMemoryProtectionModuleMenuItem_Click(object sender, EventArgs e)
         {
-            ModuleItem item = (ModuleItem)listModules.SelectedItems[0].Tag;
-            VirtualProtectWindow w = new VirtualProtectWindow(_pid, item.BaseAddress.ToIntPtr(), item.Size);
-
-            w.ShowDialog();
+            ModuleItem item = this.listModules.SelectedItems[0].Tag as ModuleItem;
+           
+            using (VirtualProtectWindow w = new VirtualProtectWindow(_pid, item.BaseAddress.ToIntPtr(), item.Size))
+            {
+                w.ShowDialog();
+            }
         }
 
         private void readMemoryModuleMenuItem_Click(object sender, EventArgs e)
         {
-            ModuleItem item = (ModuleItem)listModules.SelectedItems[0].Tag;
+            ModuleItem item = this.listModules.SelectedItems[0].Tag as ModuleItem;
 
             MemoryEditor.ReadWriteMemory(_pid, item.BaseAddress.ToIntPtr(), item.Size, true);
         }
@@ -513,7 +514,7 @@ namespace ProcessHacker.Components
                     }
 
                     // If we didn't find the service name, use the driver base name.
-                    if (serviceName == null)
+                    if (string.IsNullOrEmpty(serviceName))
                     {
                         if (moduleItem.Name.EndsWith(".sys", StringComparison.OrdinalIgnoreCase))
                             serviceName = moduleItem.Name.Remove(moduleItem.Name.Length - 4, 4);
@@ -521,15 +522,13 @@ namespace ProcessHacker.Components
                             serviceName = moduleItem.Name;
                     }
 
-                    RegistryKey servicesKey =
-                        Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Services", true);
+                    RegistryKey servicesKey = Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Services", true);
                     bool serviceKeyCreated;
                     RegistryKey serviceKey;
 
                     // Check if the service key exists so that we don't delete it 
                     // later if it does.
-                    if (Array.Exists<string>(servicesKey.GetSubKeyNames(),
-                        (keyName) => (string.Compare(keyName, serviceName, true) == 0)))
+                    if (Array.Exists<string>(servicesKey.GetSubKeyNames(),  keyName => string.Compare(keyName, serviceName, true) == 0))
                     {
                         serviceKeyCreated = false;
                     }
@@ -572,11 +571,10 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    using (ProcessHandle phandle = new ProcessHandle(_pid,
-                        Program.MinProcessQueryRights | ProcessAccess.VmOperation |
+                    using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | ProcessAccess.VmOperation |
                         ProcessAccess.VmRead | ProcessAccess.VmWrite | ProcessAccess.CreateThread))
                     {
-                        IntPtr baseAddress = ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress.ToIntPtr();
+                        IntPtr baseAddress = (listModules.SelectedItems[0].Tag as ModuleItem).BaseAddress.ToIntPtr();
 
                         phandle.SetModuleReferenceCount(baseAddress, 1);
 
@@ -646,8 +644,8 @@ namespace ProcessHacker.Components
 
         public int Compare(ListViewItem x, ListViewItem y, int column)
         {
-            ModuleItem mx = (ModuleItem)x.Tag;
-            ModuleItem my = (ModuleItem)y.Tag;
+            ModuleItem mx = x.Tag as ModuleItem;
+            ModuleItem my = y.Tag as ModuleItem;
 
             if (mx.FileName.Equals(_mainModule, StringComparison.OrdinalIgnoreCase))
                 return -1;

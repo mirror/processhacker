@@ -148,9 +148,6 @@ namespace ProcessHacker.Native
         {
             _deviceName = deviceName;
 
-            if (OSVersion.Architecture != OSArch.I386)
-                throw new NotSupportedException("KProcessHacker does not support 64-bit Windows.");
-
             try
             {
                 _fileHandle = new FileHandle(

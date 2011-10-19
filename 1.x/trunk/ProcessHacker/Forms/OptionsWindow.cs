@@ -267,7 +267,6 @@ namespace ProcessHacker
             checkAllowOnlyOneInstance.Checked = Settings.Instance.AllowOnlyOneInstance;
             checkVerifySignatures.Checked = Settings.Instance.VerifySignatures;
             checkHideHandlesWithNoName.Checked = Settings.Instance.HideHandlesWithNoName;
-            checkEnableKPH.Enabled = OSVersion.Architecture == OSArch.I386;
             checkEnableKPH.Checked = Settings.Instance.EnableKPH;
             checkEnableExperimentalFeatures.Checked = Settings.Instance.EnableExperimentalFeatures;
             checkStartHidden.Checked = Settings.Instance.StartHidden;

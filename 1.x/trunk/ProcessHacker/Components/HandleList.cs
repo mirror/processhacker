@@ -113,8 +113,10 @@ namespace ProcessHacker.Components
                                                         break;
                                                     case "token":
                                                         {
-                                                            (new TokenWindow(new RemoteTokenHandle(phandle, 
-                                                                handle))).ShowDialog();
+                                                            using (TokenWindow twindow = new TokenWindow(new RemoteTokenHandle(phandle, handle)))
+                                                            {
+                                                                twindow.ShowDialog();
+                                                            }
                                                         }
                                                         break;
                                                     case "process":
@@ -134,8 +136,7 @@ namespace ProcessHacker.Components
                                                                 pid = ProcessHandle.FromHandle(dupHandle).GetProcessId();
                                                             }
 
-                                                            Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],
-                                                                (f) => Program.FocusWindow(f));
+                                                            Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], Program.FocusWindow);
                                                         }
                                                         break;
                                                 }

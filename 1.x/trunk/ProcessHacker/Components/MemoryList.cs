@@ -551,7 +551,7 @@ namespace ProcessHacker.Components
                 }
 
                 MemoryEditor m_e = MemoryEditor.ReadWriteMemory(_pid, regionAddress, (int)regionSize, false,
-                   new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f) { f.Select(address.Decrement(regionAddress).ToInt64(), 1); }));
+                   new Program.MemoryEditorInvokeAction(f => { f.Select(address.Decrement(regionAddress).ToInt64(), 1); }));
             }
         }
 

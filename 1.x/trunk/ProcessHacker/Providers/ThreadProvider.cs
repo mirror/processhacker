@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+
 using ProcessHacker.Common;
 using ProcessHacker.Common.Messaging;
 using ProcessHacker.Common.Threading;

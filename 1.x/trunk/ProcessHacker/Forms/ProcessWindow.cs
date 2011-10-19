@@ -740,40 +740,38 @@ namespace ProcessHacker
 
             listEnvironment.BeginUpdate();
 
-            WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
+            WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
+            {
+                try
                 {
-                    try
+                    using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
                     {
-                        using (ProcessHandle phandle = new ProcessHandle(_pid,
-                            ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
+                        foreach (var pair in phandle.GetEnvironmentVariables())
                         {
-                            foreach (var pair in phandle.GetEnvironmentVariables())
+                            if (pair.Key != string.Empty)
                             {
-                                if (pair.Key != string.Empty)
+                                if (this.IsHandleCreated)
                                 {
-                                    if (this.IsHandleCreated)
-                                    {
-                                        // Work around delegate variable capturing.
-                                        var localPair = pair;
+                                    // Work around delegate variable capturing.
+                                    var localPair = pair;
 
-                                        this.BeginInvoke(new MethodInvoker(() =>
-                                        {
-                                            listEnvironment.Items.Add(
-                                                new ListViewItem(new string[] { localPair.Key, localPair.Value }));
-                                        }));
-                                    }
+                                    this.BeginInvoke(new MethodInvoker(() =>
+                                    {
+                                        listEnvironment.Items.Add(new ListViewItem(new string[] { localPair.Key, localPair.Value }));
+                                    }));
                                 }
                             }
                         }
                     }
-                    catch
-                    { }
+                }
+                catch
+                { }
 
-                    if (this.IsHandleCreated)
-                    {
-                        this.BeginInvoke(new MethodInvoker(() => listEnvironment.EndUpdate()));
-                    }
-                }), "process-update-environment-variables");
+                if (this.IsHandleCreated)
+                {
+                    this.BeginInvoke(new MethodInvoker(() => listEnvironment.EndUpdate()));
+                }
+            }), "process-update-environment-variables");
         }
 
         public void UpdateProtected()
@@ -1058,15 +1056,16 @@ namespace ProcessHacker
         {
             try
             {
-                ComboBoxPickerWindow picker = new ComboBoxPickerWindow(new string[] { "Protect", "Unprotect" });
-
-                picker.Message = "Select an action below:";
-                picker.SelectedItem = (textProtected.Text == "Protected") ? "Protect" : "Unprotect";
-
-                if (picker.ShowDialog() == DialogResult.OK)
+                using (ComboBoxPickerWindow picker = new ComboBoxPickerWindow(new string[] { "Protect", "Unprotect" }))
                 {
-                    KProcessHacker.Instance.SetProcessProtected(_pid, picker.SelectedItem == "Protect");
-                    this.UpdateProtected();
+                    picker.Message = "Select an action below:";
+                    picker.SelectedItem = string.Equals(this.textProtected.Text, "Protected", StringComparison.OrdinalIgnoreCase) ? "Protect" : "Unprotect";
+
+                    if (picker.ShowDialog() == DialogResult.OK)
+                    {
+                        KProcessHacker.Instance.SetProcessProtected(_pid, string.Equals(picker.SelectedItem, "Protect", StringComparison.OrdinalIgnoreCase));
+                        this.UpdateProtected();
+                    }
                 }
             }
             catch (Exception ex)
@@ -1086,7 +1085,7 @@ namespace ProcessHacker
                 {
                     IntPtr baseAddress = phandle.GetBasicInformation().PebBaseAddress;
 
-                    Program.HackerWindow.BeginInvoke(new MethodInvoker(delegate
+                    Program.HackerWindow.BeginInvoke(new MethodInvoker(() =>
                     {
                         StructWindow sw = new StructWindow(_pid, baseAddress, Program.Structs["PEB"]);
 
@@ -1137,7 +1136,7 @@ namespace ProcessHacker
             {
                 SecurityEditor.EditSecurity(
                     this,
-                    SecurityEditor.GetSecurableWrapper((access) => new ProcessHandle(_pid, (ProcessAccess)access)),
+                    SecurityEditor.GetSecurableWrapper(access => new ProcessHandle(_pid, (ProcessAccess)access)),
                     _processItem.Name,
                     NativeTypeFactory.GetAccessEntries(NativeTypeFactory.ObjectType.Process)
                     );

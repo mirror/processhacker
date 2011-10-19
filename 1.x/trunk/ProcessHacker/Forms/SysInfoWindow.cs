@@ -50,8 +50,7 @@ namespace ProcessHacker
             this.AddEscapeToClose();
 
             this.Size = Settings.Instance.SysInfoWindowSize;
-            this.Location = Utils.FitRectangle(new Rectangle(
-                Settings.Instance.SysInfoWindowLocation, this.Size), this).Location;
+            this.Location = Utils.FitRectangle(new Rectangle(Settings.Instance.SysInfoWindowLocation, this.Size), this).Location;
 
             // Load the pool limit addresses.
             if (
@@ -59,21 +58,19 @@ namespace ProcessHacker
                 KProcessHacker.Instance != null
                 )
             {
-                WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
+                WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
+                {
+                    try
                     {
-                        try
-                        {
-                            SymbolProvider symbols = new SymbolProvider();
+                        SymbolProvider symbols = new SymbolProvider();
 
-                            symbols.LoadModule(Windows.KernelFileName, Windows.KernelBase);
-                            _mmSizeOfPagedPoolInBytes = 
-                                symbols.GetSymbolFromName("MmSizeOfPagedPoolInBytes").Address.ToIntPtr();
-                            _mmMaximumNonPagedPoolInBytes = 
-                                symbols.GetSymbolFromName("MmMaximumNonPagedPoolInBytes").Address.ToIntPtr();
-                        }
-                        catch
-                        { }
-                    }), "load-mm-addresses");
+                        symbols.LoadModule(Windows.KernelFileName, Windows.KernelBase);
+                        _mmSizeOfPagedPoolInBytes = symbols.GetSymbolFromName("MmSizeOfPagedPoolInBytes").Address.ToIntPtr();
+                        _mmMaximumNonPagedPoolInBytes = symbols.GetSymbolFromName("MmMaximumNonPagedPoolInBytes").Address.ToIntPtr();
+                    }
+                    catch
+                    { }
+                }), "load-mm-addresses");
             }
         }
 

@@ -12,7 +12,7 @@ namespace ProcessHacker.Common.Messaging
         public MessageQueue()
         {
             // Action message listener.
-            this.AddListener(new MessageQueueListener<ActionMessage>((action) => action.Action()));
+            this.AddListener(new MessageQueueListener<ActionMessage>(action => action.Action()));
         }
 
         public void AddListener(MessageQueueListener listener)

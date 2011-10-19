@@ -352,7 +352,7 @@ namespace ProcessHacker
             }
             else
             {
-                SysInfoWindow.BeginInvoke(new MethodInvoker(delegate
+                SysInfoWindow.BeginInvoke(new MethodInvoker(() =>
                 {
                     SysInfoWindow.Show();
                     SysInfoWindow.Activate();
@@ -377,8 +377,10 @@ namespace ProcessHacker
 
         private void aboutMenuItem_Click(object sender, EventArgs e)
         {
-            AboutWindow about = new AboutWindow();
-            about.ShowDialog();
+            using (AboutWindow about = new AboutWindow())
+            {
+                about.ShowDialog();
+            }
         }
 
         private void optionsMenuItem_Click(object sender, EventArgs e)
@@ -1457,15 +1459,16 @@ namespace ProcessHacker
 
         private void affinityProcessMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessAffinity affForm = new ProcessAffinity(processSelectedPid);
-
-            try
+            using (ProcessAffinity affForm = new ProcessAffinity(processSelectedPid))
             {
-                affForm.ShowDialog();
-            }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
+                try
+                {
+                    affForm.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
             }
         }
 
@@ -1600,8 +1603,10 @@ namespace ProcessHacker
             {
                 Settings.Instance.RunAsCommand = Program.ProcessProvider.Dictionary[processSelectedPid].FileName;
 
-                RunWindow run = new RunWindow();
-                run.ShowDialog();
+                using (RunWindow run = new RunWindow())
+                {
+                    run.ShowDialog();
+                }
             }
             catch (Exception ex)
             {
@@ -1613,9 +1618,11 @@ namespace ProcessHacker
         {
             try
             {
-                RunWindow run = new RunWindow();
-                run.UsePID(processSelectedPid);
-                run.ShowDialog();
+                using (RunWindow run = new RunWindow())
+                {
+                    run.UsePID(processSelectedPid);
+                    run.ShowDialog();
+                }
             }
             catch (Exception ex)
             {
@@ -1842,8 +1849,7 @@ namespace ProcessHacker
             if (treeProcesses.SelectedNodes.Count != 1)
                 return;
 
-            Program.TryStart(Settings.Instance.SearchEngine.Replace("%s",
-                treeProcesses.SelectedNodes[0].Name));
+            Program.TryStart(Settings.Instance.SearchEngine.Replace("%s", treeProcesses.SelectedNodes[0].Name));
         }
 
         private void reanalyzeProcessMenuItem_Click(object sender, EventArgs e)
@@ -1889,7 +1895,9 @@ namespace ProcessHacker
                 vt.Show();
             }
             else
+            {
                 PhUtils.ShowError("An Internet session could not be established. Please verify connectivity.");
+            }
         }
 
         private void analyzeWaitChainProcessMenuItem_Click(object sender, EventArgs e)
@@ -2715,25 +2723,10 @@ namespace ProcessHacker
             if (Loader.LoadDll(Settings.Instance.DbgHelpPath) == IntPtr.Zero)
                 Loader.LoadDll("dbghelp.dll");
 
-            // Find the location of the dbghelp.dll we loaded and load symsrv.dll.
-            try
-            {
-                ProcessHandle.Current.EnumModules((module) =>
-                    {
-                        if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
-                        {
-                            // Load symsrv.dll from the same directory as dbghelp.dll.
-
-                            Loader.LoadDll(System.IO.Path.GetDirectoryName(module.FileName) + "\\symsrv.dll");
-
-                            return false;
-                        }
-
-                        return true;
-                    });
-            }
-            catch
-            { }
+            // Load symsrv.dll from the same directory as dbghelp.dll.
+            // TODO: improve logic.
+            if (Loader.LoadDll(System.IO.Path.GetDirectoryName(Settings.Instance.DbgHelpPath) + "\\symsrv.dll") == IntPtr.Zero)
+                Loader.LoadDll("symsrv.dll");
 
             // Set the first run setting here.
             Settings.Instance.FirstRun = false;
@@ -3393,7 +3386,7 @@ namespace ProcessHacker
 
         private void LoadStructs()
         {
-            WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
+            WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
                 {
                     try
                     {
@@ -3462,7 +3455,7 @@ namespace ProcessHacker
             _refreshHighlightingSync = new ActionSync(
                 () =>
                 {
-                    this.BeginInvoke(new Action(treeProcesses.RefreshItems), null);
+                    this.BeginInvoke(new MethodInvoker(treeProcesses.RefreshItems), null);
                 }, 2);
 
             Logging.Logged += this.QueueMessage;

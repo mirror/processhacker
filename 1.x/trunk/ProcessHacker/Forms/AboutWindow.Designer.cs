@@ -42,13 +42,14 @@
             this.flowCredits = new System.Windows.Forms.FlowLayoutPanel();
             this.label8 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.linkGamingMasteR = new System.Windows.Forms.LinkLabel();
             this.linkKerem = new System.Windows.Forms.LinkLabel();
@@ -62,7 +63,6 @@
             this.labelFiller = new System.Windows.Forms.Label();
             this.buttonChangelog = new System.Windows.Forms.Button();
             this.buttonDiagnostics = new System.Windows.Forms.Button();
-            this.label13 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.flowCredits.SuspendLayout();
             this.SuspendLayout();
@@ -70,6 +70,7 @@
             // buttonClose
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonClose.Location = new System.Drawing.Point(420, 320);
             this.buttonClose.Name = "buttonClose";
@@ -202,9 +203,9 @@
             // 
             // flowCredits
             // 
-            this.flowCredits.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowCredits.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.flowCredits.AutoScroll = true;
             this.flowCredits.Controls.Add(this.label8);
             this.flowCredits.Controls.Add(this.label5);
@@ -260,16 +261,6 @@
             this.label5.TabIndex = 18;
             this.label5.Text = "wj32 - Project Manager";
             // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(6, 55);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(90, 13);
-            this.label12.TabIndex = 29;
-            this.label12.Text = "dmex - Developer";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -288,6 +279,16 @@
             this.label6.Size = new System.Drawing.Size(91, 13);
             this.label6.TabIndex = 18;
             this.label6.Text = "Dean - Developer";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(6, 55);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(90, 13);
+            this.label12.TabIndex = 29;
+            this.label12.Text = "dmex - Developer";
             // 
             // label10
             // 
@@ -328,6 +329,15 @@
             this.label11.Size = new System.Drawing.Size(68, 13);
             this.label11.TabIndex = 17;
             this.label11.Text = "Thanks to:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 120);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(189, 13);
+            this.label13.TabIndex = 30;
+            this.label13.Text = "Donators - Thank you for your support!";
             // 
             // label2
             // 
@@ -473,19 +483,11 @@
             this.buttonDiagnostics.UseVisualStyleBackColor = true;
             this.buttonDiagnostics.Click += new System.EventHandler(this.buttonDiagnostics_Click);
             // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 120);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(189, 13);
-            this.label13.TabIndex = 30;
-            this.label13.Text = "Donators - Thank you for your support!";
-            // 
             // AboutWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.buttonClose;
             this.ClientSize = new System.Drawing.Size(507, 355);
             this.Controls.Add(this.buttonDiagnostics);
             this.Controls.Add(this.buttonChangelog);

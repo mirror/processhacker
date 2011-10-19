@@ -264,22 +264,20 @@ namespace ProcessHacker.Native.Objects
             FileAccess access
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
             IoStatusBlock isb;
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenFile(
+                Win32.NtOpenFile(
                     out handle,
                     access,
                     ref oa,
                     out isb,
                     shareMode,
                     openOptions
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
