@@ -438,9 +438,9 @@ namespace ProcessHacker
 
                         using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
                         {
-                            try { fpResult.ElevationType = thandle.GetElevationType(); }
+                            try { fpResult.ElevationType = thandle.ElevationType; }
                             catch { }
-                            try { fpResult.IsElevated = thandle.IsElevated(); }
+                            try { fpResult.IsElevated = thandle.IsElevated; }
                             catch { }
 
                             // Try to get the integrity level.
@@ -1039,7 +1039,7 @@ namespace ProcessHacker
                                     {
                                         try
                                         {
-                                            using (var sid = thandle.GetUser())
+                                            using (var sid = thandle.User)
                                                 item.Username = sid.GetFullName(true);
                                         }
                                         catch

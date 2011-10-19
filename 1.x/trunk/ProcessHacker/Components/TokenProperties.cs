@@ -60,10 +60,10 @@ namespace ProcessHacker.Components
                     // "General"
                     try
                     {
-                        textUser.Text = thandle.GetUser().GetFullName(true);
-                        textUserSID.Text = thandle.GetUser().StringSid;
-                        textOwner.Text = thandle.GetOwner().GetFullName(true);
-                        textPrimaryGroup.Text = thandle.GetPrimaryGroup().GetFullName(true);
+                        textUser.Text = thandle.User.GetFullName(true);
+                        textUserSID.Text = thandle.User.StringSid;
+                        textOwner.Text = thandle.Owner.GetFullName(true);
+                        textPrimaryGroup.Text = thandle.PrimaryGroup.GetFullName(true);
                     }
                     catch (Exception ex)
                     {
@@ -72,7 +72,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        textSessionID.Text = thandle.GetSessionId().ToString();
+                        textSessionID.Text = thandle.SessionId.ToString();
                     }
                     catch (Exception ex)
                     {
@@ -81,7 +81,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        var type = thandle.GetElevationType();
+                        var type = thandle.ElevationType;
 
                         if (type == TokenElevationType.Default)
                             textElevated.Text = "N/A";
@@ -100,7 +100,7 @@ namespace ProcessHacker.Components
                     {
                         try
                         {
-                            TokenHandle linkedToken = thandle.GetLinkedToken();
+                            TokenHandle linkedToken = thandle.LinkedToken;
 
                             if (linkedToken != null)
                                 linkedToken.Dispose();
@@ -119,8 +119,8 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        bool virtAllowed = thandle.IsVirtualizationAllowed();
-                        bool virtEnabled = thandle.IsVirtualizationEnabled();
+                        bool virtAllowed = thandle.IsVirtualizationAllowed;
+                        bool virtEnabled = thandle.IsVirtualizationEnabled;
 
                         if (virtEnabled)
                             textVirtualized.Text = "Enabled";
@@ -138,7 +138,7 @@ namespace ProcessHacker.Components
                     {
                         using (TokenHandle tokenSource = _object.GetToken(TokenAccess.QuerySource))
                         {
-                            var source = tokenSource.GetSource();
+                            var source = tokenSource.Source;
 
                             textSourceName.Text = source.SourceName.TrimEnd('\0', '\r', '\n', ' ');
 
@@ -155,7 +155,7 @@ namespace ProcessHacker.Components
                     // "Advanced"
                     try
                     {
-                        var statistics = thandle.GetStatistics();
+                        var statistics = thandle.Statistics;
 
                         textTokenType.Text = statistics.TokenType.ToString();
                         textImpersonationLevel.Text = statistics.ImpersonationLevel.ToString();
@@ -171,7 +171,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        var groups = thandle.GetGroups();
+                        var groups = thandle.Groups;
 
                         _groups = new TokenGroupsList(groups);
 
@@ -188,7 +188,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        var privileges = thandle.GetPrivileges();
+                        var privileges = thandle.Privileges;
 
                         for (int i = 0; i < privileges.Length; i++)
                         {

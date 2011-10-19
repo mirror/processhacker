@@ -1115,8 +1115,8 @@ namespace ProcessHacker
                             {
                                 using (var thandle = phandle.GetToken(TokenAccess.Query))
                                 {
-                                    if (virtualizationProcessMenuItem.Enabled = thandle.IsVirtualizationAllowed())
-                                        virtualizationProcessMenuItem.Checked = thandle.IsVirtualizationEnabled();
+                                    if (virtualizationProcessMenuItem.Enabled = thandle.IsVirtualizationAllowed)
+                                        virtualizationProcessMenuItem.Checked = thandle.IsVirtualizationEnabled;
                                 }
                             }
                             catch
@@ -1436,7 +1436,7 @@ namespace ProcessHacker
                 {
                     using (var thandle = phandle.GetToken(TokenAccess.GenericWrite))
                     {
-                        thandle.SetVirtualizationEnabled(!virtualizationProcessMenuItem.Checked);
+                        thandle.IsVirtualizationEnabled = !virtualizationProcessMenuItem.Checked;
                     }
                 }
             }
@@ -3416,7 +3416,7 @@ namespace ProcessHacker
             try
             {
                 using (var thandle = ProcessHandle.Current.GetToken(TokenAccess.Query))
-                using (var sid = thandle.GetUser())
+                using (var sid = thandle.User)
                     this.Text += " [" + sid.GetFullName(true) + (KProcessHacker.Instance != null ? "+" : string.Empty) + "]";
             }
             catch

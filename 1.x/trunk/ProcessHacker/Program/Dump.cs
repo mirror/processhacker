@@ -405,11 +405,11 @@ namespace ProcessHacker
                     {
                         using (var thandle = phandle.GetToken(TokenAccess.Query))
                         {
-                            bw.Write("UserName", thandle.GetUser().GetFullName(true));
+                            bw.Write("UserName", thandle.User.GetFullName(true));
                             userNameWritten = true;
 
                             if (OSVersion.HasUac)
-                                bw.Write("ElevationType", (int)thandle.GetElevationType());
+                                bw.Write("ElevationType", (int)thandle.ElevationType);
                         }
                     }
                 }
@@ -623,22 +623,22 @@ namespace ProcessHacker
 
                     using (var thandle = phandle.GetToken(TokenAccess.Query))
                     {
-                        Sid user = thandle.GetUser();
+                        Sid user = thandle.User;
 
                         bw.Write("UserName", user.GetFullName(true));
                         bw.Write("UserStringSid", user.StringSid);
-                        bw.Write("OwnerName", thandle.GetOwner().GetFullName(true));
-                        bw.Write("PrimaryGroupName", thandle.GetPrimaryGroup().GetFullName(true));
-                        bw.Write("SessionId", thandle.GetSessionId());
+                        bw.Write("OwnerName", thandle.Owner.GetFullName(true));
+                        bw.Write("PrimaryGroupName", thandle.PrimaryGroup.GetFullName(true));
+                        bw.Write("SessionId", thandle.SessionId);
 
                         if (OSVersion.HasUac)
                         {
-                            bw.Write("Elevated", thandle.IsElevated());
-                            bw.Write("VirtualizationAllowed", thandle.IsVirtualizationAllowed());
-                            bw.Write("VirtualizationEnabled", thandle.IsVirtualizationEnabled());
+                            bw.Write("Elevated", thandle.IsElevated);
+                            bw.Write("VirtualizationAllowed", thandle.IsVirtualizationAllowed);
+                            bw.Write("VirtualizationEnabled", thandle.IsVirtualizationEnabled);
                         }
 
-                        var statistics = thandle.GetStatistics();
+                        var statistics = thandle.Statistics;
 
                         bw.Write("Type", (int)statistics.TokenType);
                         bw.Write("ImpersonationLevel", (int)statistics.ImpersonationLevel);
@@ -647,7 +647,7 @@ namespace ProcessHacker
                         bw.Write("MemoryUsed", statistics.DynamicCharged);
                         bw.Write("MemoryAvailable", statistics.DynamicAvailable);
 
-                        var groups = thandle.GetGroups();
+                        var groups = thandle.Groups;
 
                         using (var groupsMo = tokenMo.CreateChild("Groups"))
                         {
@@ -663,7 +663,7 @@ namespace ProcessHacker
                             bw2.Close();
                         }
 
-                        var privileges = thandle.GetPrivileges();
+                        var privileges = thandle.Privileges;
 
                         using (var privilegesMo = tokenMo.CreateChild("Privileges"))
                         {
@@ -686,7 +686,7 @@ namespace ProcessHacker
                     {
                         using (var thandle = phandle.GetToken(TokenAccess.QuerySource))
                         {
-                            var source = thandle.GetSource();
+                            var source = thandle.Source;
 
                             bw.Write("SourceName", source.SourceName.TrimEnd('\0', '\r', '\n', ' '));
                             bw.Write("SourceLuid", source.SourceIdentifier.QuadPart);

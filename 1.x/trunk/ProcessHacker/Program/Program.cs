@@ -177,7 +177,7 @@ namespace ProcessHacker
 
             ThreadPool.SetMinThreads(1, 1);
             ThreadPool.SetMaxThreads(2, 2);
-            WorkQueue.GlobalWorkQueue.MaxWorkerThreads = 2;
+            WorkQueue.GlobalWorkQueue.MaxWorkerThreads = Environment.ProcessorCount;
 
             // Create or open the Process Hacker mutex, used only by the installer.
             try
@@ -191,7 +191,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var thandle = ProcessHandle.Current.GetToken())
+                using (TokenHandle thandle = ProcessHandle.Current.GetToken())
                 {
                     thandle.TrySetPrivilege("SeDebugPrivilege", SePrivilegeAttributes.Enabled);
                     thandle.TrySetPrivilege("SeIncreaseBasePriorityPrivilege", SePrivilegeAttributes.Enabled);
@@ -202,7 +202,7 @@ namespace ProcessHacker
 
                     if (OSVersion.HasUac)
                     {
-                        try { ElevationType = thandle.GetElevationType(); }
+                        try { ElevationType = thandle.ElevationType; }
                         catch { ElevationType = TokenElevationType.Full; }
 
                         if (ElevationType == TokenElevationType.Default &&
@@ -226,14 +226,12 @@ namespace ProcessHacker
             try
             {
                 if (
-                    // Only load KPH if we're on 32-bit and it's enabled.
-                    OSVersion.Architecture == OSArch.I386 &&
-                    Settings.Instance.EnableKPH &&
-                    !NoKph &&
+                    // Only load KPH if it's enabled.
+                    Settings.Instance.EnableKPH && !NoKph &&
                     // Don't load KPH if we're going to install/uninstall it.
                     !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph")
                     )
-                    KProcessHacker.Instance = new KProcessHacker("KProcessHacker");
+                    KProcessHacker.Instance = new KProcessHacker("KProcessHacker2");
             }
             catch
             { }

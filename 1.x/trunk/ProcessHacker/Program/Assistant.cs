@@ -288,7 +288,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    token.SetSessionId(sessionId);
+                    token.SessionId = sessionId;
                 }
                 catch (Exception ex)
                 {

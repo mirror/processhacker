@@ -239,7 +239,7 @@ namespace ProcessHacker.Common
 
         public static string GetIntegrity(this TokenHandle tokenHandle, out int integrityLevel)
         {
-            var groups = tokenHandle.GetGroups();
+            var groups = tokenHandle.Groups;
             string integrity = null;
 
             integrityLevel = 0;
