@@ -193,7 +193,7 @@ namespace ProcessHacker.Native.Api
             {
                 using (ProcessHandle phandle = new ProcessHandle(ProcessId, OSVersion.MinProcessQueryInfoAccess))
                 {
-                    return phandle.GetToken(TokenAccess.Query).GetSessionId();
+                    return phandle.GetToken(TokenAccess.Query).SessionId;
                 }
             }
 

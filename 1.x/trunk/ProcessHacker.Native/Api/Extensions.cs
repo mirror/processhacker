@@ -485,11 +485,10 @@ namespace ProcessHacker.Native
                                 new NativeHandle<TokenAccess>(process, handle, TokenAccess.Query))
                             {
                                 var tokenHandle = TokenHandle.FromHandle(tokenHandleDup);
-                                var sid = tokenHandle.GetUser();
+                                var sid = tokenHandle.User;
 
                                 using (sid)
-                                    info.BestName = sid.GetFullName(true) + ": 0x" +
-                                        tokenHandle.GetStatistics().AuthenticationId.ToString();
+                                    info.BestName = sid.GetFullName(true) + ": 0x" + tokenHandle.Statistics.AuthenticationId.ToString();
                             }
                         }
 

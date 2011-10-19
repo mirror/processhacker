@@ -46,7 +46,7 @@ namespace ProcessHacker.Native.Ui
                     using (var phandle = new ProcessHandle(process.Process.ProcessId, OSVersion.MinProcessQueryInfoAccess))
                     {
                         using (var thandle = phandle.GetToken(TokenAccess.Query))
-                        using (var sid = thandle.GetUser())
+                        using (var sid = thandle.User)
                             userName = sid.GetFullName(true);
 
                         fileName = FileUtils.GetFileName(phandle.GetImageFileName());

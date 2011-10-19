@@ -52,7 +52,7 @@ namespace ProcessHacker.Native.Security
                 if (currentUser == null)
                 {
                     using (var thandle = TokenHandle.OpenCurrentPrimary(TokenAccess.Query))
-                        _currentUser = currentUser = thandle.GetUser();
+                        _currentUser = currentUser = thandle.User;
                 }
 
                 return currentUser;

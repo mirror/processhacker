@@ -37,7 +37,7 @@ namespace ProcessHacker.Native.Objects
 
         public TokenHandle GetToken()
         {
-            return _token.GetLinkedToken();
+            return _token.LinkedToken;
         }
 
         public TokenHandle GetToken(TokenAccess access)

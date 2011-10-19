@@ -2907,6 +2907,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TokenStatistics
     {
+        public static readonly int SizeOf;
+
         public Luid TokenId;
         public Luid AuthenticationId;
         public long ExpirationTime;
@@ -2917,6 +2919,11 @@ namespace ProcessHacker.Native.Api
         public int GroupCount;
         public int PrivilegeCount;
         public Luid ModifiedId;
+
+        static TokenStatistics()
+        {
+            SizeOf = Marshal.SizeOf(typeof(TokenStatistics));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
