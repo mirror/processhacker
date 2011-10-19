@@ -133,7 +133,7 @@ VOID WINAPI CachedGetUserFromSid(PSID pSid, LPWSTR pUserName, PULONG pcwcUserNam
     SidToUserName(pSid, pUserName, cwcUserName);
 
     /* Allocate a new entry */
-    *pcwcUserName = (ULONG)wcslen(pUserName);
+    *pcwcUserName = wcslen(pUserName);
     cwcUserName = *pcwcUserName + 1;
     cbSid = GetLengthSid(pSid);
     pEntry = HeapAlloc(GetProcessHeap(), 0, sizeof(SIDTOUSERNAME) + cbSid + cwcUserName * sizeof(WCHAR));
@@ -175,18 +175,18 @@ void PerfDataRefresh(void)
 
     /* Get new system time */
     status = NtQuerySystemInformation(SystemTimeOfDayInformation, &SysTimeInfo, sizeof(SysTimeInfo), NULL);
-    if (!NT_SUCCESS(status))
-        return;
+    //if (!NT_SUCCESS(status))
+        //return;
 
     /* Get new CPU's idle time */
     status = NtQuerySystemInformation(SystemPerformanceInformation, &SysPerfInfo, sizeof(SysPerfInfo), NULL);
-    if (!NT_SUCCESS(status))
-        return;
+    //if (!NT_SUCCESS(status))
+        //return;
 
     /* Get system cache information */
     status = NtQuerySystemInformation(SystemFileCacheInformation, &SysCacheInfo, sizeof(SysCacheInfo), NULL);
-    if (!NT_SUCCESS(status))
-        return;
+    //if (!NT_SUCCESS(status))
+       //return;
 
     /* Get processor time information */
     SysProcessorTimeInfo = (PSYSTEM_PROCESSOR_PERFORMANCE_INFORMATION)HeapAlloc(GetProcessHeap(), 0, sizeof(SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION) * SystemBasicInfo.NumberOfProcessors);
@@ -196,7 +196,7 @@ void PerfDataRefresh(void)
     {
         if (SysProcessorTimeInfo != NULL)
             HeapFree(GetProcessHeap(), 0, SysProcessorTimeInfo);
-        
+
         return;
     }
 

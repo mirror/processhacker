@@ -1106,15 +1106,15 @@ typedef struct _SYSTEM_POOLTAG
 {
     union
     {
-        UCHAR Tag[4];
+        UCHAR Tag[4];	
         ULONG TagUlong;
     };
     ULONG PagedAllocs;
     ULONG PagedFrees;
-    ULONG PagedUsed;
+    SIZE_T PagedUsed;
     ULONG NonPagedAllocs;
     ULONG NonPagedFrees;
-    ULONG NonPagedUsed;
+    SIZE_T NonPagedUsed;
 } SYSTEM_POOLTAG, *PSYSTEM_POOLTAG;
 typedef struct _SYSTEM_POOLTAG_INFORMATION
 {
@@ -1350,10 +1350,10 @@ typedef struct _SYSTEM_VERIFIER_INFORMATION
    ULONG CurrentNonPagedPoolAllocations;
    ULONG PeakPagedPoolAllocations;
    ULONG PeakNonPagedPoolAllocations;
-   ULONG PagedPoolUsageInBytes;
-   ULONG NonPagedPoolUsageInBytes;
-   ULONG PeakPagedPoolUsageInBytes;
-   ULONG PeakNonPagedPoolUsageInBytes;
+   SIZE_T PagedPoolUsageInBytes;
+   SIZE_T NonPagedPoolUsageInBytes;
+   SIZE_T PeakPagedPoolUsageInBytes;
+   SIZE_T PeakNonPagedPoolUsageInBytes;
 } SYSTEM_VERIFIER_INFORMATION, *PSYSTEM_VERIFIER_INFORMATION;
 
 // FIXME: Class 52
@@ -1462,7 +1462,7 @@ typedef struct _SYSTEM_FIRMWARE_TABLE_INFORMATION
 //
 typedef struct _SYSTEM_MEMORY_LIST_INFORMATION
 {
-   SIZE_T ZeroPageCount;
+   SIZE_T ZeroPageCount;	
    SIZE_T FreePageCount;
    SIZE_T ModifiedPageCount;
    SIZE_T ModifiedNoWritePageCount;

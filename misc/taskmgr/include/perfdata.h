@@ -90,6 +90,6 @@ ULONG PerfDataGetKernelMemoryPagedK(void);
 ULONG PerfDataGetKernelMemoryNonPagedK(void);
 ULONG PerfDataGetPhysicalMemoryTotalK(void);
 ULONG PerfDataGetPhysicalMemoryAvailableK(void);
-ULONG PerfDataGetPhysicalMemorySystemCacheK(void);
+SIZE_T PerfDataGetPhysicalMemorySystemCacheK(void);
 ULONG PerfDataGetSystemHandleCount(void);
 ULONG PerfDataGetTotalThreadCount(void);

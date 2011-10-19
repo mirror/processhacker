@@ -342,7 +342,6 @@ BOOL CALLBACK EnumWindowsProc(HWND hWnd, LPARAM lParam)
 void AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung)
 {
     LPAPPLICATION_PAGE_LIST_ITEM    pAPLI = NULL;
-    //HIMAGELIST                      hImageListLarge;
     HIMAGELIST                      hImageListSmall;
     LV_ITEM                         item;
     int                             i;
@@ -402,7 +401,7 @@ void AddOrUpdateHwnd(HWND hWnd, WCHAR *szTitle, HICON hIcon, BOOL bHung)
         pAPLI->hIcon = hIcon;
         pAPLI->bHung = bHung;
         
-        wcscpy_s(pAPLI->szTitle, _countof(pAPLI->szTitle), szTitle);
+        wcscpy_s(pAPLI->szTitle, NUMBER_OF_ITEMS_IN_ARRAY(pAPLI->szTitle), szTitle);
 
         /* Add the item to the list */
         memset(&item, 0, sizeof(LV_ITEM));
