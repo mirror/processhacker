@@ -83,7 +83,6 @@ namespace ProcessHacker.Native.Objects
             FileHandle fileHandle
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
@@ -91,7 +90,7 @@ namespace ProcessHacker.Native.Objects
             {
                 if (maximumSize != 0)
                 {
-                    if ((status = Win32.NtCreateSection(
+                    Win32.NtCreateSection(
                         out handle,
                         access,
                         ref oa,
@@ -99,12 +98,11 @@ namespace ProcessHacker.Native.Objects
                         pageAttributes,
                         sectionAttributes,
                         fileHandle ?? IntPtr.Zero
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
+                        ).ThrowIf();
                 }
                 else
                 {
-                    if ((status = Win32.NtCreateSection(
+                    Win32.NtCreateSection(
                         out handle,
                         access,
                         ref oa,
@@ -112,8 +110,7 @@ namespace ProcessHacker.Native.Objects
                         pageAttributes,
                         sectionAttributes,
                         fileHandle ?? IntPtr.Zero
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
+                        ).ThrowIf();
                 }
             }
             finally
@@ -135,14 +132,12 @@ namespace ProcessHacker.Native.Objects
 
         public SectionHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, SectionAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenSection(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtOpenSection(out handle, access, ref oa).ThrowIf();
             }
             finally
             {
@@ -158,36 +153,39 @@ namespace ProcessHacker.Native.Objects
 
         public long Extend(long newSize)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtExtendSection(this, ref newSize)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtExtendSection(this, ref newSize).ThrowIf();
 
             return newSize;
         }
 
         public SectionBasicInformation GetBasicInformation()
         {
-            NtStatus status;
             SectionBasicInformation sbi;
             IntPtr retLength;
 
-            if ((status = Win32.NtQuerySection(this, SectionInformationClass.SectionBasicInformation,
-                out sbi, new IntPtr(Marshal.SizeOf(typeof(SectionBasicInformation))), out retLength)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtQuerySection(
+                this, 
+                SectionInformationClass.SectionBasicInformation,
+                out sbi, 
+                new IntPtr(SectionBasicInformation.SizeOf), 
+                out retLength
+                ).ThrowIf();
 
             return sbi;
         }
 
         public SectionImageInformation GetImageInformation()
         {
-            NtStatus status;
             SectionImageInformation sii;
             IntPtr retLength;
 
-            if ((status = Win32.NtQuerySection(this, SectionInformationClass.SectionImageInformation,
-                out sii, new IntPtr(Marshal.SizeOf(typeof(SectionImageInformation))), out retLength)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtQuerySection(
+                this, 
+                SectionInformationClass.SectionImageInformation,
+                out sii, 
+                new IntPtr(SectionImageInformation.SizeOf),
+                out retLength
+                ).ThrowIf();
 
             return sii;
         }
@@ -233,11 +231,9 @@ namespace ProcessHacker.Native.Objects
             MemoryProtection protection
             )
         {
-            NtStatus status;
-
             // sectionOffset requires 2 << 15 = 0x10000 = 65536 alignment.
             // viewSize will be rounded up to the page size.
-            if ((status = Win32.NtMapViewOfSection(
+            Win32.NtMapViewOfSection(
                 this,
                 processHandle,
                 ref baseAddress,
@@ -248,8 +244,7 @@ namespace ProcessHacker.Native.Objects
                 inheritDisposition,
                 allocationType,
                 protection
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return new SectionView(baseAddress, viewSize);
         }

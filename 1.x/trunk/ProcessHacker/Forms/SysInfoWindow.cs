@@ -267,13 +267,17 @@ namespace ProcessHacker
             var perfInfo = Program.ProcessProvider.Performance;
             var info = new PerformanceInformation();
 
-            Win32.GetPerformanceInfo(out info, System.Runtime.InteropServices.Marshal.SizeOf(info));
+            Win32.GetPerformanceInfo(out info, PerformanceInformation.SizeOf);
 
             SystemCacheInformation cacheInfo;
             int retLen;
 
-            Win32.NtQuerySystemInformation(SystemInformationClass.SystemFileCacheInformation,
-                out cacheInfo, Marshal.SizeOf(typeof(SystemCacheInformation)), out retLen);
+            Win32.NtQuerySystemInformation(
+                SystemInformationClass.SystemFileCacheInformation,
+                out cacheInfo, 
+                SystemCacheInformation.SizeOf, 
+                out retLen
+                );
 
             // Totals
             labelTotalsProcesses.Text = ((ulong)info.ProcessCount).ToString("N0");
@@ -373,7 +377,7 @@ namespace ProcessHacker
 
         private void ProcessProvider_Updated()
         {
-            this.BeginInvoke(new MethodInvoker(delegate
+            this.BeginInvoke(new MethodInvoker(() =>
             {
                 this.UpdateGraphs();
                 this.UpdateInfo();

@@ -41,15 +41,18 @@ namespace ProcessHacker.Native.Objects
 
         public static SemaphoreHandle Create(SemaphoreAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, int initialCount, int maximumCount)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateSemaphore(out handle, access, ref oa,
-                    initialCount, maximumCount)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtCreateSemaphore(
+                    out handle, 
+                    access, 
+                    ref oa,
+                    initialCount, 
+                    maximumCount
+                    ).ThrowIf();
             }
             finally
             {
@@ -70,14 +73,12 @@ namespace ProcessHacker.Native.Objects
 
         public SemaphoreHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, SemaphoreAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenSemaphore(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtOpenSemaphore(out handle, access, ref oa).ThrowIf();
             }
             finally
             {
@@ -93,13 +94,16 @@ namespace ProcessHacker.Native.Objects
 
         public SemaphoreBasicInformation GetBasicInformation()
         {
-            NtStatus status;
             SemaphoreBasicInformation sbi;
             int retLength;
 
-            if ((status = Win32.NtQuerySemaphore(this, SemaphoreInformationClass.SemaphoreBasicInformation,
-                out sbi, Marshal.SizeOf(typeof(SemaphoreBasicInformation)), out retLength)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtQuerySemaphore(
+                this, 
+                SemaphoreInformationClass.SemaphoreBasicInformation,
+                out sbi, 
+                SemaphoreBasicInformation.SizeOf, 
+                out retLength
+                ).ThrowIf();
 
             return sbi;
         }
@@ -111,11 +115,9 @@ namespace ProcessHacker.Native.Objects
 
         public int Release(int count)
         {
-            NtStatus status;
             int previousCount;
 
-            if ((status = Win32.NtReleaseSemaphore(this, count, out previousCount)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtReleaseSemaphore(this, count, out previousCount).ThrowIf();
 
             return previousCount;
         }

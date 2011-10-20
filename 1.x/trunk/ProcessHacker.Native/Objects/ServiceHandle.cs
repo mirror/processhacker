@@ -96,8 +96,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the service.</param>
         public ServiceHandle(string serviceName, ServiceAccess access)
         {
-            using (ServiceManagerHandle manager =
-                new ServiceManagerHandle(ScManagerAccess.Connect))
+            using (ServiceManagerHandle manager = new ServiceManagerHandle(ScManagerAccess.Connect))
             {
                 this.Handle = Win32.OpenService(manager, serviceName, access);
 
@@ -181,7 +180,7 @@ namespace ProcessHacker.Native.Objects
             ServiceStatusProcess status;
             int retLen;
 
-            if (!Win32.QueryServiceStatusEx(this, 0, out status, Marshal.SizeOf(typeof(ServiceStatusProcess)), out retLen))
+            if (!Win32.QueryServiceStatusEx(this, 0, out status, ServiceStatusProcess.SizeOf, out retLen))
                 Win32.Throw();
 
             return status;

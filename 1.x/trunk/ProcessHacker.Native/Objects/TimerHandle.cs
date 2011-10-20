@@ -47,14 +47,12 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A handle to the timer.</returns>
         public static TimerHandle Create(TimerAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, TimerType type)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateTimer(out handle, access, ref oa, type)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtCreateTimer(out handle, access, ref oa, type).ThrowIf();
             }
             finally
             {
@@ -77,14 +75,12 @@ namespace ProcessHacker.Native.Objects
 
         public TimerHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, TimerAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenTimer(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtOpenTimer(out handle, access, ref oa).ThrowIf();
             }
             finally
             {
@@ -104,11 +100,9 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The state of the timer (whether it is signaled).</returns>
         public bool Cancel()
         {
-            NtStatus status;
             bool currentState;
 
-            if ((status = Win32.NtCancelTimer(this, out currentState)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtCancelTimer(this, out currentState).ThrowIf();
 
             return currentState;
         }
@@ -118,13 +112,16 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public TimerBasicInformation GetBasicInformation()
         {
-            NtStatus status;
             TimerBasicInformation tbi;
             int retLength;
 
-            if ((status = Win32.NtQueryTimer(this, TimerInformationClass.TimerBasicInformation,
-                out tbi, Marshal.SizeOf(typeof(TimerBasicInformation)), out retLength)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtQueryTimer(
+                this, 
+                TimerInformationClass.TimerBasicInformation,
+                out tbi, 
+                TimerBasicInformation.SizeOf, 
+                out retLength
+                ).ThrowIf();
 
             return tbi;
         }
@@ -206,14 +203,13 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The state of the timer (whether it is signaled).</returns>
         public bool Set(long dueTime, bool relative, TimerApcRoutine routine, IntPtr context, bool resume, int period)
         {
-            NtStatus status;
             long realDueTime = relative ? -dueTime : dueTime;
             bool previousState;
 
             // Keep the APC routine alive.
             _routine = routine;
 
-            if ((status = Win32.NtSetTimer(
+            Win32.NtSetTimer(
                 this,
                 ref realDueTime,
                 routine,
@@ -221,8 +217,7 @@ namespace ProcessHacker.Native.Objects
                 resume,
                 period,
                 out previousState
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return previousState;
         }

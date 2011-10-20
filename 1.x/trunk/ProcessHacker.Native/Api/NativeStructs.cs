@@ -1018,12 +1018,19 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct IoCounters
     {
+        public static readonly int SizeOf;
+
         public ulong ReadOperationCount;
         public ulong WriteOperationCount;
         public ulong OtherOperationCount;
         public ulong ReadTransferCount;
         public ulong WriteTransferCount;
         public ulong OtherTransferCount;
+
+        static IoCounters()
+        {
+            SizeOf = Marshal.SizeOf(typeof(IoCounters));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1555,6 +1562,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectAttributes : IDisposable
     {
+        public static readonly int SizeOf;
+
+        static ObjectAttributes()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ObjectAttributes));
+        }
+
         public ObjectAttributes(
             string objectName,
             ObjectFlags attributes,
@@ -1570,17 +1584,17 @@ namespace ProcessHacker.Native.Api
             SecurityQualityOfService? securityQos
             )
         {
-            this.Length = Marshal.SizeOf(typeof(ObjectAttributes));
+            this.Length = ObjectAttributes.SizeOf;
             this.RootDirectory = IntPtr.Zero;
             this.ObjectName = IntPtr.Zero;
-            this.SecurityDescriptor = IntPtr.Zero;
-            this.SecurityQualityOfService = IntPtr.Zero;
+            this.PtrSecurityDescriptor = IntPtr.Zero;
+            this.PtrSecurityQualityOfService = IntPtr.Zero;
 
             // Object name
-            if (objectName != null)
+            if (!string.IsNullOrEmpty(objectName))
             {
                 UnicodeString unicodeString = new UnicodeString(objectName);
-                IntPtr unicodeStringMemory = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UnicodeString)));
+                IntPtr unicodeStringMemory = Marshal.AllocHGlobal(UnicodeString.SizeOf);
 
                 Marshal.StructureToPtr(unicodeString, unicodeStringMemory, false);
                 this.ObjectName = unicodeStringMemory;
@@ -1594,13 +1608,13 @@ namespace ProcessHacker.Native.Api
                 this.RootDirectory = rootDirectory;
 
             // Security descriptor
-            this.SecurityDescriptor = securityDescriptor ?? IntPtr.Zero;
+            this.PtrSecurityDescriptor = securityDescriptor ?? IntPtr.Zero;
 
             // Security QOS
             if (securityQos.HasValue)
             {
-                this.SecurityQualityOfService = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(SecurityQualityOfService)));
-                Marshal.StructureToPtr(securityQos.Value, this.SecurityQualityOfService, false);
+                this.PtrSecurityQualityOfService = Marshal.AllocHGlobal(SecurityQualityOfService.SizeOf);
+                Marshal.StructureToPtr(securityQos.Value, this.PtrSecurityQualityOfService, false);
             }
         }
 
@@ -1608,8 +1622,8 @@ namespace ProcessHacker.Native.Api
         public IntPtr RootDirectory;
         public IntPtr ObjectName;
         public ObjectFlags Attributes;
-        public IntPtr SecurityDescriptor;
-        public IntPtr SecurityQualityOfService;
+        public IntPtr PtrSecurityDescriptor;
+        public IntPtr PtrSecurityQualityOfService;
 
         public void Dispose()
         {
@@ -1621,10 +1635,10 @@ namespace ProcessHacker.Native.Api
             }
 
             // Security QOS
-            if (this.SecurityQualityOfService != IntPtr.Zero)
+            if (this.PtrSecurityQualityOfService != IntPtr.Zero)
             {
-                Marshal.FreeHGlobal(this.SecurityQualityOfService);
-                this.SecurityQualityOfService = IntPtr.Zero;
+                Marshal.FreeHGlobal(this.PtrSecurityQualityOfService);
+                this.PtrSecurityQualityOfService = IntPtr.Zero;
             }
         }
     }
@@ -1632,6 +1646,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectBasicInformation
     {
+        public static readonly int SizeOf;
+
         public uint Attributes;
         public int GrantedAccess;
         public uint HandleCount;
@@ -1646,6 +1662,11 @@ namespace ProcessHacker.Native.Api
         public uint TypeInformationLength;
         public uint SecurityDescriptorLength;
         public ulong CreateTime;
+
+        static ObjectBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ObjectBasicInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1841,7 +1862,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct PrivilegeSetStruct
     {
-        public static int PrivilegesOffset =
+        public static readonly int PrivilegesOffset =
             Marshal.OffsetOf(typeof(PrivilegeSetStruct), "Privileges").ToInt32();
 
         public int Count;
@@ -1852,12 +1873,19 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessBasicInformation
     {
+        public static readonly int SizeOf;
+
         public NtStatus ExitStatus;
         public IntPtr PebBaseAddress;
         public IntPtr AffinityMask;
         public int BasePriority;
         public IntPtr UniqueProcessId;
         public IntPtr InheritedFromUniqueProcessId;
+
+        static ProcessBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ProcessBasicInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1906,9 +1934,16 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessPriorityClassStruct
     {
+        public static readonly int SizeOf;
+
         //the type char is set by the CLR runtime to marshal as Ansi (single byte) for some insane reason...
         public char Foreground;
         public char PriorityClass;
+
+        static ProcessPriorityClassStruct()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ProcessPriorityClassStruct));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2204,14 +2239,23 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SectionBasicInformation
     {
+        public static readonly int SizeOf;
+
         public int Unknown;
         public SectionAttributes SectionAttributes;
         public long SectionSize;
+
+        static SectionBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SectionBasicInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct SectionImageInformation
     {
+        public static readonly int SizeOf;
+
         public IntPtr TransferAddress;
         public int StackZeroBits;
         public IntPtr StackReserved;
@@ -2230,11 +2274,18 @@ namespace ProcessHacker.Native.Api
         public int LoaderFlags;
         public int ImageFileSize;
         public int Reserved;
+
+        static SectionImageInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SectionImageInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct SecurityDescriptorStruct
     {
+        public static readonly int SizeOf;
+
         public byte Revision;
         public byte Sbz1;
         public SecurityDescriptorControlFlags Control;
@@ -2242,6 +2293,11 @@ namespace ProcessHacker.Native.Api
         public IntPtr Group; // Sid*
         public IntPtr Sacl; // Acl*
         public IntPtr Dacl; // Acl*
+
+        static SecurityDescriptorStruct()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SecurityDescriptorStruct));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2259,13 +2315,20 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SecurityQualityOfService
     {
+        public static readonly int SizeOf;
+
+        static SecurityQualityOfService()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SecurityQualityOfService));
+        }
+
         public SecurityQualityOfService(
             SecurityImpersonationLevel impersonationLevel,
             bool dynamicTracking,
             bool effectiveOnly
             )
         {
-            this.Length = Marshal.SizeOf(typeof(SecurityQualityOfService));
+            this.Length = SecurityQualityOfService.SizeOf;
             this.ImpersonationLevel = impersonationLevel;
             this.ContextTrackingMode = dynamicTracking;
             this.EffectiveOnly = effectiveOnly;
@@ -2282,18 +2345,32 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SemaphoreBasicInformation
     {
+        public static readonly int SizeOf;
+
         public int CurrentCount;
         public int MaximumCount;
+
+        static SemaphoreBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SemaphoreBasicInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct SidStruct
     {
+        public static readonly int SizeOf;
+
         public byte Revision;
         public byte SubAuthorityCount;
         public SidIdentifierAuthority IdentifierAuthority;
 
         // Array of ULONG follows
+
+        static SidStruct()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SidStruct));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2333,6 +2410,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemBasicInformation
     {
+        public static readonly int SizeOf;
+
         public int Reserved;
         public int TimerResolution;
         public int PageSize;
@@ -2344,11 +2423,18 @@ namespace ProcessHacker.Native.Api
         public IntPtr MaximumUserModeAddress;
         public IntPtr ActiveProcessorsAffinityMask;
         public byte NumberOfProcessors;
+
+        static SystemBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemBasicInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemCacheInformation
     {
+        public static readonly int SizeOf;
+
         /// <summary>
         /// The size of the system working set, in bytes.
         /// </summary>
@@ -2369,6 +2455,11 @@ namespace ProcessHacker.Native.Api
         public IntPtr TransitionSharedPagesPeak;
         public int TransitionRePurposeCount;
         public int Flags;
+
+        static SystemCacheInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemCacheInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2455,7 +2546,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemPerformanceInformation
     {
-        public static readonly int Size = Marshal.SizeOf(typeof(SystemPerformanceInformation));
+        public static readonly int SizeOf;
 
         /// <summary>
         /// The total idle time of all processors in units of 100-nanoseconds.
@@ -2476,194 +2567,201 @@ namespace ProcessHacker.Native.Api
         /// <summary>
         /// Number of calls to NtReadFile.
         /// </summary>
-        public int IoReadOperationCount;
+        public uint IoReadOperationCount;
         /// <summary>
         /// Number of calls to NtWriteFile.
         /// </summary>
-        public int IoWriteOperationCount;
+        public uint IoWriteOperationCount;
         /// <summary>
         /// Number of calls to other I/O functions.
         /// </summary>
-        public int IoOtherOperationCount;
+        public uint IoOtherOperationCount;
         /// <summary>
         /// The number of pages of physical memory available.
         /// </summary>
-        public int AvailablePages;
+        public uint AvailablePages;
         /// <summary>
         /// The number of pages of committed virtual memory.
         /// </summary>
-        public int CommittedPages;
+        public uint CommittedPages;
         /// <summary>
         /// The number of pages of virtual memory that could be committed 
         /// without extending the system's pagefiles.
         /// </summary>
-        public int CommitLimit;
+        public uint CommitLimit;
         /// <summary>
         /// The peak number of pages of committed virtual memory.
         /// </summary>
-        public int PeakCommitment;
+        public uint PeakCommitment;
         /// <summary>
         /// The total number of soft and hard page faults.
         /// </summary>
-        public int PageFaultCount;
+        public uint PageFaultCount;
         /// <summary>
         /// The number of copy-on-write page faults.
         /// </summary>
-        public int CopyOnWriteCount;
+        public uint CopyOnWriteCount;
         /// <summary>
         /// The number of soft page faults.
         /// </summary>
-        public int TransitionCount;
+        public uint TransitionCount;
         /// <summary>
         /// Something that the Native API reference book doesn't have.
         /// </summary>
-        public int CacheTransitionCount;
+        public uint CacheTransitionCount;
         /// <summary>
         /// The number of demand zero faults.
         /// </summary>
-        public int DemandZeroCount;
+        public uint DemandZeroCount;
         /// <summary>
         /// The number of pages read from disk to resolve page faults.
         /// </summary>
-        public int PageReadCount;
+        public uint PageReadCount;
         /// <summary>
         /// The number of read operations initiated to resolve page faults.
         /// </summary>
-        public int PageReadIoCount;
-        public int CacheReadCount;
-        public int CacheIoCount;
+        public uint PageReadIoCount;
+        public uint CacheReadCount;
+        public uint CacheIoCount;
         /// <summary>
         /// The number of pages written to the system's pagefiles.
         /// </summary>
-        public int DirtyPagesWriteCount;
+        public uint DirtyPagesWriteCount;
         /// <summary>
         /// The number of write operations performed on the system's pagefiles.
         /// </summary>
-        public int DirtyWriteIoCount;
+        public uint DirtyWriteIoCount;
         /// <summary>
         /// The number of pages written to mapped files.
         /// </summary>
-        public int MappedPagesWriteCount;
+        public uint MappedPagesWriteCount;
         /// <summary>
         /// The number of write operations performed on mapped files.
         /// </summary>
-        public int MappedWriteIoCount;
+        public uint MappedWriteIoCount;
         /// <summary>
         /// The number of pages used by the paged pool.
         /// </summary>
-        public int PagedPoolPages;
+        public uint PagedPoolPages;
         /// <summary>
         /// The number of pages used by the non-paged pool.
         /// </summary>
-        public int NonPagedPoolPages;
+        public uint NonPagedPoolPages;
         /// <summary>
         /// The number of allocations made from the paged pool.
         /// </summary>
-        public int PagedPoolAllocs;
+        public uint PagedPoolAllocs;
         /// <summary>
         /// The number of allocations returned to the paged pool.
         /// </summary>
-        public int PagedPoolFrees;
+        public uint PagedPoolFrees;
         /// <summary>
         /// The number of allocations made from the non-paged pool.
         /// </summary>
-        public int NonPagedPoolAllocs;
+        public uint NonPagedPoolAllocs;
         /// <summary>
         /// The number of allocations returned to the non-paged pool.
         /// </summary>
-        public int NonPagedPoolFrees;
+        public uint NonPagedPoolFrees;
         /// <summary>
         /// The number of available System Page Table Entries.
         /// </summary>
-        public int FreeSystemPtes;
+        public uint FreeSystemPtes;
         /// <summary>
         /// The number of pages of pageable OS code and data in physical 
         /// memory.
         /// </summary>
-        public int ResidentSystemCodePage;
+        public uint ResidentSystemCodePage;
         /// <summary>
         /// The number of pages of pageable driver code and data.
         /// </summary>
-        public int TotalSystemDriverPages;
+        public uint TotalSystemDriverPages;
         /// <summary>
         /// The number of pages of OS driver code and data.
         /// </summary>
-        public int TotalSystemCodePages;
+        public uint TotalSystemCodePages;
         /// <summary>
         /// The number of times an allocation could be statisfied by one of the 
         /// small non-paged lookaside lists.
         /// </summary>
-        public int NonPagedPoolLookasideHits;
+        public uint NonPagedPoolLookasideHits;
         /// <summary>
         /// The number of times an allocation could be statisfied by one of the 
         /// small paged lookaside lists.
         /// </summary>
-        public int PagedPoolLookasideHits;
+        public uint PagedPoolLookasideHits;
         /// <summary>
         /// The number of pages available for use by the paged pool.
         /// </summary>
-        public int AvailablePagedPoolPages;
+        public uint AvailablePagedPoolPages;
         /// <summary>
         /// The number of pages of the system cache in physical memory.
         /// </summary>
-        public int ResidentSystemCachePage;
+        public uint ResidentSystemCachePage;
         /// <summary>
         /// The number of pages of the paged pool in physical memory.
         /// </summary>
-        public int ResidentPagedPoolPage;
+        public uint ResidentPagedPoolPage;
         /// <summary>
         /// The number of pages of pageable driver code and data in physical memory.
         /// </summary>
-        public int ResidentSystemDriverPage;
+        public uint ResidentSystemDriverPage;
         /// <summary>
         /// The number of asynchronous fast read operations.
         /// </summary>
-        public int CcFastReadNoWait;
+        public uint CcFastReadNoWait;
         /// <summary>
         /// The number of synchronous fast read operations.
         /// </summary>
-        public int CcFastReadWait;
+        public uint CcFastReadWait;
         /// <summary>
         /// The number of fast read operations not possible because of resource 
         /// conflicts.
         /// </summary>
-        public int CcFastReadResourceMiss;
-        public int CcFastReadNotPossible;
-        public int CcFastMdlReadNoWait;
-        public int CcFastMdlReadWait;
-        public int CcFastMdlReadResourceMiss;
-        public int CcFastMdlReadNotPossible;
-        public int CcMapDataNoWait;
-        public int CcMapDataWait;
-        public int CcMapDataNoWaitMiss;
-        public int CcMapDataWaitMiss;
-        public int CcPinMappedDataCount;
-        public int CcPinReadNoWait;
-        public int CcPinReadWait;
-        public int CcPinReadNoWaitMiss;
-        public int CcPinReadWaitMiss;
-        public int CcCopyReadNoWait;
-        public int CcCopyReadWait;
-        public int CcCopyReadNoWaitMiss;
-        public int CcCopyReadWaitMiss;
-        public int CcMdlReadNoWait;
-        public int CcMdlReadWait;
-        public int CcMdlReadNoWaitMiss;
-        public int CcMdlReadWaitMiss;
-        public int CcReadAheadIos;
-        public int CcLazyWriteIos;
-        public int CcLazyWritePages;
-        public int CcDataFlushes;
-        public int CcDataPages;
-        public int ContextSwitches;
-        public int FirstLevelTbFills;
-        public int SecondLevelTbFills;
-        public int SystemCalls;
+        public uint CcFastReadResourceMiss;
+        public uint CcFastReadNotPossible;
+        public uint CcFastMdlReadNoWait;
+        public uint CcFastMdlReadWait;
+        public uint CcFastMdlReadResourceMiss;
+        public uint CcFastMdlReadNotPossible;
+        public uint CcMapDataNoWait;
+        public uint CcMapDataWait;
+        public uint CcMapDataNoWaitMiss;
+        public uint CcMapDataWaitMiss;
+        public uint CcPinMappedDataCount;
+        public uint CcPinReadNoWait;
+        public uint CcPinReadWait;
+        public uint CcPinReadNoWaitMiss;
+        public uint CcPinReadWaitMiss;
+        public uint CcCopyReadNoWait;
+        public uint CcCopyReadWait;
+        public uint CcCopyReadNoWaitMiss;
+        public uint CcCopyReadWaitMiss;
+        public uint CcMdlReadNoWait;
+        public uint CcMdlReadWait;
+        public uint CcMdlReadNoWaitMiss;
+        public uint CcMdlReadWaitMiss;
+        public uint CcReadAheadIos;
+        public uint CcLazyWriteIos;
+        public uint CcLazyWritePages;
+        public uint CcDataFlushes;
+        public uint CcDataPages;
+        public uint ContextSwitches;
+        public uint FirstLevelTbFills;
+        public uint SecondLevelTbFills;
+        public uint SystemCalls;
+
+        static SystemPerformanceInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemPerformanceInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemProcessInformation
     {
+        public static readonly int SizeOf;
+
         public int NextEntryOffset;
         public int NumberOfThreads;
         public long SpareLi1;
@@ -2693,17 +2791,29 @@ namespace ProcessHacker.Native.Api
             get { return _inheritedFromProcessId.ToInt32(); }
             set { _inheritedFromProcessId = value.ToIntPtr(); }
         }
+
+        static SystemProcessInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemProcessInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemProcessorPerformanceInformation
     {
+        public static readonly int SizeOf;
+
         public long IdleTime;
         public long KernelTime;
         public long UserTime;
         public long DpcTime;
         public long InterruptTime;
         public int InterruptCount;
+
+        static SystemProcessorPerformanceInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemProcessorPerformanceInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2733,6 +2843,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemTimeOfDayInformation
     {
+        public static readonly int SizeOf;
+
         public long BootTime;
         public long CurrentTime;
         public long TimeZoneBias;
@@ -2740,6 +2852,11 @@ namespace ProcessHacker.Native.Api
         public int Reserved;
         public long BootTimeBias;
         public long SleepTimeBias;
+
+        static SystemTimeOfDayInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemTimeOfDayInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2777,9 +2894,16 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TimerBasicInformation
     {
+        public static readonly int SizeOf;
+
         public LargeInteger RemainingTime;
         [MarshalAs(UnmanagedType.I1)]
         public bool TimerState;
+
+        static TimerBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(TimerBasicInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2889,6 +3013,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct TokenSource
     {
+        public static readonly int SizeOf;
+
         public TokenSource(string sourceName, Luid sourceIdentifier)
         {
             if (sourceName.Length > 8)
@@ -2902,6 +3028,11 @@ namespace ProcessHacker.Native.Api
         public string SourceName;
 
         public Luid SourceIdentifier;
+
+        static TokenSource()
+        {
+            SizeOf = Marshal.SizeOf(typeof(TokenSource));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2995,9 +3126,16 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct UnicodeString : IComparable<UnicodeString>, IEquatable<UnicodeString>, IDisposable
     {
+        public static readonly int SizeOf;
+
+        static UnicodeString()
+        {
+            SizeOf = Marshal.SizeOf(typeof(UnicodeString));
+        }
+
         public UnicodeString(string str)
         {
-            if (str != null)
+            if (!string.IsNullOrEmpty(str))
             {
                 UnicodeString newString;
 
@@ -3042,14 +3180,13 @@ namespace ProcessHacker.Native.Api
         /// </summary>
         public UnicodeString Duplicate()
         {
-            NtStatus status;
             UnicodeString newString;
 
-            if ((status = Win32.RtlDuplicateUnicodeString(
-                RtlDuplicateUnicodeStringFlags.AllocateNullString |
-                RtlDuplicateUnicodeStringFlags.NullTerminate,
-                ref this, out newString)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlDuplicateUnicodeString(
+                RtlDuplicateUnicodeStringFlags.AllocateNullString | RtlDuplicateUnicodeStringFlags.NullTerminate,
+                ref this, 
+                out newString
+                ).ThrowIf();
 
             return newString;
         }
@@ -3071,12 +3208,14 @@ namespace ProcessHacker.Native.Api
 
         public int Hash(HashStringAlgorithm algorithm, bool caseInsensitive)
         {
-            NtStatus status;
             int hash;
 
-            if ((status = Win32.RtlHashUnicodeString(ref this,
-                caseInsensitive, algorithm, out hash)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlHashUnicodeString(
+                ref this,
+                caseInsensitive, 
+                algorithm, 
+                out hash
+                ).ThrowIf();
 
             return hash;
         }
@@ -3094,7 +3233,7 @@ namespace ProcessHacker.Native.Api
         public string Read()
         {
             if (this.Length == 0)
-                return "";
+                return string.Empty;
 
             return Marshal.PtrToStringUni(this.Buffer, this.Length / 2);
         }
@@ -3102,7 +3241,7 @@ namespace ProcessHacker.Native.Api
         public string Read(ProcessHandle processHandle)
         {
             if (this.Length == 0)
-                return "";
+                return string.Empty;
 
             byte[] strData = processHandle.ReadMemory(this.Buffer, this.Length);
             GCHandle strDataHandle = GCHandle.Alloc(strData, GCHandleType.Pinned);
@@ -3129,11 +3268,9 @@ namespace ProcessHacker.Native.Api
 
         public AnsiString ToAnsiString()
         {
-            NtStatus status;
             AnsiString ansiStr = new AnsiString();
 
-            if ((status = Win32.RtlUnicodeStringToAnsiString(ref ansiStr, ref this, true)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlUnicodeStringToAnsiString(ref ansiStr, ref this, true).ThrowIf();
 
             return ansiStr;
         }
@@ -3145,11 +3282,9 @@ namespace ProcessHacker.Native.Api
 
         public AnsiString ToUpperAnsiString()
         {
-            NtStatus status;
             AnsiString ansiStr = new AnsiString();
 
-            if ((status = Win32.RtlUpcaseUnicodeStringToAnsiString(ref ansiStr, ref this, true)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlUpcaseUnicodeStringToAnsiString(ref ansiStr, ref this, true).ThrowIf();
 
             return ansiStr;
         }
@@ -3158,6 +3293,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct VmCounters
     {
+        public static readonly int SizeOf;
+
         public IntPtr PeakVirtualSize;
         public IntPtr VirtualSize;
         public int PageFaultCount;
@@ -3169,6 +3306,11 @@ namespace ProcessHacker.Native.Api
         public IntPtr QuotaNonPagedPoolUsage;
         public IntPtr PagefileUsage;
         public IntPtr PeakPagefileUsage;
+
+        static VmCounters()
+        {
+            SizeOf = Marshal.SizeOf(typeof(VmCounters));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -3222,7 +3364,7 @@ namespace ProcessHacker.Native.Api
 
         public VmCountersEx ToVmCountersEx()
         {
-            return new VmCountersEx()
+            return new VmCountersEx
             {
                 PeakVirtualSize = this.PeakVirtualSize.ToIntPtr(),
                 VirtualSize = this.VirtualSize.ToIntPtr(),

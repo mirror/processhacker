@@ -266,6 +266,8 @@ namespace ProcessHacker.Components
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
     public struct TaskDialogButton
     {
+        public static readonly int SizeOf;
+
         /// <summary>
         /// The ID of the button. This value is returned by TaskDialog.Show when the button is clicked.
         /// </summary>
@@ -305,6 +307,11 @@ namespace ProcessHacker.Components
         {
             get { return this.buttonText; }
             set { this.buttonText = value; }
+        }
+
+        static TaskDialogButton()
+        {
+            SizeOf = Marshal.SizeOf(typeof(TaskDialogButton));
         }
     }
 
@@ -1036,7 +1043,7 @@ namespace ProcessHacker.Components
                 if (customButtons.Length > 0)
                 {
                     // Hand marshal the buttons array.
-                    int elementSize = Marshal.SizeOf(typeof(TaskDialogButton));
+                    int elementSize = TaskDialogButton.SizeOf;
                     config.pButtons = Marshal.AllocHGlobal(elementSize * (int)customButtons.Length);
                     for (int i = 0; i < customButtons.Length; i++)
                     {
@@ -1054,7 +1061,7 @@ namespace ProcessHacker.Components
                 if (customRadioButtons.Length > 0)
                 {
                     // Hand marshal the buttons array.
-                    int elementSize = Marshal.SizeOf(typeof(TaskDialogButton));
+                    int elementSize = TaskDialogButton.SizeOf;
                     config.pRadioButtons = Marshal.AllocHGlobal(elementSize * (int)customRadioButtons.Length);
                     for (int i = 0; i < customRadioButtons.Length; i++)
                     {
@@ -1124,7 +1131,7 @@ namespace ProcessHacker.Components
                 // that are not required for the users of this class.
                 if (config.pButtons != IntPtr.Zero)
                 {
-                    int elementSize = Marshal.SizeOf(typeof(TaskDialogButton));
+                    int elementSize = TaskDialogButton.SizeOf;
                     for (int i = 0; i < config.cButtons; i++)
                     {
                         unsafe
@@ -1139,7 +1146,7 @@ namespace ProcessHacker.Components
 
                 if (config.pRadioButtons != IntPtr.Zero)
                 {
-                    int elementSize = Marshal.SizeOf(typeof(TaskDialogButton));
+                    int elementSize = TaskDialogButton.SizeOf;
                     for (int i = 0; i < config.cRadioButtons; i++)
                     {
                         unsafe

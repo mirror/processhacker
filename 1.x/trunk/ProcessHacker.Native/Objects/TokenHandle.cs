@@ -462,7 +462,7 @@ namespace ProcessHacker.Native.Objects
                 TokenSource source;
                 int retLen;
 
-                if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenSource, out source, Marshal.SizeOf(typeof(TokenSource)), out retLen))
+                if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenSource, out source, TokenSource.SizeOf, out retLen))
                     Win32.Throw();
 
                 return source;

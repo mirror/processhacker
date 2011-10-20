@@ -594,8 +594,7 @@ namespace ProcessHacker.Native.Objects
                     // some part of ObReferenceObjectByHandle is hooked. We can 
                     // open the process with SYNCHRONIZE access and set the granted access 
                     // using KPH.
-                    this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcess(pid,
-                        (ProcessAccess)StandardRights.Synchronize));
+                    this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcess(pid, (ProcessAccess)StandardRights.Synchronize));
                     KProcessHacker.Instance.KphSetHandleGrantedAccess(this.Handle, (int)access);
                 }
             }
@@ -642,34 +641,31 @@ namespace ProcessHacker.Native.Objects
             ProcessAccess access
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
                 // NtOpenProcess fails when both a client ID and a name is specified.
-                if (name != null)
+                if (!string.IsNullOrEmpty(name))
                 {
                     // Name specified, don't specify a CID.
-                    if ((status = Win32.NtOpenProcess(
+                    Win32.NtOpenProcess(
                         out handle,
                         access,
                         ref oa,
                         IntPtr.Zero
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
+                        ).ThrowIf();
                 }
                 else
                 {
                     // No name, specify a CID.
-                    if ((status = Win32.NtOpenProcess(
+                    Win32.NtOpenProcess(
                         out handle,
                         access,
                         ref oa,
                         ref clientId
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
+                        ).ThrowIf();
                 }
             }
             finally
@@ -751,17 +747,14 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The base address of the allocated pages.</returns>
         public IntPtr AllocateMemory(IntPtr baseAddress, ref IntPtr size, MemoryFlags type, MemoryProtection protection)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtAllocateVirtualMemory(
+            Win32.NtAllocateVirtualMemory(
                 this,
                 ref baseAddress,
                 IntPtr.Zero,
                 ref size,
                 type,
                 protection
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return baseAddress;
         }
@@ -891,10 +884,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="debugObjectHandle">A handle to a debug object.</param>
         public void Debug(DebugObjectHandle debugObjectHandle)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtDebugActiveProcess(this, debugObjectHandle)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtDebugActiveProcess(this, debugObjectHandle).ThrowIf();
         }
 
         /// <summary>
@@ -904,16 +894,13 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void DisableHandleTracing()
         {
-            NtStatus status;
-
             // Length 0 and NULL disables handle tracing.
-            if ((status = Win32.NtSetInformationProcess(
+            Win32.NtSetInformationProcess(
                 this,
                 ProcessInformationClass.ProcessHandleTracing,
                 IntPtr.Zero,
                 0
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         /// <summary>
@@ -932,16 +919,14 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void EnableHandleTracing()
         {
-            NtStatus status;
             ProcessHandleTracingEnable phte = new ProcessHandleTracingEnable();
 
-            if ((status = Win32.NtSetInformationProcess(
+            Win32.NtSetInformationProcess(
                 this,
                 ProcessInformationClass.ProcessHandleTracing,
                 ref phte,
                 Marshal.SizeOf(phte)
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         /// <summary>
@@ -1091,17 +1076,15 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A NT status value.</returns>
         public NtStatus FlushMemory(IntPtr baseAddress, int size)
         {
-            NtStatus status;
             IntPtr sizeIntPtr = size.ToIntPtr();
             IoStatusBlock isb;
 
-            if ((status = Win32.NtFlushVirtualMemory(
+            Win32.NtFlushVirtualMemory(
                 this,
                 ref baseAddress,
                 ref sizeIntPtr,
                 out isb
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return isb.Status;
         }
@@ -1125,20 +1108,18 @@ namespace ProcessHacker.Native.Objects
         /// reserve the memory instead of freeing it.</param>
         public void FreeMemory(IntPtr baseAddress, int size, bool reserveOnly)
         {
-            NtStatus status;
             IntPtr sizeIntPtr = size.ToIntPtr();
 
             // Size needs to be 0 if we're freeing.
             if (!reserveOnly)
                 sizeIntPtr = IntPtr.Zero;
 
-            if ((status = Win32.NtFreeVirtualMemory(
+            Win32.NtFreeVirtualMemory(
                 this,
                 ref baseAddress,
                 ref sizeIntPtr,
                 reserveOnly ? MemoryFlags.Decommit : MemoryFlags.Release
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         /// <summary>
@@ -1185,13 +1166,16 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A PROCESS_BASIC_INFORMATION structure.</returns>
         public ProcessBasicInformation GetBasicInformation()
         {
-            NtStatus status;
             ProcessBasicInformation pbi;
             int retLen;
 
-            if ((status = Win32.NtQueryInformationProcess(this, ProcessInformationClass.ProcessBasicInformation,
-                out pbi, Marshal.SizeOf(typeof(ProcessBasicInformation)), out retLen)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtQueryInformationProcess(
+                this, 
+                ProcessInformationClass.ProcessBasicInformation,
+                out pbi, 
+                ProcessBasicInformation.SizeOf, 
+                out retLen
+                ).ThrowIf();
 
             return pbi;
         }
@@ -1205,8 +1189,8 @@ namespace ProcessHacker.Native.Objects
         {
             if (!this.IsPosix())
                 return this.GetPebString(PebOffset.CommandLine);
-            else
-                return this.GetPosixCommandLine();
+            
+            return this.GetPosixCommandLine();
         }
 
         /// <summary>
@@ -1244,9 +1228,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A debug object handle.</returns>
         public DebugObjectHandle GetDebugObject()
         {
-            IntPtr handle;
-
-            handle = this.GetDebugObjectHandle();
+            IntPtr handle = this.GetDebugObjectHandle();
 
             // Check if we got a handle. If we didn't the process is not being debugged.
             if (handle == IntPtr.Zero)
@@ -1521,8 +1503,7 @@ namespace ProcessHacker.Native.Objects
                         continue;
                     }
 
-                    if (status >= NtStatus.Error)
-                        Win32.Throw(status);
+                    status.ThrowIf();
 
                     return new ProcessHandleTraceCollection(data);
                 }
@@ -1595,13 +1576,16 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                NtStatus status;
                 int value;
                 int retLength;
 
-                if ((status = Win32.NtQueryInformationProcess(
-                    this, infoClass, out value, sizeof(int), out retLength)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtQueryInformationProcess(
+                    this, 
+                    infoClass, 
+                    out value, 
+                    sizeof(int), 
+                    out retLength
+                    ).ThrowIf();
 
                 return value;
             }
@@ -1614,28 +1598,29 @@ namespace ProcessHacker.Native.Objects
         /// <returns>An IntPtr.</returns>
         private IntPtr GetInformationIntPtr(ProcessInformationClass infoClass)
         {
-            NtStatus status;
             IntPtr value;
             int retLength;
 
-            if ((status = Win32.NtQueryInformationProcess(
-                this, infoClass, out value, IntPtr.Size, out retLength)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtQueryInformationProcess(
+                this, 
+                infoClass, 
+                out value, 
+                IntPtr.Size, 
+                out retLength
+                ).ThrowIf();
 
             return value;
         }
 
         private string GetInformationUnicodeString(ProcessInformationClass infoClass)
         {
-            NtStatus status;
             int retLen;
 
             Win32.NtQueryInformationProcess(this, infoClass, IntPtr.Zero, 0, out retLen);
 
             using (MemoryAlloc data = new MemoryAlloc(retLen))
             {
-                if ((status = Win32.NtQueryInformationProcess(this, infoClass, data, retLen, out retLen)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtQueryInformationProcess(this, infoClass, data, retLen, out retLen).ThrowIf();
 
                 return data.ReadStruct<UnicodeString>().Read();
             }
@@ -1656,18 +1641,16 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A IoCounters structure.</returns>
         public IoCounters GetIoStatistics()
         {
-            NtStatus status;
             IoCounters counters;
             int retLength;
 
-            if ((status = Win32.NtQueryInformationProcess(
+            Win32.NtQueryInformationProcess(
                 this,
                 ProcessInformationClass.ProcessIoCounters,
                 out counters,
-                Marshal.SizeOf(typeof(IoCounters)),
+                IoCounters.SizeOf,
                 out retLength
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return counters;
         }
@@ -1678,14 +1661,12 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A job object handle.</returns>
         public JobObjectHandle GetJobObject(JobObjectAccess access)
         {
-            IntPtr handle;
-
-            handle = JobObjectHandle.Open(this, access);
+            IntPtr handle = JobObjectHandle.Open(this, access);
 
             if (handle != IntPtr.Zero)
                 return new JobObjectHandle(handle, true);
-            else
-                return null;
+          
+            return null;
         }
 
         /// <summary>
@@ -1736,7 +1717,7 @@ namespace ProcessHacker.Native.Objects
         {
             ProcessModule mainModule = null;
 
-            this.EnumModules((module) =>
+            this.EnumModules(module =>
             {
                 mainModule = module;
                 return false;
@@ -1778,7 +1759,7 @@ namespace ProcessHacker.Native.Objects
                         );
                 }
 
-                if (status >= NtStatus.Error)
+                if (status.IsError())
                     return null;
 
                 return FileUtils.GetFileName(data.ReadStruct<UnicodeString>().Read());
@@ -1791,18 +1772,16 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A VmCounters structure.</returns>
         public VmCounters GetMemoryStatistics()
         {
-            NtStatus status;
             VmCounters counters;
             int retLength;
 
-            if ((status = Win32.NtQueryInformationProcess(
+            Win32.NtQueryInformationProcess(
                 this,
                 ProcessInformationClass.ProcessVmCounters,
                 out counters,
-                Marshal.SizeOf(typeof(VmCounters)),
+                VmCounters.SizeOf,
                 out retLength
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return counters;
         }
@@ -1816,7 +1795,7 @@ namespace ProcessHacker.Native.Objects
         {
             List<ProcessModule> modules = new List<ProcessModule>();
 
-            this.EnumModules((module) =>
+            this.EnumModules(module =>
             {
                 modules.Add(module);
                 return true;
@@ -1832,22 +1811,20 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A process handle.</returns>
         public ProcessHandle GetNextProcess(ProcessAccess access)
         {
-            NtStatus status;
             IntPtr handle;
 
-            if ((status = Win32.NtGetNextProcess(
+            Win32.NtGetNextProcess(
                 this,
                 access,
                 0,
                 0,
                 out handle
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             if (handle != IntPtr.Zero)
                 return new ProcessHandle(handle, true);
-            else
-                return null;
+           
+            return null;
         }
 
         /// <summary>
@@ -1858,23 +1835,21 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A thread handle.</returns>
         public ThreadHandle GetNextThread(ThreadHandle threadHandle, ThreadAccess access)
         {
-            NtStatus status;
             IntPtr handle;
 
-            if ((status = Win32.NtGetNextThread(
+            Win32.NtGetNextThread(
                 this,
                 threadHandle != null ? threadHandle : IntPtr.Zero,
                 access,
                 0,
                 0,
                 out handle
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             if (handle != IntPtr.Zero)
                 return new ThreadHandle(handle, true);
-            else
-                return null;
+
+            return null;
         }
 
         /// <summary>
@@ -1915,7 +1890,7 @@ namespace ProcessHacker.Native.Objects
             // Read the UNICODE_STRING structure.
             UnicodeString pebStr;
 
-            this.ReadMemory(processParameters.Increment(realOffset), &pebStr, Marshal.SizeOf(typeof(UnicodeString)));
+            this.ReadMemory(processParameters.Increment(realOffset), &pebStr, UnicodeString.SizeOf);
 
             // read string and decode it
             return Encoding.Unicode.GetString(this.ReadMemory(pebStr.Buffer, pebStr.Length), 0, pebStr.Length);
@@ -1940,8 +1915,9 @@ namespace ProcessHacker.Native.Objects
             this.ReadMemory(
                 processParameters.Increment(GetPebOffset(PebOffset.CommandLine)),
                 &commandLineUs,
-                Marshal.SizeOf(typeof(UnicodeString))
+                UnicodeString.SizeOf
                 );
+
             IntPtr stringAddr = commandLineUs.Buffer;
 
             /*
@@ -2028,18 +2004,16 @@ namespace ProcessHacker.Native.Objects
             //        return ProcessPriorityClass.Unknown;
             //}
 
-            NtStatus status;
             ProcessPriorityClassStruct priorityClass;
             int retLength;
 
-            if ((status = Win32.NtQueryInformationProcess(
+            Win32.NtQueryInformationProcess(
                 this,
                 ProcessInformationClass.ProcessPriorityClass,
                 out priorityClass,
-                Marshal.SizeOf(typeof(ProcessPriorityClassStruct)),
+                ProcessPriorityClassStruct.SizeOf,
                 out retLength
-                )) != NtStatus.Success)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return (ProcessPriorityClass)priorityClass.PriorityClass;
         }
@@ -2228,18 +2202,16 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The old memory protection.</returns>
         public MemoryProtection ProtectMemory(IntPtr baseAddress, int size, MemoryProtection protection)
         {
-            NtStatus status;
             IntPtr sizeIntPtr = size.ToIntPtr();
             MemoryProtection oldProtection;
 
-            if ((status = Win32.NtProtectVirtualMemory(
+            Win32.NtProtectVirtualMemory(
                 this,
                 ref baseAddress,
                 ref sizeIntPtr,
                 protection,
                 out oldProtection
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return oldProtection;
         }
@@ -2251,19 +2223,17 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A MEMORY_BASIC_INFORMATION structure.</returns>
         public MemoryBasicInformation QueryMemory(IntPtr baseAddress)
         {
-            NtStatus status;
             MemoryBasicInformation mbi;
             IntPtr retLength;
 
-            if ((status = Win32.NtQueryVirtualMemory(
+            Win32.NtQueryVirtualMemory(
                 this,
                 baseAddress,
                 MemoryInformationClass.MemoryBasicInformation,
                 out mbi,
-                Marshal.SizeOf(typeof(MemoryBasicInformation)).ToIntPtr(),
+                MemoryBasicInformation.SizeOf.ToIntPtr(),
                 out retLength
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return mbi;
         }
@@ -2331,17 +2301,15 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                NtStatus status;
                 IntPtr retLengthIntPtr;
 
-                if ((status = Win32.NtReadVirtualMemory(
+                Win32.NtReadVirtualMemory(
                     this,
                     baseAddress,
                     buffer,
                     length.ToIntPtr(),
                     out retLengthIntPtr
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
 
                 retLength = retLengthIntPtr.ToInt32();
             }
@@ -2376,10 +2344,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="debugObjectHandle">The debug object which was used to debug the process.</param>
         public void RemoveDebug(DebugObjectHandle debugObjectHandle)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtRemoveProcessDebug(this, debugObjectHandle)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtRemoveProcessDebug(this, debugObjectHandle).ThrowIf();
         }
 
         /// <summary>
@@ -2393,10 +2358,7 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                NtStatus status;
-
-                if ((status = Win32.NtResumeProcess(this)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtResumeProcess(this).ThrowIf();
             }
         }
 
@@ -2471,11 +2433,12 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                NtStatus status;
-
-                if ((status = Win32.NtSetInformationProcess(
-                    this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtSetInformationProcess(
+                    this, 
+                    infoClass, 
+                    ref value, 
+                    sizeof(int)
+                    ).ThrowIf();
             }
         }
 
@@ -2583,19 +2546,17 @@ namespace ProcessHacker.Native.Objects
             //if (!Win32.SetPriorityClass(this, pcWin32))
             //    Win32.Throw();
 
-            NtStatus status;
             ProcessPriorityClassStruct processPriority;
 
             processPriority.Foreground = '\0';
             processPriority.PriorityClass = Convert.ToChar(priorityClass);
 
-            if ((status = Win32.NtSetInformationProcess(
+            Win32.NtSetInformationProcess(
                 this,
                 ProcessInformationClass.ProcessPriorityClass,
                 ref processPriority,
-                Marshal.SizeOf(typeof(ProcessPriorityClassStruct))
-                )) != NtStatus.Success)
-                Win32.Throw(status);
+                ProcessPriorityClassStruct.SizeOf
+                ).ThrowIf();
         }
 
         /// <summary>
@@ -2609,10 +2570,7 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                NtStatus status;
-
-                if ((status = Win32.NtSuspendProcess(this)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtSuspendProcess(this).ThrowIf();
             }
         }
 
@@ -2636,10 +2594,7 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                NtStatus status;
-
-                if ((status = Win32.NtTerminateProcess(this, exitStatus)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtTerminateProcess(this, exitStatus).ThrowIf();
             }
         }
 
@@ -2695,14 +2650,11 @@ namespace ProcessHacker.Native.Objects
         /// <param name="baseAddress">The offset at which to begin writing.</param>
         /// <param name="buffer">The data to write.</param>
         /// <returns>The length, in bytes, that was written.</returns>
-        public int WriteMemory(IntPtr baseAddress, byte[] buffer)
+        public unsafe int WriteMemory(IntPtr baseAddress, byte[] buffer)
         {
-            unsafe
+            fixed (byte* dataPtr = buffer)
             {
-                fixed (byte* dataPtr = buffer)
-                {
-                    return WriteMemory(baseAddress, dataPtr, buffer.Length);
-                }
+                return WriteMemory(baseAddress, dataPtr, buffer.Length);
             }
         }
 
@@ -2741,17 +2693,15 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                NtStatus status;
                 IntPtr retLengthIntPtr;
 
-                if ((status = Win32.NtWriteVirtualMemory(
+                Win32.NtWriteVirtualMemory(
                     this,
                     baseAddress,
                     buffer,
                     length.ToIntPtr(),
                     out retLengthIntPtr
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
 
                 retLength = retLengthIntPtr.ToInt32();
             }

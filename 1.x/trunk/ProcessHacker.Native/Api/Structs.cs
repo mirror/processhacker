@@ -296,6 +296,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct MemoryBasicInformation
     {
+        public static readonly int SizeOf;
+
         public IntPtr BaseAddress;
         public IntPtr AllocationBase;
         public MemoryProtection AllocationProtect;
@@ -303,6 +305,11 @@ namespace ProcessHacker.Native.Api
         public MemoryState State;
         public MemoryProtection Protect;
         public MemoryType Type;
+
+        static MemoryBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(MemoryBasicInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 16)]
@@ -555,6 +562,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct PerformanceInformation
     {
+        public static readonly int SizeOf;
+
         public int Size;
         public IntPtr CommitTotal;
         public IntPtr CommitLimit;
@@ -569,6 +578,11 @@ namespace ProcessHacker.Native.Api
         public int HandlesCount;
         public int ProcessCount;
         public int ThreadCount;
+
+        static PerformanceInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(PerformanceInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -695,6 +709,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ServiceStatusProcess
     {
+        public static readonly int SizeOf;
+
         public ServiceType ServiceType;
         public ServiceState CurrentState;
         public ServiceAccept ControlsAccepted;
@@ -704,6 +720,11 @@ namespace ProcessHacker.Native.Api
         public int WaitHint;
         public int ProcessID;
         public ServiceFlags ServiceFlags;
+
+        static ServiceStatusProcess()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ServiceStatusProcess));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -899,6 +920,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct WintrustData
     {
+        public static readonly int SizeOf;
+
+        static WintrustData()
+        {
+            SizeOf = Marshal.SizeOf(typeof(WintrustData));
+        }
+
         public int Size;
         public IntPtr PolicyCallbackData;
         public IntPtr SIPClientData;

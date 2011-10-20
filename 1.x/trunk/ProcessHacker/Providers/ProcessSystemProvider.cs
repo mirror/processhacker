@@ -250,7 +250,7 @@ namespace ProcessHacker
         private SystemProcess _dpcs = new SystemProcess()
         {
             Name = "DPCs",
-            Process = new SystemProcessInformation()
+            Process = new SystemProcessInformation
             {
                 ProcessId = -2,
                 InheritedFromProcessId = 0,
@@ -261,7 +261,7 @@ namespace ProcessHacker
         private SystemProcess _interrupts = new SystemProcess()
         {
             Name = "Interrupts",
-            Process = new SystemProcessInformation()
+            Process = new SystemProcessInformation
             {
                 ProcessId = -3,
                 InheritedFromProcessId = 0,
@@ -272,29 +272,32 @@ namespace ProcessHacker
         public ProcessSystemProvider()
             : base()
         {
-            this.Name = this.GetType().Name;
+            this.Name = "ProcessSystemProvider";
 
             // Add the file processing results listener.
-            _messageQueue.AddListener(
-                new MessageQueueListener<ProcessQueryMessage>((message) =>
-                    {
-                        if (this.Dictionary.ContainsKey(message.Pid))
-                        {
-                            ProcessItem item = this.Dictionary[message.Pid];
+            _messageQueue.AddListener(new MessageQueueListener<ProcessQueryMessage>(message =>
+            {
+                if (this.Dictionary.ContainsKey(message.Pid))
+                {
+                    ProcessItem item = this.Dictionary[message.Pid];
 
-                            this.FillPqResult(item, message);
-                            item.JustProcessed = true;
-                        }
-                    }));
+                    this.FillPqResult(item, message);
+                    item.JustProcessed = true;
+                }
+            }));
 
             SystemBasicInformation basic;
             int retLen;
 
-            Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, out basic,
-                Marshal.SizeOf(typeof(SystemBasicInformation)), out retLen);
+            Win32.NtQuerySystemInformation(
+                SystemInformationClass.SystemBasicInformation, 
+                out basic,
+                SystemBasicInformation.SizeOf,
+                out retLen
+                );
+
             _system = basic;
-            _processorPerfArraySize = Marshal.SizeOf(typeof(SystemProcessorPerformanceInformation)) *
-                _system.NumberOfProcessors;
+            _processorPerfArraySize = SystemProcessorPerformanceInformation.SizeOf * _system.NumberOfProcessors;
             _processorPerfBuffer = new MemoryAlloc(_processorPerfArraySize);
             _processorPerfArray = new SystemProcessorPerformanceInformation[_system.NumberOfProcessors];
 
@@ -339,9 +342,11 @@ namespace ProcessHacker
             {
                 Int64Delta.Update(ref _cpuKernelDeltas[i], this.ProcessorPerfArray[i].KernelTime);
                 Int64Delta.Update(ref _cpuUserDeltas[i], this.ProcessorPerfArray[i].UserTime);
-                Int64Delta.Update(ref _cpuOtherDeltas[i],
-                    this.ProcessorPerfArray[i].IdleTime + this.ProcessorPerfArray[i].DpcTime +
-                    this.ProcessorPerfArray[i].InterruptTime);
+                
+                Int64Delta.Update(
+                    ref _cpuOtherDeltas[i], 
+                    this.ProcessorPerfArray[i].IdleTime + this.ProcessorPerfArray[i].DpcTime + this.ProcessorPerfArray[i].InterruptTime
+                    );
 
                 _cpusKernelHistory[i] = new CircularBuffer<float>(_historyMaxSize);
                 _cpusUserHistory[i] = new CircularBuffer<float>(_historyMaxSize);
@@ -371,8 +376,12 @@ namespace ProcessHacker
         {
             int retLen;
 
-            Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessorPerformanceInformation,
-                _processorPerfBuffer, _processorPerfArraySize, out retLen);
+            Win32.NtQuerySystemInformation(
+                SystemInformationClass.SystemProcessorPerformanceInformation,
+                _processorPerfBuffer, 
+                _processorPerfArraySize, 
+                out retLen
+                );
 
             _processorPerf = new SystemProcessorPerformanceInformation();
 
@@ -400,8 +409,12 @@ namespace ProcessHacker
         {
             int retLen;
 
-            Win32.NtQuerySystemInformation(SystemInformationClass.SystemPerformanceInformation,
-                 out _performance, SystemPerformanceInformation.Size, out retLen);
+            Win32.NtQuerySystemInformation(
+                SystemInformationClass.SystemPerformanceInformation,
+                 out _performance, 
+                 SystemPerformanceInformation.SizeOf, 
+                 out retLen
+                 );
         }
 
         private ProcessQueryMessage QueryProcessStage1(int pid, string fileName, bool forced)
@@ -419,10 +432,10 @@ namespace ProcessHacker
             fpResult.Pid = pid;
             fpResult.Stage = 0x1;
 
-            if (fileName == null)
+            if (string.IsNullOrEmpty(fileName))
                 fileName = this.GetFileName(pid);
 
-            if (fileName == null)
+            if (string.IsNullOrEmpty(fileName))
                 Logging.Log(Logging.Importance.Warning, "Could not get file name for PID " + pid.ToString());
 
             fpResult.FileName = fileName;
@@ -509,7 +522,7 @@ namespace ProcessHacker
             catch
             { }
 
-            if (fileName != null)
+            if (!string.IsNullOrEmpty(fileName))
             {
                 try
                 {
@@ -601,7 +614,7 @@ namespace ProcessHacker
             fpResult.Stage = 0x2;
             fpResult.IsPacked = false;
 
-            if (fileName == null)
+            if (string.IsNullOrEmpty(fileName))
                 return null;
 
             // Don't process the file if it is too big (above 32MB).
@@ -623,7 +636,7 @@ namespace ProcessHacker
             // 1. The function-to-library ratio is lower than 4
             //   (on average less than 4 functions are imported from each library)
             // 2. It references more than 3 libraries but less than 14 libraries.
-            if (fileName != null && (Settings.Instance.VerifySignatures || forced))
+            if (!string.IsNullOrEmpty(fileName) && (Settings.Instance.VerifySignatures || forced))
             {
                 try
                 {
@@ -658,7 +671,7 @@ namespace ProcessHacker
             {
                 if (Settings.Instance.VerifySignatures || forced)
                 {
-                    if (fileName != null)
+                    if (!string.IsNullOrEmpty(fileName))
                     {
                         string uniName = global::System.IO.Path.GetFullPath(fileName).ToLowerInvariant();
 
