@@ -109,10 +109,9 @@ namespace ProcessHacker.FormHelper
                     try
                     {
                         // Modules
-                        using (var phandle = new ProcessHandle(process.Key,
-                            Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                        using (var phandle = new ProcessHandle(process.Key, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                         {
-                            phandle.EnumModules((module) =>
+                            phandle.EnumModules(module =>
                             {
                                 if (module.FileName.ToLowerInvariant().Contains(strFilterLower))
                                     this.CallDllMatchListView(process.Key, module);

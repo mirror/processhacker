@@ -544,8 +544,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (var phandle = new ProcessHandle(pid,
-                        Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                     {
                         fpResult.CmdLine = phandle.GetCommandLine();
                         fpResult.IsPosix = phandle.IsPosix();

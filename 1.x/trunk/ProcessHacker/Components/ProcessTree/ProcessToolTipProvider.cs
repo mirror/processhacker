@@ -46,15 +46,15 @@ namespace ProcessHacker
             // Use the process node's tooltip mechanism to allow caching.
             if (pNode != null)
                 return pNode.GetTooltipText(this);
-            else
-                return string.Empty;
+            
+            return string.Empty;
         }
 
         public string GetToolTip(ProcessNode pNode)
         {
             try
             {
-                string cmdText = (pNode.ProcessItem.CmdLine != null ?
+                string cmdText = (!string.IsNullOrEmpty(pNode.ProcessItem.CmdLine) ?
                         (Utils.CreateEllipsis(pNode.ProcessItem.CmdLine.Replace("\0", string.Empty), 100) + "\n") : string.Empty);
 
                 string fileText = string.Empty;
@@ -65,22 +65,21 @@ namespace ProcessHacker
                     {
                         var info = pNode.ProcessItem.VersionInfo;
 
-                        fileText = "File:\n" + PhUtils.FormatFileInfo(
-                            info.FileName, info.FileDescription, info.CompanyName, info.FileVersion, 4);
+                        fileText = "File:\n" + PhUtils.FormatFileInfo(info.FileName, info.FileDescription, info.CompanyName, info.FileVersion, 4);
                     }
                 }
                 catch
                 {
-                    if (pNode.ProcessItem.FileName != null)
+                    if (!string.IsNullOrEmpty(pNode.ProcessItem.FileName))
                         fileText = "File:\n    " + pNode.ProcessItem.FileName;
                 }
 
                 string runDllText = string.Empty;
 
-                if (pNode.ProcessItem.FileName != null &&
+                if (!string.IsNullOrEmpty(pNode.ProcessItem.FileName) &&
                     pNode.ProcessItem.FileName.EndsWith("\\rundll32.exe",
                     StringComparison.InvariantCultureIgnoreCase) &&
-                    pNode.ProcessItem.CmdLine != null)
+                    !string.IsNullOrEmpty(pNode.ProcessItem.CmdLine))
                 {
                     try
                     {
@@ -105,10 +104,9 @@ namespace ProcessHacker
 
                 string dllhostText = string.Empty;
 
-                if (pNode.ProcessItem.FileName != null &&
-                    pNode.ProcessItem.FileName.EndsWith("\\dllhost.exe",
-                    StringComparison.InvariantCultureIgnoreCase) &&
-                    pNode.ProcessItem.CmdLine != null)
+                if (!string.IsNullOrEmpty(pNode.ProcessItem.FileName) &&
+                    pNode.ProcessItem.FileName.EndsWith("\\dllhost.exe", StringComparison.InvariantCultureIgnoreCase) &&
+                    !string.IsNullOrEmpty(pNode.ProcessItem.CmdLine))
                 {
                     try
                     {
