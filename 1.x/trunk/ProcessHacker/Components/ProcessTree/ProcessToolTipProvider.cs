@@ -157,9 +157,8 @@ namespace ProcessHacker
                         {
                             if (services.ContainsKey(service))
                             {
-                                if (services[service].Status.DisplayName != string.Empty)
-                                    servicesText += "    " + service + " (" +
-                                    services[service].Status.DisplayName + ")\n";
+                                if (string.IsNullOrEmpty(services[service].Status.DisplayName))
+                                    servicesText += "    " + service + " (" + services[service].Status.DisplayName + ")\n";
                                 else
                                     servicesText += "    " + service + "\n";
                             }

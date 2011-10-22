@@ -109,8 +109,7 @@ namespace ProcessHacker
                     {
                         info = processHandles[h].GetHandleInfo(_processHandle);
 
-                        if ((info.BestName == null || info.BestName == "") &&
-                            HideHandlesWithNoName)
+                        if (string.IsNullOrEmpty(info.BestName) && HideHandlesWithNoName)
                             continue;
                     }
                     catch

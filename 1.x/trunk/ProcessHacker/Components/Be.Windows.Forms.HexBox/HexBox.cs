@@ -1396,7 +1396,7 @@ namespace Be.Windows.Forms
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			SetStyle(ControlStyles.ResizeRedraw, true);
 
-            _thumbTrackTimer.Interval = 50;
+            _thumbTrackTimer.Interval = 1000;
             _thumbTrackTimer.Tick += new EventHandler(PerformScrollThumbTrack);
 		}
 

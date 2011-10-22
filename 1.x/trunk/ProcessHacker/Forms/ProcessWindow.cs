@@ -748,7 +748,7 @@ namespace ProcessHacker
                     {
                         foreach (var pair in phandle.GetEnvironmentVariables())
                         {
-                            if (pair.Key != string.Empty)
+                            if (!string.IsNullOrEmpty(pair.Key))
                             {
                                 if (this.IsHandleCreated)
                                 {

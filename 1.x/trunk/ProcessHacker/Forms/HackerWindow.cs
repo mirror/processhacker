@@ -2042,7 +2042,7 @@ namespace ProcessHacker
         {
             this.QueueMessage("New Service: " + item.Status.ServiceName +
                 " (" + item.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
-                ((item.Status.DisplayName != string.Empty) ?
+                (!string.IsNullOrEmpty(item.Status.DisplayName) ?
                 " (" + item.Status.DisplayName + ")" :
                 string.Empty));
 

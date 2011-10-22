@@ -192,7 +192,7 @@ namespace ProcessHacker
                     SymbolProvider.Options = SymbolOptions.DeferredLoads |
                         (Settings.Instance.DbgHelpUndecorate ? SymbolOptions.UndName : 0);
 
-                    if (Settings.Instance.DbgHelpSearchPath != "")
+                    if (!string.IsNullOrEmpty(Settings.Instance.DbgHelpSearchPath))
                         _symbols.SearchPath = Settings.Instance.DbgHelpSearchPath;
 
                     try
