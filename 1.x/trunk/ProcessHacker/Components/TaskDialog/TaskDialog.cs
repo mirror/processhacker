@@ -1012,7 +1012,7 @@ namespace ProcessHacker.Components
 
             try
             {
-                config.cbSize = (uint)Marshal.SizeOf(typeof(UnsafeNativeMethods.TASKDIALOGCONFIG));
+                config.cbSize = (uint)UnsafeNativeMethods.TASKDIALOGCONFIG.SizeOf;
                 config.hwndParent = hwndOwner;
                 config.dwFlags = this.flags;
                 config.dwCommonButtons = this.commonButtons;

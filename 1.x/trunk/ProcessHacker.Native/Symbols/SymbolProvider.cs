@@ -337,7 +337,7 @@ namespace ProcessHacker.Native.Symbols
             }
 
             // Allocate some memory for the symbol information.
-            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + _maxNameLen))
+            using (var data = new MemoryAlloc(SymbolInfo.SizeOf + _maxNameLen))
             {
                 var info = new SymbolInfo();
 
@@ -386,7 +386,7 @@ namespace ProcessHacker.Native.Symbols
                 }
 
                 // If we don't have a module name, return an address.
-                if (modFileName == null)
+                if (string.IsNullOrEmpty(modFileName))
                 {
                     level = SymbolResolveLevel.Address;
                     flags = 0;
@@ -420,12 +420,10 @@ namespace ProcessHacker.Native.Symbols
                     {
                         return fi.Name + "+0x" + (address - modBase).ToString("x");
                     }
-                    else
-                    {
-                        var s = modFileName.Split('\\');
 
-                        return s[s.Length - 1] + "+0x" + (address - modBase).ToString("x");
-                    }
+                    var s = modFileName.Split('\\');
+
+                    return s[s.Length - 1] + "+0x" + (address - modBase).ToString("x");
                 }
 
                 // If we have everything, return the full symbol name: module!symbol+offset.
@@ -437,14 +435,14 @@ namespace ProcessHacker.Native.Symbols
 
                 if (displacement == 0)
                     return fi.Name + "!" + name;
-                else
-                    return fi.Name + "!" + name + "+0x" + displacement.ToString("x");
+
+                return fi.Name + "!" + name + "+0x" + displacement.ToString("x");
             }
         }
 
         public SymbolInformation GetSymbolFromName(string symbolName)
         {
-            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + _maxNameLen))
+            using (var data = new MemoryAlloc(SymbolInfo.SizeOf + _maxNameLen))
             {
                 var info = new SymbolInfo();
 

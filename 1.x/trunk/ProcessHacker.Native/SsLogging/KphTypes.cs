@@ -101,27 +101,46 @@ namespace ProcessHacker.Native.SsLogging
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsBlockHeader
     {
+        public static readonly int SizeOf;
+
         public ushort Size;
         public KphSsBlockType Type;
+
+        static KphSsBlockHeader()
+        {
+            SizeOf = Marshal.SizeOf(typeof(KphSsBlockHeader));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsBytes
     {
-        public static readonly int BufferOffset = Marshal.OffsetOf(typeof(KphSsBytes), "Buffer").ToInt32();
+        public static readonly int BufferOffset;
 
         public ushort Length;
         public byte Buffer;
+
+        static KphSsBytes()
+        {
+            BufferOffset = Marshal.OffsetOf(typeof(KphSsBytes), "Buffer").ToInt32();
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsClientInformation
     {
+        public static readonly int SizeOf;
+
         public IntPtr ProcessId;
         public IntPtr BufferBase;
         public int BufferSize;
         public int NumberOfBlocksWritten;
         public int NumberOfBlocksDropped;
+
+        static KphSsClientInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(KphSsClientInformation));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

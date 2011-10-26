@@ -13,8 +13,15 @@ namespace ProcessHacker.Native.Io
         [StructLayout(LayoutKind.Sequential)]
         public struct BeepSetParameters
         {
+            public static readonly int SizeOf;
+
             public int Frequency;
             public int Duration;
+
+            static BeepSetParameters()
+            {
+                SizeOf = Marshal.SizeOf(typeof(BeepSetParameters));
+            }
         }
 
         public const int BeepFrequencyMinimum = 0x25;
@@ -22,18 +29,15 @@ namespace ProcessHacker.Native.Io
 
         public static readonly int IoCtlSet = Win32.CtlCode(DeviceType.Beep, 0, DeviceControlMethod.Buffered, DeviceControlAccess.Any);
 
-        public static void Beep(int frequency, int duration)
+        public static unsafe void Beep(int frequency, int duration)
         {
-            unsafe
-            {
-                BeepSetParameters p;
+            BeepSetParameters p;
 
-                p.Frequency = frequency;
-                p.Duration = duration;
+            p.Frequency = frequency;
+            p.Duration = duration;
 
-                using (var fhandle = OpenBeepDevice(FileAccess.GenericRead))
-                    fhandle.IoControl(IoCtlSet, &p, Marshal.SizeOf(typeof(BeepSetParameters)), null, 0);
-            }
+            using (var fhandle = OpenBeepDevice(FileAccess.GenericRead))
+                fhandle.IoControl(IoCtlSet, &p, BeepSetParameters.SizeOf, null, 0);
         }
 
         private static FileHandle OpenBeepDevice(FileAccess access)

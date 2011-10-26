@@ -289,8 +289,15 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct LuidAndAttributes
     {
+        public static readonly int SizeOf;
+
         public Luid Luid;
         public SePrivilegeAttributes Attributes;
+
+        static LuidAndAttributes()
+        {
+            SizeOf = Marshal.SizeOf(typeof(LuidAndAttributes));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -840,7 +847,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SymbolInfo
     {
-        public static readonly int NameOffset = Marshal.OffsetOf(typeof(SymbolInfo), "Name").ToInt32();
+        public static readonly int SizeOf;
+        public static readonly int NameOffset;
 
         public int SizeOfStruct;
         public int TypeIndex;
@@ -857,6 +865,12 @@ namespace ProcessHacker.Native.Api
         public int NameLen;
         public int MaxNameLen;
         public byte Name;
+
+        static SymbolInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SymbolInfo));
+            NameOffset = Marshal.OffsetOf(typeof(SymbolInfo), "Name").ToInt32();
+        }
     } 
 
     [StructLayout(LayoutKind.Sequential)]

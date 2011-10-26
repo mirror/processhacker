@@ -255,7 +255,7 @@ namespace ProcessHacker.Native.SsLogging
                     return;
 
                 // Check if we have an implicit cursor reset.
-                if (_buffer.Size - _cursor < Marshal.SizeOf(typeof(KphSsBlockHeader)))
+                if (_buffer.Size - _cursor < KphSsBlockHeader.SizeOf)
                     _cursor = 0;
 
                 // Read the block header.
@@ -269,23 +269,20 @@ namespace ProcessHacker.Native.SsLogging
                 }
 
                 // Process the block.
-                if (blockHeader.Type == KphSsBlockType.Event)
+                switch (blockHeader.Type)
                 {
-                    // Raise the events.
-
-                    if (this.EventBlockReceived != null)
-                        this.EventBlockReceived(ReadEventBlock(new MemoryRegion(_buffer, _cursor)));
-                    if (this.RawEventBlockReceived != null)
-                        this.RawEventBlockReceived(new MemoryRegion(_buffer, _cursor));
-                }
-                else if (blockHeader.Type == KphSsBlockType.Argument)
-                {
-                    // Raise the events.
-
-                    if (this.ArgumentBlockReceived != null)
-                        this.ArgumentBlockReceived(ReadArgumentBlock(new MemoryRegion(_buffer, _cursor)));
-                    if (this.RawArgumentBlockReceived != null)
-                        this.RawArgumentBlockReceived(new MemoryRegion(_buffer, _cursor));
+                    case KphSsBlockType.Event:
+                        if (this.EventBlockReceived != null)
+                            this.EventBlockReceived(ReadEventBlock(new MemoryRegion(this._buffer, this._cursor)));
+                        if (this.RawEventBlockReceived != null)
+                            this.RawEventBlockReceived(new MemoryRegion(this._buffer, this._cursor));
+                        break;
+                    case KphSsBlockType.Argument:
+                        if (this.ArgumentBlockReceived != null)
+                            this.ArgumentBlockReceived(ReadArgumentBlock(new MemoryRegion(this._buffer, this._cursor)));
+                        if (this.RawArgumentBlockReceived != null)
+                            this.RawArgumentBlockReceived(new MemoryRegion(this._buffer, this._cursor));
+                        break;
                 }
 
                 // Advance the cursor.
@@ -303,7 +300,7 @@ namespace ProcessHacker.Native.SsLogging
             KProcessHacker.Instance.SsQueryClientEntry(
                 _clientEntryHandle,
                 out info,
-                Marshal.SizeOf(typeof(KphSsClientInformation)),
+                KphSsClientInformation.SizeOf,
                 out retLength
                 );
 
@@ -329,8 +326,10 @@ namespace ProcessHacker.Native.SsLogging
                     _terminating = false;
 
                     // Create the buffer worker thread.
-                    _bufferWorkerThread = new Thread(this.BufferWorkerThreadStart, Utils.SixteenthStackSize);
-                    _bufferWorkerThread.IsBackground = true;
+                    _bufferWorkerThread = new Thread(this.BufferWorkerThreadStart, Utils.SixteenthStackSize)
+                    {
+                        IsBackground = true
+                    };
                     _bufferWorkerThread.Start();
                     // Wait for the thread to initialize.
                     _bufferWorkerThreadReadyEvent.Wait();

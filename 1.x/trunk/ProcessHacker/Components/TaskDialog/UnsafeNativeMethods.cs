@@ -313,6 +313,8 @@ namespace ProcessHacker.Components
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode, Pack = 1)]
         internal struct TASKDIALOGCONFIG
         {
+            public static readonly int SizeOf;
+
             /// <summary>
             /// Size of the structure in bytes.
             /// </summary>
@@ -440,7 +442,12 @@ namespace ProcessHacker.Components
             /// Width of the Task Dialog's client area in DLU's.
             /// If 0, Task Dialog will calculate the ideal width.
             /// </summary>
-            public uint cxWidth;                                 
+            public uint cxWidth;
+
+            static TASKDIALOGCONFIG()
+            {
+                SizeOf = Marshal.SizeOf(typeof(TASKDIALOGCONFIG));
+            }     
         }
     }
 }

@@ -22,16 +22,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Security
 {
     public sealed class PrivilegeSet : IList<Privilege>
     {
-        private static int _sizeOfLaa = Marshal.SizeOf(typeof(LuidAndAttributes));
-
-        private List<Privilege> _privileges;
+        private readonly List<Privilege> _privileges;
         private PrivilegeSetFlags _flags;
 
         public PrivilegeSet()
@@ -75,25 +73,24 @@ namespace ProcessHacker.Native.Security
 
         public MemoryAlloc ToMemory()
         {
-            int requiredSize = 8 + _sizeOfLaa * _privileges.Count;
+            int requiredSize = 8 + LuidAndAttributes.SizeOf * _privileges.Count;
             MemoryAlloc memory = new MemoryAlloc(requiredSize);
 
             memory.WriteInt32(0, _privileges.Count);
             memory.WriteInt32(4, (int)_flags);
 
             for (int i = 0; i < _privileges.Count; i++)
-                memory.WriteStruct<LuidAndAttributes>(8, i, _privileges[i].ToLuidAndAttributes());
+                memory.WriteStruct(8, i, _privileges[i].ToLuidAndAttributes());
 
             return memory;
         }
 
         public TokenPrivileges ToTokenPrivileges()
         {
-            return new TokenPrivileges()
+            return new TokenPrivileges
             {
                 PrivilegeCount = _privileges.Count,
-                Privileges = _privileges.ConvertAll<LuidAndAttributes>(
-                (privilege) => privilege.ToLuidAndAttributes()).ToArray()
+                Privileges = _privileges.ConvertAll(privilege => privilege.ToLuidAndAttributes()).ToArray()
             };
         }
 

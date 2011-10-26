@@ -558,7 +558,6 @@ namespace ProcessHacker.Native
         public static Dictionary<int, SystemProcess> GetProcesses(bool getThreads)
         {
             int retLength;
-            Dictionary<int, SystemProcess> returnProcesses;
 
             if (_processesBuffer == null)
                 _processesBuffer = new MemoryAlloc(0x10000);
@@ -590,7 +589,7 @@ namespace ProcessHacker.Native
                 }
             }
 
-            returnProcesses = new Dictionary<int, SystemProcess>(32); // 32 processes on a computer?
+            Dictionary<int, SystemProcess> returnProcesses = new Dictionary<int, SystemProcess>(32);
 
             int i = 0;
             SystemProcess currentProcess = new SystemProcess();
@@ -605,8 +604,7 @@ namespace ProcessHacker.Native
 
                 currentProcess.Name = currentProcess.Process.ImageName.Read();
 
-                if (getThreads &&
-                    currentProcess.Process.ProcessId != 0)
+                if (getThreads && currentProcess.Process.ProcessId != 0)
                 {
                     currentProcess.Threads = new Dictionary<int, SystemThreadInformation>();
 

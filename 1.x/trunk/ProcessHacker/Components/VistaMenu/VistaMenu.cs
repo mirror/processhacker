@@ -383,7 +383,9 @@ namespace wyDay.Controls
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public class MENUITEMINFO_T_RW
     {
-        public int cbSize = Marshal.SizeOf(typeof(MENUITEMINFO_T_RW));
+        public static readonly int SizeOf;
+
+        public int cbSize = SizeOf;
         public int fMask = 0x00000080; //MIIM_BITMAP = 0x00000080
         public int fType;
         public int fState;
@@ -395,17 +397,29 @@ namespace wyDay.Controls
         public IntPtr dwTypeData = IntPtr.Zero;
         public int cch;
         public IntPtr hbmpItem = IntPtr.Zero;
+
+        static MENUITEMINFO_T_RW()
+        {
+            SizeOf = Marshal.SizeOf(typeof(MENUITEMINFO_T_RW));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public class MENUINFO
     {
-        public int cbSize = Marshal.SizeOf(typeof(MENUINFO));
+        public static readonly int SizeOf;
+
+        public int cbSize = SizeOf;
         public int fMask = 0x00000010; //MIM_STYLE;
         public int dwStyle = 0x04000000; //MNS_CHECKORBMP;
         public uint cyMax;
         public IntPtr hbrBack = IntPtr.Zero;
         public int dwContextHelpID;
         public IntPtr dwMenuData = IntPtr.Zero;
+
+        static MENUINFO()
+        {
+            SizeOf = Marshal.SizeOf(typeof(MENUINFO));
+        }
     }
 }

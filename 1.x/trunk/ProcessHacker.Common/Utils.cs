@@ -1359,7 +1359,7 @@ namespace ProcessHacker.Common
         /// <returns>The size of the structure.</returns>
         public static int SizeOf<T>()
         {
-            return System.Runtime.InteropServices.Marshal.SizeOf(typeof(T));
+            return Marshal.SizeOf(typeof(T));
         }
 
         /// <summary>
