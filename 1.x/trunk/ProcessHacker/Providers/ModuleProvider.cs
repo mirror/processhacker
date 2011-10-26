@@ -51,12 +51,11 @@ namespace ProcessHacker
 
     public class ModuleProvider : Provider<IntPtr, ModuleItem>
     {
-        private ProcessHandle _processHandle;
-        private int _pid;
-        private bool _isWow64 = false;
+        private readonly ProcessHandle _processHandle;
+        private readonly int _pid;
+        private readonly bool _isWow64;
 
         public ModuleProvider(int pid)
-            : base()
         {
             this.Name = this.GetType().Name;
             _pid = pid;
@@ -87,7 +86,7 @@ namespace ProcessHacker
                 { }
             }
 
-            this.Disposed += (provider) => { if (_processHandle != null) _processHandle.Dispose(); };
+            this.Disposed += provider => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
         protected override void Update()
@@ -106,13 +105,13 @@ namespace ProcessHacker
                 // Is this a WOW64 process? If it is, get the 32-bit modules.
                 if (!_isWow64)
                 {
-                    _processHandle.EnumModules((module) =>
-                        {
-                            if (!modules.ContainsKey(module.BaseAddress))
-                                modules.Add(module.BaseAddress, module);
+                    _processHandle.EnumModules(module =>
+                    {
+                        if (!modules.ContainsKey(module.BaseAddress))
+                            modules.Add(module.BaseAddress, module);
 
-                            return true;
-                        });
+                        return true;
+                    });
                 }
                 else
                 {
@@ -149,7 +148,7 @@ namespace ProcessHacker
                 }
 
                 // add mapped files
-                _processHandle.EnumMemory((info) =>
+                _processHandle.EnumMemory(info =>
                 {
                     if (info.Type == MemoryType.Mapped)
                     {
@@ -180,7 +179,7 @@ namespace ProcessHacker
             else
             {
                 // Add loaded kernel modules.
-                Windows.EnumKernelModules((module) =>
+                Windows.EnumKernelModules(module =>
                 {
                     if (!modules.ContainsKey(module.BaseAddress))
                         modules.Add(module.BaseAddress, module);

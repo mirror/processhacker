@@ -287,7 +287,7 @@ namespace ProcessHacker
                     while (!streamReaderReceive.EndOfStream)
                     {
                         string data = streamReaderReceive.ReadLine();
-                        if (!data.Contains("#") | !data.Contains("?"))
+                        if (!data.Contains("#", StringComparison.OrdinalIgnoreCase) | !data.Contains("?", StringComparison.OrdinalIgnoreCase))
                         {
                             WriteResult(data, string.Empty, string.Empty);
                         }

@@ -501,50 +501,50 @@ namespace ProcessHacker
                         if (OSVersion.Architecture == OSArch.Amd64)
                             isWow64 = phandle.IsWow64();
 
-                        phandle.EnumModules((module) =>
+                        phandle.EnumModules(module =>
+                        {
+                            if (!baseAddressList.ContainsKey(module.BaseAddress))
                             {
-                                if (!baseAddressList.ContainsKey(module.BaseAddress))
-                                {
-                                    DumpProcessModule(modules, module);
-                                    baseAddressList.Add(module.BaseAddress, null);
-                                }
+                                DumpProcessModule(modules, module);
+                                baseAddressList.Add(module.BaseAddress, null);
+                            }
 
-                                return true;
-                            });
+                            return true;
+                        });
                     }
 
                     try
                     {
                         using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
                         {
-                            phandle.EnumMemory((memory) =>
+                            phandle.EnumMemory(memory =>
+                            {
+                                if (memory.Type == MemoryType.Mapped)
                                 {
-                                    if (memory.Type == MemoryType.Mapped)
+                                    if (!baseAddressList.ContainsKey(memory.BaseAddress))
                                     {
-                                        if (!baseAddressList.ContainsKey(memory.BaseAddress))
+                                        string fileName = phandle.GetMappedFileName(memory.BaseAddress);
+
+                                        if (!string.IsNullOrEmpty(fileName))
                                         {
-                                            string fileName = phandle.GetMappedFileName(memory.BaseAddress);
+                                            fileName = FileUtils.GetFileName(fileName);
 
-                                            if (fileName != null)
-                                            {
-                                                fileName = FileUtils.GetFileName(fileName);
+                                            DumpProcessModule(modules, new ProcessModule(
+                                                                           memory.BaseAddress,
+                                                                           memory.RegionSize.ToInt32(),
+                                                                           IntPtr.Zero,
+                                                                           0,
+                                                                           Path.GetFileName(fileName),
+                                                                           fileName
+                                                                           ));
 
-                                                DumpProcessModule(modules, new ProcessModule(
-                                                    memory.BaseAddress,
-                                                    memory.RegionSize.ToInt32(),
-                                                    IntPtr.Zero,
-                                                    0,
-                                                    Path.GetFileName(fileName),
-                                                    fileName
-                                                    ));
-
-                                                baseAddressList.Add(memory.BaseAddress, null);
-                                            }
+                                            baseAddressList.Add(memory.BaseAddress, null);
                                         }
                                     }
+                                }
 
-                                    return true;
-                                });
+                                return true;
+                            });
                         }
                     }
                     catch
@@ -562,16 +562,16 @@ namespace ProcessHacker
                                     RtlQueryProcessDebugFlags.NonInvasive
                                     );
 
-                                buffer.EnumModules((module) =>
+                                buffer.EnumModules(module =>
+                                {
+                                    if (!baseAddressList.ContainsKey(module.BaseAddress))
                                     {
-                                        if (!baseAddressList.ContainsKey(module.BaseAddress))
-                                        {
-                                            DumpProcessModule(modules, module);
-                                            baseAddressList.Add(module.BaseAddress, null);
-                                        }
+                                        DumpProcessModule(modules, module);
+                                        baseAddressList.Add(module.BaseAddress, null);
+                                    }
 
-                                        return true;
-                                    });
+                                    return true;
+                                });
                             }
                         }
                         catch
@@ -669,12 +669,12 @@ namespace ProcessHacker
                         {
                             BinaryWriter bw2 = new BinaryWriter(privilegesMo.GetWriteStream());
 
-                            for (int i = 0; i < privileges.Length; i++)
+                            foreach (Privilege t in privileges)
                             {
                                 bw2.WriteListEntry(
-                                    privileges[i].Name + ";" +
-                                    privileges[i].DisplayName + ";" +
-                                    ((int)privileges[i].Attributes).ToString("x")
+                                    t.Name + ";" +
+                                    t.DisplayName + ";" +
+                                    ((int)t.Attributes).ToString("x")
                                     );
                             }
 

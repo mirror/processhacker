@@ -87,7 +87,7 @@ namespace ProcessHacker
                         string targetFile = pNode.ProcessItem.CmdLine.Split(new char[] { ' ' }, 2)[1].Split(',')[0];
 
                         // if it doesn't specify an absolute path, assume it's in system32.
-                        if (!targetFile.Contains(":"))
+                        if (!targetFile.Contains(":", StringComparison.OrdinalIgnoreCase))
                             targetFile = Environment.SystemDirectory + "\\" + targetFile;
 
                         FileVersionInfo info = FileVersionInfo.GetVersionInfo(targetFile);

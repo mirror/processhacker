@@ -42,13 +42,12 @@ namespace ProcessHacker
 
     public class HandleProvider : Provider<short, HandleItem>
     {
-        private ProcessHandle _processHandle;
-        private int _pid;
+        private readonly ProcessHandle _processHandle;
+        private readonly int _pid;
 
         public HandleProvider(int pid)
-            : base()
         {
-            this.Name = this.GetType().Name;
+            this.Name = "HandleProvider";
             _pid = pid;
 
             try
@@ -65,7 +64,7 @@ namespace ProcessHacker
                 { }
             }
 
-            this.Disposed += (provider) => { if (_processHandle != null) _processHandle.Dispose(); };
+            this.Disposed += provider => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
         protected override void Update()

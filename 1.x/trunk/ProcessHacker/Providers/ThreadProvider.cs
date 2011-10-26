@@ -75,37 +75,38 @@ namespace ProcessHacker
         public delegate void LoadingStateChangedDelegate(bool loading);
         private delegate void ResolveThreadStartAddressDelegate(int tid, ulong startAddress);
 
-        private static readonly WorkQueue _symbolsWorkQueue = new WorkQueue() { MaxWorkerThreads = 1 };
+        private static readonly WorkQueue _symbolsWorkQueue = new WorkQueue
+        { 
+            MaxWorkerThreads = 1 
+        };
 
         public event LoadingStateChangedDelegate LoadingStateChanged;
 
-        private ProcessHandle _processHandle;
-        private ProcessAccess _processAccess;
+        private readonly ProcessHandle _processHandle;
+        private readonly ProcessAccess _processAccess;
         private SymbolProvider _symbols;
-        private int _kernelSymbolsLoaded = 0;
-        private int _pid;
-        private int _loading = 0;
-        private MessageQueue _messageQueue = new MessageQueue();
-        private int _symbolsStartedLoading = 0;
+        private int _kernelSymbolsLoaded;
+        private readonly int _pid;
+        private int _loading;
+        private readonly MessageQueue _messageQueue = new MessageQueue();
+        private int _symbolsStartedLoading;
         private FastEvent _moduleLoadCompletedEvent = new FastEvent(false);
 
         public ThreadProvider(int pid)
-            : base()
         {
-            this.Name = this.GetType().Name;
+            this.Name = "ThreadProvider";
             _pid = pid;
 
-            _messageQueue.AddListener(
-                new MessageQueueListener<ResolveMessage>((message) =>
+            _messageQueue.AddListener(new MessageQueueListener<ResolveMessage>(message =>
+            {
+                if (message.Symbol != null)
                 {
-                    if (message.Symbol != null)
-                    {
-                        this.Dictionary[message.Tid].StartAddress = message.Symbol;
-                        this.Dictionary[message.Tid].FileName = message.FileName;
-                        this.Dictionary[message.Tid].StartAddressLevel = message.ResolveLevel;
-                        this.Dictionary[message.Tid].JustResolved = true;
-                    }
-                }));
+                    this.Dictionary[message.Tid].StartAddress = message.Symbol;
+                    this.Dictionary[message.Tid].FileName = message.FileName;
+                    this.Dictionary[message.Tid].StartAddressLevel = message.ResolveLevel;
+                    this.Dictionary[message.Tid].JustResolved = true;
+                }
+            }));
 
             this.Disposed += ThreadProvider_Disposed;
 
@@ -199,8 +200,7 @@ namespace ProcessHacker
                     {
                         if (_pid > 4)
                         {
-                            using (var phandle =
-                                new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                            using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                             {
                                 if (OSVersion.Architecture == OSArch.I386 || !phandle.IsWow64())
                                 {
@@ -232,7 +232,7 @@ namespace ProcessHacker
                         // kernel32.dll and ntdll.dll.
                         try
                         {
-                            ProcessHandle.Current.EnumModules((module) =>
+                            ProcessHandle.Current.EnumModules(module =>
                             {
                                 if (
                                     module.BaseName.Equals("kernel32.dll", StringComparison.OrdinalIgnoreCase) ||
@@ -344,7 +344,7 @@ namespace ProcessHacker
             ulong modBase;
             string fileName = _symbols.GetModuleFromAddress(startAddress, out modBase);
 
-            if (fileName == null)
+            if (string.IsNullOrEmpty(fileName))
             {
                 level = SymbolResolveLevel.Address;
                 return "0x" + startAddress.ToString("x");

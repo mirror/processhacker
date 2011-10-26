@@ -479,7 +479,7 @@ namespace ProcessHacker.Components
                 SecurityEditor.EditSecurity(
                     this,
                     SecurityEditor.GetSecurableWrapper(
-                        (access) => new ServiceHandle(listServices.SelectedItems[0].Name, (ServiceAccess)access)
+                        access => new ServiceHandle(listServices.SelectedItems[0].Name, (ServiceAccess)access)
                         ),
                     listServices.SelectedItems[0].Name,
                     NativeTypeFactory.GetAccessEntries(NativeTypeFactory.ObjectType.Service)

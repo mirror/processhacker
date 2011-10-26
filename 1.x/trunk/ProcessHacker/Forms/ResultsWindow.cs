@@ -135,27 +135,28 @@ namespace ProcessHacker
             return EditSearch(type, this.Location, this.Size);
         }
 
-        public DialogResult EditSearch(SearchType type, System.Drawing.Point location, System.Drawing.Size size)
+        public DialogResult EditSearch(SearchType type, Point location, Size size)
         {
             DialogResult dr = DialogResult.Cancel;
 
             _so.Type = type;
 
-            SearchWindow sw = new SearchWindow(_pid, _so);
-
-            sw.StartPosition = FormStartPosition.Manual;
-            sw.Location = new System.Drawing.Point(
-                location.X + (size.Width - sw.Width) / 2,
-                location.Y + (size.Height - sw.Height) / 2);
-
-            Rectangle newRect = Utils.FitRectangle(new Rectangle(sw.Location, sw.Size), Screen.GetWorkingArea(sw));
-
-            sw.Location = newRect.Location;
-            sw.Size = newRect.Size;
-
-            if ((dr = sw.ShowDialog()) == DialogResult.OK)
+            using (SearchWindow sw = new SearchWindow(_pid, _so))
             {
-                _so = sw.SearchOptions;
+                sw.StartPosition = FormStartPosition.Manual;
+                sw.Location = new Point(
+                    location.X + (size.Width - sw.Width)/2,
+                    location.Y + (size.Height - sw.Height)/2);
+
+                Rectangle newRect = Utils.FitRectangle(new Rectangle(sw.Location, sw.Size), Screen.GetWorkingArea(sw));
+
+                sw.Location = newRect.Location;
+                sw.Size = newRect.Size;
+
+                if ((dr = sw.ShowDialog()) == DialogResult.OK)
+                {
+                    _so = sw.SearchOptions;
+                }
             }
 
             return dr;
@@ -175,7 +176,7 @@ namespace ProcessHacker
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                buttonFind.Image = global::ProcessHacker.Properties.Resources.cross;
+                buttonFind.Image = Properties.Resources.cross;
                 toolTip.SetToolTip(buttonFind, "Cancel");
                 buttonEdit.Enabled = false;
                 buttonFilter.Enabled = false;
@@ -187,11 +188,11 @@ namespace ProcessHacker
 
                 // refresh
                 _so.Type = _so.Type;
-                _so.Searcher.SearchFinished += new SearchFinished(Searcher_SearchFinished);
-                _so.Searcher.SearchProgressChanged += new SearchProgressChanged(Searcher_SearchProgressChanged);
-                _so.Searcher.SearchError += new SearchError(SearchError);
+                _so.Searcher.SearchFinished += this.Searcher_SearchFinished;
+                _so.Searcher.SearchProgressChanged += this.Searcher_SearchProgressChanged;
+                _so.Searcher.SearchError += this.SearchError;
 
-                _searchThread = new Thread(new ThreadStart(_so.Searcher.Search), Utils.SixteenthStackSize);
+                _searchThread = new Thread(this._so.Searcher.Search, Utils.SixteenthStackSize);
 
                 _searchThread.Start();
             }
@@ -199,20 +200,17 @@ namespace ProcessHacker
 
         private void SearchError(string message)
         {
-            this.Invoke(new MethodInvoker(delegate
+            this.Invoke(new MethodInvoker(() =>
             {
                 PhUtils.ShowError("Unable to search memory: " + message);
-                _searchThread = null;
-                Searcher_SearchFinished();
+                this._searchThread = null;
+                this.Searcher_SearchFinished();
             }));
         }
 
         private void Searcher_SearchProgressChanged(string progress)
         {
-            this.BeginInvoke(new MethodInvoker(delegate
-            {
-                labelText.Text = progress;
-            }));
+            this.BeginInvoke(new MethodInvoker(() => this.labelText.Text = progress));
         }
 
         private void Searcher_SearchFinished()
@@ -223,7 +221,7 @@ namespace ProcessHacker
 
                 labelText.Text = String.Format("{0} results.", listResults.Items.Count);
 
-                buttonFind.Image = global::ProcessHacker.Properties.Resources.arrow_refresh;
+                buttonFind.Image = Properties.Resources.arrow_refresh;
                 toolTip.SetToolTip(buttonFind, "Search");
                 this.Cursor = Cursors.Default;
                 buttonEdit.Enabled = true;
@@ -257,25 +255,26 @@ namespace ProcessHacker
             DialogResult dr = DialogResult.Cancel;
             ResultsWindow rw = this;
 
-            SaveFileDialog sfd = new SaveFileDialog();
-
-            sfd.Filter = "Text Document (*.txt)|*.txt|All Files (*.*)|*.*";
-            dr = sfd.ShowDialog();
-            filename = sfd.FileName;
-
-            if (dr == DialogResult.OK)
+            using (SaveFileDialog sfd = new SaveFileDialog())
             {
-                System.IO.StreamWriter sw = new System.IO.StreamWriter(filename);
+                sfd.Filter = "Text Document (*.txt)|*.txt|All Files (*.*)|*.*";
+                dr = sfd.ShowDialog();
+                filename = sfd.FileName;
 
-                foreach (string[] s in _so.Searcher.Results)
+                if (dr == DialogResult.OK)
                 {
-                    sw.Write("0x{0:x} ({1}){2}\r\n", Int32.Parse(s[0].Replace("0x", string.Empty),
-                        System.Globalization.NumberStyles.HexNumber) + Int32.Parse(s[1].Replace("0x", string.Empty),
-                        System.Globalization.NumberStyles.HexNumber), Int32.Parse(s[2]),
-                        s[3] != string.Empty ? (": " + s[3]) : string.Empty);
-                }
+                    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(filename))
+                    {
 
-                sw.Close();
+                        foreach (string[] s in _so.Searcher.Results)
+                        {
+                            sw.Write("0x{0:x} ({1}){2}\r\n", int.Parse(s[0].Replace("0x", string.Empty),
+                                System.Globalization.NumberStyles.HexNumber) + int.Parse(s[1].Replace("0x", string.Empty),
+                                System.Globalization.NumberStyles.HexNumber), int.Parse(s[2]),
+                                     s[3] != string.Empty ? (": " + s[3]) : string.Empty);
+                        }
+                    }
+                }
             }
         }
 
@@ -311,35 +310,32 @@ namespace ProcessHacker
                     return;
                 }
 
-                phandle.EnumMemory((info) =>
+                phandle.EnumMemory(info =>
+                {
+                    if (info.BaseAddress.ToInt64() > s_a)
                     {
-                        if (info.BaseAddress.ToInt64() > s_a)
+                        long selectlength =
+                            (long)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][2]);
+
+                        Program.GetMemoryEditor(_pid, lastInfo.BaseAddress, lastInfo.RegionSize.ToInt64(), f =>
                         {
-                            long selectlength =
-                                (long)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][2]);
+                            try
+                            {
+                                f.ReadOnly = false;
+                                f.Activate();
+                                f.Select(s_a - lastInfo.BaseAddress.ToInt64(), selectlength);
+                            }
+                            catch
+                            { }
+                        });
 
-                            MemoryEditor ed = Program.GetMemoryEditor(_pid,
-                                lastInfo.BaseAddress,
-                                lastInfo.RegionSize.ToInt64(),
-                                new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f)
-                                {
-                                    try
-                                    {
-                                        f.ReadOnly = false;
-                                        f.Activate();
-                                        f.Select(s_a - lastInfo.BaseAddress.ToInt64(), selectlength);
-                                    }
-                                    catch
-                                    { }
-                                }));
+                        return false;
+                    }
 
-                            return false;
-                        }
+                    lastInfo = info;
 
-                        lastInfo = info;
-
-                        return true;
-                    });
+                    return true;
+                });
             }
             catch { }
 
@@ -428,17 +424,11 @@ namespace ProcessHacker
                 columnMenu.Tag = ch.Index;
 
                 item = new MenuItem("Contains...", new EventHandler(filterMenuItem_Clicked));
-                item.Tag = new Matcher(delegate(string s1, string s2)
-                {
-                    return s1.Contains(s2);
-                });
+                item.Tag = new Matcher((s1, s2) => s1.Contains(s2, StringComparison.OrdinalIgnoreCase));
                 columnMenu.MenuItems.Add(item);
 
                 item = new MenuItem("Contains (case-insensitive)...", new EventHandler(filterMenuItem_Clicked));
-                item.Tag = new Matcher(delegate(string s1, string s2)
-                {
-                    return s1.ToUpperInvariant().Contains(s2.ToUpperInvariant());
-                });
+                item.Tag = new Matcher((s1, s2) => s1.Contains(s2, StringComparison.OrdinalIgnoreCase));
                 columnMenu.MenuItems.Add(item);
 
                 item = new MenuItem("Regex...", new EventHandler(filterMenuItem_Clicked));
@@ -479,42 +469,42 @@ namespace ProcessHacker
                 item = new MenuItem("Numerical relation...", new EventHandler(filterMenuItem_Clicked));
                 item.Tag = new Matcher(delegate(string s1, string s2)
                 {
-                    if (s2.Contains("!="))
+                    if (s2.Contains("!=", StringComparison.OrdinalIgnoreCase))
                     {
                         decimal n1 = BaseConverter.ToNumberParse(s1);
                         decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "!=" }, StringSplitOptions.None)[1]);
 
                         return n1 != n2;
                     }
-                    else if (s2.Contains("<="))
+                    else if (s2.Contains("<=", StringComparison.OrdinalIgnoreCase))
                     {
                         decimal n1 = BaseConverter.ToNumberParse(s1);
                         decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "<=" }, StringSplitOptions.None)[1]);
 
                         return n1 <= n2;
                     }
-                    else if (s2.Contains(">="))
+                    else if (s2.Contains(">=", StringComparison.OrdinalIgnoreCase))
                     {
                         decimal n1 = BaseConverter.ToNumberParse(s1);
                         decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { ">=" }, StringSplitOptions.None)[1]);
 
                         return n1 >= n2;
                     }
-                    else if (s2.Contains("<"))
+                    else if (s2.Contains("<", StringComparison.OrdinalIgnoreCase))
                     {
                         decimal n1 = BaseConverter.ToNumberParse(s1);
                         decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "<" }, StringSplitOptions.None)[1]);
 
                         return n1 < n2;
                     }
-                    else if (s2.Contains(">"))
+                    else if (s2.Contains(">", StringComparison.OrdinalIgnoreCase))
                     {
                         decimal n1 = BaseConverter.ToNumberParse(s1);
                         decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { ">" }, StringSplitOptions.None)[1]);
 
                         return n1 > n2;
                     }
-                    else if (s2.Contains("="))
+                    else if (s2.Contains("=", StringComparison.OrdinalIgnoreCase))
                     {
                         decimal n1 = BaseConverter.ToNumberParse(s1);
                         decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "=" }, StringSplitOptions.None)[1]);
@@ -531,7 +521,7 @@ namespace ProcessHacker
                 menu.MenuItems.Add(columnMenu);
             }
 
-            menu.Show(buttonFilter, new System.Drawing.Point(buttonFilter.Size.Width, 0));
+            menu.Show(buttonFilter, new Point(buttonFilter.Size.Width, 0));
         }
 
         private void filterMenuItem_Clicked(object sender, EventArgs e)
@@ -557,13 +547,13 @@ namespace ProcessHacker
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                ResultsWindow rw = Program.GetResultsWindow(_pid, new Program.ResultsWindowInvokeAction(delegate(ResultsWindow f)
+                Program.GetResultsWindow(_pid, f =>
                 {
                     f.ResultsList.VirtualListSize = 0;
 
-                    foreach (string[] s in Results)
-                    {                
-                        if (m(s[index], prompt.Value))    
+                    foreach (string[] s in this.Results)
+                    {
+                        if (m(s[index], prompt.Value))
                         {
                             f.Results.Add(s);
                             f.ResultsList.VirtualListSize++;
@@ -571,9 +561,9 @@ namespace ProcessHacker
                     }
 
                     f.Label = "Filter: " + f.Results.Count + " results.";
-                           
+
                     f.Show();
-                }));
+                });
 
                 this.Cursor = Cursors.Default;   
             }

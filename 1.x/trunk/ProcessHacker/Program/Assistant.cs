@@ -172,18 +172,18 @@ namespace ProcessHacker
 
             TokenHandle token = null;
             string domain = null;
-            string username = "";
+            string username;
 
             if (args.ContainsKey("-u"))
             {
                 string user = args["-u"];
 
-                if (user.Contains("\\"))
+                if (user.Contains("\\", StringComparison.OrdinalIgnoreCase))
                 {
                     domain = user.Split('\\')[0];
                     username = user.Split('\\')[1];
                 }
-                else if (user.Contains("@"))
+                else if (user.Contains("@", StringComparison.OrdinalIgnoreCase))
                 {
                     username = user.Split('@')[0];
                     domain = user.Split('@')[1];

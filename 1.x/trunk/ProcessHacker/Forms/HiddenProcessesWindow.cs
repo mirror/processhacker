@@ -163,7 +163,7 @@ namespace ProcessHacker
                             phandle,
                             pid,
                             ref totalCount, ref hiddenCount, ref terminatedCount,
-                            (pid_) => processes.ContainsKey(pid_)
+                            processes.ContainsKey
                             );
                 }
                 catch (WindowsException ex)
@@ -273,7 +273,7 @@ namespace ProcessHacker
                                     phandle,
                                     pid,
                                     ref totalCount, ref hiddenCount, ref terminatedCount,
-                                    (pid_) => processes.ContainsKey(pid_)
+                                    processes.ContainsKey
                                     );
                                 phandle.Dispose();
                             }
@@ -475,34 +475,35 @@ namespace ProcessHacker
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-
-            sfd.FileName = "Process Scan.txt";
-            sfd.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-            sfd.OverwritePrompt = true;
-
-            if (sfd.ShowDialog() == DialogResult.OK)
+            using (SaveFileDialog sfd = new SaveFileDialog())
             {
-                try
-                {
-                    using (var sw = new StreamWriter(sfd.FileName))
-                    {
-                        sw.WriteLine("Process Hacker Hidden Processes Scan");
-                        sw.WriteLine("Method: " + comboMethod.SelectedItem.ToString());
-                        sw.WriteLine();
+                sfd.FileName = "Process Scan.txt";
+                sfd.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+                sfd.OverwritePrompt = true;
 
-                        foreach (ListViewItem item in listProcesses.Items)
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        using (var sw = new StreamWriter(sfd.FileName))
                         {
-                            sw.WriteLine(
-                                (item.BackColor == Color.Red ? "[HIDDEN] " : "") +
-                                (item.BackColor == Color.DarkGray ? "[Terminated] " : "") +
-                                item.SubItems[1].Text + ": " + item.SubItems[0].Text);
+                            sw.WriteLine("Process Hacker Hidden Processes Scan");
+                            sw.WriteLine("Method: " + comboMethod.SelectedItem.ToString());
+                            sw.WriteLine();
+
+                            foreach (ListViewItem item in listProcesses.Items)
+                            {
+                                sw.WriteLine(
+                                    (item.BackColor == Color.Red ? "[HIDDEN] " : "") +
+                                    (item.BackColor == Color.DarkGray ? "[Terminated] " : "") +
+                                    item.SubItems[1].Text + ": " + item.SubItems[0].Text);
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    PhUtils.ShowException("Unable to save the scan results", ex);
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowException("Unable to save the scan results", ex);
+                    }
                 }
             }
         }

@@ -1014,7 +1014,7 @@ namespace ProcessHacker.Components
                 SecurityEditor.EditSecurity(
                     this,
                     SecurityEditor.GetSecurableWrapper(
-                        (access) => new ThreadHandle(int.Parse(listThreads.SelectedItems[0].Text), (ThreadAccess)access)
+                        access => new ThreadHandle(int.Parse(listThreads.SelectedItems[0].Text), (ThreadAccess)access)
                         ),
                     "Thread " + listThreads.SelectedItems[0].Text,
                     NativeTypeFactory.GetAccessEntries(NativeTypeFactory.ObjectType.Thread)
@@ -1102,12 +1102,12 @@ namespace ProcessHacker.Components
                 {
                     IntPtr[] lastParams = new IntPtr[4];
 
-                    thandle.WalkStack(phandle, (stackFrame) =>
+                    thandle.WalkStack(phandle, stackFrame =>
                         {
                             uint address = stackFrame.PcAddress.ToUInt32();
                             string name = _provider.Symbols.GetSymbolFromAddress(address).ToLowerInvariant();
 
-                            if (name == null)
+                            if (string.IsNullOrEmpty(name))
                             {
                                 // dummy
                             }

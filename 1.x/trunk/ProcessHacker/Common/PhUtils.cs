@@ -196,7 +196,7 @@ namespace ProcessHacker.Common
             if (userName == null)
                 return string.Empty;
 
-            if (!userName.Contains("\\"))
+            if (!userName.Contains("\\", StringComparison.OrdinalIgnoreCase))
                 return userName;
 
             string[] split = userName.Split(new char[] { '\\' }, 2);

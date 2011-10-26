@@ -186,7 +186,7 @@ namespace ProcessHacker.Structs
 
                     try
                     {
-                        if (includeFile.Contains(":"))
+                        if (includeFile.Contains(":", StringComparison.OrdinalIgnoreCase))
                             this.Parse(includeFile);
                         else
                             this.Parse(info.DirectoryName + "\\" + includeFile);

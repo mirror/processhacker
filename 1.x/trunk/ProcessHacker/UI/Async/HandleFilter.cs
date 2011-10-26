@@ -113,24 +113,23 @@ namespace ProcessHacker.FormHelper
                         {
                             phandle.EnumModules(module =>
                             {
-                                if (module.FileName.ToLowerInvariant().Contains(strFilterLower))
+                                if (module.FileName.Contains(strFilterLower, StringComparison.OrdinalIgnoreCase))
                                     this.CallDllMatchListView(process.Key, module);
                                 return true;
                             });
                         }
 
                         // Memory
-                        using (var phandle = new ProcessHandle(process.Key,
-                            ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
+                        using (var phandle = new ProcessHandle(process.Key, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
                         {
-                            phandle.EnumMemory((region) =>
+                            phandle.EnumMemory(region =>
                             {
                                 if (region.Type != MemoryType.Mapped)
                                     return true;
 
                                 string name = phandle.GetMappedFileName(region.BaseAddress);
 
-                                if (name != null && name.ToLowerInvariant().Contains(strFilterLower))
+                                if (!string.IsNullOrEmpty(name) && name.Contains(strFilterLower, StringComparison.OrdinalIgnoreCase))
                                     this.CallMappedFileMatchListView(process.Key, region.BaseAddress, name);
 
                                 return true;
@@ -148,12 +147,12 @@ namespace ProcessHacker.FormHelper
                                     RtlQueryProcessDebugFlags.NonInvasive
                                     );
 
-                                buffer.EnumModules((module) =>
-                                    {
-                                        if (module.FileName.ToLowerInvariant().Contains(strFilterLower))
-                                            this.CallDllMatchListView(process.Key, module);
-                                        return true;
-                                    });
+                                buffer.EnumModules(module =>
+                                {
+                                    if (module.FileName.Contains(strFilterLower, StringComparison.OrdinalIgnoreCase))
+                                        this.CallDllMatchListView(process.Key, module);
+                                    return true;
+                                });
                             }
                         }
                     }
@@ -167,9 +166,7 @@ namespace ProcessHacker.FormHelper
             }
         }
 
-        private void CompareHandleBestNameWithFilter(
-            Dictionary<int, ProcessHandle> processHandles,
-            SystemHandleEntry currhandle)
+        private void CompareHandleBestNameWithFilter(Dictionary<int, ProcessHandle> processHandles, SystemHandleEntry currhandle)
         {
             try
             {
@@ -201,8 +198,7 @@ namespace ProcessHacker.FormHelper
                 }
 
                 if (!processHandles.ContainsKey(currhandle.ProcessId))
-                    processHandles.Add(currhandle.ProcessId,
-                        new ProcessHandle(currhandle.ProcessId, Program.MinProcessGetHandleInformationRights));
+                    processHandles.Add(currhandle.ProcessId, new ProcessHandle(currhandle.ProcessId, Program.MinProcessGetHandleInformationRights));
 
                 var info = currhandle.GetHandleInfo(processHandles[currhandle.ProcessId]);
 
@@ -210,7 +206,7 @@ namespace ProcessHacker.FormHelper
                     return;
 
                 if (
-                    (info.BestName != null && info.BestName.ToLowerInvariant().Contains(strFilterLower)) ||
+                    (!string.IsNullOrEmpty(info.BestName) && info.BestName.Contains(strFilterLower, StringComparison.OrdinalIgnoreCase)) ||
                     (intPtrFilter != IntPtr.Zero && currhandle.Object == intPtrFilter)
                     )
                 {

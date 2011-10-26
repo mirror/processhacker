@@ -40,10 +40,7 @@ namespace ProcessHackerRestartRecovery
         public static void RegisterForRestart()
         {
             // Register for automatic restart if the application was terminated for any reason other than a system reboot or a system update.
-            ApplicationRestartRecoveryManager.RegisterForApplicationRestart(
-                new RestartSettings("-recovered", 
-                    RestartRestrictions.NotOnReboot 
-                    | RestartRestrictions.NotOnPatch));
+            RegisterForApplicationRestart(new RestartSettings("-recovered", RestartRestrictions.NotOnReboot | RestartRestrictions.NotOnPatch));
         }
 
         public static void RegisterForRecovery()
@@ -52,9 +49,10 @@ namespace ProcessHackerRestartRecovery
             // In some cases it might make sense to pass this initial state.
             // Another approach: When doing "auto-save", register for recovery everytime, and pass
             // the current state I.E. data for recovery at that time. 
-            RecoveryData data = new RecoveryData(new RecoveryCallback(RecoveryProcedure), null);
+            RecoveryData data = new RecoveryData(RecoveryProcedure, null);
             RecoverySettings settings = new RecoverySettings(data, 0);
-            ApplicationRestartRecoveryManager.RegisterForApplicationRecovery(settings);
+            
+            RegisterForApplicationRecovery(settings);
         }
 
         /// <summary>
@@ -73,12 +71,12 @@ namespace ProcessHackerRestartRecovery
             try
             {
                 // Remove the icons or they remain in the system try.
-                ProcessHacker.Program.HackerWindow.ExecuteOnIcons((icon) => icon.Visible = false);
-                ProcessHacker.Program.HackerWindow.ExecuteOnIcons((icon) => icon.Dispose());
+                ProcessHacker.Program.HackerWindow.ExecuteOnIcons(icon => icon.Visible = false);
+                ProcessHacker.Program.HackerWindow.ExecuteOnIcons(icon => icon.Dispose());
 
                 // Make sure KPH connection is closed.
-                if (ProcessHacker.Native.KProcessHacker.Instance != null)
-                    ProcessHacker.Native.KProcessHacker.Instance.Close();
+                if (KProcessHacker.Instance != null)
+                    KProcessHacker.Instance.Close();
             }
             catch { }
 
@@ -132,10 +130,13 @@ namespace ProcessHackerRestartRecovery
 
                 HResult hr = AppRestartRecoveryNativeMethods.RegisterApplicationRecoveryCallback(AppRestartRecoveryNativeMethods.internalCallback, (IntPtr)handle, settings.PingInterval, (uint)0);
 
-                if (hr == HResult.InvalidArgument)
-                    throw new ArgumentException("Application was not registered for recovery due to bad parameters.");
-                else if (hr == HResult.Fail)
-                    throw new ExternalException("Application failed to register for recovery.");
+                switch (hr)
+                {
+                    case HResult.InvalidArgument:
+                        throw new ArgumentException("Application was not registered for recovery due to bad parameters.");
+                    case HResult.Fail:
+                        throw new ExternalException("Application failed to register for recovery.");
+                }
             }
         }
 
@@ -176,7 +177,7 @@ namespace ProcessHackerRestartRecovery
         {
             if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
             {
-                bool canceled = false;
+                bool canceled;
 
                 HResult hr = AppRestartRecoveryNativeMethods.ApplicationRecoveryInProgress(out canceled);
 
@@ -185,8 +186,8 @@ namespace ProcessHackerRestartRecovery
 
                 return canceled;
             }
-            else
-                return true;
+            
+            return true;
         }
 
         /// <summary>
@@ -218,10 +219,13 @@ namespace ProcessHackerRestartRecovery
             {
                 HResult hr = AppRestartRecoveryNativeMethods.RegisterApplicationRestart(settings.Command, settings.Restrictions);
 
-                if (hr == HResult.Fail)
-                    throw new InvalidOperationException("Application failed to registered for restart.");
-                else if (hr == HResult.InvalidArgument)
-                    throw new ArgumentException("Failed to register application for restart due to bad parameters.");
+                switch (hr)
+                {
+                    case HResult.Fail:
+                        throw new InvalidOperationException("Application failed to registered for restart.");
+                    case HResult.InvalidArgument:
+                        throw new ArgumentException("Failed to register application for restart due to bad parameters.");
+                }
             }
         }   
     }

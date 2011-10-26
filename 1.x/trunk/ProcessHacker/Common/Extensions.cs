@@ -25,6 +25,14 @@ using System.Collections.Generic;
 
 namespace ProcessHacker.Common
 {
+    public static class StringExtensions
+    {
+        public static bool Contains(this string source, string toCheck, StringComparison comp)
+        {
+            return source.IndexOf(toCheck, comp) >= 0;
+        }
+    }
+
     public static class LongExtensions
     {
         /// <summary>

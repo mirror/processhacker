@@ -468,7 +468,7 @@ namespace ProcessHacker.Components
 
         private void selectAllMenuItem_Click(object sender, EventArgs e)
         {
-            Utils.SelectAll(listPrivileges.Items);
+            this.listPrivileges.Items.SelectAll();
         }
 
         private void buttonLinkedToken_Click(object sender, EventArgs e)
@@ -488,7 +488,7 @@ namespace ProcessHacker.Components
             {
                 SecurityEditor.EditSecurity(
                     this,
-                    SecurityEditor.GetSecurableWrapper((access) => _object.GetToken((TokenAccess)access)),
+                    SecurityEditor.GetSecurableWrapper(access => _object.GetToken((TokenAccess)access)),
                     "Token",
                     NativeTypeFactory.GetAccessEntries(NativeTypeFactory.ObjectType.Token)
                     );

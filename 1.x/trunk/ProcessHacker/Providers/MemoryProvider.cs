@@ -43,29 +43,26 @@ namespace ProcessHacker
         public MemoryType Type;
         public MemoryState State;
         public MemoryProtection Protection;
-
     }
 
     public class MemoryProvider : Provider<IntPtr, MemoryItem>
     {
-        private ProcessHandle _processHandle;
-        private int _pid;
+        private readonly ProcessHandle _processHandle;
+        private readonly int _pid;
 
         public MemoryProvider(int pid)
-            : base()
         {
-            this.Name = this.GetType().Name;
+            this.Name = "MemoryProvider";
             _pid = pid;
 
             try
             {
-                _processHandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation |
-                    Program.MinProcessReadMemoryRights);
+                _processHandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
             }
             catch
             { }
 
-            this.Disposed += (provider) => { if (_processHandle != null) _processHandle.Dispose(); };
+            this.Disposed += provider => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
         protected override void Update()
@@ -86,14 +83,13 @@ namespace ProcessHacker
             var memoryInfo = new Dictionary<IntPtr, MemoryBasicInformation>();
             var newdictionary = new Dictionary<IntPtr, MemoryItem>(this.Dictionary);
 
-            _processHandle.EnumMemory((info) =>
-                {
-                    if ((this.IgnoreFreeRegions && info.State != MemoryState.Free) ||
-                        !this.IgnoreFreeRegions)
-                        memoryInfo.Add(info.BaseAddress, info);
+            _processHandle.EnumMemory(info =>
+            {
+                if ((this.IgnoreFreeRegions && info.State != MemoryState.Free) || !this.IgnoreFreeRegions)
+                    memoryInfo.Add(info.BaseAddress, info);
 
-                    return true;
-                });
+                return true;
+            });
 
             // look for freed memory regions
             foreach (IntPtr address in Dictionary.Keys)

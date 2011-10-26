@@ -70,9 +70,7 @@ namespace ProcessHacker
 
             try
             {
-                phandle = new ProcessHandle(PID,
-                    ProcessAccess.QueryInformation |
-                    Program.MinProcessReadMemoryRights);
+                phandle = new ProcessHandle(PID, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
             }
             catch
             {
@@ -80,65 +78,66 @@ namespace ProcessHacker
                 return;
             }
 
-            phandle.EnumMemory((info) =>
-                {
-                    // skip unreadable areas
-                    if (info.Protect == MemoryProtection.AccessDenied)
-                        return true;
-                    if (info.State != MemoryState.Commit)
-                        return true;
-
-                    if ((!opt_priv) && (info.Type == MemoryType.Private))
-                        return true;
-
-                    if ((!opt_img) && (info.Type == MemoryType.Image))
-                        return true;
-
-                    if ((!opt_map) && (info.Type == MemoryType.Mapped))
-                        return true;
-
-                    byte[] data = new byte[info.RegionSize.ToInt32()];
-                    int bytesRead = 0;
-
-                    CallSearchProgressChanged(
-                        String.Format("Searching 0x{0} ({1} found)...", info.BaseAddress.ToString("x"), count));
-
-                    try
-                    {
-                        bytesRead = phandle.ReadMemory(info.BaseAddress, data, data.Length);
-
-                        if (bytesRead == 0)
-                            return true;
-                    }
-                    catch
-                    {
-                        return true;
-                    }
-
-                    StringBuilder sdata = new StringBuilder();
-                    string sdata2 = string.Empty;
-
-                    for (int i = 0; i < data.Length; i++)
-                        sdata.Append((char)data[i]);
-
-                    sdata2 = sdata.ToString();
-                    sdata = null;
-
-                    MatchCollection mc = rx.Matches(sdata2);
-
-                    foreach (Match m in mc)
-                    {
-                        Results.Add(new string[] { Utils.FormatAddress(info.BaseAddress),
-                                String.Format("0x{0:x}", m.Index), m.Length.ToString(),
-                                Utils.MakePrintable(m.Value) });
-
-                        count++;
-                    }
-
-                    data = null;
-
+            phandle.EnumMemory(info =>
+            {
+                // skip unreadable areas
+                if (info.Protect == MemoryProtection.AccessDenied)
                     return true;
-                });
+                if (info.State != MemoryState.Commit)
+                    return true;
+
+                if ((!opt_priv) && (info.Type == MemoryType.Private))
+                    return true;
+
+                if ((!opt_img) && (info.Type == MemoryType.Image))
+                    return true;
+
+                if ((!opt_map) && (info.Type == MemoryType.Mapped))
+                    return true;
+
+                byte[] data = new byte[info.RegionSize.ToInt32()];
+                int bytesRead = 0;
+
+                CallSearchProgressChanged(
+                    String.Format("Searching 0x{0} ({1} found)...", info.BaseAddress.ToString("x"), count));
+
+                try
+                {
+                    bytesRead = phandle.ReadMemory(info.BaseAddress, data, data.Length);
+
+                    if (bytesRead == 0)
+                        return true;
+                }
+                catch
+                {
+                    return true;
+                }
+
+                StringBuilder sdata = new StringBuilder();
+                string sdata2 = string.Empty;
+
+                for (int i = 0; i < data.Length; i++)
+                    sdata.Append((char)data[i]);
+
+                sdata2 = sdata.ToString();
+                sdata = null;
+
+                MatchCollection mc = rx.Matches(sdata2);
+
+                foreach (Match m in mc)
+                {
+                    Results.Add(new string[]
+                    {
+                        Utils.FormatAddress(info.BaseAddress),
+                        String.Format("0x{0:x}", m.Index), m.Length.ToString(),
+                        Utils.MakePrintable(m.Value)
+                    });
+
+                    count++;
+                }
+
+                return true;
+            });
 
             phandle.Dispose();
 

@@ -60,30 +60,28 @@ namespace ProcessHacker
             public string HostName;
         }
 
-        private MessageQueue _messageQueue = new MessageQueue();
-        private Dictionary<IPAddress, string> _resolveCache = new Dictionary<IPAddress, string>();
-        private FastResourceLock _resolveCacheLock = new FastResourceLock();
+        private readonly MessageQueue _messageQueue = new MessageQueue();
+        private readonly Dictionary<IPAddress, string> _resolveCache = new Dictionary<IPAddress, string>();
+        private readonly FastResourceLock _resolveCacheLock = new FastResourceLock();
 
         public NetworkProvider()
-            : base()
         {
-            this.Name = this.GetType().Name;
+            this.Name = "NetworkProvider";
 
-            _messageQueue.AddListener(
-                new MessageQueueListener<AddressResolveMessage>((message) =>
+            _messageQueue.AddListener(new MessageQueueListener<AddressResolveMessage>(message =>
+            {
+                if (Dictionary.ContainsKey(message.Id))
                 {
-                    if (Dictionary.ContainsKey(message.Id))
-                    {
-                        var item = Dictionary[message.Id];
+                    var item = Dictionary[message.Id];
 
-                        if (message.Remote)
-                            item.RemoteString = message.HostName;
-                        else
-                            item.LocalString = message.HostName;
+                    if (message.Remote)
+                        item.RemoteString = message.HostName;
+                    else
+                        item.LocalString = message.HostName;
 
-                        item.JustProcessed = true;
-                    }
-                }));
+                    item.JustProcessed = true;
+                }
+            }));
         }
 
         protected override void Update()
@@ -301,7 +299,7 @@ namespace ProcessHacker
                 }
             }
 
-            _messageQueue.Enqueue(new AddressResolveMessage()
+            _messageQueue.Enqueue(new AddressResolveMessage
             {
                 Id = id,
                 Remote = remote,

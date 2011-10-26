@@ -63,10 +63,10 @@ namespace ProcessHacker.Native
         [ThreadStatic]
         private static MemoryAlloc _servicesBuffer;
 
-        private static int _numberOfProcessors = 0;
-        private static int _pageSize = 0;
+        private static int _numberOfProcessors;
+        private static int _pageSize;
         private static IntPtr _kernelBase = IntPtr.Zero;
-        private static string _kernelFileName = null;
+        private static string _kernelFileName;
 
         /// <summary>
         /// Gets the number of active processors.
@@ -271,7 +271,7 @@ namespace ProcessHacker.Native
         {
             IntPtr kernelBase = IntPtr.Zero;
 
-            Windows.EnumKernelModules(module =>
+            EnumKernelModules(module =>
             {
                 kernelBase = module.BaseAddress;
                 return false;
@@ -345,7 +345,6 @@ namespace ProcessHacker.Native
 
         public static Luid[] GetLogonSessions()
         {
-            NtStatus status;
             int logonSessionCount;
             IntPtr logonSessionList;
 
@@ -372,11 +371,9 @@ namespace ProcessHacker.Native
         public static Dictionary<int, List<NetworkConnection>> GetNetworkConnections()
         {
             var retDict = new Dictionary<int, List<NetworkConnection>>();
-            int length;
+            int length = 0;
 
             // TCP IPv4
-
-            length = 0;
             Win32.GetExtendedTcpTable(IntPtr.Zero, ref length, false, AiFamily.INet, TcpTableClass.OwnerPidAll, 0);
 
             using (var mem = new MemoryAlloc(length))
@@ -500,7 +497,6 @@ namespace ProcessHacker.Native
         public static SystemPagefile[] GetPagefiles()
         {
             int retLength;
-            List<SystemPagefile> pagefiles = new List<SystemPagefile>();
 
             using (MemoryAlloc data = new MemoryAlloc(0x200))
             {
@@ -520,10 +516,9 @@ namespace ProcessHacker.Native
                         throw new OutOfMemoryException();
                 }
 
-                if (status >= NtStatus.Error)
-                    Win32.Throw(status);
+                status.ThrowIf();
 
-                pagefiles = new List<SystemPagefile>(2);
+                List<SystemPagefile> pagefiles = new List<SystemPagefile>(2);
 
                 int i = 0;
                 SystemPagefileInformation currentPagefile;
@@ -582,7 +577,7 @@ namespace ProcessHacker.Native
                     data,
                     data.Size,
                     out retLength
-                    )) >= NtStatus.Error)
+                    )).IsError())
                 {
                     if (attempts > 3)
                         Win32.Throw(status);
@@ -730,17 +725,13 @@ namespace ProcessHacker.Native
                 MemoryAlloc data = _servicesBuffer;
 
                 if (!Win32.EnumServicesStatusEx(manager, IntPtr.Zero, ServiceQueryType.Win32 | ServiceQueryType.Driver,
-                    ServiceQueryState.All, data,
-                    data.Size, out requiredSize, out servicesReturned,
-                    ref resume, null))
+                    ServiceQueryState.All, data, data.Size, out requiredSize, out servicesReturned, ref resume, null))
                 {
                     // resize buffer
                     data.ResizeNew(requiredSize);
 
                     if (!Win32.EnumServicesStatusEx(manager, IntPtr.Zero, ServiceQueryType.Win32 | ServiceQueryType.Driver,
-                        ServiceQueryState.All, data,
-                        data.Size, out requiredSize, out servicesReturned,
-                        ref resume, null))
+                        ServiceQueryState.All, data, data.Size, out requiredSize, out servicesReturned, ref resume, null))
                         Win32.Throw();
                 }
 
@@ -769,7 +760,7 @@ namespace ProcessHacker.Native
             // Read the tick count.
             var tickCount = QueryKSystemTime(Win32.UserSharedData.Increment(KUserSharedData.TickCountOffset));
 
-            return (((long)tickCount.LowPart * tickCountMultiplier) >> (int)24) + (((long)tickCount.HighPart * tickCountMultiplier) << (int)8);
+            return (((long)tickCount.LowPart * tickCountMultiplier) >> 24) + (((long)tickCount.HighPart * tickCountMultiplier) << 8);
         }
 
         /// <summary>

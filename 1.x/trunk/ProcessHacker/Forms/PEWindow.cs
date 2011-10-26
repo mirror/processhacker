@@ -316,13 +316,13 @@ namespace ProcessHacker
                 var function = _mappedImage.Exports.GetFunction(entry.Ordinal);
 
                 e.Item = new ListViewItem(new string[]
-                    {
-                        entry.Ordinal.ToString(),
-                        function.ForwardedName != null ? entry.Name + " > " + function.ForwardedName : entry.Name,
-                        function.ForwardedName == null ? 
-                        "0x" + function.Function.Decrement(new IntPtr(_mappedImage.Memory)).ToString("x") :
-                        string.Empty
-                    });
+                {
+                    entry.Ordinal.ToString(),
+                    !string.IsNullOrEmpty(function.ForwardedName) ? entry.Name + " > " + function.ForwardedName : entry.Name, 
+                    string.IsNullOrEmpty(function.ForwardedName) ?  
+                    "0x" + function.Function.Decrement(new IntPtr(_mappedImage.Memory)).ToString("x") :
+                    string.Empty
+                });
             }
         }
 
@@ -344,9 +344,9 @@ namespace ProcessHacker
             {
                 fileName = FileUtils.FindFile(System.IO.Path.GetDirectoryName(_path), e.Group.Header);
 
-                if (fileName != null)
+                if (!string.IsNullOrEmpty(fileName))
                 {
-                    Program.GetPEWindow(fileName, (f) => Program.FocusWindow(f));
+                    Program.GetPEWindow(fileName, Program.FocusWindow);
                 }
                 else
                 {

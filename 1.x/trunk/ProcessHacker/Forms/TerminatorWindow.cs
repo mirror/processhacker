@@ -161,15 +161,13 @@ namespace ProcessHacker
             this.M1Internal();
         }
 
-        private unsafe void M1Internal()
+        private void M1Internal()
         {
             using (MemoryAlloc alloc = new MemoryAlloc(0x1000))
             {
-                using (ProcessHandle phandle = new ProcessHandle(_pid,
-                    ProcessAccess.QueryInformation |
-                    Program.MinProcessWriteMemoryRights))
+                using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | Program.MinProcessWriteMemoryRights))
                 {
-                    phandle.EnumMemory((info) =>
+                    phandle.EnumMemory(info =>
                     {
                         for (int i = 0; i < info.RegionSize.ToInt32(); i += 0x1000)
                         {
@@ -189,10 +187,9 @@ namespace ProcessHacker
 
         private void M2()
         {
-            using (ProcessHandle phandle = new ProcessHandle(_pid,
-                ProcessAccess.QueryInformation | ProcessAccess.VmOperation))
+            using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | ProcessAccess.VmOperation))
             {
-                phandle.EnumMemory((info) =>
+                phandle.EnumMemory(info =>
                 {
                     phandle.ProtectMemory(info.BaseAddress, info.RegionSize.ToInt32(), MemoryProtection.NoAccess);
                     return true;
@@ -202,8 +199,7 @@ namespace ProcessHacker
 
         private void TD1()
         {
-            using (var dhandle =
-                DebugObjectHandle.Create(DebugObjectAccess.ProcessAssign, DebugObjectFlags.KillOnClose))
+            using (var dhandle = DebugObjectHandle.Create(DebugObjectAccess.ProcessAssign, DebugObjectFlags.KillOnClose))
             {
                 using (var phandle = new ProcessHandle(_pid, ProcessAccess.SuspendResume))
                     phandle.Debug(dhandle);
@@ -237,8 +233,7 @@ namespace ProcessHacker
 
             using (var jhandle = JobObjectHandle.Create(JobObjectAccess.AssignProcess | JobObjectAccess.Terminate))
             {
-                using (ProcessHandle phandle =
-                    new ProcessHandle(_pid, ProcessAccess.SetQuota | ProcessAccess.Terminate))
+                using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.SetQuota | ProcessAccess.Terminate))
                 {
                     phandle.AssignToJobObject(jhandle);
                 }
@@ -386,18 +381,18 @@ namespace ProcessHacker
 
         private void W1()
         {
-            WindowHandle.Enumerate((window) =>
-                {
-                    if (window.GetClientId().ProcessId == _pid)
-                        window.PostMessage(WindowMessage.Destroy, 0, 0);
+            WindowHandle.Enumerate(window =>
+            {
+                if (window.GetClientId().ProcessId == _pid)
+                    window.PostMessage(WindowMessage.Destroy, 0, 0);
 
-                    return true;
-                });
+                return true;
+            });
         }
 
         private void W2()
         {
-            WindowHandle.Enumerate((window) =>
+            WindowHandle.Enumerate(window =>
             {
                 if (window.GetClientId().ProcessId == _pid)
                     window.PostMessage(WindowMessage.Quit, 0, 0);

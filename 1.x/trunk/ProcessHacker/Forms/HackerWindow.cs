@@ -1165,24 +1165,23 @@ namespace ProcessHacker
 
                     // Find the process' window (if any).
                     windowHandle = WindowHandle.Zero;
-                    WindowHandle.Enumerate(
-                        (handle) =>
+                    WindowHandle.Enumerate(handle =>
+                    {
+                        // GetWindowLong
+                        // Shell_TrayWnd
+                        if (handle.IsWindow() && handle.IsVisible() && handle.IsParent())
                         {
-                            // GetWindowLong
-                            // Shell_TrayWnd
-                            if (handle.IsWindow() && handle.IsVisible() && handle.IsParent())
-                            {
-                                int pid;
-                                Win32.GetWindowThreadProcessId(handle, out pid);
+                            int pid;
+                            Win32.GetWindowThreadProcessId(handle, out pid);
 
-                                if (pid == processSelectedPid)
-                                {
-                                    windowHandle = handle;
-                                    return false;
-                                }
+                            if (pid == processSelectedPid)
+                            {
+                                windowHandle = handle;
+                                return false;
                             }
-                            return true;
-                        });
+                        }
+                        return true;
+                    });
 
                     // Enable the Window submenu if we found window owned 
                     // by the process. Otherwise, disable the submenu.
@@ -3096,7 +3095,7 @@ namespace ProcessHacker
                 case (int)WindowMessage.SettingChange:
                     {
                         // Refresh icon sizes.
-                        this.ExecuteOnIcons((icon) => icon.Size = UsageIcon.GetSmallIconSize());
+                        this.ExecuteOnIcons(icon => icon.Size = UsageIcon.GetSmallIconSize());
                         // Refresh the tree view visual style.
                         treeProcesses.Tree.RefreshVisualStyles();
                     }
@@ -3117,8 +3116,8 @@ namespace ProcessHacker
             //serviceP.Dispose();
             //networkP.Dispose();
 
-            this.ExecuteOnIcons((icon) => icon.Visible = false);
-            this.ExecuteOnIcons((icon) => icon.Dispose());
+            this.ExecuteOnIcons(icon => icon.Visible = false);
+            this.ExecuteOnIcons(icon => icon.Dispose());
 
             // Only save settings if requested and no other instance of 
             // PH is running.
@@ -3268,28 +3267,29 @@ namespace ProcessHacker
             foreach (var icon in notifyIcons)
                 icon.Icon = (Icon)blackIcon.Clone();
 
-            this.ExecuteOnIcons((icon) => icon.ContextMenu = menuIcon);
-            this.ExecuteOnIcons((icon) => icon.MouseDoubleClick += notifyIcon_MouseDoubleClick);
-            cpuHistoryMenuItem.Checked = Settings.Instance.CpuHistoryIconVisible;
-            cpuUsageMenuItem.Checked = Settings.Instance.CpuUsageIconVisible;
-            ioHistoryMenuItem.Checked = Settings.Instance.IoHistoryIconVisible;
-            commitHistoryMenuItem.Checked = Settings.Instance.CommitHistoryIconVisible;
-            physMemHistoryMenuItem.Checked = Settings.Instance.PhysMemHistoryIconVisible;
+            this.ExecuteOnIcons(icon => icon.ContextMenu = menuIcon);
+            this.ExecuteOnIcons(icon => icon.MouseDoubleClick += notifyIcon_MouseDoubleClick);
+
+            this.cpuHistoryMenuItem.Checked = Settings.Instance.CpuHistoryIconVisible;
+            this.cpuUsageMenuItem.Checked = Settings.Instance.CpuUsageIconVisible;
+            this.ioHistoryMenuItem.Checked = Settings.Instance.IoHistoryIconVisible;
+            this.commitHistoryMenuItem.Checked = Settings.Instance.CommitHistoryIconVisible;
+            this.physMemHistoryMenuItem.Checked = Settings.Instance.PhysMemHistoryIconVisible;
             this.ApplyIconVisibilities();
 
-            NPMenuItem.Checked = Settings.Instance.NewProcesses;
-            TPMenuItem.Checked = Settings.Instance.TerminatedProcesses;
-            NSMenuItem.Checked = Settings.Instance.NewServices;
-            startedSMenuItem.Checked = Settings.Instance.StartedServices;
-            stoppedSMenuItem.Checked = Settings.Instance.StoppedServices;
-            DSMenuItem.Checked = Settings.Instance.DeletedServices;
+            this.NPMenuItem.Checked = Settings.Instance.NewProcesses;
+            this.TPMenuItem.Checked = Settings.Instance.TerminatedProcesses;
+            this.NSMenuItem.Checked = Settings.Instance.NewServices;
+            this.startedSMenuItem.Checked = Settings.Instance.StartedServices;
+            this.stoppedSMenuItem.Checked = Settings.Instance.StoppedServices;
+            this.DSMenuItem.Checked = Settings.Instance.DeletedServices;
 
-            NPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
-            TPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
-            NSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
-            startedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
-            stoppedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
-            DSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            this.NPMenuItem.Click += this.CheckedMenuItem_Click;
+            this.TPMenuItem.Click += this.CheckedMenuItem_Click;
+            this.NSMenuItem.Click += this.CheckedMenuItem_Click;
+            this.startedSMenuItem.Click += this.CheckedMenuItem_Click;
+            this.stoppedSMenuItem.Click += this.CheckedMenuItem_Click;
+            this.DSMenuItem.Click += this.CheckedMenuItem_Click;
         }
 
         private void LoadControls()
@@ -3556,14 +3556,11 @@ namespace ProcessHacker
                 toolStrip.Items.Add(targetButton);
 
                 var targetThreadButton = new TargetWindowButton();
-                targetThreadButton.TargetWindowFound += (pid, tid) =>
-                    {
-                        Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], (f) =>
-                            {
-                                Program.FocusWindow(f);
-                                f.SelectThread(tid);
-                            });
-                    };
+                targetThreadButton.TargetWindowFound += (pid, tid) => Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], f =>
+                {
+                    Program.FocusWindow(f);
+                    f.SelectThread(tid);
+                });
                 targetThreadButton.Image = Properties.Resources.application_go;
                 targetThreadButton.Text = "Find window and select thread";
                 targetThreadButton.ToolTipText = "Find window and select thread";

@@ -297,7 +297,7 @@ namespace ProcessHacker
             if (modulesMo == null)
                 return;
 
-            modulesMo.EnumChildren((childMo) =>
+            modulesMo.EnumChildren(childMo =>
             {
                 using (childMo)
                     this.LoadModule(childMo);
@@ -356,7 +356,7 @@ namespace ProcessHacker
             if (handlesMo == null)
                 return;
 
-            handlesMo.EnumChildren((childMo) =>
+            handlesMo.EnumChildren(childMo =>
             {
                 using (childMo)
                     this.LoadHandles(childMo);

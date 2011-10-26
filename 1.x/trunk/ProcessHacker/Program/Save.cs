@@ -88,7 +88,7 @@ namespace ProcessHacker
                     progressWindow.ProgressBarStyle = ProgressBarStyle.Marquee;
                     progressWindow.ProgressText = "Creating the dump file...";
 
-                    dumpTask.Completed += (result) =>
+                    dumpTask.Completed += result =>
                     {
                         progressWindow.SetCompleted();
 

@@ -148,7 +148,7 @@ namespace ProcessHacker
                 return;
             }
 
-            processesMo.EnumChildren((childMo) =>
+            processesMo.EnumChildren(childMo =>
                 {
                     using (childMo)
                         this.LoadProcess(childMo);
@@ -268,7 +268,7 @@ namespace ProcessHacker
                 return;
             }
 
-            servicesMo.EnumChildren((childMo) =>
+            servicesMo.EnumChildren(childMo =>
             {
                 using (childMo)
                     this.LoadService(childMo);
