@@ -380,10 +380,10 @@ namespace ProcessHacker
         }
 
         private Font _font;
-        [SettingDefault("Microsoft Sans Serif, 8.25pt")]
+        [SettingDefault("Segoe UI, 10pt")]
         public Font Font
         {
-            get { return _font != null ? _font : (_font = (Font)this["Font"]); }
+            get { return this._font ?? (this._font = (Font)this["Font"]); }
             set { this["Font"] = _font = value; }
         }
 

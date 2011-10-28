@@ -918,7 +918,7 @@ namespace ProcessHacker
         public static void CompactNativeHeaps()
         {
             foreach (var heap in Heap.GetHeaps())
-                heap.Compact(0);
+                heap.Compact();
         }
 
         public static string GetDiagnosticInformation()

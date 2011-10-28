@@ -1914,7 +1914,7 @@ namespace ProcessHacker.Native.Objects
             public UnmanagedIsb()
             {
                 // Allocate an ISB.
-                _ioStatusBlock = (IoStatusBlock*)MemoryAlloc.PrivateHeap.Allocate(0, IoStatusBlock.SizeOf);
+                _ioStatusBlock = (IoStatusBlock*)MemoryAlloc.PrivateHeap.Allocate(IoStatusBlock.SizeOf);
                 // Zero the ISB.
                 _ioStatusBlock->Pointer = IntPtr.Zero;
                 _ioStatusBlock->Information = IntPtr.Zero;
@@ -1924,7 +1924,7 @@ namespace ProcessHacker.Native.Objects
             protected override void DisposeObject(bool disposing)
             {
                 if (_ioStatusBlock != null)
-                    MemoryAlloc.PrivateHeap.Free(0, new IntPtr(_ioStatusBlock));
+                    MemoryAlloc.PrivateHeap.Free(new IntPtr(_ioStatusBlock));
             }
 
             public IntPtr Information
