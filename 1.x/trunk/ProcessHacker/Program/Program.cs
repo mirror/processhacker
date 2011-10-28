@@ -35,7 +35,6 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
-using ProcessHacker.UI.Actions;
 
 namespace ProcessHacker
 {
@@ -92,22 +91,22 @@ namespace ProcessHacker
         public static ServiceProvider ServiceProvider;
         public static NetworkProvider NetworkProvider;
 
-        public static bool BadConfig = false;
+        public static bool BadConfig;
         public static TokenElevationType ElevationType;
         public static ProcessHacker.Native.Threading.Mutant GlobalMutex;
         public static string GlobalMutexName = @"\BaseNamedObjects\ProcessHackerMutex";
         public static System.Collections.Specialized.StringCollection ImposterNames =
             new System.Collections.Specialized.StringCollection();
         public static int InspectPid = -1;
-        public static bool NoKph = false;
+        public static bool NoKph;
         public static string SelectTab = "Processes";
-        public static bool StartHidden = false;
-        public static bool StartVisible = false;
+        public static bool StartHidden;
+        public static bool StartVisible;
         public static ProviderThread PrimaryProviderThread;
         public static ProviderThread SecondaryProviderThread;
         public static ProcessHacker.Native.Threading.Waiter SharedWaiter;
 
-        private static object CollectWorkerThreadsLock = new object();
+        private static readonly object CollectWorkerThreadsLock = new object();
 
         /// <summary>
         /// The main entry point for the application.
@@ -115,7 +114,7 @@ namespace ProcessHacker
         [STAThread]
         public static void Main(string[] args)
         {
-            Dictionary<string, string> pArgs = null;
+            Dictionary<string, string> pArgs;
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -177,7 +176,7 @@ namespace ProcessHacker
             { }
 
             ThreadPool.SetMinThreads(1, 1);
-            ThreadPool.SetMaxThreads(2, 2);
+            //ThreadPool.SetMaxThreads(2, 2);
             WorkQueue.GlobalWorkQueue.MaxWorkerThreads = Environment.ProcessorCount;
 
             // Create or open the Process Hacker mutex, used only by the installer.
@@ -1359,16 +1358,8 @@ namespace ProcessHacker
         public static void UpdateWindowMenu(ToolStripMenuItem windowMenuItem, Form f)
         {
             WeakReference<Form> fRef = new WeakReference<Form>(f);
-
             windowMenuItem.DropDownItems.Clear();
-
-
-            HackerWindow.AddMenuItemDelegate addMenuItem = (text, onClick) =>
-            {
-                windowMenuItem.DropDownItems.Add(text, null, onClick);
-                //shutdownTrayMenuItem.MenuItems.Add(new MenuItem(text, onClick));
-                //shutDownToolStripMenuItem.DropDownItems.Add(text, null, onClick);
-            };
+            HackerWindow.AddMenuItemDelegate addMenuItem = (text, onClick) => windowMenuItem.DropDownItems.Add(text, null, onClick);
 
             addMenuItem("&Always On Top", (sender, e) =>
             {
@@ -1380,9 +1371,9 @@ namespace ProcessHacker
 
                     if (sf == HackerWindow)
                         HackerWindowTopMost = sf.TopMost;
-                }));
 
-                //UpdateWindowMenu(sf, f);
+                    ((ToolStripMenuItem)sender).Checked = HackerWindowTopMost;
+                }));
             });
 
             addMenuItem("&Close", (sender, e) =>
@@ -1393,8 +1384,6 @@ namespace ProcessHacker
                     return;
 
                 fs.BeginInvoke(new MethodInvoker(fs.Close));
-
-                //UpdateWindowMenu(sf, f);
             });
         }
 

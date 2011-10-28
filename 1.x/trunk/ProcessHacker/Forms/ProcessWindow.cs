@@ -58,7 +58,7 @@ namespace ProcessHacker
         private JobProperties _jobProps;
         private ServiceProperties _serviceProps;
         private DotNetCounters _dotNetCounters;
-        private bool _dotNetCountersInitialized = false;
+        private bool _dotNetCountersInitialized;
 
         private ProcessHacker.Common.Threading.ActionSync _selectThreadRun;
 
