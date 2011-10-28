@@ -1123,7 +1123,7 @@ namespace ProcessHacker
             {
                 ed = MemoryEditors[id];
 
-                ed.Invoke(action, ed);
+                ed.BeginInvoke(action, ed);
 
                 return ed;
             }
@@ -1232,7 +1232,7 @@ namespace ProcessHacker
             {
                 pw = PEWindows[path];
 
-                pw.Invoke(action, pw);
+                pw.BeginInvoke(action, pw);
 
                 return pw;
             }
@@ -1288,7 +1288,7 @@ namespace ProcessHacker
             {
                 pw = PWindows[process.Pid];
 
-                pw.Invoke(action, pw);
+                pw.BeginInvoke(action, pw);
 
                 return pw;
             }
@@ -1427,7 +1427,7 @@ namespace ProcessHacker
             if (f == null)
                 return;
 
-            f.Invoke(new MethodInvoker(() =>
+            f.BeginInvoke(new MethodInvoker(() =>
             {
                 f.TopMost = !f.TopMost;
 
@@ -1445,7 +1445,7 @@ namespace ProcessHacker
             if (f == null)
                 return;
 
-            f.Invoke(new MethodInvoker(f.Close));
+            f.BeginInvoke(new MethodInvoker(f.Close));
         }
     }
 }

@@ -88,6 +88,12 @@
     <Compile Include="Components\Be.Windows.Forms.HexBox\IByteProvider.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\MemoryDataBlock.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\NativeMethods.cs" />
+    <Compile Include="Components\MenuStripEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\ToolStripEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\TreeViewAdv\BitmapHelper.cs" />
     <Compile Include="Components\TreeViewAdv\GifDecoder.cs" />
     <Compile Include="Components\TreeViewAdv\NodePlotter.cs">
@@ -718,6 +724,7 @@
     <Compile Include="Providers\ProviderThread.cs" />
     <Compile Include="UI\Actions\ElevationLevel.cs" />
     <Compile Include="UI\Actions\SessionActions.cs" />
+    <Compile Include="UI\AeroRenderer.cs" />
     <Compile Include="UI\ExplorerVisualStyle.cs" />
     <Compile Include="UI\GenericViewMenu.cs" />
     <Compile Include="UI\Icons\CommitHistoryIcon.cs" />

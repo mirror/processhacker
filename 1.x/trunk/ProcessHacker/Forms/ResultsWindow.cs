@@ -200,7 +200,7 @@ namespace ProcessHacker
 
         private void SearchError(string message)
         {
-            this.Invoke(new MethodInvoker(() =>
+            this.BeginInvoke(new MethodInvoker(() =>
             {
                 PhUtils.ShowError("Unable to search memory: " + message);
                 this._searchThread = null;
@@ -215,20 +215,20 @@ namespace ProcessHacker
 
         private void Searcher_SearchFinished()
         {
-            this.Invoke(new MethodInvoker(delegate
+            this.BeginInvoke(new MethodInvoker(() =>
             {
-                listResults.VirtualListSize = _so.Searcher.Results.Count;
+                this.listResults.VirtualListSize = this._so.Searcher.Results.Count;
 
-                labelText.Text = String.Format("{0} results.", listResults.Items.Count);
+                this.labelText.Text = String.Format("{0} results.", this.listResults.Items.Count);
 
-                buttonFind.Image = Properties.Resources.arrow_refresh;
-                toolTip.SetToolTip(buttonFind, "Search");
+                this.buttonFind.Image = Properties.Resources.arrow_refresh;
+                this.toolTip.SetToolTip(this.buttonFind, "Search");
                 this.Cursor = Cursors.Default;
-                buttonEdit.Enabled = true;
-                buttonFilter.Enabled = true;
-                buttonIntersect.Enabled = true;
-                buttonSave.Enabled = true;
-                buttonFind.Enabled = true;
+                this.buttonEdit.Enabled = true;
+                this.buttonFilter.Enabled = true;
+                this.buttonIntersect.Enabled = true;
+                this.buttonSave.Enabled = true;
+                this.buttonFind.Enabled = true;
             }));
 
             _searchThread = null;
@@ -251,7 +251,6 @@ namespace ProcessHacker
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-            string filename = string.Empty;
             DialogResult dr = DialogResult.Cancel;
             ResultsWindow rw = this;
 
@@ -259,7 +258,7 @@ namespace ProcessHacker
             {
                 sfd.Filter = "Text Document (*.txt)|*.txt|All Files (*.*)|*.*";
                 dr = sfd.ShowDialog();
-                filename = sfd.FileName;
+                string filename = sfd.FileName;
 
                 if (dr == DialogResult.OK)
                 {

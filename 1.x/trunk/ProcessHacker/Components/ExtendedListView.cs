@@ -162,7 +162,7 @@ namespace ProcessHacker.Components
             if (lvGroup == null || lvGroup.ListView == null)
                 return;
             if (lvGroup.ListView.InvokeRequired)
-                lvGroup.ListView.Invoke(new CallBackSetGroupState(SetGrpState), lvGroup, grpState, task);
+                lvGroup.ListView.BeginInvoke(new CallBackSetGroupState(SetGrpState), lvGroup, grpState, task);
             else
             {
                 int? GrpId = GetGroupID(lvGroup);

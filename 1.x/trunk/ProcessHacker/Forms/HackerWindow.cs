@@ -45,7 +45,7 @@ namespace ProcessHacker
     {
         public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
 
-        private ThumbButtonManager thumbButtonManager;
+        private readonly ThumbButtonManager thumbButtonManager;
         //private JumpListManager jumpListManager; //Reserved for future use
 
         private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
@@ -2813,12 +2813,14 @@ namespace ProcessHacker
         {
             checkForUpdatesMenuItem.Enabled = false;
 
-            Thread t = new Thread(new ThreadStart(() =>
-                {
-                    Updater.Update(this, interactive);
-                    this.Invoke(new MethodInvoker(() => checkForUpdatesMenuItem.Enabled = true));
-                }), Utils.SixteenthStackSize);
-            t.IsBackground = true;
+            Thread t = new Thread(() =>
+            {
+                Updater.Update(this, interactive);
+                this.BeginInvoke(new MethodInvoker(() => this.checkForUpdatesMenuItem.Enabled = true));
+            }, Utils.SixteenthStackSize)
+            {
+                IsBackground = true
+            };
             t.Start();
         }
 
@@ -3058,11 +3060,6 @@ namespace ProcessHacker
                         }
                     }
                     break;
-
-                case (int)WindowMessage.Paint:
-                    this.Painting();
-                    break;
-
                 case (int)WindowMessage.Activate:
                 case (int)WindowMessage.KillFocus:
                     {
@@ -3452,11 +3449,8 @@ namespace ProcessHacker
                     Program.NetworkProvider.Enabled = true;
                     Program.NetworkProvider.Boost();
                 }, 2);
-            _refreshHighlightingSync = new ActionSync(
-                () =>
-                {
-                    this.BeginInvoke(new MethodInvoker(treeProcesses.RefreshItems), null);
-                }, 2);
+
+            _refreshHighlightingSync = new ActionSync(() => this.BeginInvoke(new MethodInvoker(this.treeProcesses.RefreshItems), null), 2);
 
             Logging.Logged += this.QueueMessage;
             this.LoadWindowSettings();
@@ -3464,8 +3458,7 @@ namespace ProcessHacker
             this.LoadControls();
             this.LoadNotificationIcons();
 
-            if ((!Settings.Instance.StartHidden && !Program.StartHidden) ||
-                Program.StartVisible)
+            if ((!Settings.Instance.StartHidden && !Program.StartHidden) || Program.StartVisible)
             {
                 this.Visible = true;
             }
@@ -3482,7 +3475,43 @@ namespace ProcessHacker
             Program.ServiceProvider.Enabled = true;
             Program.ServiceProvider.Boost();
 
-            _dontCalculate = false;
+            ToolStripManager.Renderer = new AeroRenderer(ToolbarTheme.Blue);
+
+            ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
+            //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
+
+            this.CreateShutdownMenuItems();
+            this.LoadFixOSSpecific();
+            this.LoadUac();
+            this.LoadAddShortcuts();
+            this.LoadFixNProcessHacker();
+
+            toolStrip.Items.Add(new ToolStripSeparator());
+            var targetButton = new TargetWindowButton();
+            targetButton.TargetWindowFound += (pid, tid) => this.SelectProcess(pid);
+            toolStrip.Items.Add(targetButton);
+
+            var targetThreadButton = new TargetWindowButton();
+            targetThreadButton.TargetWindowFound += (pid, tid) => Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], f =>
+            {
+                Program.FocusWindow(f);
+                f.SelectThread(tid);
+            });
+            targetThreadButton.Image = Properties.Resources.application_go;
+            targetThreadButton.Text = "Find window and select thread";
+            targetThreadButton.ToolTipText = "Find window and select thread";
+            toolStrip.Items.Add(targetThreadButton);
+
+            try { TerminalServerHandle.RegisterNotificationsCurrent(this, true); }
+            catch (Exception ex) { Logging.Log(ex); }
+            try { this.UpdateSessions(); }
+            catch (Exception ex) { Logging.Log(ex); }
+
+            try { Win32.SetProcessShutdownParameters(0x100, 0); }
+            catch { }
+
+            if (Settings.Instance.AppUpdateAutomatic)
+                this.UpdateProgram(false);
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
@@ -3500,83 +3529,6 @@ namespace ProcessHacker
         private void HackerWindow_VisibleChanged(object sender, EventArgs e)
         {
             treeProcesses.Draw = this.Visible;
-        }
-
-        // ==== Performance hacks section ====
-        private bool _dontCalculate = true;
-        private int _layoutCount = 0;
-
-        protected override void OnLayout(LayoutEventArgs levent)
-        {
-            _layoutCount++;
-
-            if (_layoutCount < 3)
-                return;
-
-            base.OnLayout(levent);
-        }
-
-        protected override void OnResize(EventArgs e)
-        {
-            if (_dontCalculate)
-                return;
-
-            //
-            // Size grip bug fix as per
-            // http://jelle.druyts.net/2003/10/20/StatusBarResizeBug.aspx
-            //
-            if (statusBar != null)
-            {
-                statusBar.SizingGrip = (WindowState == FormWindowState.Normal);
-            }
-
-            base.OnResize(e);
-        }
-
-        private bool isFirstPaint = true;
-
-        private void Painting()
-        {
-            if (isFirstPaint)
-            {
-                isFirstPaint = false;
-    
-                ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
-                //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
-
-                this.CreateShutdownMenuItems();
-                this.LoadFixOSSpecific();
-                this.LoadUac();
-                this.LoadAddShortcuts();
-                this.LoadFixNProcessHacker();
-
-                toolStrip.Items.Add(new ToolStripSeparator());
-                var targetButton = new TargetWindowButton();
-                targetButton.TargetWindowFound += (pid, tid) => this.SelectProcess(pid);
-                toolStrip.Items.Add(targetButton);
-
-                var targetThreadButton = new TargetWindowButton();
-                targetThreadButton.TargetWindowFound += (pid, tid) => Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], f =>
-                {
-                    Program.FocusWindow(f);
-                    f.SelectThread(tid);
-                });
-                targetThreadButton.Image = Properties.Resources.application_go;
-                targetThreadButton.Text = "Find window and select thread";
-                targetThreadButton.ToolTipText = "Find window and select thread";
-                toolStrip.Items.Add(targetThreadButton);
-
-                try { TerminalServerHandle.RegisterNotificationsCurrent(this, true); }
-                catch (Exception ex) { Logging.Log(ex); }
-                try { this.UpdateSessions(); }
-                catch (Exception ex) { Logging.Log(ex); }
-
-                try { Win32.SetProcessShutdownParameters(0x100, 0); }
-                catch { }
-
-                if (Settings.Instance.AppUpdateAutomatic)
-                    this.UpdateProgram(false);
-            }
         }
     }
 }
