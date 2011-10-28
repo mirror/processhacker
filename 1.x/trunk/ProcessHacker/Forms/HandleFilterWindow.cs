@@ -95,7 +95,6 @@ namespace ProcessHacker
         {
             if (this.Visible)
             {
-                this.SetPhParent();
                 textFilter.SelectAll();
             }
         }

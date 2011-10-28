@@ -22,7 +22,7 @@ namespace ProcessHacker
         public WaitChainWindow(string procName, int procPid)
         {
             InitializeComponent();
-            this.SetPhParent();
+
             this.AddEscapeToClose();
             this.SetTopMost();
 

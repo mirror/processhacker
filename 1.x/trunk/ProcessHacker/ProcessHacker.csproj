@@ -229,12 +229,6 @@
     </Compile>
     <None Include="app.config" />
     <None Include="Components\Be.Windows.Forms.HexBox\HexBox.snk" />
-    <Compile Include="Components\VistaMenu\OwnerDrawnMenu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Components\VistaMenu\VistaMenu.cs">
-      <SubType>Component</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Components\Be.Windows.Forms.HexBox\HexBox.bmp" />

@@ -64,7 +64,6 @@ namespace ProcessHacker
 
         public ProcessWindow(ProcessItem process)
         {
-            this.SetPhParent();
             InitializeComponent();
             this.AddEscapeToClose();
             this.SetTopMost();
@@ -115,7 +114,7 @@ namespace ProcessHacker
                 Utils.FitRectangle(new Rectangle(location, this.Size), this).Location;
 
             // Update the Window menu.
-            Program.UpdateWindowMenu(windowMenuItem, this);
+            //Program.UpdateWindowMenu(windowMenuItem, this);
 
             SymbolProviderExtensions.ShowWarning(this, false);
         }

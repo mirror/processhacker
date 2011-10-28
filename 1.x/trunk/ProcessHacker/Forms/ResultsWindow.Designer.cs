@@ -56,9 +56,7 @@ namespace ProcessHacker
             this.buttonEdit = new System.Windows.Forms.Button();
             this.buttonFind = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // listResults
@@ -185,11 +183,6 @@ namespace ProcessHacker
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
-            // 
             // ResultsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -208,7 +201,6 @@ namespace ProcessHacker
             this.Text = "Results";
             this.Load += new System.EventHandler(this.ResultsWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ResultsWindow_FormClosing);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -226,7 +218,6 @@ namespace ProcessHacker
         private System.Windows.Forms.Button buttonFind;
         private System.Windows.Forms.Button buttonEdit;
         private System.Windows.Forms.Button buttonIntersect;
-        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MainMenu mainMenu;
         private System.Windows.Forms.MenuItem windowMenuItem;
         private System.Windows.Forms.Button buttonFilter;

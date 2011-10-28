@@ -39,7 +39,6 @@
             this.propertiesMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.goToProcessServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.propertiesServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.copyServiceMenuItem = new System.Windows.Forms.MenuItem();
@@ -48,7 +47,6 @@
             this.tabControl.SuspendLayout();
             this.tabProcesses.SuspendLayout();
             this.tabServices.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // treeProcesses
@@ -120,7 +118,6 @@
             // propertiesMenuItem
             // 
             this.propertiesMenuItem.DefaultItem = true;
-            this.vistaMenu.SetImage(this.propertiesMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
             this.propertiesMenuItem.Index = 0;
             this.propertiesMenuItem.Text = "Properties";
             this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
@@ -132,18 +129,11 @@
             // 
             // copyMenuItem
             // 
-            this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyMenuItem.Index = 2;
             this.copyMenuItem.Text = "Copy";
             // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
-            // 
             // goToProcessServiceMenuItem
             // 
-            this.vistaMenu.SetImage(this.goToProcessServiceMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
             this.goToProcessServiceMenuItem.Index = 0;
             this.goToProcessServiceMenuItem.Text = "Go to Process";
             this.goToProcessServiceMenuItem.Click += new System.EventHandler(this.goToProcessServiceMenuItem_Click);
@@ -151,14 +141,12 @@
             // propertiesServiceMenuItem
             // 
             this.propertiesServiceMenuItem.DefaultItem = true;
-            this.vistaMenu.SetImage(this.propertiesServiceMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
             this.propertiesServiceMenuItem.Index = 1;
             this.propertiesServiceMenuItem.Text = "Properties";
             this.propertiesServiceMenuItem.Click += new System.EventHandler(this.propertiesServiceMenuItem_Click);
             // 
             // copyServiceMenuItem
             // 
-            this.vistaMenu.SetImage(this.copyServiceMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyServiceMenuItem.Index = 3;
             this.copyServiceMenuItem.Text = "Copy";
             // 
@@ -190,7 +178,6 @@
             this.tabControl.ResumeLayout(false);
             this.tabProcesses.ResumeLayout(false);
             this.tabServices.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -204,7 +191,7 @@
         private ProcessHacker.Components.ServiceList listServices;
         private System.Windows.Forms.ContextMenu menuProcess;
         private System.Windows.Forms.MenuItem propertiesMenuItem;
-        private wyDay.Controls.VistaMenu vistaMenu;
+
         private System.Windows.Forms.MenuItem copyMenuItem;
         private System.Windows.Forms.ContextMenu menuService;
         private System.Windows.Forms.MenuItem goToProcessServiceMenuItem;

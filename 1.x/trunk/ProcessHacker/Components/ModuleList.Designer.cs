@@ -52,8 +52,6 @@
             this.copyFileNameMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllModuleMenuItem = new System.Windows.Forms.MenuItem();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // listModules
@@ -98,48 +96,41 @@
             // 
             // changeMemoryProtectionModuleMenuItem
             // 
-            this.vistaMenu.SetImage(this.changeMemoryProtectionModuleMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
             this.changeMemoryProtectionModuleMenuItem.Index = 0;
             this.changeMemoryProtectionModuleMenuItem.Text = "Change &Memory Protection...";
             this.changeMemoryProtectionModuleMenuItem.Click += new System.EventHandler(this.changeMemoryProtectionModuleMenuItem_Click);
             // 
             // readMemoryModuleMenuItem
             // 
-            this.vistaMenu.SetImage(this.readMemoryModuleMenuItem, global::ProcessHacker.Properties.Resources.page);
             this.readMemoryModuleMenuItem.Index = 2;
             this.readMemoryModuleMenuItem.Text = "Read Memory";
             this.readMemoryModuleMenuItem.Click += new System.EventHandler(this.readMemoryModuleMenuItem_Click);
             // 
             // inspectModuleMenuItem
             // 
-            this.vistaMenu.SetImage(this.inspectModuleMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
             this.inspectModuleMenuItem.Index = 5;
             this.inspectModuleMenuItem.Text = "&Inspect";
             this.inspectModuleMenuItem.Click += new System.EventHandler(this.inspectModuleMenuItem_Click);
             // 
             // copyModuleMenuItem
             // 
-            this.vistaMenu.SetImage(this.copyModuleMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyModuleMenuItem.Index = 8;
             this.copyModuleMenuItem.Text = "Copy";
             // 
             // openContainingFolderMenuItem
             // 
-            this.vistaMenu.SetImage(this.openContainingFolderMenuItem, global::ProcessHacker.Properties.Resources.folder_explore);
             this.openContainingFolderMenuItem.Index = 9;
             this.openContainingFolderMenuItem.Text = "&Open Containing Folder";
             this.openContainingFolderMenuItem.Click += new System.EventHandler(this.openContainingFolderMenuItem_Click);
             // 
             // propertiesMenuItem
             // 
-            this.vistaMenu.SetImage(this.propertiesMenuItem, global::ProcessHacker.Properties.Resources.application_view_detail);
             this.propertiesMenuItem.Index = 10;
             this.propertiesMenuItem.Text = "Prope&rties";
             this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
             // 
             // unloadMenuItem
             // 
-            this.vistaMenu.SetImage(this.unloadMenuItem, global::ProcessHacker.Properties.Resources.cross);
             this.unloadMenuItem.Index = 3;
             this.unloadMenuItem.Text = "&Unload";
             this.unloadMenuItem.Click += new System.EventHandler(this.unloadMenuItem_Click);
@@ -196,11 +187,6 @@
             this.selectAllModuleMenuItem.Text = "Select &All";
             this.selectAllModuleMenuItem.Click += new System.EventHandler(this.selectAllModuleMenuItem_Click);
             // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
-            // 
             // ModuleList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -209,7 +195,6 @@
             this.DoubleBuffered = true;
             this.Name = "ModuleList";
             this.Size = new System.Drawing.Size(450, 472);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -221,7 +206,6 @@
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnSize;
         private System.Windows.Forms.ColumnHeader columnDesc;
-        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.ContextMenu menuModule;
         private System.Windows.Forms.MenuItem getFuncAddressMenuItem;
         private System.Windows.Forms.MenuItem changeMemoryProtectionModuleMenuItem;

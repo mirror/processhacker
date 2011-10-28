@@ -65,7 +65,6 @@ namespace ProcessHacker
             this.listImports = new ProcessHacker.Components.ExtendedListView();
             this.columnImportName = new System.Windows.Forms.ColumnHeader();
             this.columnImportHint = new System.Windows.Forms.ColumnHeader();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.tabControl.SuspendLayout();
             this.tabCOFFHeader.SuspendLayout();
             this.tabCOFFOptionalHeader.SuspendLayout();
@@ -73,7 +72,6 @@ namespace ProcessHacker
             this.tabSections.SuspendLayout();
             this.tabExports.SuspendLayout();
             this.tabImports.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl
@@ -350,11 +348,6 @@ namespace ProcessHacker
             this.columnImportHint.Text = "Hint";
             this.columnImportHint.Width = 80;
             // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
-            // 
             // PEWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -373,14 +366,12 @@ namespace ProcessHacker
             this.tabSections.ResumeLayout(false);
             this.tabExports.ResumeLayout(false);
             this.tabImports.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabCOFFHeader;
         private System.Windows.Forms.TabPage tabCOFFOptionalHeader;

@@ -46,8 +46,6 @@ namespace ProcessHacker
             this.propertiesMenuItem = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
             this.progress = new System.Windows.Forms.ProgressBar();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -138,7 +136,6 @@ namespace ProcessHacker
             // 
             // closeMenuItem
             // 
-            this.vistaMenu.SetImage(this.closeMenuItem, global::ProcessHacker.Properties.Resources.cross);
             this.closeMenuItem.Index = 0;
             this.closeMenuItem.Text = "Close";
             this.closeMenuItem.Click += new System.EventHandler(this.closeMenuItem_Click);
@@ -157,7 +154,6 @@ namespace ProcessHacker
             // 
             // copyMenuItem
             // 
-            this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyMenuItem.Index = 3;
             this.copyMenuItem.Text = "&Copy";
             // 
@@ -170,11 +166,6 @@ namespace ProcessHacker
             this.progress.Size = new System.Drawing.Size(395, 23);
             this.progress.TabIndex = 4;
             this.progress.Visible = false;
-            // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
             // 
             // HandleFilterWindow
             // 
@@ -194,7 +185,6 @@ namespace ProcessHacker
             this.Load += new System.EventHandler(this.HandleFilterWindow_Load);
             this.VisibleChanged += new System.EventHandler(this.HandleFilterWindow_VisibleChanged);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HandleFilterWindow_FormClosing);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -212,7 +202,6 @@ namespace ProcessHacker
         private System.Windows.Forms.ColumnHeader columnHandle;
         private System.Windows.Forms.ContextMenu menuHandle;
         private System.Windows.Forms.MenuItem closeMenuItem;
-        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MenuItem copyMenuItem;
         private System.Windows.Forms.ProgressBar progress;
         private System.Windows.Forms.MenuItem propertiesMenuItem;

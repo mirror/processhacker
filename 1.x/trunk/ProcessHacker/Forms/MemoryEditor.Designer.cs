@@ -59,9 +59,7 @@ namespace ProcessHacker
             this.buttonStruct = new System.Windows.Forms.Button();
             this.hexBoxMemory = new Be.Windows.Forms.HexBox();
             this.utilitiesButtonMemory = new ProcessHacker.Components.UtilitiesButton();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // labelHexSelection
@@ -175,7 +173,6 @@ namespace ProcessHacker
             // 
             // menuItem6
             // 
-            this.vistaMenu.SetImage(this.menuItem6, global::ProcessHacker.Properties.Resources.page);
             this.menuItem6.Index = 0;
             this.menuItem6.Shortcut = System.Windows.Forms.Shortcut.F5;
             this.menuItem6.Text = "&Read";
@@ -183,14 +180,12 @@ namespace ProcessHacker
             // 
             // writeMenuItem
             // 
-            this.vistaMenu.SetImage(this.writeMenuItem, global::ProcessHacker.Properties.Resources.page_edit);
             this.writeMenuItem.Index = 1;
             this.writeMenuItem.Text = "&Write";
             this.writeMenuItem.Click += new System.EventHandler(this.writeMenuItem_Click);
             // 
             // menuItem2
             // 
-            this.vistaMenu.SetImage(this.menuItem2, global::ProcessHacker.Properties.Resources.disk);
             this.menuItem2.Index = 2;
             this.menuItem2.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
             this.menuItem2.Text = "&Save...";
@@ -203,7 +198,6 @@ namespace ProcessHacker
             // 
             // menuItem4
             // 
-            this.vistaMenu.SetImage(this.menuItem4, global::ProcessHacker.Properties.Resources.door_out);
             this.menuItem4.Index = 4;
             this.menuItem4.Text = "&Close";
             this.menuItem4.Click += new System.EventHandler(this.menuItem4_Click);
@@ -255,11 +249,6 @@ namespace ProcessHacker
             this.utilitiesButtonMemory.TabIndex = 10;
             this.toolTip.SetToolTip(this.utilitiesButtonMemory, "Insert Data");
             // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
-            // 
             // MemoryEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -282,7 +271,6 @@ namespace ProcessHacker
             this.Text = "Memory Editor";
             this.Load += new System.EventHandler(this.MemoryEditor_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MemoryEditor_FormClosing);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -303,7 +291,6 @@ namespace ProcessHacker
         private System.Windows.Forms.MainMenu mainMenu;
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem menuItem2;
-        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MenuItem writeMenuItem;
         private System.Windows.Forms.MenuItem menuItem5;
         private System.Windows.Forms.MenuItem menuItem4;

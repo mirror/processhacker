@@ -40,9 +40,7 @@ namespace ProcessHacker
             this.menuHeap = new System.Windows.Forms.ContextMenu();
             this.destroyMenuItem = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.checkSizesInBytes = new System.Windows.Forms.CheckBox();
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonClose
@@ -104,21 +102,14 @@ namespace ProcessHacker
             // 
             // destroyMenuItem
             // 
-            this.vistaMenu.SetImage(this.destroyMenuItem, global::ProcessHacker.Properties.Resources.cross);
             this.destroyMenuItem.Index = 0;
             this.destroyMenuItem.Text = "&Destroy";
             this.destroyMenuItem.Click += new System.EventHandler(this.destroyMenuItem_Click);
             // 
             // copyMenuItem
             // 
-            this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyMenuItem.Index = 1;
             this.copyMenuItem.Text = "&Copy";
-            // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
             // 
             // checkSizesInBytes
             // 
@@ -152,7 +143,6 @@ namespace ProcessHacker
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Process Heaps";
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -168,7 +158,6 @@ namespace ProcessHacker
         private System.Windows.Forms.ColumnHeader columnEntries;
         private System.Windows.Forms.ContextMenu menuHeap;
         private System.Windows.Forms.MenuItem destroyMenuItem;
-        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MenuItem copyMenuItem;
         private System.Windows.Forms.CheckBox checkSizesInBytes;
     }

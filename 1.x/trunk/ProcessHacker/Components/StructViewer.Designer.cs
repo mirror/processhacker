@@ -39,8 +39,6 @@
             this.decMenuItem = new System.Windows.Forms.MenuItem();
             this.hexMenuItem = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // treeStruct
@@ -123,13 +121,8 @@
             // 
             // copyMenuItem
             // 
-            this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyMenuItem.Index = 1;
             this.copyMenuItem.Text = "&Copy";
-            // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
             // 
             // StructViewer
             // 
@@ -138,7 +131,6 @@
             this.Controls.Add(this.treeStruct);
             this.Name = "StructViewer";
             this.Size = new System.Drawing.Size(362, 331);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -155,6 +147,5 @@
         private System.Windows.Forms.MenuItem decMenuItem;
         private System.Windows.Forms.MenuItem hexMenuItem;
         private System.Windows.Forms.MenuItem copyMenuItem;
-        private wyDay.Controls.VistaMenu vistaMenu;
     }
 }

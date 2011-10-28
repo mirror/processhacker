@@ -83,14 +83,12 @@
             this.menuPrivileges = new System.Windows.Forms.ContextMenu();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupSource.SuspendLayout();
             this.groupToken.SuspendLayout();
             this.tabAdvanced.SuspendLayout();
             this.tabPrivileges.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl
@@ -529,28 +527,24 @@
             // 
             // enableMenuItem
             // 
-            this.vistaMenu.SetImage(this.enableMenuItem, global::ProcessHacker.Properties.Resources.tick);
             this.enableMenuItem.Index = 0;
             this.enableMenuItem.Text = "&Enable";
             this.enableMenuItem.Click += new System.EventHandler(this.enableMenuItem_Click);
             // 
             // disableMenuItem
             // 
-            this.vistaMenu.SetImage(this.disableMenuItem, global::ProcessHacker.Properties.Resources.cross);
             this.disableMenuItem.Index = 1;
             this.disableMenuItem.Text = "&Disable";
             this.disableMenuItem.Click += new System.EventHandler(this.disableMenuItem_Click);
             // 
             // removeMenuItem
             // 
-            this.vistaMenu.SetImage(this.removeMenuItem, global::ProcessHacker.Properties.Resources.delete);
             this.removeMenuItem.Index = 2;
             this.removeMenuItem.Text = "&Remove";
             this.removeMenuItem.Click += new System.EventHandler(this.removeMenuItem_Click);
             // 
             // copyMenuItem
             // 
-            this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyMenuItem.Index = 4;
             this.copyMenuItem.Text = "&Copy";
             // 
@@ -576,11 +570,6 @@
             this.selectAllMenuItem.Text = "Select &All";
             this.selectAllMenuItem.Click += new System.EventHandler(this.selectAllMenuItem_Click);
             // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
-            // 
             // TokenProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -597,7 +586,6 @@
             this.tabAdvanced.ResumeLayout(false);
             this.tabAdvanced.PerformLayout();
             this.tabPrivileges.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -616,7 +604,6 @@
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnStatus;
         private System.Windows.Forms.ColumnHeader columnDesc;
-        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MenuItem enableMenuItem;
         private System.Windows.Forms.MenuItem disableMenuItem;
         private System.Windows.Forms.MenuItem removeMenuItem;

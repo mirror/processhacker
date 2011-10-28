@@ -156,7 +156,6 @@ namespace ProcessHacker
             this.tabJob = new System.Windows.Forms.TabPage();
             this.tabServices = new System.Windows.Forms.TabPage();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.tabDotNet = new System.Windows.Forms.TabPage();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -176,7 +175,6 @@ namespace ProcessHacker
             this.tabMemory.SuspendLayout();
             this.tabEnvironment.SuspendLayout();
             this.tabHandles.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // ProcessWindow
@@ -1030,11 +1028,6 @@ namespace ProcessHacker
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
             // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
-            // 
             // tabDotNet
             // 
             this.tabDotNet.Location = new System.Drawing.Point(4, 40);
@@ -1068,7 +1061,6 @@ namespace ProcessHacker
             this.tabEnvironment.ResumeLayout(false);
             this.tabHandles.ResumeLayout(false);
             this.tabHandles.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1076,7 +1068,6 @@ namespace ProcessHacker
         #endregion
 
         private System.Windows.Forms.MainMenu mainMenu;
-        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MenuItem processMenuItem;
         private System.Windows.Forms.MenuItem windowMenuItem;
         private System.Windows.Forms.MenuItem inspectImageFileMenuItem;

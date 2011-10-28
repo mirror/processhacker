@@ -34,28 +34,23 @@ namespace ProcessHacker
     {
         public static MemoryEditor ReadWriteMemory(int pid, IntPtr address, int size, bool RO)
         {
-            return ReadWriteMemory(pid, address, size, RO, 
-                new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f) { }));
+            return ReadWriteMemory(pid, address, size, RO, editor => { });
         }
 
-        public static MemoryEditor ReadWriteMemory(int pid, IntPtr address, int size, bool RO, 
-            Program.MemoryEditorInvokeAction action)
+        public static MemoryEditor ReadWriteMemory(int pid, IntPtr address, int size, bool RO, Program.MemoryEditorInvokeAction action)
         {
             try
             {
-                MemoryEditor ed = null;
-
-                ed = Program.GetMemoryEditor(pid, address, size,
-                    new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f)
+                MemoryEditor ed = Program.GetMemoryEditor(pid, address, size, f =>
+                {
+                    if (!f.IsDisposed)
                     {
-                        if (!f.IsDisposed)
-                        {
-                            f.ReadOnly = RO;
-                            f.Show();
-                            action(f);
-                            f.Activate();
-                        }
-                    }));
+                        f.ReadOnly = RO;
+                        f.Show();
+                        action(f);
+                        f.Activate();
+                    }
+                });
 
                 return ed;
             }
@@ -65,8 +60,8 @@ namespace ProcessHacker
             }
         }
 
-        private int _pid;
-        private long _length;
+        private readonly int _pid;
+        private readonly long _length;
         private IntPtr _address;
         private byte[] _data;
 
@@ -115,10 +110,9 @@ namespace ProcessHacker
 
         private void MemoryEditor_Load(object sender, EventArgs e)
         {
-            Program.UpdateWindowMenu(windowMenuItem, this);
+            //Program.UpdateWindowMenu(windowMenuItem, this);
 
             this.Size = Settings.Instance.MemoryWindowSize;
-            this.SetPhParent(false);
         }
 
         private void MemoryEditor_FormClosing(object sender, FormClosingEventArgs e)
@@ -161,7 +155,7 @@ namespace ProcessHacker
 
         private void ReadMemory()
         {
-            using (var phandle = new ProcessHandle(_pid, Program.MinProcessReadMemoryRights))
+            using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessReadMemoryRights))
             {
                 _data = new byte[_length];
 
@@ -307,7 +301,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
                     string fileName = phandle.GetImageFileName();
 
@@ -409,19 +403,12 @@ namespace ProcessHacker
                 if (Program.Structs.ContainsKey(lpw.SelectedItem))
                 {
                     // stupid TreeViewAdv only works on the one thread
-                    Program.HackerWindow.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            StructWindow sw = new StructWindow(_pid, (_address.Increment(selectionStart)),
-                                Program.Structs[lpw.SelectedItem]);
-
-                            try
-                            {
-                                sw.Show();
-                                sw.Activate();
-                            }
-                            catch
-                            { }
-                        }));
+                    Program.HackerWindow.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        StructWindow sw = new StructWindow(this._pid, (this._address.Increment(selectionStart)), Program.Structs[lpw.SelectedItem]);
+                        sw.Show();
+                        sw.Activate();
+                    }));
                 }
             }
         }

@@ -65,8 +65,6 @@ namespace ProcessHacker
         private void PEWindow_Load(object sender, EventArgs e)
         {
             this.Size = Settings.Instance.PEWindowSize;
-
-            this.SetPhParent();
         }
 
         private void PEWindow_FormClosing(object sender, FormClosingEventArgs e)

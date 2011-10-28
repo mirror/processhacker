@@ -83,14 +83,13 @@ namespace ProcessHacker
 
         private void ResultsWindow_Load(object sender, EventArgs e)
         {
-            Program.UpdateWindowMenu(windowMenuItem, this);
+            //Program.UpdateWindowMenu(windowMenuItem, this);
 
             listResults.ContextMenu = listResults.GetCopyMenu(listResults_RetrieveVirtualItem);
 
             this.Size = Settings.Instance.ResultsWindowSize;
 
             ColumnSettings.LoadSettings(Settings.Instance.ResultsListViewColumns, listResults);
-            this.SetPhParent(false);
         }
 
         private void ResultsWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -405,7 +404,7 @@ namespace ProcessHacker
                 item.Click += new EventHandler(intersectItemClicked);
                 menu.MenuItems.Add(item);
 
-                vistaMenu.SetImage(item, global::ProcessHacker.Properties.Resources.table);
+                //vistaMenu.SetImage(item, global::ProcessHacker.Properties.Resources.table);
             }
 
             menu.Show(buttonIntersect, new System.Drawing.Point(buttonIntersect.Size.Width, 0));

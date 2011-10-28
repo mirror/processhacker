@@ -35,6 +35,7 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
+using ProcessHacker.UI.Actions;
 
 namespace ProcessHacker
 {
@@ -1355,24 +1356,46 @@ namespace ProcessHacker
             f.Activate();
         }
 
-        public static void UpdateWindowMenu(Menu windowMenuItem, Form f)
+        public static void UpdateWindowMenu(ToolStripMenuItem windowMenuItem, Form f)
         {
             WeakReference<Form> fRef = new WeakReference<Form>(f);
 
-            windowMenuItem.MenuItems.DisposeAndClear();
+            windowMenuItem.DropDownItems.Clear();
 
-            MenuItem item;
 
-            item = new MenuItem("&Always On Top");
-            item.Tag = fRef;
-            item.Click += windowAlwaysOnTopItemClicked;
-            item.Checked = f.TopMost;
-            windowMenuItem.MenuItems.Add(item);
+            HackerWindow.AddMenuItemDelegate addMenuItem = (text, onClick) =>
+            {
+                windowMenuItem.DropDownItems.Add(text, null, onClick);
+                //shutdownTrayMenuItem.MenuItems.Add(new MenuItem(text, onClick));
+                //shutDownToolStripMenuItem.DropDownItems.Add(text, null, onClick);
+            };
 
-            item = new MenuItem("&Close");
-            item.Tag = fRef;
-            item.Click += windowCloseItemClicked;
-            windowMenuItem.MenuItems.Add(item);
+            addMenuItem("&Always On Top", (sender, e) =>
+            {
+                Form sf = fRef;
+
+                sf.BeginInvoke(new MethodInvoker(() =>
+                {
+                    sf.TopMost = !sf.TopMost;
+
+                    if (sf == HackerWindow)
+                        HackerWindowTopMost = sf.TopMost;
+                }));
+
+                //UpdateWindowMenu(sf, f);
+            });
+
+            addMenuItem("&Close", (sender, e) =>
+            {
+                Form fs = fRef.Target;
+
+                if (fs == null)
+                    return;
+
+                fs.BeginInvoke(new MethodInvoker(fs.Close));
+
+                //UpdateWindowMenu(sf, f);
+            });
         }
 
         public static void AddEscapeToClose(this Form f)
@@ -1392,60 +1415,6 @@ namespace ProcessHacker
         {
             if (HackerWindowTopMost)
                 f.TopMost = true;
-        }
-
-        /// <summary>
-        /// Floats the window on top of the main Process Hacker window.
-        /// </summary>
-        /// <param name="f">The form to float.</param>
-        /// <remarks>
-        /// Always call this method before calling InitializeComponent in order for the 
-        /// parent to be restored properly.
-        /// </remarks>
-        public static void SetPhParent(this Form f)
-        {
-            f.SetPhParent(true);
-        }
-
-        public static void SetPhParent(this Form f, bool hideInTaskbar)
-        {
-            if (Settings.Instance.FloatChildWindows)
-            {
-                if (hideInTaskbar)
-                    f.ShowInTaskbar = false;
-
-                IntPtr oldParent = Win32.SetWindowLongPtr(f.Handle, GetWindowLongOffset.HwndParent, Program.HackerWindowHandle);
-
-                //f.FormClosing += (sender, e) => Win32.SetWindowLongPtr(f.Handle, GetWindowLongOffset.HwndParent, oldParent);
-            }
-        }
-
-        private static void windowAlwaysOnTopItemClicked(object sender, EventArgs e)
-        {
-            Form f = ((WeakReference<Form>)((MenuItem)sender).Tag).Target;
-
-            if (f == null)
-                return;
-
-            f.BeginInvoke(new MethodInvoker(() =>
-            {
-                f.TopMost = !f.TopMost;
-
-                if (f == HackerWindow)
-                    HackerWindowTopMost = f.TopMost;
-            }));
-
-            UpdateWindowMenu(((MenuItem)sender).Parent, f);
-        }
-
-        private static void windowCloseItemClicked(object sender, EventArgs e)
-        {
-            Form f = ((WeakReference<Form>)((MenuItem)sender).Tag).Target;
-
-            if (f == null)
-                return;
-
-            f.BeginInvoke(new MethodInvoker(f.Close));
         }
     }
 }

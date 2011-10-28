@@ -48,7 +48,7 @@ namespace ProcessHacker
         private readonly ThumbButtonManager thumbButtonManager;
         //private JumpListManager jumpListManager; //Reserved for future use
 
-        private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
+        public delegate void AddMenuItemDelegate(string text, EventHandler onClick);
 
         // This entire file is a big monolithic mess.
 
@@ -90,7 +90,7 @@ namespace ProcessHacker
         /// <summary>
         /// The list of notification icons.
         /// </summary>
-        List<UsageIcon> notifyIcons = new List<UsageIcon>();
+        readonly List<UsageIcon> notifyIcons = new List<UsageIcon>();
         /// <summary>
         /// The CPU history icon, with a history of CPU usage.
         /// </summary>
@@ -118,7 +118,7 @@ namespace ProcessHacker
         /// A dictionary relating services to processes. Each key is a PID and 
         /// each value is a list of service names hosted in that particular process.
         /// </summary>
-        Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
+        readonly Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
 
         /// <summary>
         /// The number of selected processes. Not used.
@@ -133,7 +133,7 @@ namespace ProcessHacker
         /// The PH log, with events such as process creation/termination and various 
         /// service events.
         /// </summary>
-        List<KeyValuePair<DateTime, string>> _log = new List<KeyValuePair<DateTime, string>>();
+        readonly List<KeyValuePair<DateTime, string>> _log = new List<KeyValuePair<DateTime, string>>();
 
         /// <summary>
         /// windowhandle owned by the currently selected process. 
@@ -161,14 +161,9 @@ namespace ProcessHacker
         // The following two properties were used by the Window menu system. 
         // Not very useful, but still needed for now.
 
-        public MenuItem WindowMenuItem
+        public ToolStripMenuItem WindowMenuItem
         {
-            get { return windowMenuItem; }
-        }
-
-        public wyDay.Controls.VistaMenu VistaMenu
-        {
-            get { return vistaMenu; }
+            get { return windowToolStripMenuItem; }
         }
 
         // Mostly used by Save.cs.
@@ -420,15 +415,6 @@ namespace ProcessHacker
             Settings.Instance.ToolbarVisible = toolStrip.Visible = toolbarMenuItem.Checked;
         }
 
-        private void updateNowMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Program.ProcessProvider.RunCount > 1)
-                Program.ProcessProvider.Boost();
-
-            if (Program.ServiceProvider.RunCount > 1)
-                Program.ServiceProvider.Boost();
-        }
-
         private void updateProcessesMenuItem_Click(object sender, EventArgs e)
         {
             updateProcessesMenuItem.Checked = !updateProcessesMenuItem.Checked;
@@ -611,15 +597,15 @@ namespace ProcessHacker
         {
             if (listNetwork.SelectedItems.Count == 0)
             {
-                menuNetwork.DisableAll();
+                //contextMenuStripNetwork.DisableAll();
             }
             else if (listNetwork.SelectedItems.Count == 1)
             {
-                menuNetwork.EnableAll();
+                //contextMenuStripNetwork.EnableAll();
             }
             else
             {
-                menuNetwork.EnableAll();
+                //contextMenuStripNetwork.EnableAll();
                 goToProcessNetworkMenuItem.Enabled = false;
             }
 
@@ -822,8 +808,8 @@ namespace ProcessHacker
             List<ProcessItem> processes = new List<ProcessItem>();
 
             // Clear the images so we don't get GDI+ handle leaks
-            foreach (MenuItem item in processesMenuItem.MenuItems)
-                vistaMenu.SetImage(item, null);
+            //foreach (MenuItem item in processesMenuItem.MenuItems)
+                //vistaMenu.SetImage(item, null);
 
             processesMenuItem.MenuItems.DisposeAndClear();
 
@@ -878,60 +864,59 @@ namespace ProcessHacker
                     processItem.Text = process.Name + " (" + process.Pid.ToString() + ")";
                     processItem.Tag = process;
 
-                    terminateItem.Click += new EventHandler((sender_, e_) =>
+                    terminateItem.Click += (sender_, e_) =>
                     {
-                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
+                        ProcessItem item = ((MenuItem)sender_).Parent.Tag as ProcessItem;
 
                         ProcessActions.Terminate(this, new int[] { item.Pid }, new string[] { item.Name }, true);
-                    });
+                    };
                     terminateItem.Text = "Terminate";
 
-                    suspendItem.Click += new EventHandler((sender_, e_) =>
+                    suspendItem.Click += (sender_, e_) =>
                     {
-                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
+                        ProcessItem item = ((MenuItem)sender_).Parent.Tag as ProcessItem;
 
                         ProcessActions.Suspend(this, new int[] { item.Pid }, new string[] { item.Name }, true);
-                    });
+                    };
                     suspendItem.Text = "Suspend";
 
-                    resumeItem.Click += new EventHandler((sender_, e_) =>
+                    resumeItem.Click += (sender_, e_) =>
                     {
-                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
+                        ProcessItem item = ((MenuItem)sender_).Parent.Tag as ProcessItem;
 
                         ProcessActions.Resume(this, new int[] { item.Pid }, new string[] { item.Name }, true);
-                    });
+                    };
                     resumeItem.Text = "Resume";
 
-                    propertiesItem.Click += new EventHandler((sender_, e_) =>
+                    propertiesItem.Click += (sender_, e_) =>
                     {
                         try
                         {
                             ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
-                            ProcessWindow pForm = Program.GetProcessWindow(Program.ProcessProvider.Dictionary[item.Pid],
-                                new Program.PWindowInvokeAction(delegate(ProcessWindow f)
+                            Program.GetProcessWindow(Program.ProcessProvider.Dictionary[item.Pid], f =>
                             {
                                 f.Show();
                                 f.Activate();
-                            }));
+                            });
                         }
                         catch (Exception ex)
                         {
                             PhUtils.ShowException("Unable to inspect the process", ex);
                         }
-                    });
+                    };
                     propertiesItem.Text = "Properties";
 
                     processItem.MenuItems.AddRange(new MenuItem[] { terminateItem, suspendItem, resumeItem, propertiesItem });
                     processesMenuItem.MenuItems.Add(processItem);
 
-                    vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.Pid].Icon);
+                   // vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.Pid].Icon);
                 }
             }
             catch
             {
-                foreach (MenuItem item in processesMenuItem.MenuItems)
-                    vistaMenu.SetImage(item, null);
+                //foreach (MenuItem item in processesMenuItem.MenuItems)
+                    //vistaMenu.SetImage(item, null);
 
                 processesMenuItem.MenuItems.DisposeAndClear();
             }
@@ -2440,22 +2425,26 @@ namespace ProcessHacker
 
         private void findHandlesToolStripButton_Click(object sender, EventArgs e)
         {
-            findHandlesMenuItem_Click(sender, e);
+            findHandlesMenuItem.PerformClick();
         }
 
         private void refreshToolStripButton_Click(object sender, EventArgs e)
         {
-            updateNowMenuItem_Click(sender, e);
+            if (Program.ProcessProvider.RunCount > 1)
+                Program.ProcessProvider.Boost();
+
+            if (Program.ServiceProvider.RunCount > 1)
+                Program.ServiceProvider.Boost();
         }
 
         private void sysInfoToolStripButton_Click(object sender, EventArgs e)
         {
-            sysInfoMenuItem_Click(sender, e);
+            sysInfoMenuItem.PerformClick();
         }
 
         private void optionsToolStripButton_Click(object sender, EventArgs e)
         {
-            optionsMenuItem_Click(sender, e);
+            optionsMenuItem.PerformClick();
         }
 
         #endregion
@@ -2530,18 +2519,18 @@ namespace ProcessHacker
 
         private void CreateShutdownMenuItems()
         {
-            AddMenuItemDelegate addMenuItem = (string text, EventHandler onClick) =>
+            AddMenuItemDelegate addMenuItem = (text, onClick) =>
             {
-                shutdownMenuItem.MenuItems.Add(new MenuItem(text, onClick));
+                shutdownMenuItem.DropDownItems.Add(text, null, onClick);
                 shutdownTrayMenuItem.MenuItems.Add(new MenuItem(text, onClick));
                 shutDownToolStripMenuItem.DropDownItems.Add(text, null, onClick);
             };
 
-            addMenuItem("Lock", (sender, e) => { Win32.LockWorkStation(); });
-            addMenuItem("Logoff", (sender, e) => { Win32.ExitWindowsEx(ExitWindowsFlags.Logoff, 0); });
+            addMenuItem("Lock", (sender, e) => Win32.LockWorkStation());
+            addMenuItem("Logoff", (sender, e) => Win32.ExitWindowsEx(ExitWindowsFlags.Logoff, 0));
             addMenuItem("-", null);
-            addMenuItem("Sleep", (sender, e) => { Win32.SetSuspendState(false, false, false); });
-            addMenuItem("Hibernate", (sender, e) => { Win32.SetSuspendState(true, false, false); });
+            addMenuItem("Sleep", (sender, e) => Win32.SetSuspendState(false, false, false));
+            addMenuItem("Hibernate", (sender, e) => Win32.SetSuspendState(true, false, false));
             addMenuItem("-", null);
             addMenuItem("Restart", (sender, e) =>
             {
@@ -2579,7 +2568,7 @@ namespace ProcessHacker
             const int height = 50;
             const int margin = 4;
             Bitmap shieldImage;
-            Button button = new Button()
+            Button button = new Button
             {
                 Text = " ",
                 Size = new Size(width, height),
@@ -2826,9 +2815,9 @@ namespace ProcessHacker
 
         private void UpdateSessions()
         {
-            var currentServer = TerminalServerHandle.GetCurrent();
+            TerminalServerHandle currentServer = TerminalServerHandle.GetCurrent();
 
-            usersMenuItem.MenuItems.Clear();
+            usersToolStripMenuItem.DropDownItems.Clear();
 
             foreach (var session in currentServer.GetSessions())
             {
@@ -2841,88 +2830,82 @@ namespace ProcessHacker
                     continue;
                 }
 
-                MenuItem userMenuItem = new MenuItem();
-
-                userMenuItem.Text = session.SessionId + ": " + displayName;
-
-                MenuItem currentMenuItem;
-
-                currentMenuItem = new MenuItem() { Text = "Disconnect", Tag = session.SessionId };
-                currentMenuItem.Click += (sender, e) =>
-                    {
-                        int sessionId = (int)((MenuItem)sender).Tag;
-
-                        SessionActions.Disconnect(this, sessionId, false);
-                    };
-                userMenuItem.MenuItems.Add(currentMenuItem);
-                currentMenuItem = new MenuItem() { Text = "Logoff", Tag = session.SessionId };
-                currentMenuItem.Click += (sender, e) =>
+                AddMenuItemDelegate addMenuItem = (text, onClick) =>
                 {
-                    int sessionId = (int)((MenuItem)sender).Tag;
-
-                    SessionActions.Logoff(this, sessionId, true);
+                    usersToolStripMenuItem.DropDownItems.Add(text, null, onClick);
+                    shutdownTrayMenuItem.MenuItems.Add(new MenuItem(text, onClick));
+                    shutDownToolStripMenuItem.DropDownItems.Add(text, null, onClick);
                 };
-                userMenuItem.MenuItems.Add(currentMenuItem);
-                currentMenuItem = new MenuItem() { Text = "Send Message...", Tag = session.SessionId };
-                currentMenuItem.Click += (sender, e) =>
+
+                addMenuItem("Disconnect", (sender, e) =>
                 {
                     int sessionId = (int)((MenuItem)sender).Tag;
 
+                    SessionActions.Disconnect(this, session.SessionId, false);
+                });
+
+                //MenuItem userMenuItem = new MenuItem();
+                //userMenuItem.Text = session.SessionId + ": " + displayName;
+                addMenuItem("Logoff", (sender, e) =>
+                {
+                    int sessionId = (int)((MenuItem)sender).Tag;
+
+                    SessionActions.Logoff(this, session.SessionId, true);
+                });
+
+                addMenuItem("Send Message...", (sender, e) =>
+                {
                     try
                     {
-                        var mbw = new MessageBoxWindow();
+                        MessageBoxWindow mbw = new MessageBoxWindow
+                        {
+                            MessageBoxTitle = "Message from " + Program.CurrentUsername
+                        };
 
-                        mbw.MessageBoxTitle = "Message from " + Program.CurrentUsername;
                         mbw.OkButtonClicked += () =>
+                        {
+                            try
                             {
-                                try
-                                {
-                                    TerminalServerHandle.GetCurrent().GetSession(sessionId).SendMessage(
-                                        mbw.MessageBoxTitle,
-                                        mbw.MessageBoxText,
-                                        MessageBoxButtons.OK,
-                                        mbw.MessageBoxIcon,
-                                        0,
-                                        0,
-                                        mbw.MessageBoxTimeout,
-                                        false
-                                        );
-                                    return true;
-                                }
-                                catch (Exception ex)
-                                {
-                                    PhUtils.ShowException("Unable to send the message", ex);
-                                    return false;
-                                }
-                            };
+                                TerminalServerHandle.GetCurrent().GetSession(session.SessionId).SendMessage(
+                                    mbw.MessageBoxTitle,
+                                    mbw.MessageBoxText,
+                                    MessageBoxButtons.OK,
+                                    mbw.MessageBoxIcon,
+                                    0,
+                                    0,
+                                    mbw.MessageBoxTimeout,
+                                    false
+                                    );
+
+                                return true;
+                            }
+                            catch (Exception ex)
+                            {
+                                PhUtils.ShowException("Unable to send the message", ex);
+                                return false;
+                            }
+                        };
                         mbw.ShowDialog();
                     }
                     catch (Exception ex)
                     {
                         PhUtils.ShowException("Unable to show the message window", ex);
                     }
-                };
-                userMenuItem.MenuItems.Add(currentMenuItem);
-                currentMenuItem = new MenuItem() { Text = "Properties...", Tag = session.SessionId };
-                currentMenuItem.Click += (sender, e) =>
-                {
-                    int sessionId = (int)((MenuItem)sender).Tag;
+                });
 
+                addMenuItem("Properties...", (sender, e) =>
+                {
                     try
                     {
-                        var sessionInformationWindow =
-                            new SessionInformationWindow(TerminalServerHandle.GetCurrent().GetSession(sessionId));
-
-                        sessionInformationWindow.ShowDialog();
+                        using (var sessionWindow = new SessionInformationWindow(TerminalServerHandle.GetCurrent().GetSession(session.SessionId)))
+                            sessionWindow.ShowDialog();
                     }
                     catch (Exception ex)
                     {
                         PhUtils.ShowException("Unable to show session properties", ex);
                     }
-                };
-                userMenuItem.MenuItems.Add(currentMenuItem);
+                });
 
-                usersMenuItem.MenuItems.Add(userMenuItem);
                 session.Dispose();
             }
         }
@@ -3157,8 +3140,8 @@ namespace ProcessHacker
 
         public void LoadFixOSSpecific()
         {
-            if (KProcessHacker.Instance == null)
-                hiddenProcessesMenuItem.Visible = false;
+            //if (KProcessHacker.Instance == null)
+                //hiddenProcessesMenuItem.Visible = false;
 
             if (KProcessHacker.Instance == null || !OSVersion.HasSetAccessToken)
                 setTokenProcessMenuItem.Visible = false;
@@ -3225,9 +3208,8 @@ namespace ProcessHacker
         {
             if (Program.ElevationType == TokenElevationType.Limited)
             {
-                uacShieldIcon = this.GetUacShieldIcon();
-
-                vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
+                this.showDetailsForAllProcessesMenuItem.Image = uacShieldIcon = this.GetUacShieldIcon();
+                //vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
                 //vistaMenu.SetImage(startServiceMenuItem, uacShieldIcon);
                 //vistaMenu.SetImage(continueServiceMenuItem, uacShieldIcon);
                 //vistaMenu.SetImage(pauseServiceMenuItem, uacShieldIcon);
@@ -3296,11 +3278,10 @@ namespace ProcessHacker
 
             GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
             GenericViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
-            GenericViewMenu.AddMenuItems(copyNetworkMenuItem.MenuItems, listNetwork.List, null);
+            //GenericViewMenu.AddMenuItems(copyNetworkMenuItem.MenuItems, listNetwork.List, null);
 
             treeProcesses.ContextMenu = menuProcess;
             listServices.ContextMenu = menuService;
-            listNetwork.ContextMenu = menuNetwork;
 
             treeProcesses.Provider = Program.ProcessProvider;
             treeProcesses.Tree.BeginUpdate();
@@ -3330,26 +3311,29 @@ namespace ProcessHacker
             }
 
             treeProcesses.Tree.MouseDown += (sender, e) =>
+            {
+                if (e.Button == MouseButtons.Right && e.Location.Y < treeProcesses.Tree.ColumnHeaderHeight)
                 {
-                    if (e.Button == MouseButtons.Right && e.Location.Y < treeProcesses.Tree.ColumnHeaderHeight)
+                    ContextMenu menu = new ContextMenu();
+
+                    menu.MenuItems.Add(new MenuItem("Choose Columns...", (sender_, e_) =>
                     {
-                        ContextMenu menu = new ContextMenu();
+                        using (var c = new ChooseColumnsWindow(treeProcesses.Tree))
+                        {
+                            c.ShowDialog();
+                        }
 
-                        menu.MenuItems.Add(new MenuItem("Choose Columns...", (sender_, e_) =>
-                            {
-                                (new ChooseColumnsWindow(treeProcesses.Tree)
-                                { }).ShowDialog();
+                        copyProcessMenuItem.MenuItems.DisposeAndClear();
+                        GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
+                        treeProcesses.Tree.InvalidateNodeControlCache();
+                        treeProcesses.Tree.Invalidate();
+                    }));
 
-                                copyProcessMenuItem.MenuItems.DisposeAndClear();
-                                GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
-                                treeProcesses.Tree.InvalidateNodeControlCache();
-                                treeProcesses.Tree.Invalidate();
-                            }));
+                    menu.Show(treeProcesses.Tree, e.Location);
+                }
+            };
 
-                        menu.Show(treeProcesses.Tree, e.Location);
-                    }
-                };
-            treeProcesses.Tree.ColumnClicked += (sender, e) => { DeselectAll(treeProcesses.Tree); };
+            treeProcesses.Tree.ColumnClicked += (sender, e) => this.DeselectAll(this.treeProcesses.Tree);
             treeProcesses.Tree.ColumnReordered += (sender, e) =>
             {
                 copyProcessMenuItem.MenuItems.DisposeAndClear();
@@ -3361,17 +3345,17 @@ namespace ProcessHacker
 
         private void LoadAddShortcuts()
         {
-            treeProcesses.Tree.KeyDown +=
-                (sender, e) =>
+            treeProcesses.Tree.KeyDown += (sender, e) =>
+            {
+                if (e.Control && e.KeyCode == Keys.A)
                 {
-                    if (e.Control && e.KeyCode == Keys.A)
-                    {
-                        treeProcesses.TreeNodes.SelectAll();
-                        treeProcesses.Tree.Invalidate();
-                    }
+                    treeProcesses.TreeNodes.SelectAll();
+                    treeProcesses.Tree.Invalidate();
+                }
 
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.TreeViewAdvCopy(treeProcesses.Tree, -1);
-                };
+                if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.TreeViewAdvCopy(treeProcesses.Tree, -1);
+            };
+
             listServices.List.AddShortcuts();
             listNetwork.List.AddShortcuts();
         }
@@ -3384,29 +3368,29 @@ namespace ProcessHacker
         private void LoadStructs()
         {
             WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
+            {
+                try
                 {
-                    try
+                    if (System.IO.File.Exists(Application.StartupPath + "\\structs.txt"))
                     {
-                        if (System.IO.File.Exists(Application.StartupPath + "\\structs.txt"))
-                        {
-                            Structs.StructParser parser = new ProcessHacker.Structs.StructParser(Program.Structs);
+                        Structs.StructParser parser = new ProcessHacker.Structs.StructParser(Program.Structs);
 
-                            parser.Parse(Application.StartupPath + "\\structs.txt");
-                        }
+                        parser.Parse(Application.StartupPath + "\\structs.txt");
                     }
-                    catch (Exception ex)
-                    {
-                        QueueMessage("Error loading structure definitions: " + ex.Message);
-                    }
-                }), "load-structs");
+                }
+                catch (Exception ex)
+                {
+                    QueueMessage("Error loading structure definitions: " + ex.Message);
+                }
+            }), "load-structs");
         }
 
         private void LoadOther()
         {
             try
             {
-                using (var thandle = ProcessHandle.Current.GetToken(TokenAccess.Query))
-                using (var sid = thandle.User)
+                using (TokenHandle thandle = ProcessHandle.Current.GetToken(TokenAccess.Query))
+                using (Sid sid = thandle.User)
                     this.Text += " [" + sid.GetFullName(true) + (KProcessHacker.Instance != null ? "+" : string.Empty) + "]";
             }
             catch
@@ -3437,7 +3421,7 @@ namespace ProcessHacker
                 Windows7Taskbar.ProcessAppId = "ProcessHacker";
 
                 thumbButtonManager = new ThumbButtonManager(this);
-                thumbButtonManager.TaskbarButtonCreated += new EventHandler(thumbButtonManager_TaskbarButtonCreated);
+                thumbButtonManager.TaskbarButtonCreated += this.thumbButtonManager_TaskbarButtonCreated;
             }
 
             this.AddEscapeToClose();
@@ -3469,8 +3453,8 @@ namespace ProcessHacker
             this.LoadOther();
             this.LoadStructs();
 
-            vistaMenu.DelaySetImageCalls = false;
-            vistaMenu.PerformPendingSetImageCalls();
+            //vistaMenu.DelaySetImageCalls = false;
+            //vistaMenu.PerformPendingSetImageCalls();
 
             Program.ServiceProvider.Enabled = true;
             Program.ServiceProvider.Boost();
@@ -3516,7 +3500,7 @@ namespace ProcessHacker
 
         private void HackerWindow_Load(object sender, EventArgs e)
         {
-            Program.UpdateWindowMenu(windowMenuItem, this);
+            Program.UpdateWindowMenu(windowToolStripMenuItem, this);
             this.ApplyFont(Settings.Instance.Font);
             this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
         }
@@ -3529,6 +3513,11 @@ namespace ProcessHacker
         private void HackerWindow_VisibleChanged(object sender, EventArgs e)
         {
             treeProcesses.Draw = this.Visible;
+        }
+
+        private void refreshToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

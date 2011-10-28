@@ -38,20 +38,13 @@ namespace ProcessHacker
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ThreadWindow));
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.fileModule = new ProcessHacker.Components.FileNameBox();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonWalk = new System.Windows.Forms.Button();
             this.listViewCallStack = new ExtendedListView();
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
-            // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
             // 
             // fileModule
             // 
@@ -131,7 +124,6 @@ namespace ProcessHacker
             this.Text = "Thread";
             this.Load += new System.EventHandler(this.ThreadWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ThreadWindow_FormClosing);
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -139,7 +131,6 @@ namespace ProcessHacker
 
         #endregion
 
-        private wyDay.Controls.VistaMenu vistaMenu;
         private ProcessHacker.Components.FileNameBox fileModule;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonWalk;

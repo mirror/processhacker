@@ -84,10 +84,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.labelTEBAddress = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.fileModule = new ProcessHacker.Components.FileNameBox();
             this.tableInformation.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // listThreads
@@ -156,14 +154,12 @@
             // inspectThreadMenuItem
             // 
             this.inspectThreadMenuItem.DefaultItem = true;
-            this.vistaMenu.SetImage(this.inspectThreadMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
             this.inspectThreadMenuItem.Index = 0;
             this.inspectThreadMenuItem.Text = "&Inspect";
             this.inspectThreadMenuItem.Click += new System.EventHandler(this.inspectThreadMenuItem_Click);
             // 
             // terminateThreadMenuItem
             // 
-            this.vistaMenu.SetImage(this.terminateThreadMenuItem, global::ProcessHacker.Properties.Resources.cross);
             this.terminateThreadMenuItem.Index = 1;
             this.terminateThreadMenuItem.Text = "&Terminate";
             this.terminateThreadMenuItem.Click += new System.EventHandler(this.terminateThreadMenuItem_Click);
@@ -176,14 +172,12 @@
             // 
             // suspendThreadMenuItem
             // 
-            this.vistaMenu.SetImage(this.suspendThreadMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
             this.suspendThreadMenuItem.Index = 3;
             this.suspendThreadMenuItem.Text = "&Suspend";
             this.suspendThreadMenuItem.Click += new System.EventHandler(this.suspendThreadMenuItem_Click);
             // 
             // resumeThreadMenuItem
             // 
-            this.vistaMenu.SetImage(this.resumeThreadMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
             this.resumeThreadMenuItem.Index = 4;
             this.resumeThreadMenuItem.Text = "&Resume";
             this.resumeThreadMenuItem.Click += new System.EventHandler(this.resumeThreadMenuItem_Click);
@@ -207,7 +201,6 @@
             // 
             // tokenThreadMenuItem
             // 
-            this.vistaMenu.SetImage(this.tokenThreadMenuItem, global::ProcessHacker.Properties.Resources.locked);
             this.tokenThreadMenuItem.Index = 8;
             this.tokenThreadMenuItem.Text = "Token";
             this.tokenThreadMenuItem.Click += new System.EventHandler(this.tokenThreadMenuItem_Click);
@@ -328,7 +321,6 @@
             // 
             // copyThreadMenuItem
             // 
-            this.vistaMenu.SetImage(this.copyThreadMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyThreadMenuItem.Index = 13;
             this.copyThreadMenuItem.Text = "C&opy";
             // 
@@ -544,11 +536,6 @@
             this.label7.TabIndex = 5;
             this.label7.Text = "Start Module:";
             // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            this.vistaMenu.DelaySetImageCalls = false;
-            // 
             // fileModule
             // 
             this.fileModule.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
@@ -572,7 +559,6 @@
             this.Size = new System.Drawing.Size(450, 460);
             this.tableInformation.ResumeLayout(false);
             this.tableInformation.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -584,7 +570,6 @@
         private System.Windows.Forms.ColumnHeader columnThreadID;
         private System.Windows.Forms.ColumnHeader columnContextSwitchesDelta;
         private System.Windows.Forms.ColumnHeader columnStartAddress;
-        private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.ContextMenu menuThread;
         private System.Windows.Forms.MenuItem inspectThreadMenuItem;
         private System.Windows.Forms.MenuItem terminateThreadMenuItem;

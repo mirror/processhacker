@@ -42,8 +42,8 @@ namespace ProcessHacker
 {
     public partial class VirusTotalUploaderWindow : Form
     {
-        string fileName;
-        string processName;
+        readonly string fileName;
+        readonly string processName;
 
         long totalFileSize;
         long bytesPerSecond;
@@ -54,7 +54,6 @@ namespace ProcessHacker
 
         public VirusTotalUploaderWindow(string procName, string procPath)
         {
-            this.SetPhParent();
             InitializeComponent();
             this.AddEscapeToClose();
             this.SetTopMost();
