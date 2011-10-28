@@ -391,7 +391,7 @@ namespace ProcessHacker.Components
             }
             else
             {
-                menuMemory.DisableAll();
+                //menuMemory.DisableAll();
 
                 dumpMemoryMenuItem.Enabled = true;
                 readWriteAddressMemoryMenuItem.Enabled = true;

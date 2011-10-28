@@ -10,7 +10,7 @@ namespace ProcessHacker.Common
             return reference.Target;
         }
 
-        private WeakReference _weakReference;
+        private readonly WeakReference _weakReference;
 
         public WeakReference(T obj)
             : this(obj, false)

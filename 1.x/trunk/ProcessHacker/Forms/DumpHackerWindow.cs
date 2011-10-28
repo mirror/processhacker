@@ -365,18 +365,17 @@ namespace ProcessHacker
 
         private void menuProcess_Popup(object sender, EventArgs e)
         {
-            if (treeProcesses.SelectedTreeNodes.Count == 0)
+            switch (this.treeProcesses.SelectedTreeNodes.Count)
             {
-                menuProcess.DisableAll();
-            }
-            else if (treeProcesses.SelectedTreeNodes.Count == 1)
-            {
-                menuProcess.EnableAll();
-            }
-            else
-            {
-                menuProcess.EnableAll();
-                propertiesMenuItem.Enabled = false;
+                case 0:
+                    break;
+                case 1:
+                    this.menuProcess.EnableAll();
+                    break;
+                default:
+                    this.menuProcess.EnableAll();
+                    this.propertiesMenuItem.Enabled = false;
+                    break;
             }
         }
 
@@ -399,7 +398,7 @@ namespace ProcessHacker
         {
             if (listServices.SelectedItems.Count == 0)
             {
-                menuService.DisableAll();
+                //menuService.DisableAll();
             }
             else if (listServices.SelectedItems.Count == 1)
             {

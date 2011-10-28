@@ -72,9 +72,8 @@ namespace TaskbarLib
         private static IPropertyStore InternalGetWindowPropertyStore(IntPtr hwnd)
         {
             IPropertyStore propStore;
-            HResult shGetPropertyStoreResult = UnsafeNativeMethods.SHGetPropertyStoreForWindow(
-                hwnd, ref SafeNativeMethods.IID_IPropertyStore, out propStore);
-            shGetPropertyStoreResult.ThrowIf();
+
+            UnsafeNativeMethods.SHGetPropertyStoreForWindow(hwnd, ref SafeNativeMethods.IID_IPropertyStore, out propStore);
 
             return propStore;
         }
@@ -119,15 +118,16 @@ namespace TaskbarLib
             set
             {
                 IPropertyStore propStore = InternalGetWindowPropertyStore(Program.HackerWindowHandle);
+                if (propStore != null)
+                {
+                    PropVariant pv = new PropVariant();
+                    pv.SetValue(value);
 
-                PropVariant pv = new PropVariant();
-                pv.SetValue(value);
+                    propStore.SetValue(ref PropertyKey.PKEY_AppUserModel_ID, ref pv);
 
-                HResult setValueResult = propStore.SetValue(ref PropertyKey.PKEY_AppUserModel_ID, ref pv);
-                setValueResult.ThrowIf();
-
-                Marshal.ReleaseComObject(propStore);
-                pv.Dispose();
+                    Marshal.ReleaseComObject(propStore);
+                    pv.Dispose();
+                }
             }
         }
 
@@ -139,14 +139,12 @@ namespace TaskbarLib
             get
             {
                 string appId;
-                HResult getProcessAppUserModeIDResult = UnsafeNativeMethods.GetCurrentProcessExplicitAppUserModelID(out appId);
-                getProcessAppUserModeIDResult.ThrowIf();
+                UnsafeNativeMethods.GetCurrentProcessExplicitAppUserModelID(out appId);
                 return appId;
             }
             set
             {
-                HResult setProcessAppUserModeIDResult = UnsafeNativeMethods.SetCurrentProcessExplicitAppUserModelID(value);
-                setProcessAppUserModeIDResult.ThrowIf();
+               UnsafeNativeMethods.SetCurrentProcessExplicitAppUserModelID(value);
             }
         }
 

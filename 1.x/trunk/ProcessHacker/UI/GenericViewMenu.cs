@@ -75,7 +75,7 @@ namespace ProcessHacker.UI
 
             if (lv.SelectedIndices.Count == 0)
             {
-                Utils.DisableAllMenuItems(citem);
+                //Utils.DisableAllMenuItems(citem);
             }
             else
             {

@@ -442,25 +442,25 @@
             // ioPriority0ThreadMenuItem
             // 
             this.ioPriority0ThreadMenuItem.Name = "ioPriority0ThreadMenuItem";
-            this.ioPriority0ThreadMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.ioPriority0ThreadMenuItem.Size = new System.Drawing.Size(80, 22);
             this.ioPriority0ThreadMenuItem.Text = "0";
             // 
             // ioPriority1ThreadMenuItem
             // 
             this.ioPriority1ThreadMenuItem.Name = "ioPriority1ThreadMenuItem";
-            this.ioPriority1ThreadMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.ioPriority1ThreadMenuItem.Size = new System.Drawing.Size(80, 22);
             this.ioPriority1ThreadMenuItem.Text = "1";
             // 
             // ioPriority3ThreadMenuItem
             // 
             this.ioPriority3ThreadMenuItem.Name = "ioPriority3ThreadMenuItem";
-            this.ioPriority3ThreadMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.ioPriority3ThreadMenuItem.Size = new System.Drawing.Size(80, 22);
             this.ioPriority3ThreadMenuItem.Text = "2";
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem5.Text = "3";
             // 
             // protectionToolStripMenuItem
@@ -497,37 +497,37 @@
             // realTimeToolStripMenuItem
             // 
             this.realTimeToolStripMenuItem.Name = "realTimeToolStripMenuItem";
-            this.realTimeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.realTimeToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.realTimeToolStripMenuItem.Text = "Real Time";
             // 
             // highToolStripMenuItem
             // 
             this.highToolStripMenuItem.Name = "highToolStripMenuItem";
-            this.highToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.highToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.highToolStripMenuItem.Text = "High";
             // 
             // aboveNormalToolStripMenuItem
             // 
             this.aboveNormalToolStripMenuItem.Name = "aboveNormalToolStripMenuItem";
-            this.aboveNormalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboveNormalToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.aboveNormalToolStripMenuItem.Text = "Above Normal";
             // 
             // normalToolStripMenuItem
             // 
             this.normalToolStripMenuItem.Name = "normalToolStripMenuItem";
-            this.normalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.normalToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.normalToolStripMenuItem.Text = "Normal";
             // 
             // belowNormalToolStripMenuItem
             // 
             this.belowNormalToolStripMenuItem.Name = "belowNormalToolStripMenuItem";
-            this.belowNormalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.belowNormalToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.belowNormalToolStripMenuItem.Text = "Below Normal";
             // 
             // idleToolStripMenuItem
             // 
             this.idleToolStripMenuItem.Name = "idleToolStripMenuItem";
-            this.idleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.idleToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.idleToolStripMenuItem.Text = "Idle";
             // 
             // runAsToolStripMenuItem1
@@ -665,7 +665,7 @@
             this.listServices.Location = new System.Drawing.Point(3, 3);
             this.listServices.Name = "listServices";
             this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 465);
+            this.listServices.Size = new System.Drawing.Size(790, 462);
             this.listServices.TabIndex = 0;
             this.listServices.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listServices_KeyDown);
             this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
@@ -785,7 +785,7 @@
             this.listNetwork.Location = new System.Drawing.Point(3, 3);
             this.listNetwork.Name = "listNetwork";
             this.listNetwork.Provider = null;
-            this.listNetwork.Size = new System.Drawing.Size(790, 465);
+            this.listNetwork.Size = new System.Drawing.Size(790, 462);
             this.listNetwork.TabIndex = 0;
             this.listNetwork.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listNetwork_KeyDown);
             this.listNetwork.DoubleClick += new System.EventHandler(this.listNetwork_DoubleClick);

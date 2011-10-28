@@ -2503,7 +2503,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll", CharSet = CharSet.Unicode)]
         public static extern NtStatus LdrGetDllHandle(
             [In] [Optional] string DllPath,
-            [In] [Optional] ref int DllCharacteristics,
+            [In] [Optional] int DllCharacteristics,
             [In] ref UnicodeString DllName,
             [Out] out IntPtr DllHandle
             );
@@ -2511,7 +2511,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus LdrGetProcedureAddress(
             [In] IntPtr DllHandle,
-            [In] [Optional] ref AnsiString ProcedureName,
+            [In] [Optional] IntPtr ProcedureName,
             [In] [Optional] int ProcedureNumber,
             [Out] out IntPtr ProcedureAddress
             );
@@ -2519,7 +2519,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll", CharSet = CharSet.Unicode)]
         public static extern NtStatus LdrLoadDll(
             [In] [Optional] string DllPath,
-            [In] [Optional] ref int DllCharacteristics,
+            [In] [Optional] int DllCharacteristics,
             [In] ref UnicodeString DllName,
             [Out] out IntPtr DllHandle
             );

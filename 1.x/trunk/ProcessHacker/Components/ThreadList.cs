@@ -511,7 +511,7 @@ namespace ProcessHacker.Components
         {
             if (listThreads.SelectedItems.Count == 0)
             {
-                menuThread.DisableAll();
+                //menuThread.DisableAll();
 
                 return;
             }
@@ -628,7 +628,7 @@ namespace ProcessHacker.Components
             }
             else
             {
-                menuThread.DisableAll();
+                //menuThread.DisableAll();
 
                 terminateThreadMenuItem.Enabled = true;
                 forceTerminateThreadMenuItem.Enabled = true;

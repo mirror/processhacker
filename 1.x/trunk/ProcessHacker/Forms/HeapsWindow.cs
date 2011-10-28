@@ -139,7 +139,7 @@ namespace ProcessHacker
         {
             if (listHeaps.SelectedItems.Count == 0)
             {
-                menuHeap.DisableAll();
+               // menuHeap.DisableAll();
             }
             else if (listHeaps.SelectedItems.Count == 1)
             {
@@ -150,7 +150,7 @@ namespace ProcessHacker
             }
             else
             {
-                menuHeap.DisableAll();
+               // menuHeap.DisableAll();
                 copyMenuItem.Enabled = true;
             }
         }

@@ -103,7 +103,7 @@ namespace ProcessHacker
         {
             if (listHandles.SelectedItems.Count == 0)
             {
-                menuHandle.DisableAll();
+               // menuHandle.DisableAll();
             }
             else if (listHandles.SelectedItems.Count == 1)
             {

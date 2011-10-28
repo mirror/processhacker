@@ -358,7 +358,7 @@ namespace ProcessHacker.Components
         {
             if (listPrivileges.SelectedItems.Count == 0)
             {
-                menuPrivileges.DisableAll();
+                //menuPrivileges.DisableAll();
             }
             else
             {

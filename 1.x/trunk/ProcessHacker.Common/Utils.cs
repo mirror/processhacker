@@ -235,7 +235,7 @@ namespace ProcessHacker.Common
         /// Disables the menu items contained in the specified menu. 
         /// </summary>
         /// <param name="menu">The menu.</param>
-        public static void DisableAllMenuItems(Menu menu)
+        public static void DisableAllMenuItems(MenuItem menu)
         {
             foreach (MenuItem item in menu.MenuItems)
                 item.Enabled = false;
@@ -244,7 +244,7 @@ namespace ProcessHacker.Common
         /// <summary>
         /// Disables all menu items. 
         /// </summary>
-        public static void DisableAll(this Menu menu)
+        public static void DisableAll(this MenuItem menu)
         {
             DisableAllMenuItems(menu);
         }

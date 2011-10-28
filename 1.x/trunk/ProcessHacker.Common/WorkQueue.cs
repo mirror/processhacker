@@ -175,7 +175,7 @@ namespace ProcessHacker.Common
             }
         }
 
-        private static WorkQueue _globalWorkQueue = new WorkQueue();
+        private static readonly WorkQueue _globalWorkQueue = new WorkQueue();
 
         /// <summary>
         /// Gets the global work queue instance.
@@ -228,7 +228,7 @@ namespace ProcessHacker.Common
         /// <summary>
         /// The work queue. This object is used as a lock.
         /// </summary>
-        private Queue<WorkItem> _workQueue = new Queue<WorkItem>();
+        private readonly Queue<WorkItem> _workQueue = new Queue<WorkItem>();
         /// <summary>
         /// The maximum number of worker threads. If there are less worker threads 
         /// than this limit, they will be created as necessary. If there are more 
@@ -241,11 +241,11 @@ namespace ProcessHacker.Common
         /// as necessary and the number of worker threads will never drop below 
         /// this number.
         /// </summary>
-        private int _minWorkerThreads = 0;
+        private int _minWorkerThreads;
         /// <summary>
         /// The pool of worker threads. This object is used as a lock.
         /// </summary>
-        private Dictionary<int, Thread> _workerThreads = new Dictionary<int, Thread>();
+        private readonly Dictionary<int, Thread> _workerThreads = new Dictionary<int, Thread>();
         /// <summary>
         /// The number of worker threads which are currently running work.
         /// </summary>
@@ -258,7 +258,7 @@ namespace ProcessHacker.Common
         /// <summary>
         /// If true, prevents new work items from being queued.
         /// </summary>
-        private volatile bool _isJoining = false;
+        private volatile bool _isJoining;
 
         /// <summary>
         /// Creates a new work queue.
@@ -342,9 +342,11 @@ namespace ProcessHacker.Common
         /// </summary>
         private void CreateWorkerThread()
         {
-            Thread workThread = new Thread(this.WorkerThreadStart, Utils.SixteenthStackSize);
-            workThread.IsBackground = true;
-            workThread.Priority = ThreadPriority.Lowest;
+            Thread workThread = new Thread(this.WorkerThreadStart, Utils.SixteenthStackSize)
+            {
+                IsBackground = true, 
+                Priority = ThreadPriority.Lowest
+            };
             workThread.SetApartmentState(ApartmentState.STA);
             _workerThreads.Add(workThread.ManagedThreadId, workThread);
             workThread.Start();
@@ -378,7 +380,7 @@ namespace ProcessHacker.Common
             // Check for work items.
             while (_workQueue.Count > 0)
             {
-                WorkItem workItem = null;
+                WorkItem workItem;
 
                 // Lock and re-check.
                 lock (_workQueue)
@@ -535,7 +537,7 @@ namespace ProcessHacker.Common
                 // Check for work.
                 if (_workQueue.Count > 0)
                 {
-                    WorkItem workItem = null;
+                    WorkItem workItem;
 
                     // There is work, but we must lock and re-check.
                     lock (_workQueue)
@@ -553,7 +555,7 @@ namespace ProcessHacker.Common
                 else
                 {
                     // No work available. Wait for work.
-                    bool workArrived = false;
+                    bool workArrived;
 
                     lock (_workQueue)
                         workArrived = Monitor.Wait(_workQueue, _noWorkTimeout);

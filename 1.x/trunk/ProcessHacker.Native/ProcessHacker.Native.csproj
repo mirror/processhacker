@@ -124,6 +124,7 @@
     <Compile Include="Memory\PinnedObject.cs" />
     <Compile Include="Memory\Section.cs" />
     <Compile Include="Memory\VirtualMemoryAlloc.cs" />
+    <Compile Include="NativeLibrary.cs" />
     <Compile Include="NativeUtils.cs" />
     <Compile Include="NProcessHacker.cs" />
     <Compile Include="Objects\LsaAuthHandle.cs" />

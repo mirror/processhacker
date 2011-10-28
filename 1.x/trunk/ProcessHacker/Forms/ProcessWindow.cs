@@ -41,8 +41,6 @@ namespace ProcessHacker
 {
     public partial class ProcessWindow : Form
     {
-        private bool _isFirstPaint = true;
-
         private ProcessItem _processItem;
         private int _pid;
         private ProcessHandle _processHandle;
@@ -84,8 +82,7 @@ namespace ProcessHacker
                 Program.PWindows.Add(_pid, this);
 
             this.FixTabs();
-
-            _dontCalculate = false;
+          
 
             _selectThreadRun = new ProcessHacker.Common.Threading.ActionSync(this.SelectThreadInternal, 2);
         }
@@ -117,6 +114,8 @@ namespace ProcessHacker
             //Program.UpdateWindowMenu(windowMenuItem, this);
 
             SymbolProviderExtensions.ShowWarning(this, false);
+
+            this.LoadStage1();
         }
 
         public ExtendedListView ThreadListView
@@ -142,36 +141,6 @@ namespace ProcessHacker
         public ExtendedListView ServiceListView
         {
             get { return _serviceProps.List; }
-        }
-
-        // ==== Performance hacks ====
-        protected override void WndProc(ref Message m)
-        {
-            switch (m.Msg)
-            {
-                case (int)WindowMessage.Paint:
-                    {
-                        if (_isFirstPaint)
-                        {
-                            _isFirstPaint = false;
-                            this.LoadStage1();
-                        }
-                    }
-                    break;
-            }
-
-            if (!this.IsDisposed)
-                base.WndProc(ref m);
-        }
-
-        private bool _dontCalculate = true;
-
-        protected override void OnResize(EventArgs e)
-        {
-            if (_dontCalculate)
-                return;
-
-            base.OnResize(e);
         }
 
         private void FixTabs()

@@ -3312,10 +3312,6 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            // Force the handle to be created
-            { var handle = this.Handle; }
-            Program.HackerWindowHandle = this.Handle;
-
             if (OSVersion.HasExtendedTaskbar)
             {
                 // We need to call this here or we don't receive the TaskbarButtonCreated message
@@ -3356,13 +3352,8 @@ namespace ProcessHacker
             this.LoadOther();
             this.LoadStructs();
 
-            //vistaMenu.DelaySetImageCalls = false;
-            //vistaMenu.PerformPendingSetImageCalls();
-
             Program.ServiceProvider.Enabled = true;
             Program.ServiceProvider.Boost();
-
-            ToolStripManager.Renderer = new AeroRenderer(ToolbarTheme.Blue);
 
             ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRestart();
             //ProcessHackerRestartRecovery.ApplicationRestartRecoveryManager.RegisterForRecovery();
@@ -3399,6 +3390,8 @@ namespace ProcessHacker
 
             if (Settings.Instance.AppUpdateAutomatic)
                 this.UpdateProgram(false);
+
+            ToolStripManager.Renderer = new AeroRenderer(ToolbarTheme.Blue);
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)

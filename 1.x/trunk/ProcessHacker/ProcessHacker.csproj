@@ -94,6 +94,9 @@
     <Compile Include="Components\ToolStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Components\Tracker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\TreeViewAdv\BitmapHelper.cs" />
     <Compile Include="Components\TreeViewAdv\GifDecoder.cs" />
     <Compile Include="Components\TreeViewAdv\NodePlotter.cs">
@@ -210,6 +213,9 @@
       <DependentUpon>PromptBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Components\Tracker.resx">
+      <DependentUpon>Tracker.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\TreeViewAdv\Tree\TreeViewAdv.resx">
       <DependentUpon>TreeViewAdv.cs</DependentUpon>
     </EmbeddedResource>

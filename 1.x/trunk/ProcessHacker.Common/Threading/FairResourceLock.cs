@@ -21,8 +21,11 @@
  */
 
 #define DEFER_EVENT_CREATION
-//#define ENABLE_STATISTICS
-//#define RIGOROUS_CHECKS
+
+#if DEBUG
+#define ENABLE_STATISTICS
+#define RIGOROUS_CHECKS
+#endif
 
 using System;
 using System.Runtime.InteropServices;
@@ -723,7 +726,7 @@ namespace ProcessHacker.Common.Threading
         public Statistics GetStatistics()
         {
 #if ENABLE_STATISTICS
-            return new Statistics()
+            return new Statistics
             {
                 AcqExcl = _acqExclCount,
                 AcqShrd = _acqShrdCount,

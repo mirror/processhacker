@@ -313,7 +313,7 @@ namespace ProcessHacker.Components
             {
                 if (_pid == 4)
                 {
-                    menuModule.DisableAll();
+                    //menuModule.DisableAll();
 
                     if (KProcessHacker.Instance != null)
                         unloadMenuItem.Enabled = true;
@@ -332,7 +332,7 @@ namespace ProcessHacker.Components
             }
             else
             {
-                menuModule.DisableAll();
+               // menuModule.DisableAll();
 
                 if (listModules.SelectedItems.Count > 1)
                 {

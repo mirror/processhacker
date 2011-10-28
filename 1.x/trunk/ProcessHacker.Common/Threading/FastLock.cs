@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace ProcessHacker.Common.Threading
@@ -43,13 +41,10 @@ namespace ProcessHacker.Common.Threading
             }
 
             // Slow path 2 - wait on the event.
-
-            IntPtr newEvent;
-
             // Note: see FastEvent.cs for a more detailed explanation of this 
             // technique.
 
-            newEvent = Interlocked.CompareExchange(ref _event, IntPtr.Zero, IntPtr.Zero);
+            IntPtr newEvent = Interlocked.CompareExchange(ref this._event, IntPtr.Zero, IntPtr.Zero);
 
             if (newEvent == IntPtr.Zero)
             {

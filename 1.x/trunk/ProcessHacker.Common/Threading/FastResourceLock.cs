@@ -21,8 +21,11 @@
  */
 
 #define DEFER_EVENT_CREATION
-//#define ENABLE_STATISTICS
-//#define RIGOROUS_CHECKS
+
+#if DEBUG
+#define ENABLE_STATISTICS
+#define RIGOROUS_CHECKS
+#endif
 
 using System;
 using System.Threading;
@@ -528,12 +531,10 @@ namespace ProcessHacker.Common.Threading
         /// <param name="handle">A reference to the event handle.</param>
         private void EnsureEventCreated(ref IntPtr handle)
         {
-            IntPtr eventHandle;
-
             if (Thread.VolatileRead(ref handle) != IntPtr.Zero)
                 return;
 
-            eventHandle = NativeMethods.CreateSemaphore(IntPtr.Zero, 0, int.MaxValue, null);
+            IntPtr eventHandle = NativeMethods.CreateSemaphore(IntPtr.Zero, 0, int.MaxValue, null);
 
             if (Interlocked.CompareExchange(ref handle, eventHandle, IntPtr.Zero) != IntPtr.Zero)
                 NativeMethods.CloseHandle(eventHandle);
@@ -597,9 +598,7 @@ namespace ProcessHacker.Common.Threading
                 // Case 2: if we have shared waiters, release all of them.
                 else
                 {
-                    int sharedWaiters;
-
-                    sharedWaiters = (value >> LockSharedWaitersShift) & LockSharedWaitersMask;
+                    int sharedWaiters = (value >> LockSharedWaitersShift) & LockSharedWaitersMask;
 
                     if (Interlocked.CompareExchange(
                         ref _value,
