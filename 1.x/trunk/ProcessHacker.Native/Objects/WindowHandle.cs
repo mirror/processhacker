@@ -177,7 +177,7 @@ namespace ProcessHacker.Native.Objects
             return Win32.PostMessage(this, message, wParam, lParam);
         }
 
-        public IntPtr SendMessage(WindowMessage message, int wParam, int lParam)
+        public IntPtr SendMessage(WindowMessage message, IntPtr wParam, IntPtr lParam)
         {
             return Win32.SendMessage(this, message, wParam, lParam);
         }

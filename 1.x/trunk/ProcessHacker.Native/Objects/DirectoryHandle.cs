@@ -133,7 +133,7 @@ namespace ProcessHacker.Native.Objects
                     {
                         // Check if we have at least one entry. If not, 
                         // we need to double the buffer size and try again.
-                        if (data.ReadStruct<ObjectDirectoryInformation>(0).Name.Buffer != IntPtr.Zero)
+                        if (data.ReadStruct<ObjectDirectoryInformation>(0, ObjectDirectoryInformation.SizeOf, 0).Name.Buffer != IntPtr.Zero)
                             break;
 
                         if (data.Size > 16 * 1024 * 1024)
@@ -142,14 +142,13 @@ namespace ProcessHacker.Native.Objects
                         data.ResizeNew(data.Size * 2);
                     }
 
-                    if (status >= NtStatus.Error)
-                        Win32.Throw(status);
+                    status.ThrowIf();
 
                     int i = 0;
 
                     while (true)
                     {
-                        ObjectDirectoryInformation info = data.ReadStruct<ObjectDirectoryInformation>(i);
+                        ObjectDirectoryInformation info = data.ReadStruct<ObjectDirectoryInformation>(0, ObjectDirectoryInformation.SizeOf, i);
 
                         if (info.Name.Buffer == IntPtr.Zero)
                             break;
@@ -176,7 +175,7 @@ namespace ProcessHacker.Native.Objects
         {
             var objects = new List<ObjectEntry>();
 
-            this.EnumObjects((obj) =>
+            this.EnumObjects(obj =>
                 {
                     objects.Add(obj);
                     return true;

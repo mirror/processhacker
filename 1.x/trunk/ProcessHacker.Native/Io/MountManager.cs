@@ -48,6 +48,11 @@ namespace ProcessHacker.Native.Io
         public struct MountMgrMountPoint
         {
             public static readonly int SizeOf;
+            
+            static MountMgrMountPoint()
+            {
+                SizeOf = Marshal.SizeOf(typeof(MountMgrMountPoint));
+            }
 
             public int SymbolicLinkNameOffset;
             public ushort SymbolicLinkNameLength;
@@ -55,11 +60,6 @@ namespace ProcessHacker.Native.Io
             public ushort UniqueIdLength;
             public int DeviceNameOffset;
             public ushort DeviceNameLength;
-
-            static MountMgrMountPoint()
-            {
-                SizeOf = Marshal.SizeOf(typeof(MountMgrMountPoint));
-            }
         }
 
         // Output for IoCtlDeletePoints, IoCtlQueryPoints and IoCtlDeletePointsDbOnly
@@ -352,6 +352,7 @@ namespace ProcessHacker.Native.Io
                         {
                             MountMgrMountPoint mp = outData.ReadStruct<MountMgrMountPoint>(
                                 MountMgrMountPoints.MountPointsOffset,
+                                MountMgrMountPoint.SizeOf,
                                 i
                                 );
 

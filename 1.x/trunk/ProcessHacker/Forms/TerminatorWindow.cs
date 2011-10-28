@@ -263,7 +263,7 @@ namespace ProcessHacker
                 {
                     phandle = phandle.GetNextProcess(Program.MinProcessQueryRights | ProcessAccess.Terminate);
 
-                    if (phandle.GetProcessId() == _pid)
+                    if (phandle.ProcessId == _pid)
                     {
                         found = true;
                         break;

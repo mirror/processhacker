@@ -1181,7 +1181,7 @@ namespace ProcessHacker.Native
 
     public class KphHandle : BaseObject
     {
-        private IntPtr _handle;
+        private readonly IntPtr _handle;
 
         protected KphHandle(IntPtr handle)
         {
@@ -1210,6 +1210,13 @@ namespace ProcessHacker.Native
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessHandleInformation
     {
+        public static readonly int SizeOf;
+
+        static ProcessHandleInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ProcessHandleInformation));
+        }
+
         public IntPtr Handle;
         public IntPtr Object;
         public int GrantedAccess;

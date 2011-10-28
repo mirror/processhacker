@@ -10,33 +10,17 @@ namespace Aga.Controls.Tree.NodeControls
 {
 	public class NodeTextBox: BaseTextControl
 	{
-		private const int MinTextBoxWidth = 30;
-
-		private TextBox EditorTextBox
+	    private TextBox EditorTextBox
 		{
-			get
-			{
-				return CurrentEditor as TextBox;
-			}
+			get { return this.CurrentEditor as TextBox; }
 		}
 
-		public NodeTextBox()
+	    protected override Size CalculateEditorSize(EditorContext context)
 		{
+		    return context.Bounds.Size;
 		}
 
-		protected override Size CalculateEditorSize(EditorContext context)
-		{
-			if (Parent.UseColumns)
-				return context.Bounds.Size;
-			else
-			{
-				Size size = GetLabelSize(context.CurrentNode, context.DrawContext, _label);
-				int width = Math.Max(size.Width + Font.Height, MinTextBoxWidth); // reserve a place for new typed character
-				return new Size(width, size.Height);
-			}
-		}
-
-		public override void KeyDown(KeyEventArgs args)
+	    public override void KeyDown(KeyEventArgs args)
 		{
 			if (args.KeyCode == Keys.F2 && Parent.CurrentNode != null)
 			{
@@ -51,7 +35,7 @@ namespace Aga.Controls.Tree.NodeControls
 			textBox.TextAlign = TextAlign;
 			textBox.Text = GetLabel(node);
 			textBox.BorderStyle = BorderStyle.FixedSingle;
-			textBox.TextChanged += new EventHandler(textBox_TextChanged);
+			textBox.TextChanged += this.textBox_TextChanged;
 			_label = textBox.Text;
 			SetEditControlProperties(textBox, node);
 			return textBox;

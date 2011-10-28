@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ProcessHacker.Native.Api;
+﻿using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.SsLogging
 {
@@ -9,7 +6,7 @@ namespace ProcessHacker.Native.SsLogging
     {
         internal SsObjectAttributes(MemoryRegion data)
         {
-            KphSsObjectAttributes oaInfo = data.ReadStruct<KphSsObjectAttributes>();
+            KphSsObjectAttributes oaInfo = data.ReadStruct<KphSsObjectAttributes>(0, KphSsObjectAttributes.SizeOf, 0);
 
             if (oaInfo.ObjectNameOffset != 0)
                 this.ObjectName = new SsUnicodeString(new MemoryRegion(data, oaInfo.ObjectNameOffset));

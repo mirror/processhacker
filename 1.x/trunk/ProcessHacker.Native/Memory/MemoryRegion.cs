@@ -20,68 +20,15 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define SIZE_CACHE_USE_RESOURCE_LOCK
-
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 using ProcessHacker.Common.Objects;
-using ProcessHacker.Common.Threading;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native
 {
     public class MemoryRegion : BaseObject
     {
-        private static Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
-#if SIZE_CACHE_USE_RESOURCE_LOCK
-        private static FastResourceLock _sizeCacheLock = new FastResourceLock();
-#endif
-
-        private static int GetStructSize(Type structType)
-        {
-            int size;
-
-#if SIZE_CACHE_USE_RESOURCE_LOCK
-            _sizeCacheLock.AcquireShared();
-
-            if (_sizeCache.ContainsKey(structType))
-            {
-                size = _sizeCache[structType];
-                _sizeCacheLock.ReleaseShared();
-            }
-            else
-            {
-                _sizeCacheLock.ReleaseShared();
-
-                size = Marshal.SizeOf(structType);
-                _sizeCacheLock.AcquireExclusive();
-
-                try
-                {
-                    if (!_sizeCache.ContainsKey(structType))
-                        _sizeCache.Add(structType, size);
-                }
-                finally
-                {
-                    _sizeCacheLock.ReleaseExclusive();
-                }
-            }
-
-            return size;
-#else
-            lock (_sizeCache)
-            {
-                if (_sizeCache.ContainsKey(structType))
-                    size = _sizeCache[structType];
-                else
-                    _sizeCache.Add(structType, size = Marshal.SizeOf(structType));
-
-                return size;
-            }
-#endif
-        }
-
         public static T ReadStruct<T>(IntPtr ptr)
         {
             return (T)Marshal.PtrToStructure(ptr, typeof(T));
@@ -97,7 +44,7 @@ namespace ProcessHacker.Native
             return memory.Memory.ToPointer();
         }
 
-        private MemoryRegion _parent;
+        private readonly MemoryRegion _parent;
         private IntPtr _memory;
         private int _size;
 
@@ -174,15 +121,15 @@ namespace ProcessHacker.Native
 
         public void DestroyStruct<T>()
         {
-            this.DestroyStruct<T>(0);
+            Marshal.DestroyStructure(_memory, typeof(T));
         }
 
-        public void DestroyStruct<T>(int index)
+        public void DestroyStruct<T>(int index, int size)
         {
-            this.DestroyStruct<T>(0, index);
+            this.DestroyStruct<T>(0, index, size);
         }
 
-        public void DestroyStruct<T>(int offset, int index)
+        public void DestroyStruct<T>(int offset, int index, int size)
         {
             if (index == 0)
             {
@@ -191,7 +138,7 @@ namespace ProcessHacker.Native
             else
             {
                 Marshal.DestroyStructure(
-                    _memory.Increment(offset + GetStructSize(typeof(T)) * index),
+                    _memory.Increment(offset + size * index),
                     typeof(T)
                     );
             }
@@ -199,7 +146,7 @@ namespace ProcessHacker.Native
 
         public void Fill(int offset, int length, byte value)
         {
-            ProcessHacker.Native.Api.Win32.RtlFillMemory(
+            Win32.RtlFillMemory(
                 _memory.Increment(offset),
                 length.ToIntPtr(),
                 value
@@ -266,12 +213,9 @@ namespace ProcessHacker.Native
         /// <param name="offset">The offset at which to begin reading.</param>
         /// <param name="index">The index at which to begin reading, after the offset is added.</param>
         /// <returns>The integer.</returns>
-        public int ReadInt32(int offset, int index)
+        public unsafe int ReadInt32(int offset, int index)
         {
-            unsafe
-            {
-                return ((int*)((byte*)_memory + offset))[index];
-            }
+            return ((int*)((byte*)this._memory + offset))[index];
         }
 
         public int[] ReadInt32Array(int offset, int count)
@@ -288,17 +232,14 @@ namespace ProcessHacker.Native
             return this.ReadIntPtr(offset, 0);
         }
 
-        public IntPtr ReadIntPtr(int offset, int index)
+        public unsafe IntPtr ReadIntPtr(int offset, int index)
         {
-            unsafe
-            {
-                return ((IntPtr*)((byte*)_memory + offset))[index];
-            }
+            return ((IntPtr*)((byte*)this._memory + offset))[index];
         }
 
         public void ReadMemory(IntPtr buffer, int destOffset, int srcOffset, int length)
         {
-            ProcessHacker.Native.Api.Win32.RtlMoveMemory(
+            Win32.RtlMoveMemory(
                 buffer.Increment(destOffset),
                 _memory.Increment(srcOffset),
                 length.ToIntPtr()
@@ -321,36 +262,14 @@ namespace ProcessHacker.Native
         /// <param name="offset">The offset at which to begin reading.</param>
         /// <param name="index">The index at which to begin reading, after the offset is added.</param>
         /// <returns>The integer.</returns>
-        public uint ReadUInt32(int offset, int index)
+        public unsafe uint ReadUInt32(int offset, int index)
         {
-            unsafe
-            {
-                return ((uint*)((byte*)_memory + offset))[index];
-            }
+            return ((uint*)((byte*)this._memory + offset))[index];
         }
 
-        /// <summary>
-        /// Creates a struct from the memory allocation.
-        /// </summary>
-        /// <typeparam name="T">The type of the struct.</typeparam>
-        /// <returns>The new struct.</returns>
-        public T ReadStruct<T>()
-            where T : struct
+        public T ReadStruct<T>() where T : struct
         {
-            return this.ReadStruct<T>(0);
-        }
-
-        /// <summary>
-        /// Creates a struct from the memory allocation.
-        /// </summary>
-        /// <typeparam name="T">The type of the struct.</typeparam>
-        /// <param name="index">The index at which to begin reading to the struct. This is multiplied by  
-        /// the size of the struct.</param>
-        /// <returns>The new struct.</returns>
-        public T ReadStruct<T>(int index)
-            where T : struct
-        {
-            return this.ReadStruct<T>(0, index);
+            return (T)Marshal.PtrToStructure(_memory, typeof(T));
         }
 
         /// <summary>
@@ -361,20 +280,14 @@ namespace ProcessHacker.Native
         /// <param name="index">The index at which to begin reading to the struct. This is multiplied by  
         /// the size of the struct.</param>
         /// <returns>The new struct.</returns>
-        public T ReadStruct<T>(int offset, int index)
-            where T : struct
+        public T ReadStruct<T>(int offset, int size, int index) where T : struct
         {
             if (index == 0)
             {
                 return (T)Marshal.PtrToStructure(_memory.Increment(offset), typeof(T));
             }
-            else
-            {
-                return (T)Marshal.PtrToStructure(
-                    _memory.Increment(offset + GetStructSize(typeof(T)) * index),
-                    typeof(T)
-                    );
-            }
+
+            return (T)Marshal.PtrToStructure(this._memory.Increment(offset + size * index), typeof(T));
         }
 
         public string ReadUnicodeString(int offset)
@@ -392,12 +305,9 @@ namespace ProcessHacker.Native
         /// </summary>
         /// <param name="offset">The offset at which to write.</param>
         /// <param name="b">The value of the byte.</param>
-        public void WriteByte(int offset, byte b)
+        public unsafe void WriteByte(int offset, byte b)
         {
-            unsafe
-            {
-                *((byte*)_memory + offset) = b;
-            }
+            *((byte*)this._memory + offset) = b;
         }
 
         public void WriteBytes(int offset, byte[] b)
@@ -405,53 +315,41 @@ namespace ProcessHacker.Native
             Marshal.Copy(b, 0, _memory.Increment(offset), b.Length);
         }
 
-        public void WriteInt16(int offset, short i)
+        public unsafe void WriteInt16(int offset, short i)
         {
-            unsafe
-            {
-                *(short*)((byte*)_memory + offset) = i;
-            }
+            *(short*)((byte*)this._memory + offset) = i;
         }
 
-        public void WriteInt32(int offset, int i)
+        public unsafe void WriteInt32(int offset, int i)
         {
-            unsafe
-            {
-                *(int*)((byte*)_memory + offset) = i;
-            }
+            *(int*)((byte*)this._memory + offset) = i;
         }
 
-        public void WriteIntPtr(int offset, IntPtr i)
+        public unsafe void WriteIntPtr(int offset, IntPtr i)
         {
-            unsafe
-            {
-                *(IntPtr*)((byte*)_memory + offset) = i;
-            }
+            *(IntPtr*)((byte*)this._memory + offset) = i;
         }
 
         public void WriteMemory(int offset, IntPtr buffer, int length)
         {
-            ProcessHacker.Native.Api.Win32.RtlMoveMemory(
+            Win32.RtlMoveMemory(
                 _memory.Increment(offset),
                 buffer,
                 length.ToIntPtr()
                 );
         }
 
-        public void WriteStruct<T>(T s)
-            where T : struct
+        public void WriteStruct<T>(T s) where T : struct
         {
-            this.WriteStruct<T>(0, s);
+            Marshal.StructureToPtr(s, _memory, false);
         }
 
-        public void WriteStruct<T>(int index, T s)
-            where T : struct
+        public void WriteStruct<T>(int index, int size, T s) where T : struct
         {
-            this.WriteStruct<T>(0, index, s);
+            this.WriteStruct(0, size, index, s);
         }
 
-        public void WriteStruct<T>(int offset, int index, T s)
-            where T : struct
+        public void WriteStruct<T>(int offset, int size, int index, T s) where T : struct
         {
             if (index == 0)
             {
@@ -461,7 +359,7 @@ namespace ProcessHacker.Native
             {
                 Marshal.StructureToPtr(
                     s,
-                    _memory.Increment(offset + GetStructSize(typeof(T)) * index),
+                    _memory.Increment(offset + size * index),
                     false
                     );
             }
@@ -472,20 +370,17 @@ namespace ProcessHacker.Native
         /// </summary>
         /// <param name="offset">The offset to add.</param>
         /// <param name="s">The string to write.</param>
-        public void WriteUnicodeString(int offset, string s)
+        public unsafe void WriteUnicodeString(int offset, string s)
         {
-            unsafe
+            fixed (char* ptr = s)
             {
-                fixed (char* ptr = s)
-                {
-                    this.WriteMemory(offset, (IntPtr)ptr, s.Length * 2);
-                }
+                this.WriteMemory(offset, (IntPtr)ptr, s.Length * 2);
             }
         }
 
         public void Zero(int offset, int length)
         {
-            ProcessHacker.Native.Api.Win32.RtlZeroMemory(
+            Win32.RtlZeroMemory(
                 _memory.Increment(offset),
                 length.ToIntPtr()
                 );

@@ -124,6 +124,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SamRidEnumeration
     {
+        public static readonly int SizeOf;
+
+        static SamRidEnumeration()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SamRidEnumeration));
+        }
+
         public int RelativeId;
         public UnicodeString Name;
     }
@@ -131,6 +138,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SamSidEnumeration
     {
+        public static readonly int SizeOf;
+
+        static SamSidEnumeration()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SamSidEnumeration));
+        }
+
         public IntPtr Sid; // Sid*
         public UnicodeString Name;
     }

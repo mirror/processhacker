@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Aga.Controls.Tree.NodeControls;
-using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace Aga.Controls.Tree
 {
@@ -14,7 +10,7 @@ namespace Aga.Controls.Tree
 
 		private TreeViewAdv _tree;
 		private TreeNodeAdv _currentNode;
-		private string _searchString = "";
+        private string _searchString = string.Empty;
 		private DateTime _lastKeyPressed = DateTime.Now;
 
 		public IncrementalSearch(TreeViewAdv tree)
@@ -67,7 +63,7 @@ namespace Aga.Controls.Tree
 
 			foreach (string label in IterateNodeLabels(node))
 			{
-                if (label.StartsWith(_searchString, StringComparison.OrdinalIgnoreCase))
+				if (label.StartsWith(_searchString))
 				{
 					_tree.SelectedNode = _currentNode;
 					return;
@@ -78,7 +74,7 @@ namespace Aga.Controls.Tree
 		public virtual void EndSearch()
 		{
 			_currentNode = null;
-			_searchString = "";
+            _searchString = string.Empty;
 		}
 
 		protected IEnumerable<string> IterateNodeLabels(TreeNodeAdv start)
@@ -115,7 +111,7 @@ namespace Aga.Controls.Tree
 		private bool DoContinuousSearch()
 		{
 			bool found = false;
-			if (!string.IsNullOrEmpty(_searchString))
+			if (!String.IsNullOrEmpty(_searchString))
 			{
 				TreeNodeAdv node = null;
 				if (_tree.SelectedNode != null)
@@ -127,7 +123,7 @@ namespace Aga.Controls.Tree
 				{
 					foreach (string label in IterateNodeLabels(node))
 					{
-                        if (label.StartsWith(_searchString, StringComparison.OrdinalIgnoreCase))
+						if (label.StartsWith(_searchString))
 						{
 							found = true;
 							_tree.SelectedNode = _currentNode;

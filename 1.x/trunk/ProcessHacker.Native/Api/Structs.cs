@@ -171,6 +171,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct EnumServiceStatusProcess
     {
+        public static readonly int SizeOf;
+
+        static EnumServiceStatusProcess()
+        {
+            SizeOf = Marshal.SizeOf(typeof(EnumServiceStatusProcess));
+        }
+
         [MarshalAs(UnmanagedType.LPTStr)]
         public string ServiceName;
 
@@ -291,13 +298,13 @@ namespace ProcessHacker.Native.Api
     {
         public static readonly int SizeOf;
 
-        public Luid Luid;
-        public SePrivilegeAttributes Attributes;
-
         static LuidAndAttributes()
         {
             SizeOf = Marshal.SizeOf(typeof(LuidAndAttributes));
         }
+
+        public Luid Luid;
+        public SePrivilegeAttributes Attributes;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -372,6 +379,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct MibTcpRowOwnerPid
     {
+        public static readonly int SizeOf;
+
+        static MibTcpRowOwnerPid()
+        {
+            SizeOf = Marshal.SizeOf(typeof(MibTcpRowOwnerPid));
+        }
+
         public MibTcpState State;
         public uint LocalAddress;
         public int LocalPort;
@@ -382,7 +396,14 @@ namespace ProcessHacker.Native.Api
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MibTcp6RowOwnerPid
-    {
+    {  
+        public static readonly int SizeOf;
+
+        static MibTcp6RowOwnerPid()
+        {
+            SizeOf = Marshal.SizeOf(typeof(MibTcp6RowOwnerPid));
+        }
+
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] LocalAddress;
         public uint LocalScopeId;
@@ -474,7 +495,14 @@ namespace ProcessHacker.Native.Api
  
     [StructLayout(LayoutKind.Sequential)]
     public struct MibUdpRowOwnerPid
-    {
+    {        
+        public static readonly int SizeOf;
+
+        static MibUdpRowOwnerPid()
+        {
+            SizeOf = Marshal.SizeOf(typeof(MibUdpRowOwnerPid));
+        }
+
         public uint LocalAddress;
         public int LocalPort;
         public int OwningProcessId;
@@ -483,6 +511,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MibUdp6RowOwnerPid
     {
+        public static readonly int SizeOf;
+
+        static MibUdp6RowOwnerPid()
+        {
+            SizeOf = Marshal.SizeOf(typeof(MibUdp6RowOwnerPid));
+        }
+
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] LocalAddress;
         public uint LocalScopeId;
@@ -686,6 +721,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct SecPkgInfo
     {
+        public static readonly int SizeOf;
+
+        static SecPkgInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SecPkgInfo));
+        }
+
         public int Capabilities;
         public ushort Version;
         public ushort RpcId;
@@ -770,6 +812,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct SiAccess
     {
+        public static readonly int SizeOf;
+
+        static SiAccess()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SiAccess));
+        }
+
         public IntPtr Guid;
         public int Mask;
         public IntPtr Name; // string
@@ -920,6 +969,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WintrustCatalogInfo
     {
+        public static readonly int SizeOf;
+
+        static WintrustCatalogInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(WintrustCatalogInfo));
+        }
+
         public int Size;
         public int CatalogVersion;
         public string CatalogFilePath;
@@ -958,6 +1014,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct WintrustFileInfo
     {
+        public static readonly int SizeOf;
+
+        static WintrustFileInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(WintrustFileInfo));
+        }
+
         public int Size;
         public IntPtr FilePath;
         public IntPtr FileHandle;
@@ -983,6 +1046,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WtsProcessInfo
     {
+        public static readonly int SizeOf;
+
+        static WtsProcessInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(WtsProcessInfo));
+        }
+
         public int SessionId;
         public int ProcessId;
         public IntPtr ProcessName;
@@ -992,6 +1062,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WtsSessionInfo
     {
+        public static readonly int SizeOf;
+
+        static WtsSessionInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(WtsSessionInfo));
+        }
+
         public int SessionID;
         public string WinStationName;
         public WtsConnectStateClass State;

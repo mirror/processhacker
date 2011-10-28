@@ -1,22 +1,17 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
+
 namespace Aga.Controls.Tree
 {
 	internal abstract class InputState
 	{
-		private TreeViewAdv _tree;
+	    public TreeViewAdv Tree { get; private set; }
 
-		public TreeViewAdv Tree
+	    protected InputState(TreeViewAdv tree)
 		{
-			get { return _tree; }
+			this.Tree = tree;
 		}
 
-		public InputState(TreeViewAdv tree)
-		{
-			_tree = tree;
-		}
-
-		public abstract void KeyDown(System.Windows.Forms.KeyEventArgs args);
+		public abstract void KeyDown(KeyEventArgs args);
 		public abstract void MouseDown(TreeNodeAdvMouseEventArgs args);
 		public abstract void MouseUp(TreeNodeAdvMouseEventArgs args);
 

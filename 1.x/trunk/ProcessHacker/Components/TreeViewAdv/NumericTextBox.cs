@@ -147,12 +147,14 @@ namespace Aga.Controls
 		}
 
 
-		public int IntValue
+		public uint IntValue
 		{
 			get
 			{
-				int intValue;
-				Int32.TryParse(this.Text, numberStyle, CultureInfo.CurrentCulture.NumberFormat, out intValue);
+				uint intValue;
+
+				uint.TryParse(this.Text, numberStyle, CultureInfo.CurrentCulture.NumberFormat, out intValue);
+
 				return intValue;
 			}
 		}

@@ -1,4 +1,6 @@
-﻿namespace ProcessHacker
+﻿using ProcessHacker.Components;
+
+namespace ProcessHacker
 {
     partial class HandleFilterWindow
     {
@@ -33,7 +35,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.textFilter = new System.Windows.Forms.TextBox();
             this.buttonFind = new System.Windows.Forms.Button();
-            this.listHandles = new System.Windows.Forms.ListView();
+            this.listHandles = new ExtendedListView();
             this.columnProcess = new System.Windows.Forms.ColumnHeader();
             this.columnType = new System.Windows.Forms.ColumnHeader();
             this.columnName = new System.Windows.Forms.ColumnHeader();
@@ -203,7 +205,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textFilter;
         private System.Windows.Forms.Button buttonFind;
-        private System.Windows.Forms.ListView listHandles;
+        private ExtendedListView listHandles;
         private System.Windows.Forms.ColumnHeader columnProcess;
         private System.Windows.Forms.ColumnHeader columnType;
         private System.Windows.Forms.ColumnHeader columnName;

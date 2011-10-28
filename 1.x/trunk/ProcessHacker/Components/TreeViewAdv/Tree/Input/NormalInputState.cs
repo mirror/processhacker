@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Aga.Controls.Tree
 {
 	internal class NormalInputState : InputState
 	{
-		private bool _mouseDownFlag = false;
+		private bool _mouseDownFlag;
 
 		public NormalInputState(TreeViewAdv tree) : base(tree)
 		{
@@ -15,33 +13,33 @@ namespace Aga.Controls.Tree
 
 		public override void KeyDown(KeyEventArgs args)
 		{
-			if (Tree.CurrentNode == null && Tree.Root.Nodes.Count > 0)
-				Tree.CurrentNode = Tree.Root.Nodes[0];
+			if (this.Tree.CurrentNode == null && this.Tree.Root.Nodes.Count > 0)
+				this.Tree.CurrentNode = this.Tree.Root.Nodes[0];
 
-			if (Tree.CurrentNode != null)
+			if (this.Tree.CurrentNode != null)
 			{
 				switch (args.KeyCode)
 				{
 					case Keys.Right:
-                        if (!Tree.CurrentNode.IsExpanded)
+                        if (!this.Tree.CurrentNode.IsExpanded)
                         {
-                            Tree.CurrentNode.IsExpanded = true;
+                            this.Tree.CurrentNode.IsExpanded = true;
                             // by fliser
-                            Tree.FullUpdate();
+                            this.Tree.FullUpdate();
                         }
-                        else if (Tree.CurrentNode.Nodes.Count > 0)
-                            Tree.SelectedNode = Tree.CurrentNode.Nodes[0];
+                        else if (this.Tree.CurrentNode.Nodes.Count > 0)
+                            this.Tree.SelectedNode = this.Tree.CurrentNode.Nodes[0];
 						args.Handled = true;
 						break;
 					case Keys.Left:
-                        if (Tree.CurrentNode.IsExpanded)
+                        if (this.Tree.CurrentNode.IsExpanded)
                         {
-                            Tree.CurrentNode.IsExpanded = false;
+                            this.Tree.CurrentNode.IsExpanded = false;
                             // by fliser
-                            Tree.FullUpdate();
+                            this.Tree.FullUpdate();
                         }
-                        else if (Tree.CurrentNode.Parent != Tree.Root)
-                            Tree.SelectedNode = Tree.CurrentNode.Parent;
+                        else if (this.Tree.CurrentNode.Parent != this.Tree.Root)
+                            this.Tree.SelectedNode = this.Tree.CurrentNode.Parent;
 						args.Handled = true;
 						break;
 					case Keys.Down:
@@ -53,41 +51,41 @@ namespace Aga.Controls.Tree
 						args.Handled = true;
 						break;
 					case Keys.PageDown:
-						NavigateForward(Math.Max(1, Tree.CurrentPageSize - 1));
+						NavigateForward(Math.Max(1, this.Tree.CurrentPageSize - 1));
 						args.Handled = true;
 						break;
 					case Keys.PageUp:
-						NavigateBackward(Math.Max(1, Tree.CurrentPageSize - 1));
+						NavigateBackward(Math.Max(1, this.Tree.CurrentPageSize - 1));
 						args.Handled = true;
 						break;
 					case Keys.Home:
-						if (Tree.RowMap.Count > 0)
-							FocusRow(Tree.RowMap[0]);
+						if (this.Tree.RowMap.Count > 0)
+							FocusRow(this.Tree.RowMap[0]);
 						args.Handled = true;
 						break;
 					case Keys.End:
-						if (Tree.RowMap.Count > 0)
-							FocusRow(Tree.RowMap[Tree.RowMap.Count-1]);
+						if (this.Tree.RowMap.Count > 0)
+							FocusRow(this.Tree.RowMap[this.Tree.RowMap.Count-1]);
 						args.Handled = true;
 						break;
 					case Keys.Subtract:
-						Tree.CurrentNode.Collapse();
+						this.Tree.CurrentNode.Collapse();
                         // by fliser
-                        Tree.FullUpdate();
+                        this.Tree.FullUpdate();
                         args.Handled = true;
 						args.SuppressKeyPress = true;
 						break;
 					case Keys.Add:
-						Tree.CurrentNode.Expand();
+						this.Tree.CurrentNode.Expand();
                         // by fliser
-                        Tree.FullUpdate();
+                        this.Tree.FullUpdate();
                         args.Handled = true;
 						args.SuppressKeyPress = true;
 						break;
 					case Keys.Multiply:
-						Tree.CurrentNode.ExpandAll();
+						this.Tree.CurrentNode.ExpandAll();
                         // by fliser
-                        Tree.FullUpdate();
+                        this.Tree.FullUpdate();
                         args.Handled = true;
 						args.SuppressKeyPress = true;
 						break;
@@ -99,15 +97,13 @@ namespace Aga.Controls.Tree
 		{
 			if (args.Node != null)
 			{
-				Tree.ItemDragMode = true;
-				Tree.ItemDragStart = args.Location;
-
 				if (args.Button == MouseButtons.Left || args.Button == MouseButtons.Right)
 				{
-					Tree.BeginUpdate();
+					this.Tree.BeginUpdate();
 					try
 					{
-						Tree.CurrentNode = args.Node;
+						this.Tree.CurrentNode = args.Node;
+
 						if (args.Node.IsSelected)
 							_mouseDownFlag = true;
 						else
@@ -118,27 +114,30 @@ namespace Aga.Controls.Tree
 					}
 					finally
 					{
-						Tree.EndUpdate();
+						this.Tree.EndUpdate();
 					}
 				}
 
 			}
 			else
 			{
-				Tree.ItemDragMode = false;
 				MouseDownAtEmptySpace(args);
 			}
 		}
 
 		public override void MouseUp(TreeNodeAdvMouseEventArgs args)
 		{
-			Tree.ItemDragMode = false;
 			if (_mouseDownFlag)
 			{
-				if (args.Button == MouseButtons.Left)
-					DoMouseOperation(args);
-				else if (args.Button == MouseButtons.Right)
-					Tree.CurrentNode = args.Node;
+				switch (args.Button)
+				{
+				    case MouseButtons.Left:
+				        this.DoMouseOperation(args);
+				        break;
+				    case MouseButtons.Right:
+				        this.Tree.CurrentNode = args.Node;
+				        break;
+				}
 			}
 			_mouseDownFlag = false;
 		}
@@ -146,63 +145,63 @@ namespace Aga.Controls.Tree
 
 		private void NavigateBackward(int n)
 		{
-			int row = Math.Max(Tree.CurrentNode.Row - n, 0);
-			if (row != Tree.CurrentNode.Row)
-				FocusRow(Tree.RowMap[row]);
+			int row = Math.Max(this.Tree.CurrentNode.Row - n, 0);
+			if (row != this.Tree.CurrentNode.Row)
+				FocusRow(this.Tree.RowMap[row]);
 		}
 
 		private void NavigateForward(int n)
 		{
-			int row = Math.Min(Tree.CurrentNode.Row + n, Tree.RowCount - 1);
-			if (row != Tree.CurrentNode.Row)
-				FocusRow(Tree.RowMap[row]);
+			int row = Math.Min(this.Tree.CurrentNode.Row + n, this.Tree.RowCount - 1);
+			if (row != this.Tree.CurrentNode.Row)
+				FocusRow(this.Tree.RowMap[row]);
 		}
 
 		protected virtual void MouseDownAtEmptySpace(TreeNodeAdvMouseEventArgs args)
 		{
-			Tree.ClearSelectionInternal();
+			this.Tree.ClearSelectionInternal();
 		}
 
 		protected virtual void FocusRow(TreeNodeAdv node)
 		{
-			Tree.SuspendSelectionEvent = true;
+			this.Tree.SuspendSelectionEvent = true;
 			try
 			{
-				Tree.ClearSelectionInternal();
-				Tree.CurrentNode = node;
-				Tree.SelectionStart = node;
+				this.Tree.ClearSelectionInternal();
+				this.Tree.CurrentNode = node;
+				this.Tree.SelectionStart = node;
 				node.IsSelected = true;
-				Tree.ScrollTo(node);
+				this.Tree.ScrollTo(node);
 			}
 			finally
 			{
-				Tree.SuspendSelectionEvent = false;
+				this.Tree.SuspendSelectionEvent = false;
 			}
 		}
 
 		protected bool CanSelect(TreeNodeAdv node)
 		{
-			if (Tree.SelectionMode == TreeSelectionMode.MultiSameParent)
+			if (this.Tree.SelectionMode == TreeSelectionMode.MultiSameParent)
 			{
-				return (Tree.SelectionStart == null || node.Parent == Tree.SelectionStart.Parent);
+				return (this.Tree.SelectionStart == null || node.Parent == this.Tree.SelectionStart.Parent);
 			}
-			else
-				return true;
+
+            return true;
 		}
 
 		protected virtual void DoMouseOperation(TreeNodeAdvMouseEventArgs args)
 		{
-			Tree.SuspendSelectionEvent = true;
+			this.Tree.SuspendSelectionEvent = true;
 			try
 			{
-				Tree.ClearSelectionInternal();
+				this.Tree.ClearSelectionInternal();
 				if (args.Node != null)
 					args.Node.IsSelected = true;
-				Tree.SelectionStart = args.Node;
+				this.Tree.SelectionStart = args.Node;
 			}
 			finally
 			{
-				Tree.SuspendSelectionEvent = false;
+				this.Tree.SuspendSelectionEvent = false;
 			}
 		}
 	}

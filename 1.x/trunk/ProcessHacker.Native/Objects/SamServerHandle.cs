@@ -84,22 +84,18 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the server.</param>
         public SamServerHandle(string serverName, SamServerAccess access)
         {
-            NtStatus status;
-            ObjectAttributes oa = new ObjectAttributes();
-            UnicodeString serverNameStr;
             IntPtr handle;
-
-            serverNameStr = new UnicodeString(serverName);
+            ObjectAttributes oa = new ObjectAttributes();
+            UnicodeString serverNameStr = new UnicodeString(serverName);
 
             try
             {
-                if ((status = Win32.SamConnect(
+                Win32.SamConnect(
                     ref serverNameStr,
                     out handle,
                     access,
                     ref oa
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -111,31 +107,28 @@ namespace ProcessHacker.Native.Objects
 
         public void EnumDomains(EnumDomainsDelegate callback)
         {
-            NtStatus status;
             int enumerationContext = 0;
             IntPtr buffer;
             int count;
 
             while (true)
             {
-                status = Win32.SamEnumerateDomainsInSamServer(
+                Win32.SamEnumerateDomainsInSamServer(
                     this,
                     ref enumerationContext,
                     out buffer,
                     0x100,
                     out count
-                    );
+                    ).ThrowIf();
 
-                if (status >= NtStatus.Error)
-                    Win32.Throw(status);
                 if (count == 0)
                     break;
 
-                using (var bufferAlloc = new SamMemoryAlloc(buffer))
+                using (SamMemoryAlloc bufferAlloc = new SamMemoryAlloc(buffer))
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        var data = bufferAlloc.ReadStruct<SamSidEnumeration>(i);
+                        SamSidEnumeration data = bufferAlloc.ReadStruct<SamSidEnumeration>(0, SamSidEnumeration.SizeOf, i);
 
                         if (!callback(data.Name.Read()))
                             return;
@@ -148,7 +141,7 @@ namespace ProcessHacker.Native.Objects
         {
             List<string> domains = new List<string>();
 
-            this.EnumDomains((name) =>
+            this.EnumDomains(name =>
             {
                 domains.Add(name);
                 return true;
@@ -159,20 +152,17 @@ namespace ProcessHacker.Native.Objects
 
         public Sid LookupDomain(string name)
         {
-            NtStatus status;
-            UnicodeString nameStr;
             IntPtr domainId;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                if ((status = Win32.SamLookupDomainInSamServer(
+                Win32.SamLookupDomainInSamServer(
                     this,
                     ref nameStr,
                     out domainId
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -185,10 +175,7 @@ namespace ProcessHacker.Native.Objects
 
         public void Shutdown()
         {
-            NtStatus status;
-
-            if ((status = Win32.SamShutdownSamServer(this)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.SamShutdownSamServer(this).ThrowIf();
         }
     }
 }

@@ -50,9 +50,6 @@
             this.treeStruct.Columns.Add(this.columnValue);
             this.treeStruct.DefaultToolTipProvider = null;
             this.treeStruct.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeStruct.DragDropMarkColor = System.Drawing.Color.Black;
-            this.treeStruct.FullRowSelect = true;
-            this.treeStruct.GridLineStyle = Aga.Controls.Tree.GridLineStyle.Horizontal;
             this.treeStruct.LineColor = System.Drawing.SystemColors.ControlDark;
             this.treeStruct.Location = new System.Drawing.Point(0, 0);
             this.treeStruct.Model = null;
@@ -64,7 +61,6 @@
             this.treeStruct.ShowNodeToolTips = true;
             this.treeStruct.Size = new System.Drawing.Size(362, 331);
             this.treeStruct.TabIndex = 0;
-            this.treeStruct.UseColumns = true;
             // 
             // columnName
             // 

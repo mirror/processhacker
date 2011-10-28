@@ -221,7 +221,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Resources\loading_icon" />
-    <None Include="Tree\ClassDiagram.cd" />
     <None Include="Tree\NodeControls\ClassDiagram.cd" />
     <None Include="Resources\unknown.bmp" />
   </ItemGroup>

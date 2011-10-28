@@ -1,4 +1,6 @@
-﻿namespace ProcessHacker
+﻿using ProcessHacker.Components;
+
+namespace ProcessHacker
 {
     partial class TerminatorWindow
     {
@@ -31,7 +33,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TerminatorWindow));
             this.labelProgress = new System.Windows.Forms.Label();
-            this.listTests = new System.Windows.Forms.ListView();
+            this.listTests = new ExtendedListView();
             this.columnID = new System.Windows.Forms.ColumnHeader();
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
@@ -118,7 +120,7 @@
         #endregion
 
         private System.Windows.Forms.Label labelProgress;
-        private System.Windows.Forms.ListView listTests;
+        private ExtendedListView listTests;
         private System.Windows.Forms.Button buttonRun;
         private System.Windows.Forms.ColumnHeader columnDescription;
         private System.Windows.Forms.ImageList imageList;

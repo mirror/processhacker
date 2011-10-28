@@ -2,7 +2,7 @@ using System.Windows.Forms;
 
 namespace Aga.Controls.Tree
 {
-	partial class TreeViewAdv
+    sealed partial class TreeViewAdv
 	{
 		private System.ComponentModel.IContainer components = null;
 

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Aga.Controls.Tree
 {
@@ -12,40 +10,40 @@ namespace Aga.Controls.Tree
 
 		protected override void FocusRow(TreeNodeAdv node)
 		{
-			Tree.SuspendSelectionEvent = true;
+			this.Tree.SuspendSelectionEvent = true;
 			try
 			{
-				if (Tree.SelectionMode == TreeSelectionMode.Single || Tree.SelectionStart == null)
+				if (this.Tree.SelectionMode == TreeSelectionMode.Single || this.Tree.SelectionStart == null)
 					base.FocusRow(node);
 				else if (CanSelect(node))
 				{
 					SelectAllFromStart(node);
-					Tree.CurrentNode = node;
-					Tree.ScrollTo(node);
+					this.Tree.CurrentNode = node;
+					this.Tree.ScrollTo(node);
 				}
 			}
 			finally
 			{
-				Tree.SuspendSelectionEvent = false;
+				this.Tree.SuspendSelectionEvent = false;
 			}
 		}
 
 		protected override void DoMouseOperation(TreeNodeAdvMouseEventArgs args)
 		{
-			if (Tree.SelectionMode == TreeSelectionMode.Single || Tree.SelectionStart == null)
+			if (this.Tree.SelectionMode == TreeSelectionMode.Single || this.Tree.SelectionStart == null)
 			{
 				base.DoMouseOperation(args);
 			}
 			else if (CanSelect(args.Node))
 			{
-				Tree.SuspendSelectionEvent = true;
+				this.Tree.SuspendSelectionEvent = true;
 				try
 				{
 					SelectAllFromStart(args.Node);
 				}
 				finally
 				{
-					Tree.SuspendSelectionEvent = false;
+					this.Tree.SuspendSelectionEvent = false;
 				}
 			}
 		}
@@ -56,13 +54,13 @@ namespace Aga.Controls.Tree
 
 		private void SelectAllFromStart(TreeNodeAdv node)
 		{
-			Tree.ClearSelectionInternal();
+			this.Tree.ClearSelectionInternal();
 			int a = node.Row;
-			int b = Tree.SelectionStart.Row;
+			int b = this.Tree.SelectionStart.Row;
 			for (int i = Math.Min(a, b); i <= Math.Max(a, b); i++)
 			{
-				if (Tree.SelectionMode == TreeSelectionMode.Multi || Tree.RowMap[i].Parent == node.Parent)
-					Tree.RowMap[i].IsSelected = true;
+				if (this.Tree.SelectionMode == TreeSelectionMode.Multi || this.Tree.RowMap[i].Parent == node.Parent)
+					this.Tree.RowMap[i].IsSelected = true;
 			}
 		}
 	}

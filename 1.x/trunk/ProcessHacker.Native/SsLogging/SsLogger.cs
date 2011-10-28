@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
@@ -20,7 +19,7 @@ namespace ProcessHacker.Native.SsLogging
 
         public static SsData ReadArgumentBlock(MemoryRegion data)
         {
-            var argBlock = data.ReadStruct<KphSsArgumentBlock>();
+            KphSsArgumentBlock argBlock = data.ReadStruct<KphSsArgumentBlock>(0, KphSsArgumentBlock.SizeOf, 0);
 
             MemoryRegion dataRegion;
             SsData ssArg = null;
@@ -32,37 +31,45 @@ namespace ProcessHacker.Native.SsLogging
             {
                 case KphSsArgumentType.Int8:
                     {
-                        SsSimple simpleArg = new SsSimple();
+                        SsSimple simpleArg = new SsSimple
+                        {
+                            Argument = argBlock.Data.Int8, 
+                            Type = typeof(Byte)
+                        };
 
-                        simpleArg.Argument = argBlock.Data.Int8;
-                        simpleArg.Type = typeof(Byte);
                         ssArg = simpleArg;
                     }
                     break;
                 case KphSsArgumentType.Int16:
                     {
-                        SsSimple simpleArg = new SsSimple();
+                        SsSimple simpleArg = new SsSimple
+                        {
+                            Argument = argBlock.Data.Int16, 
+                            Type = typeof(Int16)
+                        };
 
-                        simpleArg.Argument = argBlock.Data.Int16;
-                        simpleArg.Type = typeof(Int16);
                         ssArg = simpleArg;
                     }
                     break;
                 case KphSsArgumentType.Int32:
                     {
-                        SsSimple simpleArg = new SsSimple();
+                        SsSimple simpleArg = new SsSimple
+                        {
+                            Argument = argBlock.Data.Int32, 
+                            Type = typeof(Int32)
+                        };
 
-                        simpleArg.Argument = argBlock.Data.Int32;
-                        simpleArg.Type = typeof(Int32);
                         ssArg = simpleArg;
                     }
                     break;
                 case KphSsArgumentType.Int64:
                     {
-                        SsSimple simpleArg = new SsSimple();
+                        SsSimple simpleArg = new SsSimple
+                        {
+                            Argument = argBlock.Data.Int64, 
+                            Type = typeof(Int64)
+                        };
 
-                        simpleArg.Argument = argBlock.Data.Int64;
-                        simpleArg.Type = typeof(Int64);
                         ssArg = simpleArg;
                     }
                     break;
@@ -100,7 +107,7 @@ namespace ProcessHacker.Native.SsLogging
 
         public static SsEvent ReadEventBlock(MemoryRegion data)
         {
-            var eventBlock = data.ReadStruct<KphSsEventBlock>();
+            var eventBlock = data.ReadStruct<KphSsEventBlock>(0, KphSsEventBlock.SizeOf, 0);
 
             int[] arguments;
             IntPtr[] stackTrace;
@@ -126,10 +133,8 @@ namespace ProcessHacker.Native.SsLogging
             ssEvent.StackTrace = stackTrace;
 
             // Flags
-            ssEvent.ArgumentsCopyFailed =
-                (eventBlock.Flags & KphSsEventFlags.CopyArgumentsFailed) == KphSsEventFlags.CopyArgumentsFailed;
-            ssEvent.ArgumentsProbeFailed =
-                (eventBlock.Flags & KphSsEventFlags.ProbeArgumentsFailed) == KphSsEventFlags.ProbeArgumentsFailed;
+            ssEvent.ArgumentsCopyFailed = eventBlock.Flags.HasFlag(KphSsEventFlags.CopyArgumentsFailed);
+            ssEvent.ArgumentsProbeFailed = eventBlock.Flags.HasFlag(KphSsEventFlags.ProbeArgumentsFailed);
             ssEvent.CallNumber = eventBlock.Number;
 
             if ((eventBlock.Flags & KphSsEventFlags.UserMode) == KphSsEventFlags.UserMode)
@@ -142,7 +147,7 @@ namespace ProcessHacker.Native.SsLogging
 
         public static string ReadWString(MemoryRegion data)
         {
-            KphSsWString wString = data.ReadStruct<KphSsWString>();
+            KphSsWString wString = data.ReadStruct<KphSsWString>(0, KphSsWString.SizeOf, 0);
 
             return data.ReadUnicodeString(KphSsWString.BufferOffset, wString.Length / 2);
         }
@@ -152,20 +157,20 @@ namespace ProcessHacker.Native.SsLogging
         public event RawArgumentBlockReceivedDelegate RawArgumentBlockReceived;
         public event RawEventBlockReceivedDelegate RawEventBlockReceived;
 
-        private bool _started = false;
-        private object _startLock = new object();
+        private bool _started;
+        private readonly object _startLock = new object();
 
-        private bool _terminating = false;
+        private bool _terminating;
         private Thread _bufferWorkerThread;
         private ThreadHandle _bufferWorkerThreadHandle;
-        private Event _bufferWorkerThreadReadyEvent = new Event(true, false);
+        private readonly Event _bufferWorkerThreadReadyEvent = new Event(true, false);
 
-        private VirtualMemoryAlloc _buffer;
-        private SemaphoreHandle _readSemaphore;
-        private SemaphoreHandle _writeSemaphore;
-        private int _cursor = 0;
-        private KphSsClientEntryHandle _clientEntryHandle;
-        private KphSsRuleSetEntryHandle _ruleSetEntryHandle;
+        private readonly VirtualMemoryAlloc _buffer;
+        private readonly SemaphoreHandle _readSemaphore;
+        private readonly SemaphoreHandle _writeSemaphore;
+        private int _cursor;
+        private readonly KphSsClientEntryHandle _clientEntryHandle;
+        private readonly KphSsRuleSetEntryHandle _ruleSetEntryHandle;
 
         public SsLogger(int bufferedBlockCount, bool includeAll)
         {
@@ -259,13 +264,13 @@ namespace ProcessHacker.Native.SsLogging
                     _cursor = 0;
 
                 // Read the block header.
-                blockHeader = _buffer.ReadStruct<KphSsBlockHeader>(_cursor, 0);
+                blockHeader = _buffer.ReadStruct<KphSsBlockHeader>(_cursor, KphSsBlockHeader.SizeOf, 0);
 
                 // Check if we have an explicit cursor reset.
                 if (blockHeader.Type == KphSsBlockType.Reset)
                 {
                     _cursor = 0;
-                    blockHeader = _buffer.ReadStruct<KphSsBlockHeader>(_cursor, 0);
+                    blockHeader = _buffer.ReadStruct<KphSsBlockHeader>(_cursor, KphSsBlockHeader.SizeOf, 0);
                 }
 
                 // Process the block.

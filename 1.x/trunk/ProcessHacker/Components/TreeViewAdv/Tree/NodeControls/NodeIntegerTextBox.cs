@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 using System.Windows.Forms;
 
@@ -17,16 +14,13 @@ namespace Aga.Controls.Tree.NodeControls
 			set { _allowNegativeSign = value; }
 		}
 
-		public NodeIntegerTextBox()
+	    protected override TextBox CreateTextBox()
 		{
-		}
-
-		protected override TextBox CreateTextBox()
-		{
-			NumericTextBox textBox = new NumericTextBox();
-			textBox.AllowDecimalSeperator = false;
-			textBox.AllowNegativeSign = AllowNegativeSign;
-			return textBox;
+            return new NumericTextBox 
+            {
+                AllowDecimalSeperator = false, 
+                AllowNegativeSign = this.AllowNegativeSign
+            };
 		}
 
 		protected override void DoApplyChanges(TreeNodeAdv node, Control editor)

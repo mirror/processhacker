@@ -37,7 +37,7 @@ namespace ProcessHacker.Native.Debugging
     /// </summary>
     public sealed class DebugBuffer : BaseObject
     {
-        private IntPtr _buffer;
+        private readonly IntPtr _buffer;
 
         /// <summary>
         /// Creates a new debug buffer.
@@ -64,7 +64,7 @@ namespace ProcessHacker.Native.Debugging
         /// <param name="callback">The callback for the enumeration.</param>
         public void EnumHeaps(DebugEnumHeapsDelegate callback)
         {
-            var debugInfo = this.GetDebugInformation();
+            RtlDebugInformation debugInfo = this.GetDebugInformation();
 
             if (debugInfo.Heaps == IntPtr.Zero)
                 throw new InvalidOperationException("Heap information does not exist.");
@@ -74,7 +74,7 @@ namespace ProcessHacker.Native.Debugging
 
             for (int i = 0; i < heaps.NumberOfHeaps; i++)
             {
-                var heap = heapInfo.ReadStruct<RtlHeapInformation>(RtlProcessHeaps.HeapsOffset, i);
+                RtlHeapInformation heap = heapInfo.ReadStruct<RtlHeapInformation>(RtlProcessHeaps.HeapsOffset, RtlHeapInformation.SizeOf, i);
 
                 if (!callback(new HeapInformation(heap)))
                     break;
@@ -97,7 +97,7 @@ namespace ProcessHacker.Native.Debugging
 
             for (int i = 0; i < locks.NumberOfLocks; i++)
             {
-                var lock_ = locksInfo.ReadStruct<RtlProcessLockInformation>(sizeof(int), i);
+                var lock_ = locksInfo.ReadStruct<RtlProcessLockInformation>(sizeof(int), RtlProcessLockInformation.SizeOf, i);
 
                 if (!callback(new LockInformation(lock_)))
                     break;
@@ -110,17 +110,17 @@ namespace ProcessHacker.Native.Debugging
         /// <param name="callback">The callback for the enumeration.</param>
         public void EnumModules(DebugEnumModulesDelegate callback)
         {
-            var debugInfo = this.GetDebugInformation();
+            RtlDebugInformation debugInfo = this.GetDebugInformation();
 
             if (debugInfo.Modules == IntPtr.Zero)
                 throw new InvalidOperationException("Module information does not exist.");
 
             MemoryRegion modulesInfo = new MemoryRegion(debugInfo.Modules);
-            var modules = modulesInfo.ReadStruct<RtlProcessModules>();
+            RtlProcessModules modules = modulesInfo.ReadStruct<RtlProcessModules>();
 
             for (int i = 0; i < modules.NumberOfModules; i++)
             {
-                var module = modulesInfo.ReadStruct<RtlProcessModuleInformation>(RtlProcessModules.ModulesOffset, i);
+                var module = modulesInfo.ReadStruct<RtlProcessModuleInformation>(RtlProcessModules.ModulesOffset, RtlProcessModuleInformation.SizeOf, i);
 
                 if (!callback(new ModuleInformation(module)))
                     break;
@@ -146,7 +146,7 @@ namespace ProcessHacker.Native.Debugging
         {
             List<HeapInformation> heaps = new List<HeapInformation>();
 
-            this.EnumHeaps((heap) =>
+            this.EnumHeaps(heap =>
             {
                 heaps.Add(heap);
                 return true;
@@ -163,7 +163,7 @@ namespace ProcessHacker.Native.Debugging
         {
             List<LockInformation> locks = new List<LockInformation>();
 
-            this.EnumLocks((lock_) =>
+            this.EnumLocks(lock_ =>
             {
                 locks.Add(lock_);
                 return true;
@@ -180,7 +180,7 @@ namespace ProcessHacker.Native.Debugging
         {
             List<ModuleInformation> modules = new List<ModuleInformation>();
 
-            this.EnumModules((module) =>
+            this.EnumModules(module =>
             {
                 modules.Add(module);
                 return true;
@@ -205,14 +205,11 @@ namespace ProcessHacker.Native.Debugging
         /// <param name="flags">The information to query.</param>
         public void Query(int pid, RtlQueryProcessDebugFlags flags)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlQueryProcessDebugInformation(
+            Win32.RtlQueryProcessDebugInformation(
                 pid.ToIntPtr(),
                 flags,
                 _buffer
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         /// <summary>
@@ -220,10 +217,7 @@ namespace ProcessHacker.Native.Debugging
         /// </summary>
         public void QueryBackTraces()
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlQueryProcessBackTraceInformation(_buffer)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlQueryProcessBackTraceInformation(_buffer).ThrowIf();
         }
 
         /// <summary>
@@ -231,10 +225,7 @@ namespace ProcessHacker.Native.Debugging
         /// </summary>
         public void QueryHeaps()
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlQueryProcessHeapInformation(_buffer)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlQueryProcessHeapInformation(_buffer).ThrowIf();
         }
 
         /// <summary>
@@ -242,10 +233,7 @@ namespace ProcessHacker.Native.Debugging
         /// </summary>
         public void QueryLocks()
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlQueryProcessLockInformation(_buffer)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlQueryProcessLockInformation(_buffer).ThrowIf();
         }
 
         //public void QueryModules()

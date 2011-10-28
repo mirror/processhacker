@@ -9,6 +9,7 @@ namespace Aga.Controls
 	/// <summary>
 	/// High resolution timer, used to test performance
 	/// </summary>
+    [System.Security.SuppressUnmanagedCodeSecurity]
 	public static class TimeCounter
 	{
 		private static Int64 _start;
@@ -50,10 +51,10 @@ namespace Aga.Controls
 
 		[DllImport("Kernel32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		static extern bool QueryPerformanceCounter(ref Int64 performanceCount);
+		static extern bool QueryPerformanceCounter(ref long performanceCount);
 
 		[DllImport("Kernel32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		static extern bool QueryPerformanceFrequency(ref Int64 frequency);
+		static extern bool QueryPerformanceFrequency(ref long frequency);
 	}
 }

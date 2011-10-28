@@ -1,18 +1,20 @@
+/*
+ * Modified by wj32.
+ */
+
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
-
 using ProcessHacker.Properties;
 
 namespace Aga.Controls.Tree.NodeControls
 {
 	internal class NodePlusMinus : NodeControl
 	{
-        private TreeViewAdv _tree;
-		public const int ImageSize = 9;
-		public const int Width = 16;
-        private bool _useVisualStyles;
+        private readonly TreeViewAdv _tree;
+        public static int ImageSize = 9;
+		public static int Width = 16;
         private VisualStyleRenderer _openedRenderer;
         private VisualStyleRenderer _closedRenderer;
 		private Bitmap _plus;
@@ -48,9 +50,20 @@ namespace Aga.Controls.Tree.NodeControls
 
         public void RefreshVisualStyles()
         {
-            bool useVisualStyles = Application.RenderWithVisualStyles;
-
-            if (useVisualStyles)
+            if (ExplorerVisualStyle.VisualStylesEnabled)
+            {
+                try
+                {
+                    _openedRenderer = ExplorerVisualStyle.TvOpenedRenderer;
+                    _closedRenderer = ExplorerVisualStyle.TvClosedRenderer;
+                }
+                catch
+                {
+                    _openedRenderer = new VisualStyleRenderer(VisualStyleElement.TreeView.Glyph.Opened);
+                    _closedRenderer = new VisualStyleRenderer(VisualStyleElement.TreeView.Glyph.Closed);
+                }
+            }
+            else
             {
                 try
                 {
@@ -59,11 +72,8 @@ namespace Aga.Controls.Tree.NodeControls
                 }
                 catch
                 {
-                    useVisualStyles = false;
                 }
             }
-
-            _useVisualStyles = useVisualStyles;
         }
 
 		public override Size MeasureSize(TreeNodeAdv node, DrawContext context)
@@ -73,43 +83,42 @@ namespace Aga.Controls.Tree.NodeControls
 
 		public override void Draw(TreeNodeAdv node, DrawContext context)
 		{
-			if (node.CanExpand)
-			{
-				Rectangle r = context.Bounds;
-				int dy = (int)Math.Round((float)(r.Height - ImageSize) / 2);
+		    if (!node.CanExpand)
+		        return;
 
-                if (_useVisualStyles)
-                {
-                    VisualStyleRenderer renderer;
+		    Rectangle r = context.Bounds;
 
-                    if (node.IsExpanded)
-                        renderer = _openedRenderer;
-                    else
-                        renderer = _closedRenderer;
+            if (ExplorerVisualStyle.VisualStylesEnabled)
+		    {
+		        VisualStyleRenderer renderer;
 
-                    try
-                    {
-                        renderer.DrawBackground(context.Graphics, new Rectangle(r.X, r.Y + dy, ImageSize, ImageSize));
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        // Fucking retarded VisualStyleRenderer throws exceptions.
-                        _useVisualStyles = false;
-                    }
-                }
+		        if (node.IsExpanded)
+		            renderer = this._openedRenderer;
+		        else
+		            renderer = this._closedRenderer;
 
-                if (!_useVisualStyles)
-                {
-                    Image img;
+		        try
+		        {
+                    renderer.DrawBackground(context.Graphics, new Rectangle(r.X, r.Y, Width, Width));
+		        }
+		        catch (InvalidOperationException)
+		        {
+		            
+		        }
+		    }
+            else
+		    {
+		        Image img;
 
-                    if (node.IsExpanded)
-                        img = this.Minus;
-                    else
-                        img = this.Plus;
+		        if (node.IsExpanded)
+		            img = this.Minus;
+		        else
+		            img = this.Plus;
 
-                    context.Graphics.DrawImageUnscaled(img, new Point(r.X, r.Y + dy));
-                }
-			}
+                int dy = (int)Math.Round((float)(r.Height - ImageSize) / 2);
+
+		        context.Graphics.DrawImageUnscaled(img, new Point(r.X, r.Y + dy));
+		    }
 		}
 
 		public override void MouseDown(TreeNodeAdvMouseEventArgs args)

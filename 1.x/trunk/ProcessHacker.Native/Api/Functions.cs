@@ -2591,8 +2591,8 @@ namespace ProcessHacker.Native.Api
         public static extern IntPtr SendMessage(
             [In] IntPtr hWnd, 
             [In] WindowMessage msg,
-            [In] int w,
-            [In] int l
+            [In] IntPtr w,
+            [In] IntPtr l
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]

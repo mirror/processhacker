@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace Aga.Controls.Tree
 {
-	public partial class TreeViewAdv
+	public sealed partial class TreeViewAdv
 	{
         // Note by wj32: I've added a whole bunch of this.Invalidate()s that are necessary for PH.
 		#region Keys
@@ -34,18 +34,18 @@ namespace Aga.Controls.Tree
 		{
 			if ((ModifierKeys & Keys.Shift) == Keys.Shift)
 			{
-				if (!(Input is InputWithShift))
-					Input = new InputWithShift(this);
+				if (!(this.Input is InputWithShift))
+					this.Input = new InputWithShift(this);
 			}
 			else if ((ModifierKeys & Keys.Control) == Keys.Control)
 			{
-				if (!(Input is InputWithControl))
-					Input = new InputWithControl(this);
+				if (!(this.Input is InputWithControl))
+					this.Input = new InputWithControl(this);
 			}
 			else
 			{
-				if (!(Input.GetType() == typeof(NormalInputState)))
-					Input = new NormalInputState(this);
+				if (!(this.Input.GetType() == typeof(NormalInputState)))
+					this.Input = new NormalInputState(this);
 			}
 		}
 
@@ -56,10 +56,10 @@ namespace Aga.Controls.Tree
 			{
 				if (e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.ControlKey)
 					ChangeInput();
-				Input.KeyDown(e);
+				this.Input.KeyDown(e);
 				if (!e.Handled)
 				{
-					foreach (NodeControlInfo item in GetNodeControls(CurrentNode))
+					foreach (NodeControlInfo item in GetNodeControls(this.CurrentNode))
 					{
 						item.Control.KeyDown(e);
 						if (e.Handled)
@@ -79,7 +79,7 @@ namespace Aga.Controls.Tree
 					ChangeInput();
 				if (!e.Handled)
 				{
-					foreach (NodeControlInfo item in GetNodeControls(CurrentNode))
+					foreach (NodeControlInfo item in GetNodeControls(this.CurrentNode))
 					{
 						item.Control.KeyUp(e);
 						if (e.Handled)
@@ -105,7 +105,7 @@ namespace Aga.Controls.Tree
 		{
 			TreeNodeAdvMouseEventArgs args = new TreeNodeAdvMouseEventArgs(e);
 			args.ViewLocation = new Point(e.X + OffsetX,
-				e.Y + _rowLayout.GetRowBounds(FirstVisibleRow).Y - ColumnHeaderHeight);
+				e.Y + _rowLayout.GetRowBounds(FirstVisibleRow).Y - this.ColumnHeaderHeight);
 			args.ModifierKeys = ModifierKeys;
 			args.Node = GetNodeAt(e.Location);
 			NodeControlInfo info = GetNodeControlInfoAt(args.Node, e.Location);
@@ -141,14 +141,14 @@ namespace Aga.Controls.Tree
 				c = GetColumnDividerAt(e.Location);
 				if (c != null)
 				{
-                    Input = new ResizeColumnState(this, c, e.Location);
+                    this.Input = new ResizeColumnState(this, c, e.Location);
                     this.Invalidate();
 					return;
 				}
 				c = GetColumnAt(e.Location);
 				if (c != null)
 				{
-					Input = new ClickColumnState(this, c, e.Location);
+					this.Input = new ClickColumnState(this, c, e.Location);
                     UpdateView();
                     this.Invalidate();
 					return;
@@ -162,7 +162,7 @@ namespace Aga.Controls.Tree
 				args.Control.MouseDown(args);
 
 			if (!args.Handled)
-				Input.MouseDown(args);
+				this.Input.MouseDown(args);
 
             base.OnMouseDown(e);
             this.Invalidate();
@@ -170,12 +170,13 @@ namespace Aga.Controls.Tree
 
 		protected override void OnMouseClick(MouseEventArgs e)
 		{
-			//TODO: Disable when click on plusminus icon
 			TreeNodeAdvMouseEventArgs args = CreateMouseArgs(e);
-			if (args.Node != null)
+			
+            if (args.Node != null)
 				OnNodeMouseClick(args);
 
 			base.OnMouseClick(e);
+
             this.FullUpdate();
             this.Invalidate();
 		}
@@ -189,10 +190,6 @@ namespace Aga.Controls.Tree
 
 			if (!args.Handled)
 			{
-                // disabled by wj32 - I think this behaviour sucks.
-                //if (args.Node != null && args.Button == MouseButtons.Left)
-                //    args.Node.IsExpanded = !args.Node.IsExpanded;
-
 				if (args.Node != null)
 					OnNodeMouseDoubleClick(args);
 			}
@@ -203,34 +200,32 @@ namespace Aga.Controls.Tree
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
 			TreeNodeAdvMouseEventArgs args = CreateMouseArgs(e);
-			if (Input is ResizeColumnState)
-				Input.MouseUp(args);
+			
+            if (this.Input is ResizeColumnState)
+				this.Input.MouseUp(args);
 			else
 			{
 				if (args.Node != null && args.Control != null)
 					args.Control.MouseUp(args);
-				if (!args.Handled)
-					Input.MouseUp(args);
+				
+                if (!args.Handled)
+					this.Input.MouseUp(args);
 
 				base.OnMouseUp(e);
 			}
 		}
 
+
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
-			if (Input.MouseMove(e))
+		    if (this.Input.MouseMove(e))
 				return;
 
 			base.OnMouseMove(e);
+
 			SetCursor(e);
+
 			UpdateToolTip(e);
-			if (ItemDragMode && Dist(e.Location, ItemDragStart) > ItemDragSensivity
-				&& CurrentNode != null && CurrentNode.IsSelected)
-			{
-				ItemDragMode = false;
-				_toolTip.Active = false;
-				OnItemDrag(e.Button, Selection.ToArray());
-			}
 		}
 
 		protected override void OnMouseLeave(EventArgs e)
@@ -242,39 +237,50 @@ namespace Aga.Controls.Tree
 
 		private void SetCursor(MouseEventArgs e)
 		{
-			TreeColumn col;
-			col = GetColumnDividerAt(e.Location);
-			if (col == null)
-				_innerCursor = null;
-			else
-			{
-				if (col.Width == 0)
-					_innerCursor = ResourceHelper.DVSplitCursor;
-				else
-					_innerCursor = Cursors.VSplit;
-			}
+		    using (TreeColumn col = this.GetColumnDividerAt(e.Location))
+		    {
+		        if (col == null)
+		            this._innerCursor = null;
+		        else
+		        {
+		            switch (col.Width)
+		            {
+		                case 0:
+		                    this._innerCursor = Cursors.VSplit;
+		                    break;
+		                default:
+		                    this._innerCursor = Cursors.VSplit;
+		                    break;
+		            }
+		        }
 
-			col = GetColumnAt(e.Location);
-			if (col != _hotColumn)
-			{
-				_hotColumn = col;
-				UpdateHeaders();
-			}
+		        //col = this.GetColumnAt(e.Location);
+
+		        if (col != this._hotColumn)
+		        {
+		            this._hotColumn = col;
+
+		            this.UpdateHeaders();
+		        }
+		    }
 		}
 
 		internal TreeColumn GetColumnAt(Point p)
 		{
-			if (p.Y > ColumnHeaderHeight)
+			if (p.Y > this.ColumnHeaderHeight)
 				return null;
 
 			int x = -OffsetX;
-			foreach (TreeColumn col in Columns)
+			
+            foreach (TreeColumn col in this.Columns)
 			{
 				if (col.IsVisible)
 				{
-					Rectangle rect = new Rectangle(x, 0, col.Width, ColumnHeaderHeight);
-					x += col.Width;
-					if (rect.Contains(p))
+					Rectangle rect = new Rectangle(x, 0, col.Width, this.ColumnHeaderHeight);
+					
+                    x += col.Width;
+				
+                    if (rect.Contains(p))
 						return col;
 				}
 			}
@@ -284,14 +290,14 @@ namespace Aga.Controls.Tree
 		internal int GetColumnX(TreeColumn column)
 		{
 			int x = -OffsetX;
-			foreach (TreeColumn col in Columns)
+			foreach (TreeColumn col in this.Columns)
 			{
 				if (col.IsVisible)
 				{
-					if (column == col)
+				    if (column == col)
 						return x;
-					else
-						x += col.Width;
+				    
+                    x += col.Width;
 				}
 			}
 			return x;
@@ -299,21 +305,23 @@ namespace Aga.Controls.Tree
 
 		internal TreeColumn GetColumnDividerAt(Point p)
 		{
-			if (p.Y > ColumnHeaderHeight)
+			if (p.Y > this.ColumnHeaderHeight)
 				return null;
 
 			int x = -OffsetX;
 			TreeColumn prevCol = null;
 			Rectangle left, right;
-			foreach (TreeColumn col in Columns)
+		
+            foreach (TreeColumn col in this.Columns)
 			{
 				if (col.IsVisible)
 				{
 					if (col.Width > 0)
 					{
-						left = new Rectangle(x, 0, DividerWidth / 2, ColumnHeaderHeight);
-						right = new Rectangle(x + col.Width - (DividerWidth / 2), 0, DividerWidth / 2, ColumnHeaderHeight);
-						if (left.Contains(p) && prevCol != null)
+						left = new Rectangle(x, 0, DividerWidth / 2, this.ColumnHeaderHeight);
+						right = new Rectangle(x + col.Width - (DividerWidth / 2), 0, DividerWidth / 2, this.ColumnHeaderHeight);
+						
+                        if (left.Contains(p) && prevCol != null)
 							return prevCol;
 						else if (right.Contains(p))
 							return col;
@@ -323,8 +331,9 @@ namespace Aga.Controls.Tree
 				}
 			}
 
-			left = new Rectangle(x, 0, DividerWidth / 2, ColumnHeaderHeight);
-			if (left.Contains(p) && prevCol != null)
+			left = new Rectangle(x, 0, DividerWidth / 2, this.ColumnHeaderHeight);
+			
+            if (left.Contains(p) && prevCol != null)
 				return prevCol;
 
 			return null;
@@ -346,9 +355,10 @@ namespace Aga.Controls.Tree
 
 		TreeNodeAdv _hotNode;
 		NodeControl _hotControl;
+
 		private void DisplayNodesTooltip(MouseEventArgs e)
 		{
-			if (ShowNodeToolTips)
+			if (this.ShowNodeToolTips)
 			{
 				TreeNodeAdvMouseEventArgs args = CreateMouseArgs(e);
 				if (args.Node != null && args.Control != null)
@@ -391,164 +401,10 @@ namespace Aga.Controls.Tree
 					msg = btc.GetLabel(args.Node);
 			}
 
-			if (String.IsNullOrEmpty(msg) && DefaultToolTipProvider != null)
-				msg = DefaultToolTipProvider.GetToolTip(args.Node, args.Control);
+			if (String.IsNullOrEmpty(msg) && this.DefaultToolTipProvider != null)
+				msg = this.DefaultToolTipProvider.GetToolTip(args.Node, args.Control);
 
 			return msg;
-		}
-
-		#endregion
-
-		#region DragDrop
-
-		private bool _dragAutoScrollFlag = false;
-		private Bitmap _dragBitmap = null;
-		private System.Threading.Timer _dragTimer;
-
-		private void StartDragTimer()
-		{
-			if (_dragTimer == null)
-				_dragTimer = new System.Threading.Timer(new TimerCallback(DragTimerTick), null, 0, 100);
-		}
-
-		private void StopDragTimer()
-		{
-			if (_dragTimer != null)
-			{
-				_dragTimer.Dispose();
-				_dragTimer = null;
-			}
-		}
-
-		private void SetDropPosition(Point pt)
-		{
-			TreeNodeAdv node = GetNodeAt(pt);
-			_dropPosition.Node = node;
-			if (node != null)
-			{
-				Rectangle first = _rowLayout.GetRowBounds(FirstVisibleRow);
-				Rectangle bounds = _rowLayout.GetRowBounds(node.Row);
-				float pos = (pt.Y + first.Y - ColumnHeaderHeight - bounds.Y) / (float)bounds.Height;
-				if (pos < TopEdgeSensivity)
-					_dropPosition.Position = NodePosition.Before;
-				else if (pos > (1 - BottomEdgeSensivity))
-					_dropPosition.Position = NodePosition.After;
-				else
-					_dropPosition.Position = NodePosition.Inside;
-			}
-		}
-
-		private void DragTimerTick(object state)
-		{
-			_dragAutoScrollFlag = true;
-		}
-
-		private void DragAutoScroll()
-		{
-			_dragAutoScrollFlag = false;
-			Point pt = PointToClient(MousePosition);
-			if (pt.Y < 20 && _vScrollBar.Value > 0)
-				_vScrollBar.Value--;
-			else if (pt.Y > Height - 20 && _vScrollBar.Value <= _vScrollBar.Maximum - _vScrollBar.LargeChange)
-				_vScrollBar.Value++;
-		}
-
-		public void DoDragDropSelectedNodes(DragDropEffects allowedEffects)
-		{
-			if (SelectedNodes.Count > 0)
-			{
-				TreeNodeAdv[] nodes = new TreeNodeAdv[SelectedNodes.Count];
-				SelectedNodes.CopyTo(nodes, 0);
-				DoDragDrop(nodes, allowedEffects);
-			}
-		}
-
-		private void CreateDragBitmap(IDataObject data)
-		{
-			if (UseColumns || !DisplayDraggingNodes)
-				return;
-
-			TreeNodeAdv[] nodes = data.GetData(typeof(TreeNodeAdv[])) as TreeNodeAdv[];
-			if (nodes != null && nodes.Length > 0)
-			{
-				Rectangle rect = DisplayRectangle;
-				Bitmap bitmap = new Bitmap(rect.Width, rect.Height);
-				using (Graphics gr = Graphics.FromImage(bitmap))
-				{
-					gr.Clear(BackColor);
-					DrawContext context = new DrawContext();
-					context.Graphics = gr;
-					context.Font = Font;
-					context.Enabled = true;
-					int y = 0;
-					int maxWidth = 0;
-					foreach (TreeNodeAdv node in nodes)
-					{
-						if (node.Tree == this)
-						{
-							int x = 0;
-							int height = _rowLayout.GetRowBounds(node.Row).Height;
-							foreach (NodeControl c in NodeControls)
-							{
-								Size s = c.GetActualSize(node, context);
-								if (!s.IsEmpty)
-								{
-									int width = s.Width;
-									rect = new Rectangle(x, y, width, height);
-									x += (width + 1);
-									context.Bounds = rect;
-									c.Draw(node, context);
-								}
-							}
-							y += height;
-							maxWidth = Math.Max(maxWidth, x);
-						}
-					}
-
-					if (maxWidth > 0 && y > 0)
-					{
-						_dragBitmap = new Bitmap(maxWidth, y, PixelFormat.Format32bppArgb);
-						using (Graphics tgr = Graphics.FromImage(_dragBitmap))
-							tgr.DrawImage(bitmap, Point.Empty);
-						BitmapHelper.SetAlphaChanelValue(_dragBitmap, 150);
-					}
-					else
-						_dragBitmap = null;
-				}
-			}
-		}
-
-		protected override void OnDragOver(DragEventArgs drgevent)
-		{
-			ItemDragMode = false;
-			Point pt = PointToClient(new Point(drgevent.X, drgevent.Y));
-			if (_dragAutoScrollFlag)
-				DragAutoScroll();
-			SetDropPosition(pt);
-			UpdateView();
-			base.OnDragOver(drgevent);
-		}
-
-		protected override void OnDragEnter(DragEventArgs drgevent)
-		{
-			_search.EndSearch();
-			DragMode = true;
-			CreateDragBitmap(drgevent.Data);
-			base.OnDragEnter(drgevent);
-		}
-
-		protected override void OnDragLeave(EventArgs e)
-		{
-			DragMode = false;
-			UpdateView();
-			base.OnDragLeave(e);
-		}
-
-		protected override void OnDragDrop(DragEventArgs drgevent)
-		{
-			DragMode = false;
-			UpdateView();
-			base.OnDragDrop(drgevent);
 		}
 
 		#endregion

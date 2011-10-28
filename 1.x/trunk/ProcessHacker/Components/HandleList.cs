@@ -133,7 +133,7 @@ namespace ProcessHacker.Components
                                                                     new GenericHandle(
                                                                         phandle, handle,
                                                                         (int)OSVersion.MinProcessQueryInfoAccess);
-                                                                pid = ProcessHandle.FromHandle(dupHandle).GetProcessId();
+                                                                pid = ProcessHandle.FromHandle(dupHandle).ProcessId;
                                                             }
 
                                                             Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], Program.FocusWindow);
@@ -298,35 +298,22 @@ namespace ProcessHacker.Components
 
             if (!e.Handled)
             {
-                if (e.KeyCode == Keys.Enter)
+                switch (e.KeyCode)
                 {
-                    propertiesHandleMenuItem_Click(null, null);
-                }
-                else if (e.KeyCode == Keys.Delete)
-                {
-                    if (ConfirmHandleClose())
-                    {
-                        closeHandleMenuItem_Click(null, null);
-                    }
+                    case Keys.Enter:
+                        this.propertiesHandleMenuItem_Click(null, null);
+                        break;
+                    case Keys.Delete:
+                        if (ConfirmHandleClose())
+                        {
+                            this.closeHandleMenuItem_Click(null, null);
+                        }
+                        break;
                 }
             }
         }
 
         #region Properties
-
-        public new bool DoubleBuffered
-        {
-            get
-            {
-                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
-                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listHandles, null);
-            }
-            set
-            {
-                typeof(ListView).GetProperty("DoubleBuffered",
-                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listHandles, value, null);
-            }
-        }
 
         public override bool Focused
         {
@@ -348,7 +335,7 @@ namespace ProcessHacker.Components
             set { listHandles.ContextMenuStrip = value; }
         }
 
-        public ListView List
+        public ExtendedListView List
         {
             get { return listHandles; }
         }

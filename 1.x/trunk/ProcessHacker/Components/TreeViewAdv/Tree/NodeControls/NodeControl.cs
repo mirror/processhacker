@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using System.ComponentModel;
@@ -64,7 +62,7 @@ namespace Aga.Controls.Tree.NodeControls
 			}
 		}
 
-		private int _leftMargin = 0;
+		private int _leftMargin;
 		public int LeftMargin
 		{
 			get { return _leftMargin; }
@@ -99,36 +97,31 @@ namespace Aga.Controls.Tree.NodeControls
 		protected virtual Rectangle GetBounds(TreeNodeAdv node, DrawContext context)
 		{
 			Rectangle r = context.Bounds;
-			Size s = GetActualSize(node, context);
-			Size bs = new Size(r.Width - LeftMargin, Math.Min(r.Height, s.Height));
-			switch (VerticalAlign)
+			
+            Size s = GetActualSize(node, context);
+			
+            Size bs = new Size(r.Width - LeftMargin, Math.Min(r.Height, s.Height));
+			
+            switch (this.VerticalAlign)
 			{
-				case VerticalAlignment.Top:
-					return new Rectangle(new Point(r.X + LeftMargin, r.Y), bs);
-				case VerticalAlignment.Bottom:
-					return new Rectangle(new Point(r.X + LeftMargin, r.Bottom - s.Height), bs);
-				default:
-					return new Rectangle(new Point(r.X + LeftMargin, r.Y + (r.Height - s.Height) / 2), bs);
+                case VerticalAlignment.Top:
+			        {
+			            return new Rectangle(new Point(r.X + LeftMargin, r.Y), bs);
+			        }
+                case VerticalAlignment.Bottom:
+			        {
+			            return new Rectangle(new Point(r.X + LeftMargin, r.Bottom - s.Height), bs);
+			        }
+                default:
+			        {
+			            return new Rectangle(new Point(r.X + LeftMargin, r.Y + (r.Height - s.Height)/2), bs);
+			        }
 			}
 		}
 
-		protected void CheckThread()
-		{
-			if (Parent != null && Control.CheckForIllegalCrossThreadCalls)
-				if (Parent.InvokeRequired)
-					throw new InvalidOperationException("Cross-thread calls are not allowed");
-		}
-
-		public bool IsVisible(TreeNodeAdv node)
-		{
-			NodeControlValueEventArgs args = new NodeControlValueEventArgs(node);
-			args.Value = true;
-			OnIsVisibleValueNeeded(args);
-			return Convert.ToBoolean(args.Value);
-		}
 
         // wj32: getting sizes takes a lot of CPU time, so let's cache it.
-        private bool _cachedSizeValid = false;
+        private bool _cachedSizeValid;
         private Size _cachedSize = Size.Empty;
 
 		internal Size GetActualSize(TreeNodeAdv node, DrawContext context)
@@ -152,36 +145,21 @@ namespace Aga.Controls.Tree.NodeControls
 		}
 
 		public abstract Size MeasureSize(TreeNodeAdv node, DrawContext context);
-
 		public abstract void Draw(TreeNodeAdv node, DrawContext context);
 
 		public virtual string GetToolTip(TreeNodeAdv node)
 		{
 			if (ToolTipProvider != null)
 				return ToolTipProvider.GetToolTip(node, this);
-			else
-				return string.Empty;
+			
+            return string.Empty;
 		}
 
-		public virtual void MouseDown(TreeNodeAdvMouseEventArgs args)
-		{
-		}
-
-		public virtual void MouseUp(TreeNodeAdvMouseEventArgs args)
-		{
-		}
-
-		public virtual void MouseDoubleClick(TreeNodeAdvMouseEventArgs args)
-		{
-		}
-
-		public virtual void KeyDown(KeyEventArgs args)
-		{
-		}
-
-		public virtual void KeyUp(KeyEventArgs args)
-		{
-		}
+		public virtual void MouseDown(TreeNodeAdvMouseEventArgs args) { }
+		public virtual void MouseUp(TreeNodeAdvMouseEventArgs args) { }
+		public virtual void MouseDoubleClick(TreeNodeAdvMouseEventArgs args) { }
+		public virtual void KeyDown(KeyEventArgs args) { }
+		public virtual void KeyUp(KeyEventArgs args) { }
 
 		public event EventHandler<NodeControlValueEventArgs> IsVisibleValueNeeded;
 		protected virtual void OnIsVisibleValueNeeded(NodeControlValueEventArgs args)

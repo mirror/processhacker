@@ -424,7 +424,7 @@ namespace ProcessHacker.Native.Api
         OverwriteIf = 0x5
     }
 
-    public enum FileInformationClass : int
+    public enum FileInformationClass
     {
         FileDirectoryInformation = 1, // dir
         FileFullDirectoryInformation, // dir

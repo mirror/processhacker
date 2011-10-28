@@ -1,196 +1,167 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
 using System.ComponentModel;
 
 namespace Aga.Controls.Tree.NodeControls
 {
-	public abstract class BindableControl : NodeControl
-	{
-		private struct MemberAdapter
-		{
-			private object _obj;
-			private PropertyInfo _pi;
-			private FieldInfo _fi;
+    public abstract class BindableControl : NodeControl
+    {
+        private struct MemberAdapter
+        {
+            private object _obj;
+            private PropertyInfo _pi;
+            private FieldInfo _fi;
 
-			public static readonly MemberAdapter Empty = new MemberAdapter();
+            public static readonly MemberAdapter Empty;
 
-			public Type MemberType
-			{
-				get
-				{
-					if (_pi != null)
-						return _pi.PropertyType;
-					else if (_fi != null)
-						return _fi.FieldType;
-					else
-						return null;
-				}
-			}
+            public Type MemberType
+            {
+                get
+                {
+                    if (_pi != null)
+                        return _pi.PropertyType;
 
-			public object Value
-			{
-				get
-				{
-					if (_pi != null && _pi.CanRead)
-						return _pi.GetValue(_obj, null);
-					else if (_fi != null)
-						return _fi.GetValue(_obj);
-					else
-						return null;
-				}
-				set
-				{
-					if (_pi != null && _pi.CanWrite)
-						_pi.SetValue(_obj, value, null);
-					else if (_fi != null)
-						_fi.SetValue(_obj, value);
-				}
-			}
+                    if (_fi != null)
+                        return _fi.FieldType;
 
-			public MemberAdapter(object obj, PropertyInfo pi)
-			{
-				_obj = obj;
-				_pi = pi;
-				_fi = null;
-			}
+                    return null;
+                }
+            }
 
-			public MemberAdapter(object obj, FieldInfo fi)
-			{
-				_obj = obj;
-				_fi = fi;
-				_pi = null;
-			}
-		}
+            public object Value
+            {
+                get
+                {
+                    if (_pi != null && _pi.CanRead)
+                        return _pi.GetValue(_obj, null);
 
-		#region Properties
+                    if (_fi != null)
+                        return _fi.GetValue(_obj);
 
-		private bool _virtualMode = false;
-		[DefaultValue(false), Category("Data")]
-		public bool VirtualMode
-		{
-			get { return _virtualMode; }
-			set { _virtualMode = value; }
-		}
+                    return null;
+                }
+                set
+                {
+                    if (_pi != null && _pi.CanWrite)
+                        _pi.SetValue(_obj, value, null);
+                    else if (_fi != null)
+                        _fi.SetValue(_obj, value);
+                }
+            }
 
-		private string _propertyName = "";
-		[DefaultValue(""), Category("Data")]
-		public string DataPropertyName
-		{
-			get { return _propertyName; }
-			set { _propertyName = value != null ? value : ""; }
-		}
+            public MemberAdapter(object obj, PropertyInfo pi)
+            {
+                _obj = obj;
+                _pi = pi;
+                _fi = null;
+            }
 
-		private bool _incrementalSearchEnabled = false;
-		[DefaultValue(false)]
-		public bool IncrementalSearchEnabled
-		{
-			get { return _incrementalSearchEnabled; }
-			set { _incrementalSearchEnabled = value; }
-		}
+            public MemberAdapter(object obj, FieldInfo fi)
+            {
+                _obj = obj;
+                _fi = fi;
+                _pi = null;
+            }
+        }
 
-		#endregion
+        #region Properties
 
-		public virtual object GetValue(TreeNodeAdv node)
-		{
-			if (VirtualMode)
-			{
-				NodeControlValueEventArgs args = new NodeControlValueEventArgs(node);
-				OnValueNeeded(args);
-				return args.Value;
-			}
-			else
-			{
-				try
-				{
-					return GetMemberAdapter(node).Value;
-				}
-				catch (TargetInvocationException ex)
-				{
-					if (ex.InnerException != null)
-						throw new ArgumentException(ex.InnerException.Message, ex.InnerException);
-					else
-						throw new ArgumentException(ex.Message);
-				}
-			}
-		}
+        [DefaultValue(false), Category("Data")]
+        public bool VirtualMode { get; set; }
 
-		public virtual void SetValue(TreeNodeAdv node, object value)
-		{
-			if (VirtualMode)
-			{
-				NodeControlValueEventArgs args = new NodeControlValueEventArgs(node);
-				args.Value = value;
-				OnValuePushed(args);
-			}
-			else
-			{
-				try
-				{
-					MemberAdapter ma = GetMemberAdapter(node);
-					ma.Value = value;
-				}
-				catch (TargetInvocationException ex)
-				{
-					if (ex.InnerException != null)
-						throw new ArgumentException(ex.InnerException.Message, ex.InnerException);
-					else
-						throw new ArgumentException(ex.Message);
-				}
-			}
-		}
+        protected BindableControl()
+        {
+            this.DataPropertyName = string.Empty;
+        }
 
-		public Type GetPropertyType(TreeNodeAdv node)
-		{
-			return GetMemberAdapter(node).MemberType;
-		}
+        [DefaultValue(""), Category("Data")]
+        public string DataPropertyName { get; set; }
 
-		private MemberAdapter GetMemberAdapter(TreeNodeAdv node)
-		{
+        [DefaultValue(false)]
+        public bool IncrementalSearchEnabled { get; set; }
+
+        #endregion
+
+        public virtual object GetValue(TreeNodeAdv node)
+        {
+            if (this.VirtualMode)
+            {
+                NodeControlValueEventArgs args = new NodeControlValueEventArgs(node);
+                OnValueNeeded(args);
+                return args.Value;
+            }
+
+            return this.GetMemberAdapter(node).Value;
+        }
+
+        public virtual void SetValue(TreeNodeAdv node, object value)
+        {
+            if (this.VirtualMode)
+            {
+                NodeControlValueEventArgs args = new NodeControlValueEventArgs(node)
+                {
+                    Value = value
+                };
+
+                OnValuePushed(args);
+            }
+            else
+            {
+                MemberAdapter ma = GetMemberAdapter(node);
+
+                ma.Value = value;
+            }
+        }
+
+        public Type GetPropertyType(TreeNodeAdv node)
+        {
+            return GetMemberAdapter(node).MemberType;
+        }
+
+        private MemberAdapter GetMemberAdapter(TreeNodeAdv node)
+        {
+
             MemberAdapter adapter = MemberAdapter.Empty;
 
-            if (node.Tag != null && !string.IsNullOrEmpty(DataPropertyName))
+            if (node.Tag != null && !string.IsNullOrEmpty(this.DataPropertyName))
             {
                 Type type = node.Tag.GetType();
-                PropertyInfo pi = type.GetProperty(DataPropertyName);
+                PropertyInfo pi = type.GetProperty(this.DataPropertyName);
 
                 if (pi != null)
                 {
                     return new MemberAdapter(node.Tag, pi);
                 }
-                else
-                {
-                    FieldInfo fi = type.GetField(DataPropertyName,
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                    if (fi != null)
-                        return new MemberAdapter(node.Tag, fi);
-                }
+
+                FieldInfo fi = type.GetField(this.DataPropertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                if (fi != null)
+                    return new MemberAdapter(node.Tag, fi);
             }
 
             return adapter;
-		}
+        }
 
-		public override string ToString()
-		{
-			if (string.IsNullOrEmpty(DataPropertyName))
-				return GetType().Name;
-			else
-				return string.Format("{0} ({1})", GetType().Name, DataPropertyName);
-		}
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(this.DataPropertyName))
+                return GetType().Name;
 
-		public event EventHandler<NodeControlValueEventArgs> ValueNeeded;
-		private void OnValueNeeded(NodeControlValueEventArgs args)
-		{
-			if (ValueNeeded != null)
-				ValueNeeded(this, args);
-		}
+            return this.GetType().Name + " (" + this.DataPropertyName + ")";
+        }
 
-		public event EventHandler<NodeControlValueEventArgs> ValuePushed;
-		private void OnValuePushed(NodeControlValueEventArgs args)
-		{
-			if (ValuePushed != null)
-				ValuePushed(this, args);
-		}
-	}
+        public event EventHandler<NodeControlValueEventArgs> ValueNeeded;
+        private void OnValueNeeded(NodeControlValueEventArgs args)
+        {
+            if (this.ValueNeeded != null)
+                this.ValueNeeded(this, args);
+        }
+
+        public event EventHandler<NodeControlValueEventArgs> ValuePushed;
+        private void OnValuePushed(NodeControlValueEventArgs args)
+        {
+            if (this.ValuePushed != null)
+                this.ValuePushed(this, args);
+        }
+    }
 }

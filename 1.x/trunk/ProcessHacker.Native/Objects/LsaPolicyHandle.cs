@@ -267,14 +267,14 @@ namespace ProcessHacker.Native.Objects
 
                 if (status == NtStatus.NoMoreEntries)
                     break;
-                if (status >= NtStatus.Error)
-                    Win32.Throw(status);
+
+                status.ThrowIf();
 
                 using (var bufferAlloc = new LsaMemoryAlloc(buffer))
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        if (!callback(new Privilege(bufferAlloc.ReadStruct<PolicyPrivilegeDefinition>(i).Name.Read())))
+                        if (!callback(new Privilege(bufferAlloc.ReadStruct<PolicyPrivilegeDefinition>(0, PolicyPrivilegeDefinition.SizeOf, i).Name.Read())))
                             return;
                     }
                 }
@@ -289,11 +289,11 @@ namespace ProcessHacker.Native.Objects
         {
             List<Sid> sids = new List<Sid>();
 
-            this.EnumAccounts((sid) =>
-                {
-                    sids.Add(sid);
-                    return true;
-                });
+            this.EnumAccounts(sid =>
+            {
+                sids.Add(sid);
+                return true;
+            });
 
             return sids.ToArray();
         }
@@ -308,7 +308,7 @@ namespace ProcessHacker.Native.Objects
         {
             List<Sid> sids = new List<Sid>();
 
-            this.EnumAccountsWithPrivilege(privilegeName, (sid) =>
+            this.EnumAccountsWithPrivilege(privilegeName, sid =>
             {
                 sids.Add(sid);
                 return true;
@@ -321,7 +321,7 @@ namespace ProcessHacker.Native.Objects
         {
             List<Privilege> privileges = new List<Privilege>();
 
-            this.EnumPrivileges((privilege) =>
+            this.EnumPrivileges(privilege =>
             {
                 privileges.Add(privilege);
                 return true;
@@ -363,7 +363,7 @@ namespace ProcessHacker.Native.Objects
                     new IntPtr[] { sid },
                     out referencedDomains,
                     out names
-                )) >= NtStatus.Error)
+                )).IsError())
             {
                 if (status == NtStatus.NoneMapped)
                 {
@@ -393,7 +393,7 @@ namespace ProcessHacker.Native.Objects
                 {
                     LsaReferencedDomainList domains = referencedDomainsAlloc.ReadStruct<LsaReferencedDomainList>();
                     MemoryRegion trustArray = new MemoryRegion(domains.Domains);
-                    LsaTrustInformation trustInfo = trustArray.ReadStruct<LsaTrustInformation>(translatedName.DomainIndex);
+                    LsaTrustInformation trustInfo = trustArray.ReadStruct<LsaTrustInformation>(0, LsaTrustInformation.SizeOf, translatedName.DomainIndex);
 
                     domainName = trustInfo.Name.Read();
                 }
@@ -413,29 +413,26 @@ namespace ProcessHacker.Native.Objects
 
         public string LookupPrivilegeDisplayName(string name)
         {
-            NtStatus status;
-            UnicodeString nameStr;
             IntPtr displayName;
             short language;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                if ((status = Win32.LsaLookupPrivilegeDisplayName(
+                Win32.LsaLookupPrivilegeDisplayName(
                     this,
                     ref nameStr,
                     out displayName,
                     out language
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
                 nameStr.Dispose();
             }
 
-            using (var displayNameAlloc = new LsaMemoryAlloc(displayName))
+            using (LsaMemoryAlloc displayNameAlloc = new LsaMemoryAlloc(displayName))
             {
                 return displayNameAlloc.ReadStruct<UnicodeString>().Read();
             }
@@ -443,17 +440,15 @@ namespace ProcessHacker.Native.Objects
 
         public string LookupPrivilegeName(Luid value)
         {
-            NtStatus status;
             IntPtr name;
 
-            if ((status = Win32.LsaLookupPrivilegeName(
+            Win32.LsaLookupPrivilegeName(
                 this,
                 ref value,
                 out name
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
-            using (var nameAlloc = new LsaMemoryAlloc(name))
+            using (LsaMemoryAlloc nameAlloc = new LsaMemoryAlloc(name))
             {
                 return nameAlloc.ReadStruct<UnicodeString>().Read();
             }
@@ -461,20 +456,17 @@ namespace ProcessHacker.Native.Objects
 
         public Luid LookupPrivilegeValue(string name)
         {
-            NtStatus status;
-            UnicodeString nameStr;
             Luid luid;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                if ((status = Win32.LsaLookupPrivilegeValue(
+                Win32.LsaLookupPrivilegeValue(
                     this,
                     ref nameStr,
                     out luid
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -508,11 +500,10 @@ namespace ProcessHacker.Native.Objects
         public Sid LookupSid(string name, out SidNameUse nameUse, out string domainName)
         {
             NtStatus status;
-            UnicodeString nameStr;
             IntPtr referencedDomains;
             IntPtr sids;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
@@ -523,7 +514,7 @@ namespace ProcessHacker.Native.Objects
                     new UnicodeString[] { nameStr },
                     out referencedDomains,
                     out sids
-                    )) >= NtStatus.Error)
+                    )).IsError())
                 {
                     if (status == NtStatus.NoneMapped)
                     {
@@ -558,7 +549,7 @@ namespace ProcessHacker.Native.Objects
                 {
                     LsaReferencedDomainList domains = referencedDomainsAlloc.ReadStruct<LsaReferencedDomainList>();
                     MemoryRegion trustArray = new MemoryRegion(domains.Domains);
-                    LsaTrustInformation trustInfo = trustArray.ReadStruct<LsaTrustInformation>(translatedSid.DomainIndex);
+                    LsaTrustInformation trustInfo = trustArray.ReadStruct<LsaTrustInformation>(0, LsaTrustInformation.SizeOf, translatedSid.DomainIndex);
 
                     domainName = trustInfo.Name.Read();
                 }
@@ -578,21 +569,17 @@ namespace ProcessHacker.Native.Objects
 
         public void RemovePrivileges(Sid accountSid)
         {
-            NtStatus status;
-
-            if ((status = Win32.LsaRemoveAccountRights(
+            Win32.LsaRemoveAccountRights(
                 this,
                 accountSid,
                 true,
                 null,
                 0
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         public void RemovePrivileges(Sid accountSid, string[] privileges)
         {
-            NtStatus status;
             UnicodeString[] privilegeStrArray = new UnicodeString[privileges.Length];
 
             for (int i = 0; i < privileges.Length; i++)
@@ -600,14 +587,13 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                if ((status = Win32.LsaRemoveAccountRights(
+                Win32.LsaRemoveAccountRights(
                     this,
                     accountSid,
                     false,
                     privilegeStrArray,
                     privilegeStrArray.Length
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -618,47 +604,41 @@ namespace ProcessHacker.Native.Objects
 
         public string RetrievePrivateData(string name)
         {
-            NtStatus status;
-            UnicodeString nameStr;
             IntPtr privateData;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                if ((status = Win32.LsaRetrievePrivateData(
+                Win32.LsaRetrievePrivateData(
                     this,
                     ref nameStr,
                     out privateData
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
                 nameStr.Dispose();
             }
 
-            using (var privateDataAlloc = new LsaMemoryAlloc(privateData))
+            using (LsaMemoryAlloc privateDataAlloc = new LsaMemoryAlloc(privateData))
+            {
                 return privateDataAlloc.ReadStruct<UnicodeString>().Read();
+            }
         }
 
         public void StorePrivateData(string name, string privateData)
         {
-            NtStatus status;
-            UnicodeString nameStr;
-            UnicodeString privateDataStr;
-
-            nameStr = new UnicodeString(name);
-            privateDataStr = new UnicodeString(privateData);
+            UnicodeString nameStr = new UnicodeString(name);
+            UnicodeString privateDataStr = new UnicodeString(privateData);
 
             try
             {
-                if ((status = Win32.LsaStorePrivateData(
+                Win32.LsaStorePrivateData(
                     this,
                     ref nameStr,
                     ref privateDataStr
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {

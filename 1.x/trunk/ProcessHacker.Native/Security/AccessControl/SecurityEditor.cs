@@ -122,27 +122,25 @@ namespace ProcessHacker.Native.Security.AccessControl
             return new SeSecurableObjectWrapper(objectType, openMethod);
         }
 
-        private bool _disposed = false;
-        private ISecurable _securable;
-        private List<MemoryAlloc> _pool = new List<MemoryAlloc>();
-        private string _name;
-        private MemoryAlloc _accessRights;
-        private int _accessRightCount;
+        private bool _disposed;
+        private readonly ISecurable _securable;
+        private readonly List<MemoryAlloc> _pool = new List<MemoryAlloc>();
+        private readonly string _name;
+        private readonly MemoryAlloc _accessRights;
+        private readonly int _accessRightCount;
 
         internal SecurityEditor(ISecurable securable, string name, IEnumerable<AccessEntry> accessEntries)
         {
-            List<SiAccess> accesses;
-
             _securable = securable;
             _name = name;
 
-            accesses = new List<SiAccess>();
+            List<SiAccess> accesses = new List<SiAccess>();
 
             foreach (var entry in accessEntries)
             {
                 if (entry.Mask != 0)
                 {
-                    accesses.Add(new SiAccess()
+                    accesses.Add(new SiAccess
                     {
                         Guid = IntPtr.Zero,
                         Mask = entry.Mask,
@@ -152,7 +150,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 }
             }
 
-            _accessRights = this.AllocateStructArray<SiAccess>(accesses.ToArray());
+            _accessRights = this.AllocateStructArray(SiAccess.SizeOf, accesses.ToArray());
             _accessRightCount = accesses.Count;
         }
 
@@ -160,7 +158,7 @@ namespace ProcessHacker.Native.Security.AccessControl
         {
             if (!_disposed)
             {
-                _pool.ForEach((alloc) => alloc.Dispose());
+                _pool.ForEach(alloc => alloc.Dispose());
                 _pool.Clear();
                 _disposed = true;
             }
@@ -200,39 +198,37 @@ namespace ProcessHacker.Native.Security.AccessControl
             return m;
         }
 
-        private MemoryAlloc AllocateStruct<T>(T value)
-            where T : struct
+        private MemoryAlloc AllocateStruct<T>(int size, T value) where T : struct
         {
-            MemoryAlloc alloc = new MemoryAlloc(Marshal.SizeOf(typeof(T)));
+            MemoryAlloc alloc = new MemoryAlloc(size);
 
-            alloc.WriteStruct<T>(0, value);
+            alloc.WriteStruct(0, size, value);
 
             return alloc;
         }
 
-        private MemoryAlloc AllocateStructFromPool<T>(T value)
+        private MemoryAlloc AllocateStructFromPool<T>(int size, T value)
             where T : struct
         {
-            MemoryAlloc m = this.AllocateStruct<T>(value);
+            MemoryAlloc m = this.AllocateStruct(size, value);
             _pool.Add(m);
             return m;
         }
 
-        private MemoryAlloc AllocateStructArray<T>(T[] value)
-            where T : struct
+        private MemoryAlloc AllocateStructArray<T>(int size, T[] value) where T : struct
         {
-            MemoryAlloc alloc = new MemoryAlloc(Marshal.SizeOf(typeof(T)) * value.Length);
+            MemoryAlloc alloc = new MemoryAlloc(size * value.Length);
 
             for (int i = 0; i < value.Length; i++)
-                alloc.WriteStruct<T>(i, value[i]);
+                alloc.WriteStruct(i, size, value[i]);
 
             return alloc;
         }
 
-        private MemoryAlloc AllocateStructArrayFromPool<T>(T[] value)
+        private MemoryAlloc AllocateStructArrayFromPool<T>(int size, T[] value)
             where T : struct
         {
-            MemoryAlloc m = this.AllocateStructArray<T>(value);
+            MemoryAlloc m = this.AllocateStructArray(size, value);
             _pool.Add(m);
             return m;
         }
@@ -333,10 +329,10 @@ namespace ProcessHacker.Native.Security.AccessControl
 
     public struct AccessEntry
     {
-        private bool _general;
-        private int _mask;
-        private string _name;
-        private bool _specific;
+        private readonly bool _general;
+        private readonly int _mask;
+        private readonly string _name;
+        private readonly bool _specific;
 
         public AccessEntry(string name, object mask, bool general, bool specific)
         {

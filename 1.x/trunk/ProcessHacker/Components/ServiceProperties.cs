@@ -95,7 +95,7 @@ namespace ProcessHacker.Components
 
         public int PID { get; set; }
 
-        public ListView List
+        public ExtendedListView List
         {
             get { return listServices; }
         }

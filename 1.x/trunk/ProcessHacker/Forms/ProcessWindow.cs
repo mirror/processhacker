@@ -120,27 +120,27 @@ namespace ProcessHacker
             SymbolProviderExtensions.ShowWarning(this, false);
         }
 
-        public ListView ThreadListView
+        public ExtendedListView ThreadListView
         {
             get { return listThreads.List; }
         }
 
-        public ListView ModuleListView
+        public ExtendedListView ModuleListView
         {
             get { return listModules.List; }
         }
 
-        public ListView MemoryListView
+        public ExtendedListView MemoryListView
         {
             get { return listMemory.List; }
         }
 
-        public ListView HandleListView
+        public ExtendedListView HandleListView
         {
             get { return listHandles.List; }
         }
 
-        public ListView ServiceListView
+        public ExtendedListView ServiceListView
         {
             get { return _serviceProps.List; }
         }

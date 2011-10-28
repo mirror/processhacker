@@ -37,16 +37,16 @@ namespace Aga.Controls.Tree
 
 		private void FinishResize()
 		{
-			Tree.ChangeInput();
-			Tree.FullUpdate();
-			Tree.OnColumnWidthChanged(Column);
+			this.Tree.ChangeInput();
+			this.Tree.FullUpdate();
+			this.Tree.OnColumnWidthChanged(this.Column);
 		}
 
         public override bool MouseMove(MouseEventArgs args)
         {
-			Column.Width = _initWidth + args.Location.X - _initLocation.X;
-            Tree.UpdateView();
-            Tree.Invalidate();
+			this.Column.Width = _initWidth + args.Location.X - _initLocation.X;
+            this.Tree.UpdateView();
+            this.Tree.Invalidate();
             return true;
         }
 	}

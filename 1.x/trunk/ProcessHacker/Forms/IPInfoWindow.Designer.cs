@@ -1,4 +1,6 @@
-﻿namespace ProcessHacker
+﻿using ProcessHacker.Components;
+
+namespace ProcessHacker
 {
     partial class IPInfoWindow
     {
@@ -30,7 +32,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IPInfoWindow));
             this.buttonClose = new System.Windows.Forms.Button();
-            this.listInfo = new System.Windows.Forms.ListView();
+            this.listInfo = new ExtendedListView();
             this.labelInfo = new System.Windows.Forms.Label();
             this.labelStatus = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -107,7 +109,7 @@
         #endregion
 
         private System.Windows.Forms.Button buttonClose;
-        private System.Windows.Forms.ListView listInfo;
+        private ExtendedListView listInfo;
         private System.Windows.Forms.Label labelInfo;
         private System.Windows.Forms.Label labelStatus;
     }

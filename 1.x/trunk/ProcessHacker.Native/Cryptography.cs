@@ -226,7 +226,7 @@ namespace ProcessHacker.Native
                 strMem.WriteUnicodeString(0, fileName);
                 strMem.WriteInt16(fileName.Length * 2, 0);
 
-                fileInfo.Size = Marshal.SizeOf(fileInfo);
+                fileInfo.Size = WintrustFileInfo.SizeOf;
                 fileInfo.FilePath = strMem;
 
                 WintrustData trustData = new WintrustData();
@@ -243,7 +243,7 @@ namespace ProcessHacker.Native
 
                 using (MemoryAlloc mem = new MemoryAlloc(fileInfo.Size))
                 {
-                    mem.WriteStruct<WintrustFileInfo>(fileInfo);
+                    mem.WriteStruct(fileInfo);
                     trustData.UnionData = mem;
 
                     uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, WintrustActionGenericVerifyV2, ref trustData);
@@ -270,8 +270,7 @@ namespace ProcessHacker.Native
 
             signerName = null;
 
-            using (FileHandle sourceFile = FileHandle.CreateWin32(fileName, FileAccess.GenericRead, FileShareMode.Read,
-                FileCreationDispositionWin32.OpenExisting))
+            using (FileHandle sourceFile = FileHandle.CreateWin32(fileName, FileAccess.GenericRead, FileShareMode.Read, FileCreationDispositionWin32.OpenExisting))
             {
                 byte[] hash = new byte[256];
                 int hashLength = 256;
@@ -311,27 +310,29 @@ namespace ProcessHacker.Native
                     return VerifyResult.NoSignature;
                 }
 
-                WintrustCatalogInfo wci = new WintrustCatalogInfo();
+                WintrustCatalogInfo wci = new WintrustCatalogInfo
+                {
+                    Size = WintrustCatalogInfo.SizeOf, 
+                    CatalogFilePath = ci.CatalogFile, 
+                    MemberFilePath = fileName, 
+                    MemberTag = memberTag.ToString()
+                };
 
-                wci.Size = Marshal.SizeOf(wci);
-                wci.CatalogFilePath = ci.CatalogFile;
-                wci.MemberFilePath = fileName;
-                wci.MemberTag = memberTag.ToString();
-
-                WintrustData trustData = new WintrustData();
-
-                trustData.Size = WintrustData.SizeOf;
-                trustData.UIChoice = 1;
-                trustData.UnionChoice = 2;
-                trustData.RevocationChecks = WtdRevocationChecks.None;
-                trustData.StateAction = WtdStateAction.Verify;
+                WintrustData trustData = new WintrustData
+                {
+                    Size = WintrustData.SizeOf, 
+                    UIChoice = 1, 
+                    UnionChoice = 2, 
+                    RevocationChecks = WtdRevocationChecks.None, 
+                    StateAction = WtdStateAction.Verify
+                };
 
                 if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
                     trustData.ProvFlags = WtdProvFlags.CacheOnlyUrlRetrieval;
 
                 using (MemoryAlloc mem = new MemoryAlloc(wci.Size))
                 {
-                    mem.WriteStruct<WintrustCatalogInfo>(wci);
+                    mem.WriteStruct(wci);
 
                     try
                     {

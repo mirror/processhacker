@@ -90,20 +90,6 @@ namespace ProcessHacker.Components
 
         #region Properties
 
-        public new bool DoubleBuffered
-        {
-            get
-            {
-                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
-                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listServices, null);
-            }
-            set
-            {
-                typeof(ListView).GetProperty("DoubleBuffered",
-                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listServices, value, null);
-            }
-        }
-
         public override bool Focused
         {
             get
@@ -124,7 +110,7 @@ namespace ProcessHacker.Components
             set { listServices.ContextMenuStrip = value; }
         }
 
-        public ListView List
+        public ExtendedListView List
         {
             get { return listServices; }
         }
@@ -136,10 +122,10 @@ namespace ProcessHacker.Components
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified -= new ServiceProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved -= new ServiceProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated -= new ServiceProvider.ProviderUpdateOnce(provider_Updated);
+                    _provider.DictionaryAdded -= this.provider_DictionaryAdded;
+                    _provider.DictionaryModified -= this.provider_DictionaryModified;
+                    _provider.DictionaryRemoved -= this.provider_DictionaryRemoved;
+                    _provider.Updated -= this.provider_Updated;
                 }
 
                 _provider = value;
@@ -150,10 +136,10 @@ namespace ProcessHacker.Components
                 {
                     //_provider.InterlockedExecute(new MethodInvoker(() =>
                     //{
-                        _provider.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                        _provider.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                        _provider.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                        _provider.Updated += new ServiceProvider.ProviderUpdateOnce(provider_Updated);
+                        _provider.DictionaryAdded += this.provider_DictionaryAdded;
+                        _provider.DictionaryModified += this.provider_DictionaryModified;
+                        _provider.DictionaryRemoved += this.provider_DictionaryRemoved;
+                        _provider.Updated += this.provider_Updated;
 
                         foreach (ServiceItem item in _provider.Dictionary.Values)
                         {
@@ -213,13 +199,13 @@ namespace ProcessHacker.Components
             if (_needsSort)
             {
                 this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    if (_needsSort)
                     {
-                        if (_needsSort)
-                        {
-                            listServices.Sort();
-                            _needsSort = false;
-                        }
-                    }));
+                        listServices.Sort();
+                        _needsSort = false;
+                    }
+                }));
             }
 
             _runCount++;
@@ -237,19 +223,16 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(ServiceItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
-                item.RunId > 0 && _runCount > 0);
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, item.RunId > 0 && _runCount > 0)
+            {
+                Name = item.Status.ServiceName, 
+                Text = item.Status.ServiceName
+            };
 
-            litem.Name = item.Status.ServiceName;
-            litem.Text = item.Status.ServiceName;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
-                item.Status.DisplayName));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
-                item.Status.ServiceStatusProcess.ServiceType.ToString()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
-                item.Status.ServiceStatusProcess.CurrentState.ToString()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
-                item.Config.StartType.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Status.DisplayName));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Status.ServiceStatusProcess.ServiceType.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Status.ServiceStatusProcess.CurrentState.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Config.StartType.ToString()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
                 item.Status.ServiceStatusProcess.ProcessID == 0 ? string.Empty :
                 item.Status.ServiceStatusProcess.ProcessID.ToString()));

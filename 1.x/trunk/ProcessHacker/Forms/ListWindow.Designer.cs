@@ -1,4 +1,6 @@
-﻿namespace ProcessHacker
+﻿using ProcessHacker.Components;
+
+namespace ProcessHacker
 {
     partial class ListWindow
     {
@@ -29,7 +31,7 @@
         private void InitializeComponent()
         {
             this.buttonClose = new System.Windows.Forms.Button();
-            this.listView = new System.Windows.Forms.ListView();
+            this.listView = new ExtendedListView();
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnValue = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
@@ -96,7 +98,7 @@
         #endregion
 
         private System.Windows.Forms.Button buttonClose;
-        private System.Windows.Forms.ListView listView;
+        private ExtendedListView listView;
         private System.Windows.Forms.ColumnHeader columnName;
         private System.Windows.Forms.ColumnHeader columnValue;
     }

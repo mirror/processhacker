@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
 using System.Drawing;
@@ -11,7 +9,7 @@ namespace Aga.Controls.Tree
 	{
 		#region NodeCollection
 
-		private class NodeCollection : Collection<Node>
+		public class NodeCollection : Collection<Node>
 		{
 			private Node _owner;
 
@@ -75,20 +73,11 @@ namespace Aga.Controls.Tree
 
 		#region Properties
 
-		private TreeModel _model;
-		internal TreeModel Model
-		{
-			get { return _model; }
-			set { _model = value; }
-		}
+	    internal TreeModel Model { get; set; }
 
-		private NodeCollection _nodes;
-		public Collection<Node> Nodes
-		{
-			get { return _nodes; }
-		}
+	    public NodeCollection Nodes { get; private set; }
 
-		private Node _parent;
+	    private Node _parent;
 		public Node Parent
 		{
 			get { return _parent; }
@@ -108,21 +97,19 @@ namespace Aga.Controls.Tree
 		private int _index = -1;
 		public int Index
 		{
-			get
-			{
-				return _index;
-			}
+			get { return _index; }
 		}
 
 		public Node PreviousNode
 		{
 			get
 			{
-				int index = Index;
-				if (index > 0)
+				int index = this.Index;
+				
+                if (index > 0)
 					return _parent.Nodes[index - 1];
-				else
-					return null;
+
+			    return null;
 			}
 		}
 
@@ -131,10 +118,11 @@ namespace Aga.Controls.Tree
 			get
 			{
 				int index = Index;
+
 				if (index >= 0 && index < _parent.Nodes.Count - 1)
 					return _parent.Nodes[index + 1];
-				else
-					return null;
+			    
+                return null;
 			}
 		}
 
@@ -180,14 +168,9 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		private object _tag;
-		public object Tag
-		{
-			get { return _tag; }
-			set { _tag = value; }
-		}
+	    public object Tag { get; set; }
 
-		public bool IsChecked
+	    public bool IsChecked
 		{
 			get 
 			{ 
@@ -204,10 +187,7 @@ namespace Aga.Controls.Tree
 
 		public virtual bool IsLeaf
 		{
-			get
-			{
-				return false;
-			}
+			get { return false; }
 		}
 
 		#endregion
@@ -220,7 +200,7 @@ namespace Aga.Controls.Tree
 		public Node(string text)
 		{
 			_text = text;
-			_nodes = new NodeCollection(this);
+			this.Nodes = new NodeCollection(this);
 		}
 
 		public override string ToString()
@@ -231,25 +211,29 @@ namespace Aga.Controls.Tree
 		public TreeModel FindModel()
 		{
 			Node node = this;
+
 			while (node != null)
 			{
 				if (node.Model != null)
 					return node.Model;
+
 				node = node.Parent;
 			}
+
 			return null;
 		}
 
 		protected void NotifyModel()
 		{
 			TreeModel model = FindModel();
+
 			if (model != null && Parent != null)
 			{
 				TreePath path = model.GetPath(Parent);
-				if (path != null)
+				
+                if (path != null)
 				{
-					TreeModelEventArgs args = new TreeModelEventArgs(path, new int[] { Index }, new object[] { this });
-					model.OnNodesChanged(args);
+					model.OnNodesChanged(new TreeModelEventArgs(path, new int[] { Index }, new object[] { this }));
 				}
 			}
 		}

@@ -275,11 +275,9 @@ namespace ProcessHacker.Native.Objects
                     StartupFlags.ForceOffFeedback)
                     processMsg.ProcessHandle = processMsg.ProcessHandle.And((1).ToIntPtr().Not());
 
-                using (var data = new MemoryAlloc(
-                    CsrApiMsg.ApiMessageDataOffset + Marshal.SizeOf(typeof(BaseCreateProcessMsg))
-                    ))
+                using (MemoryAlloc data = new MemoryAlloc(CsrApiMsg.ApiMessageDataOffset + BaseCreateProcessMsg.SizeOf))
                 {
-                    data.WriteStruct<BaseCreateProcessMsg>(CsrApiMsg.ApiMessageDataOffset, 0, processMsg);
+                    data.WriteStruct(CsrApiMsg.ApiMessageDataOffset, BaseCreateProcessMsg.SizeOf, 0, processMsg);
 
                     Win32.CsrClientCallServer(
                         data,
@@ -290,7 +288,7 @@ namespace ProcessHacker.Native.Objects
 
                     NtStatus status = (NtStatus)data.ReadStruct<CsrApiMsg>().ReturnValue;
 
-                    if (status >= NtStatus.Error)
+                    if (status.IsError())
                     {
                         phandle.Terminate(status);
                         Win32.Throw(status);
@@ -1393,8 +1391,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets a GUI handle count.
         /// </summary>
-        /// <param name="userObjects">If true, returns the number of USER handles. Otherwise, returns 
-        /// the number of GDI handles.</param>
+        /// <param name="userObjects">If true, returns the number of USER handles. Otherwise, returns the number of GDI handles.</param>
         /// <returns>A handle count.</returns>
         public int GetGuiResources(bool userObjects)
         {
@@ -1418,7 +1415,7 @@ namespace ProcessHacker.Native.Objects
             int returnLength = 0;
             int attempts = 0;
 
-            using (var data = new MemoryAlloc(0x1000))
+            using (MemoryAlloc data = new MemoryAlloc(0x1000))
             {
                 while (true)
                 {
@@ -1446,7 +1443,7 @@ namespace ProcessHacker.Native.Objects
                     ProcessHandleInformation[] handles = new ProcessHandleInformation[handleCount];
 
                     for (int i = 0; i < handleCount; i++)
-                        handles[i] = data.ReadStruct<ProcessHandleInformation>(sizeof(int), i);
+                        handles[i] = data.ReadStruct<ProcessHandleInformation>(sizeof(int), ProcessHandleInformation.SizeOf, i);
 
                     return handles;
                 }
@@ -1477,15 +1474,15 @@ namespace ProcessHacker.Native.Objects
             NtStatus status = NtStatus.Success;
             int retLength;
 
-            using (var data = new MemoryAlloc(0x10000))
+            using (MemoryAlloc data = new MemoryAlloc(0x10000))
             {
-                var query = new ProcessHandleTracingQuery();
+                ProcessHandleTracingQuery query = new ProcessHandleTracingQuery();
 
                 // If Handle is not NULL, NtQueryInformationProcess will 
                 // get a specific stack trace. Otherwise, it will get 
                 // all of the stack traces.
                 query.Handle = handle;
-                data.WriteStruct<ProcessHandleTracingQuery>(query);
+                data.WriteStruct(query);
 
                 for (int i = 0; i < 8; i++)
                 {
@@ -1627,13 +1624,14 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Gets the process' I/O priority, ranging from 0-7.
+        /// Gets/Sets the process' I/O priority, ranging from 0-7.
         /// </summary>
         /// <returns></returns>
-        public int GetIoPriority()
+        public int IoPriority
         {
-            return this.GetInformationInt32(ProcessInformationClass.ProcessIoPriority);
-        }
+            get { return this.GetInformationInt32(ProcessInformationClass.ProcessIoPriority); }
+            set { this.SetInformationInt32(ProcessInformationClass.ProcessIoPriority, value); }
+    }
 
         /// <summary>
         /// Gets I/O statistics for the process.
@@ -1839,7 +1837,7 @@ namespace ProcessHacker.Native.Objects
 
             Win32.NtGetNextThread(
                 this,
-                threadHandle != null ? threadHandle : IntPtr.Zero,
+                threadHandle ?? IntPtr.Zero,
                 access,
                 0,
                 0,
@@ -1952,7 +1950,8 @@ namespace ProcessHacker.Native.Objects
 
                 if (zeroReached)
                     break;
-                else if (value == IntPtr.Zero)
+                
+                if (value == IntPtr.Zero)
                     zeroReached = true;
             }
 
@@ -2021,17 +2020,17 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the process' unique identifier.
         /// </summary>
-        public int GetProcessId()
+        public int ProcessId
         {
-            return this.GetBasicInformation().UniqueProcessId.ToInt32();
+            get { return this.GetBasicInformation().UniqueProcessId.ToInt32(); }
         }
 
         /// <summary>
         /// Gets the process' session ID.
         /// </summary>
-        public int GetSessionId()
+        public int SessionId
         {
-            return this.GetInformationInt32(ProcessInformationClass.ProcessSessionInformation);
+            get { return this.GetInformationInt32(ProcessInformationClass.ProcessSessionInformation); }
         }
 
         /// <summary>
@@ -2120,11 +2119,14 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Gets whether the system will crash upon the process being terminated.
+        /// Gets/Sets whether the system will crash upon the process being terminated.
+        /// This function requires SeTcbPrivilege.
+        /// <param name="value">Whether the system will crash upon the process being terminated.</param>
         /// </summary>
-        public bool IsCritical()
+        public bool IsCritical
         {
-            return this.GetInformationInt32(ProcessInformationClass.ProcessBreakOnTermination) != 0;
+            get { return this.GetInformationInt32(ProcessInformationClass.ProcessBreakOnTermination) != 0; }
+            set {  this.SetInformationInt32(ProcessInformationClass.ProcessBreakOnTermination, value ? 1 : 0); }
         }
 
         /// <summary>
@@ -2381,15 +2383,6 @@ namespace ProcessHacker.Native.Objects
             this.SetInformationInt32(ProcessInformationClass.ProcessBasePriority, basePriority);
         }
 
-        /// <summary>
-        /// Sets whether the system will crash upon the process being terminated. 
-        /// This function requires SeTcbPrivilege.
-        /// </summary>
-        /// <param name="critical">Whether the system will crash upon the process being terminated.</param>
-        public void SetCritical(bool critical)
-        {
-            this.SetInformationInt32(ProcessInformationClass.ProcessBreakOnTermination, critical ? 1 : 0);
-        }
 
         /// <summary>
         /// Sets the process' DEP policy.
@@ -2440,11 +2433,6 @@ namespace ProcessHacker.Native.Objects
                     sizeof(int)
                     ).ThrowIf();
             }
-        }
-
-        public void SetIoPriority(int ioPriority)
-        {
-            this.SetInformationInt32(ProcessInformationClass.ProcessIoPriority, ioPriority);
         }
 
         /// <summary>
@@ -2634,7 +2622,7 @@ namespace ProcessHacker.Native.Objects
         {
             if (!Win32.MiniDumpWriteDump(
                 this,
-                this.GetProcessId(),
+                this.ProcessId,
                 fileHandle,
                 type,
                 IntPtr.Zero,
@@ -2715,10 +2703,10 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class ProcessHandleTrace
     {
-        private ClientId _clientId;
-        private IntPtr _handle;
-        private IntPtr[] _stack;
-        private HandleTraceType _type;
+        private readonly ClientId _clientId;
+        private readonly IntPtr _handle;
+        private readonly IntPtr[] _stack;
+        private readonly HandleTraceType _type;
 
         internal ProcessHandleTrace(ProcessHandleTracingEntry entry)
         {
@@ -2776,16 +2764,16 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class ProcessHandleTraceCollection : ReadOnlyCollection<ProcessHandleTrace>
     {
-        private IntPtr _handle;
+        private readonly IntPtr _handle;
 
         internal ProcessHandleTraceCollection(MemoryAlloc data)
             : base(new List<ProcessHandleTrace>())
         {
-            if (data.Size < Marshal.SizeOf(typeof(ProcessHandleTracingQuery)))
+            if (data.Size < ProcessHandleTracingEntry.SizeOf)
                 throw new ArgumentException("Data memory allocation is too small.");
 
             // Read the structure.
-            var query = data.ReadStruct<ProcessHandleTracingQuery>();
+            ProcessHandleTracingQuery query = data.ReadStruct<ProcessHandleTracingQuery>();
 
             _handle = query.Handle;
 
@@ -2794,8 +2782,9 @@ namespace ProcessHacker.Native.Objects
 
             for (int i = 0; i < query.TotalTraces; i++)
             {
-                var entry = data.ReadStruct<ProcessHandleTracingEntry>(
-                    ProcessHandleTracingQuery.HandleTraceOffset,
+                ProcessHandleTracingEntry entry = data.ReadStruct<ProcessHandleTracingEntry>(
+                    ProcessHandleTracingQuery.HandleTraceOffset, 
+                    ProcessHandleTracingEntry.SizeOf,
                     i
                     );
 

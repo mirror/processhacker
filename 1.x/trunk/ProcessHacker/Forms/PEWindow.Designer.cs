@@ -1,4 +1,6 @@
-﻿namespace ProcessHacker
+﻿using ProcessHacker.Components;
+
+namespace ProcessHacker
 {
     partial class PEWindow
     {
@@ -35,27 +37,27 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PEWindow));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabCOFFHeader = new System.Windows.Forms.TabPage();
-            this.listCOFFHeader = new System.Windows.Forms.ListView();
+            this.listCOFFHeader = new ExtendedListView();
             this.columnCHName = new System.Windows.Forms.ColumnHeader();
             this.columnCHValue = new System.Windows.Forms.ColumnHeader();
             this.tabCOFFOptionalHeader = new System.Windows.Forms.TabPage();
-            this.listCOFFOptionalHeader = new System.Windows.Forms.ListView();
+            this.listCOFFOptionalHeader = new ExtendedListView();
             this.columnCOHName = new System.Windows.Forms.ColumnHeader();
             this.columnCOHValue = new System.Windows.Forms.ColumnHeader();
             this.tabImageData = new System.Windows.Forms.TabPage();
-            this.listImageData = new System.Windows.Forms.ListView();
+            this.listImageData = new ExtendedListView();
             this.columnIDName = new System.Windows.Forms.ColumnHeader();
             this.columnIDRVA = new System.Windows.Forms.ColumnHeader();
             this.columnIDSize = new System.Windows.Forms.ColumnHeader();
             this.tabSections = new System.Windows.Forms.TabPage();
-            this.listSections = new System.Windows.Forms.ListView();
+            this.listSections = new ExtendedListView();
             this.columnSectionName = new System.Windows.Forms.ColumnHeader();
             this.columnSectionVA = new System.Windows.Forms.ColumnHeader();
             this.columnSectionVS = new System.Windows.Forms.ColumnHeader();
             this.columnSectionFileAddress = new System.Windows.Forms.ColumnHeader();
             this.columnSectionCharacteristics = new System.Windows.Forms.ColumnHeader();
             this.tabExports = new System.Windows.Forms.TabPage();
-            this.listExports = new System.Windows.Forms.ListView();
+            this.listExports = new ExtendedListView();
             this.columnExportOrdinal = new System.Windows.Forms.ColumnHeader();
             this.columnExportName = new System.Windows.Forms.ColumnHeader();
             this.columnExportFileAddress = new System.Windows.Forms.ColumnHeader();
@@ -385,24 +387,24 @@
         private System.Windows.Forms.TabPage tabSections;
         private System.Windows.Forms.TabPage tabExports;
         private System.Windows.Forms.TabPage tabImports;
-        private System.Windows.Forms.ListView listExports;
+        private ExtendedListView listExports;
         private System.Windows.Forms.ColumnHeader columnExportName;
         private System.Windows.Forms.ColumnHeader columnExportOrdinal;
         private System.Windows.Forms.ColumnHeader columnExportFileAddress;
-        private System.Windows.Forms.ListView listCOFFHeader;
+        private ExtendedListView listCOFFHeader;
         private System.Windows.Forms.ColumnHeader columnCHName;
         private System.Windows.Forms.ColumnHeader columnCHValue;
-        private System.Windows.Forms.ListView listCOFFOptionalHeader;
+        private ExtendedListView listCOFFOptionalHeader;
         private System.Windows.Forms.ColumnHeader columnCOHName;
         private System.Windows.Forms.ColumnHeader columnCOHValue;
-        private System.Windows.Forms.ListView listSections;
+        private ExtendedListView listSections;
         private System.Windows.Forms.ColumnHeader columnSectionName;
         private System.Windows.Forms.ColumnHeader columnSectionVA;
         private System.Windows.Forms.ColumnHeader columnSectionFileAddress;
         private System.Windows.Forms.ColumnHeader columnSectionCharacteristics;
         private System.Windows.Forms.ColumnHeader columnSectionVS;
         private System.Windows.Forms.TabPage tabImageData;
-        private System.Windows.Forms.ListView listImageData;
+        private ExtendedListView listImageData;
         private System.Windows.Forms.ColumnHeader columnIDName;
         private System.Windows.Forms.ColumnHeader columnIDRVA;
         private System.Windows.Forms.ColumnHeader columnIDSize;

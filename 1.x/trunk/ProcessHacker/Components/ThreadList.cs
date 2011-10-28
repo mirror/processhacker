@@ -209,32 +209,19 @@ namespace ProcessHacker.Components
 
             if (!e.Handled)
             {
-                if (e.KeyCode == Keys.Enter)
+                switch (e.KeyCode)
                 {
-                    inspectThreadMenuItem_Click(null, null);
-                }
-                else if (e.KeyCode == Keys.Delete)
-                {
-                    terminateThreadMenuItem_Click(null, null);
+                    case Keys.Enter:
+                        this.inspectThreadMenuItem_Click(null, null);
+                        break;
+                    case Keys.Delete:
+                        this.terminateThreadMenuItem_Click(null, null);
+                        break;
                 }
             }
         }
 
         #region Properties
-
-        public new bool DoubleBuffered
-        {
-            get
-            {
-                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
-                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listThreads, null);
-            }
-            set
-            {
-                typeof(ListView).GetProperty("DoubleBuffered",
-                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listThreads, value, null);
-            }
-        }
 
         public override bool Focused
         {
@@ -256,7 +243,7 @@ namespace ProcessHacker.Components
             set { listThreads.ContextMenuStrip = value; }
         }
 
-        public ListView List
+        public ExtendedListView List
         {
             get { return listThreads; }
         }
@@ -270,11 +257,11 @@ namespace ProcessHacker.Components
 
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new ThreadProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified -= new ThreadProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved -= new ThreadProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated -= new ThreadProvider.ProviderUpdateOnce(provider_Updated);
-                    _provider.LoadingStateChanged -= new ThreadProvider.LoadingStateChangedDelegate(provider_LoadingStateChanged);
+                    _provider.DictionaryAdded -= this.provider_DictionaryAdded;
+                    _provider.DictionaryModified -= this.provider_DictionaryModified;
+                    _provider.DictionaryRemoved -= this.provider_DictionaryRemoved;
+                    _provider.Updated -= this.provider_Updated;
+                    _provider.LoadingStateChanged -= this.provider_LoadingStateChanged;
                 }
 
                 _provider = value;
@@ -306,11 +293,11 @@ namespace ProcessHacker.Components
                     else
                         listThreads.Columns[1].Text = "Context Switches Delta";
 
-                    _provider.DictionaryAdded += new ThreadProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified += new ThreadProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved += new ThreadProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated += new ThreadProvider.ProviderUpdateOnce(provider_Updated);
-                    _provider.LoadingStateChanged += new ThreadProvider.LoadingStateChangedDelegate(provider_LoadingStateChanged);
+                    _provider.DictionaryAdded += this.provider_DictionaryAdded;
+                    _provider.DictionaryModified += this.provider_DictionaryModified;
+                    _provider.DictionaryRemoved += this.provider_DictionaryRemoved;
+                    _provider.Updated += this.provider_Updated;
+                    _provider.LoadingStateChanged += this.provider_LoadingStateChanged;
 
                     this.EnableDisableMenuItems();
                 }
@@ -368,13 +355,13 @@ namespace ProcessHacker.Components
             if (_needsSort)
             {
                 this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    if (_needsSort)
                     {
-                        if (_needsSort)
-                        {
-                            listThreads.Sort();
-                            _needsSort = false;
-                        }
-                    }));
+                        listThreads.Sort();
+                        _needsSort = false;
+                    }
+                }));
             }
 
             _runCount++;

@@ -12,58 +12,58 @@ namespace Aga.Controls.Tree
 	/// </summary>
 	public class TreeModel : ITreeModel
 	{
-		private Node _root;
-		public Node Root
-		{
-			get { return _root; }
-		}
+	    public Node Root { get; private set; }
 
-		public Collection<Node> Nodes
+	    public Collection<Node> Nodes
 		{
-			get { return _root.Nodes; }
+			get { return this.Root.Nodes; }
 		}
 
 		public TreeModel()
 		{
-			_root = new Node();
-			_root.Model = this;
+			this.Root = new Node 
+            {
+                Model = this
+            };
 		}
 
 		public TreePath GetPath(Node node)
 		{
-			if (node == _root)
+			if (node == this.Root)
 				return TreePath.Empty;
-			else
-			{
-				Stack<object> stack = new Stack<object>();
-				while (node != _root)
-				{
-					stack.Push(node);
-					node = node.Parent;
-				}
-				return new TreePath(stack.ToArray());
-			}
+		    
+            Stack<object> stack = new Stack<object>();
+		   
+            while (node != this.Root)
+		    {
+		        stack.Push(node);
+		        node = node.Parent;
+		    }
+
+		    return new TreePath(stack.ToArray());
 		}
 
 		public Node FindNode(TreePath path)
 		{
 			if (path.IsEmpty())
-				return _root;
-			else
-				return FindNode(_root, path, 0);
+				return this.Root;
+
+            return FindNode(this.Root, path, 0);
 		}
 
 		private Node FindNode(Node root, TreePath path, int level)
 		{
-			foreach (Node node in root.Nodes)
-				if (node == path.FullPath[level])
-				{
-					if (level == path.FullPath.Length - 1)
-						return node;
-					else
-						return FindNode(node, path, level + 1);
-				}
-			return null;
+            foreach (Node node in root.Nodes)
+            {
+                if (node == path.FullPath[level])
+                {
+                    if (level == path.FullPath.Length - 1)
+                        return node;
+
+                    return FindNode(node, path, level + 1);
+                }
+            }
+		    return null;
 		}
 
 		#region ITreeModel Members
@@ -71,11 +71,14 @@ namespace Aga.Controls.Tree
 		public System.Collections.IEnumerable GetChildren(TreePath treePath)
 		{
 			Node node = FindNode(treePath);
-			if (node != null)
-				foreach (Node n in node.Nodes)
-					yield return n;
-			else
-				yield break;
+
+            if (node != null)
+            {
+                foreach (Node n in node.Nodes)
+                    yield return n;
+            }
+            else
+                yield break;
 		}
 
 		public bool IsLeaf(TreePath treePath)
@@ -83,8 +86,8 @@ namespace Aga.Controls.Tree
 			Node node = FindNode(treePath);
 			if (node != null)
 				return node.IsLeaf;
-			else
-				throw new ArgumentException("treePath");
+		
+            throw new ArgumentException("treePath");
 		}
 
 		public event EventHandler<TreeModelEventArgs> NodesChanged;

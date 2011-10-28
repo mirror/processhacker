@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Aga.Controls.Tree
 {
@@ -29,12 +27,4 @@ namespace Aga.Controls.Tree
 		None, Standard, Continuous
 	}
 
-	[Flags]
-    public enum GridLineStyle
-    {
-		None = 0, 
-		Horizontal = 1, 
-		Vertical = 2, 
-		HorizontalAndVertical = 3
-    }
 }

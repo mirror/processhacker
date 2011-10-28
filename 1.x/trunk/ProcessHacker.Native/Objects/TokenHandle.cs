@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 using ProcessHacker.Native.Security.AccessControl;
@@ -251,10 +250,11 @@ namespace ProcessHacker.Native.Objects
 
         public void AdjustGroups(Sid[] groups)
         {
-            TokenGroups tokenGroups = new TokenGroups();
-
-            tokenGroups.GroupCount = groups.Length;
-            tokenGroups.Groups = new SidAndAttributes[groups.Length];
+            TokenGroups tokenGroups = new TokenGroups
+            {
+                GroupCount = groups.Length, 
+                Groups = new SidAndAttributes[groups.Length]
+            };
 
             for (int i = 0; i < groups.Length; i++)
                 tokenGroups.Groups[i] = groups[i].ToSidAndAttributes();
@@ -370,8 +370,7 @@ namespace ProcessHacker.Native.Objects
 
                 using (MemoryAlloc data = new MemoryAlloc(retLen))
                 {
-                    if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenOwner, data,
-                        data.Size, out retLen))
+                    if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenOwner, data, data.Size, out retLen))
                         Win32.Throw();
 
                     return new Sid(data.ReadIntPtr(0));
@@ -423,7 +422,7 @@ namespace ProcessHacker.Native.Objects
 
                     for (int i = 0; i < count; i++)
                     {
-                        var laa = data.ReadStruct<LuidAndAttributes>(sizeof(int), i);
+                        var laa = data.ReadStruct<LuidAndAttributes>(sizeof(int), LuidAndAttributes.SizeOf, i);
                         privileges[i] = new Privilege(this, laa.Luid, laa.Attributes);
                     }
 
@@ -545,7 +544,7 @@ namespace ProcessHacker.Native.Objects
 
         private Sid[] GetGroupsInternal(TokenInformationClass infoClass)
         {
-            int retLen = 0;
+            int retLen;
 
             Win32.GetTokenInformation(this, infoClass, IntPtr.Zero, 0, out retLen);
 
@@ -555,12 +554,12 @@ namespace ProcessHacker.Native.Objects
                     data.Size, out retLen))
                     Win32.Throw();
 
-                int count = data.ReadStruct<TokenGroups>().GroupCount;
+                int count = data.ReadStruct<TokenGroups>(0, TokenGroups.SizeOf, 0).GroupCount;
                 Sid[] sids = new Sid[count];
 
                 for (int i = 0; i < count; i++)
                 {
-                    var saa = data.ReadStruct<SidAndAttributes>(TokenGroups.GroupsOffset, i);
+                    var saa = data.ReadStruct<SidAndAttributes>(TokenGroups.GroupsOffset, SidAndAttributes.SizeOf, i);
                     sids[i] = new Sid(saa.Sid, saa.Attributes);
                 }
 
@@ -663,11 +662,12 @@ namespace ProcessHacker.Native.Objects
 
         public NtStatus TrySetPrivilege(Luid privilegeLuid, SePrivilegeAttributes attributes)
         {
-            TokenPrivileges tkp = new TokenPrivileges();
+            TokenPrivileges tkp = new TokenPrivileges
+            {
+                Privileges = new LuidAndAttributes[1], 
+                PrivilegeCount = 1
+            };
 
-            tkp.Privileges = new LuidAndAttributes[1];
-
-            tkp.PrivilegeCount = 1;
             tkp.Privileges[0].Attributes = attributes;
             tkp.Privileges[0].Luid = privilegeLuid;
 

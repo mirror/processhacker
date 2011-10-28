@@ -74,7 +74,7 @@ namespace ProcessHacker.UI.Actions
                 {
                     using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
                     {
-                        if (phandle.IsCritical())
+                        if (phandle.IsCritical)
                         {
                             critical = true;
                             break;
@@ -126,7 +126,7 @@ namespace ProcessHacker.UI.Actions
                         try
                         {
                             using (var phandle = new ProcessHandle(pids[i], ProcessAccess.QueryInformation))
-                                criticalPid = phandle.IsCritical();
+                                criticalPid = phandle.IsCritical;
                         }
                         catch
                         {

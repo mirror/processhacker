@@ -273,12 +273,12 @@ namespace ProcessHacker.Native.Objects
 
         private FilePipeInformation GetInformation()
         {
-            return this.QueryStruct<FilePipeInformation>(FileInformationClass.FilePipeInformation);
+            return this.QueryStruct<FilePipeInformation>(FileInformationClass.FilePipeInformation, FilePipeInformation.SizeOf);
         }
 
         private FilePipeLocalInformation GetLocalInformation()
         {
-            return this.QueryStruct<FilePipeLocalInformation>(FileInformationClass.FilePipeLocalInformation);
+            return this.QueryStruct<FilePipeLocalInformation>(FileInformationClass.FilePipeLocalInformation, FilePipeLocalInformation.SizeOf);
         }
 
         public PipeType GetPipeType()
@@ -293,16 +293,14 @@ namespace ProcessHacker.Native.Objects
 
         public bool Listen()
         {
-            NtStatus status;
             int returnLength;
 
-            status = this.FsControl(FsCtlListen, IntPtr.Zero, 0, IntPtr.Zero, 0, out returnLength);
+            NtStatus status = this.FsControl(FsCtlListen, IntPtr.Zero, 0, IntPtr.Zero, 0, out returnLength);
 
             if (status == NtStatus.PipeConnected)
                 return true;
 
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+            status.ThrowIf();
 
             return false;
         }
@@ -367,7 +365,7 @@ namespace ProcessHacker.Native.Objects
 
         public int Peek(IntPtr buffer, int length, out int bytesAvailable, out int bytesLeftInMessage)
         {
-            using (var data = new MemoryAlloc(FilePipePeekBuffer.DataOffset + length))
+            using (MemoryAlloc data = new MemoryAlloc(FilePipePeekBuffer.DataOffset + length))
             {
                 NtStatus status;
                 int returnLength;
@@ -379,8 +377,7 @@ namespace ProcessHacker.Native.Objects
                 if (status == NtStatus.BufferOverflow)
                     status = NtStatus.Success;
 
-                if (status >= NtStatus.Error)
-                    Win32.Throw(status);
+                status.ThrowIf();
 
                 FilePipePeekBuffer info = data.ReadStruct<FilePipePeekBuffer>();
                 int bytesRead;

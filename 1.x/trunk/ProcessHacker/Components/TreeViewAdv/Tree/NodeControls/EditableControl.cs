@@ -14,48 +14,38 @@ namespace Aga.Controls.Tree.NodeControls
 
 		#region Properties
 
-		private TreeNodeAdv _editNode;
-		protected TreeNodeAdv EditNode
-		{
-			get { return _editNode; }
-		}
+	    protected TreeNodeAdv EditNode { get; private set; }
+	    protected Control CurrentEditor { get; private set; }
 
-		private Control _editor;
-		protected Control CurrentEditor
-		{
-			get { return _editor; }
-		}
+	    [DefaultValue(false)]
+	    public bool EditOnClick { get; set; }
 
-		private bool _editOnClick = false;
-		[DefaultValue(false)]
-		public bool EditOnClick
-		{
-			get { return _editOnClick; }
-			set { _editOnClick = value; }
-		}
-		
-		#endregion
+	    #endregion
 
 		protected EditableControl()
 		{
-			_timer = new Timer();
-			_timer.Interval = 1000;
-			_timer.Tick += new EventHandler(TimerTick);
+			_timer = new Timer
+			{
+			    Interval = 1000
+			};
+
+		    _timer.Tick += this.TimerTick;
 		}
 
 		private void TimerTick(object sender, EventArgs e)
 		{
 			_timer.Stop();
+
 			if (_editFlag)
 				BeginEditByUser();
-			_editFlag = false;
+			
+            _editFlag = false;
 		}
 
 		public void SetEditorBounds(EditorContext context)
 		{
 			Size size = CalculateEditorSize(context);
-			context.Editor.Bounds = new Rectangle(context.Bounds.X, context.Bounds.Y,
-				Math.Min(size.Width, context.Bounds.Width), context.Bounds.Height);
+			context.Editor.Bounds = new Rectangle(context.Bounds.X, context.Bounds.Y, Math.Min(size.Width, context.Bounds.Width), context.Bounds.Height);
 		}
 
 		protected abstract Size CalculateEditorSize(EditorContext context);
@@ -77,43 +67,49 @@ namespace Aga.Controls.Tree.NodeControls
 			{
 				CancelEventArgs args = new CancelEventArgs();
 				OnEditorShowing(args);
+
 				if (!args.Cancel)
 				{
-					_editor = CreateEditor(Parent.CurrentNode);
-					_editor.Validating += new CancelEventHandler(EditorValidating);
-					_editor.KeyDown += new KeyEventHandler(EditorKeyDown);
-					_editNode = Parent.CurrentNode;
-					Parent.DisplayEditor(_editor, this);
+					this.CurrentEditor = CreateEditor(Parent.CurrentNode);
+					this.CurrentEditor.Validating += this.EditorValidating;
+					this.CurrentEditor.KeyDown += this.EditorKeyDown;
+					this.EditNode = Parent.CurrentNode;
+					Parent.DisplayEditor(this.CurrentEditor, this);
 				}
 			}
 		}
 
 		private void EditorKeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Escape)
-				EndEdit(false);
-			else if (e.KeyCode == Keys.Enter)
-				EndEdit(true);
+		    switch (e.KeyCode)
+		    {
+		        case Keys.Escape:
+		            this.EndEdit(false);
+		            break;
+		        case Keys.Enter:
+		            this.EndEdit(true);
+		            break;
+		    }
 		}
 
-		private void EditorValidating(object sender, CancelEventArgs e)
+	    private void EditorValidating(object sender, CancelEventArgs e)
 		{
 			ApplyChanges();
 		}
 
 		internal void HideEditor(Control editor)
 		{
-			editor.Validating -= new CancelEventHandler(EditorValidating);
+			editor.Validating -= this.EditorValidating;
 			editor.Parent = null;
 			editor.Dispose();
-			_editNode = null;
+			this.EditNode = null;
 			OnEditorHided();
 		}
 
 		public void EndEdit(bool applyChanges)
 		{
 			if (!applyChanges)
-				_editor.Validating -= new CancelEventHandler(EditorValidating);
+				this.CurrentEditor.Validating -= this.EditorValidating;
 			Parent.Focus();
 		}
 
@@ -125,7 +121,7 @@ namespace Aga.Controls.Tree.NodeControls
 		{
 			try
 			{
-				DoApplyChanges(_editNode, _editor);
+				DoApplyChanges(this.EditNode, this.CurrentEditor);
 			}
 			catch (ArgumentException ex)
 			{
@@ -139,15 +135,14 @@ namespace Aga.Controls.Tree.NodeControls
 
 		public override void MouseDown(TreeNodeAdvMouseEventArgs args)
 		{
-			_editFlag = (!EditOnClick && args.Button == MouseButtons.Left 
+			_editFlag = (!this.EditOnClick && args.Button == MouseButtons.Left 
 				&& args.ModifierKeys == Keys.None && args.Node.IsSelected);
 		}
 
 		public override void MouseUp(TreeNodeAdvMouseEventArgs args)
 		{
-			if (EditOnClick && args.Button == MouseButtons.Left && args.ModifierKeys == Keys.None)
+			if (this.EditOnClick && args.Button == MouseButtons.Left && args.ModifierKeys == Keys.None)
 			{
-				Parent.ItemDragMode = false;
 				BeginEdit();
 				args.Handled = true;
 			}

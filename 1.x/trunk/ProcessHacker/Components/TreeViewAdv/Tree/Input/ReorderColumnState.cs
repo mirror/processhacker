@@ -39,7 +39,7 @@ namespace Aga.Controls.Tree
 		public ReorderColumnState(TreeViewAdv tree, TreeColumn column, Point initialMouseLocation)
 			: base(tree, column)
 		{
-			_location = new Point(initialMouseLocation.X + Tree.OffsetX, 0);
+			_location = new Point(initialMouseLocation.X + this.Tree.OffsetX, 0);
 			_dragOffset = tree.GetColumnX(column) - initialMouseLocation.X;
 			_ghostImage = column.CreateGhostImage(new Rectangle(0, 0, column.Width, tree.ColumnHeaderHeight), tree.Font);
 		}
@@ -63,9 +63,9 @@ namespace Aga.Controls.Tree
 		public override bool MouseMove(MouseEventArgs args)
 		{
 			_dropColumn = null;
-			_location = new Point(args.X + Tree.OffsetX, 0);
+			_location = new Point(args.X + this.Tree.OffsetX, 0);
 			int x = 0;
-			foreach (TreeColumn c in Tree.Columns)
+			foreach (TreeColumn c in this.Tree.Columns)
 			{
 				if (c.IsVisible)
 				{
@@ -77,24 +77,24 @@ namespace Aga.Controls.Tree
 					x += c.Width;
 				}
 			}
-			Tree.UpdateHeaders();
+			this.Tree.UpdateHeaders();
 			return true;
 		}
 
 		private void FinishResize()
 		{
-			Tree.ChangeInput();
-			if (Column == DropColumn)
-				Tree.UpdateView();
+			this.Tree.ChangeInput();
+			if (this.Column == DropColumn)
+				this.Tree.UpdateView();
 			else
 			{
-				Tree.Columns.Remove(Column);
+				this.Tree.Columns.Remove(this.Column);
 				if (DropColumn == null)
-					Tree.Columns.Add(Column);
+					this.Tree.Columns.Add(this.Column);
 				else
-					Tree.Columns.Insert(Tree.Columns.IndexOf(DropColumn), Column);
+					this.Tree.Columns.Insert(this.Tree.Columns.IndexOf(DropColumn), this.Column);
 
-				Tree.OnColumnReordered(Column);
+				this.Tree.OnColumnReordered(this.Column);
 			}
 		}
 	}

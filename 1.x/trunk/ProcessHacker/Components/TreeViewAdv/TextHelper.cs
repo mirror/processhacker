@@ -10,36 +10,67 @@ namespace Aga.Controls
 	{
 		public static StringAlignment TranslateAligment(HorizontalAlignment aligment)
 		{
-			if (aligment == HorizontalAlignment.Left)
-				return StringAlignment.Near;
-			else if (aligment == HorizontalAlignment.Right)
-				return StringAlignment.Far;
-			else
-				return StringAlignment.Center;
+		    switch (aligment)
+		    {
+                case HorizontalAlignment.Left:
+		            {
+		                return StringAlignment.Near;
+		            }
+                case HorizontalAlignment.Right:
+		            {
+		                return StringAlignment.Far;
+		            }
+                default:
+		            {
+		                return StringAlignment.Center;
+		            }
+		    }
 		}
 
-        public static TextFormatFlags TranslateAligmentToFlag(HorizontalAlignment aligment)
+	    public static TextFormatFlags TranslateAligmentToFlag(HorizontalAlignment aligment)
         {
-            if (aligment == HorizontalAlignment.Left)
-                return TextFormatFlags.Left;
-            else if (aligment == HorizontalAlignment.Right)
-                return TextFormatFlags.Right;
-            else
-                return TextFormatFlags.HorizontalCenter;
+            switch (aligment)
+            {
+                case HorizontalAlignment.Left:
+                    {
+                        return TextFormatFlags.Left;
+                    }
+                case HorizontalAlignment.Right:
+                    {
+                        return TextFormatFlags.Right;
+                    }
+                default:
+                    {
+                        return TextFormatFlags.HorizontalCenter;
+                    }
+            }
         }
 
-		public static TextFormatFlags TranslateTrimmingToFlag(StringTrimming trimming)
+	    public static TextFormatFlags TranslateTrimmingToFlag(StringTrimming trimming)
 		{
-			if (trimming == StringTrimming.EllipsisCharacter)
-				return TextFormatFlags.EndEllipsis;
-			else if (trimming == StringTrimming.EllipsisPath)
-				return TextFormatFlags.PathEllipsis;
-			if (trimming == StringTrimming.EllipsisWord)
-				return TextFormatFlags.WordEllipsis;
-			if (trimming == StringTrimming.Word)
-				return TextFormatFlags.WordBreak;
-			else
-				return TextFormatFlags.Default;
+			switch (trimming)
+			{
+                case StringTrimming.EllipsisCharacter:
+			        {
+			            return TextFormatFlags.EndEllipsis;
+			        }
+                case StringTrimming.EllipsisPath:
+			        {
+			            return TextFormatFlags.PathEllipsis;
+			        }
+                case StringTrimming.EllipsisWord:
+			        {
+			            return TextFormatFlags.WordEllipsis;
+			        }
+                case StringTrimming.Word:
+			        {
+			            return TextFormatFlags.WordBreak;
+			        }
+                default:
+			        {
+			            return TextFormatFlags.Default;
+			        }
+			}
 		}
 	}
 }

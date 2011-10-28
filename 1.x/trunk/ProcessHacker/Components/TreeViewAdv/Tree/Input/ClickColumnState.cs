@@ -26,20 +26,20 @@ namespace Aga.Controls.Tree
 
 		public override bool MouseMove(MouseEventArgs args)
 		{
-			if (TreeViewAdv.Dist(_location, args.Location) > TreeViewAdv.ItemDragSensivity
-				&& Tree.AllowColumnReorder)
+			if (TreeViewAdv.Dist(_location, args.Location) > TreeViewAdv.ItemDragSensivity)
 			{
-				Tree.Input = new ReorderColumnState(Tree, Column, args.Location);
-				Tree.UpdateView();
+				this.Tree.Input = new ReorderColumnState(this.Tree, this.Column, args.Location);
+				this.Tree.UpdateView();
 			}
+
 			return true;
 		}
 
 		public override void MouseUp(TreeNodeAdvMouseEventArgs args)
 		{
-			Tree.ChangeInput();
-			Tree.UpdateView();
-			Tree.OnColumnClicked(Column);
+			this.Tree.ChangeInput();
+			this.Tree.UpdateView();
+			this.Tree.OnColumnClicked(this.Column);
 		}
 	}
 }

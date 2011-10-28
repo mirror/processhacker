@@ -1,21 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Aga.Controls.Tree
 {
 	public class TreeViewAdvEventArgs : EventArgs
 	{
-		private TreeNodeAdv _node;
+	    public TreeNodeAdv Node { get; private set; }
 
-		public TreeNodeAdv Node
+	    public TreeViewAdvEventArgs(TreeNodeAdv node)
 		{
-			get { return _node; }
-		}
-
-		public TreeViewAdvEventArgs(TreeNodeAdv node)
-		{
-			_node = node;
+			this.Node = node;
 		}
 	}
 }

@@ -1,15 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Windows.Forms.VisualStyles;
 using System.Drawing.Imaging;
+using ProcessHacker.Common;
 
 namespace Aga.Controls.Tree
 {
-	[TypeConverter(typeof(TreeColumn.TreeColumnConverter)), DesignTimeVisible(false), ToolboxItem(false)]
+	[TypeConverter(typeof(TreeColumnConverter)), DesignTimeVisible(false), ToolboxItem(false)]
 	public class TreeColumn : Component
 	{
 		private class TreeColumnConverter : ComponentConverter
@@ -25,34 +24,29 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		private const int HeaderLeftMargin = 5;
-        private const int HeaderRightMargin = 5;   
-		private const int SortOrderMarkMargin = 8;
+		private static int HeaderLeftMargin = 5;
+        private static int HeaderRightMargin = 5;   
+		private static int SortOrderMarkMargin = 8;
 
         private TextFormatFlags _headerFlags;
-        private TextFormatFlags _baseHeaderFlags = TextFormatFlags.NoPadding | 
+        private static TextFormatFlags _baseHeaderFlags = TextFormatFlags.NoPadding | 
                                                    TextFormatFlags.EndEllipsis |
                                                    TextFormatFlags.VerticalCenter |
 												TextFormatFlags.PreserveGraphicsTranslateTransform;
 
 		#region Properties
 
-        private TreeColumnCollection _owner;
-		internal TreeColumnCollection Owner
-		{
-			get { return _owner; }
-			set { _owner = value; }
-		}
+	    internal TreeColumnCollection Owner { get; set; }
 
-		[Browsable(false)]
+	    [Browsable(false)]
 		public int Index
 		{
-			get 
+			get
 			{
-				if (Owner != null)
-					return Owner.IndexOf(this);
-				else
-					return -1;
+			    if (this.Owner != null)
+					return this.Owner.IndexOf(this);
+			    
+                return -1;
 			}
 		}
 
@@ -68,15 +62,10 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		private string _tooltipText;
-		[Localizable(true)]
-		public string TooltipText
-		{
-			get { return _tooltipText; }
-			set { _tooltipText = value; }
-		}
+	    [Localizable(true)]
+	    public string TooltipText { get; set; }
 
-		private int _width;
+	    private int _width;
 		[DefaultValue(50), Localizable(true)]
 		public int Width
 		{
@@ -157,15 +146,10 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-        private bool _sortable = false;
-        [DefaultValue(false)]
-        public bool Sortable
-        {
-            get { return _sortable; }
-            set { _sortable = value; }
-        }
+	    [DefaultValue(false)]
+	    public bool Sortable { get; set; }
 
-		private SortOrder _sort_order = SortOrder.None;
+	    private SortOrder _sort_order = SortOrder.None;
 		public SortOrder SortOrder
 		{
 			get { return _sort_order; }
@@ -182,10 +166,10 @@ namespace Aga.Controls.Tree
 		{
 			get
 			{
-				if (Application.RenderWithVisualStyles)
+                if (ExplorerVisualStyle.VisualStylesEnabled)
 					return new Size(9, 5);
-				else
-					return new Size(7, 4);
+			    
+                return new Size(7, 4);
 			}
 		}
 		#endregion
@@ -204,18 +188,13 @@ namespace Aga.Controls.Tree
 
 		public override string ToString()
 		{
-			if (string.IsNullOrEmpty(Header))
+		    if (string.IsNullOrEmpty(Header))
 				return GetType().Name;
-			else
-				return Header;
+		    
+            return this.Header;
 		}
 
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-		}
-
-		#region Draw
+	    #region Draw
 
         private static VisualStyleRenderer _normalRenderer;
         private static VisualStyleRenderer _hotRenderer;
@@ -224,11 +203,17 @@ namespace Aga.Controls.Tree
 		internal Bitmap CreateGhostImage(Rectangle bounds, Font font)
 		{
 			Bitmap b = new Bitmap(bounds.Width, bounds.Height, PixelFormat.Format32bppArgb);
-			Graphics gr = Graphics.FromImage(b);
-			gr.FillRectangle(SystemBrushes.ControlDark, bounds);
-			DrawContent(gr, bounds, font);
-			BitmapHelper.SetAlphaChanelValue(b, 150);
-			return b;
+
+            using (Graphics gr = Graphics.FromImage(b))
+            {
+                gr.FillRectangle(SystemBrushes.ControlDark, bounds);
+
+                DrawContent(gr, bounds, font);
+
+                BitmapHelper.SetAlphaChanelValue(b, 150);
+            }
+
+		    return b;
 		}
 
 		internal void Draw(Graphics gr, Rectangle bounds, Font font, bool pressed, bool hot)
@@ -239,34 +224,46 @@ namespace Aga.Controls.Tree
 
         internal void DrawContent(Graphics gr, Rectangle bounds, Font font)
         {
-            Rectangle innerBounds = new Rectangle(bounds.X + HeaderLeftMargin, bounds.Y,
-                                   bounds.Width - HeaderLeftMargin - HeaderRightMargin,
-                                   bounds.Height);
+            Rectangle innerBounds = new Rectangle(bounds.X + HeaderLeftMargin, bounds.Y, bounds.Width - HeaderLeftMargin - HeaderRightMargin, bounds.Height);
 
-            if (SortOrder != SortOrder.None)
-				innerBounds.Width -= (SortMarkSize.Width + SortOrderMarkMargin);
+            if (this.SortOrder != SortOrder.None)
+                innerBounds.Width -= (this.SortMarkSize.Width + SortOrderMarkMargin);
 
-            Size maxTextSize = TextRenderer.MeasureText(gr, Header, font, innerBounds.Size, TextFormatFlags.NoPadding);
-			Size textSize = TextRenderer.MeasureText(gr, Header, font, innerBounds.Size, _baseHeaderFlags);
+            Size maxTextSize = gr.GetCachedSize(this.Header, font);// innerBounds.Size, TextFormatFlags.NoPadding);
+            Size textSize = gr.GetCachedSize(this.Header, font);// innerBounds.Size, _baseHeaderFlags);
 
             if (SortOrder != SortOrder.None)
             {
 				int tw = Math.Min(textSize.Width, innerBounds.Size.Width);
 
-                int x = 0;
-                if (TextAlign == HorizontalAlignment.Left)
-					x = innerBounds.X + tw + SortOrderMarkMargin;
-                else if (TextAlign == HorizontalAlignment.Right)
-					x = innerBounds.Right + SortOrderMarkMargin;
-                else
-					x = innerBounds.X + tw + (innerBounds.Width - tw) / 2 + SortOrderMarkMargin;
+                int x;
+
+                switch (this.TextAlign)
+                {
+                    case HorizontalAlignment.Left:
+                        {
+                            x = innerBounds.X + tw + SortOrderMarkMargin;
+                            break;
+                        }
+                    case HorizontalAlignment.Right:
+                        {
+                            x = innerBounds.Right + SortOrderMarkMargin;
+                            break;
+                        }
+                    default:
+                        {
+                            x = innerBounds.X + tw + (innerBounds.Width - tw) / 2 + SortOrderMarkMargin;
+                            break;
+                        }
+                }
+
                 DrawSortMark(gr, bounds, x);
 			}
 
-			if (textSize.Width < maxTextSize.Width)
-				TextRenderer.DrawText(gr, Header, font, innerBounds, SystemColors.ControlText, _baseHeaderFlags | TextFormatFlags.Left);
+            if (textSize.Width < maxTextSize.Width)
+                TextRenderer.DrawText(gr, Header, font, innerBounds, SystemColors.ControlText, _baseHeaderFlags | TextFormatFlags.Left);
             else
-				TextRenderer.DrawText(gr, Header, font, innerBounds, SystemColors.ControlText, _headerFlags);
+                TextRenderer.DrawText(gr, Header, font, innerBounds, SystemColors.ControlText, _headerFlags);
         }
 
 		private void DrawSortMark(Graphics gr, Rectangle bounds, int x)
@@ -275,15 +272,33 @@ namespace Aga.Controls.Tree
 			x = Math.Max(x, bounds.X + SortOrderMarkMargin);
 
             int w2 = SortMarkSize.Width / 2;
-            if (SortOrder == SortOrder.Ascending)
+            
+            switch (this.SortOrder)
             {
-                Point[] points = new Point[] { new Point(x, y), new Point(x + SortMarkSize.Width, y), new Point(x + w2, y + SortMarkSize.Height) };
-                gr.FillPolygon(SystemBrushes.ControlDark, points);
-            }
-            else if (SortOrder == SortOrder.Descending)
-            {
-                Point[] points = new Point[] { new Point(x - 1, y + SortMarkSize.Height), new Point(x + SortMarkSize.Width, y + SortMarkSize.Height), new Point(x + w2, y - 1) };
-                gr.FillPolygon(SystemBrushes.ControlDark, points);
+                case SortOrder.Ascending:
+                    {
+                        Point[] points = new[] 
+                        { 
+                            new Point(x, y), 
+                            new Point(x + this.SortMarkSize.Width, y), 
+                            new Point(x + w2, y + this.SortMarkSize.Height)
+                        };
+
+                        gr.FillPolygon(SystemBrushes.ControlDark, points);
+                    }
+                    break;
+                case SortOrder.Descending:
+                    {
+                        Point[] points = new[] 
+                        { 
+                            new Point(x - 1, y + this.SortMarkSize.Height), 
+                            new Point(x + this.SortMarkSize.Width, y + this.SortMarkSize.Height), 
+                            new Point(x + w2, y - 1) 
+                        };
+
+                        gr.FillPolygon(SystemBrushes.ControlDark, points);
+                    }
+                    break;
             }
 		}
 
@@ -294,12 +309,14 @@ namespace Aga.Controls.Tree
 
 		internal static void DrawBackground(Graphics gr, Rectangle bounds, bool pressed, bool hot)
         {
-			if (Application.RenderWithVisualStyles)
+            if (ExplorerVisualStyle.VisualStylesEnabled)
 			{
                 if (_normalRenderer == null)
                     _normalRenderer = new VisualStyleRenderer(VisualStyleElement.Header.Item.Normal);
+               
                 if (_hotRenderer == null)
                     _hotRenderer = new VisualStyleRenderer(VisualStyleElement.Header.Item.Hot);
+               
                 if (_pressedRenderer == null)
                     _pressedRenderer = new VisualStyleRenderer(VisualStyleElement.Header.Item.Pressed);
 
@@ -310,24 +327,26 @@ namespace Aga.Controls.Tree
 				else
 					_normalRenderer.DrawBackground(gr, bounds);
 			}
-			else
-			{
-				gr.FillRectangle(SystemBrushes.Control, bounds);
-				Pen p1 = SystemPens.ControlLightLight;
-				Pen p2 = SystemPens.ControlDark;
-				Pen p3 = SystemPens.ControlDarkDark;
-				if (pressed)
-					gr.DrawRectangle(p2, bounds.X, bounds.Y, bounds.Width, bounds.Height);
-				else
-				{
-					gr.DrawLine(p1, bounds.X, bounds.Y, bounds.Right, bounds.Y);
-					gr.DrawLine(p3, bounds.X, bounds.Bottom, bounds.Right, bounds.Bottom);
-					gr.DrawLine(p3, bounds.Right - 1, bounds.Y, bounds.Right - 1, bounds.Bottom - 1);
-					gr.DrawLine(p1, bounds.Left, bounds.Y + 1, bounds.Left, bounds.Bottom - 2);
-					gr.DrawLine(p2, bounds.Right - 2, bounds.Y + 1, bounds.Right - 2, bounds.Bottom - 2);
-					gr.DrawLine(p2, bounds.X, bounds.Bottom - 1, bounds.Right - 2, bounds.Bottom - 1);
-				}
-			}
+            else
+            {
+                gr.Clear(SystemColors.Control);
+
+                Pen p1 = SystemPens.ControlLightLight;
+                Pen p2 = SystemPens.ControlDark;
+                Pen p3 = SystemPens.ControlDarkDark;
+
+                if (pressed)
+                    gr.DrawRectangle(p2, bounds.X, bounds.Y, bounds.Width, bounds.Height);
+                else
+                {
+                    gr.DrawLine(p1, bounds.X, bounds.Y, bounds.Right, bounds.Y);
+                    gr.DrawLine(p3, bounds.X, bounds.Bottom, bounds.Right, bounds.Bottom);
+                    gr.DrawLine(p3, bounds.Right - 1, bounds.Y, bounds.Right - 1, bounds.Bottom - 1);
+                    gr.DrawLine(p1, bounds.Left, bounds.Y + 1, bounds.Left, bounds.Bottom - 2);
+                    gr.DrawLine(p2, bounds.Right - 2, bounds.Y + 1, bounds.Right - 2, bounds.Bottom - 2);
+                    gr.DrawLine(p2, bounds.X, bounds.Bottom - 1, bounds.Right - 2, bounds.Bottom - 1);
+                }
+            }
 		}
 
 		#endregion

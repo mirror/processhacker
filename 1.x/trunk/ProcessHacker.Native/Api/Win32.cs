@@ -228,7 +228,7 @@ namespace ProcessHacker.Native.Api
                 table.Table = new MibTcpRowOwnerPid[count];
 
                 for (int i = 0; i < count; i++)
-                    table.Table[i] = mem.ReadStruct<MibTcpRowOwnerPid>(sizeof(int), i);
+                    table.Table[i] = mem.ReadStruct<MibTcpRowOwnerPid>(sizeof(int), MibTcpRowOwnerPid.SizeOf, i);
             }
 
             return table;
@@ -297,7 +297,7 @@ namespace ProcessHacker.Native.Api
                 table.Table = new MibUdpRowOwnerPid[count];
 
                 for (int i = 0; i < count; i++)
-                    table.Table[i] = mem.ReadStruct<MibUdpRowOwnerPid>(sizeof(int), i);
+                    table.Table[i] = mem.ReadStruct<MibUdpRowOwnerPid>(sizeof(int), MibTcpRowOwnerPid.SizeOf, i);
             }
 
             return table;

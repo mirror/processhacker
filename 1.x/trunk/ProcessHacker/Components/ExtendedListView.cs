@@ -31,6 +31,7 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
@@ -83,6 +84,20 @@ namespace ProcessHacker.Components
             //Enable the OnNotifyMessage event so we get a chance to filter out 
             // Windows messages before they get to the form's WndProc.
             this.SetStyle(ControlStyles.EnableNotifyMessage, true);
+        }
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+
+            if (!this.DesignMode) //TODO: temporary VS fix...
+            {
+                if (OSVersion.IsAbove(WindowsVersion.XP))
+                {
+                    Win32.SetWindowTheme(this.Handle, "Explorer", null);
+                }
+
+                this.MakeFocusInvisible();
+            }
         }
 
         public bool DoubleClickChecks

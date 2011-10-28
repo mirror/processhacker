@@ -91,6 +91,7 @@ namespace ProcessHacker.Components
             using (Bitmap b = new Bitmap(_plotter.Width, _plotter.Height))
             {
                 _plotter.DrawToBitmap(b, new Rectangle(0, 0, b.Width, b.Height));
+
                 context.Graphics.DrawImage(b, context.Bounds.Location);
             }
         }

@@ -40,9 +40,9 @@ namespace ProcessHacker.Components
     public partial class ModuleList : UserControl
     {
         private ModuleProvider _provider;
-        private int _runCount = 0;
-        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
-        private HighlightingContext _highlightingContext;
+        private int _runCount;
+        private readonly List<ListViewItem> _needsAdd = new List<ListViewItem>();
+        private readonly HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -55,10 +55,10 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _highlightingContext = new HighlightingContext(listModules);
-            listModules.KeyDown += new KeyEventHandler(ModuleList_KeyDown);
-            listModules.MouseDown += new MouseEventHandler(listModules_MouseDown);
-            listModules.MouseUp += new MouseEventHandler(listModules_MouseUp);
-            listModules.DoubleClick += new EventHandler(listModules_DoubleClick);
+            listModules.KeyDown += this.ModuleList_KeyDown;
+            listModules.MouseDown += this.listModules_MouseDown;
+            listModules.MouseUp += this.listModules_MouseUp;
+            listModules.DoubleClick += this.listModules_DoubleClick;
 
             ColumnSettings.LoadSettings(Settings.Instance.ModuleListViewColumns, listModules);
             listModules.ContextMenu = menuModule;
@@ -91,20 +91,6 @@ namespace ProcessHacker.Components
 
         #region Properties
 
-        public new bool DoubleBuffered
-        {
-            get
-            {
-                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
-                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listModules, null);
-            }
-            set
-            {
-                typeof(ListView).GetProperty("DoubleBuffered",
-                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listModules, value, null);
-            }
-        }
-
         public override bool Focused
         {
             get
@@ -125,7 +111,7 @@ namespace ProcessHacker.Components
             set { listModules.ContextMenuStrip = value; }
         }
 
-        public ListView List
+        public ExtendedListView List
         {
             get { return listModules; }
         }
@@ -137,9 +123,9 @@ namespace ProcessHacker.Components
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new ModuleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryRemoved -= new ModuleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated -= new ModuleProvider.ProviderUpdateOnce(provider_Updated);
+                    _provider.DictionaryAdded -= this.provider_DictionaryAdded;
+                    _provider.DictionaryRemoved -= this.provider_DictionaryRemoved;
+                    _provider.Updated -= this.provider_Updated;
                 }
 
                 _provider = value;
@@ -156,9 +142,9 @@ namespace ProcessHacker.Components
                         provider_DictionaryAdded(item);
                     }
 
-                    _provider.DictionaryAdded += new ModuleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryRemoved += new ModuleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated += new ModuleProvider.ProviderUpdateOnce(provider_Updated);
+                    _provider.DictionaryAdded += this.provider_DictionaryAdded;
+                    _provider.DictionaryRemoved += this.provider_DictionaryRemoved;
+                    _provider.Updated += this.provider_Updated;
                     _pid = _provider.Pid;
 
                     try
@@ -169,9 +155,7 @@ namespace ProcessHacker.Components
                         }
                         else
                         {
-                            using (var phandle =
-                                new ProcessHandle(_pid,
-                                    Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                            using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                                 _mainModule = FileUtils.GetFileName(phandle.GetMainModule().FileName);
                         }
 
@@ -267,8 +251,8 @@ namespace ProcessHacker.Components
                 (item.Flags & LdrpDataTableEntryFlags.ImageNotAtBase) != 0
                 )
                 return Settings.Instance.ColorRelocatedDlls;
-            else
-                return SystemColors.Window;
+           
+            return SystemColors.Window;
         }
 
         public void AddItem(ModuleItem item)
@@ -287,22 +271,22 @@ namespace ProcessHacker.Components
         }
 
         private void provider_DictionaryAdded(ModuleItem item)
-        {          
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
-                item.RunId > 0 && _runCount > 0);
+        {
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, item.RunId > 0 && _runCount > 0)
+            {
+                Name = item.BaseAddress.ToString(), 
+                Text = item.Name
+            };
 
-            litem.Name = item.BaseAddress.ToString();
-            litem.Text = item.Name;
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Utils.FormatAddress(item.BaseAddress)));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Utils.FormatSize(item.Size)));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
-            litem.ToolTipText = PhUtils.FormatFileInfo(
-                item.FileName, item.FileDescription, item.FileCompanyName, item.FileVersion, 0);
+            litem.ToolTipText = PhUtils.FormatFileInfo(item.FileName, item.FileDescription, item.FileCompanyName, item.FileVersion, 0);
             litem.Tag = item;
             litem.NormalColor = this.GetModuleColor(item);
 
             if (item.FileName.Equals(_mainModule, StringComparison.OrdinalIgnoreCase))
-                litem.Font = new System.Drawing.Font(litem.Font, System.Drawing.FontStyle.Bold);
+                litem.Font = new Font(litem.Font, FontStyle.Bold);
 
             lock (_needsAdd)
                 _needsAdd.Add(litem);
@@ -310,10 +294,7 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryRemoved(ModuleItem item)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
-            {
-                listModules.Items[item.BaseAddress.ToString()].Remove();
-            }));
+            this.BeginInvoke(new MethodInvoker(() => this.listModules.Items[item.BaseAddress.ToString()].Remove()));
         }
 
         public void SaveSettings()
@@ -419,21 +400,14 @@ namespace ProcessHacker.Components
         {
             try
             {
-                PEWindow pw = Program.GetPEWindow(this.GetItemFileName(listModules.SelectedItems[0]), new Program.PEWindowInvokeAction(f =>
+                Program.GetPEWindow(this.GetItemFileName(listModules.SelectedItems[0]), f =>
                 {
                     if (!f.IsDisposed)
                     {
-                        try
-                        {
-                            f.Show();
-                            f.Activate();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logging.Log(ex);
-                        }
+                        f.Show();
+                        f.Activate();
                     }
-                }));
+                });
             }
             catch (Exception ex)
             {
@@ -468,7 +442,7 @@ namespace ProcessHacker.Components
 
         private void selectAllModuleMenuItem_Click(object sender, EventArgs e)
         {
-            Utils.SelectAll(listModules.Items);
+            this.listModules.Items.SelectAll();
         }
 
         private void unloadMenuItem_Click(object sender, EventArgs e)
@@ -487,19 +461,19 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    var moduleItem = (ModuleItem)listModules.SelectedItems[0].Tag;
+                    ModuleItem moduleItem = listModules.SelectedItems[0].Tag as ModuleItem;
                     string serviceName = null;
 
                     // Try to find the name of the service key for the driver by 
                     // looping through the objects in the Driver directory and 
                     // opening each one.
-                    using (var dhandle = new DirectoryHandle("\\Driver", DirectoryAccess.Query))
+                    using (DirectoryHandle dhandle = new DirectoryHandle("\\Driver", DirectoryAccess.Query))
                     {
-                        foreach (var obj in dhandle.GetObjects())
+                        foreach (DirectoryHandle.ObjectEntry obj in dhandle.GetObjects())
                         {
                             try
                             {
-                                using (var driverHandle = new DriverHandle("\\Driver\\" + obj.Name))
+                                using (DriverHandle driverHandle = new DriverHandle("\\Driver\\" + obj.Name))
                                 {
                                     if (driverHandle.GetBasicInformation().DriverStart == moduleItem.BaseAddress.ToIntPtr())
                                     {
@@ -528,7 +502,7 @@ namespace ProcessHacker.Components
 
                     // Check if the service key exists so that we don't delete it 
                     // later if it does.
-                    if (Array.Exists<string>(servicesKey.GetSubKeyNames(),  keyName => string.Compare(keyName, serviceName, true) == 0))
+                    if (Array.Exists(servicesKey.GetSubKeyNames(),  keyName => string.Compare(keyName, serviceName, true) == 0))
                     {
                         serviceKeyCreated = false;
                     }
@@ -606,13 +580,11 @@ namespace ProcessHacker.Components
                         {
                             if (OSVersion.Architecture == OSArch.Amd64)
                             {
-                                PhUtils.ShowError("Unable to find the module to unload. This may be caused " +
-                                    "by an attempt to unload a mapped file or a 32-bit module.");
+                                PhUtils.ShowError("Unable to find the module to unload. This may be caused by an attempt to unload a mapped file or a 32-bit module.");
                             }
                             else
                             {
-                                PhUtils.ShowError("Unable to find the module to unload. This may be caused " +
-                                    "by an attempt to unload a mapped file.");
+                                PhUtils.ShowError("Unable to find the module to unload. This may be caused by an attempt to unload a mapped file.");
                             }
                         }
                         else
@@ -635,7 +607,7 @@ namespace ProcessHacker.Components
 
     public class ModuleListComparer : ISortedListViewComparer
     {
-        private string _mainModule;
+        private readonly string _mainModule;
 
         public ModuleListComparer(string mainModule)
         {

@@ -239,7 +239,7 @@ namespace ProcessHacker.Native.Security.Authentication
                 SecPkgInfo[] array = new SecPkgInfo[count];
 
                 for (int i = 0; i < count; i++)
-                    array[i] = alloc.ReadStruct<SecPkgInfo>(i);
+                    array[i] = alloc.ReadStruct<SecPkgInfo>(0, SecPkgInfo.SizeOf, i);
 
                 return array;
             }

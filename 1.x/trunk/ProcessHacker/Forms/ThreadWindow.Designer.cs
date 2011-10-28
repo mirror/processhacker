@@ -1,4 +1,6 @@
-﻿namespace ProcessHacker
+﻿using ProcessHacker.Components;
+
+namespace ProcessHacker
 {
     partial class ThreadWindow
     {
@@ -40,7 +42,7 @@
             this.fileModule = new ProcessHacker.Components.FileNameBox();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonWalk = new System.Windows.Forms.Button();
-            this.listViewCallStack = new System.Windows.Forms.ListView();
+            this.listViewCallStack = new ExtendedListView();
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
@@ -141,7 +143,7 @@
         private ProcessHacker.Components.FileNameBox fileModule;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonWalk;
-        private System.Windows.Forms.ListView listViewCallStack;
+        private ExtendedListView listViewCallStack;
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
     }

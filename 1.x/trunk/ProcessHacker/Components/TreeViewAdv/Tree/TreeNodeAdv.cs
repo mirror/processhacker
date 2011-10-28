@@ -78,13 +78,9 @@ namespace Aga.Controls.Tree
 
 		#region Properties
 
-		private TreeViewAdv _tree;
-		internal TreeViewAdv Tree
-		{
-			get { return _tree; }
-		}
+	    internal TreeViewAdv Tree { get; private set; }
 
-		private int _row;
+	    private int _row;
 		internal int Row
 		{
 			get { return _row; }
@@ -120,19 +116,20 @@ namespace Aga.Controls.Tree
             }
         }
 
-        private Color _backColor = SystemColors.Window;
+        private Color _backColor = Color.White;
         public Color BackColor
         {
             get
             {
                 if (_state != NodeState.Normal)
                     return StateColors[_state];
-                else
-                    return _backColor;
+
+                return _backColor;
             }
             set
             {
                 _backColor = value;
+
                 if (_automaticForeColor)
                     _autoForeColor = GetForeColor(this.BackColor);
             }
@@ -180,21 +177,21 @@ namespace Aga.Controls.Tree
 			{
 				if (_isSelected != value)
 				{
-					if (Tree.IsMyNode(this))
+					if (this.Tree.IsMyNode(this))
 					{
 						//_tree.OnSelectionChanging
 						if (value)
 						{
-							if (!_tree.Selection.Contains(this))
-								_tree.Selection.Add(this);
+							if (!this.Tree.Selection.Contains(this))
+								this.Tree.Selection.Add(this);
 
-							if (_tree.Selection.Count == 1)
-								_tree.CurrentNode = this;
+							if (this.Tree.Selection.Count == 1)
+								this.Tree.CurrentNode = this;
 						}
 						else
-							_tree.Selection.Remove(this);
-						_tree.UpdateView();
-						_tree.OnSelectionChanged();
+							this.Tree.Selection.Remove(this);
+						this.Tree.UpdateView();
+						this.Tree.OnSelectionChanged();
 					}
 					_isSelected = value;
 				}
@@ -374,21 +371,21 @@ namespace Aga.Controls.Tree
 		internal TreeNodeAdv(TreeViewAdv tree, object tag)
 		{
 			_row = -1;
-			_tree = tree;
+			this.Tree = tree;
 			_nodes = new NodeCollection(this);
 			_children = new ReadOnlyCollection<TreeNodeAdv>(_nodes);
 			_tag = tag;
         }
 
         public override string ToString()
-		{
-			if (Tag != null)
+        {
+            if (Tag != null)
 				return Tag.ToString();
-			else
-				return base.ToString();
+            
+            return base.ToString();
         }
 
-        public void Collapse()
+	    public void Collapse()
         {
 			if (_isExpanded)
 				Collapse(true);
@@ -408,26 +405,26 @@ namespace Aga.Controls.Tree
         {
             TreeNodeAdv parent = this.Parent;
 
-            while (parent != _tree.Root)
+            while (parent != this.Tree.Root)
             {
                 parent.Expand();
                 parent = parent.Parent;
             }
 
-            _tree.ScrollTo(this);
+            this.Tree.ScrollTo(this);
         }
 
         public void EnsureVisible2()
         {
             TreeNodeAdv parent = this.Parent;
 
-            while (parent != _tree.Root)
+            while (parent != this.Tree.Root)
             {
                 parent.Expand();
                 parent = parent.Parent;
             }
 
-            _tree.ScrollTo2(this);
+            this.Tree.ScrollTo2(this);
         }
 
 		public void Expand()
@@ -448,14 +445,14 @@ namespace Aga.Controls.Tree
 
 		private void SetIsExpanded(bool value, bool ignoreChildren)
 		{
-			if (Tree == null)
+			if (this.Tree == null)
 			{
 				_isExpanded = value;
 				if (!ignoreChildren)
-					Tree.SetIsExpandedRecursive(this, value);
+					this.Tree.SetIsExpandedRecursive(this, value);
 			}
 			else
-				Tree.SetIsExpanded(this, value, ignoreChildren);
+				this.Tree.SetIsExpanded(this, value, ignoreChildren);
 		}
 
 		#region ISerializable Members

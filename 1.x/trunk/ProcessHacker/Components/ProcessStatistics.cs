@@ -30,7 +30,7 @@ namespace ProcessHacker.Components
 {
     public partial class ProcessStatistics : UserControl
     {
-        private int _pid;
+        private readonly int _pid;
 
         public ProcessStatistics(int pid)
         {
@@ -46,18 +46,6 @@ namespace ProcessHacker.Components
             {
                 labelCPUCyclesText.Text = "N/A";
             }
-
-            _dontCalculate = false;
-        }
-
-        private bool _dontCalculate = true;
-
-        protected override void OnResize(EventArgs e)
-        {
-            if (_dontCalculate)
-                return;
-
-            base.OnResize(e);
         }
 
         public void ClearStatistics()
@@ -120,26 +108,23 @@ namespace ProcessHacker.Components
             labelIOOtherBytes.Text = Utils.FormatSize(item.Process.IoCounters.OtherTransferCount);
 
             labelOtherHandles.Text = ((ulong)item.Process.HandleCount).ToString("N0");
-
+            
             if (_pid > 0)
             {
                 try
                 {
-                    using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    labelOtherGDIHandles.Text = item.ProcessQueryHandle.GetGuiResources(false).ToString("N0");
+                    labelOtherUSERHandles.Text = item.ProcessQueryHandle.GetGuiResources(true).ToString("N0");
+
+                    if (OSVersion.HasCycleTime)
+                        labelCPUCycles.Text = item.ProcessQueryHandle.GetCycleTime().ToString("N0");
+                    else
+                        labelCPUCycles.Text = "N/A";
+
+                    if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
                     {
-                        labelOtherGDIHandles.Text = phandle.GetGuiResources(false).ToString("N0");
-                        labelOtherUSERHandles.Text = phandle.GetGuiResources(true).ToString("N0");
-
-                        if (OSVersion.HasCycleTime)
-                            labelCPUCycles.Text = phandle.GetCycleTime().ToString("N0");
-                        else
-                            labelCPUCycles.Text = "N/A";
-
-                        if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
-                        {
-                            labelMemoryPP.Text = phandle.GetPagePriority().ToString();
-                            labelIOPriority.Text = phandle.GetIoPriority().ToString();
-                        }
+                        labelMemoryPP.Text = item.ProcessQueryHandle.GetPagePriority().ToString();
+                        labelIOPriority.Text = item.ProcessQueryHandle.IoPriority.ToString();
                     }
                 }
                 catch

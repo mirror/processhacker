@@ -1,4 +1,6 @@
-﻿namespace ProcessHacker
+﻿using ProcessHacker.Components;
+
+namespace ProcessHacker
 {
     partial class LogWindow
     {
@@ -29,7 +31,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.listLog = new System.Windows.Forms.ListView();
+            this.listLog = new ExtendedListView();
             this.columnTime = new System.Windows.Forms.ColumnHeader();
             this.columnMessage = new System.Windows.Forms.ColumnHeader();
             this.buttonClose = new System.Windows.Forms.Button();
@@ -162,7 +164,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ListView listLog;
+        private ExtendedListView listLog;
         private System.Windows.Forms.ColumnHeader columnTime;
         private System.Windows.Forms.ColumnHeader columnMessage;
         private System.Windows.Forms.Button buttonClose;

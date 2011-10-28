@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 
 namespace Aga.Controls.Tree.NodeControls
@@ -19,13 +17,17 @@ namespace Aga.Controls.Tree.NodeControls
 		{
 			if (EditEnabled)
 			{
-				NodeControlValueEventArgs args = new NodeControlValueEventArgs(node);
-				args.Value = true;
-				OnIsEditEnabledValueNeeded(args);
-				return Convert.ToBoolean(args.Value);
+				NodeControlValueEventArgs args = new NodeControlValueEventArgs(node)
+				{
+				    Value = true
+				};
+
+			    OnIsEditEnabledValueNeeded(args);
+				
+                return (bool)args.Value;
 			}
-			else
-				return false;
+				
+            return false;
 		}
 
 		public event EventHandler<NodeControlValueEventArgs> IsEditEnabledValueNeeded;

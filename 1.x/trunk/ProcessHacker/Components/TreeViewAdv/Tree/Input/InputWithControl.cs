@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Aga.Controls.Tree
 {
-	internal class InputWithControl: NormalInputState
+	internal class InputWithControl : NormalInputState
 	{
 		public InputWithControl(TreeViewAdv tree): base(tree)
 		{
@@ -12,14 +8,14 @@ namespace Aga.Controls.Tree
 
 		protected override void DoMouseOperation(TreeNodeAdvMouseEventArgs args)
 		{
-			if (Tree.SelectionMode == TreeSelectionMode.Single)
+			if (this.Tree.SelectionMode == TreeSelectionMode.Single)
 			{
 				base.DoMouseOperation(args);
 			}
 			else if (CanSelect(args.Node))
 			{
 				args.Node.IsSelected = !args.Node.IsSelected;
-				Tree.SelectionStart = args.Node;
+				this.Tree.SelectionStart = args.Node;
 			}
 		}
 

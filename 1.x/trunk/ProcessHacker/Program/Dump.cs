@@ -390,7 +390,7 @@ namespace ProcessHacker
                     using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
                     {
                         bw.Write("IsBeingDebugged", phandle.IsBeingDebugged());
-                        bw.Write("IsCritical", phandle.IsCritical());
+                        bw.Write("IsCritical", phandle.IsCritical);
                         bw.Write("DepStatus", (int)phandle.GetDepStatus());
                     }
                 }

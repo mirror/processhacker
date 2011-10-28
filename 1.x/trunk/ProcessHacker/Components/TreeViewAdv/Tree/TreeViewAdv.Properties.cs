@@ -11,9 +11,9 @@ using Aga.Controls.Tree.NodeControls;
 
 namespace Aga.Controls.Tree
 {
-	public partial class TreeViewAdv
+	public sealed partial class TreeViewAdv
 	{
-		private Cursor _innerCursor = null;
+		private Cursor _innerCursor;
 
 		public override Cursor Cursor
 		{
@@ -21,61 +21,32 @@ namespace Aga.Controls.Tree
 			{
                 if (_innerCursor != null)
                     return _innerCursor;
-                else
-					return base.Cursor;
+               
+                return base.Cursor;
 			}
-			set
-			{
-				base.Cursor = value;
-			}
+			set { base.Cursor = value; }
 		}
 
 		#region Internal Properties
 
 		private IRowLayout _rowLayout;
 
-		private bool _dragMode;
-		private bool DragMode
-		{
-			get { return _dragMode; }
-			set
-			{
-				_dragMode = value;
-				if (!value)
-				{
-					StopDragTimer();
-					if (_dragBitmap != null)
-						_dragBitmap.Dispose();
-					_dragBitmap = null;
-				}
-				else
-					StartDragTimer();
-			}
-		}
+	    public int ColumnHeaderHeight { get; private set; }
 
-		public int ColumnHeaderHeight
-		{
-			get
-			{
-				if (UseColumns)
-					return _columnHeaderHeight;
-				else
-					return 0;
-			}
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// returns all nodes, which parent is expanded
 		/// </summary>
 		private IEnumerable<TreeNodeAdv> VisibleNodes
 		{
 			get
 			{
-				TreeNodeAdv node = Root;
-				while (node != null)
+				TreeNodeAdv node = this.Root;
+				
+                while (node != null)
 				{
 					node = node.NextVisibleNode;
-					if (node != null)
+					
+                    if (node != null)
 						yield return node;
 				}
 			}
@@ -96,53 +67,16 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		private List<TreeNodeAdv> _rowMap;
-		internal List<TreeNodeAdv> RowMap
-		{
-			get { return _rowMap; }
-		}
+	    internal List<TreeNodeAdv> RowMap { get; private set; }
+	    internal TreeNodeAdv SelectionStart { get; set; }
+	    internal InputState Input { get; set; }
 
-		private TreeNodeAdv _selectionStart;
-		internal TreeNodeAdv SelectionStart
-		{
-			get { return _selectionStart; }
-			set { _selectionStart = value; }
-		}
-
-		private InputState _input;
-		internal InputState Input
-		{
-			get { return _input; }
-			set
-			{
-				_input = value;
-			}
-		}
-
-		private bool _itemDragMode;
-		internal bool ItemDragMode
-		{
-			get { return _itemDragMode; }
-			set { _itemDragMode = value; }
-		}
-
-		private Point _itemDragStart;
-		internal Point ItemDragStart
-		{
-			get { return _itemDragStart; }
-			set { _itemDragStart = value; }
-		}
-
-
-		/// <summary>
+	    /// <summary>
 		/// Number of rows fits to the current page
 		/// </summary>
 		internal int CurrentPageSize
 		{
-			get
-			{
-				return _rowLayout.CurrentPageSize;
-			}
+			get { return _rowLayout.CurrentPageSize; }
 		}
 
 		/// <summary>
@@ -150,29 +84,21 @@ namespace Aga.Controls.Tree
 		/// </summary>
 		internal int RowCount
 		{
-			get
-			{
-				return RowMap.Count;
-			}
+			get { return this.RowMap.Count; }
 		}
 
-		private int _contentWidth = 0;
-		private int ContentWidth
-		{
-			get
-			{
-				return _contentWidth;
-			}
-		}
+	    private int ContentWidth { get; set; }
 
-		private int _firstVisibleRow;
+	    private int _firstVisibleRow;
 		internal int FirstVisibleRow
 		{
 			get { return _firstVisibleRow; }
 			set
 			{
 				HideEditor();
+
 				_firstVisibleRow = value;
+
 				UpdateView();
 			}
 		}
@@ -184,7 +110,9 @@ namespace Aga.Controls.Tree
 			private set
 			{
 				HideEditor();
+
 				_offsetX = value;
+
 				UpdateView();
 			}
 		}
@@ -202,59 +130,15 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		private List<TreeNodeAdv> _selection;
-		internal List<TreeNodeAdv> Selection
-		{
-			get { return _selection; }
-		}
+	    internal List<TreeNodeAdv> Selection { get; private set; }
 
-		#endregion
+	    #endregion
 
 		#region Public Properties
 
 		#region DesignTime
 
-		private bool _displayDraggingNodes;
-		[DefaultValue(false), Category("Behavior")]
-		public bool DisplayDraggingNodes
-		{
-			get { return _displayDraggingNodes; }
-			set { _displayDraggingNodes = value; }
-		}
-
-		private bool _fullRowSelect;
-		[DefaultValue(false), Category("Behavior")]
-		public bool FullRowSelect
-		{
-			get { return _fullRowSelect; }
-			set
-			{
-				_fullRowSelect = value;
-				UpdateView();
-			}
-		}
-
-		private bool _useColumns;
-		[DefaultValue(false), Category("Behavior")]
-		public bool UseColumns
-		{
-			get { return _useColumns; }
-			set
-			{
-				_useColumns = value;
-				FullUpdate();
-			}
-		}
-
-		private bool _allowColumnReorder;
-		[DefaultValue(false), Category("Behavior")]
-		public bool AllowColumnReorder
-		{
-			get { return _allowColumnReorder; }
-			set { _allowColumnReorder = value; }
-		}
-
-		private bool _showLines = true;
+	    private bool _showLines = true;
 		[DefaultValue(true), Category("Behavior")]
 		public bool ShowLines
 		{
@@ -278,22 +162,10 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		private bool _showNodeToolTips = false;
-		[DefaultValue(false), Category("Behavior")]
-		public bool ShowNodeToolTips
-		{
-			get { return _showNodeToolTips; }
-			set { _showNodeToolTips = value; }
-		}
+	    [DefaultValue(false), Category("Behavior")]
+	    public bool ShowNodeToolTips { get; set; }
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic"), DefaultValue(true), Category("Behavior"), Obsolete("No longer used")]
-		public bool KeepNodesExpanded
-		{
-			get { return true; }
-			set {}
-		}
-
-		private ITreeModel _model;
+	    private ITreeModel _model;
 		[Category("Data")]
 		public ITreeModel Model
 		{
@@ -302,12 +174,14 @@ namespace Aga.Controls.Tree
 			{
 				if (_model != value)
 				{
-					AbortBackgroundExpandingThreads();
 					if (_model != null)
 						UnbindModelEvents();
+
 					_model = value;
+
 					CreateNodes();
 					FullUpdate();
+
 					if (_model != null)
 						BindModelEvents();
 				}
@@ -317,7 +191,7 @@ namespace Aga.Controls.Tree
         // Font proprety for Tahoma as default font
         // wj32: Apparently some people don't have Tahoma...
         //private static Font _font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)), false);
-        private static Font _font = System.Windows.Forms.Control.DefaultFont;
+        private static Font _font = DefaultFont;
         [Category("Appearance")]
         public override Font Font
         {
@@ -331,7 +205,7 @@ namespace Aga.Controls.Tree
                     base.Font = _font;
                 else
                 {
-                    if (value == System.Windows.Forms.Control.DefaultFont)
+                    if (value == Control.DefaultFont)
                         base.Font = _font;
                     else
                         base.Font = value;
@@ -352,30 +226,25 @@ namespace Aga.Controls.Tree
 		[DefaultValue(BorderStyle.Fixed3D), Category("Appearance")]
 		public BorderStyle BorderStyle
 		{
-			get
-			{
-				return this._borderStyle;
-			}
-			set
+			get { return this._borderStyle; }
+		    set
 			{
 				if (_borderStyle != value)
 				{
 					_borderStyle = value;
+
                     this.RecreateHandle();
                     this.Invalidate();
 				}
 			}
 		}
 
-		private bool _autoRowHeight = false;
+		private bool _autoRowHeight;
 		[DefaultValue(false), Category("Appearance")]
 		public bool AutoRowHeight
 		{
-			get
-			{
-				return _autoRowHeight;
-			}
-			set
+			get { return _autoRowHeight; }
+		    set
 			{
 				_autoRowHeight = value;
 				if (value)
@@ -385,25 +254,6 @@ namespace Aga.Controls.Tree
 				FullUpdate();
 			}
 		}
-
-        private GridLineStyle _gridLineStyle = GridLineStyle.None;
-        [DefaultValue(GridLineStyle.None), Category("Appearance")]
-        public GridLineStyle GridLineStyle
-        {
-            get
-            {
-                return _gridLineStyle;
-            }
-            set
-            {
-				if (value != _gridLineStyle)
-				{
-					_gridLineStyle = value;
-					UpdateView();
-					OnGridLineStyleChanged();
-				}
-            }
-        }
 
 		private int _rowHeight = 16;
 		[DefaultValue(16), Category("Appearance")]
@@ -465,20 +315,15 @@ namespace Aga.Controls.Tree
 			set
 			{
 				if (value < 0 || value > 1)
-					throw new ArgumentOutOfRangeException("value should be from 0 to 1");
+					throw new ArgumentOutOfRangeException("BottomEdgeSensivity", "value should be from 0 to 1");
 				_bottomEdgeSensivity = value;
 			}
 		}
 
-		private bool _loadOnDemand;
-		[DefaultValue(false), Category("Behavior")]
-		public bool LoadOnDemand
-		{
-			get { return _loadOnDemand; }
-			set { _loadOnDemand = value; }
-		}
+	    [DefaultValue(false), Category("Behavior")]
+	    public bool LoadOnDemand { get; set; }
 
-		private int _indent = 19;
+	    private int _indent = 19;
 		[DefaultValue(19), Category("Behavior")]
 		public int Indent
 		{
@@ -503,92 +348,33 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		private Color _dragDropMarkColor = Color.Black;
-		[Category("Behavior")]
-		public Color DragDropMarkColor
-		{
-			get { return _dragDropMarkColor; }
-			set
-			{
-				_dragDropMarkColor = value;
-				CreateMarkPen();
-			}
-		}
+	    [Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+	    public TreeColumnCollection Columns { get; private set; }
 
-		private float _dragDropMarkWidth = 3.0f;
-		[DefaultValue(3.0f), Category("Behavior")]
-		public float DragDropMarkWidth
-		{
-			get { return _dragDropMarkWidth; }
-			set
-			{
-				_dragDropMarkWidth = value;
-				CreateMarkPen();
-			}
-		}
+	    [Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Editor(typeof(NodeControlCollectionEditor), typeof(UITypeEditor))]
+	    public NodeControlsCollection NodeControls { get; private set; }
 
-		private bool _highlightDropPosition = true;
-		[DefaultValue(true), Category("Behavior")]
-		public bool HighlightDropPosition
-		{
-			get { return _highlightDropPosition; }
-			set { _highlightDropPosition = value; }
-		}
-
-		private TreeColumnCollection _columns;
-		[Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-		public Collection<TreeColumn> Columns
-		{
-			get { return _columns; }
-		}
-
-		private NodeControlsCollection _controls;
-		[Category("Behavior"), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-		[Editor(typeof(NodeControlCollectionEditor), typeof(UITypeEditor))]
-		public Collection<NodeControl> NodeControls
-		{
-			get
-			{
-				return _controls;
-			}
-		}
-
-		private bool _asyncExpanding;
-		/// <summary>
-		/// When set to true, node contents will be read in background thread
-		/// </summary>
-		[Category("Behavior")]
-		[DefaultValue(false)]
-		public bool AsyncExpanding
-		{
-			get { return _asyncExpanding; }
-			set { _asyncExpanding = value; }
-		}
-
-		#endregion
+	    #endregion
 
 		#region RunTime
 
-		private IToolTipProvider _defaultToolTipProvider = null;
-		[Browsable(false)]
-		public IToolTipProvider DefaultToolTipProvider
-		{
-			get { return _defaultToolTipProvider; }
-			set { _defaultToolTipProvider = value; }
-		}
+	    [Browsable(false)]
+	    public IToolTipProvider DefaultToolTipProvider { get; set; }
 
-		[Browsable(false)]
+	    [Browsable(false)]
 		public IEnumerable<TreeNodeAdv> AllNodes
 		{
 			get
 			{
-				if (_root.Nodes.Count > 0)
+				if (this.Root.Nodes.Count > 0)
 				{
-					TreeNodeAdv node = _root.Nodes[0];
-					while (node != null)
+					TreeNodeAdv node = this.Root.Nodes[0];
+					
+                    while (node != null)
 					{
 						yield return node;
-						if (node.Nodes.Count > 0)
+						
+                        if (node.Nodes.Count > 0)
 							node = node.Nodes[0];
 						else if (node.NextNode != null)
 							node = node.NextNode;
@@ -599,45 +385,26 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		private DropPosition _dropPosition;
-		[Browsable(false)]
-		public DropPosition DropPosition
-		{
-			get { return _dropPosition; }
-			set { _dropPosition = value; }
-		}
+	    [Browsable(false)]
+	    public TreeNodeAdv Root { get; private set; }
 
-		private TreeNodeAdv _root;
-		[Browsable(false)]
-		public TreeNodeAdv Root
-		{
-			get { return _root; }
-		}
+	    [Browsable(false)]
+	    public ReadOnlyCollection<TreeNodeAdv> SelectedNodes { get; private set; }
 
-		private ReadOnlyCollection<TreeNodeAdv> _readonlySelection;
-		[Browsable(false)]
-		public ReadOnlyCollection<TreeNodeAdv> SelectedNodes
-		{
-			get
-			{
-				return _readonlySelection;
-			}
-		}
-
-		[Browsable(false)]
+	    [Browsable(false)]
 		public TreeNodeAdv SelectedNode
 		{
 			get
 			{
-				if (Selection.Count > 0)
+				if (this.Selection.Count > 0)
 				{
-					if (CurrentNode != null && CurrentNode.IsSelected)
-						return CurrentNode;
-					else
-						return Selection[0];
+					if (this.CurrentNode != null && this.CurrentNode.IsSelected)
+						return this.CurrentNode;
+					
+                    return this.Selection[0];
 				}
-				else
-					return null;
+				
+                return null;
 			}
 			set
 			{
@@ -645,6 +412,7 @@ namespace Aga.Controls.Tree
 					return;
 
 				BeginUpdate();
+
 				try
 				{
 					if (value == null)
@@ -658,7 +426,7 @@ namespace Aga.Controls.Tree
 
 						ClearSelectionInternal();
 						value.IsSelected = true;
-						CurrentNode = value;
+						this.CurrentNode = value;
 						EnsureVisible(value);
 					}
 				}
@@ -669,18 +437,13 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		private TreeNodeAdv _currentNode;
-		[Browsable(false)]
-		public TreeNodeAdv CurrentNode
-		{
-			get { return _currentNode; }
-			internal set { _currentNode = value; }
-		}
+	    [Browsable(false)]
+	    public TreeNodeAdv CurrentNode { get; internal set; }
 
-        [Browsable(false)]
+	    [Browsable(false)]
         public int ItemCount
         {
-            get { return RowMap.Count; }
+            get { return this.RowMap.Count; }
         } 
 
 		#endregion

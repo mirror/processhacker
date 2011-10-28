@@ -74,7 +74,7 @@ namespace ProcessHacker.Native.Objects
                 Win32.Throw();
         }
 
-        private string _systemName;
+        private readonly string _systemName;
 
         private TerminalServerHandle(IntPtr handle, bool owned)
             : base(handle, owned)
@@ -120,13 +120,13 @@ namespace ProcessHacker.Native.Objects
             if (!Win32.WTSEnumerateProcesses(this, 0, 1, out dataPtr, out count))
                 Win32.Throw();
 
-            using (var data = new WtsMemoryAlloc(dataPtr))
+            using (WtsMemoryAlloc data = new WtsMemoryAlloc(dataPtr))
             {
                 processes = new TerminalServerProcess[count];
 
                 for (int i = 0; i < count; i++)
                 {
-                    var process = data.ReadStruct<WtsProcessInfo>(i);
+                    var process = data.ReadStruct<WtsProcessInfo>(0, WtsProcessInfo.SizeOf, i);
                     processes[i] = new TerminalServerProcess(
                         process.ProcessId,
                         process.SessionId,
@@ -157,18 +157,18 @@ namespace ProcessHacker.Native.Objects
         {
             IntPtr dataPtr;
             int count;
-            TerminalServerSession[] sessions;
 
             if (!Win32.WTSEnumerateSessions(this, 0, 1, out dataPtr, out count))
                 Win32.Throw();
 
-            using (var data = new WtsMemoryAlloc(dataPtr))
+            using (WtsMemoryAlloc data = new WtsMemoryAlloc(dataPtr))
             {
-                sessions = new TerminalServerSession[count];
+                TerminalServerSession[] sessions = new TerminalServerSession[count];
 
                 for (int i = 0; i < count; i++)
                 {
-                    var session = data.ReadStruct<WtsSessionInfo>(i);
+                    WtsSessionInfo session = data.ReadStruct<WtsSessionInfo>(0, WtsSessionInfo.SizeOf, i);
+                    
                     sessions[i] = new TerminalServerSession(
                         this,
                         session.SessionID,
@@ -235,8 +235,8 @@ namespace ProcessHacker.Native.Objects
             return Win32.WTSGetActiveConsoleSessionId();
         }
 
-        private TerminalServerHandle _serverHandle;
-        private int _sessionId;
+        private readonly TerminalServerHandle _serverHandle;
+        private readonly int _sessionId;
         private string _name;
         private WtsConnectStateClass _state = (WtsConnectStateClass)(-1);
         private string _initialProgram;
@@ -291,8 +291,7 @@ namespace ProcessHacker.Native.Objects
                     IntPtr dataPtr;
                     int length;
 
-                    if (!Win32.WTSQuerySessionInformation(
-                        _serverHandle, _sessionId, WtsInformationClass.ConnectState, out dataPtr, out length))
+                    if (!Win32.WTSQuerySessionInformation(_serverHandle, _sessionId, WtsInformationClass.ConnectState, out dataPtr, out length))
                         Win32.Throw();
 
                     using (var data = new WtsMemoryAlloc(dataPtr))
@@ -382,21 +381,17 @@ namespace ProcessHacker.Native.Objects
                     IntPtr dataPtr;
                     int length;
 
-                    if (!Win32.WTSQuerySessionInformation(
-                        _serverHandle, _sessionId, WtsInformationClass.ClientAddress, out dataPtr, out length))
+                    if (!Win32.WTSQuerySessionInformation(_serverHandle, _sessionId, WtsInformationClass.ClientAddress, out dataPtr, out length))
                         Win32.Throw();
 
                     if (dataPtr != IntPtr.Zero)
                     {
-                        unsafe
+                        using (WtsMemoryAlloc data = new WtsMemoryAlloc(dataPtr))
                         {
-                            using (var data = new WtsMemoryAlloc(dataPtr))
-                            {
-                                var address = data.ReadStruct<WtsClientAddress>();
+                            WtsClientAddress address = data.ReadStruct<WtsClientAddress>();
 
-                                if (address.AddressFamily != 0)
-                                    _clientAddress = new System.Net.IPAddress(data.ReadBytes(6, 4));
-                            }
+                            if (address.AddressFamily != 0)
+                                this._clientAddress = new System.Net.IPAddress(data.ReadBytes(6, 4));
                         }
                     }
                 }
@@ -409,13 +404,12 @@ namespace ProcessHacker.Native.Objects
         {
             get
             {
-                if (_clientDisplay == null)
+                if (!_clientDisplay.HasValue)
                 {
                     IntPtr dataPtr;
                     int length;
 
-                    if (!Win32.WTSQuerySessionInformation(
-                        _serverHandle, _sessionId, WtsInformationClass.ClientDisplay, out dataPtr, out length))
+                    if (!Win32.WTSQuerySessionInformation(_serverHandle, _sessionId, WtsInformationClass.ClientDisplay, out dataPtr, out length))
                         Win32.Throw();
 
                     if (dataPtr != IntPtr.Zero)
@@ -514,10 +508,10 @@ namespace ProcessHacker.Native.Objects
 
     public class TerminalServerProcess
     {
-        private int _processId;
-        private int _sessionId;
-        private string _name;
-        private Sid _sid;
+        private readonly int _processId;
+        private readonly int _sessionId;
+        private readonly string _name;
+        private readonly Sid _sid;
 
         internal TerminalServerProcess(int processId, int sessionId, string name, Sid sid)
         {

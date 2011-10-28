@@ -453,7 +453,7 @@ namespace ProcessHacker.Common
         /// <param name="visible">Whether the shield icon is visible.</param>
         public static void SetShieldIcon(this Button button, bool visible)
         {
-            Win32.SendMessage(button.Handle, WindowMessage.BcmSetShield, 0, visible ? 1 : 0);
+            Win32.SendMessage(button.Handle, WindowMessage.BcmSetShield, IntPtr.Zero, visible ? (IntPtr)1 : IntPtr.Zero);
         }
 
         /// <summary>

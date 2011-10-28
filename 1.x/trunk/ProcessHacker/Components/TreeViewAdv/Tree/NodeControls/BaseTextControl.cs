@@ -4,40 +4,27 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Reflection;
 using System.ComponentModel;
+using ProcessHacker.Common;
 
 namespace Aga.Controls.Tree.NodeControls
 {
 	public abstract class BaseTextControl : EditableControl
 	{
-		private TextFormatFlags _baseFormatFlags;
+		private readonly TextFormatFlags _baseFormatFlags;
         private TextFormatFlags _formatFlags;
-        private Pen _focusPen;
-		private StringFormat _format;
+        private readonly Pen _focusPen;
+		private readonly StringFormat _format;
 
 		#region Properties
 
-		private Font _font = null;
+		private Font _font;
 		public Font Font
 		{
-			get
-			{
-				if (_font == null)
-					return Control.DefaultFont;
-				else
-					return _font;
-			}
-			set
-			{
-				if (value == Control.DefaultFont)
-					_font = null;
-				else
-					_font = value;
-			}
+			get { return this._font ?? Control.DefaultFont; }
+		    set { this._font = value == Control.DefaultFont ? null : value; }
 		}
 
 		protected bool ShouldSerializeFont()
@@ -77,25 +64,22 @@ namespace Aga.Controls.Tree.NodeControls
 			set { _displayHiddenContentInToolTip = value; }
 		}
 
-		private bool _useCompatibleTextRendering = false;
-		[DefaultValue(false)]
-		public bool UseCompatibleTextRendering
-		{
-			get { return _useCompatibleTextRendering; }
-			set { _useCompatibleTextRendering = value; }
-		}
+	    [DefaultValue(false)]
+	    public bool UseCompatibleTextRendering { get; set; }
 
-		#endregion
+	    #endregion
 
 		protected BaseTextControl()
 		{
-			IncrementalSearchEnabled = true;
-			_focusPen = new Pen(Color.Black);
-			_focusPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+			this.IncrementalSearchEnabled = true;
 
-			_format = new StringFormat(StringFormatFlags.NoClip | StringFormatFlags.FitBlackBox | StringFormatFlags.MeasureTrailingSpaces);
-			_baseFormatFlags = TextFormatFlags.PreserveGraphicsClipping | TextFormatFlags.NoPrefix |
-                           TextFormatFlags.PreserveGraphicsTranslateTransform;
+			_focusPen = new Pen(Color.Black) 
+            {
+                DashStyle = System.Drawing.Drawing2D.DashStyle.Dot
+            };
+
+		    _format = new StringFormat(StringFormatFlags.NoClip | StringFormatFlags.FitBlackBox | StringFormatFlags.MeasureTrailingSpaces);
+			_baseFormatFlags = TextFormatFlags.PreserveGraphicsClipping | TextFormatFlags.NoPrefix | TextFormatFlags.PreserveGraphicsTranslateTransform;
 			SetFormatFlags();
 			LeftMargin = 3;
 		}
@@ -105,8 +89,7 @@ namespace Aga.Controls.Tree.NodeControls
 			_format.Alignment = TextHelper.TranslateAligment(TextAlign);
 			_format.Trimming = Trimming;
 
-			_formatFlags = _baseFormatFlags | TextHelper.TranslateAligmentToFlag(TextAlign)
-				| TextHelper.TranslateTrimmingToFlag(Trimming);
+			_formatFlags = _baseFormatFlags | TextHelper.TranslateAligmentToFlag(TextAlign)| TextHelper.TranslateTrimmingToFlag(Trimming);
 		}
 
 		public override Size MeasureSize(TreeNodeAdv node, DrawContext context)
@@ -121,45 +104,44 @@ namespace Aga.Controls.Tree.NodeControls
 
 		protected Size GetLabelSize(TreeNodeAdv node, DrawContext context, string label)
 		{
-			CheckThread();
 			Font font = GetDrawingFont(node, context, label);
-			Size s = Size.Empty;
 
-            if (!UseCompatibleTextRendering)
-            {
-                SizeF sf = context.Graphics.MeasureString(label, font);
-                s = Size.Ceiling(sf);
-            }
-            else
-            {
-                s = TextRenderer.MeasureText(label, font);
-            }
-
+		    Size s = context.Graphics.GetCachedSize(label, font);
+  
 			if (!s.IsEmpty)
 				return s;
-			else
-				return new Size(10, Font.Height);
+		    
+            return new Size(10, this.Font.Height);
 		}
 
 		protected Font GetDrawingFont(TreeNodeAdv node, DrawContext context, string label)
 		{
 			Font font = context.Font;
-			if (DrawText != null)
+			
+            if (this.DrawText != null)
 			{
-				DrawEventArgs args = new DrawEventArgs(node, context, label);
-				args.Font = context.Font;
-				OnDrawText(args);
+				DrawEventArgs args = new DrawEventArgs(node, context, label) 
+                {
+                    Font = context.Font
+                };
+
+			    OnDrawText(args);
 				font = args.Font;
 			}
+
 			return font;
 		}
 
 		protected void SetEditControlProperties(Control control, TreeNodeAdv node)
 		{
 			string label = GetLabel(node);
-			DrawContext context = new DrawContext();
-			context.Font = control.Font;
-			control.Font = GetDrawingFont(node, context, label);
+			
+            DrawContext context = new DrawContext 
+            {
+                Font = control.Font
+            };
+
+		    control.Font = GetDrawingFont(node, context, label);
 		}
 
 		public override void Draw(TreeNodeAdv node, DrawContext context)
@@ -168,45 +150,59 @@ namespace Aga.Controls.Tree.NodeControls
 				return;
 
 			string label = GetLabel(node);
+
 			Rectangle bounds = GetBounds(node, context);
-			Rectangle focusRect = new Rectangle(bounds.X, context.Bounds.Y,	
-				bounds.Width, context.Bounds.Height);
+			Rectangle focusRect = new Rectangle(bounds.X, context.Bounds.Y,	bounds.Width, context.Bounds.Height);
 
 			Brush backgroundBrush;
 			Color textColor;
 			Font font;
+
 			CreateBrushes(node, context, label, out backgroundBrush, out textColor, out font, ref label);
 
-			if (backgroundBrush != null)
-				context.Graphics.FillRectangle(backgroundBrush, focusRect);
-			if (context.DrawFocus)
+            if (backgroundBrush != null)
+            {
+                context.Graphics.FillRectangle(backgroundBrush, focusRect);
+            }
+
+		    if (context.DrawFocus)
 			{
 				focusRect.Width--;
 				focusRect.Height--;
-				if (context.DrawSelection == DrawSelectionMode.None)
-					_focusPen.Color = SystemColors.ControlText;
-				else
-					_focusPen.Color = SystemColors.InactiveCaption;
+
+                //switch (context.DrawSelection)
+                //{
+                //    case DrawSelectionMode.None:
+                //        this._focusPen.Color = SystemColors.ControlText;
+                //        break;
+                //    default:
+                //        this._focusPen.Color = SystemColors.InactiveCaption;
+                //        break;
+                //}
+
 				context.Graphics.DrawRectangle(_focusPen, focusRect);
 			}
-            if (!UseCompatibleTextRendering)                                       
+            if (!this.UseCompatibleTextRendering)
+            {
                 context.Graphics.DrawString(label, font, GetFrush(textColor), bounds, _format);
+            }
             else
+            {
                 TextRenderer.DrawText(context.Graphics, label, font, bounds, textColor, _formatFlags);
+            }
 		}
 
 		private static Dictionary<Color, Brush> _brushes = new Dictionary<Color,Brush>();
 		private static Brush GetFrush(Color color)
 		{
-			Brush br;
-			if (_brushes.ContainsKey(color))
-				br = _brushes[color];
-			else
-			{
-				br = new SolidBrush(color);
-				_brushes.Add(color, br);
-			}
-			return br;
+		    if (_brushes.ContainsKey(color))
+				return _brushes[color];
+		    
+            Brush br = new SolidBrush(color);
+
+		    _brushes.Add(color, br);
+
+		    return br;
 		}
 
 		private void CreateBrushes(TreeNodeAdv node, DrawContext context, string text, out Brush backgroundBrush, out Color textColor, out Font font, ref string label)
@@ -218,50 +214,62 @@ namespace Aga.Controls.Tree.NodeControls
 			backgroundBrush = null;
 			font = context.Font;
 
-			if (context.DrawSelection == DrawSelectionMode.Active)
+			switch (context.DrawSelection)
 			{
-				textColor = SystemColors.HighlightText;
-                backgroundBrush = SystemBrushes.Highlight;
+                case DrawSelectionMode.Active:
+			        {
+			            //textColor = SystemColors.HighlightText;
+			            //backgroundBrush = SystemBrushes.Highlight;
+			            break;
+			        }
+                case DrawSelectionMode.Inactive:
+			        {
+			            //textColor = SystemColors.ControlText;
+			            //backgroundBrush = SystemBrushes.InactiveBorder;
+			            break;
+			        }
+                case DrawSelectionMode.FullRowSelect:
+			        {
+			            //textColor = SystemColors.HighlightText;
+			            break;
+			        }
 			}
-			else if (context.DrawSelection == DrawSelectionMode.Inactive)
+
+			//if (!context.Enabled)
+				//textColor = SystemColors.GrayText;
+
+			if (this.DrawText != null)
 			{
-				textColor = SystemColors.ControlText;
-                backgroundBrush = SystemBrushes.InactiveBorder;
-			}
-			else if (context.DrawSelection == DrawSelectionMode.FullRowSelect)
-				textColor = SystemColors.HighlightText;
+                //DrawEventArgs args = new DrawEventArgs(node, context, text) 
+                //{
+                //    TextColor = textColor, 
+                //    BackgroundBrush = backgroundBrush, 
+                //    Font = font
+                //};
 
-			if (!context.Enabled)
-				textColor = SystemColors.GrayText;
+			    //OnDrawText(args);
 
-			if (DrawText != null)
-			{
-				DrawEventArgs args = new DrawEventArgs(node, context, text);
-				args.TextColor = textColor;
-				args.BackgroundBrush = backgroundBrush;
-				args.Font = font;
-
-				OnDrawText(args);
-
-				textColor = args.TextColor;
-				backgroundBrush = args.BackgroundBrush;
-				font = args.Font;
-				label = args.Text;
+				//textColor = args.TextColor;
+				//backgroundBrush = args.BackgroundBrush;
+				//font = args.Font;
+				//label = args.Text;
 			}
 		}
 
 		public string GetLabel(TreeNodeAdv node)
 		{
-			if (node != null && node.Tag != null)
-			{
-				object obj = GetValue(node);
-				if (obj != null)
-					return FormatLabel(obj);
-			}
-			return string.Empty;
+		    if (node != null && node.Tag != null)
+		    {
+		        object obj = GetValue(node);
+
+		        if (obj != null)
+		            return FormatLabel(obj);
+		    }
+
+		    return string.Empty;
 		}
 
-		protected virtual string FormatLabel(object obj)
+	    protected virtual string FormatLabel(object obj)
 		{
 			return obj.ToString();
 		}
@@ -274,6 +282,7 @@ namespace Aga.Controls.Tree.NodeControls
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
+
 			if (disposing)
 			{
 				_focusPen.Dispose();

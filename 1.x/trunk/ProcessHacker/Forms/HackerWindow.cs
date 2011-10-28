@@ -1071,7 +1071,7 @@ namespace ProcessHacker
                         {
                             if (OSVersion.HasIoPriority)
                             {
-                                switch (phandle.GetIoPriority())
+                                switch (phandle.IoPriority)
                                 {
                                     case 0:
                                         ioPriority0ThreadMenuItem.Checked = true;
@@ -2946,7 +2946,7 @@ namespace ProcessHacker
         {
             try
             {
-                using (var phandle = new ProcessHandle(processSelectedPid, ProcessAccess.SetInformation))
+                using (ProcessHandle phandle = new ProcessHandle(processSelectedPid, ProcessAccess.SetInformation))
                     phandle.SetPriorityClass(priority);
             }
             catch (Exception ex)
@@ -2959,8 +2959,8 @@ namespace ProcessHacker
         {
             try
             {
-                using (var phandle = new ProcessHandle(processSelectedPid, ProcessAccess.SetInformation))
-                    phandle.SetIoPriority(ioPriority);
+                using (ProcessHandle phandle = new ProcessHandle(processSelectedPid, ProcessAccess.SetInformation))
+                    phandle.IoPriority = ioPriority;
             }
             catch (Exception ex)
             {

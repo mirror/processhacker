@@ -61,7 +61,7 @@ namespace ProcessHacker.Native.Security
 
             for (int i = 0; i < privilegeSet.Count; i++)
             {
-                _privileges.Add(new Privilege(memoryRegion.ReadStruct<LuidAndAttributes>(PrivilegeSetStruct.PrivilegesOffset, i)));
+                _privileges.Add(new Privilege(memoryRegion.ReadStruct<LuidAndAttributes>(PrivilegeSetStruct.PrivilegesOffset, LuidAndAttributes.SizeOf, i)));
             }
         }
 
@@ -80,7 +80,7 @@ namespace ProcessHacker.Native.Security
             memory.WriteInt32(4, (int)_flags);
 
             for (int i = 0; i < _privileges.Count; i++)
-                memory.WriteStruct(8, i, _privileges[i].ToLuidAndAttributes());
+                memory.WriteStruct(8, LuidAndAttributes.SizeOf, i, _privileges[i].ToLuidAndAttributes());
 
             return memory;
         }
