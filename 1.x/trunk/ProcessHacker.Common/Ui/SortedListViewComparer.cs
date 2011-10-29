@@ -43,11 +43,9 @@ namespace ProcessHacker.Common.Ui
     {
         private class DefaultComparer : ISortedListViewComparer
         {
-            private SortedListViewComparer _sortedListComparer;
-
             public DefaultComparer(SortedListViewComparer sortedListComparer)
             {
-                _sortedListComparer = sortedListComparer;
+
             }
 
             public int Compare(ListViewItem x, ListViewItem y, int column)
@@ -79,17 +77,17 @@ namespace ProcessHacker.Common.Ui
             }
         }
 
-        private ListView _list;
-        private bool _virtualMode = false;
+        private readonly ListView _list;
+        private bool _virtualMode;
         private RetrieveVirtualItemEventHandler _retrieveVirtualItem;
-        private bool _triState = false;
+        private bool _triState;
         private ISortedListViewComparer _comparer;
         private ISortedListViewComparer _triStateComparer;
         private int _sortColumn;
         private SortOrder _sortOrder;
-        private Dictionary<int, Comparison<ListViewItem>> _customSorters =
+        private readonly Dictionary<int, Comparison<ListViewItem>> _customSorters =
             new Dictionary<int, Comparison<ListViewItem>>();
-        private List<int> _columnSortOrder = new List<int>();
+        private readonly List<int> _columnSortOrder = new List<int>();
 
         /// <summary>
         /// Creates a new sorted list manager.
@@ -98,7 +96,7 @@ namespace ProcessHacker.Common.Ui
         public SortedListViewComparer(ListView list)
         {
             _list = list;
-            _list.ColumnClick += new ColumnClickEventHandler(list_ColumnClick);
+            _list.ColumnClick += this.list_ColumnClick;
             _sortColumn = 0;
             _sortOrder = SortOrder.Ascending;
             _comparer = new DefaultComparer(this);
@@ -255,12 +253,15 @@ namespace ProcessHacker.Common.Ui
 
         private int ModifySort(int result, SortOrder order)
         {
-            if (order == SortOrder.Ascending)
-                return result;
-            else if (order == SortOrder.Descending)
-                return -result;
-            else
-                return result;
+            switch (order)
+            {
+                case SortOrder.Ascending:
+                    return result;
+                case SortOrder.Descending:
+                    return -result;
+                default:
+                    return result;
+            }
         }
 
         private int Compare(ListViewItem x, ListViewItem y, int column)

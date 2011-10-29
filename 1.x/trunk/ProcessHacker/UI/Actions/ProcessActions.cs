@@ -92,11 +92,12 @@ namespace ProcessHacker.UI.Actions
 
             if (OSVersion.HasTaskDialogs)
             {
-                TaskDialog td = new TaskDialog();
-
-                td.WindowTitle = "Process Hacker";
-                td.MainInstruction = "Do you want to " + action + " " + name + "?";
-                td.Content = content;
+                TaskDialog td = new TaskDialog
+                {
+                    PositionRelativeToWindow = true, 
+                    WindowTitle = "Process Hacker", 
+                    MainInstruction = "Do you want to " + action + " " + name + "?", Content = content
+                };
 
                 if (critical)
                 {
@@ -119,13 +120,13 @@ namespace ProcessHacker.UI.Actions
 
                     for (int i = 0; i < pids.Length; i++)
                     {
-                        bool dangerousPid, criticalPid;
+                        bool criticalPid;
 
-                        dangerousPid = PhUtils.IsDangerousPid(pids[i]);
+                        bool dangerousPid = PhUtils.IsDangerousPid(pids[i]);
 
                         try
                         {
-                            using (var phandle = new ProcessHandle(pids[i], ProcessAccess.QueryInformation))
+                            using (ProcessHandle phandle = new ProcessHandle(pids[i], ProcessAccess.QueryInformation))
                                 criticalPid = phandle.IsCritical;
                         }
                         catch
@@ -195,7 +196,7 @@ namespace ProcessHacker.UI.Actions
                 {
                     foreach (int pid in pids)
                     {
-                        using (var phandle = new ProcessHandle(pid, access))
+                        using (ProcessHandle phandle = new ProcessHandle(pid, access))
                         { }
                     }
                 }
@@ -207,47 +208,44 @@ namespace ProcessHacker.UI.Actions
                     if (Settings.Instance.ElevationLevel == (int)ElevationLevel.Elevate)
                         return ElevationAction.Elevate;
 
-                    TaskDialog td = new TaskDialog();
-
-                    td.WindowTitle = "Process Hacker";
-                    td.MainIcon = TaskDialogIcon.Warning;
-                    td.MainInstruction = "Do you want to " + elevateAction + "?";
-                    td.Content = "The action cannot be performed in the current security context. " +
-                        "Do you want Process Hacker to prompt for the appropriate credentials and " + elevateAction + "?";
-
-                    td.ExpandedInformation = "Error: " + ex.Message + " (0x" + ex.ErrorCode.ToString("x") + ")";
-                    td.ExpandFooterArea = true;
-
-                    td.Buttons = new TaskDialogButton[]
+                    TaskDialog td = new TaskDialog
                     {
-                        new TaskDialogButton((int)DialogResult.Yes, "Elevate\nPrompt for credentials and " + elevateAction + "."),
-                        new TaskDialogButton((int)DialogResult.No, "Continue\nAttempt to perform the action without elevation.")
-                    };
-                    td.CommonButtons = TaskDialogCommonButtons.Cancel;
-                    td.UseCommandLinks = true;
-                    td.Callback = (taskDialog, args, userData) =>
-                    {
-                        if (args.Notification == TaskDialogNotification.Created)
+                        PositionRelativeToWindow = true,
+                        WindowTitle = "Process Hacker",
+                        MainIcon = TaskDialogIcon.Warning,
+                        MainInstruction = "Do you want to " + elevateAction + "?",
+                        Content = "The action cannot be performed in the current security context. " +
+                        "Do you want Process Hacker to prompt for the appropriate credentials and " + elevateAction + "?",
+                        ExpandedInformation = "Error: " + ex.Message + " (0x" + ex.ErrorCode.ToString("x") + ")",
+                        ExpandFooterArea = true,
+                        Buttons = new TaskDialogButton[]
                         {
-                            taskDialog.SetButtonElevationRequiredState((int)DialogResult.Yes, true);
-                        }
+                            new TaskDialogButton((int)DialogResult.Yes, "Elevate\nPrompt for credentials and " + elevateAction + "."),
+                            new TaskDialogButton((int)DialogResult.No, "Continue\nAttempt to perform the action without elevation.")
+                        },
+                        CommonButtons = TaskDialogCommonButtons.Cancel,
+                        UseCommandLinks = true,
+                        Callback = (taskDialog, args, userData) =>
+                        {
+                            if (args.Notification == TaskDialogNotification.Created)
+                            {
+                                taskDialog.SetButtonElevationRequiredState((int)DialogResult.Yes, true);
+                            }
 
-                        return false;
+                            return false;
+                        }
                     };
 
                     DialogResult result = (DialogResult)td.Show(window);
 
-                    if (result == DialogResult.Yes)
+                    switch (result)
                     {
-                        return ElevationAction.Elevate;
-                    }
-                    else if (result == DialogResult.No)
-                    {
-                        return ElevationAction.DontElevate;
-                    }
-                    else if (result == DialogResult.Cancel)
-                    {
-                        return ElevationAction.Cancel;
+                        case DialogResult.Yes:
+                            return ElevationAction.Elevate;
+                        case DialogResult.No:
+                            return ElevationAction.DontElevate;
+                        case DialogResult.Cancel:
+                            return ElevationAction.Cancel;
                     }
                 }
             }
@@ -255,36 +253,35 @@ namespace ProcessHacker.UI.Actions
             return ElevationAction.NotRequired;
         }
 
-        private static bool ElevateIfRequired(IWin32Window window, int[] pids, string[] names,
-            ProcessAccess access, string action)
+        private static bool ElevateIfRequired(IWin32Window window, int[] pids, string[] names, ProcessAccess access, string action)
         {
-            ElevationAction result;
+            ElevationAction result = PromptForElevation(window, pids, names, access, "elevate the action", action);
 
-            result = PromptForElevation(window, pids, names, access, "elevate the action", action);
-
-            if (result == ElevationAction.NotRequired || result == ElevationAction.DontElevate)
+            switch (result)
             {
-                return false;
-            }
-            else if (result == ElevationAction.Cancel)
-            {
-                return true;
-            }
-            else if (result == ElevationAction.Elevate)
-            {
-                string objects = "";
+                case ElevationAction.DontElevate:
+                case ElevationAction.NotRequired:
+                    return false;
+                case ElevationAction.Cancel:
+                    return true;
+                case ElevationAction.Elevate:
+                    {
+                        string objects = string.Empty;
 
-                foreach (int pid in pids)
-                    objects += pid + ",";
+                        foreach (int pid in pids)
+                            objects += pid + ",";
 
-                Program.StartProcessHackerAdmin("-e -type process -action " + action + " -obj \"" +
-                    objects + "\" -hwnd " + window.Handle.ToString(), null, window.Handle);
+                        Program.StartProcessHackerAdmin(
+                            "-e -type process -action " + action + " -obj \"" + objects + "\" -hwnd " + window.Handle.ToString()
+                            , 
+                            null, 
+                            window.Handle
+                            );
 
-                return true;
-            }
-            else
-            {
-                return false;
+                        return true;
+                    }
+                default:
+                    return false;
             }
         }
 
@@ -315,29 +312,20 @@ namespace ProcessHacker.UI.Actions
                 result = ElevationAction.NotRequired;
             }
 
-            if (result == ElevationAction.Elevate)
+            switch (result)
             {
-                Program.StartProcessHackerAdmin("-v -ip " + pid.ToString(), () =>
-                {
-                    Program.HackerWindow.Exit();
-                }, window.Handle);
-
-                return false;
-            }
-            else if (result == ElevationAction.Cancel)
-            {
-                return false;
+                case ElevationAction.Elevate:
+                    Program.StartProcessHackerAdmin("-v -ip " + pid.ToString(), () => Program.HackerWindow.Exit(), window.Handle);
+                    return false;
+                case ElevationAction.Cancel:
+                    return false;
             }
 
             if (Program.ProcessProvider.Dictionary.ContainsKey(pid))
             {
                 try
                 {
-                    ProcessWindow pForm = Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],
-                        new Program.PWindowInvokeAction(delegate(ProcessWindow f)
-                        {
-                            Program.FocusWindow(f);
-                        }));
+                    Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], Program.FocusWindow);
                 }
                 catch (Exception ex)
                 {
@@ -370,8 +358,7 @@ namespace ProcessHacker.UI.Actions
             {
                 try
                 {
-                    using (ProcessHandle phandle = 
-                        new ProcessHandle(pids[i], ProcessAccess.Terminate))
+                    using (ProcessHandle phandle = new ProcessHandle(pids[i], ProcessAccess.Terminate))
                         phandle.Terminate();
                 }
                 catch (Exception ex)
@@ -405,9 +392,9 @@ namespace ProcessHacker.UI.Actions
 
             var processes = Windows.GetProcesses();
 
-            for (int i = 0; i < pids.Length; i++)
+            foreach (int t in pids)
             {
-                if (!TerminateTree(window, processes, pids[i]))
+                if (!TerminateTree(window, processes, t))
                     allGood = false;
             }
 

@@ -33,7 +33,7 @@ namespace ProcessHacker
 {
     public partial class ErrorDialog : Form
     {
-        private Exception _exception;
+        private readonly Exception _exception;
         private string _trackerItem;
 
         public ErrorDialog(Exception ex, bool terminating)

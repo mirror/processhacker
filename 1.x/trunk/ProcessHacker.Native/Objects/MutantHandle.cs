@@ -21,11 +21,8 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -43,14 +40,12 @@ namespace ProcessHacker.Native.Objects
 
         public static MutantHandle Create(MutantAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, bool initialOwner)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateMutant(out handle, access, ref oa, initialOwner)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtCreateMutant(out handle, access, ref oa, initialOwner).ThrowIf();
             }
             finally
             {
@@ -71,14 +66,12 @@ namespace ProcessHacker.Native.Objects
 
         public MutantHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, MutantAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenMutant(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtOpenMutant(out handle, access, ref oa).ThrowIf();
             }
             finally
             {
@@ -92,39 +85,49 @@ namespace ProcessHacker.Native.Objects
             : this(name, 0, null, access)
         { }
 
-        public MutantBasicInformation GetBasicInformation()
+        public MutantBasicInformation BasicInformation
         {
-            NtStatus status;
-            MutantBasicInformation mbi;
-            int retLength;
+            get
+            {
+                MutantBasicInformation mbi;
+                int retLength;
 
-            if ((status = Win32.NtQueryMutant(this, MutantInformationClass.MutantBasicInformation,
-                out mbi, Marshal.SizeOf(typeof(MutantBasicInformation)), out retLength)) >= NtStatus.Error)
-                Win32.Throw(status);
+                Win32.NtQueryMutant(
+                    this,
+                    MutantInformationClass.MutantBasicInformation,
+                    out mbi,
+                    MutantBasicInformation.SizeOf,
+                    out retLength
+                    ).ThrowIf();
 
-            return mbi;
+                return mbi;
+            }
         }
 
-        public MutantOwnerInformation GetOwnerInformation()
+        public MutantOwnerInformation OwnerInformation
         {
-            NtStatus status;
-            MutantOwnerInformation moi;
-            int retLength;
+            get
+            {
+                MutantOwnerInformation moi;
+                int retLength;
 
-            if ((status = Win32.NtQueryMutant(this, MutantInformationClass.MutantOwnerInformation,
-                out moi, Marshal.SizeOf(typeof(MutantOwnerInformation)), out retLength)) >= NtStatus.Error)
-                Win32.Throw(status);
+                Win32.NtQueryMutant(
+                    this,
+                    MutantInformationClass.MutantOwnerInformation,
+                    out moi,
+                    MutantOwnerInformation.SizeOf,
+                    out retLength
+                    ).ThrowIf();
 
-            return moi;
+                return moi;
+            }
         }
 
         public int Release()
         {
-            NtStatus status;
             int previousCount;
 
-            if ((status = Win32.NtReleaseMutant(this, out previousCount)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtReleaseMutant(this, out previousCount).ThrowIf();
 
             return previousCount;
         }

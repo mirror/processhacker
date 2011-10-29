@@ -10,7 +10,7 @@ namespace ProcessHacker.Common.Ui
     public static class ColumnHeaderExtensions
     {
         [StructLayout(LayoutKind.Sequential)]
-        private struct LVCOLUMN
+        public struct LVCOLUMN
         {
             public Int32 mask;
             public Int32 cx;
@@ -45,11 +45,13 @@ namespace ProcessHacker.Common.Ui
             for (int i = 0; i <= listView.Columns.Count - 1; i++)
             {
                 IntPtr ColumnPtr = new IntPtr(i);
-                LVCOLUMN lvColumn = new LVCOLUMN();
-                lvColumn.mask = HDI_FORMAT;
+                LVCOLUMN lvColumn = new LVCOLUMN
+                {
+                    mask = HDI_FORMAT
+                };
                 SendMessage(columnHeader, HDM_GETITEM, ColumnPtr, ref lvColumn);
 
-                if (!(order == SortOrder.None) && i == column.Index)
+                if (order != SortOrder.None && i == column.Index)
                 {
                     switch (order)
                     {

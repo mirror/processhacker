@@ -30,7 +30,7 @@ namespace ProcessHacker.Common
     /// </summary>
     public static class BaseConverter
     {
-        private static int[] _reverseChars = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        private static readonly int[] _reverseChars = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 37, 38, 39, 40, 41,
             42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 52,
             53, 54, 55, 56, 57, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -122,7 +122,7 @@ namespace ProcessHacker.Common
                 return 0;
 
             bool negative = number[0] == '-';
-            decimal result = 0;
+            decimal result;
 
             if (negative)
                 number = number.Substring(1);
@@ -169,8 +169,8 @@ namespace ProcessHacker.Common
 
             if (negative)
                 return -result;
-            else
-                return result;
+            
+            return result;
         }
     }
 }

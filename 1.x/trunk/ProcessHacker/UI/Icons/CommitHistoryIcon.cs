@@ -20,7 +20,6 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Runtime.InteropServices;
 using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 
@@ -33,10 +32,13 @@ namespace ProcessHacker
             this.UseSecondLine = false;
             this.UseLongData = true;
 
-            PerformanceInformation info = new PerformanceInformation();
+            PerformanceInformation info = new PerformanceInformation
+            {
+                Size = PerformanceInformation.SizeOf
+            };
 
-            info.Size = Marshal.SizeOf(info);
             Win32.GetPerformanceInfo(out info, info.Size);
+
             this.MinMaxValue = info.CommitLimit.ToInt64();
         }
 
@@ -46,8 +48,7 @@ namespace ProcessHacker
             this.Update(this.Provider.Performance.CommittedPages, 0);
             this.Redraw();
 
-            this.Text = "Commit: " + Utils.FormatSize(
-                (long)this.Provider.Performance.CommittedPages * this.Provider.System.PageSize);
+            this.Text = "Commit: " + Utils.FormatSize(this.Provider.Performance.CommittedPages * this.Provider.System.PageSize);
         }
     }
 }

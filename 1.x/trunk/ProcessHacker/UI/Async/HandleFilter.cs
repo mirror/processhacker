@@ -42,16 +42,14 @@ namespace ProcessHacker.FormHelper
         public delegate void MatchProgressEvent(int currentValue, int count);
         public event MatchListViewEvent MatchListView;
         public event MatchProgressEvent MatchProgress;
-        private string strFilter;
-        private string strFilterLower;
-        private IntPtr intPtrFilter;
+        private readonly string strFilterLower;
+        private readonly IntPtr intPtrFilter;
         private List<ListViewItem> listViewItemContainer = new List<ListViewItem>(BufferSize);
-        private Dictionary<int, bool> isCurrentSessionIdCache = new Dictionary<int, bool>();
+        private readonly Dictionary<int, bool> isCurrentSessionIdCache = new Dictionary<int, bool>();
 
         public HandleFilter(ISynchronizeInvoke isi, string strFilter)
             : base(isi)
         {
-            this.strFilter = strFilter;
             strFilterLower = strFilter.ToLowerInvariant();
 
             try
@@ -102,14 +100,14 @@ namespace ProcessHacker.FormHelper
                     phandle.Dispose();
 
                 // Find DLLs and mapped files
-                var processes = Windows.GetProcesses();
+                Dictionary<int, SystemProcess> processes = Windows.GetProcesses();
 
-                foreach (var process in processes)
+                foreach (KeyValuePair<int, SystemProcess> process in processes)
                 {
                     try
                     {
                         // Modules
-                        using (var phandle = new ProcessHandle(process.Key, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                        using (ProcessHandle phandle = new ProcessHandle(process.Key, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                         {
                             phandle.EnumModules(module =>
                             {
@@ -120,7 +118,7 @@ namespace ProcessHacker.FormHelper
                         }
 
                         // Memory
-                        using (var phandle = new ProcessHandle(process.Key, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
+                        using (ProcessHandle phandle = new ProcessHandle(process.Key, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
                         {
                             phandle.EnumMemory(region =>
                             {
@@ -221,11 +219,13 @@ namespace ProcessHacker.FormHelper
 
         private void CallHandleMatchListView(SystemHandleEntry handle, ObjectInformation info)
         {
-            ListViewItem item = new ListViewItem();
-            item.Name = handle.ProcessId.ToString() + " " + handle.Handle.ToString();
-            item.Text = Program.ProcessProvider.Dictionary[handle.ProcessId].Name +
-                " (" + handle.ProcessId.ToString() + ")";
-            item.Tag = handle;
+            ListViewItem item = new ListViewItem
+            {
+                Name = handle.ProcessId.ToString() + " " + handle.Handle.ToString(), 
+                Text = Program.ProcessProvider.Dictionary[handle.ProcessId].Name + " (" + handle.ProcessId.ToString() + ")", 
+                Tag = handle
+            };
+
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.TypeName));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.BestName));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + handle.Handle.ToString("x")));
@@ -234,11 +234,13 @@ namespace ProcessHacker.FormHelper
 
         private void CallDllMatchListView(int pid, ILoadedModule module)
         {
-            ListViewItem item = new ListViewItem();
-            item.Name = pid.ToString() + " " + module.BaseAddress.ToString();
-            item.Text = Program.ProcessProvider.Dictionary[pid].Name +
-                " (" + pid.ToString() + ")";
-            item.Tag = pid;
+            ListViewItem item = new ListViewItem
+            {
+                Name = pid.ToString() + " " + module.BaseAddress.ToString(), 
+                Text = Program.ProcessProvider.Dictionary[pid].Name + " (" + pid.ToString() + ")", 
+                Tag = pid
+            };
+
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "DLL"));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, module.FileName));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Utils.FormatAddress(module.BaseAddress)));
@@ -247,11 +249,12 @@ namespace ProcessHacker.FormHelper
 
         private void CallMappedFileMatchListView(int pid, IntPtr address, string fileName)
         {
-            ListViewItem item = new ListViewItem();
-            item.Name = pid.ToString() + " " + address.ToString();
-            item.Text = Program.ProcessProvider.Dictionary[pid].Name +
-                " (" + pid.ToString() + ")";
-            item.Tag = pid;
+            ListViewItem item = new ListViewItem
+            {
+                Name = pid.ToString() + " " + address.ToString(),
+                Text = Program.ProcessProvider.Dictionary[pid].Name + " (" + pid.ToString() + ")",
+                Tag = pid
+            };
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "Mapped File"));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, fileName));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Utils.FormatAddress(address)));

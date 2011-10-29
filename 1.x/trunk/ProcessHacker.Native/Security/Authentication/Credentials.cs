@@ -33,10 +33,10 @@ namespace ProcessHacker.Native.Security.Authentication
             MemoryAlloc data = new MemoryAlloc(0x100);
             int size = data.Size;
 
-            if (userName == null)
-                userName = "";
-            if (password == null)
-                password = "";
+            if (string.IsNullOrEmpty(userName))
+                userName = string.Empty;
+            if (string.IsNullOrEmpty(password))
+                password = string.Empty;
 
             if (!Win32.CredPackAuthenticationBuffer(flags, userName, password, data, ref size))
             {
@@ -122,13 +122,13 @@ namespace ProcessHacker.Native.Security.Authentication
             if (userName.Length > maxChars || password.Length > maxChars)
                 throw new ArgumentException("The user name or password string is too long.");
 
-            info.Size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CredUiInfo));
+            info.Size = CredUiInfo.SizeOf;
             info.Parent = parent != null ? parent.Handle : IntPtr.Zero;
             info.MessageText = messageText;
             info.CaptionText = captionText;
 
-            using (var userNameAlloc = new MemoryAlloc(maxBytes))
-            using (var passwordAlloc = new MemoryAlloc(maxBytes))
+            using (MemoryAlloc userNameAlloc = new MemoryAlloc(maxBytes))
+            using (MemoryAlloc passwordAlloc = new MemoryAlloc(maxBytes))
             {
                 userNameAlloc.WriteUnicodeString(0, userName);
                 userNameAlloc.WriteInt16(userName.Length * 2, 0);
@@ -178,12 +178,12 @@ namespace ProcessHacker.Native.Security.Authentication
             IntPtr outAuthBuffer;
             int outAuthBufferSize;
 
-            info.Size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CredUiInfo));
+            info.Size = CredUiInfo.SizeOf;
             info.Parent = parent != null ? parent.Handle : IntPtr.Zero;
             info.MessageText = messageText;
             info.CaptionText = captionText;
 
-            using (var inAuthBuffer = PackCredentials(0, userName, password))
+            using (MemoryRegion inAuthBuffer = PackCredentials(0, userName, password))
             {
                 result = Win32.CredUIPromptForWindowsCredentials(
                     ref info,
@@ -223,11 +223,10 @@ namespace ProcessHacker.Native.Security.Authentication
 
         public static SecPkgInfo[] GetSSPackages()
         {
-            int result;
             int count;
             IntPtr packages;
 
-            result = Win32.EnumerateSecurityPackages(out count, out packages);
+            int result = Win32.EnumerateSecurityPackages(out count, out packages);
 
             if (result != 0)
                 Win32.Throw(result);

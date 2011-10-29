@@ -286,9 +286,9 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                 {
-                    var fileName = phandle.GetImageFileName();
+                    var fileName = phandle.ImageFileName;
 
                     sb.AppendLine("Native file name: " + fileName);
                     fileName = FileUtils.GetFileName(fileName);

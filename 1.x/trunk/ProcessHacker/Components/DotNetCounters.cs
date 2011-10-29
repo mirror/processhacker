@@ -32,9 +32,9 @@ namespace ProcessHacker.Components
 {
     public partial class DotNetCounters : UserControl
     {
-        private int _pid;
-        private bool _initialized = false;
-        private string _name;
+        private readonly int _pid;
+        private bool _initialized;
+        private readonly string _name;
         private string _instanceName;
         private string _categoryName;
         private PerformanceCounter[] _counters;
@@ -43,10 +43,6 @@ namespace ProcessHacker.Components
         {
             InitializeComponent();
 
-            listAppDomains.SetTheme("explorer");
-
-            listValues.SetDoubleBuffered(true);
-            listValues.SetTheme("explorer");
             listValues.ContextMenu = listValues.GetCopyMenu();
             listValues.AddShortcuts();
 
@@ -161,21 +157,18 @@ namespace ProcessHacker.Components
                 return;
             }
 
-            for (int i = 0; i < _counters.Length; i++)
+            foreach (PerformanceCounter t in this._counters)
             {
-                var counter = _counters[i];
-
                 if (
-                    (counter.CounterType == PerformanceCounterType.NumberOfItems32 ||
-                    counter.CounterType == PerformanceCounterType.NumberOfItems64 ||
-                    counter.CounterType == PerformanceCounterType.RawFraction) &&
-                    counter.CounterName != "Not Displayed"
+                    (t.CounterType == PerformanceCounterType.NumberOfItems32 ||
+                     t.CounterType == PerformanceCounterType.NumberOfItems64 ||
+                     t.CounterType == PerformanceCounterType.RawFraction) &&
+                    t.CounterName != "Not Displayed"
                     )
                 {
-                    listValues.Items.Add(new ListViewItem(
-                        new string[] 
+                    this.listValues.Items.Add(new ListViewItem(new string[]
                     {
-                        _counters[i].CounterName,
+                        t.CounterName,
                         string.Empty
                     }));
                 }

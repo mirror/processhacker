@@ -64,12 +64,10 @@ namespace ProcessHacker.Native
 
             try
             {
-                NtStatus status;
                 IntPtr processParameters;
 
                 // Create the process parameter block.
-
-                status = Win32.RtlCreateProcessParameters(
+                Win32.RtlCreateProcessParameters(
                     out processParameters,
                     ref imagePathNameStr,
                     ref dllPathStr,
@@ -80,10 +78,7 @@ namespace ProcessHacker.Native
                     ref desktopInfoStr,
                     ref shellInfoStr,
                     ref runtimeInfoStr
-                    );
-
-                if (status >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
 
                 try
                 {
@@ -93,7 +88,7 @@ namespace ProcessHacker.Native
                     int environmentLength;
                     IntPtr newEnvironment;
 
-                    environmentLength = environment.GetLength();
+                    environmentLength = environment.Length;
                     newEnvironment = processHandle.AllocateMemory(
                         environmentLength,
                         MemoryProtection.ReadWrite

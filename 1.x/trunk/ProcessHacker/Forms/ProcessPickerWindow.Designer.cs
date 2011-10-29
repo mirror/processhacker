@@ -61,10 +61,15 @@
             // 
             // treeProcesses
             // 
-            this.treeProcesses.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeProcesses.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.treeProcesses.Draw = true;
+            this.treeProcesses.DumpMode = false;
+            this.treeProcesses.DumpProcesses = null;
+            this.treeProcesses.DumpProcessServices = null;
+            this.treeProcesses.DumpServices = null;
+            this.treeProcesses.DumpUserName = null;
             this.treeProcesses.Location = new System.Drawing.Point(12, 28);
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.Provider = null;
@@ -75,8 +80,8 @@
             // 
             // labelLabel
             // 
-            this.labelLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.labelLabel.AutoEllipsis = true;
             this.labelLabel.Location = new System.Drawing.Point(12, 9);
             this.labelLabel.Name = "labelLabel";
@@ -89,11 +94,13 @@
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(485, 392);
             this.Controls.Add(this.labelLabel);
             this.Controls.Add(this.treeProcesses);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.buttonCancel);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ProcessPickerWindow";
@@ -101,8 +108,8 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Choose a Process";
-            this.Load += new System.EventHandler(this.ProcessPickerWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProcessPickerWindow_FormClosing);
+            this.Load += new System.EventHandler(this.ProcessPickerWindow_Load);
             this.ResumeLayout(false);
 
         }

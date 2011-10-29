@@ -12,18 +12,13 @@ namespace ProcessHacker
 {
     public partial class HandleStatisticsWindow : Form
     {
-        private int _pid;
-
         public HandleStatisticsWindow(int pid)
         {
             InitializeComponent();
+
             this.AddEscapeToClose();
             this.SetTopMost();
 
-            _pid = pid;
-
-            listTypes.SetDoubleBuffered(true);
-            listTypes.SetTheme("explorer");
             listTypes.AddShortcuts();
             listTypes.ContextMenu = listTypes.GetCopyMenu();
             listTypes.ListViewItemSorter = new SortedListViewComparer(listTypes);

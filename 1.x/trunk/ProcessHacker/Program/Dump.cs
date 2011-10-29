@@ -73,18 +73,17 @@ namespace ProcessHacker
 
         public static void WriteListEntry(this BinaryWriter bw, string value)
         {
-            if (value == null)
-                value = "";
+            if (string.IsNullOrEmpty(value))
+                value = string.Empty;
 
             bw.Write(Encoding.Unicode.GetBytes(value.Replace("\0", "") + "\0"));
         }
 
-        public static void AppendStruct<T>(MemoryObject mo, T s)
-            where T : struct
+        public static void AppendStruct<T>(MemoryObject mo, int size, T s) where T : struct
         {
-            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(T))))
+            using (MemoryAlloc data = new MemoryAlloc(size))
             {
-                data.WriteStruct<T>(s);
+                data.WriteStruct(s);
                 mo.AppendData(data.ReadBytes(data.Size));
             }
         }
@@ -95,7 +94,7 @@ namespace ProcessHacker
             string str = Encoding.Unicode.GetString(mo.ReadData());
             int i = 0;
 
-            if (str == "")
+            if (string.IsNullOrEmpty(str))
                 return dict;
 
             while (true)
@@ -124,7 +123,7 @@ namespace ProcessHacker
         public static Icon GetIcon(MemoryObject mo)
         {
             byte[] data = mo.ReadData();
-            ProcessHacker.Common.ByteStreamReader reader = new ProcessHacker.Common.ByteStreamReader(data);
+            ByteStreamReader reader = new ByteStreamReader(data);
 
             using (Bitmap b = new Bitmap(reader))
             {
@@ -187,7 +186,7 @@ namespace ProcessHacker
         {
             MemoryFileSystem mfs = new MemoryFileSystem(fileName, mode);
 
-            using (var sysinfo = mfs.RootObject.CreateChild("SystemInformation"))
+            using (MemoryObject sysinfo = mfs.RootObject.CreateChild("SystemInformation"))
             {
                 BinaryWriter bw = new BinaryWriter(sysinfo.GetWriteStream());
 
@@ -209,7 +208,7 @@ namespace ProcessHacker
 
         public static void DumpProcesses(MemoryFileSystem mfs, ProcessSystemProvider provider)
         {
-            using (var processes = mfs.RootObject.GetChild("Processes"))
+            using (MemoryObject processes = mfs.RootObject.GetChild("Processes"))
             {
                 var p = Windows.GetProcesses();
 
@@ -309,8 +308,8 @@ namespace ProcessHacker
 
                     if (pid != 4)
                     {
-                        using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
-                            fileName = FileUtils.GetFileName(phandle.GetImageFileName());
+                        using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                            fileName = phandle.ImageFileName;
                     }
                     else
                     {
@@ -439,9 +438,9 @@ namespace ProcessHacker
             }
 
             using (var vmCounters = processMo.CreateChild("VmCounters"))
-                AppendStruct(vmCounters, new VmCountersEx64(process.Process.VirtualMemoryCounters));
+                AppendStruct(vmCounters, VmCountersEx64.SizeOf, new VmCountersEx64(process.Process.VirtualMemoryCounters));
             using (var ioCounters = processMo.CreateChild("IoCounters"))
-                AppendStruct(ioCounters, process.Process.IoCounters);
+                AppendStruct(ioCounters, IoCounters.SizeOf, process.Process.IoCounters);
 
             try
             {

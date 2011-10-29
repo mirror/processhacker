@@ -37,10 +37,10 @@ namespace ProcessHacker.Common
         /// </summary>
         public sealed class WorkItem
         {
-            private WorkQueue _owner;
-            private string _tag;
-            private Delegate _work;
-            private object[] _args;
+            private readonly WorkQueue _owner;
+            private readonly string _tag;
+            private readonly Delegate _work;
+            private readonly object[] _args;
             private bool _enabled = true;
             private FastEvent _completedEvent = new FastEvent(false);
             private object _result;
@@ -249,7 +249,7 @@ namespace ProcessHacker.Common
         /// <summary>
         /// The number of worker threads which are currently running work.
         /// </summary>
-        private int _busyCount = 0;
+        private int _busyCount;
         /// <summary>
         /// A worker will block on the work-arrived event for this amount of time 
         /// before terminating.

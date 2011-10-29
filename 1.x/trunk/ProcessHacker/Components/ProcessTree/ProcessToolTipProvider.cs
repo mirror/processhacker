@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Aga.Controls.Tree;
+using Microsoft.Win32;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
@@ -32,7 +33,7 @@ namespace ProcessHacker
 {
     public class ProcessToolTipProvider : IToolTipProvider
     {
-        private ProcessTree _tree;
+        private readonly ProcessTree _tree;
 
         public ProcessToolTipProvider(ProcessTree owner)
         {
@@ -110,22 +111,24 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        string clsid = pNode.ProcessItem.CmdLine.ToLowerInvariant().Split(
-                            new string[] { "/processid:" }, StringSplitOptions.None)[1].Split(' ')[0];
-                        using (var key = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey("CLSID\\" + clsid))
+                        string clsid = pNode.ProcessItem.CmdLine.ToLowerInvariant().Split(new[]
                         {
-                            using (var inprocServer32 = key.OpenSubKey("InprocServer32"))
-                            {
-                                string name = key.GetValue(string.Empty) as string;
-                                string fileName = inprocServer32.GetValue(string.Empty) as string;
+                            "/processid:"
+                        }, StringSplitOptions.None)[1].Split(' ')[0];
 
-                                FileVersionInfo info = FileVersionInfo.GetVersionInfo(Environment.ExpandEnvironmentVariables(fileName));
+                        using (RegistryKey key = Registry.ClassesRoot.OpenSubKey("CLSID\\" + clsid))
+                        using (RegistryKey inprocServer32 = key.OpenSubKey("InprocServer32"))
+                        {
+                            string name = key.GetValue(string.Empty) as string;
+                            string fileName = inprocServer32.GetValue(string.Empty) as string;
 
-                                dllhostText = "\nCOM Target:\n    " + name + " (" + clsid.ToUpper() + ")\n    " +
-                                    info.FileName + "\n    " +
-                                    info.FileDescription + " " + info.FileVersion + "\n    " + info.CompanyName;
-                            }
+                            FileVersionInfo info = FileVersionInfo.GetVersionInfo(Environment.ExpandEnvironmentVariables(fileName));
+
+                            dllhostText = "\nCOM Target:\n    " + name + " (" + clsid.ToUpper() + ")\n    " +
+                                          info.FileName + "\n    " +
+                                          info.FileDescription + " " + info.FileVersion + "\n    " + info.CompanyName;
                         }
+
                     }
                     catch (Exception ex)
                     {

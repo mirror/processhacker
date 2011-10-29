@@ -31,9 +31,9 @@ namespace ProcessHacker
         private void InitializeComponent()
         {
             this.buttonClose = new System.Windows.Forms.Button();
-            this.listTypes = new ExtendedListView();
-            this.columnType = new System.Windows.Forms.ColumnHeader();
-            this.columnNumber = new System.Windows.Forms.ColumnHeader();
+            this.listTypes = new ProcessHacker.Components.ExtendedListView();
+            this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnNumber = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // buttonClose
@@ -50,12 +50,13 @@ namespace ProcessHacker
             // 
             // listTypes
             // 
-            this.listTypes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listTypes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listTypes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnType,
             this.columnNumber});
+            this.listTypes.DoubleClickChecks = true;
             this.listTypes.FullRowSelect = true;
             this.listTypes.HideSelection = false;
             this.listTypes.Location = new System.Drawing.Point(12, 12);
@@ -81,9 +82,11 @@ namespace ProcessHacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(351, 303);
             this.Controls.Add(this.listTypes);
             this.Controls.Add(this.buttonClose);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

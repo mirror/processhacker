@@ -30,8 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HiddenProcessesWindow));
             this.listProcesses = new ProcessHacker.Components.ExtendedListView();
-            this.columnProcess = new System.Windows.Forms.ColumnHeader();
-            this.columnPID = new System.Windows.Forms.ColumnHeader();
+            this.columnProcess = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnPID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.buttonClose = new System.Windows.Forms.Button();
             this.buttonScan = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -43,12 +43,13 @@
             // 
             // listProcesses
             // 
-            this.listProcesses.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listProcesses.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listProcesses.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnProcess,
             this.columnPID});
+            this.listProcesses.DoubleClickChecks = true;
             this.listProcesses.FullRowSelect = true;
             this.listProcesses.HideSelection = false;
             this.listProcesses.Location = new System.Drawing.Point(12, 44);
@@ -96,15 +97,15 @@
             // 
             // label2
             // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoEllipsis = true;
             this.label2.Location = new System.Drawing.Point(12, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(487, 32);
             this.label2.TabIndex = 0;
             this.label2.Text = "Processes highlighted red are hidden while those highlighted gray have terminated" +
-                " but are still being referenced by other processes.";
+    " but are still being referenced by other processes.";
             // 
             // buttonTerminate
             // 
@@ -133,8 +134,8 @@
             // 
             // labelCount
             // 
-            this.labelCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.labelCount.Location = new System.Drawing.Point(12, 343);
             this.labelCount.Name = "labelCount";
             this.labelCount.Size = new System.Drawing.Size(487, 15);
@@ -160,6 +161,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(511, 396);
             this.Controls.Add(this.comboMethod);
             this.Controls.Add(this.labelCount);
@@ -169,12 +171,13 @@
             this.Controls.Add(this.buttonScan);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.listProcesses);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "HiddenProcessesWindow";
             this.Text = "Hidden Processes";
-            this.Load += new System.EventHandler(this.HiddenProcessesWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HiddenProcessesWindow_FormClosing);
+            this.Load += new System.EventHandler(this.HiddenProcessesWindow_Load);
             this.ResumeLayout(false);
 
         }

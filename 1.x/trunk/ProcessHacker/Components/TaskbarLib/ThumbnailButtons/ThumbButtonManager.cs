@@ -37,7 +37,7 @@ namespace TaskbarLib
     {
         private sealed class MessageFilter : IMessageFilter
         {
-            private ThumbButtonManager _manager;
+            private readonly ThumbButtonManager _manager;
 
             public MessageFilter(ThumbButtonManager manager)
             {
@@ -48,12 +48,13 @@ namespace TaskbarLib
             {
                 if (m.Msg == (int)Windows7Taskbar.TaskbarButtonCreatedMessage)
                 {
-                    _manager.OnTaskbarButtonCreated();
+                    this._manager.OnTaskbarButtonCreated();
                     return true;
                 }
-                else if (m.Msg == (int)ProcessHacker.Native.Api.WindowMessage.Command)
+                
+                if (m.Msg == (int)ProcessHacker.Native.Api.WindowMessage.Command)
                 {
-                    _manager.OnCommand(m.WParam);
+                    this._manager.OnCommand(m.WParam);
                 }
 
                 return false;
@@ -62,8 +63,8 @@ namespace TaskbarLib
 
         public event EventHandler TaskbarButtonCreated;
 
-        private Form _form;
-        private MessageFilter _filter;
+        private readonly Form _form;
+        private readonly MessageFilter _filter;
         private bool _disposed;
 
         /// <summary>
@@ -165,7 +166,7 @@ namespace TaskbarLib
             }
         }
 
-        private Dictionary<int, ThumbButton> _thumbButtons = new Dictionary<int, ThumbButton>();
+        private readonly Dictionary<int, ThumbButton> _thumbButtons = new Dictionary<int, ThumbButton>();
 
         #endregion
     }

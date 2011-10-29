@@ -98,6 +98,13 @@ namespace ProcessHacker.Native.Mfs
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     internal unsafe struct MfsObjectHeader
     {
+        public static readonly int SizeOf;
+
+        static MfsObjectHeader()
+        {
+            SizeOf = Marshal.SizeOf(typeof(MfsObjectHeader));
+        }
+
         public MfsCellId Flink;
         public MfsCellId Blink;
         public MfsCellId Parent;
@@ -111,11 +118,11 @@ namespace ProcessHacker.Native.Mfs
         public MfsCellId LastData;
 
         public int NameLength;
-        public fixed char Name[32];
+        public fixed char Name [32];
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    internal unsafe struct MfsDataCell
+    internal struct MfsDataCell
     {
         public static readonly int DataOffset = Marshal.OffsetOf(typeof(MfsDataCell), "Data").ToInt32();
 

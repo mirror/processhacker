@@ -88,7 +88,7 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         public bool Owned
         {
-            get { return this.Handle.GetBasicInformation().CurrentCount <= 0; }
+            get { return this.Handle.BasicInformation.CurrentCount <= 0; }
         }
 
         /// <summary>

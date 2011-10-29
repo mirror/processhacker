@@ -22,7 +22,7 @@ namespace ProcessHacker.Components
         /// <summary>
         /// The TaskDialog we will display.
         /// </summary>
-        private TaskDialog taskDialog;
+        private readonly TaskDialog taskDialog;
 
         /// <summary>
         /// The result of the dialog, either a DialogResult value for common push buttons set in the TaskDialog.CommonButtons

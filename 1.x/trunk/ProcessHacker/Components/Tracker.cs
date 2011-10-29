@@ -320,7 +320,7 @@ namespace ProcessHacker
             {
                 _text = value;
 
-                _textSize = TextRenderer.MeasureText(this.Text, this.Font);
+                _textSize = this.CreateGraphics().GetCachedSize(this.Text, this.Font);
                 _boxSize = new Size(_textSize.Width + _textPadding.Left + _textPadding.Right, _textSize.Height + _textPadding.Top + _textPadding.Bottom);
 
                 // work out Y

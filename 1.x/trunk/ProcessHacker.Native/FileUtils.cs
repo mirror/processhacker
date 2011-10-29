@@ -23,8 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -44,20 +42,18 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Used to resolve device prefixes (\Device\Harddisk1) into DOS drive names.
         /// </summary>
-        private static Dictionary<string, string> _fileNamePrefixes = new Dictionary<string, string>();
+        private static Dictionary<string, string> _fileNamePrefixes;
 
         public static string FindFile(string basePath, string fileName)
         {
-            string path;
-
-            if (basePath != null)
+            if (!string.IsNullOrEmpty(basePath))
             {
                 // Search the base path first.
                 if (System.IO.File.Exists(basePath + "\\" + fileName))
                     return System.IO.Path.Combine(basePath, fileName);
             }
 
-            path = Environment.GetEnvironmentVariable("Path");
+            string path = Environment.GetEnvironmentVariable("Path");
 
             string[] directories = path.Split(';');
 
@@ -72,12 +68,11 @@ namespace ProcessHacker.Native
 
         public static string FindFileWin32(string fileName)
         {
-            using (var data = new MemoryAlloc(0x400))
+            using (MemoryAlloc data = new MemoryAlloc(0x400))
             {
-                int retLength;
                 IntPtr filePart;
 
-                retLength = Win32.SearchPath(null, fileName, null, data.Size / 2, data, out filePart);
+                int retLength = Win32.SearchPath(null, fileName, null, data.Size / 2, data, out filePart);
 
                 if (retLength * 2 > data.Size)
                 {
@@ -99,28 +94,67 @@ namespace ProcessHacker.Native
 
         public static Icon GetFileIcon(string fileName, bool large)
         {
-            ShFileInfo shinfo = new ShFileInfo();
-
             if (string.IsNullOrEmpty(fileName))
                 throw new Exception("File name cannot be empty.");
 
             try
             {
-                if (Win32.SHGetFileInfo(fileName, 0, out shinfo,
-                    (uint)Marshal.SizeOf(shinfo),
+                ShFileInfo shinfo;
+
+                if (Win32.SHGetFileInfo(
+                    fileName, 
+                    0, 
+                    out shinfo,
+                    (uint)ShFileInfo.SizeOf,
                     Win32.ShgFiIcon |
-                    (large ? Win32.ShgFiLargeIcon : Win32.ShgFiSmallIcon)) == 0)
+                    (large ? Win32.ShgFiLargeIcon : Win32.ShgFiSmallIcon)
+                    ) == 0)
                 {
                     return null;
                 }
-                else
-                {
-                    return Icon.FromHandle(shinfo.hIcon);
-                }
+
+                return Icon.FromHandle(shinfo.hIcon);
             }
             catch
             {
                 return null;
+            }
+        }
+
+        public static unsafe string GetVistaFileName(int pid)
+        {
+            using (MemoryAlloc buffer = new MemoryAlloc(0x100))
+            {
+                SystemProcessImageNameInformation info;
+
+                info.ProcessId = pid;
+                info.ImageName.Length = 0;
+                info.ImageName.MaximumLength = 0x100;
+                info.ImageName.Buffer = buffer;
+
+                NtStatus status = Win32.NtQuerySystemInformation(
+                    SystemInformationClass.SystemProcessImageName,
+                    &info,
+                    SystemProcessImageNameInformation.SizeOf,
+                    null
+                    );
+
+                if (status == NtStatus.InfoLengthMismatch)
+                {
+                    // Our buffer was too small. The required buffer length is stored in MaximumLength.
+                    buffer.ResizeNew(info.ImageName.MaximumLength);
+
+                    Win32.NtQuerySystemInformation(
+                        SystemInformationClass.SystemProcessImageName,
+                        &info,
+                        SystemProcessImageNameInformation.SizeOf,
+                        null
+                        ).ThrowIf();
+                }
+
+                status.ThrowIf();
+
+                return FileUtils.GetFileName(info.ImageName.Text);
             }
         }
 
@@ -155,9 +189,9 @@ namespace ProcessHacker.Native
             // resolve any native object name to a DOS drive letter.
             if (fileName.StartsWith("\\", StringComparison.OrdinalIgnoreCase))
             {
-                var prefixes = _fileNamePrefixes;
+                Dictionary<string, string> prefixes = _fileNamePrefixes;
 
-                foreach (var pair in prefixes)
+                foreach (KeyValuePair<string, string> pair in prefixes)
                 {
                     if (fileName.StartsWith(pair.Key + "\\", StringComparison.OrdinalIgnoreCase))
                     {
@@ -185,42 +219,44 @@ namespace ProcessHacker.Native
             if (driveLetter < 'A' || driveLetter > 'Z')
                 throw new ArgumentException("The drive letter must be between A to Z (inclusive).");
 
-            using (var shandle = new SymbolicLinkHandle(@"\??\" + driveLetter + ":", SymbolicLinkAccess.Query))
+            using (SymbolicLinkHandle shandle = new SymbolicLinkHandle(@"\??\" + driveLetter + ":", SymbolicLinkAccess.Query))
             {
-                return shandle.GetTarget();
+                return shandle.Target;
             }
         }
 
         public static void RefreshFileNamePrefixes()
         {
-            // Just create a new dictionary to avoid having to lock the existing one.
-            var newPrefixes = new Dictionary<string, string>();
-
-            for (char c = 'A'; c <= 'Z'; c++)
+            if (_fileNamePrefixes == null)
             {
-                using (var data = new MemoryAlloc(1024))
-                {
-                    int length;
+                // Just create a new dictionary to avoid having to lock the existing one.
+                _fileNamePrefixes = new Dictionary<string, string>();
 
-                    if ((length = Win32.QueryDosDevice(c.ToString() + ":", data, data.Size / 2)) > 2)
+                for (char c = 'A'; c <= 'Z'; c++)
+                {
+                    using (MemoryAlloc data = new MemoryAlloc(1024))
                     {
-                        newPrefixes.Add(data.ReadUnicodeString(0, length - 2), c.ToString() + ":");
+                        int length;
+
+                        if ((length = Win32.QueryDosDevice(c.ToString() + ":", data, data.Size/2)) > 2)
+                        {
+                            _fileNamePrefixes.Add(data.ReadUnicodeString(0, length - 2), c.ToString() + ":");
+                        }
                     }
                 }
             }
-
-            _fileNamePrefixes = newPrefixes;
         }
 
         public static void ShowProperties(string fileName)
         {
-            var info = new ShellExecuteInfo();
-
-            info.cbSize = Marshal.SizeOf(info);
-            info.lpFile = fileName;
-            info.nShow = ShowWindowType.Show;
-            info.fMask = Win32.SeeMaskInvokeIdList;
-            info.lpVerb = "properties";
+            ShellExecuteInfo info = new ShellExecuteInfo
+            {
+                cbSize = ShellExecuteInfo.SizeOf, 
+                lpFile = fileName, 
+                nShow = ShowWindowType.Show, 
+                fMask = Win32.SeeMaskInvokeIdList, 
+                lpVerb = "properties"
+            };
 
             Win32.ShellExecuteEx(ref info);
         }

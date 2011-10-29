@@ -141,13 +141,12 @@ namespace ProcessHacker.Native
         /// <param name="enumCallback">A callback for the enumeration.</param>
         public static void EnumKernelModules(EnumKernelModulesDelegate enumCallback)
         {
-            NtStatus status;
             int retLength;
 
             if (_kernelModulesBuffer == null)
                 _kernelModulesBuffer = new MemoryAlloc(0x1000);
 
-            status = Win32.NtQuerySystemInformation(
+            NtStatus status = Win32.NtQuerySystemInformation(
                 SystemInformationClass.SystemModuleInformation,
                 _kernelModulesBuffer,
                 _kernelModulesBuffer.Size,
@@ -158,16 +157,15 @@ namespace ProcessHacker.Native
             {
                 _kernelModulesBuffer.ResizeNew(retLength);
 
-                status = Win32.NtQuerySystemInformation(
+                Win32.NtQuerySystemInformation(
                     SystemInformationClass.SystemModuleInformation,
                     _kernelModulesBuffer,
                     _kernelModulesBuffer.Size,
                     out retLength
-                    );
+                    ).ThrowIf();
             }
 
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+            status.ThrowIf();
 
             RtlProcessModules modules = _kernelModulesBuffer.ReadStruct<RtlProcessModules>();
 
@@ -327,17 +325,17 @@ namespace ProcessHacker.Native
                 var info = logonSessionDataAlloc.ReadStruct<SecurityLogonSessionData>();
 
                 return new SystemLogonSession(
-                    info.AuthenticationPackage.Read(),
-                    info.DnsDomainName.Read(),
-                    info.LogonDomain.Read(),
+                    info.AuthenticationPackage.Text,
+                    info.DnsDomainName.Text,
+                    info.LogonDomain.Text,
                     info.LogonId,
-                    info.LogonServer.Read(),
+                    info.LogonServer.Text,
                     DateTime.FromFileTime(info.LogonTime),
                     info.LogonType,
                     info.Session,
                     new Sid(info.Sid),
-                    info.Upn.Read(),
-                    info.UserName.Read()
+                    info.Upn.Text,
+                    info.UserName.Text
                     );
             }
         }
@@ -530,7 +528,7 @@ namespace ProcessHacker.Native
                         currentPagefile.TotalSize,
                         currentPagefile.TotalInUse,
                         currentPagefile.PeakUsage,
-                        FileUtils.GetFileName(currentPagefile.PageFileName.Read())
+                        FileUtils.GetFileName(currentPagefile.PageFileName.Text)
                         ));
 
                     i += currentPagefile.NextEntryOffset;
@@ -601,7 +599,7 @@ namespace ProcessHacker.Native
                     currentProcess.Process = *(SystemProcessInformation*)((byte*)data.Memory + i);
                 }
 
-                currentProcess.Name = currentProcess.Process.ImageName.Read();
+                currentProcess.Name = currentProcess.Process.ImageName.Text;
 
                 if (getThreads && currentProcess.Process.ProcessId != 0)
                 {

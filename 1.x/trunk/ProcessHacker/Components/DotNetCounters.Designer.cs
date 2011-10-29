@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.listAppDomains = new ExtendedListView();
+            this.listAppDomains = new ProcessHacker.Components.ExtendedListView();
             this.label2 = new System.Windows.Forms.Label();
             this.comboCategories = new System.Windows.Forms.ComboBox();
-            this.listValues = new ExtendedListView();
-            this.columnName = new System.Windows.Forms.ColumnHeader();
-            this.columnValue = new System.Windows.Forms.ColumnHeader();
+            this.listValues = new ProcessHacker.Components.ExtendedListView();
+            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // label1
@@ -42,14 +42,15 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 3);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(70, 13);
+            this.label1.Size = new System.Drawing.Size(76, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "AppDomains:";
             // 
             // listAppDomains
             // 
-            this.listAppDomains.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listAppDomains.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listAppDomains.DoubleClickChecks = true;
             this.listAppDomains.FullRowSelect = true;
             this.listAppDomains.HideSelection = false;
             this.listAppDomains.Location = new System.Drawing.Point(9, 19);
@@ -66,14 +67,14 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 108);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(60, 13);
+            this.label2.Size = new System.Drawing.Size(65, 13);
             this.label2.TabIndex = 2;
             this.label2.Text = "Categories:";
             // 
             // comboCategories
             // 
-            this.comboCategories.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboCategories.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboCategories.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboCategories.FormattingEnabled = true;
             this.comboCategories.Location = new System.Drawing.Point(72, 105);
@@ -84,12 +85,13 @@
             // 
             // listValues
             // 
-            this.listValues.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listValues.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listValues.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnName,
             this.columnValue});
+            this.listValues.DoubleClickChecks = true;
             this.listValues.FullRowSelect = true;
             this.listValues.HideSelection = false;
             this.listValues.Location = new System.Drawing.Point(9, 132);
@@ -114,11 +116,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listValues);
             this.Controls.Add(this.comboCategories);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.listAppDomains);
             this.Controls.Add(this.label1);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "DotNetCounters";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(380, 402);

@@ -243,14 +243,11 @@ namespace ProcessHacker.Native.Debugging
 
         //public void QueryModules(ProcessHandle processHandle, RtlQueryProcessDebugFlags flags)
         //{
-        //    NtStatus status;
-
-        //    if ((status = Win32.RtlQueryProcessModuleInformation(
+        //    Win32.RtlQueryProcessModuleInformation(
         //        processHandle ?? IntPtr.Zero,
         //        flags,
         //        _buffer
-        //        )) >= NtStatus.Error)
-        //        Win32.ThrowLastError(status);
+        //        ).ThrowIf();
         //}
     }
 }

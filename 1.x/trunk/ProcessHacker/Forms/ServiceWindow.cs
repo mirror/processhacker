@@ -26,9 +26,9 @@ using ProcessHacker.Components;
 
 namespace ProcessHacker
 {
-    public partial class ServiceWindow : Form
+    public sealed partial class ServiceWindow : Form
     {
-        private ServiceProperties _serviceProps;
+        private readonly ServiceProperties _serviceProps;
 
         public ServiceWindow(string service)
             : this(new string[] { service })
@@ -40,9 +40,11 @@ namespace ProcessHacker
             this.AddEscapeToClose();
             this.SetTopMost();
 
-            _serviceProps = new ServiceProperties(services);
-            _serviceProps.Dock = DockStyle.Fill;
-            _serviceProps.NeedsClose += new EventHandler(_serviceProps_NeedsClose);
+            _serviceProps = new ServiceProperties(services)
+            {
+                Dock = DockStyle.Fill
+            };
+            _serviceProps.NeedsClose += this._serviceProps_NeedsClose;
             this.Controls.Add(_serviceProps);
             this.Text = _serviceProps.Text;
             this.AcceptButton = _serviceProps.ApplyButton;

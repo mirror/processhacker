@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -38,33 +37,24 @@ namespace ProcessHacker.Native.Objects
             TmOptions createOptions
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+            UnicodeString logFileNameStr = new UnicodeString(logFileName);
             IntPtr handle;
 
             try
             {
-                UnicodeString logFileNameStr = new UnicodeString(logFileName);
-
-                try
-                {
-                    if ((status = Win32.NtCreateTransactionManager(
-                        out handle,
-                        access,
-                        ref oa,
-                        ref logFileNameStr,
-                        createOptions,
-                        0
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
-                }
-                finally
-                {
-                    logFileNameStr.Dispose();
-                }
+                Win32.NtCreateTransactionManager(
+                    out handle,
+                    access,
+                    ref oa,
+                    ref logFileNameStr,
+                    createOptions,
+                    0
+                    ).ThrowIf();
             }
             finally
             {
+                logFileNameStr.Dispose();
                 oa.Dispose();
             }
 
@@ -82,21 +72,19 @@ namespace ProcessHacker.Native.Objects
 
         public TmHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, TmAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenTransactionManager(
+                Win32.NtOpenTransactionManager(
                     out handle,
                     access,
                     ref oa,
                     IntPtr.Zero,
                     IntPtr.Zero,
                     0
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -106,115 +94,113 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
-        public TmBasicInformation GetBasicInformation()
+        public TmBasicInformation BasicInformation
         {
-            NtStatus status;
-            TmBasicInformation basicInfo;
-            int retLength;
-
-            if ((status = Win32.NtQueryInformationTransactionManager(
-                this,
-                TmInformationClass.TransactionManagerBasicInformation,
-                out basicInfo,
-                Marshal.SizeOf(typeof(TmBasicInformation)),
-                out retLength
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
-
-            return basicInfo;
-        }
-
-        public long GetLastRecoveredLsn()
-        {
-            NtStatus status;
-            TmRecoveryInformation recoveryInfo;
-            int retLength;
-
-            if ((status = Win32.NtQueryInformationTransactionManager(
-                this,
-                TmInformationClass.TransactionManagerRecoveryInformation,
-                out recoveryInfo,
-                Marshal.SizeOf(typeof(TmRecoveryInformation)),
-                out retLength
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
-
-            return recoveryInfo.LastRecoveredLsn;
-        }
-
-        public string GetLogFileName()
-        {
-            NtStatus status;
-            int retLength;
-
-            using (var data = new MemoryAlloc(0x1000))
+            get
             {
-                status = Win32.NtQueryInformationTransactionManager(
+                TmBasicInformation basicInfo;
+                int retLength;
+
+                Win32.NtQueryInformationTransactionManager(
                     this,
-                    TmInformationClass.TransactionManagerLogPathInformation,
-                    data,
-                    data.Size,
+                    TmInformationClass.TransactionManagerBasicInformation,
+                    out basicInfo,
+                    TmBasicInformation.SizeOf,
                     out retLength
-                    );
+                    ).ThrowIf();
 
-                if (status == NtStatus.BufferTooSmall)
+                return basicInfo;
+            }
+        }
+
+        public long LastRecoveredLsn
+        {
+            get
+            {
+                TmRecoveryInformation recoveryInfo;
+                int retLength;
+
+                Win32.NtQueryInformationTransactionManager(
+                    this,
+                    TmInformationClass.TransactionManagerRecoveryInformation,
+                    out recoveryInfo,
+                    TmRecoveryInformation.SizeOf,
+                    out retLength
+                    ).ThrowIf();
+
+                return recoveryInfo.LastRecoveredLsn;
+            }
+        }
+
+        public string LogFileName
+        {
+            get
+            {
+                int retLength;
+
+                using (MemoryAlloc data = new MemoryAlloc(0x1000))
                 {
-                    // Resize the buffer and try again.
-                    data.ResizeNew(retLength);
-
-                    status = Win32.NtQueryInformationTransactionManager(
+                    NtStatus status = Win32.NtQueryInformationTransactionManager(
                         this,
                         TmInformationClass.TransactionManagerLogPathInformation,
                         data,
                         data.Size,
                         out retLength
                         );
+
+                    if (status == NtStatus.BufferTooSmall)
+                    {
+                        // Resize the buffer and try again.
+                        data.ResizeNew(retLength);
+
+                        Win32.NtQueryInformationTransactionManager(
+                            this,
+                            TmInformationClass.TransactionManagerLogPathInformation,
+                            data,
+                            data.Size,
+                            out retLength
+                            ).ThrowIf();
+                    }
+
+                    status.ThrowIf();
+
+                    TmLogPathInformation logPathInfo = data.ReadStruct<TmLogPathInformation>();
+
+                    return data.ReadUnicodeString(TmLogPathInformation.LogPathOffset, logPathInfo.LogPathLength);
                 }
-
-                if (status >= NtStatus.Error)
-                    Win32.Throw(status);
-
-                TmLogPathInformation logPathInfo = data.ReadStruct<TmLogPathInformation>();
-
-                return data.ReadUnicodeString(TmLogPathInformation.LogPathOffset, logPathInfo.LogPathLength);
             }
         }
 
-        public Guid GetLogIdentity()
+        public Guid LogIdentity
         {
-            NtStatus status;
-            TmLogInformation logInfo;
-            int retLength;
+            get
+            {
+                TmLogInformation logInfo;
+                int retLength;
 
-            if ((status = Win32.NtQueryInformationTransactionManager(
-                this,
-                TmInformationClass.TransactionManagerLogInformation,
-                out logInfo,
-                Marshal.SizeOf(typeof(TmLogInformation)),
-                out retLength
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                Win32.NtQueryInformationTransactionManager(
+                    this,
+                    TmInformationClass.TransactionManagerLogInformation,
+                    out logInfo,
+                    TmLogInformation.SizeOf,
+                    out retLength
+                    ).ThrowIf();
 
-            return logInfo.LogIdentity;
+                return logInfo.LogIdentity;
+            }
         }
 
         public void Recover()
         {
-            NtStatus status;
-
-            if ((status = Win32.NtRecoverTransactionManager(this)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtRecoverTransactionManager(this).ThrowIf();
         }
 
         public void Rollforward(long virtualClock)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtRollforwardTransactionManager(
+            Win32.NtRollforwardTransactionManager(
                 this,
                 ref virtualClock
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
     }
 }

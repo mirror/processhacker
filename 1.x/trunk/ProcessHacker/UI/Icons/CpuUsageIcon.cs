@@ -26,8 +26,8 @@ namespace ProcessHacker
 {
     public class CpuUsageIcon : UsageIcon
     {
-        private ProcessSystemProvider _provider = Program.ProcessProvider;
-        private bool _enabled = false;
+        private readonly ProcessSystemProvider _provider = Program.ProcessProvider;
+        private bool _enabled;
 
         public CpuUsageIcon()
         { }

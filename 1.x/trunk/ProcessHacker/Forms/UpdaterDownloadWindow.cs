@@ -36,15 +36,16 @@ namespace ProcessHacker
 {
     public partial class UpdaterDownloadWindow : Form
     {
-        private Updater.UpdateItem _updateItem;
+        private readonly Updater.UpdateItem _updateItem;
         private WebClient _webClient;
         private string _fileName;
         private ThreadTask _verifyTask;
-        private bool _redirected = false;
+        private bool _redirected;
 
         public UpdaterDownloadWindow(Updater.UpdateItem updateItem)
         {
             InitializeComponent();
+
             this.AddEscapeToClose();
             this.SetTopMost();
 
@@ -53,21 +54,19 @@ namespace ProcessHacker
 
         private void UpdaterDownload_Load(object sender, EventArgs e)
         {
-            string currentVersion;
-            string version;
-
-            currentVersion = Application.ProductVersion;
-            version = _updateItem.Version.Major + "." + _updateItem.Version.Minor;
+            string currentVersion = Application.ProductVersion;
+            string version = this._updateItem.Version.Major + "." + this._updateItem.Version.Minor;
+           
             _fileName = Path.GetTempPath() + "processhacker-" + version + "-setup.exe";
 
             labelTitle.Text = "Downloading: Process Hacker " + version;
             labelReleased.Text = "Released: " + _updateItem.Date.ToString();
 
             _webClient = new WebClient();
-            _webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(webClient_DownloadProgressChanged);
-            _webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(webClient_DownloadFileCompleted);
+            _webClient.DownloadProgressChanged += this.webClient_DownloadProgressChanged;
+            _webClient.DownloadFileCompleted += this.webClient_DownloadFileCompleted;
             _webClient.Headers.Add("User-Agent", "PH/" + currentVersion + " (compatible; PH " +
-                currentVersion + "; PH " + currentVersion + "; .NET CLR " + Environment.Version.ToString() + ";)");
+                currentVersion + "; PH " + currentVersion + "; .NET CLR " + Environment.Version + ";)");
 
             try
             {
@@ -219,15 +218,17 @@ namespace ProcessHacker
 
                     if (this.IsHandleCreated)
                     {
-                        this.BeginInvoke(new MethodInvoker(() =>
-                            {
-                                int value = (int)((double)totalBytesRead * 100 / size);
+                        long read = totalBytesRead;
 
-                                if (value >= this.progressDownload.Minimum && value <= this.progressDownload.Maximum)
-                                {
-                                    this.progressDownload.Value = value;
-                                }
-                            }));
+                        this.BeginInvoke(new MethodInvoker(() =>
+                        {
+                            int value = (int)((double)read * 100 / size);
+
+                            if (value >= this.progressDownload.Minimum && value <= this.progressDownload.Maximum)
+                            {
+                                this.progressDownload.Value = value;
+                            }
+                        }));
                     }
                 } while (bytesRead != 0);
 
@@ -288,8 +289,8 @@ namespace ProcessHacker
             {
                 Program.StartProgramAdmin(
                     _fileName,
-                    "",
-                    new MethodInvoker(() => success = true),
+                    string.Empty,
+                    () => success = true,
                     ShowWindowType.Normal,
                     this.Handle
                     );
@@ -316,7 +317,7 @@ namespace ProcessHacker
                 // User canceled. Re-open the mutex.
                 try
                 {
-                    Program.GlobalMutex = new ProcessHacker.Native.Threading.Mutant(Program.GlobalMutexName);
+                    Program.GlobalMutex = new Native.Threading.Mutant(Program.GlobalMutexName);
                 }
                 catch (Exception ex)
                 {

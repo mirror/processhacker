@@ -27,10 +27,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using Microsoft.Win32;
 using TaskbarLib.Interop;
-using System.Runtime.CompilerServices;
 using ProcessHacker.Native.Api;
 
 namespace TaskbarLib
@@ -53,13 +51,13 @@ namespace TaskbarLib
     {
         #region Members
 
-        string _appId;
+        readonly string _appId;
         uint _maxSlotsInList;
 
-        JumpListTasks _tasks;
-        JumpListDestinations _destinations;
-        EventHandler _displaySettingsChangeHandler;
-        ICustomDestinationList _customDestinationList;
+        readonly JumpListTasks _tasks;
+        readonly JumpListDestinations _destinations;
+        readonly EventHandler _displaySettingsChangeHandler;
+        readonly ICustomDestinationList _customDestinationList;
         ApplicationDestinationType _enabledAutoDestinationType; // = ApplicationDestinationType.Recent;
 
         #endregion

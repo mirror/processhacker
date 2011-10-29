@@ -80,9 +80,10 @@ namespace ProcessHacker.Common.Objects
         public int Allocate<TAccess>(IRefCounted obj, TAccess grantedAccess)
             where TAccess : struct
         {
-            TEntry entry = new TEntry();
-
-            entry.GrantedAccess = Convert.ToInt64(grantedAccess);
+            TEntry entry = new TEntry
+            {
+                GrantedAccess = Convert.ToInt64(grantedAccess)
+            };
 
             return base.Allocate(obj, entry);
         }

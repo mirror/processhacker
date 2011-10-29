@@ -39,18 +39,18 @@
             this.labelValue.AutoSize = true;
             this.labelValue.Location = new System.Drawing.Point(12, 15);
             this.labelValue.Name = "labelValue";
-            this.labelValue.Size = new System.Drawing.Size(37, 13);
+            this.labelValue.Size = new System.Drawing.Size(39, 13);
             this.labelValue.TabIndex = 3;
             this.labelValue.Text = "Value:";
             // 
             // textValue
             // 
-            this.textValue.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textValue.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textValue.Location = new System.Drawing.Point(55, 12);
             this.textValue.Name = "textValue";
-            this.textValue.Size = new System.Drawing.Size(319, 20);
+            this.textValue.Size = new System.Drawing.Size(319, 22);
             this.textValue.TabIndex = 0;
             // 
             // buttonOK
@@ -81,12 +81,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(386, 73);
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.ClientSize = new System.Drawing.Size(386, 93);
             this.ControlBox = false;
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.textValue);
             this.Controls.Add(this.labelValue);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MinimumSize = new System.Drawing.Size(402, 109);
             this.Name = "PromptBox";
             this.ShowIcon = false;

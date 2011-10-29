@@ -40,10 +40,7 @@ namespace ProcessHacker.Native
 
         protected override void Free()
         {
-            NtStatus status;
-
-            if ((status = Win32.NtUnmapViewOfSection(ProcessHandle.Current, this)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtUnmapViewOfSection(ProcessHandle.Current, this).ThrowIf();
         }
 
         /// <summary>
@@ -65,8 +62,8 @@ namespace ProcessHacker.Native
         {
             if ((uint)Win32.NtAreMappedFilesTheSame(this, mappedAsFile) == this.Memory.ToUInt32())
                 return true;
-            else
-                return false;
+            
+            return false;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

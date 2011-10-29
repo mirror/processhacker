@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
@@ -17,12 +12,14 @@ namespace ProcessHacker
         public CreateServiceWindow()
         {
             InitializeComponent();
+
             this.AddEscapeToClose();
             this.SetTopMost();
 
-            Utils.Fill(comboErrorControl, typeof(ServiceErrorControl));
-            Utils.Fill(comboStartType, typeof(ServiceStartType));
-            Utils.Fill(comboType, typeof(ServiceType));
+            this.comboErrorControl.Fill(typeof(ServiceErrorControl));
+            this.comboStartType.Fill(typeof(ServiceStartType));
+            this.comboType.Fill(typeof(ServiceType));
+
             comboType.Items.Add("Win32OwnProcess, InteractiveProcess");
             comboErrorControl.SelectedItem = "Ignore";
             comboStartType.SelectedItem = "DemandStart";
@@ -36,20 +33,22 @@ namespace ProcessHacker
 
         private void buttonBrowse_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-
-            ofd.Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*";
-            ofd.FileName = textBinaryPath.Text;
-
-            if (ofd.ShowDialog() == DialogResult.OK)
-                textBinaryPath.Text = ofd.FileName;
+            using (OpenFileDialog ofd = new OpenFileDialog
+            {
+                Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*",
+                FileName = this.textBinaryPath.Text
+            })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                    textBinaryPath.Text = ofd.FileName;
+            }
         }
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
             try
             {
-                using (var scmhandle = new ServiceManagerHandle(ScManagerAccess.CreateService))
+                using (ServiceManagerHandle scmhandle = new ServiceManagerHandle(ScManagerAccess.CreateService))
                 {
                     ServiceType serviceType;
 

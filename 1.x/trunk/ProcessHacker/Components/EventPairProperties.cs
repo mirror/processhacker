@@ -7,7 +7,7 @@ namespace ProcessHacker.Components
 {
     public partial class EventPairProperties : UserControl
     {
-        private EventPairHandle _eventPairHandle;
+        private readonly EventPairHandle _eventPairHandle;
 
         public EventPairProperties(EventPairHandle eventPairHandle)
         {

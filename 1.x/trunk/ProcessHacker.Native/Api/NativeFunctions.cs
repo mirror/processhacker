@@ -1668,6 +1668,14 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static unsafe extern NtStatus NtQuerySystemInformation(
+            [In] SystemInformationClass SystemInformationClass,
+            void* SystemInformation,
+            [In] int SystemInformationLength,
+            int* ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtQuerySystemInformation(
             [In] SystemInformationClass SystemInformationClass,
             [Out] out SystemBasicInformation SystemInformation,
@@ -3291,6 +3299,14 @@ namespace ProcessHacker.Native.Api
         public static extern void RtlMoveMemory(
             [In] IntPtr Destination,
             [In] IntPtr Source,
+            [In] IntPtr Length
+            );
+
+
+        [DllImport("ntdll.dll")]
+        public static extern unsafe void RtlMoveMemory(
+            void* Destination,
+            void* Source,
             [In] IntPtr Length
             );
 

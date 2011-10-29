@@ -9,6 +9,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using ProcessHacker.Native;
 
 namespace Debugger.Wrappers
 {
@@ -23,29 +24,30 @@ namespace Debugger.Wrappers
 		
 		public static string GetString(UnmanagedStringGetter getter, uint defaultLenght, bool trim)
 		{
-			string managedString;
-			IntPtr unmanagedString;
-			uint exactLenght;
+		    uint exactLenght;
 			
 			// First attempt
-			unmanagedString = Marshal.AllocHGlobal((int)defaultLenght * 2 + 2); // + 2 for terminating zero
+            IntPtr unmanagedString = MemoryAlloc.PrivateHeap.Allocate((int)defaultLenght * 2 + 2);
 			getter(defaultLenght, out exactLenght, defaultLenght > 0 ? unmanagedString : IntPtr.Zero);
 			
-			if(exactLenght > defaultLenght) {
+			if(exactLenght > defaultLenght) 
+            {
 				// Second attempt
-				Marshal.FreeHGlobal(unmanagedString);
-				unmanagedString = Marshal.AllocHGlobal((int)exactLenght * 2 + 2); // + 2 for terminating zero
+                MemoryAlloc.PrivateHeap.Free(unmanagedString);
+                unmanagedString = MemoryAlloc.PrivateHeap.Allocate((int)exactLenght * 2 + 2); // + 2 for terminating zero
 				getter(exactLenght, out exactLenght, unmanagedString);
 			}
 			
 			// Return managed string and free unmanaged memory
-			managedString = Marshal.PtrToStringUni(unmanagedString, (int)exactLenght);
+			string managedString = Marshal.PtrToStringUni(unmanagedString, (int)exactLenght);
 			//Console.WriteLine("Marshaled string from COM: \"" + managedString + "\" lenght=" + managedString.Length + " arrayLenght=" + exactLenght);
 			// The API might or might not include terminating null at the end
-			if (trim) {
+			if (trim) 
+            {
 				managedString = managedString.TrimEnd('\0');
 			}
-			Marshal.FreeHGlobal(unmanagedString);
+
+            MemoryAlloc.PrivateHeap.Free(unmanagedString);
 			return managedString;
 		}
 	}

@@ -53,26 +53,23 @@ namespace ProcessHacker.Native.Mfs
             }
         }
 
-        private bool _readOnly;
-        private MemoryProtection _protection;
-        private Section _section;
+        private readonly bool _readOnly;
+        private readonly MemoryProtection _protection;
+        private readonly Section _section;
 
         private MfsFsHeader* _header;
-        private int _blockSize;
-        private int _blockMask;
-        private int _cellSize;
-        private int _cellCount;
-        private int _dataCellDataMaxLength;
+        private readonly int _blockSize;
+        private readonly int _blockMask;
+        private readonly int _cellSize;
+        private readonly int _cellCount;
+        private readonly int _dataCellDataMaxLength;
 
-        private MfsCellId _rootObjectCellId = new MfsCellId(0, 1);
-        private MfsObjectHeader* _rootObject;
-        private MemoryObject _rootObjectMo;
+        private readonly MfsCellId _rootObjectCellId = new MfsCellId(0, 1);
+        private readonly MemoryObject _rootObjectMo;
 
-        private FreeList<ViewDescriptor> _vdFreeList = new FreeList<ViewDescriptor>(16);
-        private Dictionary<ushort, ViewDescriptor> _views =
-            new Dictionary<ushort, ViewDescriptor>();
-        private Dictionary<IntPtr, ViewDescriptor> _views2 =
-            new Dictionary<IntPtr, ViewDescriptor>();
+        private readonly FreeList<ViewDescriptor> _vdFreeList = new FreeList<ViewDescriptor>(16);
+        private readonly Dictionary<ushort, ViewDescriptor> _views = new Dictionary<ushort, ViewDescriptor>();
+        private readonly Dictionary<IntPtr, ViewDescriptor> _views2 = new Dictionary<IntPtr, ViewDescriptor>();
 
         private ViewDescriptor _cachedLastBlockView;
 
@@ -109,7 +106,7 @@ namespace ProcessHacker.Native.Mfs
                     break;
             }
 
-            using (var fhandle = FileHandle.CreateWin32(
+            using (FileHandle fhandle = FileHandle.CreateWin32(
                 fileName,
                 FileAccess.GenericRead | (!readOnly ? FileAccess.GenericWrite : 0),
                 FileShareMode.Read,
@@ -121,46 +118,42 @@ namespace ProcessHacker.Native.Mfs
                 _readOnly = readOnly;
                 _protection = !readOnly ? MemoryProtection.ReadWrite : MemoryProtection.ReadOnly;
 
-                if (fhandle.GetSize() == 0)
+                if (fhandle.FileSize == 0)
                 {
                     if (readOnly)
                     {
                         throw new MfsInvalidFileSystemException();
                     }
-                    else
-                    {
-                        // File is too small. Make it 1 byte large and we'll deal with it 
-                        // soon.
-                        fhandle.SetEnd(1);
-                    }
+                    
+                    // File is too small. Make it 1 byte large and we'll deal with it soon.
+                    fhandle.SetEnd(1);
                 }
 
                 _section = new Section(fhandle, _protection);
 
                 _blockSize = MfsBlockSizeBase; // fake block size to begin with; we'll fix it up later.
 
-                if (fhandle.GetSize() < _blockSize)
+                if (fhandle.FileSize < _blockSize)
                 {
                     if (readOnly)
                     {
                         throw new MfsInvalidFileSystemException();
                     }
+                    
+                    // We're creating a new file system. We need the correct block size now.
+                    if (createParams != null)
+                        this._blockSize = createParams.BlockSize;
                     else
+                        this._blockSize = MfsDefaultBlockSize;
+
+                    this._section.Extend(this._blockSize);
+
+                    using (SectionView view = this._section.MapView(0, this._blockSize, this._protection))
                     {
-                        // We're creating a new file system. We need the correct block size 
-                        // now.
-                        if (createParams != null)
-                            _blockSize = createParams.BlockSize;
-                        else
-                            _blockSize = MfsDefaultBlockSize;
-
-                        _section.Extend(_blockSize);
-
-                        using (var view = _section.MapView(0, _blockSize, _protection))
-                            this.InitializeFs((MfsFsHeader*)view.Memory, createParams);
-
-                        justCreated = true;
+                        this.InitializeFs((MfsFsHeader*)view.Memory, createParams);
                     }
+
+                    justCreated = true;
                 }
 
                 _header = (MfsFsHeader*)this.ReferenceBlock(0);
@@ -196,7 +189,6 @@ namespace ProcessHacker.Native.Mfs
                 _header = (MfsFsHeader*)this.ReferenceBlock(0);
 
                 // Set up the root object.
-                _rootObject = (MfsObjectHeader*)((byte*)_header + _cellSize);
                 _rootObjectMo = new MemoryObject(this, _rootObjectCellId, true);
 
                 if (_header->NextFreeBlock != 1 && !readOnly)
@@ -211,15 +203,16 @@ namespace ProcessHacker.Native.Mfs
 
         protected override void DisposeObject(bool disposing)
         {
-            foreach (var vd in _views.Values)
+            foreach (ViewDescriptor vd in _views.Values)
                 vd.View.Dispose(disposing);
 
             if (_rootObjectMo != null)
                 _rootObjectMo.Dispose();
+
             if (_section != null)
                 _section.Dispose();
+
             _header = null;
-            _rootObject = null;
         }
 
         public int BlockSize
@@ -634,7 +627,7 @@ namespace ProcessHacker.Native.Mfs
                 throw new ArgumentException("The block size must be a multiple of the cell size.");
             if ((blockSize / cellSize) < 2)
                 throw new ArgumentException("There must be a least 2 cells in each block.");
-            if (cellSize < Marshal.SizeOf(typeof(MfsObjectHeader)))
+            if (cellSize < MfsObjectHeader.SizeOf)
                 throw new ArgumentException("The cell size is too small.");
         }
     }

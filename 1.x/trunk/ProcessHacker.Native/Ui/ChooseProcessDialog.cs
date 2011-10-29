@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ProcessHacker.Native.Objects;
@@ -27,7 +28,7 @@ namespace ProcessHacker.Native.Ui
 
         private void RefreshProcesses()
         {
-            var processes = Windows.GetProcesses();
+            Dictionary<int, SystemProcess> processes = Windows.GetProcesses();
 
             listProcesses.BeginUpdate();
             listProcesses.Items.Clear();
@@ -38,30 +39,29 @@ namespace ProcessHacker.Native.Ui
 
             foreach (var process in processes.Values)
             {
-                string userName = "";
+                string userName = string.Empty;
                 string fileName = null;
 
                 try
                 {
-                    using (var phandle = new ProcessHandle(process.Process.ProcessId, OSVersion.MinProcessQueryInfoAccess))
+                    using (ProcessHandle phandle = new ProcessHandle(process.Process.ProcessId, OSVersion.MinProcessQueryInfoAccess))
                     {
-                        using (var thandle = phandle.GetToken(TokenAccess.Query))
-                        using (var sid = thandle.User)
+                        using (TokenHandle thandle = phandle.GetToken(TokenAccess.Query))
+                        using (Sid sid = thandle.User)
                             userName = sid.GetFullName(true);
 
-                        fileName = FileUtils.GetFileName(phandle.GetImageFileName());
+                        fileName = phandle.ImageFileName;
                     }
                 }
                 catch
                 { }
 
-                ListViewItem item = new ListViewItem(
-                    new string[]
-                    {
-                        process.Process.ProcessId == 0 ? "System Idle Process" : process.Name,
-                        process.Process.ProcessId.ToString(),
-                        userName
-                    });
+                ListViewItem item = new ListViewItem(new string[]
+                {
+                    process.Process.ProcessId == 0 ? "System Idle Process" : process.Name, 
+                    process.Process.ProcessId.ToString(),
+                    userName
+                });
 
                 if (!string.IsNullOrEmpty(fileName))
                 {

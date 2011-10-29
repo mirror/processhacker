@@ -31,18 +31,12 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SysInfoWindow));
             this.gboxCPUPlotter = new System.Windows.Forms.GroupBox();
             this.tableCPUs = new System.Windows.Forms.TableLayoutPanel();
-            this.plotterCPU = new ProcessHacker.Components.Plotter();
             this.tableGraphs = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.plotterIO = new ProcessHacker.Components.Plotter();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.plotterMemory = new ProcessHacker.Components.Plotter();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
-            this.indicatorPhysical = new ProcessHacker.Components.Indicator();
             this.groupBox12 = new System.Windows.Forms.GroupBox();
-            this.indicatorIO = new ProcessHacker.Components.Indicator();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
-            this.indicatorCpu = new ProcessHacker.Components.Indicator();
             this.checkShowOneGraphPerCPU = new System.Windows.Forms.CheckBox();
             this.flowInfo = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -138,6 +132,12 @@
             this.label41 = new System.Windows.Forms.Label();
             this.labelCPUInterrupts = new System.Windows.Forms.Label();
             this.checkAlwaysOnTop = new System.Windows.Forms.CheckBox();
+            this.plotterCPU = new ProcessHacker.Components.Plotter();
+            this.plotterIO = new ProcessHacker.Components.Plotter();
+            this.plotterMemory = new ProcessHacker.Components.Plotter();
+            this.indicatorPhysical = new ProcessHacker.Components.Indicator();
+            this.indicatorIO = new ProcessHacker.Components.Indicator();
+            this.indicatorCpu = new ProcessHacker.Components.Indicator();
             this.gboxCPUPlotter.SuspendLayout();
             this.tableGraphs.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -171,7 +171,7 @@
             this.gboxCPUPlotter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gboxCPUPlotter.Location = new System.Drawing.Point(89, 3);
             this.gboxCPUPlotter.Name = "gboxCPUPlotter";
-            this.gboxCPUPlotter.Size = new System.Drawing.Size(726, 62);
+            this.gboxCPUPlotter.Size = new System.Drawing.Size(742, 111);
             this.gboxCPUPlotter.TabIndex = 2;
             this.gboxCPUPlotter.TabStop = false;
             this.gboxCPUPlotter.Text = "CPU Usage (Kernel, User)";
@@ -188,39 +188,11 @@
             this.tableCPUs.TabIndex = 3;
             this.tableCPUs.Visible = false;
             // 
-            // plotterCPU
-            // 
-            this.plotterCPU.BackColor = System.Drawing.Color.Black;
-            this.plotterCPU.Data1 = null;
-            this.plotterCPU.Data2 = null;
-            this.plotterCPU.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterCPU.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
-            this.plotterCPU.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterCPU.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterCPU.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterCPU.Location = new System.Drawing.Point(3, 16);
-            this.plotterCPU.LongData1 = null;
-            this.plotterCPU.LongData2 = null;
-            this.plotterCPU.MinMaxValue = ((long)(0));
-            this.plotterCPU.MoveStep = -1;
-            this.plotterCPU.Name = "plotterCPU";
-            this.plotterCPU.OverlaySecondLine = false;
-            this.plotterCPU.ShowGrid = true;
-            this.plotterCPU.Size = new System.Drawing.Size(720, 43);
-            this.plotterCPU.TabIndex = 0;
-            this.plotterCPU.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterCPU.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterCPU.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotterCPU.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotterCPU.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotterCPU.UseLongData = false;
-            this.plotterCPU.UseSecondLine = true;
-            // 
             // tableGraphs
             // 
-            this.tableGraphs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableGraphs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableGraphs.ColumnCount = 2;
             this.tableGraphs.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 86F));
             this.tableGraphs.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -230,7 +202,6 @@
             this.tableGraphs.Controls.Add(this.groupBox11, 0, 3);
             this.tableGraphs.Controls.Add(this.groupBox12, 0, 2);
             this.tableGraphs.Controls.Add(this.groupBox13, 0, 0);
-            this.tableGraphs.Controls.Add(this.checkShowOneGraphPerCPU, 1, 1);
             this.tableGraphs.Location = new System.Drawing.Point(12, 12);
             this.tableGraphs.Name = "tableGraphs";
             this.tableGraphs.RowCount = 4;
@@ -238,144 +209,52 @@
             this.tableGraphs.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableGraphs.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableGraphs.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableGraphs.Size = new System.Drawing.Size(818, 228);
+            this.tableGraphs.Size = new System.Drawing.Size(834, 351);
             this.tableGraphs.TabIndex = 3;
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.plotterIO);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(89, 95);
+            this.groupBox2.Location = new System.Drawing.Point(89, 120);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(726, 62);
+            this.groupBox2.Size = new System.Drawing.Size(742, 111);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "I/O (R+O, W)";
-            // 
-            // plotterIO
-            // 
-            this.plotterIO.BackColor = System.Drawing.Color.Black;
-            this.plotterIO.Data1 = null;
-            this.plotterIO.Data2 = null;
-            this.plotterIO.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterIO.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
-            this.plotterIO.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterIO.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterIO.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterIO.Location = new System.Drawing.Point(3, 16);
-            this.plotterIO.LongData1 = null;
-            this.plotterIO.LongData2 = null;
-            this.plotterIO.MinMaxValue = ((long)(0));
-            this.plotterIO.MoveStep = -1;
-            this.plotterIO.Name = "plotterIO";
-            this.plotterIO.OverlaySecondLine = true;
-            this.plotterIO.ShowGrid = true;
-            this.plotterIO.Size = new System.Drawing.Size(720, 43);
-            this.plotterIO.TabIndex = 5;
-            this.plotterIO.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterIO.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterIO.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotterIO.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotterIO.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotterIO.UseLongData = true;
-            this.plotterIO.UseSecondLine = true;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.plotterMemory);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(89, 163);
+            this.groupBox1.Location = new System.Drawing.Point(89, 237);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(726, 62);
+            this.groupBox1.Size = new System.Drawing.Size(742, 111);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Commit, Physical Memory";
-            // 
-            // plotterMemory
-            // 
-            this.plotterMemory.BackColor = System.Drawing.Color.Black;
-            this.plotterMemory.Data1 = null;
-            this.plotterMemory.Data2 = null;
-            this.plotterMemory.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterMemory.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
-            this.plotterMemory.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterMemory.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterMemory.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterMemory.Location = new System.Drawing.Point(3, 16);
-            this.plotterMemory.LongData1 = null;
-            this.plotterMemory.LongData2 = null;
-            this.plotterMemory.MinMaxValue = ((long)(0));
-            this.plotterMemory.MoveStep = -1;
-            this.plotterMemory.Name = "plotterMemory";
-            this.plotterMemory.OverlaySecondLine = true;
-            this.plotterMemory.ShowGrid = true;
-            this.plotterMemory.Size = new System.Drawing.Size(720, 43);
-            this.plotterMemory.TabIndex = 5;
-            this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterMemory.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotterMemory.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotterMemory.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotterMemory.UseLongData = true;
-            this.plotterMemory.UseSecondLine = true;
             // 
             // groupBox11
             // 
             this.groupBox11.Controls.Add(this.indicatorPhysical);
             this.groupBox11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox11.Location = new System.Drawing.Point(3, 163);
+            this.groupBox11.Location = new System.Drawing.Point(3, 237);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(80, 62);
+            this.groupBox11.Size = new System.Drawing.Size(80, 111);
             this.groupBox11.TabIndex = 9;
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Physical";
-            // 
-            // indicatorPhysical
-            // 
-            this.indicatorPhysical.BackColor = System.Drawing.Color.Black;
-            this.indicatorPhysical.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.indicatorPhysical.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.indicatorPhysical.Data1 = ((long)(0));
-            this.indicatorPhysical.Data2 = ((long)(0));
-            this.indicatorPhysical.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.indicatorPhysical.ForeColor = System.Drawing.Color.Lime;
-            this.indicatorPhysical.GraphWidth = 33;
-            this.indicatorPhysical.Location = new System.Drawing.Point(3, 16);
-            this.indicatorPhysical.Maximum = ((long)(2147483647));
-            this.indicatorPhysical.Minimum = ((long)(0));
-            this.indicatorPhysical.Name = "indicatorPhysical";
-            this.indicatorPhysical.Size = new System.Drawing.Size(74, 43);
-            this.indicatorPhysical.TabIndex = 8;
-            this.indicatorPhysical.TextValue = "";
             // 
             // groupBox12
             // 
             this.groupBox12.Controls.Add(this.indicatorIO);
             this.groupBox12.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox12.Location = new System.Drawing.Point(3, 95);
+            this.groupBox12.Location = new System.Drawing.Point(3, 120);
             this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(80, 62);
+            this.groupBox12.Size = new System.Drawing.Size(80, 111);
             this.groupBox12.TabIndex = 10;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "I/O (R+O)";
-            // 
-            // indicatorIO
-            // 
-            this.indicatorIO.BackColor = System.Drawing.Color.Black;
-            this.indicatorIO.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.indicatorIO.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.indicatorIO.Data1 = ((long)(0));
-            this.indicatorIO.Data2 = ((long)(0));
-            this.indicatorIO.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.indicatorIO.ForeColor = System.Drawing.Color.Lime;
-            this.indicatorIO.GraphWidth = 33;
-            this.indicatorIO.Location = new System.Drawing.Point(3, 16);
-            this.indicatorIO.Maximum = ((long)(2147483647));
-            this.indicatorIO.Minimum = ((long)(0));
-            this.indicatorIO.Name = "indicatorIO";
-            this.indicatorIO.Size = new System.Drawing.Size(74, 43);
-            this.indicatorIO.TabIndex = 8;
-            this.indicatorIO.TextValue = "";
             // 
             // groupBox13
             // 
@@ -383,36 +262,19 @@
             this.groupBox13.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox13.Location = new System.Drawing.Point(3, 3);
             this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(80, 62);
+            this.groupBox13.Size = new System.Drawing.Size(80, 111);
             this.groupBox13.TabIndex = 11;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "CPU Usage";
             // 
-            // indicatorCpu
-            // 
-            this.indicatorCpu.BackColor = System.Drawing.Color.Black;
-            this.indicatorCpu.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.indicatorCpu.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.indicatorCpu.Data1 = ((long)(500000000));
-            this.indicatorCpu.Data2 = ((long)(500000000));
-            this.indicatorCpu.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.indicatorCpu.ForeColor = System.Drawing.Color.Lime;
-            this.indicatorCpu.GraphWidth = 33;
-            this.indicatorCpu.Location = new System.Drawing.Point(3, 16);
-            this.indicatorCpu.Maximum = ((long)(2147483647));
-            this.indicatorCpu.Minimum = ((long)(0));
-            this.indicatorCpu.Name = "indicatorCpu";
-            this.indicatorCpu.Size = new System.Drawing.Size(74, 43);
-            this.indicatorCpu.TabIndex = 8;
-            this.indicatorCpu.TextValue = "";
-            // 
             // checkShowOneGraphPerCPU
             // 
+            this.checkShowOneGraphPerCPU.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkShowOneGraphPerCPU.AutoSize = true;
             this.checkShowOneGraphPerCPU.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowOneGraphPerCPU.Location = new System.Drawing.Point(89, 71);
+            this.checkShowOneGraphPerCPU.Location = new System.Drawing.Point(576, 631);
             this.checkShowOneGraphPerCPU.Name = "checkShowOneGraphPerCPU";
-            this.checkShowOneGraphPerCPU.Size = new System.Drawing.Size(153, 18);
+            this.checkShowOneGraphPerCPU.Size = new System.Drawing.Size(162, 18);
             this.checkShowOneGraphPerCPU.TabIndex = 3;
             this.checkShowOneGraphPerCPU.Text = "Show one graph per CPU";
             this.checkShowOneGraphPerCPU.UseVisualStyleBackColor = true;
@@ -420,21 +282,21 @@
             // 
             // flowInfo
             // 
-            this.flowInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.flowInfo.AutoScroll = true;
             this.flowInfo.Controls.Add(this.groupBox3);
             this.flowInfo.Controls.Add(this.groupBox4);
             this.flowInfo.Controls.Add(this.groupBox5);
-            this.flowInfo.Controls.Add(this.groupBox6);
-            this.flowInfo.Controls.Add(this.groupBox7);
-            this.flowInfo.Controls.Add(this.groupBox8);
-            this.flowInfo.Controls.Add(this.groupBox9);
             this.flowInfo.Controls.Add(this.groupBox10);
+            this.flowInfo.Controls.Add(this.groupBox9);
+            this.flowInfo.Controls.Add(this.groupBox6);
+            this.flowInfo.Controls.Add(this.groupBox8);
+            this.flowInfo.Controls.Add(this.groupBox7);
             this.flowInfo.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowInfo.Location = new System.Drawing.Point(12, 246);
+            this.flowInfo.Location = new System.Drawing.Point(12, 369);
             this.flowInfo.Name = "flowInfo";
-            this.flowInfo.Size = new System.Drawing.Size(818, 256);
+            this.flowInfo.Size = new System.Drawing.Size(834, 256);
             this.flowInfo.TabIndex = 4;
             // 
             // groupBox3
@@ -461,23 +323,23 @@
             this.tableLayoutPanel1.Controls.Add(this.labelTotalsHandles, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.label34, 0, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 18);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 4;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(189, 65);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(189, 63);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // labelTotalsUptime
             // 
             this.labelTotalsUptime.AutoEllipsis = true;
             this.labelTotalsUptime.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelTotalsUptime.Location = new System.Drawing.Point(65, 48);
+            this.labelTotalsUptime.Location = new System.Drawing.Point(65, 45);
             this.labelTotalsUptime.Name = "labelTotalsUptime";
-            this.labelTotalsUptime.Size = new System.Drawing.Size(121, 17);
+            this.labelTotalsUptime.Size = new System.Drawing.Size(121, 18);
             this.labelTotalsUptime.TabIndex = 2;
             this.labelTotalsUptime.Text = "value";
             this.labelTotalsUptime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -496,9 +358,9 @@
             // 
             this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(3, 17);
+            this.label8.Location = new System.Drawing.Point(3, 16);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(46, 13);
+            this.label8.Size = new System.Drawing.Size(47, 13);
             this.label8.TabIndex = 1;
             this.label8.Text = "Threads";
             // 
@@ -506,9 +368,9 @@
             // 
             this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(3, 33);
+            this.label9.Location = new System.Drawing.Point(3, 31);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(46, 13);
+            this.label9.Size = new System.Drawing.Size(49, 13);
             this.label9.TabIndex = 1;
             this.label9.Text = "Handles";
             // 
@@ -518,7 +380,7 @@
             this.labelTotalsProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelTotalsProcesses.Location = new System.Drawing.Point(65, 0);
             this.labelTotalsProcesses.Name = "labelTotalsProcesses";
-            this.labelTotalsProcesses.Size = new System.Drawing.Size(121, 16);
+            this.labelTotalsProcesses.Size = new System.Drawing.Size(121, 15);
             this.labelTotalsProcesses.TabIndex = 1;
             this.labelTotalsProcesses.Text = "value";
             this.labelTotalsProcesses.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -527,9 +389,9 @@
             // 
             this.labelTotalsThreads.AutoEllipsis = true;
             this.labelTotalsThreads.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelTotalsThreads.Location = new System.Drawing.Point(65, 16);
+            this.labelTotalsThreads.Location = new System.Drawing.Point(65, 15);
             this.labelTotalsThreads.Name = "labelTotalsThreads";
-            this.labelTotalsThreads.Size = new System.Drawing.Size(121, 16);
+            this.labelTotalsThreads.Size = new System.Drawing.Size(121, 15);
             this.labelTotalsThreads.TabIndex = 1;
             this.labelTotalsThreads.Text = "value";
             this.labelTotalsThreads.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -538,9 +400,9 @@
             // 
             this.labelTotalsHandles.AutoEllipsis = true;
             this.labelTotalsHandles.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelTotalsHandles.Location = new System.Drawing.Point(65, 32);
+            this.labelTotalsHandles.Location = new System.Drawing.Point(65, 30);
             this.labelTotalsHandles.Name = "labelTotalsHandles";
-            this.labelTotalsHandles.Size = new System.Drawing.Size(121, 16);
+            this.labelTotalsHandles.Size = new System.Drawing.Size(121, 15);
             this.labelTotalsHandles.TabIndex = 1;
             this.labelTotalsHandles.Text = "value";
             this.labelTotalsHandles.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -549,9 +411,9 @@
             // 
             this.label34.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(3, 50);
+            this.label34.Location = new System.Drawing.Point(3, 47);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(40, 13);
+            this.label34.Size = new System.Drawing.Size(44, 13);
             this.label34.TabIndex = 1;
             this.label34.Text = "Uptime";
             // 
@@ -577,13 +439,13 @@
             this.tableLayoutPanel2.Controls.Add(this.labelCCP, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.labelCCL, 1, 2);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 18);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(189, 59);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(189, 57);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
             // label1
@@ -592,7 +454,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(3, 3);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 13);
+            this.label1.Size = new System.Drawing.Size(46, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Current";
             // 
@@ -602,7 +464,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(3, 22);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(32, 13);
+            this.label2.Size = new System.Drawing.Size(31, 13);
             this.label2.TabIndex = 1;
             this.label2.Text = "Peak";
             // 
@@ -610,9 +472,9 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 42);
+            this.label3.Location = new System.Drawing.Point(3, 41);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(28, 13);
+            this.label3.Size = new System.Drawing.Size(31, 13);
             this.label3.TabIndex = 1;
             this.label3.Text = "Limit";
             // 
@@ -620,7 +482,7 @@
             // 
             this.labelCCC.AutoEllipsis = true;
             this.labelCCC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCCC.Location = new System.Drawing.Point(50, 0);
+            this.labelCCC.Location = new System.Drawing.Point(55, 0);
             this.labelCCC.Name = "labelCCC";
             this.labelCCC.Size = new System.Drawing.Size(136, 19);
             this.labelCCC.TabIndex = 1;
@@ -631,7 +493,7 @@
             // 
             this.labelCCP.AutoEllipsis = true;
             this.labelCCP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCCP.Location = new System.Drawing.Point(50, 19);
+            this.labelCCP.Location = new System.Drawing.Point(55, 19);
             this.labelCCP.Name = "labelCCP";
             this.labelCCP.Size = new System.Drawing.Size(136, 19);
             this.labelCCP.TabIndex = 1;
@@ -642,9 +504,9 @@
             // 
             this.labelCCL.AutoEllipsis = true;
             this.labelCCL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCCL.Location = new System.Drawing.Point(50, 38);
+            this.labelCCL.Location = new System.Drawing.Point(55, 38);
             this.labelCCL.Name = "labelCCL";
-            this.labelCCL.Size = new System.Drawing.Size(136, 21);
+            this.labelCCL.Size = new System.Drawing.Size(136, 19);
             this.labelCCL.TabIndex = 1;
             this.labelCCL.Text = "value";
             this.labelCCL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -671,13 +533,13 @@
             this.tableLayoutPanel3.Controls.Add(this.label19, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.labelPSC, 1, 1);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 18);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 3;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(189, 56);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(189, 54);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
             // label4
@@ -686,7 +548,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(3, 2);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(41, 13);
+            this.label4.Size = new System.Drawing.Size(46, 13);
             this.label4.TabIndex = 1;
             this.label4.Text = "Current";
             // 
@@ -694,9 +556,9 @@
             // 
             this.label7.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 39);
+            this.label7.Location = new System.Drawing.Point(3, 38);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(31, 13);
+            this.label7.Size = new System.Drawing.Size(32, 13);
             this.label7.TabIndex = 1;
             this.label7.Text = "Total";
             // 
@@ -704,7 +566,7 @@
             // 
             this.labelPMC.AutoEllipsis = true;
             this.labelPMC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPMC.Location = new System.Drawing.Point(84, 0);
+            this.labelPMC.Location = new System.Drawing.Point(85, 0);
             this.labelPMC.Name = "labelPMC";
             this.labelPMC.Size = new System.Drawing.Size(102, 18);
             this.labelPMC.TabIndex = 1;
@@ -715,9 +577,9 @@
             // 
             this.labelPMT.AutoEllipsis = true;
             this.labelPMT.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPMT.Location = new System.Drawing.Point(84, 36);
+            this.labelPMT.Location = new System.Drawing.Point(85, 36);
             this.labelPMT.Name = "labelPMT";
-            this.labelPMT.Size = new System.Drawing.Size(102, 20);
+            this.labelPMT.Size = new System.Drawing.Size(102, 18);
             this.labelPMT.TabIndex = 1;
             this.labelPMT.Text = "value";
             this.labelPMT.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -728,7 +590,7 @@
             this.label19.AutoSize = true;
             this.label19.Location = new System.Drawing.Point(3, 20);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(75, 13);
+            this.label19.Size = new System.Drawing.Size(76, 13);
             this.label19.TabIndex = 1;
             this.label19.Text = "System Cache";
             // 
@@ -736,7 +598,7 @@
             // 
             this.labelPSC.AutoEllipsis = true;
             this.labelPSC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPSC.Location = new System.Drawing.Point(84, 18);
+            this.labelPSC.Location = new System.Drawing.Point(85, 18);
             this.labelPSC.Name = "labelPSC";
             this.labelPSC.Size = new System.Drawing.Size(102, 18);
             this.labelPSC.TabIndex = 1;
@@ -746,15 +608,16 @@
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.tableLayoutPanel4);
-            this.groupBox6.Location = new System.Drawing.Point(204, 3);
+            this.groupBox6.Location = new System.Drawing.Point(405, 3);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(195, 85);
+            this.groupBox6.Size = new System.Drawing.Size(207, 96);
             this.groupBox6.TabIndex = 4;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "File Cache";
             // 
             // tableLayoutPanel4
             // 
+            this.tableLayoutPanel4.AutoSize = true;
             this.tableLayoutPanel4.ColumnCount = 2;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -766,7 +629,6 @@
             this.tableLayoutPanel4.Controls.Add(this.label10, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.labelCacheCurrent, 1, 0);
             this.tableLayoutPanel4.Controls.Add(this.labelCachePeak, 1, 1);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 4;
@@ -774,16 +636,16 @@
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(189, 66);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(198, 72);
             this.tableLayoutPanel4.TabIndex = 1;
             // 
             // label15
             // 
             this.label15.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(3, 50);
+            this.label15.Location = new System.Drawing.Point(3, 56);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(51, 13);
+            this.label15.Size = new System.Drawing.Size(56, 13);
             this.label15.TabIndex = 5;
             this.label15.Text = "Maximum";
             // 
@@ -791,7 +653,7 @@
             // 
             this.labelCacheMaximum.AutoEllipsis = true;
             this.labelCacheMaximum.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCacheMaximum.Location = new System.Drawing.Point(60, 48);
+            this.labelCacheMaximum.Location = new System.Drawing.Point(65, 54);
             this.labelCacheMaximum.Name = "labelCacheMaximum";
             this.labelCacheMaximum.Size = new System.Drawing.Size(130, 18);
             this.labelCacheMaximum.TabIndex = 4;
@@ -802,9 +664,9 @@
             // 
             this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(3, 33);
+            this.label13.Location = new System.Drawing.Point(3, 38);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(48, 13);
+            this.label13.Size = new System.Drawing.Size(55, 13);
             this.label13.TabIndex = 3;
             this.label13.Text = "Minimum";
             // 
@@ -812,9 +674,9 @@
             // 
             this.labelCacheMinimum.AutoEllipsis = true;
             this.labelCacheMinimum.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCacheMinimum.Location = new System.Drawing.Point(60, 32);
+            this.labelCacheMinimum.Location = new System.Drawing.Point(65, 36);
             this.labelCacheMinimum.Name = "labelCacheMinimum";
-            this.labelCacheMinimum.Size = new System.Drawing.Size(130, 16);
+            this.labelCacheMinimum.Size = new System.Drawing.Size(130, 18);
             this.labelCacheMinimum.TabIndex = 2;
             this.labelCacheMinimum.Text = "value";
             this.labelCacheMinimum.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -823,9 +685,9 @@
             // 
             this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 1);
+            this.label5.Location = new System.Drawing.Point(3, 2);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(41, 13);
+            this.label5.Size = new System.Drawing.Size(46, 13);
             this.label5.TabIndex = 1;
             this.label5.Text = "Current";
             // 
@@ -833,9 +695,9 @@
             // 
             this.label10.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(3, 17);
+            this.label10.Location = new System.Drawing.Point(3, 20);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(32, 13);
+            this.label10.Size = new System.Drawing.Size(31, 13);
             this.label10.TabIndex = 1;
             this.label10.Text = "Peak";
             // 
@@ -843,9 +705,9 @@
             // 
             this.labelCacheCurrent.AutoEllipsis = true;
             this.labelCacheCurrent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCacheCurrent.Location = new System.Drawing.Point(60, 0);
+            this.labelCacheCurrent.Location = new System.Drawing.Point(65, 0);
             this.labelCacheCurrent.Name = "labelCacheCurrent";
-            this.labelCacheCurrent.Size = new System.Drawing.Size(130, 16);
+            this.labelCacheCurrent.Size = new System.Drawing.Size(130, 18);
             this.labelCacheCurrent.TabIndex = 1;
             this.labelCacheCurrent.Text = "value";
             this.labelCacheCurrent.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -854,9 +716,9 @@
             // 
             this.labelCachePeak.AutoEllipsis = true;
             this.labelCachePeak.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCachePeak.Location = new System.Drawing.Point(60, 16);
+            this.labelCachePeak.Location = new System.Drawing.Point(65, 18);
             this.labelCachePeak.Name = "labelCachePeak";
-            this.labelCachePeak.Size = new System.Drawing.Size(130, 16);
+            this.labelCachePeak.Size = new System.Drawing.Size(130, 18);
             this.labelCachePeak.TabIndex = 1;
             this.labelCachePeak.Text = "value";
             this.labelCachePeak.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -864,9 +726,9 @@
             // groupBox7
             // 
             this.groupBox7.Controls.Add(this.tableLayoutPanel5);
-            this.groupBox7.Location = new System.Drawing.Point(204, 94);
+            this.groupBox7.Location = new System.Drawing.Point(618, 3);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(195, 157);
+            this.groupBox7.Size = new System.Drawing.Size(207, 157);
             this.groupBox7.TabIndex = 5;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Kernel Pools";
@@ -895,7 +757,7 @@
             this.tableLayoutPanel5.Controls.Add(this.labelKPNPU, 1, 5);
             this.tableLayoutPanel5.Controls.Add(this.label11, 0, 5);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 18);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 9;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
@@ -907,7 +769,7 @@
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(189, 138);
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(201, 136);
             this.tableLayoutPanel5.TabIndex = 1;
             // 
             // label14
@@ -916,7 +778,7 @@
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(3, 46);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(67, 13);
+            this.label14.Size = new System.Drawing.Size(69, 13);
             this.label14.TabIndex = 3;
             this.label14.Text = "Paged Frees";
             // 
@@ -926,7 +788,7 @@
             this.label17.AutoSize = true;
             this.label17.Location = new System.Drawing.Point(3, 1);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(67, 13);
+            this.label17.Size = new System.Drawing.Size(68, 13);
             this.label17.TabIndex = 1;
             this.label17.Text = "Paged Phys.";
             // 
@@ -936,7 +798,7 @@
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(3, 31);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(69, 13);
+            this.label18.Size = new System.Drawing.Size(72, 13);
             this.label18.TabIndex = 1;
             this.label18.Text = "Paged Allocs";
             // 
@@ -944,9 +806,9 @@
             // 
             this.labelKPPPU.AutoEllipsis = true;
             this.labelKPPPU.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPPPU.Location = new System.Drawing.Point(104, 0);
+            this.labelKPPPU.Location = new System.Drawing.Point(109, 0);
             this.labelKPPPU.Name = "labelKPPPU";
-            this.labelKPPPU.Size = new System.Drawing.Size(82, 15);
+            this.labelKPPPU.Size = new System.Drawing.Size(89, 15);
             this.labelKPPPU.TabIndex = 1;
             this.labelKPPPU.Text = "value";
             this.labelKPPPU.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -955,9 +817,9 @@
             // 
             this.labelKPPA.AutoEllipsis = true;
             this.labelKPPA.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPPA.Location = new System.Drawing.Point(104, 30);
+            this.labelKPPA.Location = new System.Drawing.Point(109, 30);
             this.labelKPPA.Name = "labelKPPA";
-            this.labelKPPA.Size = new System.Drawing.Size(82, 15);
+            this.labelKPPA.Size = new System.Drawing.Size(89, 15);
             this.labelKPPA.TabIndex = 1;
             this.labelKPPA.Text = "value";
             this.labelKPPA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -968,7 +830,7 @@
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(3, 16);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(59, 13);
+            this.label12.Size = new System.Drawing.Size(63, 13);
             this.label12.TabIndex = 1;
             this.label12.Text = "Paged Virt.";
             // 
@@ -976,9 +838,9 @@
             // 
             this.labelKPPVU.AutoEllipsis = true;
             this.labelKPPVU.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPPVU.Location = new System.Drawing.Point(104, 15);
+            this.labelKPPVU.Location = new System.Drawing.Point(109, 15);
             this.labelKPPVU.Name = "labelKPPVU";
-            this.labelKPPVU.Size = new System.Drawing.Size(82, 15);
+            this.labelKPPVU.Size = new System.Drawing.Size(89, 15);
             this.labelKPPVU.TabIndex = 1;
             this.labelKPPVU.Text = "value";
             this.labelKPPVU.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -987,9 +849,9 @@
             // 
             this.labelKPPF.AutoEllipsis = true;
             this.labelKPPF.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPPF.Location = new System.Drawing.Point(104, 45);
+            this.labelKPPF.Location = new System.Drawing.Point(109, 45);
             this.labelKPPF.Name = "labelKPPF";
-            this.labelKPPF.Size = new System.Drawing.Size(82, 15);
+            this.labelKPPF.Size = new System.Drawing.Size(89, 15);
             this.labelKPPF.TabIndex = 2;
             this.labelKPPF.Text = "value";
             this.labelKPPF.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1000,7 +862,7 @@
             this.label29.AutoSize = true;
             this.label29.Location = new System.Drawing.Point(3, 61);
             this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(62, 13);
+            this.label29.Size = new System.Drawing.Size(66, 13);
             this.label29.TabIndex = 3;
             this.label29.Text = "Paged Limit";
             // 
@@ -1009,9 +871,9 @@
             this.labelKPPL.AutoEllipsis = true;
             this.labelKPPL.AutoSize = true;
             this.labelKPPL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPPL.Location = new System.Drawing.Point(104, 60);
+            this.labelKPPL.Location = new System.Drawing.Point(109, 60);
             this.labelKPPL.Name = "labelKPPL";
-            this.labelKPPL.Size = new System.Drawing.Size(82, 15);
+            this.labelKPPL.Size = new System.Drawing.Size(89, 15);
             this.labelKPPL.TabIndex = 10;
             this.labelKPPL.Text = "value";
             this.labelKPPL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1020,9 +882,9 @@
             // 
             this.label33.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(3, 122);
+            this.label33.Location = new System.Drawing.Point(3, 121);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(85, 13);
+            this.label33.Size = new System.Drawing.Size(92, 13);
             this.label33.TabIndex = 9;
             this.label33.Text = "Non-Paged Limit";
             // 
@@ -1030,9 +892,9 @@
             // 
             this.labelKPNPL.AutoEllipsis = true;
             this.labelKPNPL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPNPL.Location = new System.Drawing.Point(104, 120);
+            this.labelKPNPL.Location = new System.Drawing.Point(109, 120);
             this.labelKPNPL.Name = "labelKPNPL";
-            this.labelKPNPL.Size = new System.Drawing.Size(82, 18);
+            this.labelKPNPL.Size = new System.Drawing.Size(89, 16);
             this.labelKPNPL.TabIndex = 8;
             this.labelKPNPL.Text = "value";
             this.labelKPNPL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1041,9 +903,9 @@
             // 
             this.labelKPNPF.AutoEllipsis = true;
             this.labelKPNPF.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPNPF.Location = new System.Drawing.Point(104, 105);
+            this.labelKPNPF.Location = new System.Drawing.Point(109, 105);
             this.labelKPNPF.Name = "labelKPNPF";
-            this.labelKPNPF.Size = new System.Drawing.Size(82, 15);
+            this.labelKPNPF.Size = new System.Drawing.Size(89, 15);
             this.labelKPNPF.TabIndex = 8;
             this.labelKPNPF.Text = "value";
             this.labelKPNPF.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1054,7 +916,7 @@
             this.label23.AutoSize = true;
             this.label23.Location = new System.Drawing.Point(3, 106);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(90, 13);
+            this.label23.Size = new System.Drawing.Size(95, 13);
             this.label23.TabIndex = 9;
             this.label23.Text = "Non-Paged Frees";
             // 
@@ -1062,9 +924,9 @@
             // 
             this.labelKPNPA.AutoEllipsis = true;
             this.labelKPNPA.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPNPA.Location = new System.Drawing.Point(104, 90);
+            this.labelKPNPA.Location = new System.Drawing.Point(109, 90);
             this.labelKPNPA.Name = "labelKPNPA";
-            this.labelKPNPA.Size = new System.Drawing.Size(82, 15);
+            this.labelKPNPA.Size = new System.Drawing.Size(89, 15);
             this.labelKPNPA.TabIndex = 6;
             this.labelKPNPA.Text = "value";
             this.labelKPNPA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1075,7 +937,7 @@
             this.label21.AutoSize = true;
             this.label21.Location = new System.Drawing.Point(3, 91);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(92, 13);
+            this.label21.Size = new System.Drawing.Size(98, 13);
             this.label21.TabIndex = 7;
             this.label21.Text = "Non-Paged Allocs";
             // 
@@ -1083,9 +945,9 @@
             // 
             this.labelKPNPU.AutoEllipsis = true;
             this.labelKPNPU.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPNPU.Location = new System.Drawing.Point(104, 75);
+            this.labelKPNPU.Location = new System.Drawing.Point(109, 75);
             this.labelKPNPU.Name = "labelKPNPU";
-            this.labelKPNPU.Size = new System.Drawing.Size(82, 15);
+            this.labelKPNPU.Size = new System.Drawing.Size(89, 15);
             this.labelKPNPU.TabIndex = 4;
             this.labelKPNPU.Text = "value";
             this.labelKPNPU.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1096,14 +958,14 @@
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(3, 76);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(95, 13);
+            this.label11.Size = new System.Drawing.Size(100, 13);
             this.label11.TabIndex = 5;
             this.label11.Text = "Non-Paged Usage";
             // 
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.tableLayoutPanel6);
-            this.groupBox8.Location = new System.Drawing.Point(405, 3);
+            this.groupBox8.Location = new System.Drawing.Point(405, 105);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(195, 121);
             this.groupBox8.TabIndex = 6;
@@ -1128,7 +990,7 @@
             this.tableLayoutPanel6.Controls.Add(this.labelPFCOW, 1, 1);
             this.tableLayoutPanel6.Controls.Add(this.labelPFCacheTrans, 1, 3);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 18);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 6;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
@@ -1137,14 +999,14 @@
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(189, 102);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(189, 100);
             this.tableLayoutPanel6.TabIndex = 1;
             // 
             // label20
             // 
             this.label20.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(3, 84);
+            this.label20.Location = new System.Drawing.Point(3, 83);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(38, 13);
             this.label20.TabIndex = 7;
@@ -1154,9 +1016,9 @@
             // 
             this.labelPFCache.AutoEllipsis = true;
             this.labelPFCache.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFCache.Location = new System.Drawing.Point(96, 80);
+            this.labelPFCache.Location = new System.Drawing.Point(101, 80);
             this.labelPFCache.Name = "labelPFCache";
-            this.labelPFCache.Size = new System.Drawing.Size(90, 22);
+            this.labelPFCache.Size = new System.Drawing.Size(90, 20);
             this.labelPFCache.TabIndex = 6;
             this.labelPFCache.Text = "value";
             this.labelPFCache.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1167,7 +1029,7 @@
             this.label24.AutoSize = true;
             this.label24.Location = new System.Drawing.Point(3, 65);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(72, 13);
+            this.label24.Size = new System.Drawing.Size(76, 13);
             this.label24.TabIndex = 5;
             this.label24.Text = "Demand Zero";
             // 
@@ -1177,7 +1039,7 @@
             this.label25.AutoSize = true;
             this.label25.Location = new System.Drawing.Point(3, 49);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(87, 13);
+            this.label25.Size = new System.Drawing.Size(92, 13);
             this.label25.TabIndex = 3;
             this.label25.Text = "Cache Transition";
             // 
@@ -1185,7 +1047,7 @@
             // 
             this.labelPFDZ.AutoEllipsis = true;
             this.labelPFDZ.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFDZ.Location = new System.Drawing.Point(96, 64);
+            this.labelPFDZ.Location = new System.Drawing.Point(101, 64);
             this.labelPFDZ.Name = "labelPFDZ";
             this.labelPFDZ.Size = new System.Drawing.Size(90, 16);
             this.labelPFDZ.TabIndex = 4;
@@ -1198,7 +1060,7 @@
             this.label27.AutoSize = true;
             this.label27.Location = new System.Drawing.Point(3, 1);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(31, 13);
+            this.label27.Size = new System.Drawing.Size(32, 13);
             this.label27.TabIndex = 1;
             this.label27.Text = "Total";
             // 
@@ -1208,7 +1070,7 @@
             this.label28.AutoSize = true;
             this.label28.Location = new System.Drawing.Point(3, 33);
             this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(53, 13);
+            this.label28.Size = new System.Drawing.Size(58, 13);
             this.label28.TabIndex = 1;
             this.label28.Text = "Transition";
             // 
@@ -1216,7 +1078,7 @@
             // 
             this.labelPFTotal.AutoEllipsis = true;
             this.labelPFTotal.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFTotal.Location = new System.Drawing.Point(96, 0);
+            this.labelPFTotal.Location = new System.Drawing.Point(101, 0);
             this.labelPFTotal.Name = "labelPFTotal";
             this.labelPFTotal.Size = new System.Drawing.Size(90, 16);
             this.labelPFTotal.TabIndex = 1;
@@ -1227,7 +1089,7 @@
             // 
             this.labelPFTrans.AutoEllipsis = true;
             this.labelPFTrans.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFTrans.Location = new System.Drawing.Point(96, 32);
+            this.labelPFTrans.Location = new System.Drawing.Point(101, 32);
             this.labelPFTrans.Name = "labelPFTrans";
             this.labelPFTrans.Size = new System.Drawing.Size(90, 16);
             this.labelPFTrans.TabIndex = 1;
@@ -1240,7 +1102,7 @@
             this.label31.AutoSize = true;
             this.label31.Location = new System.Drawing.Point(3, 17);
             this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(76, 13);
+            this.label31.Size = new System.Drawing.Size(85, 13);
             this.label31.TabIndex = 1;
             this.label31.Text = "Copy-On-Write";
             // 
@@ -1248,7 +1110,7 @@
             // 
             this.labelPFCOW.AutoEllipsis = true;
             this.labelPFCOW.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFCOW.Location = new System.Drawing.Point(96, 16);
+            this.labelPFCOW.Location = new System.Drawing.Point(101, 16);
             this.labelPFCOW.Name = "labelPFCOW";
             this.labelPFCOW.Size = new System.Drawing.Size(90, 16);
             this.labelPFCOW.TabIndex = 1;
@@ -1259,7 +1121,7 @@
             // 
             this.labelPFCacheTrans.AutoEllipsis = true;
             this.labelPFCacheTrans.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFCacheTrans.Location = new System.Drawing.Point(96, 48);
+            this.labelPFCacheTrans.Location = new System.Drawing.Point(101, 48);
             this.labelPFCacheTrans.Name = "labelPFCacheTrans";
             this.labelPFCacheTrans.Size = new System.Drawing.Size(90, 16);
             this.labelPFCacheTrans.TabIndex = 2;
@@ -1269,7 +1131,7 @@
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.tableLayoutPanel7);
-            this.groupBox9.Location = new System.Drawing.Point(405, 130);
+            this.groupBox9.Location = new System.Drawing.Point(204, 85);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(195, 121);
             this.groupBox9.TabIndex = 7;
@@ -1294,7 +1156,7 @@
             this.tableLayoutPanel7.Controls.Add(this.labelIORB, 1, 1);
             this.tableLayoutPanel7.Controls.Add(this.labelIOWB, 1, 3);
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 18);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.RowCount = 6;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
@@ -1303,16 +1165,16 @@
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(189, 102);
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(189, 100);
             this.tableLayoutPanel7.TabIndex = 1;
             // 
             // label16
             // 
             this.label16.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(3, 84);
+            this.label16.Location = new System.Drawing.Point(3, 83);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(62, 13);
+            this.label16.Size = new System.Drawing.Size(67, 13);
             this.label16.TabIndex = 7;
             this.label16.Text = "Other Bytes";
             // 
@@ -1320,9 +1182,9 @@
             // 
             this.labelIOOB.AutoEllipsis = true;
             this.labelIOOB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIOOB.Location = new System.Drawing.Point(71, 80);
+            this.labelIOOB.Location = new System.Drawing.Point(76, 80);
             this.labelIOOB.Name = "labelIOOB";
-            this.labelIOOB.Size = new System.Drawing.Size(115, 22);
+            this.labelIOOB.Size = new System.Drawing.Size(115, 20);
             this.labelIOOB.TabIndex = 6;
             this.labelIOOB.Text = "value";
             this.labelIOOB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1333,7 +1195,7 @@
             this.label22.AutoSize = true;
             this.label22.Location = new System.Drawing.Point(3, 65);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(33, 13);
+            this.label22.Size = new System.Drawing.Size(37, 13);
             this.label22.TabIndex = 5;
             this.label22.Text = "Other";
             // 
@@ -1343,7 +1205,7 @@
             this.label26.AutoSize = true;
             this.label26.Location = new System.Drawing.Point(3, 49);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(61, 13);
+            this.label26.Size = new System.Drawing.Size(65, 13);
             this.label26.TabIndex = 3;
             this.label26.Text = "Write Bytes";
             // 
@@ -1351,7 +1213,7 @@
             // 
             this.labelIOO.AutoEllipsis = true;
             this.labelIOO.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIOO.Location = new System.Drawing.Point(71, 64);
+            this.labelIOO.Location = new System.Drawing.Point(76, 64);
             this.labelIOO.Name = "labelIOO";
             this.labelIOO.Size = new System.Drawing.Size(115, 16);
             this.labelIOO.TabIndex = 4;
@@ -1374,7 +1236,7 @@
             this.label32.AutoSize = true;
             this.label32.Location = new System.Drawing.Point(3, 33);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(37, 13);
+            this.label32.Size = new System.Drawing.Size(40, 13);
             this.label32.TabIndex = 1;
             this.label32.Text = "Writes";
             // 
@@ -1382,7 +1244,7 @@
             // 
             this.labelIOR.AutoEllipsis = true;
             this.labelIOR.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIOR.Location = new System.Drawing.Point(71, 0);
+            this.labelIOR.Location = new System.Drawing.Point(76, 0);
             this.labelIOR.Name = "labelIOR";
             this.labelIOR.Size = new System.Drawing.Size(115, 16);
             this.labelIOR.TabIndex = 1;
@@ -1393,7 +1255,7 @@
             // 
             this.labelIOW.AutoEllipsis = true;
             this.labelIOW.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIOW.Location = new System.Drawing.Point(71, 32);
+            this.labelIOW.Location = new System.Drawing.Point(76, 32);
             this.labelIOW.Name = "labelIOW";
             this.labelIOW.Size = new System.Drawing.Size(115, 16);
             this.labelIOW.TabIndex = 1;
@@ -1406,7 +1268,7 @@
             this.label35.AutoSize = true;
             this.label35.Location = new System.Drawing.Point(3, 17);
             this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(62, 13);
+            this.label35.Size = new System.Drawing.Size(63, 13);
             this.label35.TabIndex = 1;
             this.label35.Text = "Read Bytes";
             // 
@@ -1414,7 +1276,7 @@
             // 
             this.labelIORB.AutoEllipsis = true;
             this.labelIORB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIORB.Location = new System.Drawing.Point(71, 16);
+            this.labelIORB.Location = new System.Drawing.Point(76, 16);
             this.labelIORB.Name = "labelIORB";
             this.labelIORB.Size = new System.Drawing.Size(115, 16);
             this.labelIORB.TabIndex = 1;
@@ -1425,7 +1287,7 @@
             // 
             this.labelIOWB.AutoEllipsis = true;
             this.labelIOWB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIOWB.Location = new System.Drawing.Point(71, 48);
+            this.labelIOWB.Location = new System.Drawing.Point(76, 48);
             this.labelIOWB.Name = "labelIOWB";
             this.labelIOWB.Size = new System.Drawing.Size(115, 16);
             this.labelIOWB.TabIndex = 2;
@@ -1436,7 +1298,7 @@
             // 
             this.groupBox10.AutoSize = true;
             this.groupBox10.Controls.Add(this.tableLayoutPanel8);
-            this.groupBox10.Location = new System.Drawing.Point(606, 3);
+            this.groupBox10.Location = new System.Drawing.Point(204, 3);
             this.groupBox10.MinimumSize = new System.Drawing.Size(195, 76);
             this.groupBox10.Name = "groupBox10";
             this.groupBox10.Size = new System.Drawing.Size(195, 76);
@@ -1457,22 +1319,22 @@
             this.tableLayoutPanel8.Controls.Add(this.label41, 0, 1);
             this.tableLayoutPanel8.Controls.Add(this.labelCPUInterrupts, 1, 1);
             this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel8.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel8.Location = new System.Drawing.Point(3, 18);
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
             this.tableLayoutPanel8.RowCount = 3;
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(189, 57);
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(189, 55);
             this.tableLayoutPanel8.TabIndex = 1;
             // 
             // label37
             // 
             this.label37.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(3, 3);
+            this.label37.Location = new System.Drawing.Point(3, 2);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(89, 13);
+            this.label37.Size = new System.Drawing.Size(95, 13);
             this.label37.TabIndex = 1;
             this.label37.Text = "Context Switches";
             // 
@@ -1480,9 +1342,9 @@
             // 
             this.label38.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(3, 41);
+            this.label38.Location = new System.Drawing.Point(3, 39);
             this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(66, 13);
+            this.label38.Size = new System.Drawing.Size(69, 13);
             this.label38.TabIndex = 1;
             this.label38.Text = "System Calls";
             // 
@@ -1491,9 +1353,9 @@
             this.labelCPUContextSwitches.AutoEllipsis = true;
             this.labelCPUContextSwitches.AutoSize = true;
             this.labelCPUContextSwitches.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCPUContextSwitches.Location = new System.Drawing.Point(98, 0);
+            this.labelCPUContextSwitches.Location = new System.Drawing.Point(104, 0);
             this.labelCPUContextSwitches.Name = "labelCPUContextSwitches";
-            this.labelCPUContextSwitches.Size = new System.Drawing.Size(88, 19);
+            this.labelCPUContextSwitches.Size = new System.Drawing.Size(82, 18);
             this.labelCPUContextSwitches.TabIndex = 1;
             this.labelCPUContextSwitches.Text = "value";
             this.labelCPUContextSwitches.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1503,9 +1365,9 @@
             this.labelCPUSystemCalls.AutoEllipsis = true;
             this.labelCPUSystemCalls.AutoSize = true;
             this.labelCPUSystemCalls.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCPUSystemCalls.Location = new System.Drawing.Point(98, 38);
+            this.labelCPUSystemCalls.Location = new System.Drawing.Point(104, 36);
             this.labelCPUSystemCalls.Name = "labelCPUSystemCalls";
-            this.labelCPUSystemCalls.Size = new System.Drawing.Size(88, 19);
+            this.labelCPUSystemCalls.Size = new System.Drawing.Size(82, 19);
             this.labelCPUSystemCalls.TabIndex = 1;
             this.labelCPUSystemCalls.Text = "value";
             this.labelCPUSystemCalls.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1514,9 +1376,9 @@
             // 
             this.label41.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(3, 22);
+            this.label41.Location = new System.Drawing.Point(3, 20);
             this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(51, 13);
+            this.label41.Size = new System.Drawing.Size(58, 13);
             this.label41.TabIndex = 1;
             this.label41.Text = "Interrupts";
             // 
@@ -1525,9 +1387,9 @@
             this.labelCPUInterrupts.AutoEllipsis = true;
             this.labelCPUInterrupts.AutoSize = true;
             this.labelCPUInterrupts.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCPUInterrupts.Location = new System.Drawing.Point(98, 19);
+            this.labelCPUInterrupts.Location = new System.Drawing.Point(104, 18);
             this.labelCPUInterrupts.Name = "labelCPUInterrupts";
-            this.labelCPUInterrupts.Size = new System.Drawing.Size(88, 19);
+            this.labelCPUInterrupts.Size = new System.Drawing.Size(82, 18);
             this.labelCPUInterrupts.TabIndex = 1;
             this.labelCPUInterrupts.Text = "value";
             this.labelCPUInterrupts.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1537,32 +1399,171 @@
             this.checkAlwaysOnTop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkAlwaysOnTop.AutoSize = true;
             this.checkAlwaysOnTop.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkAlwaysOnTop.Location = new System.Drawing.Point(728, 508);
+            this.checkAlwaysOnTop.Location = new System.Drawing.Point(740, 631);
             this.checkAlwaysOnTop.Name = "checkAlwaysOnTop";
-            this.checkAlwaysOnTop.Size = new System.Drawing.Size(102, 18);
+            this.checkAlwaysOnTop.Size = new System.Drawing.Size(106, 18);
             this.checkAlwaysOnTop.TabIndex = 5;
             this.checkAlwaysOnTop.Text = "Always on Top";
             this.checkAlwaysOnTop.UseVisualStyleBackColor = true;
             this.checkAlwaysOnTop.CheckedChanged += new System.EventHandler(this.checkAlwaysOnTop_CheckedChanged);
             // 
+            // plotterCPU
+            // 
+            this.plotterCPU.BackColor = System.Drawing.Color.Black;
+            this.plotterCPU.Data1 = null;
+            this.plotterCPU.Data2 = null;
+            this.plotterCPU.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterCPU.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
+            this.plotterCPU.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterCPU.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterCPU.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterCPU.Location = new System.Drawing.Point(3, 18);
+            this.plotterCPU.LongData1 = null;
+            this.plotterCPU.LongData2 = null;
+            this.plotterCPU.MinMaxValue = ((long)(0));
+            this.plotterCPU.MoveStep = -1;
+            this.plotterCPU.Name = "plotterCPU";
+            this.plotterCPU.OverlaySecondLine = false;
+            this.plotterCPU.ShowGrid = true;
+            this.plotterCPU.Size = new System.Drawing.Size(736, 90);
+            this.plotterCPU.TabIndex = 0;
+            this.plotterCPU.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterCPU.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterCPU.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterCPU.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterCPU.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterCPU.UseLongData = false;
+            this.plotterCPU.UseSecondLine = true;
+            // 
+            // plotterIO
+            // 
+            this.plotterIO.BackColor = System.Drawing.Color.Black;
+            this.plotterIO.Data1 = null;
+            this.plotterIO.Data2 = null;
+            this.plotterIO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterIO.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
+            this.plotterIO.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterIO.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterIO.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterIO.Location = new System.Drawing.Point(3, 18);
+            this.plotterIO.LongData1 = null;
+            this.plotterIO.LongData2 = null;
+            this.plotterIO.MinMaxValue = ((long)(0));
+            this.plotterIO.MoveStep = -1;
+            this.plotterIO.Name = "plotterIO";
+            this.plotterIO.OverlaySecondLine = true;
+            this.plotterIO.ShowGrid = true;
+            this.plotterIO.Size = new System.Drawing.Size(736, 90);
+            this.plotterIO.TabIndex = 5;
+            this.plotterIO.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterIO.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterIO.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterIO.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterIO.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterIO.UseLongData = true;
+            this.plotterIO.UseSecondLine = true;
+            // 
+            // plotterMemory
+            // 
+            this.plotterMemory.BackColor = System.Drawing.Color.Black;
+            this.plotterMemory.Data1 = null;
+            this.plotterMemory.Data2 = null;
+            this.plotterMemory.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterMemory.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
+            this.plotterMemory.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterMemory.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterMemory.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterMemory.Location = new System.Drawing.Point(3, 18);
+            this.plotterMemory.LongData1 = null;
+            this.plotterMemory.LongData2 = null;
+            this.plotterMemory.MinMaxValue = ((long)(0));
+            this.plotterMemory.MoveStep = -1;
+            this.plotterMemory.Name = "plotterMemory";
+            this.plotterMemory.OverlaySecondLine = true;
+            this.plotterMemory.ShowGrid = true;
+            this.plotterMemory.Size = new System.Drawing.Size(736, 90);
+            this.plotterMemory.TabIndex = 5;
+            this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterMemory.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterMemory.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterMemory.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterMemory.UseLongData = true;
+            this.plotterMemory.UseSecondLine = true;
+            // 
+            // indicatorPhysical
+            // 
+            this.indicatorPhysical.BackColor = System.Drawing.Color.Black;
+            this.indicatorPhysical.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.indicatorPhysical.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.indicatorPhysical.Data1 = ((long)(0));
+            this.indicatorPhysical.Data2 = ((long)(0));
+            this.indicatorPhysical.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.indicatorPhysical.ForeColor = System.Drawing.Color.Lime;
+            this.indicatorPhysical.GraphWidth = 33;
+            this.indicatorPhysical.Location = new System.Drawing.Point(3, 18);
+            this.indicatorPhysical.Maximum = ((long)(2147483647));
+            this.indicatorPhysical.Minimum = ((long)(0));
+            this.indicatorPhysical.Name = "indicatorPhysical";
+            this.indicatorPhysical.Size = new System.Drawing.Size(74, 90);
+            this.indicatorPhysical.TabIndex = 8;
+            this.indicatorPhysical.TextValue = "";
+            // 
+            // indicatorIO
+            // 
+            this.indicatorIO.BackColor = System.Drawing.Color.Black;
+            this.indicatorIO.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.indicatorIO.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.indicatorIO.Data1 = ((long)(0));
+            this.indicatorIO.Data2 = ((long)(0));
+            this.indicatorIO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.indicatorIO.ForeColor = System.Drawing.Color.Lime;
+            this.indicatorIO.GraphWidth = 33;
+            this.indicatorIO.Location = new System.Drawing.Point(3, 18);
+            this.indicatorIO.Maximum = ((long)(2147483647));
+            this.indicatorIO.Minimum = ((long)(0));
+            this.indicatorIO.Name = "indicatorIO";
+            this.indicatorIO.Size = new System.Drawing.Size(74, 90);
+            this.indicatorIO.TabIndex = 8;
+            this.indicatorIO.TextValue = "";
+            // 
+            // indicatorCpu
+            // 
+            this.indicatorCpu.BackColor = System.Drawing.Color.Black;
+            this.indicatorCpu.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.indicatorCpu.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.indicatorCpu.Data1 = ((long)(500000000));
+            this.indicatorCpu.Data2 = ((long)(500000000));
+            this.indicatorCpu.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.indicatorCpu.ForeColor = System.Drawing.Color.Lime;
+            this.indicatorCpu.GraphWidth = 33;
+            this.indicatorCpu.Location = new System.Drawing.Point(3, 18);
+            this.indicatorCpu.Maximum = ((long)(2147483647));
+            this.indicatorCpu.Minimum = ((long)(0));
+            this.indicatorCpu.Name = "indicatorCpu";
+            this.indicatorCpu.Size = new System.Drawing.Size(74, 90);
+            this.indicatorCpu.TabIndex = 8;
+            this.indicatorCpu.TextValue = "";
+            // 
             // SysInfoWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(842, 538);
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.ClientSize = new System.Drawing.Size(858, 661);
             this.Controls.Add(this.checkAlwaysOnTop);
             this.Controls.Add(this.flowInfo);
             this.Controls.Add(this.tableGraphs);
+            this.Controls.Add(this.checkShowOneGraphPerCPU);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(200, 500);
             this.Name = "SysInfoWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "System Information";
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.SysInfoWindow_Paint);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SysInfoWindow_FormClosing);
             this.gboxCPUPlotter.ResumeLayout(false);
             this.tableGraphs.ResumeLayout(false);
-            this.tableGraphs.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox11.ResumeLayout(false);
@@ -1580,6 +1581,7 @@
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
             this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
             this.groupBox7.ResumeLayout(false);

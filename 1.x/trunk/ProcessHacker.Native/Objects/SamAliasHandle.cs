@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -34,22 +33,19 @@ namespace ProcessHacker.Native.Objects
     {
         public static SamAliasHandle Create(SamAliasAccess access, SamDomainHandle domainHandle, string name, out int aliasId)
         {
-            NtStatus status;
-            UnicodeString nameStr;
             IntPtr handle;
 
-            nameStr = new UnicodeString(name);
+            UnicodeString nameStr = new UnicodeString(name);
 
             try
             {
-                if ((status = Win32.SamCreateAliasInDomain(
+                Win32.SamCreateAliasInDomain(
                     domainHandle,
                     ref nameStr,
                     access,
                     out handle,
                     out aliasId
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -66,7 +62,7 @@ namespace ProcessHacker.Native.Objects
 
         public static SamAliasHandle Open(Sid sid, SamAliasAccess access)
         {
-            using (var dhandle = new SamDomainHandle(sid.DomainName, SamDomainAccess.Lookup))
+            using (SamDomainHandle dhandle = new SamDomainHandle(sid.DomainName, SamDomainAccess.Lookup))
             {
                 return new SamAliasHandle(dhandle, dhandle.LookupName(sid.Name), access);
             }
@@ -84,129 +80,119 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the alias.</param>
         public SamAliasHandle(SamDomainHandle domainHandle, int aliasId, SamAliasAccess access)
         {
-            NtStatus status;
             IntPtr handle;
 
-            if ((status = Win32.SamOpenAlias(
+            Win32.SamOpenAlias(
                 domainHandle,
                 access,
                 aliasId,
                 out handle
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             this.Handle = handle;
         }
 
         public void AddMember(Sid sid)
         {
-            NtStatus status;
-
-            if ((status = Win32.SamAddMemberToAlias(this, sid)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.SamAddMemberToAlias(this, sid).ThrowIf();
         }
 
         public void AddMembers(Sid[] sids)
         {
-            NtStatus status;
             IntPtr[] sidArray = new IntPtr[sids.Length];
 
             for (int i = 0; i < sids.Length; i++)
                 sidArray[i] = sids[i];
 
-            if ((status = Win32.SamAddMultipleMembersToAlias(
+            Win32.SamAddMultipleMembersToAlias(
                 this,
                 sidArray,
                 sids.Length
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         public void Delete()
         {
-            NtStatus status;
-
-            if ((status = Win32.SamDeleteAlias(this)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.SamDeleteAlias(this).ThrowIf();
         }
 
         private SamMemoryAlloc GetInformation(AliasInformationClass infoClass)
         {
-            NtStatus status;
             IntPtr buffer;
 
-            if ((status = Win32.SamQueryInformationAlias(
+            Win32.SamQueryInformationAlias(
                 this,
                 infoClass,
                 out buffer
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return new SamMemoryAlloc(buffer);
         }
 
-        public string GetAdminComment()
+        public string AdminComment
         {
-            using (var data = this.GetInformation(AliasInformationClass.AliasAdminCommentInformation))
+            get
             {
-                return data.ReadStruct<AliasAdmCommentInformation>().AdminComment.Read();
+                using (SamMemoryAlloc data = this.GetInformation(AliasInformationClass.AliasAdminCommentInformation))
+                {
+                    return data.ReadStruct<AliasAdmCommentInformation>().AdminComment.Text;
+                }
             }
         }
 
-        public Sid[] GetMembers()
+        public Sid[] Members
         {
-            NtStatus status;
-            IntPtr members;
-            int count;
-
-            if ((status = Win32.SamGetMembersInAlias(
-                this,
-                out members,
-                out count
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
-
-            using (var membersAlloc = new SamMemoryAlloc(members))
+            get
             {
-                Sid[] sids = new Sid[count];
+                IntPtr members;
+                int count;
 
-                for (int i = 0; i < sids.Length; i++)
-                    sids[i] = new Sid(membersAlloc.ReadIntPtr(0, i));
+                Win32.SamGetMembersInAlias(
+                    this,
+                    out members,
+                    out count
+                    ).ThrowIf();
 
-                return sids;
+                using (SamMemoryAlloc membersAlloc = new SamMemoryAlloc(members))
+                {
+                    Sid[] sids = new Sid[count];
+
+                    for (int i = 0; i < sids.Length; i++)
+                        sids[i] = new Sid(membersAlloc.ReadIntPtr(0, i));
+
+                    return sids;
+                }
             }
         }
 
-        public string GetName()
+        public string Name
         {
-            using (var data = this.GetInformation(AliasInformationClass.AliasNameInformation))
+            get
             {
-                return data.ReadStruct<AliasNameInformation>().Name.Read();
+                using (SamMemoryAlloc data = this.GetInformation(AliasInformationClass.AliasNameInformation))
+                {
+                    return data.ReadStruct<AliasNameInformation>().Name.Text;
+                }
             }
         }
 
         public void RemoveMember(Sid sid)
         {
-            NtStatus status;
-
-            if ((status = Win32.SamRemoveMemberFromAlias(this, sid)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.SamRemoveMemberFromAlias(this, sid).ThrowIf();
         }
 
         public void RemoveMembers(Sid[] sids)
         {
-            NtStatus status;
             IntPtr[] sidArray = new IntPtr[sids.Length];
 
             for (int i = 0; i < sids.Length; i++)
                 sidArray[i] = sids[i];
 
-            if ((status = Win32.SamRemoveMultipleMembersFromAlias(
+            Win32.SamRemoveMultipleMembersFromAlias(
                 this,
                 sidArray,
                 sids.Length
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
     }
 }

@@ -30,16 +30,15 @@ namespace ProcessHacker
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HandleFilterWindow));
             this.label1 = new System.Windows.Forms.Label();
             this.textFilter = new System.Windows.Forms.TextBox();
             this.buttonFind = new System.Windows.Forms.Button();
-            this.listHandles = new ExtendedListView();
-            this.columnProcess = new System.Windows.Forms.ColumnHeader();
-            this.columnType = new System.Windows.Forms.ColumnHeader();
-            this.columnName = new System.Windows.Forms.ColumnHeader();
-            this.columnHandle = new System.Windows.Forms.ColumnHeader();
+            this.listHandles = new ProcessHacker.Components.ExtendedListView();
+            this.columnProcess = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuHandle = new System.Windows.Forms.ContextMenu();
             this.closeMenuItem = new System.Windows.Forms.MenuItem();
             this.processPropertiesMenuItem = new System.Windows.Forms.MenuItem();
@@ -53,21 +52,21 @@ namespace ProcessHacker
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 17);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(32, 13);
+            this.label1.Size = new System.Drawing.Size(36, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Filter:";
             // 
             // textFilter
             // 
-            this.textFilter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textFilter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textFilter.Location = new System.Drawing.Point(50, 14);
             this.textFilter.Name = "textFilter";
-            this.textFilter.Size = new System.Drawing.Size(395, 20);
+            this.textFilter.Size = new System.Drawing.Size(395, 22);
             this.textFilter.TabIndex = 1;
             this.textFilter.TextChanged += new System.EventHandler(this.textFilter_TextChanged);
-            this.textFilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textFilter_KeyPress);
             this.textFilter.Enter += new System.EventHandler(this.textFilter_Enter);
+            this.textFilter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textFilter_KeyPress);
             // 
             // buttonFind
             // 
@@ -85,14 +84,15 @@ namespace ProcessHacker
             // listHandles
             // 
             this.listHandles.AllowColumnReorder = true;
-            this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listHandles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnProcess,
             this.columnType,
             this.columnName,
             this.columnHandle});
+            this.listHandles.DoubleClickChecks = true;
             this.listHandles.FullRowSelect = true;
             this.listHandles.HideSelection = false;
             this.listHandles.Location = new System.Drawing.Point(12, 41);
@@ -159,8 +159,8 @@ namespace ProcessHacker
             // 
             // progress
             // 
-            this.progress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.progress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.progress.Location = new System.Drawing.Point(50, 11);
             this.progress.Name = "progress";
             this.progress.Size = new System.Drawing.Size(395, 23);
@@ -172,19 +172,21 @@ namespace ProcessHacker
             this.AcceptButton = this.buttonFind;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(538, 427);
             this.Controls.Add(this.progress);
             this.Controls.Add(this.listHandles);
             this.Controls.Add(this.buttonFind);
             this.Controls.Add(this.textFilter);
             this.Controls.Add(this.label1);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "HandleFilterWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Find Handles or DLLs";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HandleFilterWindow_FormClosing);
             this.Load += new System.EventHandler(this.HandleFilterWindow_Load);
             this.VisibleChanged += new System.EventHandler(this.HandleFilterWindow_VisibleChanged);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HandleFilterWindow_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -74,10 +74,10 @@
             this.textNewProtection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.textNewProtection.Location = new System.Drawing.Point(167, 186);
             this.textNewProtection.Name = "textNewProtection";
-            this.textNewProtection.Size = new System.Drawing.Size(82, 20);
+            this.textNewProtection.Size = new System.Drawing.Size(82, 22);
             this.textNewProtection.TabIndex = 7;
-            this.textNewProtection.Leave += new System.EventHandler(this.textNewProtection_Leave);
             this.textNewProtection.Enter += new System.EventHandler(this.textNewProtection_Enter);
+            this.textNewProtection.Leave += new System.EventHandler(this.textNewProtection_Leave);
             // 
             // labelNewValue
             // 
@@ -85,20 +85,24 @@
             this.labelNewValue.AutoSize = true;
             this.labelNewValue.Location = new System.Drawing.Point(100, 189);
             this.labelNewValue.Name = "labelNewValue";
-            this.labelNewValue.Size = new System.Drawing.Size(61, 13);
+            this.labelNewValue.Size = new System.Drawing.Size(63, 13);
             this.labelNewValue.TabIndex = 6;
             this.labelNewValue.Text = "New value:";
             // 
             // VirtualProtectWindow
             // 
+            this.AcceptButton = this.buttonVirtualProtect;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.CancelButton = this.buttonCloseVirtualProtect;
             this.ClientSize = new System.Drawing.Size(423, 219);
             this.Controls.Add(this.buttonCloseVirtualProtect);
             this.Controls.Add(this.buttonVirtualProtect);
             this.Controls.Add(this.textNewProtection);
             this.Controls.Add(this.labelNewValue);
             this.Controls.Add(this.labelVirtualProtectInfo);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

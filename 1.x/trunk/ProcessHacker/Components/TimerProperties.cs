@@ -8,7 +8,7 @@ namespace ProcessHacker.Components
 {
     public partial class TimerProperties : UserControl
     {
-        private TimerHandle _timerHandle;
+        private readonly TimerHandle _timerHandle;
 
         public TimerProperties(TimerHandle timerHandle)
         {
@@ -24,7 +24,7 @@ namespace ProcessHacker.Components
         {
             try
             {
-                var basicInfo = _timerHandle.GetBasicInformation();
+                var basicInfo = _timerHandle.BasicInformation;
 
                 labelSignaled.Text = basicInfo.TimerState.ToString();
                 labelTimeRemaining.Text = (new TimeSpan(-basicInfo.RemainingTime)).ToString();

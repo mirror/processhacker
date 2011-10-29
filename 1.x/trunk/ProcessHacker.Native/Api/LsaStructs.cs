@@ -76,6 +76,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct Msv1_0_InteractiveLogon
     {
+        public static readonly int SizeOf;
+
+        static Msv1_0_InteractiveLogon()
+        {
+            SizeOf = Marshal.SizeOf(typeof(Msv1_0_InteractiveLogon));
+        }
+
         public Msv1_0_LogonSubmitType MessageType;
         public UnicodeString LogonDomainName;
         public UnicodeString UserName;

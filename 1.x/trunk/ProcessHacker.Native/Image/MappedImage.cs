@@ -157,52 +157,41 @@ namespace ProcessHacker.Native.Image
 
         public ImageDataDirectory* GetDataEntry(ImageDataEntry entry)
         {
-            if (_magic == Win32.Pe32Magic)
+            switch (this._magic)
             {
-                if ((int)entry >= _ntHeaders->OptionalHeader.NumberOfRvaAndSizes)
+                case Win32.Pe32Magic:
+                    if ((int)entry >= this._ntHeaders->OptionalHeader.NumberOfRvaAndSizes)
+                        return null;
+                    return &(&this._ntHeaders->OptionalHeader.DataDirectory)[(int)entry];
+                case Win32.Pe32PlusMagic:
+                    if ((int)entry >= this.GetOptionalHeader64()->NumberOfRvaAndSizes)
+                        return null;
+                    return &(&this.GetOptionalHeader64()->DataDirectory)[(int)entry];
+                default:
                     return null;
-
-                return &(&_ntHeaders->OptionalHeader.DataDirectory)[(int)entry];
-            }
-            else if (_magic == Win32.Pe32PlusMagic)
-            {
-                if ((int)entry >= this.GetOptionalHeader64()->NumberOfRvaAndSizes)
-                    return null;
-
-                return &(&this.GetOptionalHeader64()->DataDirectory)[(int)entry];
-            }
-            else
-            {
-                return null;
             }
         }
 
         public ImageExportDirectory* GetExportDirectory()
         {
-            ImageDataDirectory* dataEntry;
-
-            dataEntry = this.GetDataEntry(ImageDataEntry.Export);
+            ImageDataDirectory* dataEntry = this.GetDataEntry(ImageDataEntry.Export);
 
             return (ImageExportDirectory*)this.RvaToVa(dataEntry->VirtualAddress);
         }
 
         public ImageImportDescriptor* GetImportDirectory()
         {
-            ImageDataDirectory* dataEntry;
-
-            dataEntry = this.GetDataEntry(ImageDataEntry.Import);
+            ImageDataDirectory* dataEntry = this.GetDataEntry(ImageDataEntry.Import);
 
             return (ImageImportDescriptor*)this.RvaToVa(dataEntry->VirtualAddress);
         }
 
         private void* GetLoadConfig(short magic)
         {
-            ImageDataDirectory* dataEntry;
-
             if (_magic != magic)
                 return null;
 
-            dataEntry = this.GetDataEntry(ImageDataEntry.LoadConfig);
+            ImageDataDirectory* dataEntry = this.GetDataEntry(ImageDataEntry.LoadConfig);
 
             if (dataEntry == null)
                 return null;
@@ -222,17 +211,14 @@ namespace ProcessHacker.Native.Image
 
         private ImageNtHeaders* GetNtHeaders()
         {
-            int offset;
-            ImageNtHeaders* ntHeaders;
-
-            offset = *((int*)((byte*)_memory + 0x3c));
+            int offset = *((int*)((byte*)this._memory + 0x3c));
 
             if (offset == 0)
                 throw new Exception("Invalid NT headers offset.");
             if (offset >= 0x10000000 || offset >= _size)
                 throw new Exception("The NT headers offset is too large.");
 
-            ntHeaders = (ImageNtHeaders*)((byte*)_memory + offset);
+            ImageNtHeaders* ntHeaders = (ImageNtHeaders*)((byte*)this._memory + offset);
 
             return ntHeaders;
         }
@@ -285,7 +271,7 @@ namespace ProcessHacker.Native.Image
                 readOnly ? MemoryProtection.ExecuteRead : MemoryProtection.ExecuteReadWrite
                 ))
             {
-                _size = (int)fileHandle.GetSize();
+                _size = (int)fileHandle.FileSize;
                 _view = section.MapView(_size);
 
                 this.Load(_view);
@@ -313,9 +299,7 @@ namespace ProcessHacker.Native.Image
 
         public void* RvaToVa(int rva)
         {
-            ImageSectionHeader* section;
-
-            section = this.RvaToSection(rva);
+            ImageSectionHeader* section = this.RvaToSection(rva);
 
             if (section == null)
                 return null;

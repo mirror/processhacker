@@ -29,8 +29,8 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class RemoteHandle
     {
-        private ProcessHandle _phandle;
-        private IntPtr _handle;
+        private readonly ProcessHandle _phandle;
+        private readonly IntPtr _handle;
 
         public RemoteHandle(ProcessHandle phandle, IntPtr handle)
         {

@@ -22,9 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Windows.Forms;
-using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
 using ProcessHacker.Native.Api;
 using ProcessHacker.UI;
@@ -34,10 +32,10 @@ namespace ProcessHacker.Components
     public partial class ServiceList : UserControl
     {
         private ServiceProvider _provider;
-        private int _runCount = 0;
-        private HighlightingContext _highlightingContext;
-        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
-        private bool _needsSort = false;
+        private int _runCount;
+        private readonly HighlightingContext _highlightingContext;
+        private readonly List<ListViewItem> _needsAdd = new List<ListViewItem>();
+        private bool _needsSort;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -49,12 +47,11 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _highlightingContext = new HighlightingContext(listServices);
-            listServices.SetTheme("explorer");
-            listServices.KeyDown += new KeyEventHandler(ServiceList_KeyDown);
-            listServices.MouseDown += new MouseEventHandler(listServices_MouseDown);
-            listServices.MouseUp += new MouseEventHandler(listServices_MouseUp);
-            listServices.DoubleClick += new EventHandler(listServices_DoubleClick);
-            listServices.SelectedIndexChanged += new System.EventHandler(listServices_SelectedIndexChanged);
+            listServices.KeyDown += this.ServiceList_KeyDown;
+            listServices.MouseDown += this.listServices_MouseDown;
+            listServices.MouseUp += this.listServices_MouseUp;
+            listServices.DoubleClick += this.listServices_DoubleClick;
+            listServices.SelectedIndexChanged += this.listServices_SelectedIndexChanged;
             listServices.ListViewItemSorter = new SortedListViewComparer(listServices);
         }
 

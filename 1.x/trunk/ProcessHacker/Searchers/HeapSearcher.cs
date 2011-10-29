@@ -35,9 +35,8 @@ namespace ProcessHacker
         {
             Results.Clear();
 
-            IntPtr snapshot;
-            var hlist = new HeapList32();
-            var heap = new HeapEntry32();
+            HeapList32 hlist = new HeapList32();
+            HeapEntry32 heap = new HeapEntry32();
             int minsize;
             int count = 0;
 
@@ -51,10 +50,10 @@ namespace ProcessHacker
                 return;
             }
 
-            snapshot = Win32.CreateToolhelp32Snapshot(SnapshotFlags.HeapList, PID);
+            IntPtr snapshot = Win32.CreateToolhelp32Snapshot(SnapshotFlags.HeapList, this.PID);
 
-            hlist.dwSize = Marshal.SizeOf(hlist);
-            heap.dwSize = Marshal.SizeOf(heap);
+            hlist.dwSize = HeapList32.SizeOf;
+            heap.dwSize = HeapEntry32.SizeOf;
 
             if (snapshot != IntPtr.Zero && Marshal.GetLastWin32Error() == 0)
             {

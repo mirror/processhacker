@@ -140,16 +140,16 @@ namespace TaskbarLib.Interop
     }
 
     [StructLayout(LayoutKind.Explicit)]
-    internal struct PropVariant : IDisposable
+    public struct PropVariant : IDisposable
     {
         [FieldOffset(0)]
         private ushort vt;
         [FieldOffset(8)]
         private IntPtr pointerValue;
         [FieldOffset(8)]
-        private byte byteValue;
+        public byte byteValue;
         [FieldOffset(8)]
-        private long longValue;
+        public long longValue;
         [FieldOffset(8)]
         private short boolValue;
         [MarshalAs(UnmanagedType.Struct)]
@@ -246,10 +246,10 @@ namespace TaskbarLib.Interop
         public static extern HResult SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
        
         [DllImport("shell32.dll")]
-        public static extern HResult GetCurrentProcessExplicitAppUserModelID([Out(), MarshalAs(UnmanagedType.LPWStr)] out string AppID);
+        public static extern HResult GetCurrentProcessExplicitAppUserModelID([Out, MarshalAs(UnmanagedType.LPWStr)] out string AppID);
 
         [DllImport("shell32.dll")]
-        public static extern HResult SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid /*IID_IPropertyStore*/, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
+        public static extern HResult SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid /*IID_IPropertyStore*/, [Out, MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
        
         [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern HResult SHCreateItemFromParsingName(string path, /* The following parameter is not used - binding context. */ IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);

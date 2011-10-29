@@ -21,10 +21,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Security;
 using ProcessHacker.Native.Security.Authentication;
 
 namespace ProcessHacker.Native.Objects
@@ -33,21 +30,18 @@ namespace ProcessHacker.Native.Objects
     {
         public static LsaAuthHandle Connect(string name)
         {
-            NtStatus status;
-            AnsiString nameStr;
             IntPtr handle;
             LsaOperationalMode mode;
 
-            nameStr = new AnsiString(name);
+            AnsiString nameStr = new AnsiString(name);
 
             try
             {
-                if ((status = Win32.LsaRegisterLogonProcess(
+                Win32.LsaRegisterLogonProcess(
                     ref nameStr,
                     out handle,
                     out mode
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -59,11 +53,9 @@ namespace ProcessHacker.Native.Objects
 
         public static LsaAuthHandle ConnectUntrusted()
         {
-            NtStatus status;
             IntPtr handle;
 
-            if ((status = Win32.LsaConnectUntrusted(out handle)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.LsaConnectUntrusted(out handle).ThrowIf();
 
             return new LsaAuthHandle(handle, true);
         }
@@ -109,20 +101,18 @@ namespace ProcessHacker.Native.Objects
             out NtStatus subStatus
             )
         {
-            NtStatus status;
-            AnsiString originNameStr;
             IntPtr profileBuffer;
             int profileBufferLength;
             IntPtr token;
             QuotaLimits quotas;
 
-            originNameStr = new AnsiString(originName);
+            AnsiString originNameStr = new AnsiString(originName);
 
             try
             {
-                using (var logonData = package.GetAuthData())
+                using (MemoryRegion logonData = package.GetAuthData())
                 {
-                    if ((status = Win32.LsaLogonUser(
+                    Win32.LsaLogonUser(
                         this,
                         ref originNameStr,
                         logonType,
@@ -137,11 +127,12 @@ namespace ProcessHacker.Native.Objects
                         out token,
                         out quotas,
                         out subStatus
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
+                        ).ThrowIf();
 
-                    using (var profileBufferAlloc = new LsaMemoryAlloc(profileBuffer, true))
+                    using (new LsaMemoryAlloc(profileBuffer, true))
+                    {
                         profileData = package.GetProfileData(new MemoryRegion(profileBuffer, 0, profileBufferLength));
+                    }
 
                     return new TokenHandle(token, true);
                 }
@@ -154,20 +145,17 @@ namespace ProcessHacker.Native.Objects
 
         public int LookupAuthenticationPackage(string packageName)
         {
-            NtStatus status;
-            AnsiString packageNameStr;
             int authenticationPackage;
 
-            packageNameStr = new AnsiString(packageName);
+            AnsiString packageNameStr = new AnsiString(packageName);
 
             try
             {
-                if ((status = Win32.LsaLookupAuthenticationPackage(
+                Win32.LsaLookupAuthenticationPackage(
                     this,
                     ref packageNameStr,
                     out authenticationPackage
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {

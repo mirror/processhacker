@@ -126,14 +126,13 @@ namespace ProcessHacker.Native.Objects
             out FileIoStatus ioStatus
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, rootDirectory);
             IoStatusBlock isb;
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateFile(
+                Win32.NtCreateFile(
                     out handle,
                     access,
                     ref oa,
@@ -145,8 +144,7 @@ namespace ProcessHacker.Native.Objects
                     createOptions,
                     IntPtr.Zero,
                     0
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
 
                 ioStatus = (FileIoStatus)isb.Information.ToInt32();
             }
@@ -168,12 +166,9 @@ namespace ProcessHacker.Native.Objects
             return CreateWin32(fileName, desiredAccess, shareMode, FileCreationDispositionWin32.OpenAlways);
         }
 
-        public static FileHandle CreateWin32(string fileName, FileAccess desiredAccess, FileShareMode shareMode,
-            FileCreationDispositionWin32 creationDisposition)
+        public static FileHandle CreateWin32(string fileName, FileAccess desiredAccess, FileShareMode shareMode, FileCreationDispositionWin32 creationDisposition)
         {
-            IntPtr handle;
-            
-            handle = Win32.CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, IntPtr.Zero);
+            IntPtr handle = Win32.CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, IntPtr.Zero);
 
             if (handle == NativeHandle.MinusOne)
                 Win32.Throw();
@@ -183,13 +178,11 @@ namespace ProcessHacker.Native.Objects
 
         public static void Delete(string fileName, ObjectFlags objectFlags)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(fileName, objectFlags, null);
 
             try
             {
-                if ((status = Win32.NtDeleteFile(ref oa)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtDeleteFile(ref oa).ThrowIf();
             }
             finally
             {
@@ -481,11 +474,9 @@ namespace ProcessHacker.Native.Objects
 
         public void BeginLock(AsyncIoContext asyncContext, long offset, long length, bool wait, bool exclusive)
         {
-            NtStatus status;
-
             asyncContext.NotifyPreBegin();
 
-            status = Win32.NtLockFile(
+            NtStatus status = Win32.NtLockFile(
                 this,
                 asyncContext.EventHandle ?? IntPtr.Zero,
                 null,
@@ -515,14 +506,13 @@ namespace ProcessHacker.Native.Objects
 
         public void BeginRead(AsyncIoContext asyncContext, long fileOffset, byte[] buffer, int offset, int length)
         {
-            PinnedObject<byte[]> pinnedBuffer;
-
             Utils.ValidateBuffer(buffer, offset, length);
+
             asyncContext.NotifyPreBegin();
 
             // Pin the buffer because the I/O system may be writing to it after 
             // this call returns.
-            pinnedBuffer = new PinnedObject<byte[]>(buffer);
+            PinnedObject<byte[]> pinnedBuffer = new PinnedObject<byte[]>(buffer);
             asyncContext.KeepAlive(pinnedBuffer);
             this.BeginRead(asyncContext, fileOffset, pinnedBuffer.Address.Increment(offset), length);
         }
@@ -570,13 +560,13 @@ namespace ProcessHacker.Native.Objects
 
         public void BeginWrite(AsyncIoContext asyncContext, long fileOffset, byte[] buffer, int offset, int length)
         {
-            PinnedObject<byte[]> pinnedBuffer;
-
             Utils.ValidateBuffer(buffer, offset, length);
+
             asyncContext.NotifyPreBegin();
 
-            pinnedBuffer = new PinnedObject<byte[]>(buffer);
+            PinnedObject<byte[]> pinnedBuffer = new PinnedObject<byte[]>(buffer);
             asyncContext.KeepAlive(pinnedBuffer);
+
             this.BeginWrite(asyncContext, fileOffset, pinnedBuffer.Address.Increment(offset), length);
         }
 
@@ -622,11 +612,9 @@ namespace ProcessHacker.Native.Objects
         /// <returns>An I/O status block.</returns>
         public IoStatusBlock CancelIo()
         {
-            NtStatus status;
             IoStatusBlock isb;
 
-            if ((status = Win32.NtCancelIoFile(this, out isb)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtCancelIoFile(this, out isb).ThrowIf();
 
             return isb;
         }
@@ -636,10 +624,10 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void Delete()
         {
-            this.SetStruct<FileDispositionInformation>(
-                FileInformationClass.FileDispositionInformation,
-                new FileDispositionInformation() { DeleteFile = true }
-                );
+            this.SetStruct(FileInformationClass.FileDispositionInformation, FileDispositionInformation.SizeOf, new FileDispositionInformation
+            {
+                DeleteFile = true
+            });
         }
 
         /// <summary>
@@ -652,8 +640,7 @@ namespace ProcessHacker.Native.Objects
             asyncContext.Wait();
             asyncContext.NotifyEnd();
 
-            if (asyncContext.Status >= NtStatus.Error)
-                Win32.Throw(asyncContext.Status);
+            asyncContext.Status.ThrowIf();
 
             return asyncContext.StatusBlock.Information.ToInt32();
         }
@@ -691,8 +678,7 @@ namespace ProcessHacker.Native.Objects
             if (asyncContext.Status == NtStatus.LockNotGranted)
                 return false;
 
-            if (asyncContext.Status >= NtStatus.Error)
-                Win32.Throw(asyncContext.Status);
+            asyncContext.Status.ThrowIf();
 
             return true;
         }
@@ -794,8 +780,7 @@ namespace ProcessHacker.Native.Objects
                             break;
 
                         // Handle any errors.
-                        if (status >= NtStatus.Error)
-                            Win32.Throw(status);
+                        status.ThrowIf();
 
                         // Read the list of files we got in this batch.
 
@@ -876,10 +861,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void Flush()
         {
-            NtStatus status;
             IoStatusBlock isb;
 
-            status = Win32.NtFlushBuffersFile(
+            NtStatus status = Win32.NtFlushBuffersFile(
                 this,
                 out isb
                 );
@@ -890,8 +874,7 @@ namespace ProcessHacker.Native.Objects
                 status = isb.Status;
             }
 
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+            status.ThrowIf();
         }
 
         /// <summary>
@@ -962,13 +945,9 @@ namespace ProcessHacker.Native.Objects
             int outBufferLength
             )
         {
-            NtStatus status;
             int returnLength;
 
-            status = this.FsControl(controlCode, inBuffer, inBufferLength, outBuffer, outBufferLength, out returnLength);
-
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+            this.FsControl(controlCode, inBuffer, inBufferLength, outBuffer, outBufferLength, out returnLength).ThrowIf();
 
             return returnLength;
         }
@@ -982,10 +961,9 @@ namespace ProcessHacker.Native.Objects
             out int returnLength
             )
         {
-            NtStatus status;
             IoStatusBlock isb;
 
-            status = Win32.NtFsControlFile(
+            NtStatus status = Win32.NtFsControlFile(
                 this,
                 IntPtr.Zero,
                 null,
@@ -1014,34 +992,37 @@ namespace ProcessHacker.Native.Objects
         /// Gets the attributes of the file.
         /// </summary>
         /// <returns>The attributes of the file.</returns>
-        public FileAttributes GetAttributes()
+        public FileAttributes Attributes
         {
-            return this.GetBasicInformation().FileAttributes;
+            get { return this.BasicInformation.FileAttributes; }
         }
 
         /// <summary>
         /// Gets basic information about the file.
         /// </summary>
         /// <returns>Basic information about the file.</returns>
-        public FileBasicInformation GetBasicInformation()
+        public FileBasicInformation BasicInformation
         {
-            return this.QueryStruct<FileBasicInformation>(FileInformationClass.FileBasicInformation, FileBasicInformation.SizeOf);
+            get { return this.QueryStruct<FileBasicInformation>(FileInformationClass.FileBasicInformation, FileBasicInformation.SizeOf); }
         }
 
         /// <summary>
         /// Gets the partial name of the file.
         /// </summary>
         /// <returns>The name of the file, relative to its volume.</returns>
-        public string GetFileName()
+        public string FileName
         {
-            using (MemoryAlloc data = this.QueryVariableSize(FileInformationClass.FileNameInformation))
+            get
             {
-                FileNameInformation info = data.ReadStruct<FileNameInformation>(0, FileNameInformation.SizeOf, 0);
+                using (MemoryAlloc data = this.QueryVariableSize(FileInformationClass.FileNameInformation))
+                {
+                    FileNameInformation info = data.ReadStruct<FileNameInformation>(0, FileNameInformation.SizeOf, 0);
 
-                return data.ReadUnicodeString(
-                    FileNameInformation.FileNameOffset,
-                    info.FileNameLength / 2
-                    );
+                    return data.ReadUnicodeString(
+                        FileNameInformation.FileNameOffset,
+                        info.FileNameLength/2
+                        );
+                }
             }
         }
 
@@ -1049,9 +1030,9 @@ namespace ProcessHacker.Native.Objects
         /// Gets a list of the files contained in the directory.
         /// </summary>
         /// <returns>An array of file information structures.</returns>
-        public FileEntry[] GetFiles()
+        public FileEntry[] Files
         {
-            return this.GetFiles(null);
+            get { return this.GetFiles(null); }
         }
 
         /// <summary>
@@ -1068,7 +1049,7 @@ namespace ProcessHacker.Native.Objects
         {
             List<FileEntry> files = new List<FileEntry>();
 
-            this.EnumFiles((file) =>
+            this.EnumFiles(file =>
                 {
                     files.Add(file);
                     return true;
@@ -1081,9 +1062,15 @@ namespace ProcessHacker.Native.Objects
         /// Gets the current position.
         /// </summary>
         /// <returns>A byte offset from the beginning of the file.</returns>
-        public long GetPosition()
+        public long Position
         {
-            return this.QueryStruct<FilePositionInformation>(FileInformationClass.FilePositionInformation, FilePositionInformation.SizeOf).CurrentByteOffset;
+            get
+            {
+                return this.QueryStruct<FilePositionInformation>(
+                    FileInformationClass.FilePositionInformation,
+                    FilePositionInformation.SizeOf
+                    ).CurrentByteOffset;
+            }
         }
 
         /// <summary>
@@ -1094,7 +1081,7 @@ namespace ProcessHacker.Native.Objects
         {
             List<FileStreamEntry> streams = new List<FileStreamEntry>();
 
-            this.EnumStreams((file) =>
+            this.EnumStreams(file =>
             {
                 streams.Add(file);
                 return true;
@@ -1107,46 +1094,53 @@ namespace ProcessHacker.Native.Objects
         /// Gets the size of the file.
         /// </summary>
         /// <returns>The size of the file.</returns>
-        public long GetSize()
+        public long FileSize
         {
-            return this.GetStandardInformation().EndOfFile;
+            get { return this.StandardInformation.EndOfFile; }
         }
 
         /// <summary>
         /// Gets standard information about the file.
         /// </summary>
         /// <returns>Standard information about the file.</returns>
-        public FileStandardInformation GetStandardInformation()
+        public FileStandardInformation StandardInformation
         {
-            return this.QueryStruct<FileStandardInformation>(FileInformationClass.FileStandardInformation, FileStandardInformation.SizeOf);
+            get 
+            { 
+                return this.QueryStruct<FileStandardInformation>(
+                    FileInformationClass.FileStandardInformation, 
+                    FileStandardInformation.SizeOf
+                    ); 
+            }
         }
 
         /// <summary>
         /// Gets the file system name of the file's associated volume.
         /// </summary>
         /// <returns>The volume's file system name.</returns>
-        public string GetVolumeFsName()
+        public string VolumeFsName
         {
-            NtStatus status;
-            IoStatusBlock isb;
-
-            using (var data = new MemoryAlloc(0x200))
+            get
             {
-                if ((status = Win32.NtQueryVolumeInformationFile(
-                    this,
-                    out isb,
-                    data,
-                    data.Size,
-                    FsInformationClass.FileFsAttributeInformation
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                IoStatusBlock isb;
 
-                FileFsAttributeInformation info = data.ReadStruct<FileFsAttributeInformation>(0, FileFsAttributeInformation.SizeOf, 0);
+                using (MemoryAlloc data = new MemoryAlloc(0x200))
+                {
+                    Win32.NtQueryVolumeInformationFile(
+                        this,
+                        out isb,
+                        data,
+                        data.Size,
+                        FsInformationClass.FileFsAttributeInformation
+                        ).ThrowIf();
 
-                return Marshal.PtrToStringUni(
-                    data.Memory.Increment(Marshal.OffsetOf(typeof(FileFsAttributeInformation), "FileSystemName")),
-                    info.FileSystemNameLength / 2
-                    );
+                    FileFsAttributeInformation info = data.ReadStruct<FileFsAttributeInformation>(0, FileFsAttributeInformation.SizeOf, 0);
+
+                    return Marshal.PtrToStringUni(
+                        data.Memory.Increment(FileFsAttributeInformation.FileSystemNameOffset),
+                        info.FileSystemNameLength/2
+                        );
+                }
             }
         }
 
@@ -1154,28 +1148,29 @@ namespace ProcessHacker.Native.Objects
         /// Gets the label of the file's associated volume.
         /// </summary>
         /// <returns>The volume label.</returns>
-        public string GetVolumeLabel()
+        public string VolumeLabel
         {
-            NtStatus status;
-            IoStatusBlock isb;
-
-            using (var data = new MemoryAlloc(0x200))
+            get
             {
-                if ((status = Win32.NtQueryVolumeInformationFile(
-                    this,
-                    out isb,
-                    data,
-                    data.Size,
-                    FsInformationClass.FileFsVolumeInformation
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                using (MemoryAlloc data = new MemoryAlloc(0x200))
+                {
+                    IoStatusBlock isb;
 
-                FileFsVolumeInformation info = data.ReadStruct<FileFsVolumeInformation>();
+                    Win32.NtQueryVolumeInformationFile(
+                        this,
+                        out isb,
+                        data,
+                        data.Size,
+                        FsInformationClass.FileFsVolumeInformation
+                        ).ThrowIf();
 
-                return Marshal.PtrToStringUni(
-                    data.Memory.Increment(Marshal.OffsetOf(typeof(FileFsVolumeInformation), "VolumeLabel")),
-                    info.VolumeLabelLength / 2
-                    );
+                    FileFsVolumeInformation info = data.ReadStruct<FileFsVolumeInformation>();
+
+                    return Marshal.PtrToStringUni(
+                        data.Memory.Increment(FileFsVolumeInformation.VolumeLabelOffset),
+                        info.VolumeLabelLength/2
+                        );
+                }
             }
         }
 
@@ -1266,13 +1261,9 @@ namespace ProcessHacker.Native.Objects
             int outBufferLength
             )
         {
-            NtStatus status;
             int returnLength;
 
-            status = this.IoControl(controlCode, inBuffer, inBufferLength, outBuffer, outBufferLength, out returnLength);
-
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+            this.IoControl(controlCode, inBuffer, inBufferLength, outBuffer, outBufferLength, out returnLength).ThrowIf();
 
             return returnLength;
         }
@@ -1286,10 +1277,9 @@ namespace ProcessHacker.Native.Objects
             out int returnLength
             )
         {
-            NtStatus status;
             IoStatusBlock isb;
 
-            status = Win32.NtDeviceIoControlFile(
+            NtStatus status = Win32.NtDeviceIoControlFile(
                 this,
                 IntPtr.Zero,
                 null,
@@ -1355,10 +1345,9 @@ namespace ProcessHacker.Native.Objects
         /// <returns>True if the lock was acquired, otherwise false.</returns>
         public bool Lock(long offset, long length, bool wait, bool exclusive)
         {
-            NtStatus status;
             IoStatusBlock isb;
 
-            status = Win32.NtLockFile(
+            NtStatus status = Win32.NtLockFile(
                 this,
                 IntPtr.Zero,
                 null,
@@ -1380,8 +1369,7 @@ namespace ProcessHacker.Native.Objects
             if (status == NtStatus.LockNotGranted)
                 return false;
 
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+            status.ThrowIf();
 
             return true;
         }
@@ -1408,7 +1396,7 @@ namespace ProcessHacker.Native.Objects
         {
             NtStatus status;
             IoStatusBlock isb;
-            var data = new MemoryAlloc(0x200);
+            MemoryAlloc data = new MemoryAlloc(0x200);
 
             while (true)
             {
@@ -1430,7 +1418,7 @@ namespace ProcessHacker.Native.Objects
                     break;
             }
 
-            if (status >= NtStatus.Error)
+            if (status.IsError())
             {
                 data.Dispose();
                 Win32.Throw(status);
@@ -1572,8 +1560,7 @@ namespace ProcessHacker.Native.Objects
                 status = isb.Status;
             }
 
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+            status.ThrowIf();
 
             return isb.Information.ToInt32();
         }
@@ -1584,10 +1571,10 @@ namespace ProcessHacker.Native.Objects
         /// <param name="offset">A byte offset from the beginning of the file.</param>
         public void SetEnd(long offset)
         {
-            this.SetStruct<FileEndOfFileInformation>(
-                FileInformationClass.FileEndOfFileInformation,
-                new FileEndOfFileInformation() { EndOfFile = offset }
-                );
+            this.SetStruct(FileInformationClass.FileEndOfFileInformation, FileEndOfFileInformation.SizeOf, new FileEndOfFileInformation
+            {
+                EndOfFile = offset
+            });
         }
 
         /// <summary>
@@ -1615,11 +1602,13 @@ namespace ProcessHacker.Native.Objects
         /// <param name="keyContext">A key to associate with the file object.</param>
         public void SetIoCompletion(IoCompletionHandle ioCompletionHandle, IntPtr keyContext)
         {
-            FileCompletionInformation info = new FileCompletionInformation();
+            FileCompletionInformation info = new FileCompletionInformation
+            {
+                Port = ioCompletionHandle, 
+                Key = keyContext
+            };
 
-            info.Port = ioCompletionHandle;
-            info.Key = keyContext;
-            this.SetStruct<FileCompletionInformation>(FileInformationClass.FileCompletionInformation, info);
+            this.SetStruct(FileInformationClass.FileCompletionInformation, FileCompletionInformation.SizeOf, info);
         }
 
         /// <summary>
@@ -1628,10 +1617,10 @@ namespace ProcessHacker.Native.Objects
         /// <param name="offset">A byte offset from the beginning of the file.</param>
         public void SetPosition(long offset)
         {
-            this.SetStruct<FilePositionInformation>(
-                FileInformationClass.FilePositionInformation,
-                new FilePositionInformation() { CurrentByteOffset = offset }
-                );
+            this.SetStruct(FileInformationClass.FilePositionInformation, FilePositionInformation.SizeOf, new FilePositionInformation
+            {
+                CurrentByteOffset = offset
+            });
         }
 
         /// <summary>
@@ -1643,7 +1632,7 @@ namespace ProcessHacker.Native.Objects
         {
             long currentPosition;
 
-            currentPosition = this.GetPosition();
+            currentPosition = this.Position;
 
             switch (origin)
             {
@@ -1654,7 +1643,7 @@ namespace ProcessHacker.Native.Objects
                     currentPosition = offset;
                     break;
                 case PositionOrigin.End:
-                    currentPosition = this.GetSize() + offset;
+                    currentPosition = this.FileSize + offset;
                     break;
             }
 
@@ -1663,24 +1652,21 @@ namespace ProcessHacker.Native.Objects
             return currentPosition;
         }
 
-        protected void SetStruct<T>(FileInformationClass infoClass, T info)
-            where T : struct
+        protected void SetStruct<T>(FileInformationClass infoClass, int size, T info) where T : struct
         {
-            NtStatus status;
-            IoStatusBlock isb;
-
-            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(T))))
+            using (MemoryAlloc data = new MemoryAlloc(size))
             {
-                data.WriteStruct<T>(info);
+                data.WriteStruct(info);
 
-                if ((status = Win32.NtSetInformationFile(
+                IoStatusBlock isb;
+
+                Win32.NtSetInformationFile(
                     this,
                     out isb,
                     data,
                     data.Size,
                     infoClass
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
         }
 
@@ -1691,19 +1677,15 @@ namespace ProcessHacker.Native.Objects
         /// <param name="length">The length of the byte range.</param>
         public void Unlock(long offset, long length)
         {
-            NtStatus status;
             IoStatusBlock isb;
 
-            status = Win32.NtUnlockFile(
+            Win32.NtUnlockFile(
                 this,
                 out isb,
                 ref offset,
                 ref length,
                 0
-                );
-
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         /// <summary>
@@ -1825,8 +1807,7 @@ namespace ProcessHacker.Native.Objects
                 status = isb.Status;
             }
 
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+            status.ThrowIf();
 
             return isb.Information.ToInt32();
         }
@@ -1977,8 +1958,10 @@ namespace ProcessHacker.Native.Objects
 
         public AsyncIoContext(AsyncIoMethod method)
         {
-            _isb = new UnmanagedIsb();
-            _isb.Status = NtStatus.Pending;
+            _isb = new UnmanagedIsb
+            {
+                Status = NtStatus.Pending
+            };
 
             if (method == AsyncIoMethod.Event)
             {
@@ -2007,6 +1990,16 @@ namespace ProcessHacker.Native.Objects
                 _eventHandle.Dispose();
             if (_isb != null)
                 _isb.Dispose();
+
+            if (_context != IntPtr.Zero)
+            {
+                GCHandle handle = GCHandle.FromIntPtr(_context);
+
+                if (handle.IsAllocated)
+                    handle.Free();
+
+                _context = IntPtr.Zero;
+            }
         }
 
         public bool Cancelled

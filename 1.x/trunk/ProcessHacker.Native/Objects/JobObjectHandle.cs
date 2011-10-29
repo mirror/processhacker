@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -45,18 +44,16 @@ namespace ProcessHacker.Native.Objects
 
         public static JobObjectHandle Create(JobObjectAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateJobObject(
+                Win32.NtCreateJobObject(
                     out handle,
                     access,
                     ref oa
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -74,11 +71,9 @@ namespace ProcessHacker.Native.Objects
             }
             catch (WindowsException)
             {
-                IntPtr handle;
-
                 // Use KPH to set the handle's granted access.
-                handle = new IntPtr(KProcessHacker.Instance.KphOpenProcessJob(processHandle,
-                    (JobObjectAccess)StandardRights.Synchronize));
+                IntPtr handle = new IntPtr(KProcessHacker.Instance.KphOpenProcessJob(processHandle, (JobObjectAccess)StandardRights.Synchronize));
+                
                 if (handle != IntPtr.Zero)
                     KProcessHacker.Instance.KphSetHandleGrantedAccess(handle, (int)access);
 
@@ -107,18 +102,16 @@ namespace ProcessHacker.Native.Objects
 
         public JobObjectHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, JobObjectAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenJobObject(
+                Win32.NtOpenJobObject(
                     out handle,
                     access,
                     ref oa
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -145,80 +138,80 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        private T QueryStruct<T>(JobObjectInformationClass informationClass)
-            where T : struct
-        {
-            int retLength;
-
-            using (MemoryAlloc data = new MemoryAlloc(Marshal.SizeOf(typeof(T))))
-            {
-                if (!Win32.QueryInformationJobObject(this, informationClass, data, data.Size, out retLength))
-                {
-                    data.ResizeNew(retLength);
-
-                    if (!Win32.QueryInformationJobObject(this, informationClass, data, data.Size, out retLength))
-                        Win32.Throw();
-                }
-
-                return data.ReadStruct<T>();
-            }
-        }
-
         public JobObjectBasicAccountingInformation GetBasicAccountingInformation()
         {
             return this.QueryStruct<JobObjectBasicAccountingInformation>(
-                JobObjectInformationClass.JobObjectBasicAccountingInformation);
+                JobObjectInformationClass.JobObjectBasicAccountingInformation, 
+                JobObjectBasicAccountingInformation.SizeOf
+                );
         }
 
         public JobObjectBasicAndIoAccountingInformation GetBasicAndIoAccountingInformation()
         {
             return this.QueryStruct<JobObjectBasicAndIoAccountingInformation>(
-                JobObjectInformationClass.JobObjectBasicAndIoAccountingInformation);
+                JobObjectInformationClass.JobObjectBasicAndIoAccountingInformation, 
+                JobObjectBasicAndIoAccountingInformation.SizeOf
+                );
         }
 
-        public JobObjectBasicLimitInformation GetBasicLimitInformation()
+        public JobObjectBasicLimitInformation BasicLimitInformation
         {
-            return this.QueryStruct<JobObjectBasicLimitInformation>(JobObjectInformationClass.JobObjectBasicLimitInformation);
+            get { return this.QueryStruct<JobObjectBasicLimitInformation>(
+                JobObjectInformationClass.JobObjectBasicLimitInformation, 
+                JobObjectBasicLimitInformation.SizeOf
+                ); 
+            }
         }
 
-        public int[] GetProcessIdList()
+        public JobObjectBasicUiRestrictions BasicUiRestrictions
         {
-            List<int> processIds = new List<int>();
-            int retLength;
-
-            // FIXME: Fixed buffer
-            using (MemoryAlloc data = new MemoryAlloc(0x1000))
+            get
             {
-                if (!Win32.QueryInformationJobObject(this, JobObjectInformationClass.JobObjectBasicProcessIdList,
-                    data, data.Size, out retLength))
+                JobObjectBasicUiRestrictions uiRestrictions;
+                int retLength;
+
+                if (!Win32.QueryInformationJobObject(this, JobObjectInformationClass.JobObjectBasicUIRestrictions, out uiRestrictions, 4, out retLength))
                     Win32.Throw();
 
-                JobObjectBasicProcessIdList listInfo = data.ReadStruct<JobObjectBasicProcessIdList>();
-
-                for (int i = 0; i < listInfo.NumberOfProcessIdsInList; i++)
-                {
-                    processIds.Add(data.ReadInt32(8, i));
-                }
+                return uiRestrictions;
             }
-
-            return processIds.ToArray();
         }
 
-        public JobObjectBasicUiRestrictions GetBasicUiRestrictions()
+        public JobObjectExtendedLimitInformation ExtendedLimitInformation
         {
-            JobObjectBasicUiRestrictions uiRestrictions;
-            int retLength;
-
-            if (!Win32.QueryInformationJobObject(this, JobObjectInformationClass.JobObjectBasicUIRestrictions,
-                out uiRestrictions, 4, out retLength))
-                Win32.Throw();
-
-            return uiRestrictions;
+            get
+            {
+                return this.QueryStruct<JobObjectExtendedLimitInformation>(
+                    JobObjectInformationClass.JobObjectExtendedLimitInformation,
+                    JobObjectExtendedLimitInformation.SizeOf
+                    );
+            }
         }
 
-        public JobObjectExtendedLimitInformation GetExtendedLimitInformation()
+        public int[] ProcessIdList
         {
-            return this.QueryStruct<JobObjectExtendedLimitInformation>(JobObjectInformationClass.JobObjectExtendedLimitInformation);
+            get
+            {
+                List<int> processIds = new List<int>();
+                int retLength;
+
+                // FIXME: Fixed buffer
+                using (MemoryAlloc data = new MemoryAlloc(0x1000))
+                {
+                    if (!Win32.QueryInformationJobObject(this, JobObjectInformationClass.JobObjectBasicProcessIdList,
+                                                         data, data.Size, out retLength))
+                        Win32.Throw();
+
+                    JobObjectBasicProcessIdList listInfo = data.ReadStruct<JobObjectBasicProcessIdList>();
+
+                    for (int i = 0; i < listInfo.NumberOfProcessIdsInList; i++)
+                    {
+                        processIds.Add(data.ReadInt32(8, i));
+                    }
+                }
+
+                return processIds.ToArray();
+            }
         }
 
         public void Terminate()
@@ -230,6 +223,24 @@ namespace ProcessHacker.Native.Objects
         {
             if (!Win32.TerminateJobObject(this, exitCode))
                 Win32.Throw();
+        }
+
+        private T QueryStruct<T>(JobObjectInformationClass informationClass, int size) where T : struct
+        {
+            int retLength;
+
+            using (MemoryAlloc data = new MemoryAlloc(size))
+            {
+                if (!Win32.QueryInformationJobObject(this, informationClass, data, data.Size, out retLength))
+                {
+                    data.ResizeNew(retLength);
+
+                    if (!Win32.QueryInformationJobObject(this, informationClass, data, data.Size, out retLength))
+                        Win32.Throw();
+                }
+
+                return data.ReadStruct<T>();
+            }
         }
     }
 }

@@ -47,8 +47,6 @@ namespace ProcessHacker
             listProcesses.ListViewItemSorter = new SortedListViewComparer(listProcesses);
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();
             listProcesses.AddShortcuts();
-            listProcesses.SetDoubleBuffered(true);
-            listProcesses.SetTheme("explorer");
 
             comboMethod.SelectedItem = "CSR Handles";
             labelCount.Text = string.Empty;
@@ -82,19 +80,19 @@ namespace ProcessHacker
             Func<int, bool> exists
             )
         {
-            string fileName = phandle.GetImageFileName();
+            string fileName = phandle.ImageFileName;
 
-            if (fileName != null)
+            if (!string.IsNullOrEmpty(fileName))
                 fileName = FileUtils.GetFileName(fileName);
 
             if (pid == 0)
                 pid = phandle.GetBasicInformation().UniqueProcessId.ToInt32();
 
-            var item = listProcesses.Items.Add(new ListViewItem(new string[]
-                    {
-                        fileName,
-                        pid.ToString()
-                    }));
+            ListViewItem item = listProcesses.Items.Add(new ListViewItem(new string[]
+            {
+                fileName, 
+                pid.ToString()
+            }));
 
             // Check if the process has terminated. This is possible because 
             // a process can be terminated while its object is still being 
@@ -133,10 +131,10 @@ namespace ProcessHacker
                 return;
 
             var item = listProcesses.Items.Add(new ListViewItem(new string[]
-                    {
-                        "(" + ex.Message + ")",
-                        pid.ToString()
-                    }));
+            {
+                "(" + ex.Message + ")", 
+                pid.ToString()
+            }));
 
             item.BackColor = Color.Red;
             item.ForeColor = Color.White;
@@ -204,15 +202,15 @@ namespace ProcessHacker
                 var csrProcesses = this.GetCsrProcesses();
 
                 // Duplicate each process handle and check if they exist in the normal list.
-                foreach (var csrhandle in csrProcesses)
+                foreach (ProcessHandle csrhandle in csrProcesses)
                 {
                     try
                     {
                         var handles = csrhandle.GetHandles();
 
-                        foreach (var handle in handles)
+                        foreach (ProcessHandleInformation handle in handles)
                         {
-                            int pid = 0;
+                            int pid;
                             bool isThread = false;
 
                             try
@@ -253,20 +251,13 @@ namespace ProcessHacker
 
                                 if (!isThread)
                                 {
-                                    var dupHandle =
-                                        new NativeHandle<ProcessAccess>(csrhandle,
-                                            handle.Handle,
-                                            Program.MinProcessQueryRights);
+                                    var dupHandle = new NativeHandle<ProcessAccess>(csrhandle, handle.Handle, Program.MinProcessQueryRights);
                                     phandle = ProcessHandle.FromHandle(dupHandle);
                                 }
                                 else
                                 {
-                                    using (var dupHandle =
-                                        new NativeHandle<ThreadAccess>(csrhandle,
-                                            handle.Handle,
-                                            Program.MinThreadQueryRights))
-                                        phandle = ThreadHandle.FromHandle(dupHandle).
-                                            GetProcess(Program.MinProcessQueryRights);
+                                    using (var dupHandle = new NativeHandle<ThreadAccess>(csrhandle, handle.Handle, Program.MinThreadQueryRights))
+                                        phandle = ThreadHandle.FromHandle(dupHandle).GetProcess(Program.MinProcessQueryRights);
                                 }
 
                                 AddProcessItem(

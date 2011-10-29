@@ -303,7 +303,7 @@ namespace ProcessHacker
             {
                 using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
-                    string fileName = phandle.GetImageFileName();
+                    string fileName = phandle.ImageFileName;
 
                     sfd.FileName = fileName.Substring(fileName.LastIndexOf('\\') + 1) + "-" + Utils.FormatAddress(_address) + ".bin";
                 }

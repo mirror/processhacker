@@ -36,14 +36,13 @@ namespace ProcessHacker.Components
 {
     public partial class TokenProperties : UserControl
     {
-        private IWithToken _object;
+        private readonly IWithToken _object;
         private TokenGroupsList _groups;
 
         public TokenProperties(IWithToken obj)
         {
             InitializeComponent();
 
-            listPrivileges.SetDoubleBuffered(true);
             listPrivileges.ListViewItemSorter = new SortedListViewComparer(listPrivileges);
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listPrivileges, null);
             listPrivileges.ContextMenu = menuPrivileges;
@@ -83,12 +82,18 @@ namespace ProcessHacker.Components
                     {
                         var type = thandle.ElevationType;
 
-                        if (type == TokenElevationType.Default)
-                            textElevated.Text = "N/A";
-                        else if (type == TokenElevationType.Full)
-                            textElevated.Text = "True";
-                        else if (type == TokenElevationType.Limited)
-                            textElevated.Text = "False";
+                        switch (type)
+                        {
+                            case TokenElevationType.Default:
+                                this.textElevated.Text = "N/A";
+                                break;
+                            case TokenElevationType.Full:
+                                this.textElevated.Text = "True";
+                                break;
+                            case TokenElevationType.Limited:
+                                this.textElevated.Text = "False";
+                                break;
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -171,7 +176,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        var groups = thandle.Groups;
+                        Sid[] groups = thandle.Groups;
 
                         _groups = new TokenGroupsList(groups);
 
@@ -190,9 +195,9 @@ namespace ProcessHacker.Components
                     {
                         var privileges = thandle.Privileges;
 
-                        for (int i = 0; i < privileges.Length; i++)
+                        foreach (Privilege t in privileges)
                         {
-                            this.AddPrivilege(privileges[i]);
+                            this.AddPrivilege(t);
                         }
                     }
                     catch (Exception ex)
@@ -205,9 +210,10 @@ namespace ProcessHacker.Components
             {
                 tabControl.Visible = false;
 
-                Label errorMessage = new Label();
-
-                errorMessage.Text = ex.Message;
+                Label errorMessage = new Label
+                {
+                    Text = ex.Message
+                };
 
                 this.Padding = new Padding(15, 10, 0, 0);
                 this.Controls.Add(errorMessage);
@@ -334,24 +340,28 @@ namespace ProcessHacker.Components
         {
             if ((Attributes & SePrivilegeAttributes.EnabledByDefault) != 0)
                 return "Default Enabled";
-            else if ((Attributes & SePrivilegeAttributes.Enabled) != 0)
+            
+            if ((Attributes & SePrivilegeAttributes.Enabled) != 0)
                 return "Enabled";
-            else if (Attributes == SePrivilegeAttributes.Disabled)
+            
+            if (Attributes == SePrivilegeAttributes.Disabled)
                 return "Disabled";
-            else
-                return "Unknown";
+            
+            return "Unknown";
         }
 
         private Color GetAttributeColor(SePrivilegeAttributes Attributes)
         {
             if ((Attributes & SePrivilegeAttributes.EnabledByDefault) != 0)
                 return Color.FromArgb(0xc0f0c0);
-            else if ((Attributes & SePrivilegeAttributes.Enabled) != 0)
+            
+            if ((Attributes & SePrivilegeAttributes.Enabled) != 0)
                 return Color.FromArgb(0xe0f0e0);
-            else if (Attributes == SePrivilegeAttributes.Disabled)
+            
+            if (Attributes == SePrivilegeAttributes.Disabled)
                 return Color.FromArgb(0xf0e0e0);
-            else
-                return Color.White;
+            
+            return Color.White;
         }
 
         private void menuPrivileges_Popup(object sender, EventArgs e)

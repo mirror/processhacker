@@ -41,7 +41,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(109, 13);
+            this.label1.Size = new System.Drawing.Size(118, 13);
             this.label1.TabIndex = 4;
             this.label1.Text = "Export Name/Ordinal:";
             // 
@@ -50,29 +50,29 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 41);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(48, 13);
+            this.label2.Size = new System.Drawing.Size(51, 13);
             this.label2.TabIndex = 5;
             this.label2.Text = "Address:";
             // 
             // textProcName
             // 
-            this.textProcName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textProcName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textProcName.Location = new System.Drawing.Point(127, 12);
             this.textProcName.Name = "textProcName";
-            this.textProcName.Size = new System.Drawing.Size(255, 20);
+            this.textProcName.Size = new System.Drawing.Size(255, 22);
             this.textProcName.TabIndex = 0;
-            this.textProcName.Leave += new System.EventHandler(this.textProcName_Leave);
             this.textProcName.Enter += new System.EventHandler(this.textProcName_Enter);
+            this.textProcName.Leave += new System.EventHandler(this.textProcName_Leave);
             // 
             // textProcAddress
             // 
-            this.textProcAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textProcAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textProcAddress.Location = new System.Drawing.Point(127, 38);
             this.textProcAddress.Name = "textProcAddress";
             this.textProcAddress.ReadOnly = true;
-            this.textProcAddress.Size = new System.Drawing.Size(255, 20);
+            this.textProcAddress.Size = new System.Drawing.Size(255, 22);
             this.textProcAddress.TabIndex = 1;
             // 
             // buttonLookup
@@ -103,6 +103,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(394, 99);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.buttonLookup);
@@ -110,6 +111,7 @@
             this.Controls.Add(this.textProcName);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

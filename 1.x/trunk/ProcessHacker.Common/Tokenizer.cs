@@ -5,8 +5,8 @@ namespace ProcessHacker.Common
 {
     public class Tokenizer
     {
-        private string _text;
-        private int _i = 0;
+        private readonly string _text;
+        private int _i;
 
         public Tokenizer(string text)
         {
@@ -90,7 +90,7 @@ namespace ProcessHacker.Common
                 _i++;
             }
             else
-                return "";
+                return string.Empty;
 
             while (_i < _text.Length)
             {
@@ -102,20 +102,29 @@ namespace ProcessHacker.Common
                 }
                 else if (inEscape)
                 {
-                    if (_text[_i] == '\\')
-                        sb.Append('\\');
-                    else if (_text[_i] == '"')
-                        sb.Append('"');
-                    else if (_text[_i] == '\'')
-                        sb.Append('\'');
-                    else if (_text[_i] == 'r')
-                        sb.Append('\r');
-                    else if (_text[_i] == 'n')
-                        sb.Append('\n');
-                    else if (_text[_i] == 't')
-                        sb.Append('\t');
-                    else
-                        throw new Exception("Unrecognized escape sequence '\\" + _text[_i] + "'");
+                    switch (this._text[this._i])
+                    {
+                        case '\\':
+                            sb.Append('\\');
+                            break;
+                        case '"':
+                            sb.Append('"');
+                            break;
+                        case '\'':
+                            sb.Append('\'');
+                            break;
+                        case 'r':
+                            sb.Append('\r');
+                            break;
+                        case 'n':
+                            sb.Append('\n');
+                            break;
+                        case 't':
+                            sb.Append('\t');
+                            break;
+                        default:
+                            throw new Exception("Unrecognized escape sequence '\\" + this._text[this._i] + "'");
+                    }
 
                     _i++;
                     inEscape = false;

@@ -234,7 +234,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <None Include="Components\Be.Windows.Forms.HexBox\HexBox.snk" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Components\Be.Windows.Forms.HexBox\HexBox.bmp" />
@@ -416,9 +415,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProtectProcessWindow.resx">
       <DependentUpon>ProtectProcessWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ScratchpadWindow.resx">
-      <DependentUpon>ScratchpadWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SessionInformationWindow.resx">
       <DependentUpon>SessionInformationWindow.cs</DependentUpon>
@@ -684,12 +680,6 @@
     </Compile>
     <Compile Include="Forms\ProtectProcessWindow.Designer.cs">
       <DependentUpon>ProtectProcessWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ScratchpadWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ScratchpadWindow.Designer.cs">
-      <DependentUpon>ScratchpadWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SessionInformationWindow.cs">
       <SubType>Form</SubType>

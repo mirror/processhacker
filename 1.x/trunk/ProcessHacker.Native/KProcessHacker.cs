@@ -119,16 +119,16 @@ namespace ProcessHacker.Native
             PspTerminateThreadByPointer = 0x2
         }
 
-        private string _deviceName;
-        private FileHandle _fileHandle;
-        private uint _baseControlNumber;
-        private KphFeatures _features;
+        private readonly string _deviceName;
+        private readonly FileHandle _fileHandle;
+        private readonly uint _baseControlNumber;
+        private readonly KphFeatures _features;
 
         /// <summary>
         /// Creates a connection to KProcessHacker.
         /// </summary>
         public KProcessHacker()
-            : this("KProcessHacker")
+            : this("KProcessHacker2")
         { }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace ProcessHacker.Native
 
                     try
                     {
-                        using (shandle = new ServiceHandle("KProcessHacker", ServiceAccess.Start))
+                        using (shandle = new ServiceHandle("KProcessHacker2", ServiceAccess.Start))
                         {
                             shandle.Start();
                         }
@@ -200,16 +200,13 @@ namespace ProcessHacker.Native
                     }
                     finally
                     {
-                        if (shandle != null)
+                        if (created)
                         {
-                            if (created)
-                            {
-                                // The SCM will delete the service when it is stopped.
-                                shandle.Delete();
-                            }
-
-                            shandle.Dispose();
+                            // The SCM will delete the service when it is stopped.
+                            shandle.Delete();
                         }
+
+                        shandle.Dispose();
                     }
                 }
                 else
@@ -696,17 +693,11 @@ namespace ProcessHacker.Native
 
         public void KphReadVirtualMemory(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
         {
-            NtStatus status;
-
-            status = KphReadVirtualMemorySafe(processHandle, baseAddress, buffer, length, out bytesRead);
-
-            if (status >= NtStatus.Error)
-                Win32.Throw(status);
+            KphReadVirtualMemorySafe(processHandle, baseAddress, buffer, length, out bytesRead).ThrowIf();
         }
 
         public NtStatus KphReadVirtualMemorySafe(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
         {
-            NtStatus status;
             byte* inData = stackalloc byte[0x14];
             int returnLength;
             int br;
@@ -717,7 +708,7 @@ namespace ProcessHacker.Native
             *(int*)(inData + 0xc) = length;
             *(int*)(inData + 0x10) = (int)&br;
 
-            status = _fileHandle.IoControl(CtlCode(Control.KphReadVirtualMemory), (IntPtr)inData, 0x14, IntPtr.Zero, 0, out returnLength);
+            NtStatus status = this._fileHandle.IoControl(this.CtlCode(Control.KphReadVirtualMemory), (IntPtr)inData, 0x14, IntPtr.Zero, 0, out returnLength);
 
             bytesRead = br;
 
@@ -731,7 +722,6 @@ namespace ProcessHacker.Native
 
         public NtStatus KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, int baseAddress, IntPtr buffer, int length, out int bytesRead)
         {
-            NtStatus status;
             byte* inData = stackalloc byte[0x14];
             int returnLength;
             int br;
@@ -742,7 +732,7 @@ namespace ProcessHacker.Native
             *(int*)(inData + 0xc) = length;
             *(int*)(inData + 0x10) = (int)&br;
 
-            status = _fileHandle.IoControl(CtlCode(Control.KphUnsafeReadVirtualMemory), (IntPtr)inData, 0x14, IntPtr.Zero, 0, out returnLength);
+            NtStatus status = this._fileHandle.IoControl(this.CtlCode(Control.KphUnsafeReadVirtualMemory), (IntPtr)inData, 0x14, IntPtr.Zero, 0, out returnLength);
 
             bytesRead = br;
 
@@ -753,8 +743,7 @@ namespace ProcessHacker.Native
         {
             int processHandleInt = processHandle;
 
-            _fileHandle.IoControl(CtlCode(Control.KphResumeProcess),
-                (byte*)&processHandleInt, 4, null, 0);
+            _fileHandle.IoControl(CtlCode(Control.KphResumeProcess), (byte*)&processHandleInt, 4, null, 0);
         }
 
         public void KphSetContextThread(ThreadHandle threadHandle, Context* context)
@@ -1202,6 +1191,13 @@ namespace ProcessHacker.Native
     [StructLayout(LayoutKind.Sequential)]
     public struct DriverBasicInformation
     {
+        public static readonly int SizeOf;
+
+        static DriverBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(DriverBasicInformation));
+        }
+
         public int Flags;
         public IntPtr DriverStart;
         public int DriverSize;

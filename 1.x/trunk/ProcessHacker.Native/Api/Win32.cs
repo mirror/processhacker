@@ -39,10 +39,12 @@ namespace ProcessHacker.Native.Api
     public delegate IntPtr WndProcDelegate(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
 
     public delegate bool SymEnumSymbolsProc(IntPtr SymInfo, int SymbolSize, int UserContext);
-    public unsafe delegate bool ReadProcessMemoryProc64(IntPtr ProcessHandle, ulong BaseAddress, IntPtr Buffer,
-        int Size, out int BytesRead);
+    public delegate bool ReadProcessMemoryProc64(IntPtr ProcessHandle, ulong BaseAddress, IntPtr Buffer, int Size, out int BytesRead);
     public delegate IntPtr FunctionTableAccessProc64(IntPtr ProcessHandle, ulong AddrBase);
     public delegate ulong GetModuleBaseProc64(IntPtr ProcessHandle, ulong Address);
+
+    public delegate int PropSheetPageCallback(IntPtr hwnd, PropSheetPageCallbackMessage uMsg, IntPtr ppsp);
+    public delegate bool DialogProc(IntPtr hwndDlg, WindowMessage uMsg, IntPtr wParam, IntPtr lParam);
 
     /// <summary>
     /// Provides interfacing to the Win32 and Native APIs.
@@ -50,7 +52,7 @@ namespace ProcessHacker.Native.Api
     [SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
-        private static FastMutex _dbgHelpLock = new FastMutex();
+        private static readonly FastMutex _dbgHelpLock = new FastMutex();
 
         /// <summary>
         /// A mutex which controls access to the dbghelp.dll functions.
@@ -115,7 +117,7 @@ namespace ProcessHacker.Native.Api
 
         #region Handles
 
-        public unsafe static void DuplicateObject(
+        public static void DuplicateObject(
             IntPtr sourceProcessHandle,
             IntPtr sourceHandle,
             int desiredAccess,
@@ -136,7 +138,7 @@ namespace ProcessHacker.Native.Api
                 );
         }
 
-        public unsafe static void DuplicateObject(
+        public static void DuplicateObject(
             IntPtr sourceProcessHandle,
             IntPtr sourceHandle,
             IntPtr targetProcessHandle,
@@ -157,22 +159,22 @@ namespace ProcessHacker.Native.Api
                     out target,
                     desiredAccess,
                     handleAttributes,
-                    options);
+                    options
+                    );
+
                 targetHandle = new IntPtr(target);
             }
             else
             {
-                NtStatus status;
-
-                if ((status = NtDuplicateObject(
+                NtDuplicateObject(
                     sourceProcessHandle,
                     sourceHandle,
                     targetProcessHandle,
                     out targetHandle,
                     desiredAccess,
                     handleAttributes,
-                    options)) >= NtStatus.Error)
-                    Throw(status);
+                    options
+                    ).ThrowIf();
             }
         }
 
@@ -198,6 +200,43 @@ namespace ProcessHacker.Native.Api
             }
 
             return sessionId;
+        }
+
+        #endregion
+
+        #region Property Sheets
+
+        [DllImport("comctl32.dll")]
+        public static extern IntPtr CreatePropertySheetPageW(
+            ref PropSheetPageW lppsp
+            );
+
+        [DllImport("user32.dll")]
+        public static extern bool MapDialogRect(
+            IntPtr hDlg,
+            ref Rect lpRect
+            );
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetParent(
+            IntPtr hWndChild,
+            IntPtr hWndNewParent
+            );
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessage(
+            IntPtr hWnd,
+            int Msg,
+            IntPtr wParam,
+            IntPtr lParam
+            );
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct NmHdr
+        {
+            public IntPtr hwndFrom;
+            public IntPtr idFrom;
+            public uint code;
         }
 
         #endregion

@@ -122,7 +122,7 @@ namespace ProcessHacker.Native.Objects
                     {
                         SamRidEnumeration data = bufferAlloc.ReadStruct<SamRidEnumeration>(0, SamRidEnumeration.SizeOf, i);
 
-                        if (!callback(data.Name.Read(), data.RelativeId))
+                        if (!callback(data.Name.Text, data.RelativeId))
                             return;
                     }
                 }
@@ -154,7 +154,7 @@ namespace ProcessHacker.Native.Objects
                     {
                         SamRidEnumeration data = bufferAlloc.ReadStruct<SamRidEnumeration>(0, SamRidEnumeration.SizeOf, i);
 
-                        if (!callback(data.Name.Read(), data.RelativeId))
+                        if (!callback(data.Name.Text, data.RelativeId))
                             return;
                     }
                 }
@@ -192,7 +192,7 @@ namespace ProcessHacker.Native.Objects
                     {
                         var data = bufferAlloc.ReadStruct<SamRidEnumeration>(0, SamRidEnumeration.SizeOf, i);
 
-                        if (!callback(data.Name.Read(), data.RelativeId))
+                        if (!callback(data.Name.Text, data.RelativeId))
                             return;
                     }
                 }
@@ -297,7 +297,7 @@ namespace ProcessHacker.Native.Objects
 
                 for (int i = 0; i < relativeIds.Length; i++)
                 {
-                    nameArray[i] = namesAlloc.ReadStruct<UnicodeString>(0, UnicodeString.SizeOf, i).Read();
+                    nameArray[i] = namesAlloc.ReadStruct<UnicodeString>(0, UnicodeString.SizeOf, i).Text;
                     useArray[i] = (SidNameUse)useAlloc.ReadInt32(0, i);
                 }
 

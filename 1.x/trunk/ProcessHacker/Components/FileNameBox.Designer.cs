@@ -37,19 +37,19 @@
             // 
             // textFileName
             // 
-            this.textFileName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textFileName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textFileName.Location = new System.Drawing.Point(0, 2);
             this.textFileName.Name = "textFileName";
-            this.textFileName.Size = new System.Drawing.Size(277, 20);
+            this.textFileName.Size = new System.Drawing.Size(277, 22);
             this.textFileName.TabIndex = 0;
             this.textFileName.Leave += new System.EventHandler(this.textFileName_Leave);
             // 
             // buttonProperties
             // 
-            this.buttonProperties.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonProperties.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonProperties.Image = global::ProcessHacker.Properties.Resources.application_form_magnify;
             this.buttonProperties.Location = new System.Drawing.Point(279, 0);
             this.buttonProperties.Name = "buttonProperties";
@@ -61,8 +61,8 @@
             // 
             // buttonExplore
             // 
-            this.buttonExplore.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonExplore.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonExplore.Image = global::ProcessHacker.Properties.Resources.folder_explore;
             this.buttonExplore.Location = new System.Drawing.Point(304, 0);
             this.buttonExplore.Name = "buttonExplore";
@@ -76,9 +76,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.buttonExplore);
             this.Controls.Add(this.buttonProperties);
             this.Controls.Add(this.textFileName);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "FileNameBox";
             this.Size = new System.Drawing.Size(328, 24);
             this.ResumeLayout(false);

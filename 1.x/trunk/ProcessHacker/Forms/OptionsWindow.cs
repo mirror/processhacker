@@ -33,20 +33,15 @@ using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.UI;
-using System.Runtime.InteropServices;
-using System.Net;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace ProcessHacker
 {
     public partial class OptionsWindow : Form
     {
-        private bool _isFirstPaint = true;
         private string _oldDbghelp;
         private string _oldTaskMgrDebugger;
         private Font _font;
-        private bool _dontApply;
+        private readonly bool _dontApply;
 
         public OptionsWindow()
             : this(false)
@@ -55,10 +50,13 @@ namespace ProcessHacker
         public OptionsWindow(bool dontApply)
         {
             InitializeComponent();
+
             this.AddEscapeToClose();
             this.SetTopMost();
 
             _dontApply = dontApply;
+
+            this.LoadStage1();
         }
 
         public TabPage SelectedTab
@@ -82,25 +80,6 @@ namespace ProcessHacker
             {
                 buttonChangeReplaceTaskManager.Visible = false;
             }
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            switch (m.Msg)
-            {
-                case (int)WindowMessage.Paint:
-                    {
-                        if (_isFirstPaint)
-                        {
-                            this.LoadStage1();
-                        }
-
-                        _isFirstPaint = false;
-                    }
-                    break;
-            }
-
-            base.WndProc(ref m);
         }
 
         private void LoadStage1()
@@ -138,7 +117,9 @@ namespace ProcessHacker
                     else if (c is ColorModifier)
                         (c as ColorModifier).ColorChanged += (sender, e) => this.EnableApplyButton();
                     else if (c is Button || c is Label || c is GroupBox)
-                        Program.Void(); // Nothing
+                    {
+                        // Nothing
+                    }
                     else
                         c.Click += (sender, e) => this.EnableApplyButton();
                 }
@@ -158,54 +139,38 @@ namespace ProcessHacker
 
         private void AddToList(string key, string description, string longDescription)
         {
-            listHighlightingColors.Items.Add(new ListViewItem()
-                {
-                    Name = key,
-                    Text = description,
-                    ToolTipText = longDescription
-                });
+            listHighlightingColors.Items.Add(new ListViewItem
+            {
+                Name = key,
+                Text = description,
+                ToolTipText = longDescription
+            });
         }
 
         private void InitializeHighlightingColors()
         {
-            AddToList("ColorOwnProcesses", "Own Processes",
-                "Processes running under the same user account as Process Hacker.");
-            AddToList("ColorSystemProcesses", "System Processes",
-                "Processes running under the NT AUTHORITY\\SYSTEM user account.");
-            AddToList("ColorServiceProcesses", "Service Processes",
-                "Processes which host one or more services.");
-            AddToList("ColorDebuggedProcesses", "Debugged Processes",
-                "Processes that are currently being debugged.");
-            AddToList("ColorElevatedProcesses", "Elevated Processes",
-                "Processes with full privileges on a Windows Vista system with UAC enabled.");
-            AddToList("ColorJobProcesses", "Job Processes",
-                "Processes associated with a job.");
-            AddToList("ColorDotNetProcesses", ".NET Processes and DLLs",
-                ".NET, or managed processes and DLLs.");
-            AddToList("ColorPosixProcesses", "POSIX Processes",
-                "Processes running under the POSIX subsystem.");
-            AddToList("ColorPackedProcesses", "Packed/Dangerous Processes",
-                "Executables are sometimes \"packed\" to reduce their size.\n" +
-                "\"Dangerous processes\" includes processes with invalid signatures and unverified " + 
-                "processes with the name of a system process.");
+            AddToList("ColorOwnProcesses", "Own Processes", "Processes running under the same user account as Process Hacker.");
+            AddToList("ColorSystemProcesses", "System Processes", "Processes running under the NT AUTHORITY\\SYSTEM user account.");
+            AddToList("ColorServiceProcesses", "Service Processes", "Processes which host one or more services.");
+            AddToList("ColorDebuggedProcesses", "Debugged Processes", "Processes that are currently being debugged.");
+            AddToList("ColorElevatedProcesses", "Elevated Processes", "Processes with full privileges on a Windows Vista system with UAC enabled.");
+            AddToList("ColorJobProcesses", "Job Processes", "Processes associated with a job.");
+            AddToList("ColorDotNetProcesses", ".NET Processes and DLLs", ".NET, or managed processes and DLLs.");
+            AddToList("ColorPosixProcesses", "POSIX Processes", "Processes running under the POSIX subsystem.");
+            AddToList("ColorPackedProcesses", "Packed/Dangerous Processes", "Executables are sometimes \"packed\" to reduce their size.\n" +
+                "\"Dangerous processes\" includes processes with invalid signatures and unverified " + "processes with the name of a system process.");
 
             // WOW64, 64-bit only.
             if (OSVersion.Architecture == OSArch.Amd64)
             {
-                AddToList("ColorWow64Processes", "32-bit Processes",
-                    "Processes running under WOW64, i.e. 32-bit.");
+                AddToList("ColorWow64Processes", "32-bit Processes", "Processes running under WOW64, i.e. 32-bit.");
             }
 
-            AddToList("ColorSuspended", "Suspended Threads",
-                "Threads that are suspended from execution.");
-            AddToList("ColorGuiThreads", "GUI Threads",
-                "Threads that have made at least one GUI-related system call.");
-            AddToList("ColorRelocatedDlls", "Relocated DLLs",
-                "DLLs that were not loaded at their preferred image bases.");
-            AddToList("ColorProtectedHandles", "Protected Handles",
-                "Handles that are protected from being closed.");
-            AddToList("ColorInheritHandles", "Inherit Handles",
-                "Handles that are to be inherited by any child processes.");
+            AddToList("ColorSuspended", "Suspended Threads","Threads that are suspended from execution.");
+            AddToList("ColorGuiThreads", "GUI Threads", "Threads that have made at least one GUI-related system call.");
+            AddToList("ColorRelocatedDlls", "Relocated DLLs", "DLLs that were not loaded at their preferred image bases.");
+            AddToList("ColorProtectedHandles", "Protected Handles", "Handles that are protected from being closed.");
+            AddToList("ColorInheritHandles", "Inherit Handles", "Handles that are to be inherited by any child processes.");
         }
 
         private void listHighlightingColors_DoubleClick(object sender, EventArgs e)
@@ -271,7 +236,6 @@ namespace ProcessHacker
             checkEnableExperimentalFeatures.Checked = Settings.Instance.EnableExperimentalFeatures;
             checkStartHidden.Checked = Settings.Instance.StartHidden;
             checkScrollDownProcessTree.Checked = Settings.Instance.ScrollDownProcessTree;
-            checkFloatChildWindows.Checked = Settings.Instance.FloatChildWindows;
             checkHidePhConnections.Checked = Settings.Instance.HideProcessHackerNetworkConnections;
 
             if (OSVersion.HasUac)
@@ -336,7 +300,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    if (!Array.Exists<string>(key.GetSubKeyNames(), s => s.Equals("taskmgr.exe", StringComparison.OrdinalIgnoreCase)))
+                    if (!Array.Exists(key.GetSubKeyNames(), s => s.Equals("taskmgr.exe", StringComparison.OrdinalIgnoreCase)))
                         key.CreateSubKey("taskmgr.exe");
 
                     Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
@@ -428,7 +392,6 @@ namespace ProcessHacker
             Settings.Instance.VerifySignatures = checkVerifySignatures.Checked;
             Settings.Instance.HideHandlesWithNoName = checkHideHandlesWithNoName.Checked;
             Settings.Instance.ScrollDownProcessTree = checkScrollDownProcessTree.Checked;
-            Settings.Instance.FloatChildWindows = checkFloatChildWindows.Checked;
             Settings.Instance.StartHidden = checkStartHidden.Checked;
             Settings.Instance.EnableKPH = checkEnableKPH.Checked;
             Settings.Instance.EnableExperimentalFeatures = checkEnableExperimentalFeatures.Checked;
@@ -439,7 +402,7 @@ namespace ProcessHacker
             Settings.Instance.MaxSamples = (int)textMaxSamples.Value;
             Program.ProcessProvider.HistoryMaxSize = Settings.Instance.MaxSamples;
             Settings.Instance.PlotterStep = (int)textStep.Value;
-            ProcessHacker.Components.Plotter.GlobalMoveStep = Settings.Instance.PlotterStep;
+            Plotter.GlobalMoveStep = Settings.Instance.PlotterStep;
 
             Settings.Instance.HighlightingDuration = (int)textHighlightingDuration.Value;
             Settings.Instance.ColorNew = colorNewProcesses.Color;
@@ -583,17 +546,19 @@ namespace ProcessHacker
 
         private void buttonFont_Click(object sender, EventArgs e)
         {
-            FontDialog fd = new FontDialog();
-
-            fd.Font = _font;
-            fd.FontMustExist = true;
-            fd.ShowEffects = true;
-
-            if (fd.ShowDialog() == DialogResult.OK)
+            using (FontDialog fd = new FontDialog
             {
-                _font = fd.Font;
-                buttonFont.Font = _font;
-                this.EnableApplyButton();
+                Font = this._font,
+                FontMustExist = true,
+                ShowEffects = true
+            })
+            {
+                if (fd.ShowDialog() == DialogResult.OK)
+                {
+                    _font = fd.Font;
+                    buttonFont.Font = _font;
+                    this.EnableApplyButton();
+                }
             }
         }
 
@@ -605,26 +570,26 @@ namespace ProcessHacker
             buttonApply.Enabled = false;
 
             string args = "-o -hwnd " + this.Handle.ToString() +
-                " -rect " + this.Location.X.ToString() + "," + this.Location.Y.ToString() + "," +
-                this.Size.Width.ToString() + "," + this.Size.Height.ToString();
+                          " -rect " + this.Location.X.ToString() + "," + this.Location.Y.ToString() + "," +
+                          this.Size.Width.ToString() + "," + this.Size.Height.ToString();
 
             // Avoid cross-thread operation.
             IntPtr thisHandle = this.Handle;
 
             Thread t = new Thread(() =>
-                {
-                    Program.StartProcessHackerAdminWait(args, thisHandle, 0xffffffff);
+            {
+                Program.StartProcessHackerAdminWait(args, thisHandle, 0xffffffff);
 
-                    this.BeginInvoke(new MethodInvoker(() =>
-                        {
-                            Settings.Instance.Reload();
-                            this.LoadSettings();
-                            if (!_dontApply)
-                                this.ApplySettings();
-                            buttonApply.Enabled = false;
-                            buttonOK.Select();
-                        }));
-                }, Utils.SixteenthStackSize);
+                this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    Settings.Instance.Reload();
+                    this.LoadSettings();
+                    if (!_dontApply)
+                        this.ApplySettings();
+                    buttonApply.Enabled = false;
+                    buttonOK.Select();
+                }));
+            }, Utils.SixteenthStackSize);
 
             t.Start();
         }
@@ -647,13 +612,15 @@ namespace ProcessHacker
 
         private void buttonDbghelpBrowse_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-
-            ofd.Filter = "dbghelp.dll|dbghelp.dll|DLL files (*.dll)|*.dll|All files (*.*)|*.*";
-            ofd.FileName = textDbghelpPath.Text;
-
-            if (ofd.ShowDialog() == DialogResult.OK)
-                textDbghelpPath.Text = ofd.FileName;
+            using (OpenFileDialog ofd = new OpenFileDialog
+            {
+                Filter = "dbghelp.dll|dbghelp.dll|DLL files (*.dll)|*.dll|All files (*.*)|*.*",
+                FileName = this.textDbghelpPath.Text
+            })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                    textDbghelpPath.Text = ofd.FileName;
+            }
         }
 
         private void buttonApply_Click(object sender, EventArgs e)

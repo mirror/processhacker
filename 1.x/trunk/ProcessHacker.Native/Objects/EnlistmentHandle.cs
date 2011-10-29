@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -41,13 +40,12 @@ namespace ProcessHacker.Native.Objects
             IntPtr enlistmentKey
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateEnlistment(
+                Win32.NtCreateEnlistment(
                     out handle,
                     access,
                     resourceManagerHandle,
@@ -56,8 +54,7 @@ namespace ProcessHacker.Native.Objects
                     createOptions,
                     notificationMask,
                     enlistmentKey
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -85,20 +82,18 @@ namespace ProcessHacker.Native.Objects
             EnlistmentAccess access
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenEnlistment(
+                Win32.NtOpenEnlistment(
                     out handle,
                     access,
                     resourceManagerHandle,
                     ref guid,
                     ref oa
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -110,108 +105,76 @@ namespace ProcessHacker.Native.Objects
 
         public void Commit(long virtualClock)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtCommitEnlistment(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtCommitEnlistment(this, ref virtualClock).ThrowIf();
         }
 
         public void CommitComplete(long virtualClock)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtCommitComplete(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtCommitComplete(this, ref virtualClock).ThrowIf();
         }
 
-        public EnlistmentBasicInformation GetBasicInformation()
+        public EnlistmentBasicInformation BasicInformation
         {
-            NtStatus status;
-            EnlistmentBasicInformation basicInfo;
-            int retLength;
+            get
+            {
+                EnlistmentBasicInformation basicInfo;
+                int retLength;
 
-            if ((status = Win32.NtQueryInformationEnlistment(
-                this,
-                EnlistmentInformationClass.EnlistmentBasicInformation,
-                out basicInfo,
-                Marshal.SizeOf(typeof(EnlistmentBasicInformation)),
-                out retLength
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                Win32.NtQueryInformationEnlistment(
+                    this,
+                    EnlistmentInformationClass.EnlistmentBasicInformation,
+                    out basicInfo,
+                    EnlistmentBasicInformation.SizeOf,
+                    out retLength
+                    ).ThrowIf();
 
-            return basicInfo;
+                return basicInfo;
+            }
         }
 
         public void Prepare(long virtualClock)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtPrepareEnlistment(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtPrepareEnlistment(this, ref virtualClock).ThrowIf();
         }
 
         public void PrepareComplete(long virtualClock)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtPrepareComplete(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtPrepareComplete(this, ref virtualClock).ThrowIf();
         }
 
         public void PrePrepare(long virtualClock)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtPrePrepareEnlistment(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtPrePrepareEnlistment(this, ref virtualClock).ThrowIf();
         }
 
         public void PrePrepareComplete(long virtualClock)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtPrePrepareComplete(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtPrePrepareComplete(this, ref virtualClock).ThrowIf();
         }
 
         public void ReadOnly(long virtualClock)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtReadOnlyEnlistment(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtReadOnlyEnlistment(this, ref virtualClock).ThrowIf();
         }
 
         public void Recover(IntPtr enlistmentKey)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtRecoverEnlistment(this, enlistmentKey)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtRecoverEnlistment(this, enlistmentKey).ThrowIf();
         }
 
         public void RejectSinglePhase(long virtualClock)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtSinglePhaseReject(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtSinglePhaseReject(this, ref virtualClock).ThrowIf();
         }
 
         public void Rollback(long virtualClock)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtRollbackEnlistment(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtRollbackEnlistment(this, ref virtualClock).ThrowIf();
         }
 
         public void RollbackComplete(long virtualClock)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtRollbackComplete(this, ref virtualClock)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtRollbackComplete(this, ref virtualClock).ThrowIf();
         }
     }
 }

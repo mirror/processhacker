@@ -22,7 +22,6 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
@@ -43,7 +42,7 @@ namespace ProcessHacker.Components
             if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
             {
                 Win32.SendMessage(this.Handle, (WindowMessage)TVM_SETEXTENDEDSTYLE, IntPtr.Zero, (IntPtr)TVS_EX_FADEINOUTEXPANDOS);
-                ProcessHacker.Common.PhUtils.SetTheme(this, "explorer");
+                Win32.SetWindowTheme(this.Handle, "Explorer", null);
             }
 
             base.OnHandleCreated(e);

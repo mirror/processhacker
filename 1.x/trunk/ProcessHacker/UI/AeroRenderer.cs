@@ -70,7 +70,7 @@ namespace System
 
         // See http://msdn2.microsoft.com/en-us/library/bb773210.aspx - "Parts and States"
         // Only menu-related parts/states are needed here, VisualStyleRenderer handles most of the rest.
-        private enum MenuParts : int
+        private enum MenuParts
         {
             ItemTMSchema = 1,
             DropDownTMSchema = 2,
@@ -94,13 +94,13 @@ namespace System
             SystemRestore = 20
         }
 
-        private enum MenuBarStates : int
+        private enum MenuBarStates
         {
             Active = 1,
             Inactive = 2
         }
 
-        private enum MenuBarItemStates : int
+        private enum MenuBarItemStates
         {
             Normal = 1,
             Hover = 2,
@@ -110,7 +110,7 @@ namespace System
             DisabledPushed = 6
         }
 
-        private enum MenuPopupItemStates : int
+        private enum MenuPopupItemStates
         {
             Normal = 1,
             Hover = 2,
@@ -118,7 +118,7 @@ namespace System
             DisabledHover = 4
         }
 
-        private enum MenuPopupCheckStates : int
+        private enum MenuPopupCheckStates
         {
             CheckmarkNormal = 1,
             CheckmarkDisabled = 2,

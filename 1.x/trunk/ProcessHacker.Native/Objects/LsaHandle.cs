@@ -46,37 +46,29 @@ namespace ProcessHacker.Native.Objects
 
         public void Delete()
         {
-            NtStatus status;
-
-            if ((status = Win32.LsaDelete(this)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.LsaDelete(this).ThrowIf();
         }
 
         public override SecurityDescriptor GetSecurity(SecurityInformation securityInformation)
         {
-            NtStatus status;
             IntPtr securityDescriptor;
 
-            if ((status = Win32.LsaQuerySecurityObject(
+            Win32.LsaQuerySecurityObject(
                 this,
                 securityInformation,
                 out securityDescriptor
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return new SecurityDescriptor(new LsaMemoryAlloc(securityDescriptor));
         }
 
         public override void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
         {
-            NtStatus status;
-
-            if ((status = Win32.LsaSetSecurityObject(
+            Win32.LsaSetSecurityObject(
                 this,
                 securityInformation,
                 securityDescriptor
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
     }
 }

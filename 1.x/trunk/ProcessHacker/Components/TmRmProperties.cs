@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.Native.Objects;
 
@@ -11,7 +6,7 @@ namespace ProcessHacker.Components
 {
     public partial class TmRmProperties : UserControl
     {
-        private ResourceManagerHandle _rmHandle;
+        private readonly ResourceManagerHandle _rmHandle;
 
         public TmRmProperties(ResourceManagerHandle rmHandle)
         {
@@ -27,8 +22,8 @@ namespace ProcessHacker.Components
         {
             try
             {
-                textDescription.Text = _rmHandle.GetDescription();
-                textGuid.Text = _rmHandle.GetGuid().ToString("B");
+                textDescription.Text = _rmHandle.Description;
+                textGuid.Text = _rmHandle.Guid.ToString("B");
             }
             catch (Exception ex)
             {

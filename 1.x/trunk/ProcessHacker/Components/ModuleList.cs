@@ -475,9 +475,9 @@ namespace ProcessHacker.Components
                             {
                                 using (DriverHandle driverHandle = new DriverHandle("\\Driver\\" + obj.Name))
                                 {
-                                    if (driverHandle.GetBasicInformation().DriverStart == moduleItem.BaseAddress.ToIntPtr())
+                                    if (driverHandle.BasicInformation.DriverStart == moduleItem.BaseAddress.ToIntPtr())
                                     {
-                                        serviceName = driverHandle.GetServiceKeyName();
+                                        serviceName = driverHandle.ServiceKeyName;
                                         break;
                                     }
                                 }

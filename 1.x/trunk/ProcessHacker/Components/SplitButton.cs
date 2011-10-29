@@ -20,22 +20,18 @@ using System.Windows.Forms.VisualStyles;
 
 namespace wyDay.Controls
 {
-    public class SplitButton : Button
+    public sealed class SplitButton : Button
     {
         private PushButtonState _state;
 
         private const int SplitSectionWidth = 18;
 
-        private static int BorderSize = SystemInformation.Border3DSize.Width * 2;
-        private bool skipNextOpen = false;
-        private Rectangle dropDownRectangle = new Rectangle();
-        private bool showSplit = false;
-
-        private bool isSplitMenuVisible = false;
-
-
-        private ContextMenuStrip m_SplitMenuStrip = null;
-        private ContextMenu m_SplitMenu = null;
+        private static readonly int BorderSize = SystemInformation.Border3DSize.Width * 2;
+        private bool skipNextOpen;
+        private Rectangle dropDownRectangle;
+        private bool showSplit;
+        private bool isSplitMenuVisible;
+        private ContextMenuStrip m_SplitMenuStrip;
 
         TextFormatFlags textFormatFlags = TextFormatFlags.Default;
 
@@ -60,31 +56,6 @@ namespace wyDay.Controls
         }
 
         [DefaultValue(null)]
-        public ContextMenu SplitMenu
-        {
-            get { return m_SplitMenu; }
-            set
-            {
-                //remove the event handlers for the old SplitMenu
-                if (m_SplitMenu != null)
-                {
-                    m_SplitMenu.Popup -= new EventHandler(SplitMenu_Popup);
-                }
-
-                //add the event handlers for the new SplitMenu
-                if (value != null)
-                {
-                    ShowSplit = true;
-                    value.Popup += new EventHandler(SplitMenu_Popup);
-                }
-                else
-                    ShowSplit = false;
-
-                m_SplitMenu = value;
-            }
-        }
-
-        [DefaultValue(null)]
         public ContextMenuStrip SplitMenuStrip
         {
             get
@@ -96,16 +67,16 @@ namespace wyDay.Controls
                 //remove the event handlers for the old SplitMenuStrip
                 if (m_SplitMenuStrip != null)
                 {
-                    m_SplitMenuStrip.Closing -= new ToolStripDropDownClosingEventHandler(SplitMenuStrip_Closing);
-                    m_SplitMenuStrip.Opening -= new CancelEventHandler(SplitMenuStrip_Opening);
+                    m_SplitMenuStrip.Closing -= this.SplitMenuStrip_Closing;
+                    m_SplitMenuStrip.Opening -= this.SplitMenuStrip_Opening;
                 }
 
                 //add the event handlers for the new SplitMenuStrip
                 if (value != null)
                 {
                     ShowSplit = true;
-                    value.Closing += new ToolStripDropDownClosingEventHandler(SplitMenuStrip_Closing);
-                    value.Opening += new CancelEventHandler(SplitMenuStrip_Opening);
+                    value.Closing += this.SplitMenuStrip_Closing;
+                    value.Opening += this.SplitMenuStrip_Opening;
                 }
                 else
                     ShowSplit = false;
@@ -291,7 +262,7 @@ namespace wyDay.Controls
             }
 
             //handle ContextMenu re-clicking the drop-down region to close the menu
-            if (m_SplitMenu != null && e.Button == MouseButtons.Left && !isMouseEntered)
+            if (m_SplitMenuStrip != null && e.Button == MouseButtons.Left && !isMouseEntered)
                 skipNextOpen = true;
 
             if (dropDownRectangle.Contains(e.Location) && !isSplitMenuVisible && e.Button == MouseButtons.Left)
@@ -317,7 +288,7 @@ namespace wyDay.Controls
             {
                 ShowContextMenuStrip();
             }
-            else if (m_SplitMenuStrip == null && m_SplitMenu == null || !isSplitMenuVisible)
+            else if (m_SplitMenuStrip == null && m_SplitMenuStrip == null || !isSplitMenuVisible)
             {
                 SetButtonDrawState();
 
@@ -458,7 +429,8 @@ namespace wyDay.Controls
             {
                 if (AutoSize)
                     return CalculateButtonAutoSize();
-                else if (!string.IsNullOrEmpty(Text) && TextRenderer.MeasureText(Text, Font).Width + SplitSectionWidth > preferredSize.Width)
+                
+                if (!string.IsNullOrEmpty(this.Text) && TextRenderer.MeasureText(this.Text, this.Font).Width + SplitSectionWidth > preferredSize.Width)
                     return preferredSize + new Size(SplitSectionWidth + BorderSize * 2, 0);
             }
 
@@ -635,9 +607,9 @@ namespace wyDay.Controls
             else if (h_image == HorizontalAlignment.Right && h_text == HorizontalAlignment.Right)
                 offset = excess_width;
             else if (h_image == HorizontalAlignment.Center && (h_text == HorizontalAlignment.Left || h_text == HorizontalAlignment.Center))
-                offset += (int)(excess_width / 3);
+                offset += excess_width / 3;
             else
-                offset += (int)(2 * (excess_width / 3));
+                offset += 2 * (excess_width / 3);
 
             if (textFirst)
             {
@@ -686,9 +658,9 @@ namespace wyDay.Controls
             else if (v_image == VerticalAlignment.Bottom && v_text == VerticalAlignment.Bottom)
                 offset = excess_height;
             else if (v_image == VerticalAlignment.Center && (v_text == VerticalAlignment.Top || v_text == VerticalAlignment.Center))
-                offset += (int)(excess_height / 3);
+                offset += excess_height / 3;
             else
-                offset += (int)(2 * (excess_height / 3));
+                offset += 2 * (excess_height / 3);
 
             if (textFirst)
             {
@@ -786,11 +758,7 @@ namespace wyDay.Controls
 
             State = PushButtonState.Pressed;
 
-            if (m_SplitMenu != null)
-            {
-                m_SplitMenu.Show(this, new Point(0, Height));
-            }
-            else if (m_SplitMenuStrip != null)
+            if (m_SplitMenuStrip != null)
             {
                 m_SplitMenuStrip.Show(this, new Point(0, Height), ToolStripDropDownDirection.BelowRight);
             }

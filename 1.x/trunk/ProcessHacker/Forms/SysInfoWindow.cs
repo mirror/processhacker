@@ -23,7 +23,6 @@
 
 using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
@@ -38,25 +37,22 @@ namespace ProcessHacker
         private static IntPtr _mmSizeOfPagedPoolInBytes;
         private static IntPtr _mmMaximumNonPagedPoolInBytes;
 
-        private bool _isFirstPaint = true;
         private Components.Plotter[] _cpuPlotters;
-        private uint _noOfCPUs = Program.ProcessProvider.System.NumberOfProcessors;
-        private uint _pages = (uint)Program.ProcessProvider.System.NumberOfPhysicalPages;
-        private uint _pageSize = (uint)Program.ProcessProvider.System.PageSize;
+        private readonly uint _noOfCPUs = Program.ProcessProvider.System.NumberOfProcessors;
+        private readonly uint _pages = (uint)Program.ProcessProvider.System.NumberOfPhysicalPages;
+        private readonly uint _pageSize = (uint)Program.ProcessProvider.System.PageSize;
 
         public SysInfoWindow()
         {
             InitializeComponent();
+
             this.AddEscapeToClose();
 
             this.Size = Settings.Instance.SysInfoWindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(Settings.Instance.SysInfoWindowLocation, this.Size), this).Location;
 
             // Load the pool limit addresses.
-            if (
-                _mmSizeOfPagedPoolInBytes == IntPtr.Zero && 
-                KProcessHacker.Instance != null
-                )
+            if (_mmSizeOfPagedPoolInBytes == IntPtr.Zero && KProcessHacker.Instance != null)
             {
                 WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
                 {
@@ -72,16 +68,8 @@ namespace ProcessHacker
                     { }
                 }), "load-mm-addresses");
             }
-        }
 
-        private void SysInfoWindow_Paint(object sender, PaintEventArgs e)
-        {
-            if (_isFirstPaint)
-            {
-                this.LoadStage1();
-            }
-
-            _isFirstPaint = false;
+            this.LoadStage1();
         }
 
         private void LoadStage1()
@@ -264,8 +252,8 @@ namespace ProcessHacker
 
         private void UpdateInfo()
         {
-            var perfInfo = Program.ProcessProvider.Performance;
-            var info = new PerformanceInformation();
+            SystemPerformanceInformation perfInfo = Program.ProcessProvider.Performance;
+            PerformanceInformation info;
 
             Win32.GetPerformanceInfo(out info, PerformanceInformation.SizeOf);
 

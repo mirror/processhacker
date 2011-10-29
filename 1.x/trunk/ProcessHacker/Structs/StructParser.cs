@@ -36,13 +36,13 @@ namespace ProcessHacker.Structs
 
     public class StructParser
     {
-        private Dictionary<string, StructDef> _structs;
+        private readonly Dictionary<string, StructDef> _structs;
 
-        private string _fileName = "";
+        private string _fileName = string.Empty;
         private int _lineNumber = 1;
-        private Dictionary<string, FieldType> _typeDefs = new Dictionary<string, FieldType>();
-        private Dictionary<string, object> _defines = new Dictionary<string, object>();
-        private bool _eatResult = false;
+        private readonly Dictionary<string, FieldType> _typeDefs = new Dictionary<string, FieldType>();
+        private readonly Dictionary<string, object> _defines = new Dictionary<string, object>();
+        private bool _eatResult;
 
         public Dictionary<string, StructDef> Structs
         {
@@ -69,8 +69,8 @@ namespace ProcessHacker.Structs
         {
             if (_typeDefs.ContainsKey(typeName))
                 return _typeDefs[typeName];
-            else
-                throw new ParserException(_fileName, _lineNumber, "Unknown identifier '" + typeName + "' (type name)");
+            
+            throw new ParserException(this._fileName, this._lineNumber, "Unknown identifier '" + typeName + "' (type name)");
         }
 
         private bool IsTypePointer(FieldType type)
@@ -137,7 +137,6 @@ namespace ProcessHacker.Structs
 
         public void Parse(string fileName)
         {
-            List<StructDef> defs = new List<StructDef>();
             int i = 0;
             string text = System.IO.File.ReadAllText(fileName);
 
@@ -211,7 +210,7 @@ namespace ProcessHacker.Structs
             _eatResult = EatWhitespace(text, ref i);
             string existingType = EatId(text, ref i);
 
-            if (_eatResult || existingType == "")
+            if (_eatResult || string.IsNullOrEmpty(existingType))
                 throw new ParserException(_fileName, _lineNumber, "Expected identifier (type name)");
 
             if (!_typeDefs.ContainsKey(existingType))
@@ -227,7 +226,7 @@ namespace ProcessHacker.Structs
             _eatResult = EatWhitespace(text, ref i);
             string newType = EatId(text, ref i);
 
-            if (_eatResult || existingType == "")
+            if (_eatResult || string.IsNullOrEmpty(existingType))
                 throw new ParserException(_fileName, _lineNumber, "Expected identifier (new type name)");
 
             if (_typeDefs.ContainsKey(newType))
@@ -252,7 +251,7 @@ namespace ProcessHacker.Structs
             _eatResult = EatWhitespace(text, ref i);
             string structName = EatId(text, ref i);
 
-            if (_eatResult || structName == "")
+            if (_eatResult || string.IsNullOrEmpty(structName))
                 throw new ParserException(_fileName, _lineNumber, "Expected identifier (struct name)");
 
             if (_structs.ContainsKey(structName))
@@ -285,7 +284,7 @@ namespace ProcessHacker.Structs
                 _eatResult = EatWhitespace(text, ref i);
                 string typeName = EatId(text, ref i);
 
-                if (_eatResult || typeName == "")
+                if (_eatResult || string.IsNullOrEmpty(typeName))
                     throw new ParserException(_fileName, _lineNumber, "Expected type name");
 
                 FieldType type;
@@ -321,7 +320,7 @@ namespace ProcessHacker.Structs
                 _eatResult = EatWhitespace(text, ref i);
                 string fieldName = EatId(text, ref i);
 
-                if (_eatResult || fieldName == "")
+                if (_eatResult || string.IsNullOrEmpty(fieldName))
                     throw new ParserException(_fileName, _lineNumber, "Expected identifier (struct field name)");
 
                 if (def.ContainsField(fieldName))
@@ -337,7 +336,7 @@ namespace ProcessHacker.Structs
                     string fieldRefName = EatId(text, ref i);
                     string fieldSizeSpec = EatNumber(text, ref i);
 
-                    if (fieldRefName != "")
+                    if (!string.IsNullOrEmpty(fieldRefName))
                     {
                         if (!def.ContainsField(fieldRefName))
                             throw new ParserException(_fileName, _lineNumber, "Unknown identifier '" + fieldRefName + "' (field name)");
@@ -391,11 +390,11 @@ namespace ProcessHacker.Structs
                             i = iSave;
                         }
                     }
-                    else if (fieldSizeSpec != "")
+                    else if (!string.IsNullOrEmpty(fieldSizeSpec))
                     {
                         try
                         {
-                            varLength = (int)BaseConverter.ToNumberParse(fieldSizeSpec);
+                            //varLength = (int)BaseConverter.ToNumberParse(fieldSizeSpec);
                             varLength = (int)BaseConverter.ToNumberParse(fieldSizeSpec);
                         }
                         catch
@@ -448,7 +447,7 @@ namespace ProcessHacker.Structs
             _eatResult = EatWhitespace(text, ref i);
             string number = EatNumber(text, ref i);
 
-            if (_eatResult || number == "")
+            if (_eatResult || string.IsNullOrEmpty(number))
                 throw new ParserException(_fileName, _lineNumber, "Expected floating-point number");
 
             try
@@ -466,7 +465,7 @@ namespace ProcessHacker.Structs
             _eatResult = EatWhitespace(text, ref i);
             string number = EatNumber(text, ref i);
 
-            if (_eatResult || number == "")
+            if (_eatResult || string.IsNullOrEmpty(number))
                 throw new ParserException(_fileName, _lineNumber, "Expected integer");
 
             try
@@ -495,20 +494,23 @@ namespace ProcessHacker.Structs
                     i++;
                     continue;
                 }
-                else if (prePostComment && text[i] == '/')
+                
+                if (prePostComment && text[i] == '/')
                 {
                     prePostComment = false;
                     inComment = false;
                     i++;
                     continue;
                 }
-                else if (!inComment && text[i] == '/')
+                
+                if (!inComment && text[i] == '/')
                 {
                     preComment = true;
                     i++;
                     continue;
                 }
-                else if (preComment)
+                
+                if (preComment)
                 {
                     if (text[i] == '*')
                     {
@@ -517,18 +519,14 @@ namespace ProcessHacker.Structs
                         i++;
                         continue;
                     }
-                    else
-                    {
-                        // it's a mistake, revert!
-                        i -= 1;
-                        break;
-                    }
+                    
+                    // it's a mistake, revert!
+                    i -= 1;
+                    break;
                 }
-                else
-                {
-                    preComment = false;
-                    prePostComment = false;
-                }
+                
+                //preComment = false;
+                prePostComment = false;
 
                 if (text[i] == '\n')
                     _lineNumber++;
@@ -555,7 +553,7 @@ namespace ProcessHacker.Structs
                 i++;
             }
             else
-                return "";
+                return string.Empty;
 
             while (i < text.Length)
             {
@@ -565,28 +563,38 @@ namespace ProcessHacker.Structs
                     i++;
                     continue;
                 }
-                else if (inEscape)
+                if (inEscape)
                 {
-                    if (text[i] == '\\')
-                        sb.Append('\\');
-                    else if (text[i] == '"')
-                        sb.Append('"');
-                    else if (text[i] == '\'')
-                        sb.Append('\'');
-                    else if (text[i] == 'r')
-                        sb.Append('\r');
-                    else if (text[i] == 'n')
-                        sb.Append('\n');
-                    else if (text[i] == 't')
-                        sb.Append('\t');
-                    else
-                        throw new ParserException(_fileName, _lineNumber, "Unrecognized escape sequence '\\" + text[i] + "'");
+                    switch (text[i])
+                    {
+                        case '\\':
+                            sb.Append('\\');
+                            break;
+                        case '"':
+                            sb.Append('"');
+                            break;
+                        case '\'':
+                            sb.Append('\'');
+                            break;
+                        case 'r':
+                            sb.Append('\r');
+                            break;
+                        case 'n':
+                            sb.Append('\n');
+                            break;
+                        case 't':
+                            sb.Append('\t');
+                            break;
+                        default:
+                            throw new ParserException(this._fileName, this._lineNumber, "Unrecognized escape sequence '\\" + text[i] + "'");
+                    }
 
                     i++;
                     inEscape = false;
                     continue;
                 }
-                else if (text[i] == '"')
+                
+                if (text[i] == '"')
                 {
                     i++;
                     break;

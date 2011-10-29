@@ -27,23 +27,22 @@ using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Mfs;
-using ProcessHacker.Native.Objects;
 using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
     public partial class DumpHackerWindow : Form
     {
-        private MemoryFileSystem _mfs;
+        private readonly MemoryFileSystem _mfs;
         private MemoryObject _processesMo;
         private MemoryObject _servicesMo;
         private string _phVersion;
         private string _osVersion;
         private OSArch _architecture;
         private string _userName;
-        private Dictionary<int, ProcessItem> _processes = new Dictionary<int, ProcessItem>();
-        private Dictionary<string, ServiceItem> _services = new Dictionary<string, ServiceItem>();
-        private Dictionary<int, List<string>> _processServices = new Dictionary<int, List<string>>();
+        private readonly Dictionary<int, ProcessItem> _processes = new Dictionary<int, ProcessItem>();
+        private readonly Dictionary<string, ServiceItem> _services = new Dictionary<string, ServiceItem>();
+        private readonly Dictionary<int, List<string>> _processServices = new Dictionary<int, List<string>>();
 
         public DumpHackerWindow(string fileName)
         {
@@ -55,7 +54,7 @@ namespace ProcessHacker
             ColumnSettings.LoadSettings(Settings.Instance.ProcessTreeColumns, treeProcesses.Tree);
             ColumnSettings.LoadSettings(Settings.Instance.ServiceListViewColumns, listServices.List);
 
-            listServices.DoubleClick += new EventHandler(listServices_DoubleClick);
+            listServices.DoubleClick += this.listServices_DoubleClick;
         }
 
         private void DumpHackerWindow_Load(object sender, EventArgs e)
@@ -106,9 +105,7 @@ namespace ProcessHacker
 
         private void LoadSystemInformation()
         {
-            MemoryObject sysInfoMo;
-
-            sysInfoMo = _mfs.RootObject.GetChild("SystemInformation");
+            MemoryObject sysInfoMo = this._mfs.RootObject.GetChild("SystemInformation");
 
             if (sysInfoMo == null)
             {
@@ -117,7 +114,7 @@ namespace ProcessHacker
                 return;
             }
 
-            var dict = Dump.GetDictionary(sysInfoMo);
+            IDictionary<string, string> dict = Dump.GetDictionary(sysInfoMo);
 
             sysInfoMo.Dispose();
 
@@ -136,30 +133,27 @@ namespace ProcessHacker
 
         private void LoadProcesses()
         {
-            MemoryObject processesMo;
-
-            processesMo = _mfs.RootObject.GetChild("Processes");
+            MemoryObject processesMo = this._mfs.RootObject.GetChild("Processes");
             _processesMo = processesMo;
 
             if (processesMo == null)
             {
-                PhUtils.ShowWarning("The dump file does not contain process information. This most likely " +
-                    "means the file is corrupt.");
+                PhUtils.ShowWarning("The dump file does not contain process information. This most likely means the file is corrupt.");
                 return;
             }
 
             processesMo.EnumChildren(childMo =>
-                {
-                    using (childMo)
-                        this.LoadProcess(childMo);
+            {
+                using (childMo)
+                    this.LoadProcess(childMo);
 
-                    return true;
-                });
+                return true;
+            });
         }
 
         private void LoadProcess(MemoryObject mo)
         {
-            var names = mo.GetChildNames();
+            var names = mo.ChildNames;
             ProcessItem pitem;
 
             if (!names.Contains("General"))
@@ -167,13 +161,15 @@ namespace ProcessHacker
 
             IDictionary<string, string> generalDict;
 
-            using (var general = mo.GetChild("General"))
+            using (MemoryObject general = mo.GetChild("General"))
                 generalDict = Dump.GetDictionary(general);
 
-            pitem = new ProcessItem();
-            pitem.Pid = Dump.ParseInt32(generalDict["ProcessId"]);
-            pitem.Name = generalDict["Name"];
-            pitem.ParentPid = Dump.ParseInt32(generalDict["ParentPid"]);
+            pitem = new ProcessItem
+            {
+                Pid = Dump.ParseInt32(generalDict["ProcessId"]),
+                Name = generalDict["Name"],
+                ParentPid = Dump.ParseInt32(generalDict["ParentPid"])
+            };
 
             if (generalDict.ContainsKey("HasParent"))
                 pitem.HasParent = Dump.ParseBool(generalDict["HasParent"]);
@@ -187,11 +183,13 @@ namespace ProcessHacker
 
             if (generalDict.ContainsKey("FileDescription"))
             {
-                pitem.VersionInfo = new ImageVersionInfo();
-                pitem.VersionInfo.FileDescription = generalDict["FileDescription"];
-                pitem.VersionInfo.CompanyName = generalDict["FileCompanyName"];
-                pitem.VersionInfo.FileVersion = generalDict["FileVersion"];
-                pitem.VersionInfo.FileName = pitem.FileName;
+                pitem.VersionInfo = new ImageVersionInfo
+                {
+                    FileDescription = generalDict["FileDescription"],
+                    CompanyName = generalDict["FileCompanyName"],
+                    FileVersion = generalDict["FileVersion"],
+                    FileName = pitem.FileName
+                };
             }
 
             if (generalDict.ContainsKey("CommandLine"))

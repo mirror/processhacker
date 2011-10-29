@@ -9,7 +9,7 @@ namespace ProcessHacker.Components
 {
     public partial class SemaphoreProperties : UserControl
     {
-        private SemaphoreHandle _semaphoreHandle;
+        private readonly SemaphoreHandle _semaphoreHandle;
 
         public SemaphoreProperties(SemaphoreHandle semaphoreHandle)
         {

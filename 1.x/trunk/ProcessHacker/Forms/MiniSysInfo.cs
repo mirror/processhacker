@@ -42,7 +42,13 @@ namespace ProcessHacker
         [DllImport("dwmapi.dll", SetLastError = true)]
         static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS inset);
 
-        MARGINS margins = new MARGINS() { Left = -1, Right = -1, Top = -1, Bottom = -1 };
+        readonly MARGINS margins = new MARGINS
+        { 
+            Left = -1, 
+            Right = -1, 
+            Top = -1, 
+            Bottom = -1 
+        };
 
         public MiniSysInfo()
         {
@@ -62,7 +68,7 @@ namespace ProcessHacker
             plotterIO.LongData1 = Program.ProcessProvider.IoReadOtherHistory;
             plotterIO.LongData2 = Program.ProcessProvider.IoWriteHistory;
 
-            Program.ProcessProvider.Updated += new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+            Program.ProcessProvider.Updated += this.ProcessProvider_Updated;
         }
 
         protected override void WndProc(ref Message m)
@@ -85,22 +91,22 @@ namespace ProcessHacker
 
         private void MiniSysInfo_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Program.ProcessProvider.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+            Program.ProcessProvider.Updated -= this.ProcessProvider_Updated;
         }
 
         private void ProcessProvider_Updated()
         {
-            this.BeginInvoke(new MethodInvoker(delegate
+            this.BeginInvoke(new MethodInvoker(() =>
             {
-                plotterCPU.LineColor1 = Settings.Instance.PlotterCPUKernelColor;
-                plotterCPU.LineColor2 = Settings.Instance.PlotterCPUUserColor;
-                plotterCPU.MoveGrid();
-                plotterCPU.Draw();
+                this.plotterCPU.LineColor1 = Settings.Instance.PlotterCPUKernelColor;
+                this.plotterCPU.LineColor2 = Settings.Instance.PlotterCPUUserColor;
+                this.plotterCPU.MoveGrid();
+                this.plotterCPU.Draw();
 
-                plotterIO.LineColor1 = Settings.Instance.PlotterIOROColor;
-                plotterIO.LineColor2 = Settings.Instance.PlotterIOWColor;
-                plotterIO.MoveGrid();
-                plotterIO.Draw();
+                this.plotterIO.LineColor1 = Settings.Instance.PlotterIOROColor;
+                this.plotterIO.LineColor2 = Settings.Instance.PlotterIOWColor;
+                this.plotterIO.MoveGrid();
+                this.plotterIO.Draw();
             }));
         }
     }

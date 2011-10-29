@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 
 namespace ProcessHacker.UI
 {
     public struct WindowFromHandle : IWin32Window
     {
-        private IntPtr _handle;
+        private readonly IntPtr _handle;
 
         public WindowFromHandle(IntPtr handle)
         {

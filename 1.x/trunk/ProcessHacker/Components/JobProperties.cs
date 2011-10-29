@@ -33,17 +33,14 @@ namespace ProcessHacker.Components
 {
     public partial class JobProperties : UserControl
     {
-        private JobObjectHandle _jobObject;
+        private readonly JobObjectHandle _jobObject;
 
         public JobProperties(JobObjectHandle jobObject)
         {
             InitializeComponent();
 
-            listProcesses.SetTheme("explorer");
             listProcesses.AddShortcuts();
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();
-
-            listLimits.SetTheme("explorer");
             listLimits.AddShortcuts();
             listLimits.ContextMenu = listLimits.GetCopyMenu();
 
@@ -54,7 +51,7 @@ namespace ProcessHacker.Components
 
             try
             {
-                string name = _jobObject.GetObjectName();
+                string name = _jobObject.ObjectName;
 
                 if (string.IsNullOrEmpty(name))
                     textJobName.Text = "(unnamed job)";
@@ -66,7 +63,7 @@ namespace ProcessHacker.Components
 
             try
             {
-                foreach (int pid in _jobObject.GetProcessIdList())
+                foreach (int pid in _jobObject.ProcessIdList)
                 {
                     ListViewItem item = new ListViewItem();
 
@@ -85,8 +82,8 @@ namespace ProcessHacker.Components
 
             try
             {
-                var extendedLimits = _jobObject.GetExtendedLimitInformation();
-                var uiRestrictions = _jobObject.GetBasicUiRestrictions();
+                var extendedLimits = _jobObject.ExtendedLimitInformation;
+                var uiRestrictions = _jobObject.BasicUiRestrictions;
                 var flags = extendedLimits.BasicLimitInformation.LimitFlags;
 
                 if ((flags & JobObjectLimitFlags.ActiveProcess) != 0)
@@ -168,8 +165,8 @@ namespace ProcessHacker.Components
         {
             try
             {
-                var accounting = _jobObject.GetBasicAndIoAccountingInformation();
-                var limits = _jobObject.GetExtendedLimitInformation();
+                JobObjectBasicAndIoAccountingInformation accounting = _jobObject.GetBasicAndIoAccountingInformation();
+                JobObjectExtendedLimitInformation limits = _jobObject.ExtendedLimitInformation;
 
                 labelGeneralActiveProcesses.Text = accounting.BasicInfo.ActiveProcesses.ToString("N0");
                 labelGeneralTotalProcesses.Text = accounting.BasicInfo.TotalProcesses.ToString("N0");
@@ -204,26 +201,27 @@ namespace ProcessHacker.Components
         {
             if (OSVersion.HasTaskDialogs)
             {
-                TaskDialog td = new TaskDialog();
-
-                td.WindowTitle = "Process Hacker";
-                td.MainIcon = TaskDialogIcon.Warning;
-                td.MainInstruction = "Do you want to terminate the job?";
-                td.Content = "Terminating a job will terminate all processes assigned to it. Are you sure " +
-                    "you want to continue?";
-                td.Buttons = new TaskDialogButton[] 
+                TaskDialog td = new TaskDialog
                 {
-                    new TaskDialogButton((int)DialogResult.Yes, "Terminate"),
-                    new TaskDialogButton((int)DialogResult.No, "Cancel")
+                    WindowTitle = "Process Hacker",
+                    MainInstruction = "Do you want to terminate the job?",
+                    Content = "Terminating a job will terminate all processes assigned to it. Are you sure " + "you want to continue?",
+                    MainIcon = TaskDialogIcon.Warning,
+                    DefaultButton = (int)DialogResult.No,
+                    Buttons = new TaskDialogButton[]                                                                                                                               
+                    {                                                                                                                              
+                        new TaskDialogButton((int)DialogResult.Yes, "Terminate"),                                                                                                                                  
+                        new TaskDialogButton((int)DialogResult.No, "Cancel")
+                    }
                 };
-                td.DefaultButton = (int)DialogResult.No;
 
                 if (td.Show(this) == (int)DialogResult.No)
                     return;
             }
             else
             {
-                if (MessageBox.Show("Are you sure you want to terminate the job? This action will " +
+                if (MessageBox.Show(
+                    "Are you sure you want to terminate the job? This action will " +
                     "terminate all processes associated with the job.", "Process Hacker",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
                     return;
@@ -231,7 +229,7 @@ namespace ProcessHacker.Components
 
             try
             {
-                using (var jhandle2 = _jobObject.Duplicate(JobObjectAccess.Terminate))
+                using (NativeHandle<JobObjectAccess> jhandle2 = _jobObject.Duplicate(JobObjectAccess.Terminate))
                     JobObjectHandle.FromHandle(jhandle2).Terminate();
             }
             catch (Exception ex)

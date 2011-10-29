@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 
 namespace ProcessHacker.Common.Threading
 {
     public class WaitableQueue<T> : IEnumerable, IEnumerable<T>
     {
-        private Queue<T> _queue = new Queue<T>();
-        private SemaphorePair _pair;
+        private readonly Queue<T> _queue = new Queue<T>();
+        private readonly SemaphorePair _pair;
 
         public WaitableQueue()
             : this(int.MaxValue)

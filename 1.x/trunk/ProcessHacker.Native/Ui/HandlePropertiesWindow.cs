@@ -34,7 +34,8 @@ namespace ProcessHacker.Native.Ui
 
         public event HandlePropertiesDelegate HandlePropertiesCallback;
 
-        private string _name, _typeName;
+        private readonly string _name;
+        private readonly string _typeName;
         private NativeHandle _objectHandle;
 
         public HandlePropertiesWindow(SystemHandleEntry handle)

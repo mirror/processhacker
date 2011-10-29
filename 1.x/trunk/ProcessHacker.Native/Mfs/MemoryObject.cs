@@ -30,9 +30,9 @@ namespace ProcessHacker.Native.Mfs
     {                     
         public delegate bool EnumChildrenDelegate(MemoryObject mo);
 
-        private bool _fsInternal;
-        private MemoryFileSystem _fs;
-        private MfsCellId _cellId;
+        private readonly bool _fsInternal;
+        private readonly MemoryFileSystem _fs;
+        private readonly MfsCellId _cellId;
         private MfsObjectHeader* _obj;
         private string _name;
 
@@ -80,7 +80,7 @@ namespace ProcessHacker.Native.Mfs
         {
             get
             {
-                if (_name == null)
+                if (string.IsNullOrEmpty(_name))
                     _name = _fs.GetObjectName(_obj);
 
                 return _name;
@@ -184,23 +184,26 @@ namespace ProcessHacker.Native.Mfs
             return null;
         }
 
-        public string[] GetChildNames()
+        public string[] ChildNames
         {
-            List<string> names = new List<string>();
+            get
+            {
+                List<string> names = new List<string>();
 
-            this.EnumChildren((mo) =>
+                this.EnumChildren(mo =>
                 {
                     names.Add(mo.Name);
                     mo.Dispose();
                     return true;
                 });
 
-            return names.ToArray();
+                return names.ToArray();
+            }
         }
 
-        public MemoryObject GetParent()
+        public MemoryObject Parent
         {
-            return new MemoryObject(_fs, _obj->Parent);
+            get { return new MemoryObject(_fs, _obj->Parent); }
         }
 
         public MemoryDataWriteStream GetWriteStream()

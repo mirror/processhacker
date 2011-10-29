@@ -39,10 +39,12 @@ namespace ProcessHacker.UI
 
         public static ContextMenu GetMenu(ListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
         {
-            ContextMenu menu = new ContextMenu();
+            ContextMenu menu = new ContextMenu
+            {
+                Tag = lv
+            };
 
-            menu.Tag = lv;
-            menu.Popup += new EventHandler(ListViewMenu_Popup);
+            menu.Popup += ListViewMenu_Popup;
             AddMenuItems(menu.MenuItems, lv, retrieveVirtualItem);
 
             return menu;
@@ -50,19 +52,29 @@ namespace ProcessHacker.UI
 
         public static void AddMenuItems(MenuItem.MenuItemCollection items, ListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
         {
-            MenuItem copyItem = new MenuItem("Copy");
+            MenuItem copyItem = new MenuItem("Copy")
+            {
+                Tag = new object[]
+                {
+                    -1, lv, retrieveVirtualItem
+                }
+            };
 
-            copyItem.Tag = new object[] { -1, lv, retrieveVirtualItem };
-            copyItem.Click += new EventHandler(ListViewMenuItem_Click);
+            copyItem.Click += ListViewMenuItem_Click;
 
             items.Add(copyItem);
 
             foreach (ColumnHeader ch in lv.Columns)
             {
-                MenuItem item = new MenuItem("Copy \"" + ch.Text + "\"");
+                MenuItem item = new MenuItem("Copy \"" + ch.Text + "\"")
+                {
+                    Tag = new object[]
+                    {
+                        ch.Index, lv, retrieveVirtualItem
+                    }
+                };
 
-                item.Tag = new object[] { ch.Index, lv, retrieveVirtualItem };
-                item.Click += new EventHandler(ListViewMenuItem_Click);
+                item.Click += ListViewMenuItem_Click;
 
                 items.Add(item);
             }
@@ -147,10 +159,15 @@ namespace ProcessHacker.UI
 
         public static void AddMenuItems(MenuItem.MenuItemCollection items, TreeViewAdv tv)
         {
-            MenuItem copyItem = new MenuItem("Copy");
+            MenuItem copyItem = new MenuItem("Copy")
+            {
+                Tag = new object[]
+                {
+                    -1, tv
+                }
+            };
 
-            copyItem.Tag = new object[] { -1, tv };
-            copyItem.Click += new EventHandler(TreeViewAdvMenuItem_Click);
+            copyItem.Click += TreeViewAdvMenuItem_Click;
 
             items.Add(copyItem);
 
@@ -173,10 +190,15 @@ namespace ProcessHacker.UI
                 if (!c.IsVisible || index == -1)
                     continue;
 
-                MenuItem item = new MenuItem("Copy \"" + c.Header + "\"");
+                MenuItem item = new MenuItem("Copy \"" + c.Header + "\"")
+                {
+                    Tag = new object[]
+                    {
+                        index, tv
+                    }
+                };
 
-                item.Tag = new object[] { index, tv };
-                item.Click += new EventHandler(TreeViewAdvMenuItem_Click);
+                item.Click += TreeViewAdvMenuItem_Click;
 
                 items.Add(item);
             }

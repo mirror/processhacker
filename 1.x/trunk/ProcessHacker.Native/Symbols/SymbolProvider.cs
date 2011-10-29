@@ -38,7 +38,7 @@ namespace ProcessHacker.Native.Symbols
     {
         private sealed class SymbolHandle : BaseObject
         {
-            private ProcessHandle _processHandle;
+            private readonly ProcessHandle _processHandle;
             private IntPtr _handle;
 
             public static implicit operator IntPtr(SymbolHandle symbolHandle)
@@ -99,7 +99,7 @@ namespace ProcessHacker.Native.Symbols
         }
 
         private const int _maxNameLen = 0x100;
-        private static IdGenerator _idGen = new IdGenerator();
+        private static readonly IdGenerator _idGen = new IdGenerator();
 
         public static SymbolOptions Options
         {
@@ -116,8 +116,8 @@ namespace ProcessHacker.Native.Symbols
             }
         }
 
-        private SymbolHandle _handle;
-        private List<KeyValuePair<ulong, string>> _modules = new List<KeyValuePair<ulong, string>>();
+        private readonly SymbolHandle _handle;
+        private readonly List<KeyValuePair<ulong, string>> _modules = new List<KeyValuePair<ulong, string>>();
 
         public SymbolProvider()
         {
@@ -142,11 +142,9 @@ namespace ProcessHacker.Native.Symbols
                 {
                     return true;
                 }
-                else
-                {
-                    Win32.DbgHelpLock.Release();
-                    return false;
-                }
+                
+                Win32.DbgHelpLock.Release();
+                return false;
             }
         }
 
@@ -166,7 +164,7 @@ namespace ProcessHacker.Native.Symbols
                 using (Win32.DbgHelpLock.AcquireContext())
                 {
                     if (!Win32.SymGetSearchPath(_handle, data, data.Capacity))
-                        return "";
+                        return string.Empty;
                 }
 
                 return data.ToString();
@@ -197,10 +195,9 @@ namespace ProcessHacker.Native.Symbols
                     _handle,
                     moduleBase,
                     mask,
-                    (symbolInfo, symbolSize, userContext) =>
-                        enumDelegate(new SymbolInformation(symbolInfo, symbolSize)),
-                    IntPtr.Zero
-                    ))
+                    (symbolInfo, symbolSize, userContext) => enumDelegate(new SymbolInformation(symbolInfo, symbolSize)), 
+                    IntPtr.Zero)
+                    )
                     Win32.Throw();
             }
         }
@@ -212,10 +209,10 @@ namespace ProcessHacker.Native.Symbols
 
             this.GetLineFromAddress(address, out fileName, out lineNumber);
 
-            if (fileName != null)
-                return fileName + ": line " + lineNumber.ToString();
-            else
-                return null;
+            if (!string.IsNullOrEmpty(fileName))
+                return fileName + ": line " + lineNumber;
+            
+            return null;
         }
 
         public void GetLineFromAddress(ulong address, out string fileName, out int lineNumber)
@@ -337,14 +334,15 @@ namespace ProcessHacker.Native.Symbols
             }
 
             // Allocate some memory for the symbol information.
-            using (var data = new MemoryAlloc(SymbolInfo.SizeOf + _maxNameLen))
+            using (MemoryAlloc data = new MemoryAlloc(SymbolInfo.SizeOf + _maxNameLen))
             {
-                var info = new SymbolInfo();
+                SymbolInfo info = new SymbolInfo
+                {
+                    SizeOfStruct = SymbolInfo.SizeOf, 
+                    MaxNameLen = _maxNameLen - 1
+                };
 
-                info.SizeOfStruct = Marshal.SizeOf(info);
-                info.MaxNameLen = _maxNameLen - 1;
-
-                Marshal.StructureToPtr(info, data, false);
+                data.WriteStruct(info);
 
                 // Hack for drivers, since we don't get their module sizes. 
                 // Preloading modules will fix this.
@@ -442,14 +440,15 @@ namespace ProcessHacker.Native.Symbols
 
         public SymbolInformation GetSymbolFromName(string symbolName)
         {
-            using (var data = new MemoryAlloc(SymbolInfo.SizeOf + _maxNameLen))
+            using (MemoryAlloc data = new MemoryAlloc(SymbolInfo.SizeOf + _maxNameLen))
             {
-                var info = new SymbolInfo();
+                SymbolInfo info = new SymbolInfo
+                {
+                    SizeOfStruct = SymbolInfo.SizeOf, 
+                    MaxNameLen = _maxNameLen - 1
+                };
 
-                info.SizeOfStruct = Marshal.SizeOf(info);
-                info.MaxNameLen = _maxNameLen - 1;
-
-                Marshal.StructureToPtr(info, data, false);
+                data.WriteStruct(info);
 
                 using (Win32.DbgHelpLock.AcquireContext())
                 {

@@ -107,15 +107,12 @@ namespace ProcessHacker.Native.SsLogging
 
         public static SsEvent ReadEventBlock(MemoryRegion data)
         {
-            var eventBlock = data.ReadStruct<KphSsEventBlock>(0, KphSsEventBlock.SizeOf, 0);
-
-            int[] arguments;
-            IntPtr[] stackTrace;
+            KphSsEventBlock eventBlock = data.ReadStruct<KphSsEventBlock>(0, KphSsEventBlock.SizeOf, 0);
 
             // Reconstruct the argument and stack trace arrays.
 
-            arguments = new int[eventBlock.NumberOfArguments];
-            stackTrace = new IntPtr[eventBlock.TraceCount];
+            int[] arguments = new int[eventBlock.NumberOfArguments];
+            IntPtr[] stackTrace = new IntPtr[eventBlock.TraceCount];
 
             for (int i = 0; i < arguments.Length; i++)
                 arguments[i] = data.ReadInt32(eventBlock.ArgumentsOffset, i);
@@ -123,20 +120,20 @@ namespace ProcessHacker.Native.SsLogging
                 stackTrace[i] = data.ReadIntPtr(eventBlock.TraceOffset, i);
 
             // Create an event object.
-            SsEvent ssEvent = new SsEvent();
-
-            // Basic information
-            ssEvent.Time = DateTime.FromFileTime(eventBlock.Time);
-            ssEvent.ThreadId = eventBlock.ClientId.ThreadId;
-            ssEvent.ProcessId = eventBlock.ClientId.ProcessId;
-            ssEvent.Arguments = arguments;
-            ssEvent.StackTrace = stackTrace;
+            SsEvent ssEvent = new SsEvent
+            {
+                // Basic information
+                Time = DateTime.FromFileTime(eventBlock.Time), 
+                ThreadId = eventBlock.ClientId.ThreadId, 
+                ProcessId = eventBlock.ClientId.ProcessId, 
+                Arguments = arguments, 
+                StackTrace = stackTrace, ArgumentsCopyFailed = 
+                eventBlock.Flags.HasFlag(KphSsEventFlags.CopyArgumentsFailed), 
+                ArgumentsProbeFailed = eventBlock.Flags.HasFlag(KphSsEventFlags.ProbeArgumentsFailed), 
+                CallNumber = eventBlock.Number
+            };
 
             // Flags
-            ssEvent.ArgumentsCopyFailed = eventBlock.Flags.HasFlag(KphSsEventFlags.CopyArgumentsFailed);
-            ssEvent.ArgumentsProbeFailed = eventBlock.Flags.HasFlag(KphSsEventFlags.ProbeArgumentsFailed);
-            ssEvent.CallNumber = eventBlock.Number;
-
             if ((eventBlock.Flags & KphSsEventFlags.UserMode) == KphSsEventFlags.UserMode)
                 ssEvent.Mode = KProcessorMode.UserMode;
             else

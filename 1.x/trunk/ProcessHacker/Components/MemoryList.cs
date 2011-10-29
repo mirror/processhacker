@@ -36,12 +36,11 @@ namespace ProcessHacker.Components
 {
     public partial class MemoryList : UserControl
     {
-        private object _listLock = new object();
-        private int _runCount = 0;
+        private int _runCount;
         private MemoryProvider _provider;
-        private bool _needsSort = false;
-        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
-        private HighlightingContext _highlightingContext;
+        private bool _needsSort;
+        private readonly List<ListViewItem> _needsAdd = new List<ListViewItem>();
+        private readonly HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -52,28 +51,27 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _highlightingContext = new HighlightingContext(listMemory);
-            listMemory.KeyDown += new KeyEventHandler(listMemory_KeyDown);
-            listMemory.MouseDown += new MouseEventHandler(listMemory_MouseDown);
-            listMemory.MouseUp += new MouseEventHandler(listMemory_MouseUp);
+            listMemory.KeyDown += this.listMemory_KeyDown;
+            listMemory.MouseDown += this.listMemory_MouseDown;
+            listMemory.MouseUp += this.listMemory_MouseUp;
 
             ColumnSettings.LoadSettings(Settings.Instance.MemoryListViewColumns, listMemory);
             listMemory.ContextMenu = menuMemory;
             GenericViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
 
             listMemory.ListViewItemSorter = new SortedListViewComparer(listMemory)
-                {
-                    SortColumn = 1,
-                    SortOrder = SortOrder.Ascending
-                };
+            {
+                SortColumn = 1,
+                SortOrder = SortOrder.Ascending
+            };
 
-            (listMemory.ListViewItemSorter as SortedListViewComparer).CustomSorters.Add(2,
-                (x, y) =>
-                {
-                    MemoryItem ix = (MemoryItem)x.Tag;
-                    MemoryItem iy = (MemoryItem)y.Tag;
+            (listMemory.ListViewItemSorter as SortedListViewComparer).CustomSorters.Add(2, (x, y) =>
+            {
+                MemoryItem ix = (MemoryItem)x.Tag;
+                MemoryItem iy = (MemoryItem)y.Tag;
 
-                    return ix.Size.CompareTo(iy.Size);
-                });
+                return ix.Size.CompareTo(iy.Size);
+            });
         }
 
         private void listMemory_MouseUp(object sender, MouseEventArgs e)
@@ -95,9 +93,11 @@ namespace ProcessHacker.Components
 
             if (!e.Handled)
             {
-                if (e.KeyCode == Keys.Enter)
+                switch (e.KeyCode)
                 {
-                    readWriteMemoryMemoryMenuItem_Click(null, null);
+                    case Keys.Enter:
+                        this.readWriteMemoryMemoryMenuItem_Click(null, null);
+                        break;
                 }
             }
         }
@@ -106,10 +106,7 @@ namespace ProcessHacker.Components
 
         public override bool Focused
         {
-            get
-            {
-                return listMemory.Focused;
-            }
+            get { return listMemory.Focused; }
         }
 
         public override ContextMenu ContextMenu
@@ -136,10 +133,10 @@ namespace ProcessHacker.Components
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified -= new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved -= new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated -= new MemoryProvider.ProviderUpdateOnce(provider_Updated);
+                    _provider.DictionaryAdded -= this.provider_DictionaryAdded;
+                    _provider.DictionaryModified -= this.provider_DictionaryModified;
+                    _provider.DictionaryRemoved -= this.provider_DictionaryRemoved;
+                    _provider.Updated -= this.provider_Updated;
                 }
 
                 _provider = value;
@@ -149,10 +146,10 @@ namespace ProcessHacker.Components
 
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded += new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified += new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved += new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated += new MemoryProvider.ProviderUpdateOnce(provider_Updated);
+                    _provider.DictionaryAdded += this.provider_DictionaryAdded;
+                    _provider.DictionaryModified += this.provider_DictionaryModified;
+                    _provider.DictionaryRemoved += this.provider_DictionaryRemoved;
+                    _provider.Updated += this.provider_Updated;
                     _pid = _provider.Pid;
 
                     foreach (MemoryItem item in _provider.Dictionary.Values)
@@ -226,28 +223,34 @@ namespace ProcessHacker.Components
 
         private string GetStateStr(MemoryState state)
         {
-            if (state == MemoryState.Commit)
-                return "Commit";
-            else if (state == MemoryState.Free)
-                return "Free";
-            else if (state == MemoryState.Reserve)
-                return "Reserve";
-            else if (state == MemoryState.Reset)
-                return "Reset";
-            else
-                return "Unknown";
+            switch (state)
+            {
+                case MemoryState.Commit:
+                    return "Commit";
+                case MemoryState.Free:
+                    return "Free";
+                case MemoryState.Reserve:
+                    return "Reserve";
+                case MemoryState.Reset:
+                    return "Reset";
+                default:
+                    return "Unknown";
+            }
         }
 
         private string GetTypeStr(MemoryType type)
         {
-            if (type == MemoryType.Image)
-                return "Image";
-            else if (type == MemoryType.Mapped)
-                return "Mapped";
-            else if (type == MemoryType.Private)
-                return "Private";
-            else
-                return "Unknown";
+            switch (type)
+            {
+                case MemoryType.Image:
+                    return "Image";
+                case MemoryType.Mapped:
+                    return "Mapped";
+                case MemoryType.Private:
+                    return "Private";
+                default:
+                    return "Unknown";
+            }
         }
 
         private void provider_Updated()
@@ -287,23 +290,27 @@ namespace ProcessHacker.Components
 
         private void FillMemoryListViewItem(ListViewItem litem, MemoryItem item)
         {
-            if (item.State == MemoryState.Free)
+            switch (item.State)
             {
-                litem.Text = "Free";
-            }
-            else if (item.Type == MemoryType.Image)
-            {
-                if (!string.IsNullOrEmpty(item.ModuleName))
-                    litem.Text = item.ModuleName;
-                else
-                    litem.Text = "Image";
+                case MemoryState.Free:
+                    litem.Text = "Free";
+                    break;
+                default:
+                    if (item.Type == MemoryType.Image)
+                    {
+                        if (!string.IsNullOrEmpty(item.ModuleName))
+                            litem.Text = item.ModuleName;
+                        else
+                            litem.Text = "Image";
 
-                litem.Text += " (" + GetStateStr(item.State) + ")";
-            }
-            else
-            {
-                litem.Text = GetTypeStr(item.Type);
-                litem.Text += " (" + GetStateStr(item.State) + ")";
+                        litem.Text += " (" + this.GetStateStr(item.State) + ")";
+                    }
+                    else
+                    {
+                        litem.Text = this.GetTypeStr(item.Type);
+                        litem.Text += " (" + this.GetStateStr(item.State) + ")";
+                    }
+                    break;
             }
 
             litem.SubItems[1].Text = Utils.FormatAddress(item.Address);
@@ -434,38 +441,35 @@ namespace ProcessHacker.Components
 
         private void dumpMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-
-            sfd.FileName = "Memory.bin";
-            sfd.Filter = "Binary Files (*.bin)|*.bin|All Files (*.*)|*.*";
-
-            if (sfd.ShowDialog() == DialogResult.OK)
+            using (SaveFileDialog sfd = new SaveFileDialog
             {
-                try
+                FileName = "Memory.bin",
+                Filter = "Binary Files (*.bin)|*.bin|All Files (*.*)|*.*"
+            })
+            {
+                if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    using (var phandle = new ProcessHandle(_pid, ProcessAccess.VmRead))
-                    using (var fhandle = FileHandle.CreateWin32(sfd.FileName, FileAccess.GenericWrite, FileShareMode.Read))
+                    try
                     {
-                        foreach (ListViewItem litem in listMemory.SelectedItems)
+                        using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.VmRead))
+                        using (FileHandle fhandle = FileHandle.CreateWin32(sfd.FileName, FileAccess.GenericWrite, FileShareMode.Read))
                         {
-                            MemoryItem item = (MemoryItem)litem.Tag;
-
-                            using (MemoryAlloc alloc = new MemoryAlloc((int)item.Size))
+                            foreach (ListViewItem litem in listMemory.SelectedItems)
                             {
-                                try
+                                MemoryItem item = (MemoryItem)litem.Tag;
+
+                                using (MemoryAlloc alloc = new MemoryAlloc((int)item.Size))
                                 {
                                     phandle.ReadMemory(item.Address, (IntPtr)alloc, (int)item.Size);
                                     fhandle.Write(alloc.Memory, (int)item.Size);
                                 }
-                                catch (WindowsException)
-                                { }
                             }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    PhUtils.ShowException("Unable to dump the selected memory regions", ex);
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowException("Unable to dump the selected memory regions", ex);
+                    }
                 }
             }
         }
@@ -535,8 +539,13 @@ namespace ProcessHacker.Components
                     return;
                 }
 
-                MemoryEditor m_e = MemoryEditor.ReadWriteMemory(_pid, regionAddress, (int)regionSize, false,
-                   new Program.MemoryEditorInvokeAction(f => { f.Select(address.Decrement(regionAddress).ToInt64(), 1); }));
+                MemoryEditor.ReadWriteMemory(
+                    _pid, 
+                    regionAddress, 
+                    (int)regionSize, 
+                    false, 
+                    f => f.Select(address.Decrement(regionAddress).ToInt64(), 1)
+                    );
             }
         }
 
@@ -583,7 +592,7 @@ namespace ProcessHacker.Components
                 {
                     using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.VmOperation))
                     {
-                        MemoryItem item = listMemory.SelectedItems[0].Tag as MemoryItem; ;
+                        MemoryItem item = listMemory.SelectedItems[0].Tag as MemoryItem;
 
                         phandle.FreeMemory(item.Address, (int)item.Size, true);
                     }

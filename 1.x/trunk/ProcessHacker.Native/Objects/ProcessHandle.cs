@@ -107,13 +107,12 @@ namespace ProcessHacker.Native.Objects
             DebugObjectHandle debugPort
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateProcess(
+                Win32.NtCreateProcess(
                     out handle,
                     access,
                     ref oa,
@@ -122,8 +121,7 @@ namespace ProcessHacker.Native.Objects
                     sectionHandle ?? IntPtr.Zero,
                     debugPort ?? IntPtr.Zero,
                     IntPtr.Zero
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -186,7 +184,7 @@ namespace ProcessHacker.Native.Objects
                 FileAccess.Execute | (FileAccess)StandardRights.Synchronize
                 ))
             {
-                using (var shandle = SectionHandle.Create(
+                using (SectionHandle shandle = SectionHandle.Create(
                     SectionAccess.All,
                     SectionAttributes.Image,
                     MemoryProtection.Execute,
@@ -216,10 +214,10 @@ namespace ProcessHacker.Native.Objects
                 currentDirectory,
                 fileName,
                 environment,
-                startupInfo.Title != null ? startupInfo.Title : fileName,
-                startupInfo.Desktop != null ? startupInfo.Desktop : "",
-                startupInfo.Reserved != null ? startupInfo.Reserved : "",
-                "",
+                !string.IsNullOrEmpty(startupInfo.Title) ? startupInfo.Title : fileName,
+                !string.IsNullOrEmpty(startupInfo.Desktop) ? startupInfo.Desktop : string.Empty,
+                !string.IsNullOrEmpty(startupInfo.Reserved) ? startupInfo.Reserved : string.Empty,
+                string.Empty,
                 ref startupInfo
                 );
 
@@ -240,24 +238,23 @@ namespace ProcessHacker.Native.Objects
 
             if (notifyCsr)
             {
-                BaseCreateProcessMsg processMsg = new BaseCreateProcessMsg();
-
-                processMsg.ProcessHandle = phandle;
-                processMsg.ThreadHandle = thandle;
-                processMsg.ClientId = clientId;
-                processMsg.CreationFlags = creationFlags;
-
-                if ((creationFlags & (ProcessCreationFlags.DebugProcess |
-                    ProcessCreationFlags.DebugOnlyThisProcess)) != 0)
+                BaseCreateProcessMsg processMsg = new BaseCreateProcessMsg
                 {
-                    NtStatus status;
+                    ProcessHandle = phandle, 
+                    ThreadHandle = thandle,
+                    ClientId = clientId, 
+                    CreationFlags = creationFlags
+                };
 
-                    status = Win32.DbgUiConnectToDbg();
+                if ((creationFlags & (ProcessCreationFlags.DebugProcess | ProcessCreationFlags.DebugOnlyThisProcess)) != 0)
+                {
+                    NtStatus status = Win32.DbgUiConnectToDbg();
 
-                    if (status >= NtStatus.Error)
+                    if (status.IsError())
                     {
                         phandle.Terminate(status);
-                        Win32.Throw(status);
+
+                        status.Throw();
                     }
 
                     processMsg.DebuggerClientId = ThreadHandle.GetCurrentCid();
@@ -267,12 +264,12 @@ namespace ProcessHacker.Native.Objects
                 // hourglass cursor on.
                 if (imageInfo.ImageSubsystem == 2)
                     processMsg.ProcessHandle = processMsg.ProcessHandle.Or((1 | 2).ToIntPtr());
+                
                 // We still have to honor the startup info settings, though.
-                if ((startupInfo.Flags & StartupFlags.ForceOnFeedback) ==
-                    StartupFlags.ForceOnFeedback)
+                if (startupInfo.Flags.HasFlag(StartupFlags.ForceOnFeedback))
                     processMsg.ProcessHandle = processMsg.ProcessHandle.Or((1).ToIntPtr());
-                if ((startupInfo.Flags & StartupFlags.ForceOffFeedback) ==
-                    StartupFlags.ForceOffFeedback)
+
+                if (startupInfo.Flags.HasFlag(StartupFlags.ForceOffFeedback))
                     processMsg.ProcessHandle = processMsg.ProcessHandle.And((1).ToIntPtr().Not());
 
                 using (MemoryAlloc data = new MemoryAlloc(CsrApiMsg.ApiMessageDataOffset + BaseCreateProcessMsg.SizeOf))
@@ -283,7 +280,7 @@ namespace ProcessHacker.Native.Objects
                         data,
                         IntPtr.Zero,
                         Win32.CsrMakeApiNumber(Win32.BaseSrvServerDllIndex, (int)BaseSrvApiNumber.BasepCreateProcess),
-                        Marshal.SizeOf(typeof(BaseCreateProcessMsg))
+                        BaseCreateProcessMsg.SizeOf
                         );
 
                     NtStatus status = (NtStatus)data.ReadStruct<CsrApiMsg>().ReturnValue;
@@ -306,12 +303,11 @@ namespace ProcessHacker.Native.Objects
 
         public static ProcessHandle CreateUserProcess(string fileName, out ClientId clientId, out ThreadHandle threadHandle)
         {
-            NtStatus status;
             UnicodeString fileNameStr = new UnicodeString(fileName);
             RtlUserProcessParameters processParams = new RtlUserProcessParameters();
             RtlUserProcessInformation processInfo;
 
-            processParams.Length = Marshal.SizeOf(processParams);
+            processParams.Length = RtlUserProcessParameters.SizeOf;
             processParams.MaximumLength = processParams.Length;
             processParams.ImagePathName = new UnicodeString(fileName);
             processParams.CommandLine = new UnicodeString(fileName);
@@ -320,7 +316,7 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                if ((status = Win32.RtlCreateUserProcess(
+                Win32.RtlCreateUserProcess(
                     ref fileNameStr,
                     0,
                     ref processParams,
@@ -331,8 +327,7 @@ namespace ProcessHacker.Native.Objects
                     IntPtr.Zero,
                     IntPtr.Zero,
                     out processInfo
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
 
                 clientId = processInfo.ClientId;
                 threadHandle = new ThreadHandle(processInfo.Thread, true);
@@ -362,7 +357,7 @@ namespace ProcessHacker.Native.Objects
         {
             ProcessInformation processInformation;
 
-            startupInfo.Size = Marshal.SizeOf(typeof(StartupInfo));
+            startupInfo.Size = StartupInfo.SizeOf;
 
             if (!Win32.CreateProcess(
                 applicationName,
@@ -399,7 +394,7 @@ namespace ProcessHacker.Native.Objects
         {
             ProcessInformation processInformation;
 
-            startupInfo.Size = Marshal.SizeOf(typeof(StartupInfo));
+            startupInfo.Size = StartupInfo.SizeOf;
 
             if (!Win32.CreateProcessAsUser(
                 tokenHandle,
@@ -923,7 +918,7 @@ namespace ProcessHacker.Native.Objects
                 this,
                 ProcessInformationClass.ProcessHandleTracing,
                 ref phte,
-                Marshal.SizeOf(phte)
+                ProcessHandleTracingEnable.SizeOf
                 ).ThrowIf();
         }
 
@@ -934,10 +929,10 @@ namespace ProcessHacker.Native.Objects
         public void EnumMemory(EnumMemoryDelegate enumMemoryCallback)
         {
             IntPtr address = IntPtr.Zero;
-            MemoryBasicInformation mbi = new MemoryBasicInformation();
-            int mbiSize = Marshal.SizeOf(mbi);
 
-            while (Win32.VirtualQueryEx(this, address, out mbi, mbiSize) != 0)
+            MemoryBasicInformation mbi;
+
+            while (Win32.VirtualQueryEx(this, address, out mbi, MemoryBasicInformation.SizeOf) != 0)
             {
                 if (!enumMemoryCallback(mbi))
                     break;
@@ -970,23 +965,23 @@ namespace ProcessHacker.Native.Objects
             if (!Win32.EnumProcessModules(this, moduleHandles, requiredSize, out requiredSize))
                 Win32.Throw();
 
-            for (int i = 0; i < moduleHandles.Length; i++)
+            foreach (IntPtr t in moduleHandles)
             {
                 ModuleInfo moduleInfo = new ModuleInfo();
                 StringBuilder baseName = new StringBuilder(0x400);
                 StringBuilder fileName = new StringBuilder(0x400);
 
-                if (!Win32.GetModuleInformation(this, moduleHandles[i], moduleInfo, Marshal.SizeOf(moduleInfo)))
+                if (!Win32.GetModuleInformation(this, t, moduleInfo, ModuleInfo.SizeOf))
                     Win32.Throw();
-                if (Win32.GetModuleBaseName(this, moduleHandles[i], baseName, baseName.Capacity * 2) == 0)
+                if (Win32.GetModuleBaseName(this, t, baseName, baseName.Capacity * 2) == 0)
                     Win32.Throw();
-                if (Win32.GetModuleFileNameEx(this, moduleHandles[i], fileName, fileName.Capacity * 2) == 0)
+                if (Win32.GetModuleFileNameEx(this, t, fileName, fileName.Capacity * 2) == 0)
                     Win32.Throw();
 
                 if (!enumModulesCallback(new ProcessModule(
-                    moduleInfo.BaseOfDll, moduleInfo.SizeOfImage, moduleInfo.EntryPoint, 0,
-                    baseName.ToString(), FileUtils.GetFileName(fileName.ToString())
-                    )))
+                                             moduleInfo.BaseOfDll, moduleInfo.SizeOfImage, moduleInfo.EntryPoint, 0,
+                                             baseName.ToString(), FileUtils.GetFileName(fileName.ToString())
+                                             )))
                     break;
             }
         }
@@ -1006,7 +1001,7 @@ namespace ProcessHacker.Native.Objects
 
             PebLdrData data;
             // Read the loader data table structure.
-            this.ReadMemory(loaderData, &data, Marshal.SizeOf(typeof(PebLdrData)));
+            this.ReadMemory(loaderData, &data, PebLdrData.SizeOf);
 
             if (!data.Initialized)
                 throw new Exception("Loader data is not initialized.");
@@ -1026,7 +1021,7 @@ namespace ProcessHacker.Native.Objects
                     break;
 
                 // Read the loader data table entry.
-                this.ReadMemory(currentLink, &currentEntry, Marshal.SizeOf(typeof(LdrDataTableEntry)));
+                this.ReadMemory(currentLink, &currentEntry, LdrDataTableEntry.SizeOf);
 
                 // Check if the entry is valid.
                 if (currentEntry.DllBase != IntPtr.Zero)
@@ -1532,9 +1527,9 @@ namespace ProcessHacker.Native.Objects
         /// QueryLimitedInformation access.
         /// </summary>
         /// <returns>A file name, in native format.</returns>
-        public string GetImageFileName()
+        public string ImageFileName
         {
-            return this.GetInformationUnicodeString(ProcessInformationClass.ProcessImageFileName);
+            get { return FileUtils.GetFileName(this.GetInformationUnicodeString(ProcessInformationClass.ProcessImageFileName)); }
         }
 
         /// <summary>
@@ -1619,7 +1614,7 @@ namespace ProcessHacker.Native.Objects
             {
                 Win32.NtQueryInformationProcess(this, infoClass, data, retLen, out retLen).ThrowIf();
 
-                return data.ReadStruct<UnicodeString>().Read();
+                return data.ReadStruct<UnicodeString>().Text;
             }
         }
 
@@ -1676,7 +1671,7 @@ namespace ProcessHacker.Native.Objects
             if (this.GetBasicInformation().UniqueProcessId.Equals(4))
                 return KnownProcess.System;
 
-            string fileName = FileUtils.GetFileName(this.GetImageFileName());
+            string fileName = this.ImageFileName;
 
             if (fileName.StartsWith(Environment.SystemDirectory, StringComparison.OrdinalIgnoreCase))
             {
@@ -1760,7 +1755,7 @@ namespace ProcessHacker.Native.Objects
                 if (status.IsError())
                     return null;
 
-                return FileUtils.GetFileName(data.ReadStruct<UnicodeString>().Read());
+                return FileUtils.GetFileName(data.ReadStruct<UnicodeString>().Text);
             }
         }
 
@@ -2453,7 +2448,7 @@ namespace ProcessHacker.Native.Objects
             IntPtr loaderData = *(IntPtr*)buffer;
 
             PebLdrData data;
-            this.ReadMemory(loaderData, &data, Marshal.SizeOf(typeof(PebLdrData)));
+            this.ReadMemory(loaderData, &data, PebLdrData.SizeOf);
 
             if (!data.Initialized)
                 throw new Exception("Loader data is not initialized.");
@@ -2471,7 +2466,7 @@ namespace ProcessHacker.Native.Objects
                 if (i > 0x800)
                     break;
 
-                this.ReadMemory(currentLink, &currentEntry, Marshal.SizeOf(typeof(LdrDataTableEntry)));
+                this.ReadMemory(currentLink, &currentEntry, LdrDataTableEntry.SizeOf);
 
                 if (currentEntry.DllBase == baseAddress)
                 {

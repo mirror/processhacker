@@ -31,9 +31,9 @@ namespace ProcessHacker
         private void InitializeComponent()
         {
             this.buttonClose = new System.Windows.Forms.Button();
-            this.listView = new ExtendedListView();
-            this.columnName = new System.Windows.Forms.ColumnHeader();
-            this.columnValue = new System.Windows.Forms.ColumnHeader();
+            this.listView = new ProcessHacker.Components.ExtendedListView();
+            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // buttonClose
@@ -50,12 +50,13 @@ namespace ProcessHacker
             // 
             // listView
             // 
-            this.listView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnName,
             this.columnValue});
+            this.listView.DoubleClickChecks = true;
             this.listView.FullRowSelect = true;
             this.listView.Location = new System.Drawing.Point(12, 12);
             this.listView.Name = "listView";
@@ -79,9 +80,11 @@ namespace ProcessHacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(511, 310);
             this.Controls.Add(this.listView);
             this.Controls.Add(this.buttonClose);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -90,7 +93,6 @@ namespace ProcessHacker
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "List";
-            this.Load += new System.EventHandler(this.ListWindow_Load);
             this.ResumeLayout(false);
 
         }

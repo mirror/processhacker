@@ -39,7 +39,7 @@ namespace ProcessHacker.Components
     public partial class ServiceProperties : UserControl
     {
         private QueryServiceConfig _oldConfig;
-        private ServiceProvider _provider;
+        private readonly ServiceProvider _provider;
 
         public event EventHandler NeedsClose;
 
@@ -52,7 +52,6 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             listServices.ListViewItemSorter = new SortedListViewComparer(listServices);
-            listServices.SetTheme("explorer");
             ColumnSettings.LoadSettings(Settings.Instance.ServiceMiniListColumns, listServices);
 
             PID = -1;
@@ -74,12 +73,12 @@ namespace ProcessHacker.Components
                     _provider.Dictionary[s].Status.ServiceStatusProcess.CurrentState.ToString() })).Name = s;
             }
 
-            _provider.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(_provider_DictionaryModified);
-            _provider.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(_provider_DictionaryRemoved);
+            _provider.DictionaryModified += this._provider_DictionaryModified;
+            _provider.DictionaryRemoved += this._provider_DictionaryRemoved;
 
-            Utils.Fill(comboErrorControl, typeof(ServiceErrorControl));
-            Utils.Fill(comboStartType, typeof(ServiceStartType));
-            Utils.Fill(comboType, typeof(ProcessHacker.Native.Api.ServiceType));
+            this.comboErrorControl.Fill(typeof(ServiceErrorControl));
+            this.comboStartType.Fill(typeof(ServiceStartType));
+            this.comboType.Fill(typeof(ProcessHacker.Native.Api.ServiceType));
             comboType.Items.Add("Win32OwnProcess, InteractiveProcess");
             comboType.Items.Add("Win32ShareProcess, InteractiveProcess");
 
@@ -127,11 +126,11 @@ namespace ProcessHacker.Components
         private void _provider_DictionaryRemoved(ServiceItem item)
         {
             this.BeginInvoke(new MethodInvoker(() =>
-                {
-                    // remove the item from the list if it's there
-                    if (listServices.Items.ContainsKey(item.Status.ServiceName))
-                        listServices.Items[item.Status.ServiceName].Remove();
-                }));
+            {
+                // remove the item from the list if it's there
+                if (listServices.Items.ContainsKey(item.Status.ServiceName))
+                    listServices.Items[item.Status.ServiceName].Remove();
+            }));
         }
 
         private void _provider_DictionaryModified(ServiceItem oldItem, ServiceItem newItem)
@@ -140,40 +139,46 @@ namespace ProcessHacker.Components
                 return;
 
             this.BeginInvoke(new MethodInvoker(() =>
+            {
+                // update the state of the service
+                if (listServices.Items.ContainsKey(newItem.Status.ServiceName))
+                    listServices.Items[newItem.Status.ServiceName].SubItems[2].Text =
+                        newItem.Status.ServiceStatusProcess.CurrentState.ToString();
+
+                // update the start and stop buttons if we have a service selected
+                if (listServices.SelectedItems.Count == 1)
                 {
-                    // update the state of the service
-                    if (listServices.Items.ContainsKey(newItem.Status.ServiceName))
-                        listServices.Items[newItem.Status.ServiceName].SubItems[2].Text =
-                            newItem.Status.ServiceStatusProcess.CurrentState.ToString();
-
-                    // update the start and stop buttons if we have a service selected
-                    if (listServices.SelectedItems.Count == 1)
+                    if (listServices.SelectedItems[0].Name == newItem.Status.ServiceName)
                     {
-                        if (listServices.SelectedItems[0].Name == newItem.Status.ServiceName)
-                        {
-                            buttonStart.Enabled = false;
-                            buttonStop.Enabled = false;
+                        buttonStart.Enabled = false;
+                        buttonStop.Enabled = false;
 
-                            if (newItem.Status.ServiceStatusProcess.CurrentState == ServiceState.Running)
-                                buttonStop.Enabled = true;
-                            else if (newItem.Status.ServiceStatusProcess.CurrentState == ServiceState.Stopped)
-                                buttonStart.Enabled = true;
+                        switch (newItem.Status.ServiceStatusProcess.CurrentState)
+                        {
+                            case ServiceState.Running:
+                                this.buttonStop.Enabled = true;
+                                break;
+                            case ServiceState.Stopped:
+                                this.buttonStart.Enabled = true;
+                                break;
                         }
                     }
+                }
 
-                    // if the service was just started in this process, add it to the list
-                    if (newItem.Status.ServiceStatusProcess.ProcessID == this.PID && oldItem.Status.ServiceStatusProcess.ProcessID == 0)
+                // if the service was just started in this process, add it to the list
+                if (newItem.Status.ServiceStatusProcess.ProcessID == this.PID && oldItem.Status.ServiceStatusProcess.ProcessID == 0)
+                {
+                    if (!listServices.Items.ContainsKey(newItem.Status.ServiceName))
                     {
-                        if (!listServices.Items.ContainsKey(newItem.Status.ServiceName))
+                        listServices.Items.Add(new ListViewItem(new string[]
                         {
-                            listServices.Items.Add(new ListViewItem(new string[] { 
-                                newItem.Status.ServiceName, 
-                                newItem.Status.DisplayName,
-                                newItem.Status.ServiceStatusProcess.CurrentState.ToString() 
-                            })).Name = newItem.Status.ServiceName;
-                        }
+                            newItem.Status.ServiceName,
+                            newItem.Status.DisplayName,
+                            newItem.Status.ServiceStatusProcess.CurrentState.ToString()
+                        })).Name = newItem.Status.ServiceName;
                     }
-                }));
+                }
+            }));
         }
 
         private void listServices_SelectedIndexChanged(object sender, EventArgs e)
@@ -425,8 +430,7 @@ namespace ProcessHacker.Components
         {
             try
             {
-                using (ServiceController controller = new ServiceController(
-                    listServices.SelectedItems[0].Name))
+                using (ServiceController controller = new ServiceController(listServices.SelectedItems[0].Name))
                 {
                     List<string> dependents = new List<string>();
 
@@ -448,8 +452,7 @@ namespace ProcessHacker.Components
         {
             try
             {
-                using (ServiceController controller = new ServiceController(
-                    listServices.SelectedItems[0].Name))
+                using (ServiceController controller = new ServiceController(listServices.SelectedItems[0].Name))
                 {
                     List<string> dependencies = new List<string>();
 

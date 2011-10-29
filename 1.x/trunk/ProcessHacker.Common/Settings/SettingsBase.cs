@@ -32,17 +32,17 @@ namespace ProcessHacker.Common.Settings
     /// </summary>
     public abstract class SettingsBase
     {
-        private ISettingsStore _store;
-        private Dictionary<string, object> _settings = new Dictionary<string, object>();
-        private Dictionary<string, object> _modifiedSettings = new Dictionary<string, object>();
-        private Dictionary<string, string> _defaultsCache = new Dictionary<string, string>();
-        private Dictionary<string, Type> _typeCache = new Dictionary<string, Type>();
+        private readonly ISettingsStore _store;
+        private readonly Dictionary<string, object> _settings = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _modifiedSettings = new Dictionary<string, object>();
+        private readonly Dictionary<string, string> _defaultsCache = new Dictionary<string, string>();
+        private readonly Dictionary<string, Type> _typeCache = new Dictionary<string, Type>();
 
         /// <summary>
         /// Creates a settings class with the specified storage provider.
         /// </summary>
         /// <param name="store">The storage provider.</param>
-        public SettingsBase(ISettingsStore store)
+        protected SettingsBase(ISettingsStore store)
         {
             _store = store;
         }
@@ -76,14 +76,15 @@ namespace ProcessHacker.Common.Settings
         {
             if (valueType.IsPrimitive)
                 return Convert.ChangeType(value, valueType);
-            else if (valueType == typeof(string))
+            
+            if (valueType == typeof(string))
                 return value;
 
-            var converter = TypeDescriptor.GetConverter(valueType);
+            TypeConverter converter = TypeDescriptor.GetConverter(valueType);
 
             // Since all types can convert to System.String, we also need to make sure they can 
             // convert from System.String.
-            if (converter.CanConvertFrom(typeof(string)) && converter.CanConvertTo(typeof(string)))
+            if (converter != null && (converter.CanConvertFrom(typeof(string)) && converter.CanConvertTo(typeof(string))))
                 return converter.ConvertFromInvariantString(value);
 
             throw new InvalidOperationException("The setting '" + value + "' has an unsupported type.");
@@ -99,14 +100,15 @@ namespace ProcessHacker.Common.Settings
         {
             if (valueType.IsPrimitive)
                 return (string)Convert.ChangeType(value, typeof(string));
-            else if (valueType == typeof(string))
+            
+            if (valueType == typeof(string))
                 return (string)value;
 
-            var converter = TypeDescriptor.GetConverter(valueType);
+            TypeConverter converter = TypeDescriptor.GetConverter(valueType);
 
             // Since all types can convert to System.String, we also need to make sure they can 
             // convert from System.String.
-            if (converter.CanConvertFrom(typeof(string)) && converter.CanConvertTo(typeof(string)))
+            if (converter != null && (converter.CanConvertFrom(typeof(string)) && converter.CanConvertTo(typeof(string))))
                 return converter.ConvertToInvariantString(value);
 
             throw new InvalidOperationException("The setting '" + value + "' has an unsupported type.");
@@ -123,12 +125,15 @@ namespace ProcessHacker.Common.Settings
             {
                 if (!_defaultsCache.ContainsKey(name))
                 {
-                    var property = this.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
-                    var attributes = property.GetCustomAttributes(typeof(SettingDefaultAttribute), true);
+                    PropertyInfo property = this.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+                    object[] attributes = property.GetCustomAttributes(typeof(SettingDefaultAttribute), true);
 
                     if (attributes.Length == 1)
                     {
-                        _defaultsCache.Add(name, (attributes[0] as SettingDefaultAttribute).Value);
+                        SettingDefaultAttribute settingDefaultAttribute = attributes[0] as SettingDefaultAttribute;
+                        
+                        if (settingDefaultAttribute != null)
+                            this._defaultsCache.Add(name, settingDefaultAttribute.Value);
                     }
                     else
                     {
@@ -168,8 +173,6 @@ namespace ProcessHacker.Common.Settings
         private object GetValue(string name)
         {
             object value;
-            string settingValue;
-            Type settingType;
 
             lock (_modifiedSettings)
             {
@@ -183,14 +186,14 @@ namespace ProcessHacker.Common.Settings
                     return _settings[name];
             }
 
-            settingValue = _store.GetValue(name);
+            string settingValue = this._store.GetValue(name);
 
-            if (settingValue == null)
+            if (string.IsNullOrEmpty(settingValue))
                 settingValue = this.GetSettingDefault(name);
-            if (settingValue == null)
-                settingValue = "";
+            if (string.IsNullOrEmpty(settingValue))
+                settingValue = string.Empty;
 
-            settingType = this.GetSettingType(name);
+            Type settingType = this.GetSettingType(name);
 
             try
             {
@@ -250,7 +253,7 @@ namespace ProcessHacker.Common.Settings
         {
             lock (_modifiedSettings)
             {
-                foreach (var pair in _modifiedSettings)
+                foreach (KeyValuePair<string, object> pair in _modifiedSettings)
                 {
                     _store.SetValue(pair.Key, this.ConvertToString(pair.Value, this.GetSettingType(pair.Key)));
                 }

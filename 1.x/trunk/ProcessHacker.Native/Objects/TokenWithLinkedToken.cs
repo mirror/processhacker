@@ -20,15 +20,13 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using System;
 
 namespace ProcessHacker.Native.Objects
 {
     public sealed class TokenWithLinkedToken : IWithToken
     {
-        private TokenHandle _token;
+        private readonly TokenHandle _token;
 
         public TokenWithLinkedToken(TokenHandle token)
         {

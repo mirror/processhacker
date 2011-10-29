@@ -32,7 +32,7 @@ namespace ProcessHacker
 {
     public partial class EditDEPWindow : Form
     {
-        private int _pid;
+        private readonly int _pid;
 
         public EditDEPWindow(int PID)
         {
@@ -44,8 +44,7 @@ namespace ProcessHacker
 
             try
             {
-                using (ProcessHandle phandle
-                  = new ProcessHandle(_pid, ProcessAccess.QueryInformation))
+                using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation))
                 {
                     var depStatus = phandle.GetDepStatus();
                     string str;

@@ -21,10 +21,7 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
-using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -175,8 +172,8 @@ namespace ProcessHacker.Native.Io
 
         private static void DeleteSymbolicLink(string path)
         {
-            using (var data = new MemoryAlloc(MountMgrMountPoint.SizeOf + path.Length * 2))
-            using (var outData = new MemoryAlloc(1600))
+            using (MemoryAlloc data = new MemoryAlloc(MountMgrMountPoint.SizeOf + path.Length * 2))
+            using (MemoryAlloc outData = new MemoryAlloc(1600))
             {
                 MountMgrMountPoint mountPoint = new MountMgrMountPoint
                 {
@@ -204,7 +201,7 @@ namespace ProcessHacker.Native.Io
         /// <returns>The device name associated with the DOS drive.</returns>
         public static string GetDeviceName(string fileName)
         {
-            using (var fhandle = new FileHandle(
+            using (FileHandle fhandle = new FileHandle(
                 fileName,
                 FileShareMode.ReadWrite,
                 FileCreateOptions.SynchronousIoNonAlert,
@@ -215,7 +212,7 @@ namespace ProcessHacker.Native.Io
 
         public static string GetDeviceName(FileHandle fhandle)
         {
-            using (var data = new MemoryAlloc(600))
+            using (MemoryAlloc data = new MemoryAlloc(600))
             {
                 fhandle.IoControl(IoCtlQueryDeviceName, IntPtr.Zero, 0, data, data.Size);
 
@@ -227,7 +224,7 @@ namespace ProcessHacker.Native.Io
 
         private static string GetReparsePointTarget(FileHandle fhandle)
         {
-            using (var data = new MemoryAlloc(FileSystem.MaximumReparseDataBufferSize))
+            using (MemoryAlloc data = new MemoryAlloc(FileSystem.MaximumReparseDataBufferSize))
             {
                 fhandle.IoControl(FileSystem.FsCtlGetReparsePoint, IntPtr.Zero, 0, data, data.Size);
 
@@ -302,7 +299,7 @@ namespace ProcessHacker.Native.Io
 
         public static string GetVolumeName(string deviceName)
         {
-            using (var data = new MemoryAlloc(MountMgrMountPoint.SizeOf + deviceName.Length * 2))
+            using (MemoryAlloc data = new MemoryAlloc(MountMgrMountPoint.SizeOf + deviceName.Length * 2))
             {
                 MountMgrMountPoint mountPoint = new MountMgrMountPoint
                 {
@@ -409,13 +406,14 @@ namespace ProcessHacker.Native.Io
                 targetVolumeName.Length * 2
                 ))
             {
-                MountMgrVolumeMountPoint mountPoint = new MountMgrVolumeMountPoint();
+                MountMgrVolumeMountPoint mountPoint = new MountMgrVolumeMountPoint
+                {
+                    SourceVolumeNameLength = (ushort)(sourceVolumeName.Length * 2), 
+                    SourceVolumeNameOffset = (ushort)MountMgrVolumeMountPoint.SizeOf, 
+                    TargetVolumeNameLength = (ushort)(targetVolumeName.Length * 2)
+                };
 
-                mountPoint.SourceVolumeNameLength = (ushort)(sourceVolumeName.Length * 2);
-                mountPoint.SourceVolumeNameOffset = (ushort)MountMgrVolumeMountPoint.SizeOf;
-                mountPoint.TargetVolumeNameLength = (ushort)(targetVolumeName.Length * 2);
-                mountPoint.TargetVolumeNameOffset = 
-                    (ushort)(mountPoint.SourceVolumeNameOffset + mountPoint.SourceVolumeNameLength);
+                mountPoint.TargetVolumeNameOffset = (ushort)(mountPoint.SourceVolumeNameOffset + mountPoint.SourceVolumeNameLength);
 
                 data.WriteStruct(mountPoint);
                 data.WriteUnicodeString(mountPoint.SourceVolumeNameOffset, sourceVolumeName);

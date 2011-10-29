@@ -32,11 +32,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.listHandles = new ExtendedListView();
-            this.columnType = new System.Windows.Forms.ColumnHeader();
-            this.columnName = new System.Windows.Forms.ColumnHeader();
-            this.columnHandle = new System.Windows.Forms.ColumnHeader();
+            this.listHandles = new ProcessHacker.Components.ExtendedListView();
+            this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.closeHandleMenuItem = new System.Windows.Forms.MenuItem();
             this.copyHandleMenuItem = new System.Windows.Forms.MenuItem();
             this.menuHandle = new System.Windows.Forms.ContextMenu();
@@ -54,6 +53,7 @@
             this.columnName,
             this.columnHandle});
             this.listHandles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listHandles.DoubleClickChecks = true;
             this.listHandles.FullRowSelect = true;
             this.listHandles.HideSelection = false;
             this.listHandles.Location = new System.Drawing.Point(0, 0);
@@ -128,8 +128,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listHandles);
-            this.DoubleBuffered = true;
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "HandleList";
             this.Size = new System.Drawing.Size(450, 472);
             this.ResumeLayout(false);

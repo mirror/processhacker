@@ -38,7 +38,6 @@ namespace ProcessHacker.Native.Objects
             IntPtr affinity
             )
         {
-            NtStatus status;
             IntPtr handle;
 
             if (bucketSize < 2 || bucketSize > 30)
@@ -49,7 +48,7 @@ namespace ProcessHacker.Native.Objects
                 uint realBucketSize = (uint)(2 << (bucketSize - 1));
                 MemoryAlloc buffer = new MemoryAlloc((int)((rangeSize - 1) / realBucketSize + 1) * sizeof(int)); // divide, round up
 
-                if ((status = Win32.NtCreateProfile(
+                Win32.NtCreateProfile(
                     out handle,
                     processHandle ?? IntPtr.Zero,
                     rangeBase,
@@ -59,8 +58,7 @@ namespace ProcessHacker.Native.Objects
                     buffer.Size,
                     profileSource,
                     affinity
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
 
                 return new ProfileHandle(handle, true, rangeBase, rangeSize, realBucketSize, buffer);
             }
@@ -68,27 +66,19 @@ namespace ProcessHacker.Native.Objects
 
         public static int GetInterval(KProfileSource profileSource)
         {
-            NtStatus status;
             int interval;
 
-            if ((status = Win32.NtQueryIntervalProfile(profileSource, out interval)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtQueryIntervalProfile(profileSource, out interval).ThrowIf();
 
             return interval;
         }
 
         public static void SetInterval(KProfileSource profileSource, int interval)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtSetIntervalProfile(interval, profileSource)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtSetIntervalProfile(interval, profileSource).ThrowIf();
         }
 
-        private IntPtr _rangeBase;
-        private uint _rangeSize;
-        private uint _bucketSize; // not logarithmic
-        private MemoryAlloc _buffer;
+        private readonly MemoryAlloc _buffer;
 
         private ProfileHandle(
             IntPtr handle,
@@ -100,9 +90,6 @@ namespace ProcessHacker.Native.Objects
             )
             : base(handle, owned)
         {
-            _rangeBase = rangeBase;
-            _rangeSize = rangeSize;
-            _bucketSize = bucketSize;
             _buffer = buffer;
         }
 
@@ -124,18 +111,12 @@ namespace ProcessHacker.Native.Objects
 
         public void Start()
         {
-            NtStatus status;
-
-            if ((status = Win32.NtStartProfile(this)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtStartProfile(this).ThrowIf();
         }
 
         public void Stop()
         {
-            NtStatus status;
-
-            if ((status = Win32.NtStopProfile(this)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtStopProfile(this).ThrowIf();
         }
     }
 }

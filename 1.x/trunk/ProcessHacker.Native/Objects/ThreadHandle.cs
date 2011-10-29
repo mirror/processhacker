@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
@@ -59,13 +58,12 @@ namespace ProcessHacker.Native.Objects
             bool createSuspended
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateThread(
+                Win32.NtCreateThread(
                     out handle,
                     access,
                     ref oa,
@@ -74,8 +72,7 @@ namespace ProcessHacker.Native.Objects
                     ref threadContext,
                     ref initialTeb,
                     createSuspended
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
             finally
             {
@@ -112,10 +109,9 @@ namespace ProcessHacker.Native.Objects
             out ClientId clientId
             )
         {
-            NtStatus status;
             IntPtr threadHandle;
 
-            if ((status = Win32.RtlCreateUserThread(
+            Win32.RtlCreateUserThread(
                 processHandle,
                 IntPtr.Zero,
                 createSuspended,
@@ -126,8 +122,7 @@ namespace ProcessHacker.Native.Objects
                 parameter,
                 out threadHandle,
                 out clientId
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return new ThreadHandle(threadHandle, true);
         }
@@ -158,7 +153,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A client ID.</returns>
         public static ClientId GetCurrentCid()
         {
-            return new ClientId(ProcessHandle.GetCurrentId(), ThreadHandle.GetCurrentId());
+            return new ClientId(ProcessHandle.GetCurrentId(), GetCurrentId());
         }
 
         /// <summary>
@@ -228,10 +223,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="portHandle">A handle to a port.</param>
         public static void RegisterTerminationPort(PortHandle portHandle)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtRegisterThreadTerminatePort(portHandle)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtRegisterThreadTerminatePort(portHandle).ThrowIf();
         }
 
         /// <summary>
@@ -277,12 +269,7 @@ namespace ProcessHacker.Native.Objects
         /// </returns>
         public static NtStatus TestAlert()
         {
-            NtStatus status;
-
-            if ((status = Win32.NtTestAlert()) >= NtStatus.Error)
-                Win32.Throw(status);
-
-            return status;
+            return Win32.NtTestAlert();
         }
 
         /// <summary>
@@ -346,7 +333,6 @@ namespace ProcessHacker.Native.Objects
             ThreadAccess access
             )
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
@@ -354,23 +340,21 @@ namespace ProcessHacker.Native.Objects
             {
                 if (clientId.ProcessId == 0 && clientId.ThreadId == 0)
                 {
-                    if ((status = Win32.NtOpenThread(
+                    Win32.NtOpenThread(
                         out handle,
                         access,
                         ref oa,
                         IntPtr.Zero
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
+                        ).ThrowIf();
                 }
                 else
                 {
-                    if ((status = Win32.NtOpenThread(
+                    Win32.NtOpenThread(
                         out handle,
                         access,
                         ref oa,
                         ref clientId
-                        )) >= NtStatus.Error)
-                        Win32.Throw(status);
+                        ).ThrowIf();
                 }
             }
             finally
@@ -390,10 +374,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void Alert()
         {
-            NtStatus status;
-
-            if ((status = Win32.NtAlertThread(this)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtAlertThread(this).ThrowIf();
         }
 
         /// <summary>
@@ -401,11 +382,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public int AlertResume()
         {
-            NtStatus status;
             int suspendCount;
 
-            if ((status = Win32.NtAlertResumeThread(this, out suspendCount)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtAlertResumeThread(this, out suspendCount).ThrowIf();
 
             return suspendCount;
         }
@@ -465,7 +444,7 @@ namespace ProcessHacker.Native.Objects
             List<ThreadStackFrame> frames = new List<ThreadStackFrame>();
 
             // Walk the stack.
-            this.WalkStack((frame) => { frames.Add(frame); return true; });
+            this.WalkStack(frame => { frames.Add(frame); return true; });
 
             // If we want to skip frames than we have, just return an empty array.
             if (frames.Count <= skipCount)
@@ -517,13 +496,16 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A THREAD_BASIC_INFORMATION structure.</returns>
         public ThreadBasicInformation GetBasicInformation()
         {
-            NtStatus status;
             ThreadBasicInformation basicInfo = new ThreadBasicInformation();
             int retLen;
 
-            if ((status = Win32.NtQueryInformationThread(this, ThreadInformationClass.ThreadBasicInformation,
-                ref basicInfo, Marshal.SizeOf(basicInfo), out retLen)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtQueryInformationThread(
+                this, 
+                ThreadInformationClass.ThreadBasicInformation,
+                ref basicInfo,
+                ThreadBasicInformation.SizeOf, 
+                out retLen
+                ).ThrowIf();
 
             return basicInfo;
         }
@@ -534,9 +516,11 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A CONTEXT struct.</returns>
         public Context GetContext(ContextFlags flags)
         {
-            Context context = new Context();
+            Context context = new Context
+            {
+                ContextFlags = flags
+            };
 
-            context.ContextFlags = flags;
             this.GetContext(ref context);
 
             return context;
@@ -555,10 +539,7 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                NtStatus status;
-
-                if ((status = Win32.NtGetContextThread(this, ref context)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtGetContextThread(this, ref context).ThrowIf();
             }
         }
 
@@ -568,9 +549,11 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A CONTEXT struct.</returns>
         public ContextAmd64 GetContext(ContextFlagsAmd64 flags)
         {
-            ContextAmd64 context = new ContextAmd64();
+            ContextAmd64 context = new ContextAmd64
+            {
+                ContextFlags = flags
+            };
 
-            context.ContextFlags = flags;
             this.GetContext(ref context);
 
             return context;
@@ -582,16 +565,13 @@ namespace ProcessHacker.Native.Objects
         /// <param name="context">A Context structure. The ContextFlags must be set appropriately.</param>
         public void GetContext(ref ContextAmd64 context)
         {
-            NtStatus status;
-
             // HACK: To avoid a datatype misalignment error, allocate some 
             // aligned memory.
-            using (var data = new AlignedMemoryAlloc(Utils.SizeOf<ContextAmd64>(16), 16))
+            using (AlignedMemoryAlloc data = new AlignedMemoryAlloc(Utils.SizeOf(16, ContextAmd64.SizeOf), 16))
             {
-                data.WriteStruct<ContextAmd64>(context);
+                data.WriteStruct(context);
 
-                if ((status = Win32.NtGetContextThread(this, data)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtGetContextThread(this, data).ThrowIf();
 
                 context = data.ReadStruct<ContextAmd64>();
             }
@@ -604,10 +584,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="context">A Context structure. The ContextFlags must be set appropriately.</param>
         public void GetContextWow64(ref Context context)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlWow64GetThreadContext(this, ref context)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlWow64GetThreadContext(this, ref context).ThrowIf();
         }
 
         /// <summary>
@@ -648,16 +625,13 @@ namespace ProcessHacker.Native.Objects
 
         private int GetInformationInt32(ThreadInformationClass infoClass)
         {
-            if (
-                KProcessHacker.Instance != null &&
-                infoClass == ThreadInformationClass.ThreadIoPriority
-                )
+            int value;
+            int retLength;
+
+            if (KProcessHacker.Instance != null && infoClass == ThreadInformationClass.ThreadIoPriority)
             {
                 unsafe
                 {
-                    int value;
-                    int retLength;
-
                     KProcessHacker.Instance.KphQueryInformationThread(
                         this, infoClass, new IntPtr(&value), sizeof(int), out retLength
                         );
@@ -665,29 +639,30 @@ namespace ProcessHacker.Native.Objects
                     return value;
                 }
             }
-            else
-            {
-                NtStatus status;
-                int value;
-                int retLength;
+            
+            Win32.NtQueryInformationThread(
+                this, 
+                infoClass, 
+                out value,
+                sizeof(int), 
+                out retLength
+                ).ThrowIf();
 
-                if ((status = Win32.NtQueryInformationThread(
-                    this, infoClass, out value, sizeof(int), out retLength)) >= NtStatus.Error)
-                    Win32.Throw(status);
-
-                return value;
-            }
+            return value;
         }
 
         private IntPtr GetInformationIntPtr(ThreadInformationClass infoClass)
         {
-            NtStatus status;
             IntPtr value;
             int retLength;
 
-            if ((status = Win32.NtQueryInformationThread(
-                this, infoClass, out value, IntPtr.Size, out retLength)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtQueryInformationThread(
+                this, 
+                infoClass, 
+                out value, 
+                IntPtr.Size, 
+                out retLength
+                ).ThrowIf();
 
             return value;
         }
@@ -718,13 +693,16 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A system call number.</returns>
         public unsafe int GetLastSystemCall(out int firstArgument)
         {
-            NtStatus status;
             int* data = stackalloc int[2];
             int retLength;
 
-            if ((status = Win32.NtQueryInformationThread(
-                this, ThreadInformationClass.ThreadLastSystemCall, data, sizeof(int) * 2, out retLength)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtQueryInformationThread(
+                this, 
+                ThreadInformationClass.ThreadLastSystemCall, 
+                data, 
+                sizeof(int) * 2, 
+                out retLength
+                ).ThrowIf();
 
             firstArgument = data[0];
 
@@ -808,12 +786,13 @@ namespace ProcessHacker.Native.Objects
         /// <param name="impersonationLevel">The impersonation level to request.</param>
         public void Impersonate(ThreadHandle clientThreadHandle, SecurityImpersonationLevel impersonationLevel)
         {
-            NtStatus status;
-            SecurityQualityOfService securityQos =
-                new SecurityQualityOfService(impersonationLevel, false, false);
+            SecurityQualityOfService securityQos = new SecurityQualityOfService(impersonationLevel, false, false);
 
-            if ((status = Win32.NtImpersonateThread(this, clientThreadHandle, ref securityQos)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtImpersonateThread(
+                this, 
+                clientThreadHandle, 
+                ref securityQos
+                ).ThrowIf();
         }
 
         /// <summary>
@@ -821,10 +800,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void ImpersonateAnonymous()
         {
-            NtStatus status;
-
-            if ((status = Win32.NtImpersonateAnonymousToken(this)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtImpersonateAnonymousToken(this).ThrowIf();
         }
 
         /// <summary>
@@ -900,16 +876,13 @@ namespace ProcessHacker.Native.Objects
         /// <param name="param3">The third parameter to pass to the function.</param>
         public void QueueApc(IntPtr address, IntPtr param1, IntPtr param2, IntPtr param3)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtQueueApcThread(
+            Win32.NtQueueApcThread(
                 this,
                 address,
                 param1,
                 param2,
                 param3
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         public void RemoteCall(IntPtr address, IntPtr[] arguments)
@@ -932,9 +905,7 @@ namespace ProcessHacker.Native.Objects
 
         public void RemoteCall(ProcessHandle processHandle, IntPtr address, IntPtr[] arguments, bool alreadySuspended)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlRemoteCall(
+            Win32.RtlRemoteCall(
                 processHandle,
                 this,
                 address,
@@ -942,8 +913,7 @@ namespace ProcessHacker.Native.Objects
                 arguments,
                 false,
                 alreadySuspended
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         /// <summary>
@@ -951,11 +921,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public int Resume()
         {
-            NtStatus status;
             int suspendCount;
 
-            if ((status = Win32.NtResumeThread(this, out suspendCount)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtResumeThread(this, out suspendCount).ThrowIf();
 
             return suspendCount;
         }
@@ -991,10 +959,7 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                NtStatus status;
-
-                if ((status = Win32.NtSetContextThread(this, ref context)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtSetContextThread(this, ref context).ThrowIf();
             }
         }
 
@@ -1004,16 +969,13 @@ namespace ProcessHacker.Native.Objects
         /// <param name="context">A CONTEXT struct.</param>
         public void SetContext(ContextAmd64 context)
         {
-            NtStatus status;
-
             // HACK: To avoid a datatype misalignment error, allocate 
             // some aligned memory.
-            using (var data = new AlignedMemoryAlloc(Utils.SizeOf<ContextAmd64>(16), 16))
+            using (AlignedMemoryAlloc data = new AlignedMemoryAlloc(Utils.SizeOf(16, ContextAmd64.SizeOf), 16))
             {
-                data.WriteStruct<ContextAmd64>(context);
+                data.WriteStruct(context);
 
-                if ((status = Win32.NtSetContextThread(this, data)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtSetContextThread(this, data).ThrowIf();
             }
         }
 
@@ -1024,10 +986,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="context">A CONTEXT struct.</param>
         public void SetContextWow64(Context context)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlWow64SetThreadContext(this, ref context)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlWow64SetThreadContext(this, ref context).ThrowIf();
         }   
 
         /// <summary>
@@ -1041,35 +1000,37 @@ namespace ProcessHacker.Native.Objects
 
         private void SetInformationInt32(ThreadInformationClass infoClass, int value)
         {
-            if (
-                KProcessHacker.Instance != null &&
-                infoClass == ThreadInformationClass.ThreadIoPriority
-                )
+            if (KProcessHacker.Instance != null && infoClass == ThreadInformationClass.ThreadIoPriority)
             {
                 unsafe
                 {
                     KProcessHacker.Instance.KphSetInformationThread(
-                        this, infoClass, new IntPtr(&value), sizeof(int)
+                        this, 
+                        infoClass, 
+                        new IntPtr(&value), 
+                        sizeof(int)
                         );
                 }
             }
             else
             {
-                NtStatus status;
-
-                if ((status = Win32.NtSetInformationThread(
-                    this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtSetInformationThread(
+                    this, 
+                    infoClass, 
+                    ref value, 
+                    sizeof(int)
+                    ).ThrowIf();
             }
         }
 
         private void SetInformationIntPtr(ThreadInformationClass infoClass, IntPtr value)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtSetInformationThread(
-                this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtSetInformationThread(
+                this, 
+                infoClass, 
+                ref value, 
+                sizeof(int)
+                ).ThrowIf();
         }
 
         public void SetIoPriority(int ioPriority)
@@ -1117,11 +1078,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public int Suspend()
         {
-            NtStatus status;
             int suspendCount;
 
-            if ((status = Win32.NtSuspendThread(this, out suspendCount)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtSuspendThread(this, out suspendCount).ThrowIf();
 
             return suspendCount;
         }
@@ -1154,10 +1113,7 @@ namespace ProcessHacker.Native.Objects
                 }
             }
 
-            NtStatus status;
-
-            if ((status = Win32.NtTerminateThread(this, exitStatus)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtTerminateThread(this, exitStatus).ThrowIf();
         }
 
         /// <summary>
@@ -1183,15 +1139,15 @@ namespace ProcessHacker.Native.Objects
             if (KProcessHacker.Instance != null)
             {
                 // Use KPH to open the parent process.
-                using (var phandle = this.GetProcess(ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                using (ProcessHandle phandle = this.GetProcess(ProcessAccess.QueryInformation | ProcessAccess.VmRead))
                     this.WalkStack(phandle, walkStackCallback, architecture);
             }
             else
             {
                 // We need to duplicate the handle to get QueryInformation access.
-                using (var dupThreadHandle = this.Duplicate(OSVersion.MinThreadQueryInfoAccess))
-                using (var phandle = new ProcessHandle(
-                    ThreadHandle.FromHandle(dupThreadHandle).GetBasicInformation().ClientId.ProcessId,
+                using (NativeHandle<ThreadAccess> dupThreadHandle = this.Duplicate(OSVersion.MinThreadQueryInfoAccess))
+                using (ProcessHandle phandle = new ProcessHandle(
+                    FromHandle(dupThreadHandle).GetBasicInformation().ClientId.ProcessId,
                     ProcessAccess.QueryInformation | ProcessAccess.VmRead
                     ))
                 {
@@ -1205,7 +1161,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="parentProcess">A handle to the thread's parent process.</param>
         /// <param name="walkStackCallback">A callback to execute.</param>
-        public unsafe void WalkStack(ProcessHandle parentProcess, WalkStackDelegate walkStackCallback)
+        public void WalkStack(ProcessHandle parentProcess, WalkStackDelegate walkStackCallback)
         {
             this.WalkStack(parentProcess, walkStackCallback, OSVersion.Architecture);
         }
@@ -1220,9 +1176,9 @@ namespace ProcessHacker.Native.Objects
         /// On 64-bit systems, this value can be set to I386 to walk the 
         /// 32-bit stack.
         /// </param>
-        public unsafe void WalkStack(ProcessHandle parentProcess, WalkStackDelegate walkStackCallback, OSArch architecture)
+        public void WalkStack(ProcessHandle parentProcess, WalkStackDelegate walkStackCallback, OSArch architecture)
         {
-            bool suspended = false;
+            bool suspended;
 
             // Suspend the thread to avoid inaccurate thread stacks.
             try
@@ -1240,12 +1196,11 @@ namespace ProcessHacker.Native.Objects
 
             if (KProcessHacker.Instance != null)
             {
-                readMemoryProc = new ReadProcessMemoryProc64(
-                    delegate(IntPtr processHandle, ulong baseAddress, IntPtr buffer, int size, out int bytesRead)
-                    {
-                        return KProcessHacker.Instance.KphReadVirtualMemorySafe(
-                            ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead).IsSuccess();
-                    });
+                readMemoryProc = 
+                    (IntPtr processHandle, ulong baseAddress, IntPtr buffer, int size, out int bytesRead) 
+                        => KProcessHacker.Instance.KphReadVirtualMemorySafe(
+                        ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead
+                        ).IsSuccess();
             }
 
             try
@@ -1253,9 +1208,10 @@ namespace ProcessHacker.Native.Objects
                 // x86/WOW64 stack walk.
                 if (OSVersion.Architecture == OSArch.I386 || (OSVersion.Architecture == OSArch.Amd64 && architecture == OSArch.I386))
                 {
-                    Context context = new Context();
-
-                    context.ContextFlags = ContextFlags.All;
+                    Context context = new Context
+                    {
+                        ContextFlags = ContextFlags.All
+                    };
 
                     if (OSVersion.Architecture == OSArch.I386)
                     {
@@ -1269,14 +1225,24 @@ namespace ProcessHacker.Native.Objects
                     }
 
                     // Set up the initial stack frame structure.
-                    var stackFrame = new StackFrame64();
-
-                    stackFrame.AddrPC.Mode = AddressMode.AddrModeFlat;
-                    stackFrame.AddrPC.Offset = (ulong)context.Eip;
-                    stackFrame.AddrStack.Mode = AddressMode.AddrModeFlat;
-                    stackFrame.AddrStack.Offset = (ulong)context.Esp;
-                    stackFrame.AddrFrame.Mode = AddressMode.AddrModeFlat;
-                    stackFrame.AddrFrame.Offset = (ulong)context.Ebp;
+                    StackFrame64 stackFrame = new StackFrame64
+                    {
+                        AddrPC =
+                        {
+                            Mode = AddressMode.AddrModeFlat,
+                            Offset = (ulong)context.Eip
+                        },
+                        AddrStack =
+                        {
+                            Mode = AddressMode.AddrModeFlat,
+                            Offset = (ulong)context.Esp
+                        },
+                        AddrFrame =
+                        {
+                            Mode = AddressMode.AddrModeFlat,
+                            Offset = (ulong)context.Ebp
+                        }
+                    };
 
                     while (true)
                     {
@@ -1370,12 +1336,12 @@ namespace ProcessHacker.Native.Objects
 
     public class ThreadStackFrame
     {
-        private IntPtr _pcAddress;
-        private IntPtr _returnAddress;
-        private IntPtr _frameAddress;
-        private IntPtr _stackAddress;
-        private IntPtr _bStoreAddress;
-        private IntPtr[] _params;
+        private readonly IntPtr _pcAddress;
+        private readonly IntPtr _returnAddress;
+        private readonly IntPtr _frameAddress;
+        private readonly IntPtr _stackAddress;
+        private readonly IntPtr _bStoreAddress;
+        private readonly IntPtr[] _params;
 
         internal ThreadStackFrame(ref StackFrame64 stackFrame)
         {

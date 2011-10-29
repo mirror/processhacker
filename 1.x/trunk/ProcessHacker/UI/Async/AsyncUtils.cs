@@ -22,7 +22,6 @@
  */
 
 using System;
-using System.Windows.Forms;
 using System.Threading;
 using System.ComponentModel;
 
@@ -31,7 +30,7 @@ namespace ProcessHacker.FormHelper
     /// <summary>
     /// Exception thrown when an operation is already in progress.
     /// </summary>
-    public class AlreadyRunningException : System.ApplicationException
+    public class AlreadyRunningException : ApplicationException
     {
         public AlreadyRunningException() : base("Operation already running")
         { }
@@ -40,9 +39,9 @@ namespace ProcessHacker.FormHelper
     public abstract class AsyncOperation
     {
         private Thread _asyncThread;
-        private object _asyncLock = new object();
+        private readonly object _asyncLock = new object();
 
-        public AsyncOperation(ISynchronizeInvoke target)
+        protected AsyncOperation(ISynchronizeInvoke target)
         {
             this.isiTarget = target;
             this.isRunning = false;
@@ -59,7 +58,7 @@ namespace ProcessHacker.FormHelper
                 this.isRunning = true;
             }
 
-            this._asyncThread = new Thread(this.InternalStart, ProcessHacker.Common.Utils.SixteenthStackSize);
+            this._asyncThread = new Thread(this.InternalStart, Common.Utils.SixteenthStackSize);
             this._asyncThread.Start();
         }
 
@@ -116,9 +115,9 @@ namespace ProcessHacker.FormHelper
 
         public event EventHandler Completed;              
         public event EventHandler Cancelled;       
-        public event System.Threading.ThreadExceptionEventHandler Failed;   
+        public event ThreadExceptionEventHandler Failed;   
 
-        private ISynchronizeInvoke isiTarget;
+        private readonly ISynchronizeInvoke isiTarget;
         protected ISynchronizeInvoke Target
         {
             get { return this.isiTarget; }

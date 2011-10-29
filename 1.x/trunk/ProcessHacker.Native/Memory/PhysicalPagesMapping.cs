@@ -1,11 +1,10 @@
 ﻿using System;
-using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Memory
 {
     public sealed class PhysicalPagesMapping : MemoryAlloc
     {
-        private PhysicalPages _physicalPages;
+        private readonly PhysicalPages _physicalPages;
 
         internal PhysicalPagesMapping(PhysicalPages physicalPages, IntPtr baseAddress)
         {

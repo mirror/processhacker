@@ -36,7 +36,7 @@ namespace ProcessHacker
 {
     public partial class HeapsWindow : Form
     {
-        private int _pid;
+        private readonly int _pid;
 
         public HeapsWindow(int pid, HeapInformation[] heaps)
         {
@@ -44,8 +44,6 @@ namespace ProcessHacker
             this.AddEscapeToClose();
             this.SetTopMost();
 
-            listHeaps.SetDoubleBuffered(true);
-            listHeaps.SetTheme("explorer");
             listHeaps.AddShortcuts();
             listHeaps.ContextMenu = menuHeap;
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHeaps, null);
@@ -137,21 +135,18 @@ namespace ProcessHacker
 
         private void menuHeap_Popup(object sender, EventArgs e)
         {
-            if (listHeaps.SelectedItems.Count == 0)
+            switch (this.listHeaps.SelectedItems.Count)
             {
-               // menuHeap.DisableAll();
-            }
-            else if (listHeaps.SelectedItems.Count == 1)
-            {
-                menuHeap.EnableAll();
-
-                if (listHeaps.SelectedItems[0].Text == "Totals")
-                    destroyMenuItem.Enabled = false;
-            }
-            else
-            {
-               // menuHeap.DisableAll();
-                copyMenuItem.Enabled = true;
+                case 0:
+                    break;
+                case 1:
+                    this.menuHeap.EnableAll();
+                    if (this.listHeaps.SelectedItems[0].Text == "Totals")
+                        this.destroyMenuItem.Enabled = false;
+                    break;
+                default:
+                    this.copyMenuItem.Enabled = true;
+                    break;
             }
         }
 

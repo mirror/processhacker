@@ -92,7 +92,7 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         public TimeSpan RemainingTime
         {
-            get { return new TimeSpan(this.Handle.GetBasicInformation().RemainingTime); }
+            get { return new TimeSpan(this.Handle.BasicInformation.RemainingTime); }
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         public bool Signaled
         {
-            get { return this.Handle.GetBasicInformation().TimerState; }
+            get { return this.Handle.BasicInformation.TimerState; }
         }
 
         /// <summary>

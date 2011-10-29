@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.Common;
@@ -41,11 +40,11 @@ namespace ProcessHacker.Components
     public partial class ThreadList : UserControl
     {
         private ThreadProvider _provider;
-        private bool _useCycleTime = false;
-        private int _runCount = 0;
-        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
-        private HighlightingContext _highlightingContext;
-        private bool _needsSort = false;
+        private bool _useCycleTime;
+        private int _runCount;
+        private readonly List<ListViewItem> _needsAdd = new List<ListViewItem>();
+        private readonly HighlightingContext _highlightingContext;
+        private bool _needsSort;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -72,23 +71,16 @@ namespace ProcessHacker.Components
             var comparer = (SortedListViewComparer)
                 (listThreads.ListViewItemSorter = new SortedListViewComparer(listThreads));
 
-            comparer.CustomSorters.Add(1,
-                (x, y) =>
+            comparer.CustomSorters.Add(1, (x, y) =>
+            {
+                if (OSVersion.HasCycleTime)
                 {
-                    if (OSVersion.HasCycleTime)
-                    {
-                        return (x.Tag as ThreadItem).CyclesDelta.CompareTo((y.Tag as ThreadItem).CyclesDelta);
-                    }
-                    else
-                    {
-                        return (x.Tag as ThreadItem).ContextSwitchesDelta.CompareTo((y.Tag as ThreadItem).ContextSwitchesDelta);
-                    }
-                });
-            comparer.CustomSorters.Add(3,
-                (x, y) =>
-                    {
-                        return (x.Tag as ThreadItem).PriorityI.CompareTo((y.Tag as ThreadItem).PriorityI);
-                    });
+                    return ((ThreadItem)x.Tag).CyclesDelta.CompareTo((y.Tag as ThreadItem).CyclesDelta);
+                }
+
+                return ((ThreadItem)x.Tag).ContextSwitchesDelta.CompareTo((y.Tag as ThreadItem).ContextSwitchesDelta);
+            });
+            comparer.CustomSorters.Add(3, (x, y) => ((ThreadItem)x.Tag).PriorityI.CompareTo((y.Tag as ThreadItem).PriorityI));
             comparer.ColumnSortOrder.Add(0);
             comparer.ColumnSortOrder.Add(2);
             comparer.ColumnSortOrder.Add(3);
@@ -96,27 +88,15 @@ namespace ProcessHacker.Components
             comparer.SortColumn = 1;
             comparer.SortOrder = SortOrder.Descending;
 
-            listThreads.KeyDown += new KeyEventHandler(ThreadList_KeyDown);
-            listThreads.MouseDown += new MouseEventHandler(listThreads_MouseDown);
-            listThreads.MouseUp += new MouseEventHandler(listThreads_MouseUp);
-            listThreads.SelectedIndexChanged += new System.EventHandler(listThreads_SelectedIndexChanged);
+            listThreads.KeyDown += this.ThreadList_KeyDown;
+            listThreads.MouseDown += this.listThreads_MouseDown;
+            listThreads.MouseUp += this.listThreads_MouseUp;
+            listThreads.SelectedIndexChanged += this.listThreads_SelectedIndexChanged;
 
             ColumnSettings.LoadSettings(Settings.Instance.ThreadListViewColumns, listThreads);
             listThreads.ContextMenu = menuThread;
             GenericViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads, null);
             listThreads_SelectedIndexChanged(null, null);
-
-            _dontCalculate = false;
-        }
-
-        private bool _dontCalculate = true;
-
-        protected override void OnResize(EventArgs e)
-        {
-            if (_dontCalculate)
-                return;
-
-            base.OnResize(e);
         }
 
         private void listThreads_MouseUp(object sender, MouseEventArgs e)
@@ -385,7 +365,8 @@ namespace ProcessHacker.Components
         {
             if (Settings.Instance.UseColorSuspended && titem.WaitReason == KWaitReason.Suspended)
                 return Settings.Instance.ColorSuspended;
-            else if (Settings.Instance.UseColorGuiThreads && titem.IsGuiThread)
+            
+            if (Settings.Instance.UseColorGuiThreads && titem.IsGuiThread)
                 return Settings.Instance.ColorGuiThreads;
 
             return System.Drawing.SystemColors.Window;
@@ -393,11 +374,12 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(ThreadItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
-                item.RunId > 0 && _runCount > 0);
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, item.RunId > 0 && _runCount > 0)
+            {
+                Name = item.Tid.ToString(), 
+                Text = item.Tid.ToString()
+            };
 
-            litem.Name = item.Tid.ToString();
-            litem.Text = item.Tid.ToString();
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, string.Empty));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
@@ -411,60 +393,60 @@ namespace ProcessHacker.Components
         private void provider_DictionaryModified(ThreadItem oldItem, ThreadItem newItem)
         {
             this.BeginInvoke(new MethodInvoker(() =>
+            {
+                lock (listThreads)
                 {
-                    lock (listThreads)
+                    ListViewItem litem = listThreads.Items[newItem.Tid.ToString()];
+
+                    if (litem == null)
+                        return;
+
+                    if (!_useCycleTime)
                     {
-                        ListViewItem litem = listThreads.Items[newItem.Tid.ToString()];
-
-                        if (litem == null)
-                            return;
-
-                        if (!_useCycleTime)
-                        {
-                            if (newItem.ContextSwitchesDelta == 0)
-                                litem.SubItems[1].Text = string.Empty;
-                            else
-                                litem.SubItems[1].Text = newItem.ContextSwitchesDelta.ToString("N0");
-                        }
+                        if (newItem.ContextSwitchesDelta == 0)
+                            litem.SubItems[1].Text = string.Empty;
                         else
-                        {
-                            if (newItem.CyclesDelta == 0)
-                                litem.SubItems[1].Text = string.Empty;
-                            else
-                                litem.SubItems[1].Text = newItem.CyclesDelta.ToString("N0");
-                        }
-
-                        litem.SubItems[2].Text = newItem.StartAddress;
-                        litem.SubItems[3].Text = newItem.Priority;
-                        litem.Tag = newItem;
-
-                        (litem as HighlightedListViewItem).NormalColor = GetThreadColor(newItem);
-                        _needsSort = true;
+                            litem.SubItems[1].Text = newItem.ContextSwitchesDelta.ToString("N0");
                     }
-                }));
+                    else
+                    {
+                        if (newItem.CyclesDelta == 0)
+                            litem.SubItems[1].Text = string.Empty;
+                        else
+                            litem.SubItems[1].Text = newItem.CyclesDelta.ToString("N0");
+                    }
+
+                    litem.SubItems[2].Text = newItem.StartAddress;
+                    litem.SubItems[3].Text = newItem.Priority;
+                    litem.Tag = newItem;
+
+                    (litem as HighlightedListViewItem).NormalColor = GetThreadColor(newItem);
+                    _needsSort = true;
+                }
+            }));
         }
 
         private void provider_DictionaryRemoved(ThreadItem item)
         {
             this.BeginInvoke(new MethodInvoker(() =>
+            {
+                lock (listThreads)
                 {
-                    lock (listThreads)
-                    {
-                        if (listThreads.Items.ContainsKey(item.Tid.ToString()))
-                            listThreads.Items[item.Tid.ToString()].Remove();
-                    }
-                }));
+                    if (listThreads.Items.ContainsKey(item.Tid.ToString()))
+                        listThreads.Items[item.Tid.ToString()].Remove();
+                }
+            }));
         }
 
         private void provider_LoadingStateChanged(bool loading)
         {
             this.BeginInvoke(new MethodInvoker(() =>
-                {
-                    if (loading)
-                        listThreads.Cursor = Cursors.AppStarting;
-                    else
-                        listThreads.Cursor = Cursors.Default;
-                }));
+            {
+                if (loading)
+                    listThreads.Cursor = Cursors.AppStarting;
+                else
+                    listThreads.Cursor = Cursors.Default;
+            }));
         }
 
         public void SaveSettings()
@@ -478,7 +460,7 @@ namespace ProcessHacker.Components
             {
                 int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
 
-                using (var thandle = new ThreadHandle(tid, OSVersion.MinThreadSetInfoAccess))
+                using (ThreadHandle thandle = new ThreadHandle(tid, OSVersion.MinThreadSetInfoAccess))
                     thandle.SetBasePriorityWin32(priority);
             }
             catch (Exception ex)
@@ -493,7 +475,7 @@ namespace ProcessHacker.Components
             {
                 int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
 
-                using (var thandle = new ThreadHandle(tid, OSVersion.MinThreadSetInfoAccess))
+                using (ThreadHandle thandle = new ThreadHandle(tid, OSVersion.MinThreadSetInfoAccess))
                     thandle.SetIoPriority(ioPriority);
             }
             catch (Exception ex)
@@ -509,136 +491,120 @@ namespace ProcessHacker.Components
 
         private void menuThread_Popup(object sender, EventArgs e)
         {
-            if (listThreads.SelectedItems.Count == 0)
+            switch (this.listThreads.SelectedItems.Count)
             {
-                //menuThread.DisableAll();
-
-                return;
-            }
-            else if (listThreads.SelectedItems.Count == 1)
-            {
-                menuThread.EnableAll();
-
-                terminateThreadMenuItem.Text = "&Terminate Thread";
-                forceTerminateThreadMenuItem.Text = "Force Terminate Thread";
-                suspendThreadMenuItem.Text = "&Suspend Thread";
-                resumeThreadMenuItem.Text = "&Resume Thread";
-                priorityThreadMenuItem.Text = "&Priority";
-
-                timeCriticalThreadMenuItem.Checked = false;
-                highestThreadMenuItem.Checked = false;
-                aboveNormalThreadMenuItem.Checked = false;
-                normalThreadMenuItem.Checked = false;
-                belowNormalThreadMenuItem.Checked = false;
-                lowestThreadMenuItem.Checked = false;
-                idleThreadMenuItem.Checked = false;
-
-                ioPriority0ThreadMenuItem.Checked = false;
-                ioPriority1ThreadMenuItem.Checked = false;
-                ioPriority2ThreadMenuItem.Checked = false;
-                ioPriority3ThreadMenuItem.Checked = false;
-
-                try
-                {
-                    using (var thandle = new ThreadHandle(
-                        int.Parse(listThreads.SelectedItems[0].SubItems[0].Text), 
-                        Program.MinThreadQueryRights))
+                case 0:
+                    return;
+                case 1:
+                    this.menuThread.EnableAll();
+                    this.terminateThreadMenuItem.Text = "&Terminate Thread";
+                    this.forceTerminateThreadMenuItem.Text = "Force Terminate Thread";
+                    this.suspendThreadMenuItem.Text = "&Suspend Thread";
+                    this.resumeThreadMenuItem.Text = "&Resume Thread";
+                    this.priorityThreadMenuItem.Text = "&Priority";
+                    this.timeCriticalThreadMenuItem.Checked = false;
+                    this.highestThreadMenuItem.Checked = false;
+                    this.aboveNormalThreadMenuItem.Checked = false;
+                    this.normalThreadMenuItem.Checked = false;
+                    this.belowNormalThreadMenuItem.Checked = false;
+                    this.lowestThreadMenuItem.Checked = false;
+                    this.idleThreadMenuItem.Checked = false;
+                    this.ioPriority0ThreadMenuItem.Checked = false;
+                    this.ioPriority1ThreadMenuItem.Checked = false;
+                    this.ioPriority2ThreadMenuItem.Checked = false;
+                    this.ioPriority3ThreadMenuItem.Checked = false;
+                    try
                     {
-                        try
+                        using (var thandle = new ThreadHandle(int.Parse(this.listThreads.SelectedItems[0].SubItems[0].Text), Program.MinThreadQueryRights))
                         {
-                            switch (thandle.GetBasePriorityWin32())
+                            try
                             {
-                                case ThreadPriorityLevel.TimeCritical:
-                                    timeCriticalThreadMenuItem.Checked = true;
-                                    break;
-                                case ThreadPriorityLevel.Highest:
-                                    highestThreadMenuItem.Checked = true;
-                                    break;
-                                case ThreadPriorityLevel.AboveNormal:
-                                    aboveNormalThreadMenuItem.Checked = true;
-                                    break;
-                                case ThreadPriorityLevel.Normal:
-                                    normalThreadMenuItem.Checked = true;
-                                    break;
-                                case ThreadPriorityLevel.BelowNormal:
-                                    belowNormalThreadMenuItem.Checked = true;
-                                    break;
-                                case ThreadPriorityLevel.Lowest:
-                                    lowestThreadMenuItem.Checked = true;
-                                    break;
-                                case ThreadPriorityLevel.Idle:
-                                    idleThreadMenuItem.Checked = true;
-                                    break;
-                            }
-                        }
-                        catch
-                        {
-                            priorityThreadMenuItem.Enabled = false;
-                        }
-
-                        try
-                        {
-                            if (OSVersion.HasIoPriority)
-                            {
-                                switch (thandle.GetIoPriority())
+                                switch (thandle.GetBasePriorityWin32())
                                 {
-                                    case 0:
-                                        ioPriority0ThreadMenuItem.Checked = true;
+                                    case ThreadPriorityLevel.TimeCritical:
+                                        this.timeCriticalThreadMenuItem.Checked = true;
                                         break;
-                                    case 1:
-                                        ioPriority1ThreadMenuItem.Checked = true;
+                                    case ThreadPriorityLevel.Highest:
+                                        this.highestThreadMenuItem.Checked = true;
                                         break;
-                                    case 2:
-                                        ioPriority2ThreadMenuItem.Checked = true;
+                                    case ThreadPriorityLevel.AboveNormal:
+                                        this.aboveNormalThreadMenuItem.Checked = true;
                                         break;
-                                    case 3:
-                                        ioPriority3ThreadMenuItem.Checked = true;
+                                    case ThreadPriorityLevel.Normal:
+                                        this.normalThreadMenuItem.Checked = true;
+                                        break;
+                                    case ThreadPriorityLevel.BelowNormal:
+                                        this.belowNormalThreadMenuItem.Checked = true;
+                                        break;
+                                    case ThreadPriorityLevel.Lowest:
+                                        this.lowestThreadMenuItem.Checked = true;
+                                        break;
+                                    case ThreadPriorityLevel.Idle:
+                                        this.idleThreadMenuItem.Checked = true;
                                         break;
                                 }
                             }
-                        }
-                        catch
-                        {
-                            ioPriorityThreadMenuItem.Enabled = false;
+                            catch
+                            {
+                                this.priorityThreadMenuItem.Enabled = false;
+                            }
+
+                            try
+                            {
+                                if (OSVersion.HasIoPriority)
+                                {
+                                    switch (thandle.GetIoPriority())
+                                    {
+                                        case 0:
+                                            this.ioPriority0ThreadMenuItem.Checked = true;
+                                            break;
+                                        case 1:
+                                            this.ioPriority1ThreadMenuItem.Checked = true;
+                                            break;
+                                        case 2:
+                                            this.ioPriority2ThreadMenuItem.Checked = true;
+                                            break;
+                                        case 3:
+                                            this.ioPriority3ThreadMenuItem.Checked = true;
+                                            break;
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                this.ioPriorityThreadMenuItem.Enabled = false;
+                            }
                         }
                     }
-                }
-                catch
-                {
-                    priorityThreadMenuItem.Enabled = false;
-                    ioPriorityThreadMenuItem.Enabled = false;
-                }
-
-                try
-                {
-                    using (ThreadHandle thandle = new ThreadHandle(
-                        int.Parse(listThreads.SelectedItems[0].Text), Program.MinThreadQueryRights
-                        ))
+                    catch
                     {
+                        this.priorityThreadMenuItem.Enabled = false;
+                        this.ioPriorityThreadMenuItem.Enabled = false;
+                    }
+                    try
+                    {
+                        using (ThreadHandle thandle = new ThreadHandle(int.Parse(this.listThreads.SelectedItems[0].Text), Program.MinThreadQueryRights))
                         using (TokenHandle tokenHandle = thandle.GetToken(TokenAccess.Query))
                         {
-                            tokenThreadMenuItem.Enabled = true;
+                            this.tokenThreadMenuItem.Enabled = true;
                         }
                     }
-                }
-                catch (WindowsException)
-                {
-                    tokenThreadMenuItem.Enabled = false;
-                }
-            }
-            else
-            {
-                //menuThread.DisableAll();
-
-                terminateThreadMenuItem.Enabled = true;
-                forceTerminateThreadMenuItem.Enabled = true;
-                suspendThreadMenuItem.Enabled = true;
-                resumeThreadMenuItem.Enabled = true;
-                terminateThreadMenuItem.Text = "&Terminate Threads";
-                forceTerminateThreadMenuItem.Text = "Force Terminate Threads";
-                suspendThreadMenuItem.Text = "&Suspend Threads";
-                resumeThreadMenuItem.Text = "&Resume Threads";
-                copyThreadMenuItem.Enabled = true;
+                    catch (WindowsException)
+                    {
+                        this.tokenThreadMenuItem.Enabled = false;
+                    }
+                    break;
+                default:
+                    this.terminateThreadMenuItem.Enabled = true;
+                    this.forceTerminateThreadMenuItem.Enabled = true;
+                    this.suspendThreadMenuItem.Enabled = true;
+                    this.resumeThreadMenuItem.Enabled = true;
+                    this.terminateThreadMenuItem.Text = "&Terminate Threads";
+                    this.forceTerminateThreadMenuItem.Text = "Force Terminate Threads";
+                    this.suspendThreadMenuItem.Text = "&Suspend Threads";
+                    this.resumeThreadMenuItem.Text = "&Resume Threads";
+                    this.copyThreadMenuItem.Enabled = true;
+                    break;
             }
 
             if (listThreads.Items.Count == 0)
@@ -775,8 +741,7 @@ namespace ProcessHacker.Components
                 {
                     foreach (ListViewItem item in listThreads.SelectedItems)
                     {
-                        using (var thandle = new ThreadHandle(int.Parse(item.SubItems[0].Text),
-                            ThreadAccess.Terminate))
+                        using (var thandle = new ThreadHandle(int.Parse(item.SubItems[0].Text), ThreadAccess.Terminate))
                         { }
                     }
                 }
@@ -886,8 +851,7 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    using (var thandle = new ThreadHandle(Int32.Parse(item.SubItems[0].Text),
-                        ThreadAccess.SuspendResume))
+                    using (var thandle = new ThreadHandle(Int32.Parse(item.SubItems[0].Text), ThreadAccess.SuspendResume))
                         thandle.Suspend();
                 }
                 catch (Exception ex)
@@ -943,8 +907,7 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    using (var thandle = new ThreadHandle(Int32.Parse(item.SubItems[0].Text),
-                        ThreadAccess.SuspendResume))
+                    using (ThreadHandle thandle = new ThreadHandle(Int32.Parse(item.SubItems[0].Text), ThreadAccess.SuspendResume))
                         thandle.Resume();
                 }
                 catch (Exception ex)
@@ -972,20 +935,12 @@ namespace ProcessHacker.Components
                 {
                     IntPtr tebBaseAddress = thandle.GetBasicInformation().TebBaseAddress;
 
-                    Program.HackerWindow.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            StructWindow sw = new StructWindow(_pid, tebBaseAddress, Program.Structs["TEB"]);
-
-                            try
-                            {
-                                sw.Show();
-                                sw.Activate();
-                            }
-                            catch (Exception ex)
-                            {
-                                Logging.Log(ex);
-                            }
-                        }));
+                    Program.HackerWindow.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        StructWindow sw = new StructWindow(this._pid, tebBaseAddress, Program.Structs["TEB"]);
+                        sw.Show();
+                        sw.Activate();
+                    }));
                 }
             }
             catch (Exception ex)
@@ -1017,18 +972,13 @@ namespace ProcessHacker.Components
         {
             try
             {
-                using (ThreadHandle thandle = new ThreadHandle(
-                    int.Parse(listThreads.SelectedItems[0].Text), Program.MinThreadQueryRights
-                    ))
+                using (ThreadHandle thandle = new ThreadHandle(int.Parse(listThreads.SelectedItems[0].Text), Program.MinThreadQueryRights))
+                using (TokenWindow tokForm = new TokenWindow(thandle))
                 {
-                    TokenWindow tokForm = new TokenWindow(thandle);
-
                     tokForm.Text = "Thread Token";
                     tokForm.ShowDialog();
                 }
             }
-            catch (ObjectDisposedException)
-            { }
             catch (Exception ex)
             {
                 PhUtils.ShowException("Unable to view the thread token", ex);
@@ -1074,287 +1024,287 @@ namespace ProcessHacker.Components
             {
                 StringBuilder sb = new StringBuilder();
                 int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
-                ProcessHandle phandle = null;
+                ProcessHandle phandle;
 
                 if ((_provider.ProcessAccess & (ProcessAccess.QueryInformation | ProcessAccess.VmRead)) != 0)
                     phandle = _provider.ProcessHandle;
                 else
                     phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead);
 
-                ProcessHandle processDupHandle = new ProcessHandle(_pid, ProcessAccess.DupHandle);
+                //ProcessHandle processDupHandle = new ProcessHandle(_pid, ProcessAccess.DupHandle);
 
                 bool found = false;
 
-                using (var thandle = new ThreadHandle(tid, ThreadAccess.GetContext | ThreadAccess.SuspendResume))
+                using (ThreadHandle thandle = new ThreadHandle(tid, ThreadAccess.GetContext | ThreadAccess.SuspendResume))
                 {
                     IntPtr[] lastParams = new IntPtr[4];
 
                     thandle.WalkStack(phandle, stackFrame =>
+                    {
+                        uint address = stackFrame.PcAddress.ToUInt32();
+                        string name = _provider.Symbols.GetSymbolFromAddress(address).ToLowerInvariant();
+
+                        if (string.IsNullOrEmpty(name))
                         {
-                            uint address = stackFrame.PcAddress.ToUInt32();
-                            string name = _provider.Symbols.GetSymbolFromAddress(address).ToLowerInvariant();
+                            // dummy
+                        }
+                        else if (
+                            name.StartsWith("kernel32.dll!sleep", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
 
-                            if (string.IsNullOrEmpty(name))
-                            {
-                                // dummy
-                            }
-                            else if (
-                                name.StartsWith("kernel32.dll!sleep", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
+                            sb.Append("Thread is sleeping. Timeout: " +
+                                      stackFrame.Params[0].ToInt32().ToString() + " milliseconds");
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!zwdelayexecution", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntdelayexecution", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
 
+                            //bool alertable = stackFrame.Params[0].ToInt32() != 0;
+                            IntPtr timeoutAddress = stackFrame.Params[1];
+                            long timeout;
+
+                            phandle.ReadMemory(timeoutAddress, &timeout, sizeof(long));
+
+                            if (timeout < 0)
+                            {
                                 sb.Append("Thread is sleeping. Timeout: " +
-                                    stackFrame.Params[0].ToInt32().ToString() + " milliseconds");
+                                          (new TimeSpan(-timeout)).TotalMilliseconds.ToString() + " milliseconds");
                             }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwdelayexecution", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntdelayexecution", StringComparison.OrdinalIgnoreCase)
-                                )
+                            else
                             {
-                                found = true;
-
-                                bool alertable = stackFrame.Params[0].ToInt32() != 0;
-                                IntPtr timeoutAddress = stackFrame.Params[1];
-                                long timeout;
-
-                                phandle.ReadMemory(timeoutAddress, &timeout, sizeof(long));
-
-                                if (timeout < 0)
-                                {
-                                    sb.Append("Thread is sleeping. Timeout: " +
-                                        (new TimeSpan(-timeout)).TotalMilliseconds.ToString() + " milliseconds");
-                                }
-                                else
-                                {
-                                    sb.AppendLine("Thread is sleeping. Timeout: " + (new DateTime(timeout)).ToString());
-                                }
+                                sb.AppendLine("Thread is sleeping. Timeout: " + (new DateTime(timeout)).ToString());
                             }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwdeviceiocontrolfile", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntdeviceiocontrolfile", StringComparison.OrdinalIgnoreCase)
-                                )
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!zwdeviceiocontrolfile", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntdeviceiocontrolfile", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
+
+                            IntPtr handle = stackFrame.Params[0];
+
+                            sb.AppendLine("Thread " + tid.ToString() + " is waiting for an I/O control request:");
+
+                            sb.AppendLine(this.GetHandleString(_pid, handle));
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!ntfscontrolfile", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!zwfscontrolfile", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
+
+                            IntPtr handle = stackFrame.Params[0];
+
+                            sb.AppendLine("Thread " + tid.ToString() + " is waiting for an FS control request:");
+
+                            sb.AppendLine(this.GetHandleString(_pid, handle));
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!ntqueryobject", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!zwqueryobject", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
+
+                            IntPtr handle = stackFrame.Params[0];
+
+                            // Use the KiFastSystemCallRet args if the handle we have is wrong.
+                            if (handle.ToInt32() % 2 != 0 || handle == IntPtr.Zero)
+                                handle = lastParams[1];
+
+                            sb.AppendLine("Thread " + tid.ToString() + " is querying an object (most likely a named pipe):");
+
+                            sb.AppendLine(this.GetHandleString(_pid, handle));
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!zwreadfile", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntreadfile", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!zwwritefile", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntwritefile", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
+
+                            IntPtr handle = stackFrame.Params[0];
+
+                            sb.AppendLine("Thread " + tid.ToString() + " is waiting for a named pipe or a file:");
+
+                            sb.AppendLine(this.GetHandleString(_pid, handle));
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!zwremoveiocompletion", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntremoveiocompletion", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
+
+                            IntPtr handle = stackFrame.Params[0];
+
+                            sb.AppendLine("Thread " + tid.ToString() + " is waiting for an I/O completion object:");
+
+                            sb.AppendLine(this.GetHandleString(_pid, handle));
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!zwreplywaitreceiveport", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntreplywaitreceiveport", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!zwrequestwaitreplyport", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntrequestwaitreplyport", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!zwalpcsendwaitreceiveport", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntalpcsendwaitreceiveport", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
+
+                            IntPtr handle = stackFrame.Params[0];
+
+                            sb.AppendLine("Thread " + tid.ToString() + " is waiting for a LPC port:");
+
+                            sb.AppendLine(this.GetHandleString(_pid, handle));
+                        }
+                        else if
+                            (
+                            name.StartsWith("ntdll.dll!zwsethighwaitloweventpair", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntsethighwaitloweventpair", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!zwsetlowwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntsetlowwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!zwwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!zwwaitloweventpair", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntwaitloweventpair", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
+
+                            IntPtr handle = stackFrame.Params[0];
+
+                            // Use the KiFastSystemCallRet args if the handle we have is wrong.
+                            if (handle.ToInt32() % 2 != 0)
+                                handle = lastParams[1];
+
+                            sb.AppendLine("Thread " + tid.ToString() + " is waiting (" + name + ") for an event pair:");
+
+                            sb.AppendLine(this.GetHandleString(_pid, handle));
+                        }
+                        else if (
+                            name.StartsWith("user32.dll!ntusergetmessage", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("user32.dll!ntuserwaitmessage", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
+
+                            sb.AppendLine("Thread " + tid.ToString() + " is waiting for a USER message.");
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!zwwaitfordebugevent", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntwaitfordebugevent", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
+
+                            IntPtr handle = stackFrame.Params[0];
+
+                            sb.AppendLine("Thread " + tid.ToString() + " is waiting for a debug event:");
+
+                            sb.AppendLine(this.GetHandleString(_pid, handle));
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!zwwaitforkeyedevent", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntwaitforkeyedevent", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!zwreleasekeyedevent", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntreleasekeyedevent", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
+
+                            IntPtr handle = stackFrame.Params[0];
+                            IntPtr key = stackFrame.Params[1];
+
+                            sb.AppendLine("Thread " + tid.ToString() +
+                                          " is waiting (" + name + ") for a keyed event (key 0x" +
+                                          key.ToString("x") + "):");
+
+                            sb.AppendLine(this.GetHandleString(_pid, handle));
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!zwwaitformultipleobjects", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntwaitformultipleobjects", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("kernel32.dll!waitformultipleobjects", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
+
+                            int handleCount = stackFrame.Params[0].ToInt32();
+                            IntPtr handleAddress = stackFrame.Params[1];
+                            WaitType waitType = (WaitType)stackFrame.Params[2].ToInt32();
+                            bool alertable = stackFrame.Params[3].ToInt32() != 0;
+
+                            // use the KiFastSystemCallRet args if we have the wrong args
+                            if (handleCount > 64)
                             {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for an I/O control request:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                                handleCount = lastParams[1].ToInt32();
+                                handleAddress = lastParams[2];
+                                waitType = (WaitType)lastParams[3].ToInt32();
                             }
-                            else if (
-                                name.StartsWith("ntdll.dll!ntfscontrolfile", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwfscontrolfile", StringComparison.OrdinalIgnoreCase)
-                                )
+
+                            IntPtr* handles = stackalloc IntPtr[handleCount];
+
+                            phandle.ReadMemory(handleAddress, handles, handleCount * IntPtr.Size);
+
+                            sb.AppendLine("Thread " + tid.ToString() +
+                                          " is waiting (alertable: " + alertable.ToString() + ", wait type: " +
+                                          waitType.ToString() + ") for:");
+
+                            for (int i = 0; i < handleCount; i++)
                             {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for an FS control request:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                                sb.AppendLine(this.GetHandleString(_pid, handles[i]));
                             }
-                            else if (
-                                name.StartsWith("ntdll.dll!ntqueryobject", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwqueryobject", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!zwwaitforsingleobject", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntwaitforsingleobject", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("kernel32.dll!waitforsingleobject", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
 
-                                IntPtr handle = stackFrame.Params[0];
+                            IntPtr handle = stackFrame.Params[0];
+                            bool alertable = stackFrame.Params[1].ToInt32() != 0;
 
-                                // Use the KiFastSystemCallRet args if the handle we have is wrong.
-                                if (handle.ToInt32() % 2 != 0 || handle == IntPtr.Zero)
-                                    handle = lastParams[1];
+                            sb.AppendLine("Thread " + tid.ToString() +
+                                          " is waiting (alertable: " + alertable.ToString() + ") for:");
 
-                                sb.AppendLine("Thread " + tid.ToString() + " is querying an object (most likely a named pipe):");
+                            sb.AppendLine(this.GetHandleString(_pid, handle));
+                        }
+                        else if (
+                            name.StartsWith("ntdll.dll!zwwaitforworkviaworkerfactory", StringComparison.OrdinalIgnoreCase) ||
+                            name.StartsWith("ntdll.dll!ntwaitforworkviaworkerfactory", StringComparison.OrdinalIgnoreCase)
+                            )
+                        {
+                            found = true;
 
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwreadfile", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntreadfile", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwwritefile", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwritefile", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
+                            IntPtr handle = stackFrame.Params[0];
 
-                                IntPtr handle = stackFrame.Params[0];
+                            sb.AppendLine("Thread " + tid.ToString() + " is waiting for work from a worker factory:");
 
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a named pipe or a file:");
+                            sb.AppendLine(this.GetHandleString(_pid, handle));
+                        }
 
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwremoveiocompletion", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntremoveiocompletion", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
+                        lastParams = stackFrame.Params;
 
-                                IntPtr handle = stackFrame.Params[0];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for an I/O completion object:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwreplywaitreceiveport", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntreplywaitreceiveport", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwrequestwaitreplyport", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntrequestwaitreplyport", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwalpcsendwaitreceiveport", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntalpcsendwaitreceiveport", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a LPC port:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if
-                                (
-                                name.StartsWith("ntdll.dll!zwsethighwaitloweventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntsethighwaitloweventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwsetlowwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntsetlowwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaithigheventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwwaitloweventpair", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitloweventpair", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-
-                                // Use the KiFastSystemCallRet args if the handle we have is wrong.
-                                if (handle.ToInt32() % 2 != 0)
-                                    handle = lastParams[1];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting (" + name + ") for an event pair:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("user32.dll!ntusergetmessage", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("user32.dll!ntuserwaitmessage", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a USER message.");
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwwaitfordebugevent", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitfordebugevent", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a debug event:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwwaitforkeyedevent", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitforkeyedevent", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!zwreleasekeyedevent", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntreleasekeyedevent", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-                                IntPtr key = stackFrame.Params[1];
-
-                                sb.AppendLine("Thread " + tid.ToString() +
-                                    " is waiting (" + name + ") for a keyed event (key 0x" +
-                                    key.ToString("x") + "):");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwwaitformultipleobjects", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitformultipleobjects", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("kernel32.dll!waitformultipleobjects", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
-
-                                int handleCount = stackFrame.Params[0].ToInt32();
-                                IntPtr handleAddress = stackFrame.Params[1];
-                                WaitType waitType = (WaitType)stackFrame.Params[2].ToInt32();
-                                bool alertable = stackFrame.Params[3].ToInt32() != 0;
-
-                                // use the KiFastSystemCallRet args if we have the wrong args
-                                if (handleCount > 64)
-                                {
-                                    handleCount = lastParams[1].ToInt32();
-                                    handleAddress = lastParams[2];
-                                    waitType = (WaitType)lastParams[3].ToInt32();
-                                }
-
-                                IntPtr* handles = stackalloc IntPtr[handleCount];
-
-                                phandle.ReadMemory(handleAddress, handles, handleCount * IntPtr.Size);
-
-                                sb.AppendLine("Thread " + tid.ToString() +
-                                    " is waiting (alertable: " + alertable.ToString() + ", wait type: " +
-                                    waitType.ToString() + ") for:");
-
-                                for (int i = 0; i < handleCount; i++)
-                                {
-                                    sb.AppendLine(this.GetHandleString(_pid, handles[i]));
-                                }
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwwaitforsingleobject", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitforsingleobject", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("kernel32.dll!waitforsingleobject", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-                                bool alertable = stackFrame.Params[1].ToInt32() != 0;
-
-                                sb.AppendLine("Thread " + tid.ToString() +
-                                    " is waiting (alertable: " + alertable.ToString() + ") for:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwwaitforworkviaworkerfactory", StringComparison.OrdinalIgnoreCase) ||
-                                name.StartsWith("ntdll.dll!ntwaitforworkviaworkerfactory", StringComparison.OrdinalIgnoreCase)
-                                )
-                            {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for work from a worker factory:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-
-                            lastParams = stackFrame.Params;
-
-                            return !found;
-                        });
+                        return !found;
+                    });
                 }
 
                 if (found)
                 {
-                    ScratchpadWindow.Create(sb.ToString());
+                    new InformationBox(sb.ToString()).ShowDialog();
                 }
                 else
                 {
@@ -1434,7 +1384,7 @@ namespace ProcessHacker.Components
 
         private void selectAllThreadMenuItem_Click(object sender, EventArgs e)
         {
-            Utils.SelectAll(listThreads.Items);
+            this.listThreads.Items.SelectAll();
         }
     }
 }

@@ -9,14 +9,13 @@
 namespace ProcessHacker.Components
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
 
     /// <summary>
     /// Class to hold native code interop declarations.
     /// </summary>
     [System.Security.SuppressUnmanagedCodeSecurity]
-    internal static partial class UnsafeNativeMethods
+    internal static class UnsafeNativeMethods
     {
         /// <summary>
         /// WM_USER taken from WinUser.h
@@ -32,7 +31,7 @@ namespace ProcessHacker.Components
         /// <param name="lParam">wParam which is interpreted differently depending on the message.</param>
         /// <param name="refData">The refrence data that was set to TaskDialog.CallbackData.</param>
         /// <returns>A HRESULT value. The return value is specific to the message being processed. </returns>
-        internal delegate int TaskDialogCallback([In] IntPtr hwnd, [In] uint msg, [In] UIntPtr wParam, [In] IntPtr lParam, [In] IntPtr refData);
+        internal delegate int TaskDialogCallback([In] IntPtr hwnd, [In] TaskDialogNotification msg, [In] UIntPtr wParam, [In] IntPtr lParam, [In] IntPtr refData);
 
         /// <summary>
         /// TASKDIALOG_FLAGS taken from CommCtrl.h.

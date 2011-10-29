@@ -30,13 +30,12 @@ namespace ProcessHacker
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.buttonClose = new System.Windows.Forms.Button();
-            this.listHeaps = new ExtendedListView();
-            this.columnAddress = new System.Windows.Forms.ColumnHeader();
-            this.columnUsed = new System.Windows.Forms.ColumnHeader();
-            this.columnCommitted = new System.Windows.Forms.ColumnHeader();
-            this.columnEntries = new System.Windows.Forms.ColumnHeader();
+            this.listHeaps = new ProcessHacker.Components.ExtendedListView();
+            this.columnAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnUsed = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnCommitted = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnEntries = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuHeap = new System.Windows.Forms.ContextMenu();
             this.destroyMenuItem = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
@@ -57,14 +56,15 @@ namespace ProcessHacker
             // 
             // listHeaps
             // 
-            this.listHeaps.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHeaps.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listHeaps.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnAddress,
             this.columnUsed,
             this.columnCommitted,
             this.columnEntries});
+            this.listHeaps.DoubleClickChecks = true;
             this.listHeaps.FullRowSelect = true;
             this.listHeaps.HideSelection = false;
             this.listHeaps.Location = new System.Drawing.Point(12, 12);
@@ -120,7 +120,7 @@ namespace ProcessHacker
             this.checkSizesInBytes.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkSizesInBytes.Location = new System.Drawing.Point(12, 423);
             this.checkSizesInBytes.Name = "checkSizesInBytes";
-            this.checkSizesInBytes.Size = new System.Drawing.Size(96, 18);
+            this.checkSizesInBytes.Size = new System.Drawing.Size(100, 18);
             this.checkSizesInBytes.TabIndex = 1;
             this.checkSizesInBytes.Text = "Sizes in bytes";
             this.checkSizesInBytes.UseVisualStyleBackColor = true;
@@ -131,10 +131,12 @@ namespace ProcessHacker
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(503, 454);
             this.Controls.Add(this.checkSizesInBytes);
             this.Controls.Add(this.listHeaps);
             this.Controls.Add(this.buttonClose);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

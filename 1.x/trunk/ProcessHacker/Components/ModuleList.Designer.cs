@@ -32,12 +32,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.listModules = new ExtendedListView();
-            this.columnName = new System.Windows.Forms.ColumnHeader();
-            this.columnBaseAddress = new System.Windows.Forms.ColumnHeader();
-            this.columnSize = new System.Windows.Forms.ColumnHeader();
-            this.columnDesc = new System.Windows.Forms.ColumnHeader();
+            this.listModules = new ProcessHacker.Components.ExtendedListView();
+            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnBaseAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnDesc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.changeMemoryProtectionModuleMenuItem = new System.Windows.Forms.MenuItem();
             this.readMemoryModuleMenuItem = new System.Windows.Forms.MenuItem();
             this.inspectModuleMenuItem = new System.Windows.Forms.MenuItem();
@@ -63,6 +62,7 @@
             this.columnSize,
             this.columnDesc});
             this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listModules.DoubleClickChecks = true;
             this.listModules.FullRowSelect = true;
             this.listModules.HideSelection = false;
             this.listModules.Location = new System.Drawing.Point(0, 0);
@@ -191,8 +191,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listModules);
-            this.DoubleBuffered = true;
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "ModuleList";
             this.Size = new System.Drawing.Size(450, 472);
             this.ResumeLayout(false);

@@ -39,7 +39,7 @@ namespace ProcessHacker
         public RunWindow()
         {
             InitializeComponent();
-            this.AddEscapeToClose();
+
             this.SetTopMost();
 
             textSessionID.Text = Program.CurrentSessionId.ToString();
@@ -48,19 +48,22 @@ namespace ProcessHacker
             if (Program.ElevationType == TokenElevationType.Limited)
                 buttonOK.SetShieldIcon(true);
 
-            List<string> users = new List<string>();
-
-            users.Add("NT AUTHORITY\\SYSTEM");
-            users.Add("NT AUTHORITY\\LOCAL SERVICE");
-            users.Add("NT AUTHORITY\\NETWORK SERVICE");
+            List<string> users = new List<string>
+            {
+                "NT AUTHORITY\\SYSTEM", 
+                "NT AUTHORITY\\LOCAL SERVICE", 
+                "NT AUTHORITY\\NETWORK SERVICE"
+            };
 
             try
             {
-                using (var phandle = new LsaPolicyHandle(LsaPolicyAccess.ViewLocalInformation))
+                using (LsaPolicyHandle phandle = new LsaPolicyHandle(LsaPolicyAccess.ViewLocalInformation))
                 {
-                    foreach (var sid in phandle.GetAccounts())
+                    foreach (Sid sid in phandle.Accounts)
+                    {
                         if (sid.NameUse == SidNameUse.User)
                             users.Add(sid.GetFullName(true));
+                    }
                 }
             }
             catch
@@ -109,21 +112,17 @@ namespace ProcessHacker
 
         private void buttonBrowse_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-
-            try
+            using (OpenFileDialog ofd = new OpenFileDialog())
             {
                 ofd.FileName = textCmdLine.Text;
+
+                ofd.CheckFileExists = true;
+                ofd.CheckPathExists = true;
+                ofd.Multiselect = false;
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                    textCmdLine.Text = ofd.FileName;
             }
-            catch
-            { }
-
-            ofd.CheckFileExists = true;
-            ofd.CheckPathExists = true;
-            ofd.Multiselect = false;
-
-            if (ofd.ShowDialog() == DialogResult.OK)
-                textCmdLine.Text = ofd.FileName;
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
@@ -145,20 +144,18 @@ namespace ProcessHacker
 
             try
             {
-                string binPath;
-                string mailslotName;
                 bool omitUserAndType = false;
 
                 if (_pid != -1)
                     omitUserAndType = true;
 
-                mailslotName = "ProcessHackerAssistant" + Utils.CreateRandomString(8);
-                binPath = "\"" + Application.ExecutablePath + "\" -assistant " +
-                    (omitUserAndType ? string.Empty :
-                    ("-u \"" + comboUsername.Text + "\" -t " + comboType.SelectedItem.ToString().ToLowerInvariant() + " ")) +
-                    (_pid != -1 ? ("-P " + _pid.ToString() + " ") : string.Empty) + "-p \"" +
-                    textPassword.Text.Replace("\"", "\\\"") + "\" -s " + textSessionID.Text + " -c \"" +
-                    textCmdLine.Text.Replace("\"", "\\\"") + "\" -E " + mailslotName;
+                string mailslotName = "ProcessHackerAssistant" + Utils.CreateRandomString(8);
+
+                string binPath = "\"" + Application.ExecutablePath + "\" -assistant " +
+                                 (omitUserAndType ? string.Empty : ("-u \"" + this.comboUsername.Text + "\" -t " + this.comboType.SelectedItem.ToString().ToLowerInvariant() + " ")) +
+                                 (this._pid != -1 ? ("-P " + this._pid.ToString() + " ") : string.Empty) + "-p \"" +
+                                 this.textPassword.Text.Replace("\"", "\\\"") + "\" -s " + this.textSessionID.Text + " -c \"" +
+                                 this.textCmdLine.Text.Replace("\"", "\\\"") + "\" -E " + mailslotName;
 
                 if (Program.ElevationType == TokenElevationType.Limited)
                 {
@@ -174,35 +171,37 @@ namespace ProcessHacker
                 {
                     string serviceName = Utils.CreateRandomString(8);
 
-                    using (var manager = new ServiceManagerHandle(ScManagerAccess.CreateService))
+                    using (ServiceManagerHandle manager = new ServiceManagerHandle(ScManagerAccess.CreateService))
+                    using (ServiceHandle service = manager.CreateService(
+                        serviceName,
+                        serviceName + " (Process Hacker Assistant)",
+                        ServiceType.Win32OwnProcess,
+                        ServiceStartType.DemandStart,
+                        ServiceErrorControl.Ignore,
+                        binPath,
+                        string.Empty,
+                        "LocalSystem",
+                        null
+                        ))
                     {
-                        using (var service = manager.CreateService(
-                            serviceName,
-                            serviceName + " (Process Hacker Assistant)",
-                            ServiceType.Win32OwnProcess,
-                            ServiceStartType.DemandStart,
-                            ServiceErrorControl.Ignore,
-                            binPath,
-                            "",
-                            "LocalSystem",
-                            null))
+                        // Create a mailslot so we can receive the error code for Assistant.
+                        using (MailslotHandle mhandle = MailslotHandle.Create(FileAccess.GenericRead, @"\Device\Mailslot\" + mailslotName, 0, 5000))
                         {
-                            // Create a mailslot so we can receive the error code for Assistant.
-                            using (var mhandle = MailslotHandle.Create(
-                                FileAccess.GenericRead, @"\Device\Mailslot\" + mailslotName, 0, 5000)
-                                )
+                            try
                             {
-                                try { service.Start(); }
-                                catch { }
-                                service.Delete();
-
-                                Win32Error errorCode = (Win32Error)mhandle.Read(4).ToInt32();
-
-                                if (errorCode != Win32Error.Success)
-                                    throw new WindowsException(errorCode);
+                                service.Start();
                             }
+                            catch { }
+
+                            service.Delete();
+
+                            Win32Error errorCode = (Win32Error)mhandle.Read(4).ToInt32();
+
+                            if (errorCode != Win32Error.Success)
+                                throw new WindowsException(errorCode);
                         }
                     }
+
 
                     this.Close();
                 }
@@ -217,12 +216,12 @@ namespace ProcessHacker
 
         private bool isServiceUser()
         {
-            if (comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" || 
-                comboUsername.Text.ToUpper() == "NT AUTHORITY\\LOCAL SERVICE" ||
-                comboUsername.Text.ToUpper() == "NT AUTHORITY\\NETWORK SERVICE")
+            if (comboUsername.Text.Equals("NT AUTHORITY\\SYSTEM", StringComparison.OrdinalIgnoreCase) || 
+                comboUsername.Text.Equals("NT AUTHORITY\\LOCAL SERVICE", StringComparison.OrdinalIgnoreCase) ||
+                comboUsername.Text.Equals("NT AUTHORITY\\NETWORK SERVICE", StringComparison.OrdinalIgnoreCase))
                 return true;
-            else
-                return false;
+
+            return false;
         }
 
         private void comboUsername_TextChanged(object sender, EventArgs e)
@@ -251,7 +250,7 @@ namespace ProcessHacker
         {
             ContextMenu menu = new ContextMenu();
 
-            foreach (var session in TerminalServerHandle.GetCurrent().GetSessions())
+            foreach (TerminalServerSession session in TerminalServerHandle.GetCurrent().GetSessions())
             {
                 MenuItem item = new MenuItem();
 
@@ -259,13 +258,17 @@ namespace ProcessHacker
                 string displayName = session.SessionId.ToString();
 
                 if (!string.IsNullOrEmpty(session.Name))
+                {
                     displayName += ": " + session.Name + (userName != "\\" ? (" (" + userName + ")") : string.Empty);
+                }
                 else if (userName != "\\")
+                {
                     displayName += ": " + userName;
+                }
 
                 item.Text = displayName;
                 item.Tag = session.SessionId;
-                item.Click += new EventHandler(item_Click);
+                item.Click += this.item_Click;
 
                 menu.MenuItems.Add(item);
             }
@@ -275,7 +278,7 @@ namespace ProcessHacker
 
         private void item_Click(object sender, EventArgs e)
         {
-            textSessionID.Text = ((MenuItem)sender).Tag.ToString();
+            textSessionID.Text = (sender as MenuItem).Tag.ToString();
         }
     }
 }

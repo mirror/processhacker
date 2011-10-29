@@ -46,7 +46,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 3);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(34, 13);
+            this.label1.Size = new System.Drawing.Size(33, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Type:";
             // 
@@ -55,7 +55,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 26);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(51, 13);
+            this.label2.Size = new System.Drawing.Size(55, 13);
             this.label2.TabIndex = 1;
             this.label2.Text = "Signaled:";
             // 
@@ -64,7 +64,7 @@
             this.labelType.AutoSize = true;
             this.labelType.Location = new System.Drawing.Point(66, 3);
             this.labelType.Name = "labelType";
-            this.labelType.Size = new System.Drawing.Size(60, 13);
+            this.labelType.Size = new System.Drawing.Size(68, 13);
             this.labelType.TabIndex = 2;
             this.labelType.Text = "Notification";
             // 
@@ -73,7 +73,7 @@
             this.labelSignaled.AutoSize = true;
             this.labelSignaled.Location = new System.Drawing.Point(66, 26);
             this.labelSignaled.Name = "labelSignaled";
-            this.labelSignaled.Size = new System.Drawing.Size(32, 13);
+            this.labelSignaled.Size = new System.Drawing.Size(33, 13);
             this.labelSignaled.TabIndex = 2;
             this.labelSignaled.Text = "False";
             // 
@@ -125,6 +125,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.buttonPulse);
             this.Controls.Add(this.buttonSet);
@@ -133,6 +134,7 @@
             this.Controls.Add(this.labelType);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "EventProperties";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(173, 117);

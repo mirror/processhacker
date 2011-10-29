@@ -22,11 +22,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
-using ProcessHacker.Native.Security.AccessControl;
 
 namespace ProcessHacker.Native.Security.AccessControl
 {
@@ -34,7 +32,7 @@ namespace ProcessHacker.Native.Security.AccessControl
     {
         private class SecurableObjectWrapper : ISecurable
         {
-            private Func<StandardRights, NativeHandle> _openMethod;
+            private readonly Func<StandardRights, NativeHandle> _openMethod;
 
             public SecurableObjectWrapper(Func<StandardRights, NativeHandle> openMethod)
             {
@@ -65,8 +63,8 @@ namespace ProcessHacker.Native.Security.AccessControl
 
         private class SeSecurableObjectWrapper : ISecurable
         {
-            private SeObjectType _objectType;
-            private Func<StandardRights, NativeHandle> _openMethod;
+            private readonly SeObjectType _objectType;
+            private readonly Func<StandardRights, NativeHandle> _openMethod;
 
             public SeSecurableObjectWrapper(SeObjectType objectType, Func<StandardRights, NativeHandle> openMethod)
             {
@@ -98,18 +96,18 @@ namespace ProcessHacker.Native.Security.AccessControl
 
         public static void EditSecurity(IWin32Window owner, ISecurable securable, string name, IEnumerable<AccessEntry> accessEntries)
         {
-            using (var osi = new SecurityEditor(securable, name, accessEntries))
+            using (SecurityEditor osi = new SecurityEditor(securable, name, accessEntries))
                 Win32.EditSecurity(owner != null ? owner.Handle : IntPtr.Zero, osi);
         }
 
         public static ISecurable GetSecurableWrapper(IntPtr handle)
         {
-            return GetSecurableWrapper((access) => new NativeHandle<StandardRights>(handle, access));
+            return GetSecurableWrapper(access => new NativeHandle<StandardRights>(handle, access));
         }
 
         public static ISecurable GetSecurableWrapper(SeObjectType objectType, IntPtr handle)
         {
-            return GetSecurableWrapper(objectType, (access) => new NativeHandle<StandardRights>(handle, access));
+            return GetSecurableWrapper(objectType, access => new NativeHandle<StandardRights>(handle, access));
         }
 
         public static ISecurable GetSecurableWrapper(Func<StandardRights, NativeHandle> openMethod)
@@ -136,7 +134,7 @@ namespace ProcessHacker.Native.Security.AccessControl
 
             List<SiAccess> accesses = new List<SiAccess>();
 
-            foreach (var entry in accessEntries)
+            foreach (AccessEntry entry in accessEntries)
             {
                 if (entry.Mask != 0)
                 {
@@ -237,17 +235,18 @@ namespace ProcessHacker.Native.Security.AccessControl
 
         public HResult GetObjectInformation(out SiObjectInfo ObjectInfo)
         {
-            SiObjectInfo soi = new SiObjectInfo();
+            SiObjectInfo soi = new SiObjectInfo
+            {
+                Flags = SiObjectInfoFlags.EditAudits |
+                        SiObjectInfoFlags.EditOwner |
+                        SiObjectInfoFlags.EditPerms |
+                        SiObjectInfoFlags.Advanced |
+                        SiObjectInfoFlags.NoAclProtect |
+                        SiObjectInfoFlags.NoTreeApply, 
+                        Instance = IntPtr.Zero, 
+                        ObjectName = this.AllocateStringFromPool(this._name)
+            };
 
-            soi.Flags =
-                SiObjectInfoFlags.EditAudits |
-                SiObjectInfoFlags.EditOwner |
-                SiObjectInfoFlags.EditPerms |
-                SiObjectInfoFlags.Advanced |
-                SiObjectInfoFlags.NoAclProtect |
-                SiObjectInfoFlags.NoTreeApply;
-            soi.Instance = IntPtr.Zero;
-            soi.ObjectName = this.AllocateStringFromPool(_name);
             ObjectInfo = soi;
 
             return HResult.OK;
@@ -257,12 +256,12 @@ namespace ProcessHacker.Native.Security.AccessControl
         {
             try
             {
-                using (var sd = _securable.GetSecurity(RequestedInformation))
+                using (SecurityDescriptor sd = _securable.GetSecurity(RequestedInformation))
                 {
                     // Since the ACL editor will free the security descriptor using 
                     // LocalFree, we need to use a local memory allocation and copy 
                     // the security descriptor into it.
-                    using (var localAlloc = new LocalMemoryAlloc(sd.Length))
+                    using (LocalMemoryAlloc localAlloc = new LocalMemoryAlloc(sd.Length))
                     {
                         localAlloc.WriteMemory(0, sd.Memory, sd.Length);
                         localAlloc.Reference(); // reference for ACL editor

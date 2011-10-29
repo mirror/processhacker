@@ -3,35 +3,30 @@ using System.Diagnostics;
 
 namespace Debugger
 {
-	[Serializable]
-	public class DebuggerEventArgs : EventArgs 
-	{
-		object debugger;
+    [Serializable]
+    public class DebuggerEventArgs : EventArgs
+    {
+        private readonly object debugger;
 
         public object Debugger
         {
-			get {
-				return debugger;
-			}
-		}
+            get { return debugger; }
+        }
 
         public DebuggerEventArgs(object debugger)
-		{
-			this.debugger = debugger;
-		}
-	}
+        {
+            this.debugger = debugger;
+        }
+    }
 
     [Serializable]
     public class ProcessEventArgs : DebuggerEventArgs
     {
-        Process process;
+        private readonly Process process;
 
         public Process Process
         {
-            get
-            {
-                return process;
-            }
+            get { return process; }
         }
 
         public ProcessEventArgs(Process process)
@@ -44,32 +39,23 @@ namespace Debugger
     [Serializable]
     public class MessageEventArgs : ProcessEventArgs
     {
-        int level;
-        string message;
-        string category;
+        private readonly int level;
+        private readonly string message;
+        private readonly string category;
 
         public int Level
         {
-            get
-            {
-                return level;
-            }
+            get { return level; }
         }
 
         public string Message
         {
-            get
-            {
-                return message;
-            }
+            get { return message; }
         }
 
         public string Category
         {
-            get
-            {
-                return category;
-            }
+            get { return category; }
         }
 
         public MessageEventArgs(Process process, string message)

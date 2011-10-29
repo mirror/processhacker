@@ -229,14 +229,15 @@ namespace ProcessHacker.Native
                 fileInfo.Size = WintrustFileInfo.SizeOf;
                 fileInfo.FilePath = strMem;
 
-                WintrustData trustData = new WintrustData();
-
-                trustData.Size = WintrustData.SizeOf;
-                trustData.UIChoice = 2; // WTD_UI_NONE
-                trustData.UnionChoice = 1; // WTD_CHOICE_FILE
-                trustData.RevocationChecks = WtdRevocationChecks.None;
-                trustData.ProvFlags = WtdProvFlags.Safer;
-                trustData.StateAction = WtdStateAction.Verify;
+                WintrustData trustData = new WintrustData
+                {
+                    Size = WintrustData.SizeOf,
+                    UIChoice = 2, // WTD_UI_NONE
+                    UnionChoice = 1, // WTD_CHOICE_FILE
+                    RevocationChecks = WtdRevocationChecks.None,
+                    ProvFlags = WtdProvFlags.Safer,
+                    StateAction = WtdStateAction.Verify
+                };
 
                 if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
                     trustData.ProvFlags |= WtdProvFlags.CacheOnlyUrlRetrieval;

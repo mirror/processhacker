@@ -29,7 +29,7 @@ namespace ProcessHacker
 {
     public partial class GetProcAddressWindow : Form
     {
-        private string _fileName;
+        private readonly string _fileName;
 
         public GetProcAddressWindow(string fileName)
         {
@@ -45,7 +45,7 @@ namespace ProcessHacker
         private void buttonLookup_Click(object sender, EventArgs e)
         {
             IntPtr module = Win32.LoadLibraryEx(_fileName, IntPtr.Zero, Win32.DontResolveDllReferences);
-            IntPtr address = IntPtr.Zero;
+            IntPtr address;
             int ordinal = 0;
 
             if (module == IntPtr.Zero)

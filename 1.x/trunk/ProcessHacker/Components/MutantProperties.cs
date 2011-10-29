@@ -1,12 +1,13 @@
 ﻿using System.Windows.Forms;
 using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Components
 {
     public partial class MutantProperties : UserControl
     {
-        private MutantHandle _mutantHandle;
+        private readonly MutantHandle _mutantHandle;
 
         public MutantProperties(MutantHandle mutantHandle)
         {
@@ -20,7 +21,7 @@ namespace ProcessHacker.Components
 
         private void UpdateInfo()
         {
-            var basicInfo = _mutantHandle.GetBasicInformation();
+            MutantBasicInformation basicInfo = _mutantHandle.BasicInformation;
 
             labelCurrentCount.Text = basicInfo.CurrentCount.ToString();
             labelAbandoned.Text = basicInfo.AbandonedState.ToString();
@@ -28,7 +29,7 @@ namespace ProcessHacker.Components
             // Windows Vista and above have owner information.
             if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
             {
-                var ownerInfo = _mutantHandle.GetOwnerInformation();
+                MutantOwnerInformation ownerInfo = _mutantHandle.OwnerInformation;
 
                 if (ownerInfo.ClientId.ProcessId != 0)
                 {

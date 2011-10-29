@@ -1,11 +1,11 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Security.Permissions;
 using System.Windows.Forms.VisualStyles;
 using Be.Windows.Forms.Design;
+using ProcessHacker;
 
 namespace Be.Windows.Forms
 {
@@ -41,12 +41,16 @@ namespace Be.Windows.Forms
 		public int CharacterPosition
 		{
 			get { return _characterPosition; }
-		} int _characterPosition;
+		}
+
+	    readonly int _characterPosition;
 
 		public long Index
 		{
 			get { return _index; }
-		} long _index;
+		}
+
+	    readonly long _index;
 	}
 	#endregion
 
@@ -104,7 +108,7 @@ namespace Be.Windows.Forms
 		/// </summary>
 		class EmptyKeyInterpreter : IKeyInterpreter
 		{
-			HexBox _hexBox;
+		    readonly HexBox _hexBox;
 
 			public EmptyKeyInterpreter(HexBox hexBox)
 			{
@@ -141,12 +145,12 @@ namespace Be.Windows.Forms
 			/// <summary>
 			/// Contains the parent HexBox control
 			/// </summary>
-			protected HexBox _hexBox;
+			protected readonly HexBox _hexBox;
 
 			/// <summary>
 			/// Contains True, if shift key is down
 			/// </summary>
-			protected bool _shiftDown;
+			bool _shiftDown;
 			/// <summary>
 			/// Contains True, if mouse is down
 			/// </summary>
@@ -820,11 +824,9 @@ namespace Be.Windows.Forms
 			#region PreProcessWmKeyUp methods
 			public virtual bool PreProcessWmKeyUp(ref Message m)
 			{
-				System.Diagnostics.Debug.WriteLine("PreProcessWmKeyUp(ref Message m)", "KeyInterpreter");
-
 				Keys vc = (Keys)m.WParam.ToInt32();
 
-				Keys keyData = vc | Control.ModifierKeys;
+				Keys keyData = vc | ModifierKeys;
 
 				switch(keyData)
 				{
@@ -854,7 +856,7 @@ namespace Be.Windows.Forms
 				return true;
 			}
 
-			protected bool RaiseKeyUp(Keys keyData)
+		    private bool RaiseKeyUp(Keys keyData)
 			{
 				KeyEventArgs e = new KeyEventArgs(keyData);
 				_hexBox.OnKeyUp(e);
@@ -972,13 +974,12 @@ namespace Be.Windows.Forms
 			protected virtual bool PerformPosMoveRightByte()
 			{
 				long pos = _hexBox._bytePos;
-				int cp = _hexBox._byteCharacterPos;
 
-				if(pos == _hexBox._byteProvider.Length)
+			    if(pos == _hexBox._byteProvider.Length)
 					return true;
 
 				pos = Math.Min(_hexBox._byteProvider.Length, pos+1);
-				cp = 0;
+				int cp = 0;
 
 				_hexBox.SetPosition(pos, cp);
 			
@@ -1158,7 +1159,7 @@ namespace Be.Windows.Forms
 		/// <summary>
 		/// Contains string format information for text drawing
 		/// </summary>
-		StringFormat _stringFormat;
+		readonly StringFormat _stringFormat;
 		/// <summary>
 		/// Contains the width and height of a single char
 		/// </summary>
@@ -1192,11 +1193,11 @@ namespace Be.Windows.Forms
 		/// <summary>
 		/// Contains a vertical scroll
 		/// </summary>
-		VScrollBar _vScrollBar;
+		readonly VScrollBar _vScrollBar;
         /// <summary>
         /// Contains a timer for thumbtrack scrolling
         /// </summary>
-        Timer _thumbTrackTimer = new Timer();
+        readonly Timer _thumbTrackTimer = new Timer();
         /// <summary>
         /// Contains the thumbtrack scrolling position
         /// </summary>
@@ -1382,22 +1383,22 @@ namespace Be.Windows.Forms
 		public HexBox()
 		{
 			this._vScrollBar = new VScrollBar();
-			this._vScrollBar.Scroll += new ScrollEventHandler(_vScrollBar_Scroll);
+			this._vScrollBar.Scroll += this._vScrollBar_Scroll;
 
-			BackColor = Color.White;
-			Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
-			_stringFormat = new StringFormat(StringFormat.GenericTypographic);
-			_stringFormat.FormatFlags = StringFormatFlags.MeasureTrailingSpaces;
+            this.BackColor = Color.White;
+            this.Font = Settings.Instance.Font;
 
-			ActivateEmptyKeyInterpreter();
-			
-			SetStyle(ControlStyles.UserPaint, true);
-			SetStyle(ControlStyles.DoubleBuffer, true);
-			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-			SetStyle(ControlStyles.ResizeRedraw, true);
+		    this._stringFormat = new StringFormat(StringFormat.GenericTypographic)
+		    {
+		        FormatFlags = StringFormatFlags.MeasureTrailingSpaces
+		    };
+
+		    this.ActivateEmptyKeyInterpreter();
+
+            this.SetStyle(ControlStyles.UserPaint | ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.ResizeRedraw, true);
 
             _thumbTrackTimer.Interval = 1000;
-            _thumbTrackTimer.Tick += new EventHandler(PerformScrollThumbTrack);
+            _thumbTrackTimer.Tick += this.PerformScrollThumbTrack;
 		}
 
 		#endregion
@@ -1433,7 +1434,7 @@ namespace Be.Windows.Forms
                         _thumbTrackTimer.Enabled = false;
 
                     // perform scroll immediately only if last refresh is very old
-                    int currentThumbTrack = System.Environment.TickCount;
+                    int currentThumbTrack = Environment.TickCount;
                     if (currentThumbTrack - _lastThumbtrack > THUMPTRACKDELAY)
                     {
                         PerformScrollThumbTrack(null, null);
@@ -1446,8 +1447,6 @@ namespace Be.Windows.Forms
                     _thumbTrackTimer.Enabled = true;
 					break;
 				case ScrollEventType.First:
-					break;
-				default:
 					break;
 			}
             
@@ -1471,7 +1470,7 @@ namespace Be.Windows.Forms
 			// calc scroll bar info
 			if(VScrollBarVisible && _byteProvider != null && _byteProvider.Length > 0 && _iHexMaxHBytes != 0)
 			{
-				long scrollmax = (long)Math.Ceiling((double)_byteProvider.Length / (double)_iHexMaxHBytes - (double)_iHexMaxVBytes);
+				long scrollmax = (long)Math.Ceiling(this._byteProvider.Length / (double)_iHexMaxHBytes - this._iHexMaxVBytes);
 				scrollmax = Math.Max(0, scrollmax);
 
 				long scrollpos = _startByte / _iHexMaxHBytes;
@@ -1534,14 +1533,11 @@ namespace Be.Windows.Forms
 			int max = 65535;
 			if(_scrollVmax < max)
 			{
-				return (long)value;
+				return value;
 			}
-			else
-			{
-				double valperc = (double)value / (double)max * (double)100;
-				long res = (int)Math.Floor((double)_scrollVmax / (double)100 * valperc);
-				return res;
-			}
+		    double valperc = (double)value / (double)max * (double)100;
+		    long res = (int)Math.Floor((double)this._scrollVmax / (double)100 * valperc);
+		    return res;
 		}
 
 		int ToScrollMax(long value)
@@ -1549,8 +1545,7 @@ namespace Be.Windows.Forms
 			long max = 65535;
 			if(value > max)
 				return (int)max;
-			else
-				return (int)value;
+		    return (int)value;
 		}
 
 		void PerformScrollToLine(long pos)
@@ -1641,12 +1636,12 @@ namespace Be.Windows.Forms
 
 			if(index < _startByte)
 			{
-				long line = (long)Math.Floor((double)index / (double)_iHexMaxHBytes);
+				long line = (long)Math.Floor(index / (double)_iHexMaxHBytes);
 				PerformScrollThumpPosition(line);
 			}
 			else if(index > _endByte)
 			{
-				long line = (long)Math.Floor((double)index / (double)_iHexMaxHBytes);
+				long line = (long)Math.Floor(index / (double)_iHexMaxHBytes);
 				line -= _iHexMaxVBytes-1;
 				PerformScrollThumpPosition(line);
 			}
@@ -1796,8 +1791,8 @@ namespace Be.Windows.Forms
 			if(_byteProvider == null || _keyInterpreter == null)
 				return;
 
-			long pos = _bytePos;
-			int cp = _byteCharacterPos;
+			long pos;
+			int cp;
 
 			if(_recHex.Contains(p))
 			{
@@ -2062,16 +2057,16 @@ namespace Be.Windows.Forms
 			if(_selectionLength > 0)
 				_byteProvider.DeleteBytes(_bytePos, _selectionLength);
 
-			byte[] buffer = null;
+			byte[] buffer;
 			IDataObject da = Clipboard.GetDataObject();
-			if(da.GetDataPresent("BinaryData"))
+			if(da != null && da.GetDataPresent("BinaryData"))
 			{
 				System.IO.MemoryStream ms = (System.IO.MemoryStream)da.GetData("BinaryData");
 				buffer = new byte[ms.Length];
 				ms.Read(buffer, 0, buffer.Length);
 				
 			}
-			else if(da.GetDataPresent(typeof(string)))
+			else if(da != null && da.GetDataPresent(typeof(string)))
 			{
 				string sBuffer = (string)da.GetData(typeof(string));
 				buffer = System.Text.Encoding.ASCII.GetBytes(sBuffer);
@@ -2107,10 +2102,9 @@ namespace Be.Windows.Forms
 			IDataObject da = Clipboard.GetDataObject();
 			if(da.GetDataPresent("BinaryData"))
 				return true;
-			else if(da.GetDataPresent(typeof(string)))
-				return true;
-			else
-				return false;
+		    if(da.GetDataPresent(typeof(string)))
+		        return true;
+		    return false;
 		}
 
 		#endregion
@@ -2411,7 +2405,7 @@ namespace Be.Windows.Forms
 								Rectangle betweenLines = new Rectangle(
 									_recStringView.X,
 									(int)(startSelPointF.Y+_charSize.Height),
-									(int)(_recStringView.Width),
+									this._recStringView.Width,
 									(int)(_charSize.Height*(multiLine-1)));
 								if(betweenLines.IntersectsWith(_recStringView))
 								{
@@ -2533,18 +2527,18 @@ namespace Be.Windows.Forms
 
 		Color GetDefaultForeColor()
 		{
-			if(Enabled)
+		    if(Enabled)
 				return ForeColor;
-			else
-				return Color.Gray;
+		    return Color.Gray;
 		}
-		void UpdateVisibilityBytes()
+
+	    void UpdateVisibilityBytes()
 		{
 			if(_byteProvider == null || _byteProvider.Length == 0)
 				return;
 
 			_startByte = (_scrollVpos+1) * _iHexMaxHBytes - _iHexMaxHBytes;
-			_endByte = (long)Math.Min(_byteProvider.Length - 1, _startByte + _iHexMaxBytes);
+			_endByte = Math.Min(this._byteProvider.Length - 1, this._startByte + this._iHexMaxBytes);
 		}
 		#endregion
 
@@ -2853,11 +2847,11 @@ namespace Be.Windows.Forms
 					ActivateKeyInterpreter();
 
 				if(_byteProvider != null)
-					_byteProvider.LengthChanged -= new EventHandler(_byteProvider_LengthChanged);
+					_byteProvider.LengthChanged -= this._byteProvider_LengthChanged;
 
 				_byteProvider = value; 
 				if(_byteProvider != null)
-					_byteProvider.LengthChanged += new EventHandler(_byteProvider_LengthChanged);
+					_byteProvider.LengthChanged += this._byteProvider_LengthChanged;
 
 				OnByteProviderChanged(EventArgs.Empty);
 
@@ -2973,14 +2967,13 @@ namespace Be.Windows.Forms
 		[DefaultValue(typeof(HexCasing), "Upper"), Category("Hex"), Description("Gets or sets whether the HexBox control displays the hex characters in upper or lower case.")]
 		public HexCasing HexCasing
 		{
-			get 
-			{ 
-				if(_hexStringFormat == "X")
+			get
+			{
+			    if(_hexStringFormat == "X")
 					return HexCasing.Upper;
-				else
-					return HexCasing.Lower;
+			    return HexCasing.Lower;
 			}
-			set 
+		    set 
 			{ 
 				string format;
 				if(value == HexCasing.Upper)
@@ -3188,7 +3181,7 @@ namespace Be.Windows.Forms
 
 		void CheckCurrentLineChanged()
 		{
-			long currentLine = (long)Math.Floor((double)_bytePos / (double)_iHexMaxHBytes) + 1;
+			long currentLine = (long)Math.Floor(this._bytePos / (double)_iHexMaxHBytes) + 1;
 
 			if(_byteProvider == null && _currentLine != 0)
 			{

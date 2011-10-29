@@ -31,12 +31,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.listMemory = new ExtendedListView();
-            this.columnName = new System.Windows.Forms.ColumnHeader();
-            this.columnAddress = new System.Windows.Forms.ColumnHeader();
-            this.columnSize = new System.Windows.Forms.ColumnHeader();
-            this.columnProtection = new System.Windows.Forms.ColumnHeader();
+            this.listMemory = new ProcessHacker.Components.ExtendedListView();
+            this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnProtection = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.changeMemoryProtectionMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.readWriteMemoryMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.readWriteAddressMemoryMenuItem = new System.Windows.Forms.MenuItem();
@@ -58,6 +57,7 @@
             this.columnSize,
             this.columnProtection});
             this.listMemory.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listMemory.DoubleClickChecks = true;
             this.listMemory.FullRowSelect = true;
             this.listMemory.HideSelection = false;
             this.listMemory.Location = new System.Drawing.Point(0, 0);
@@ -158,8 +158,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listMemory);
-            this.DoubleBuffered = true;
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "MemoryList";
             this.Size = new System.Drawing.Size(450, 472);
             this.ResumeLayout(false);

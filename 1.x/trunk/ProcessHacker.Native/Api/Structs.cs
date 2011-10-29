@@ -31,7 +31,6 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Api
 {
@@ -92,6 +91,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct CredUiInfo
     {
+        public static readonly int SizeOf;
+
+        static CredUiInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(CredUiInfo));
+        }
+
         public int Size;
         public IntPtr Parent;
         public string MessageText;
@@ -155,6 +161,25 @@ namespace ProcessHacker.Native.Api
         public IntPtr ChainContext;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct DlgTemplate
+    {
+        public static readonly int SizeOf;
+
+        public int style;
+        public int dwExtendedStyle;
+        public short cdit;
+        public short x;
+        public short y;
+        public short cx;
+        public short cy;
+
+        static DlgTemplate()
+        {
+            SizeOf = Marshal.SizeOf(typeof(DlgTemplate));
+        }
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct EnumServiceStatus
     {
@@ -210,6 +235,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct HeapEntry32
     {
+        public static readonly int SizeOf;
+
+        static HeapEntry32()
+        {
+            SizeOf = Marshal.SizeOf(typeof(HeapEntry32));
+        }
+
         public int dwSize;
         public IntPtr hHandle;
         public IntPtr dwAddress;
@@ -224,6 +256,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct HeapList32
     {
+        public static readonly int SizeOf;
+
+        static HeapList32()
+        {
+            SizeOf = Marshal.SizeOf(typeof(HeapList32));
+        }
+
         public int dwSize;
         public int th32ProcessID;
         public IntPtr th32HeapID;
@@ -332,12 +371,12 @@ namespace ProcessHacker.Native.Api
         public IntPtr BaseAddress;
         public IntPtr AllocationBase;
         public MemoryProtection AllocationProtect;
-        private int _alignment1;
+        public int _alignment1;
         public ulong RegionSize;
         public MemoryState State;
         public MemoryProtection Protect;
         public MemoryType Type;
-        private int _alignment2;
+        public int _alignment2;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -587,6 +626,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ModuleInfo
     {
+        public static readonly int SizeOf;
+
+        static ModuleInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ModuleInfo));
+        }
+
         public IntPtr BaseOfDll;
         public int SizeOfImage;
         public IntPtr EntryPoint;
@@ -651,6 +697,32 @@ namespace ProcessHacker.Native.Api
         public IntPtr ThreadHandle;
         public int ProcessId;
         public int ThreadId;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PropSheetPageW
+    {
+        public static readonly int SizeOf;
+        
+        static PropSheetPageW()
+        {
+            SizeOf = Marshal.SizeOf(typeof(PropSheetPageW));
+        }
+
+        public int dwSize;
+        public PropSheetPageFlags dwFlags;
+        public IntPtr hInstance;
+
+        public IntPtr pResource; // pszTemplate
+        public IntPtr hIcon;
+        public IntPtr pszTitle;
+        public IntPtr pfnDlgProc;
+        public IntPtr lParam;
+        public IntPtr pfnCallback;
+        public IntPtr pcRefParent;
+        public IntPtr pszHeaderTitle;
+        public IntPtr pszHeaderSubTitle;
+        public IntPtr hActCtx;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -760,6 +832,11 @@ namespace ProcessHacker.Native.Api
     {
         public static readonly int SizeOf;
 
+        static ServiceStatusProcess()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ServiceStatusProcess));
+        }
+
         public ServiceType ServiceType;
         public ServiceState CurrentState;
         public ServiceAccept ControlsAccepted;
@@ -769,16 +846,18 @@ namespace ProcessHacker.Native.Api
         public int WaitHint;
         public int ProcessID;
         public ServiceFlags ServiceFlags;
-
-        static ServiceStatusProcess()
-        {
-            SizeOf = Marshal.SizeOf(typeof(ServiceStatusProcess));
-        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct ShellExecuteInfo
     {
+        public static readonly int SizeOf;
+
+        static ShellExecuteInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ShellExecuteInfo));
+        }
+
         public int cbSize;
         public uint fMask;
         public IntPtr hWnd;
@@ -800,6 +879,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ShFileInfo
     {
+        public static readonly int SizeOf;
+
+        static ShFileInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ShFileInfo));
+        }
+
         public IntPtr hIcon;
         public IntPtr iIcon;
         public uint dwAttributes;
@@ -870,6 +956,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct StartupInfo
     {
+        public static readonly int SizeOf;
+
+        static StartupInfo()
+        {
+            SizeOf = Marshal.SizeOf(typeof(StartupInfo));
+        }
+
         public int Size;
         [MarshalAs(UnmanagedType.LPWStr)]
         public string Reserved;
@@ -943,8 +1036,8 @@ namespace ProcessHacker.Native.Api
         public int Styles;
         [MarshalAs(UnmanagedType.FunctionPtr)]
         public WndProcDelegate WindowsProc;
-        private int ExtraClassData;
-        private int ExtraWindowData;
+        public int ExtraClassData;
+        public int ExtraWindowData;
         public IntPtr InstanceHandle;
         public IntPtr IconHandle;
         public IntPtr CursorHandle;
@@ -958,6 +1051,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct WindowPlacement
     {
+        public static readonly int SizeOf;
+
+        static WindowPlacement()
+        {
+            SizeOf = Marshal.SizeOf(typeof(WindowPlacement));
+        }
+
         public int Length;
         public WindowPlacementFlags Flags;
         public ShowWindowType ShowState;

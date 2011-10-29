@@ -37,9 +37,9 @@ namespace ProcessHacker
     /// </summary>
     public class ProcessTreeModel : ITreeModel
     {
-        private ProcessTree _tree;
-        private Dictionary<int, ProcessNode> _processes = new Dictionary<int, ProcessNode>();
-        private List<ProcessNode> _roots = new List<ProcessNode>();
+        private readonly ProcessTree _tree;
+        private readonly Dictionary<int, ProcessNode> _processes = new Dictionary<int, ProcessNode>();
+        private readonly List<ProcessNode> _roots = new List<ProcessNode>();
 
         public ProcessTreeModel(ProcessTree tree)
         {
@@ -109,7 +109,7 @@ namespace ProcessHacker
         public void Remove(ProcessItem item)
         {
             ProcessNode itemNode = _processes[item.Pid];
-            ProcessNode[] itemChildren = null;
+            ProcessNode[] itemChildren;
 
             // Dispose of the process node we're removing.
             itemNode.Dispose();
@@ -141,20 +141,18 @@ namespace ProcessHacker
             this.StructureChanged(this, new TreePathEventArgs(new TreePath()));
 
             // Expand the children because TreeViewAdv collapses them by default.
-            if (itemChildren != null)
+            foreach (ProcessNode n in itemChildren)
             {
-                foreach (ProcessNode n in itemChildren)
+                try
                 {
-                    try
-                    {
-                        _tree.FindTreeNode(n).ExpandAll();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logging.Log(ex);
-                    }
+                    _tree.FindTreeNode(n).ExpandAll();
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
                 }
             }
+
 
             _tree.Invalidate();
         }
@@ -168,10 +166,8 @@ namespace ProcessHacker
             {
                 return new TreePath(node);
             }
-            else
-            {
-                return node.TreePath;
-            }
+            
+            return node.TreePath;
         }
 
         public void MoveChildrenToRoot(ProcessNode node)
@@ -217,12 +213,15 @@ namespace ProcessHacker
 
         public int ModifySort(int sortResult, SortOrder order)
         {
-            if (order == SortOrder.Ascending)
-                return -sortResult;
-            else if (order == SortOrder.Descending)
-                return sortResult;
-            else
-                return 0;
+            switch (order)
+            {
+                case SortOrder.Ascending:
+                    return -sortResult;
+                case SortOrder.Descending:
+                    return sortResult;
+            }
+
+            return 0;
         }
 
         public System.Collections.IEnumerable GetChildren(TreePath treePath)
@@ -235,123 +234,123 @@ namespace ProcessHacker
 
                 nodes.AddRange(_processes.Values);
 
-                nodes.Sort(new Comparison<ProcessNode>(delegate(ProcessNode n1, ProcessNode n2)
-                    {
-                        // We have a problem here - the GdiHandlesNumber and UserHandlesNumber 
-                        // properties are dynamically retrieved, so if n1 == n2 we may end up 
-                        // getting different values for the same process due to the timing.
-                        // If we do, then Array.Sort will throw an exception.
-                        //
-                        // The temporary HACK used here is to return 0 whenever n1 == n2.
-                        if (n1 == n2)
-                            return 0;
+                nodes.Sort((n1, n2) =>
+                {
+                    // We have a problem here - the GdiHandlesNumber and UserHandlesNumber 
+                    // properties are dynamically retrieved, so if n1 == n2 we may end up 
+                    // getting different values for the same process due to the timing.
+                    // If we do, then Array.Sort will throw an exception.
+                    //
+                    // The temporary HACK used here is to return 0 whenever n1 == n2.
+                    if (n1 == n2)
+                        return 0;
 
-                        switch (sortC)
-                        {
-                            case "name":
-                                return ModifySort(string.Compare(n1.Name, n2.Name), sortO);
-                            case "pid":
-                                return ModifySort(n1.Pid.CompareTo(n2.Pid), sortO);
-                            case "pvt. memory":
-                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PrivatePageCount.CompareTo(
-                                    n2.ProcessItem.Process.VirtualMemoryCounters.PrivatePageCount), sortO);
-                            case "working set":
-                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize.CompareTo(
-                                    n2.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize), sortO);
-                            case "peak working set":
-                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize.CompareTo(
-                                    n2.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize), sortO);
-                            case "private ws":
-                                return ModifySort(n1.PrivateWorkingSetNumber.CompareTo(n2.PrivateWorkingSetNumber), sortO);
-                            case "shared ws":
-                                return ModifySort(n1.SharedWorkingSetNumber.CompareTo(n2.SharedWorkingSetNumber), sortO);
-                            case "shareable ws":
-                                return ModifySort(n1.ShareableWorkingSetNumber.CompareTo(n2.ShareableWorkingSetNumber), sortO);
-                            case "virtual size":
-                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.VirtualSize.CompareTo(
-                                    n2.ProcessItem.Process.VirtualMemoryCounters.VirtualSize), sortO);
-                            case "peak virtual size":
-                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakVirtualSize.CompareTo(
-                                    n2.ProcessItem.Process.VirtualMemoryCounters.PeakVirtualSize), sortO);
-                            case "pagefile usage":
-                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PagefileUsage.CompareTo(
-                                    n2.ProcessItem.Process.VirtualMemoryCounters.PagefileUsage), sortO);
-                            case "peak pagefile usage":
-                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakPagefileUsage.CompareTo(
-                                    n2.ProcessItem.Process.VirtualMemoryCounters.PeakPagefileUsage), sortO);
-                            case "page faults":
-                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount.CompareTo(
-                                    n2.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount), sortO);
-                            case "cpu":
-                                return ModifySort(n1.ProcessItem.CpuUsage.CompareTo(n2.ProcessItem.CpuUsage), sortO);
-                            case "username":
-                                return ModifySort(string.Compare(n1.Username, n2.Username), sortO);
-                            case "session id":
-                                return ModifySort(n1.ProcessItem.SessionId.CompareTo(n2.ProcessItem.SessionId), sortO);
-                            case "priority class":
-                            case "base priority":
-                                return ModifySort(n1.ProcessItem.Process.BasePriority.CompareTo(
-                                    n2.ProcessItem.Process.BasePriority), sortO);
-                            case "description":
-                                return ModifySort(string.Compare(n1.Description, n2.Description), sortO);
-                            case "company":
-                                return ModifySort(string.Compare(n1.Company, n2.Company), sortO);
-                            case "file name":
-                                return ModifySort(string.Compare(n1.FileName, n2.FileName), sortO);
-                            case "command line":
-                                return ModifySort(string.Compare(n1.CommandLine, n2.CommandLine), sortO);
-                            case "threads":
-                                return ModifySort(n1.ProcessItem.Process.NumberOfThreads.CompareTo(
-                                    n2.ProcessItem.Process.NumberOfThreads), sortO);
-                            case "handles":
-                                return ModifySort(n1.ProcessItem.Process.HandleCount.CompareTo(
-                                    n2.ProcessItem.Process.HandleCount), sortO);
-                            case "gdi handles":
-                                return ModifySort(n1.GdiHandlesNumber.CompareTo(n2.GdiHandlesNumber), sortO);
-                            case "user handles":
-                                return ModifySort(n1.UserHandlesNumber.CompareTo(n2.UserHandlesNumber), sortO);
-                            case "i/o total":
-                                return ModifySort(n1.IoTotalNumber.CompareTo(n2.IoTotalNumber), sortO);
-                            case "i/o ro":
-                                return ModifySort(n1.IoReadOtherNumber.CompareTo(n2.IoReadOtherNumber), sortO);
-                            case "i/o w":
-                                return ModifySort(n1.IoWriteNumber.CompareTo(n2.IoWriteNumber), sortO);
-                            case "integrity":
-                                return ModifySort(n1.IntegrityLevel.CompareTo(n2.IntegrityLevel), sortO);
-                            case "i/o priority":
-                                return ModifySort(n1.IoPriority.CompareTo(n2.IoPriority), sortO);
-                            case "page priority":
-                                return ModifySort(n1.PagePriority.CompareTo(n2.PagePriority), sortO);
-                            case "start time":
-                                return ModifySort(n1.ProcessItem.CreateTime.CompareTo(n2.ProcessItem.CreateTime), sortO);
-                            case "start time (relative)":
-                                // Invert the order - bigger dates are actually smaller if we use the relative time span.
-                                return -ModifySort(n1.ProcessItem.CreateTime.CompareTo(n2.ProcessItem.CreateTime), sortO);
-                            case "total cpu time":
-                                return ModifySort((n1.ProcessItem.Process.KernelTime + n1.ProcessItem.Process.UserTime).
-                                    CompareTo(n2.ProcessItem.Process.KernelTime + n2.ProcessItem.Process.UserTime), sortO);
-                            case "kernel cpu time":
-                                return ModifySort(n1.ProcessItem.Process.KernelTime.CompareTo(
-                                    n2.ProcessItem.Process.KernelTime), sortO);
-                            case "user cpu time":
-                                return ModifySort(n1.ProcessItem.Process.UserTime.CompareTo(
-                                    n2.ProcessItem.Process.UserTime), sortO);
-                            case "verification status":
-                                return ModifySort(string.Compare(n1.VerificationStatus, n2.VerificationStatus), sortO);
-                            case "verified signer":
-                                return ModifySort(string.Compare(n1.VerifiedSigner, n2.VerifiedSigner), sortO);
-                            default:
-                                return 0;
-                        }
-                    }));
+                    switch (sortC)
+                    {
+                        case "name":
+                            return this.ModifySort(string.Compare(n1.Name, n2.Name), sortO);
+                        case "pid":
+                            return this.ModifySort(n1.Pid.CompareTo(n2.Pid), sortO);
+                        case "pvt. memory":
+                            return this.ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PrivatePageCount.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PrivatePageCount), sortO);
+                        case "working set":
+                            return this.ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize), sortO);
+                        case "peak working set":
+                            return this.ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize), sortO);
+                        case "private ws":
+                            return this.ModifySort(n1.PrivateWorkingSetNumber.CompareTo(n2.PrivateWorkingSetNumber), sortO);
+                        case "shared ws":
+                            return this.ModifySort(n1.SharedWorkingSetNumber.CompareTo(n2.SharedWorkingSetNumber), sortO);
+                        case "shareable ws":
+                            return this.ModifySort(n1.ShareableWorkingSetNumber.CompareTo(n2.ShareableWorkingSetNumber), sortO);
+                        case "virtual size":
+                            return this.ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.VirtualSize.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.VirtualSize), sortO);
+                        case "peak virtual size":
+                            return this.ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakVirtualSize.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PeakVirtualSize), sortO);
+                        case "pagefile usage":
+                            return this.ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PagefileUsage.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PagefileUsage), sortO);
+                        case "peak pagefile usage":
+                            return this.ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakPagefileUsage.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PeakPagefileUsage), sortO);
+                        case "page faults":
+                            return this.ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount), sortO);
+                        case "cpu":
+                            return this.ModifySort(n1.ProcessItem.CpuUsage.CompareTo(n2.ProcessItem.CpuUsage), sortO);
+                        case "username":
+                            return this.ModifySort(string.Compare(n1.Username, n2.Username), sortO);
+                        case "session id":
+                            return this.ModifySort(n1.ProcessItem.SessionId.CompareTo(n2.ProcessItem.SessionId), sortO);
+                        case "priority class":
+                        case "base priority":
+                            return this.ModifySort(n1.ProcessItem.Process.BasePriority.CompareTo(
+                                n2.ProcessItem.Process.BasePriority), sortO);
+                        case "description":
+                            return this.ModifySort(string.Compare(n1.Description, n2.Description), sortO);
+                        case "company":
+                            return this.ModifySort(string.Compare(n1.Company, n2.Company), sortO);
+                        case "file name":
+                            return this.ModifySort(string.Compare(n1.FileName, n2.FileName), sortO);
+                        case "command line":
+                            return this.ModifySort(string.Compare(n1.CommandLine, n2.CommandLine), sortO);
+                        case "threads":
+                            return this.ModifySort(n1.ProcessItem.Process.NumberOfThreads.CompareTo(
+                                n2.ProcessItem.Process.NumberOfThreads), sortO);
+                        case "handles":
+                            return this.ModifySort(n1.ProcessItem.Process.HandleCount.CompareTo(
+                                n2.ProcessItem.Process.HandleCount), sortO);
+                        case "gdi handles":
+                            return this.ModifySort(n1.GdiHandlesNumber.CompareTo(n2.GdiHandlesNumber), sortO);
+                        case "user handles":
+                            return this.ModifySort(n1.UserHandlesNumber.CompareTo(n2.UserHandlesNumber), sortO);
+                        case "i/o total":
+                            return this.ModifySort(n1.IoTotalNumber.CompareTo(n2.IoTotalNumber), sortO);
+                        case "i/o ro":
+                            return this.ModifySort(n1.IoReadOtherNumber.CompareTo(n2.IoReadOtherNumber), sortO);
+                        case "i/o w":
+                            return this.ModifySort(n1.IoWriteNumber.CompareTo(n2.IoWriteNumber), sortO);
+                        case "integrity":
+                            return this.ModifySort(n1.IntegrityLevel.CompareTo(n2.IntegrityLevel), sortO);
+                        case "i/o priority":
+                            return this.ModifySort(n1.IoPriority.CompareTo(n2.IoPriority), sortO);
+                        case "page priority":
+                            return this.ModifySort(n1.PagePriority.CompareTo(n2.PagePriority), sortO);
+                        case "start time":
+                            return this.ModifySort(n1.ProcessItem.CreateTime.CompareTo(n2.ProcessItem.CreateTime), sortO);
+                        case "start time (relative)":
+                            // Invert the order - bigger dates are actually smaller if we use the relative time span.
+                            return -this.ModifySort(n1.ProcessItem.CreateTime.CompareTo(n2.ProcessItem.CreateTime), sortO);
+                        case "total cpu time":
+                            return this.ModifySort((n1.ProcessItem.Process.KernelTime + n1.ProcessItem.Process.UserTime).
+                                                       CompareTo(n2.ProcessItem.Process.KernelTime + n2.ProcessItem.Process.UserTime), sortO);
+                        case "kernel cpu time":
+                            return this.ModifySort(n1.ProcessItem.Process.KernelTime.CompareTo(
+                                n2.ProcessItem.Process.KernelTime), sortO);
+                        case "user cpu time":
+                            return this.ModifySort(n1.ProcessItem.Process.UserTime.CompareTo(
+                                n2.ProcessItem.Process.UserTime), sortO);
+                        case "verification status":
+                            return this.ModifySort(string.Compare(n1.VerificationStatus, n2.VerificationStatus), sortO);
+                        case "verified signer":
+                            return this.ModifySort(string.Compare(n1.VerifiedSigner, n2.VerifiedSigner), sortO);
+                        default:
+                            return 0;
+                    }
+                });
 
                 return nodes;
             }
 
             if (treePath.IsEmpty())
                 return _roots;
-            else
-                return (treePath.LastNode as ProcessNode).Children;
+            
+            return (treePath.LastNode as ProcessNode).Children;
         }
 
         public bool IsLeaf(TreePath treePath)
@@ -362,16 +361,13 @@ namespace ProcessHacker
 
             if (treePath.IsEmpty())
                 return false;
-            else
-                return (treePath.LastNode as ProcessNode).Children.Count == 0;
+            
+            return (treePath.LastNode as ProcessNode).Children.Count == 0;
         }
 
         public event EventHandler<TreeModelEventArgs> NodesChanged;
-
         public event EventHandler<TreeModelEventArgs> NodesInserted;
-
         public event EventHandler<TreeModelEventArgs> NodesRemoved;
-
         public event EventHandler<TreePathEventArgs> StructureChanged;
 
         public void CallStructureChanged(TreePathEventArgs args)

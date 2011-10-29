@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listGroups = new ExtendedListView();
-            this.columnGroupName = new System.Windows.Forms.ColumnHeader();
-            this.columnFlags = new System.Windows.Forms.ColumnHeader();
+            this.listGroups = new ProcessHacker.Components.ExtendedListView();
+            this.columnGroupName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnFlags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // listGroups
@@ -40,6 +40,7 @@
             this.columnGroupName,
             this.columnFlags});
             this.listGroups.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listGroups.DoubleClickChecks = true;
             this.listGroups.FullRowSelect = true;
             this.listGroups.Location = new System.Drawing.Point(0, 0);
             this.listGroups.Name = "listGroups";
@@ -60,12 +61,14 @@
             this.columnFlags.Text = "Flags";
             this.columnFlags.Width = 180;
             // 
-            // TokenGroups
+            // TokenGroupsList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.listGroups);
-            this.Name = "TokenGroups";
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Name = "TokenGroupsList";
             this.Size = new System.Drawing.Size(431, 397);
             this.ResumeLayout(false);
 

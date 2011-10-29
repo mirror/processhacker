@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Text;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
@@ -120,8 +119,8 @@ namespace ProcessHacker.Native.Security
 
             if (copy)
                 return array.Duplicate();
-            else
-                return array;
+            
+            return array;
         }
 
         public static implicit operator IntPtr(Sid sid)
@@ -129,10 +128,10 @@ namespace ProcessHacker.Native.Security
             return sid.Memory;
         }
 
-        private MemoryRegion _memory;
-        private string _systemName;
-        private bool _hasAttributes;
-        private SidAttributes _attributes;
+        private readonly MemoryRegion _memory;
+        private readonly string _systemName;
+        private readonly bool _hasAttributes;
+        private readonly SidAttributes _attributes;
 
         private string _stringSid;
         private string _domain;
@@ -215,12 +214,9 @@ namespace ProcessHacker.Native.Security
 
         private Sid(IntPtr sid, bool hasAttributes, SidAttributes attributes, string systemName)
         {
-            NtStatus status;
-
             _memory = new MemoryAlloc(Win32.RtlLengthSid(sid));
 
-            if ((status = Win32.RtlCopySid(_memory.Size, _memory, sid)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlCopySid(_memory.Size, _memory, sid).ThrowIf();
 
             _hasAttributes = hasAttributes;
             _attributes = attributes;
@@ -247,15 +243,9 @@ namespace ProcessHacker.Native.Security
             }
         }
 
-        public byte[] IdentifierAuthority
+        public unsafe byte[] IdentifierAuthority
         {
-            get
-            {
-                unsafe
-                {
-                    return Utils.Create((*Win32.RtlIdentifierAuthoritySid(this)).Value, 6);
-                }
-            }
+            get { return Utils.Create((*Win32.RtlIdentifierAuthoritySid(this)).Value, 6); }
         }
 
         public bool HasAttributes
@@ -277,8 +267,9 @@ namespace ProcessHacker.Native.Security
         {
             get
             {
-                if (_name == null)
+                if (string.IsNullOrEmpty(_name))
                     this.GetNameAndUse(out _domain, out _name, out _nameUse);
+
                 return _name;
             }
         }
@@ -289,24 +280,22 @@ namespace ProcessHacker.Native.Security
             {
                 if (_nameUse == 0)
                     this.GetNameAndUse(out _domain, out _name, out _nameUse);
+
                 return _nameUse;
             }
         }
 
-        public int[] SubAuthorities
+        public unsafe int[] SubAuthorities
         {
             get
             {
-                unsafe
-                {
-                    byte count = *Win32.RtlSubAuthorityCountSid(this);
-                    int[] subAuthorities = new int[count];
+                byte count = *Win32.RtlSubAuthorityCountSid(this);
+                int[] subAuthorities = new int[count];
 
-                    for (int i = 0; i < count; i++)
-                        subAuthorities[i] = *Win32.RtlSubAuthoritySid(this, i);
+                for (int i = 0; i < count; i++)
+                    subAuthorities[i] = *Win32.RtlSubAuthoritySid(this, i);
 
-                    return subAuthorities;
-                }
+                return subAuthorities;
             }
         }
 
@@ -314,8 +303,9 @@ namespace ProcessHacker.Native.Security
         {
             get
             {
-                if (_stringSid == null)
-                    _stringSid = this.GetString();
+                if (string.IsNullOrEmpty(_stringSid))
+                    _stringSid = this.String;
+
                 return _stringSid;
             }
         }
@@ -354,8 +344,8 @@ namespace ProcessHacker.Native.Security
 
                 if (includeDomain && !string.IsNullOrEmpty(this.DomainName))
                     return this.DomainName + "\\" + this.Name;
-                else
-                    return this.Name;
+                
+                return this.Name;
             }
             catch
             {
@@ -369,7 +359,7 @@ namespace ProcessHacker.Native.Security
             byte[] identifierAuthority = this.IdentifierAuthority;
             int[] subAuthorities = this.SubAuthorities;
 
-            for (int i = 0; i < subAuthorities.Length; i++)
+            foreach (int t in subAuthorities)
             {
                 hashCode ^= identifierAuthority[(uint)hashCode % identifierAuthority.Length];
                 // Reverse and XOR.
@@ -389,8 +379,7 @@ namespace ProcessHacker.Native.Security
         {
             byte[] identifierAuthority = this.IdentifierAuthority;
 
-            foreach (WellKnownSidIdentifierAuthority value in
-                Enum.GetValues(typeof(WellKnownSidIdentifierAuthority)))
+            foreach (WellKnownSidIdentifierAuthority value in Enum.GetValues(typeof(WellKnownSidIdentifierAuthority)))
             {
                 if (value == WellKnownSidIdentifierAuthority.None)
                     continue;
@@ -402,16 +391,19 @@ namespace ProcessHacker.Native.Security
             return WellKnownSidIdentifierAuthority.None;
         }
 
-        private string GetString()
+        private string String
         {
-            NtStatus status;
-            UnicodeString str = new UnicodeString();
+            get
+            {
+                UnicodeString str = new UnicodeString();
 
-            if ((status = Win32.RtlConvertSidToUnicodeString(ref str, this, true)) >= NtStatus.Error)
-                Win32.Throw(status);
+                Win32.RtlConvertSidToUnicodeString(ref str, this, true).ThrowIf();
 
-            using (str)
-                return str.Read();
+                using (str)
+                {
+                    return str.Text;
+                }
+            }
         }
 
         public bool IsValid()
@@ -426,7 +418,7 @@ namespace ProcessHacker.Native.Security
 
         public SidAndAttributes ToSidAndAttributes()
         {
-            return new SidAndAttributes()
+            return new SidAndAttributes
             {
                 Attributes = _attributes,
                 Sid = this

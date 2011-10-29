@@ -41,7 +41,7 @@ namespace ProcessHacker.Components
 
     public sealed class LinkClickedEventArgs : EventArgs
     {
-        private ListViewGroup _group;
+        private readonly ListViewGroup _group;
 
         public LinkClickedEventArgs(ListViewGroup group)
         {
@@ -54,7 +54,7 @@ namespace ProcessHacker.Components
         }
     }
 
-    public class ExtendedListView : ListView
+    public sealed class ExtendedListView : ListView
     {
         #region Control Variables
 
@@ -89,15 +89,12 @@ namespace ProcessHacker.Components
         {
             base.OnHandleCreated(e);
 
-            if (!this.DesignMode) //TODO: temporary VS fix...
+            if (OSVersion.IsAbove(WindowsVersion.XP))
             {
-                if (OSVersion.IsAbove(WindowsVersion.XP))
-                {
-                    Win32.SetWindowTheme(this.Handle, "Explorer", null);
-                }
-
-                this.MakeFocusInvisible();
+                Win32.SetWindowTheme(this.Handle, "Explorer", null);
             }
+
+            this.MakeFocusInvisible();
         }
 
         public bool DoubleClickChecks
@@ -129,7 +126,9 @@ namespace ProcessHacker.Components
         {
             foreach (ListViewGroup group in this.Groups)
             {
-                if (GetGroupID(group).Value == id)
+                int? groupId = GetGroupID(group);
+
+                if (groupId != null && groupId.Value == id)
                     return group;
             }
 
@@ -140,18 +139,17 @@ namespace ProcessHacker.Components
         {
             int? grpId = null;
             Type grpType = lvGroup.GetType();
-            if (grpType != null)
+
+            PropertyInfo pInfo = grpType.GetProperty("ID", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (pInfo != null)
             {
-                PropertyInfo pInfo = grpType.GetProperty("ID", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (pInfo != null)
+                object tmprtnval = pInfo.GetValue(lvGroup, null);
+                if (tmprtnval != null)
                 {
-                    object tmprtnval = pInfo.GetValue(lvGroup, null);
-                    if (tmprtnval != null)
-                    {
-                        grpId = tmprtnval as int?;
-                    }
+                    grpId = tmprtnval as int?;
                 }
             }
+
             return grpId;
         }
 
@@ -168,7 +166,7 @@ namespace ProcessHacker.Components
                 int? GrpId = GetGroupID(lvGroup);
                 int gIndex = lvGroup.ListView.Groups.IndexOf(lvGroup);
                 LVGroup group = new LVGroup();
-                group.CbSize = Marshal.SizeOf(group);
+                group.CbSize = LVGroup.SizeOf;
 
                 if (!string.IsNullOrEmpty(task))
                 {
@@ -190,12 +188,12 @@ namespace ProcessHacker.Components
                 if (GrpId != null)
                 {
                     group.GroupId = GrpId.Value;
-                    SendMessage(base.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
+                    SendMessage(this.Handle, LVM_SetGroupInfo, GrpId.Value, ref group);
                 }
                 else
                 {
                     group.GroupId = gIndex;
-                    SendMessage(base.Handle, LVM_SetGroupInfo, gIndex, ref group);
+                    SendMessage(this.Handle, LVM_SetGroupInfo, gIndex, ref group);
                 }
 
                 lvGroup.ListView.Refresh();
@@ -283,8 +281,15 @@ namespace ProcessHacker.Components
         /// Used to set and retrieve groups.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct LVGroup
+        public struct LVGroup
         {
+            public static readonly int SizeOf;
+
+            static LVGroup()
+            {
+                SizeOf = Marshal.SizeOf(typeof(LVGroup));
+            }
+
             /// <summary>
             /// Size of this structure, in bytes.
             /// </summary>
@@ -412,12 +417,12 @@ namespace ProcessHacker.Components
             /// </summary>
             public uint CchSubsetTitle;
         }
- 
+
         /// <summary>
         /// WM_NOTIFY notificaiton message header.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        private struct NMHDR
+        public struct NMHDR
         {
             /// <summary>
             /// Window handle to the control sending a message.
@@ -437,7 +442,7 @@ namespace ProcessHacker.Components
         ///  Used to set and retrieve information about a link item.
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        private struct LITEM
+        public struct LITEM
         {
             /// <summary>
             /// Combination of one or more of the LIF flags
@@ -472,7 +477,7 @@ namespace ProcessHacker.Components
         /// Contains information about an LVN_LINKCLICK  notification. 
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        private struct NMLVLINK
+        public struct NMLVLINK
         {
             /// <summary>
             /// NMHDR structure that contains basic

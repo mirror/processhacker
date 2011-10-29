@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Text;
 using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -45,8 +44,8 @@ namespace ProcessHacker.Native.Security
             }
         }
 
-        private TokenHandle _tokenHandle;
-        private Luid _luid;
+        private readonly TokenHandle _tokenHandle;
+        private readonly Luid _luid;
         private SePrivilegeAttributes _attributes;
         private string _name;
         private string _displayName;

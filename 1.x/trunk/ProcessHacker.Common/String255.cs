@@ -110,8 +110,8 @@ namespace ProcessHacker.Common
 
             fixed (char* buffer = this.Buffer)
             {
-                for (int i = 0; i < str.Length; i++)
-                    buffer[this.Length++] = str[i];
+                foreach (char t in str)
+                    buffer[this.Length++] = t;
 
                 buffer[this.Length] = '\0';
             }

@@ -37,10 +37,10 @@ namespace ProcessHacker
     {
         private delegate bool Matcher(string s1, string s2);
 
-        private int _pid;
+        private readonly int _pid;
         private SearchOptions _so;
         private Thread _searchThread;
-        private int _id;
+        private readonly int _id;
 
         public string Id
         {
@@ -52,9 +52,6 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
             this.SetTopMost();
-
-            listResults.SetDoubleBuffered(true);
-            listResults.SetTheme("explorer");
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
@@ -416,104 +413,134 @@ namespace ProcessHacker
 
             foreach (ColumnHeader ch in listResults.Columns)
             {
-                MenuItem columnMenu = new MenuItem(ch.Text);
-                MenuItem item;
-
-                columnMenu.Tag = ch.Index;
-
-                item = new MenuItem("Contains...", new EventHandler(filterMenuItem_Clicked));
-                item.Tag = new Matcher((s1, s2) => s1.Contains(s2, StringComparison.OrdinalIgnoreCase));
-                columnMenu.MenuItems.Add(item);
-
-                item = new MenuItem("Contains (case-insensitive)...", new EventHandler(filterMenuItem_Clicked));
-                item.Tag = new Matcher((s1, s2) => s1.Contains(s2, StringComparison.OrdinalIgnoreCase));
-                columnMenu.MenuItems.Add(item);
-
-                item = new MenuItem("Regex...", new EventHandler(filterMenuItem_Clicked));
-                item.Tag = new Matcher(delegate(string s1, string s2)
+                MenuItem columnMenu = new MenuItem(ch.Text)
                 {
-                    try
-                    {
-                        System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex(s2);
+                    Tag = ch.Index
+                };
 
-                        return r.IsMatch(s1);
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                });
+                MenuItem item = new MenuItem("Contains...", this.filterMenuItem_Clicked)
+                {
+                    Tag = new Matcher((s1, s2) => s1.Contains(s2, StringComparison.OrdinalIgnoreCase))
+                };
                 columnMenu.MenuItems.Add(item);
 
-                item = new MenuItem("Regex (case-insensitive)...", new EventHandler(filterMenuItem_Clicked));
-                item.Tag = new Matcher(delegate(string s1, string s2)
+                item = new MenuItem("Contains (case-insensitive)...", this.filterMenuItem_Clicked)
                 {
-                    try
-                    {
-                        System.Text.RegularExpressions.Regex r =
-                            new System.Text.RegularExpressions.Regex(s2, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-
-                        return r.IsMatch(s1);
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                });
+                    Tag = new Matcher((s1, s2) => s1.Contains(s2, StringComparison.OrdinalIgnoreCase))
+                };
                 columnMenu.MenuItems.Add(item);
 
-                columnMenu.MenuItems.Add(new MenuItem("-")); 
-
-                item = new MenuItem("Numerical relation...", new EventHandler(filterMenuItem_Clicked));
-                item.Tag = new Matcher(delegate(string s1, string s2)
+                item = new MenuItem("Regex...", this.filterMenuItem_Clicked)
                 {
-                    if (s2.Contains("!=", StringComparison.OrdinalIgnoreCase))
+                    Tag = new Matcher((s1, s2) =>
                     {
-                        decimal n1 = BaseConverter.ToNumberParse(s1);
-                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "!=" }, StringSplitOptions.None)[1]);
+                        try
+                        {
+                            System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex(s2);
 
-                        return n1 != n2;
-                    }
-                    else if (s2.Contains("<=", StringComparison.OrdinalIgnoreCase))
-                    {
-                        decimal n1 = BaseConverter.ToNumberParse(s1);
-                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "<=" }, StringSplitOptions.None)[1]);
+                            return r.IsMatch(s1);
+                        }
+                        catch
+                        {
+                            return false;
+                        }
+                    })
+                };
+                columnMenu.MenuItems.Add(item);
 
-                        return n1 <= n2;
-                    }
-                    else if (s2.Contains(">=", StringComparison.OrdinalIgnoreCase))
+                item = new MenuItem("Regex (case-insensitive)...", this.filterMenuItem_Clicked)
+                {
+                    Tag = new Matcher((s1, s2) =>
                     {
-                        decimal n1 = BaseConverter.ToNumberParse(s1);
-                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { ">=" }, StringSplitOptions.None)[1]);
+                        try
+                        {
+                            System.Text.RegularExpressions.Regex r =
+                                new System.Text.RegularExpressions.Regex(s2, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
-                        return n1 >= n2;
-                    }
-                    else if (s2.Contains("<", StringComparison.OrdinalIgnoreCase))
-                    {
-                        decimal n1 = BaseConverter.ToNumberParse(s1);
-                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "<" }, StringSplitOptions.None)[1]);
+                            return r.IsMatch(s1);
+                        }
+                        catch
+                        {
+                            return false;
+                        }
+                    })
+                };
+                columnMenu.MenuItems.Add(item);
 
-                        return n1 < n2;
-                    }
-                    else if (s2.Contains(">", StringComparison.OrdinalIgnoreCase))
+                columnMenu.MenuItems.Add(new MenuItem("-"));
+                item = new MenuItem("Numerical relation...", this.filterMenuItem_Clicked)
+                {
+                    Tag = new Matcher((s1, s2) =>
                     {
-                        decimal n1 = BaseConverter.ToNumberParse(s1);
-                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { ">" }, StringSplitOptions.None)[1]);
+                        if (s2.Contains("!=", StringComparison.OrdinalIgnoreCase))
+                        {
+                            decimal n1 = BaseConverter.ToNumberParse(s1);
+                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
+                            {
+                                "!="
+                            }, StringSplitOptions.None)[1]);
 
-                        return n1 > n2;
-                    }
-                    else if (s2.Contains("=", StringComparison.OrdinalIgnoreCase))
-                    {
-                        decimal n1 = BaseConverter.ToNumberParse(s1);
-                        decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[] { "=" }, StringSplitOptions.None)[1]);
+                            return n1 != n2;
+                        }
 
-                        return n1 == n2;
-                    }
-                    else
-                    {
+                        if (s2.Contains("<=", StringComparison.OrdinalIgnoreCase))
+                        {
+                            decimal n1 = BaseConverter.ToNumberParse(s1);
+                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
+                            {
+                                "<="
+                            }, StringSplitOptions.None)[1]);
+
+                            return n1 <= n2;
+                        }
+
+                        if (s2.Contains(">=", StringComparison.OrdinalIgnoreCase))
+                        {
+                            decimal n1 = BaseConverter.ToNumberParse(s1);
+                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
+                            {
+                                ">="
+                            }, StringSplitOptions.None)[1]);
+
+                            return n1 >= n2;
+                        }
+
+                        if (s2.Contains("<", StringComparison.OrdinalIgnoreCase))
+                        {
+                            decimal n1 = BaseConverter.ToNumberParse(s1);
+                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
+                            {
+                                "<"
+                            }, StringSplitOptions.None)[1]);
+
+                            return n1 < n2;
+                        }
+                        
+                        if (s2.Contains(">", StringComparison.OrdinalIgnoreCase))
+                        {
+                            decimal n1 = BaseConverter.ToNumberParse(s1);
+                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
+                            {
+                                ">"
+                            }, StringSplitOptions.None)[1]);
+
+                            return n1 > n2;
+                        }
+                        
+                        if (s2.Contains("=", StringComparison.OrdinalIgnoreCase))
+                        {
+                            decimal n1 = BaseConverter.ToNumberParse(s1);
+                            decimal n2 = BaseConverter.ToNumberParse(s2.Split(new string[]
+                            {
+                                "="
+                            }, StringSplitOptions.None)[1]);
+
+                            return n1 == n2;
+                        }
+                       
                         return false;
-                    }
-                });
+                    })
+                };
                 columnMenu.MenuItems.Add(item);
 
                 menu.MenuItems.Add(columnMenu);
@@ -539,31 +566,32 @@ namespace ProcessHacker
 
         private void Filter(int index, Matcher m)
         {
-            PromptBox prompt = new PromptBox();
-
-            if (prompt.ShowDialog() == DialogResult.OK)
+            using (PromptBox prompt = new PromptBox())
             {
-                this.Cursor = Cursors.WaitCursor;
-
-                Program.GetResultsWindow(_pid, f =>
+                if (prompt.ShowDialog() == DialogResult.OK)
                 {
-                    f.ResultsList.VirtualListSize = 0;
+                    this.Cursor = Cursors.WaitCursor;
 
-                    foreach (string[] s in this.Results)
+                    Program.GetResultsWindow(_pid, f =>
                     {
-                        if (m(s[index], prompt.Value))
+                        f.ResultsList.VirtualListSize = 0;
+
+                        foreach (string[] s in this.Results)
                         {
-                            f.Results.Add(s);
-                            f.ResultsList.VirtualListSize++;
+                            if (m(s[index], prompt.Value))
+                            {
+                                f.Results.Add(s);
+                                f.ResultsList.VirtualListSize++;
+                            }
                         }
-                    }
 
-                    f.Label = "Filter: " + f.Results.Count + " results.";
+                        f.Label = "Filter: " + f.Results.Count + " results.";
 
-                    f.Show();
-                });
+                        f.Show();
+                    });
 
-                this.Cursor = Cursors.Default;   
+                    this.Cursor = Cursors.Default;
+                }
             }
         }
     }

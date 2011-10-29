@@ -32,17 +32,13 @@ namespace ProcessHacker.Components
 {
     public partial class StructViewer : UserControl
     {
-        private StructModel _model = new StructModel();
-        int _pid;
-        IntPtr _address;
-        StructDef _struct;
+        private readonly StructModel _model = new StructModel();
+        readonly StructDef _struct;
 
         public StructViewer(int pid, IntPtr address, StructDef struc)
         {
             InitializeComponent();
 
-            _pid = pid;
-            _address = address;
             _struct = struc;
             treeStruct.Model = _model;
             treeStruct.ContextMenu = menuStruct;
@@ -162,8 +158,7 @@ namespace ProcessHacker.Components
 
                     if (_value.StructName != null)
                         return _value.StructName + "[" + memberCount.ToString() +  "]";
-                    else
-                        return type.ToString() + "[" + memberCount.ToString() + "]";
+                    return type.ToString() + "[" + memberCount.ToString() + "]";
                 }
 
                 if (_value.StructName != null)

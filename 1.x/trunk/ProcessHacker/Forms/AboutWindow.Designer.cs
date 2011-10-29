@@ -42,9 +42,9 @@
             this.flowCredits = new System.Windows.Forms.FlowLayoutPanel();
             this.label8 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -207,11 +207,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.flowCredits.AutoScroll = true;
+            this.flowCredits.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.flowCredits.Controls.Add(this.label8);
             this.flowCredits.Controls.Add(this.label5);
+            this.flowCredits.Controls.Add(this.label12);
             this.flowCredits.Controls.Add(this.label1);
             this.flowCredits.Controls.Add(this.label6);
-            this.flowCredits.Controls.Add(this.label12);
             this.flowCredits.Controls.Add(this.label10);
             this.flowCredits.Controls.Add(this.label9);
             this.flowCredits.Controls.Add(this.label7);
@@ -261,10 +262,20 @@
             this.label5.TabIndex = 18;
             this.label5.Text = "wj32 - Project Manager";
             // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(6, 29);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(90, 13);
+            this.label12.TabIndex = 29;
+            this.label12.Text = "dmex - Developer";
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 29);
+            this.label1.Location = new System.Drawing.Point(6, 42);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(188, 13);
             this.label1.TabIndex = 13;
@@ -274,21 +285,11 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(6, 42);
+            this.label6.Location = new System.Drawing.Point(6, 55);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(91, 13);
             this.label6.TabIndex = 18;
             this.label6.Text = "Dean - Developer";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(6, 55);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(90, 13);
-            this.label12.TabIndex = 29;
-            this.label12.Text = "dmex - Developer";
             // 
             // label10
             // 
@@ -487,6 +488,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.CancelButton = this.buttonClose;
             this.ClientSize = new System.Drawing.Size(507, 355);
             this.Controls.Add(this.buttonDiagnostics);

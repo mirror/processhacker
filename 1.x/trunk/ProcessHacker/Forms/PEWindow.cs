@@ -32,10 +32,10 @@ using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
-    public partial class PEWindow : Form
+    public sealed partial class PEWindow : Form
     {
-        private string _path;
-        private MappedImage _mappedImage;
+        private readonly string _path;
+        private readonly MappedImage _mappedImage;
 
         public PEWindow(string path)
         {
@@ -44,6 +44,7 @@ namespace ProcessHacker
             this.SetTopMost();
 
             _path = path;
+
             this.Text = "PE File - " + path;
             Program.PEWindows.Add(Id, this);
 
@@ -85,38 +86,26 @@ namespace ProcessHacker
 
         private void InitializeLists()
         {
-            listCOFFHeader.SetDoubleBuffered(true);
-            listCOFFHeader.SetTheme("explorer");
             listCOFFHeader.ContextMenu = listCOFFHeader.GetCopyMenu();
             listCOFFHeader.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PECOFFHColumns, listCOFFHeader);
 
-            listCOFFOptionalHeader.SetDoubleBuffered(true);
-            listCOFFOptionalHeader.SetTheme("explorer");
             listCOFFOptionalHeader.ContextMenu = listCOFFOptionalHeader.GetCopyMenu();
             listCOFFOptionalHeader.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PECOFFOHColumns, listCOFFOptionalHeader);
 
-            listImageData.SetDoubleBuffered(true);
-            listImageData.SetTheme("explorer");
             listImageData.ContextMenu = listImageData.GetCopyMenu();
             listImageData.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PEImageDataColumns, listImageData);
 
-            listSections.SetDoubleBuffered(true);
-            listSections.SetTheme("explorer");
             listSections.ContextMenu = listSections.GetCopyMenu();
             listSections.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PESectionsColumns, listSections);
 
-            listExports.SetDoubleBuffered(true);
-            listExports.SetTheme("explorer");
             listExports.ContextMenu = listExports.GetCopyMenu(listExports_RetrieveVirtualItem);
             listExports.AddShortcuts(this.listExports_RetrieveVirtualItem);
             ColumnSettings.LoadSettings(Settings.Instance.PEExportsColumns, listExports);
 
-            listImports.SetDoubleBuffered(true);
-            listImports.SetTheme("explorer");
             listImports.ContextMenu = listImports.GetCopyMenu();
             listImports.AddShortcuts();
             ColumnSettings.LoadSettings(Settings.Instance.PEImportsColumns, listImports);
@@ -223,9 +212,11 @@ namespace ProcessHacker
 
                 if (dataEntry != null && dataEntry->VirtualAddress != 0)
                 {
-                    ListViewItem item = new ListViewItem();
+                    ListViewItem item = new ListViewItem
+                    {
+                        Text = ((ImageDataEntry)i).ToString()
+                    };
 
-                    item.Text = ((ImageDataEntry)i).ToString();
                     item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + dataEntry->VirtualAddress.ToString("x")));
                     item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + dataEntry->Size.ToString("x")));
 
@@ -242,9 +233,11 @@ namespace ProcessHacker
             for (int i = 0; i < _mappedImage.NumberOfSections; i++)
             {
                 ImageSectionHeader* section = &_mappedImage.Sections[i];
-                ListViewItem item = new ListViewItem();
+                ListViewItem item = new ListViewItem
+                {
+                    Text = this._mappedImage.GetSectionName(section)
+                };
 
-                item.Text = _mappedImage.GetSectionName(section);
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + section->VirtualAddress.ToString("x")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + section->SizeOfRawData.ToString("x")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + section->PointerToRawData.ToString("x")));
@@ -306,22 +299,17 @@ namespace ProcessHacker
             #endregion
         }
 
-        private void listExports_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        private unsafe void listExports_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            unsafe
-            {
-                var entry = _mappedImage.Exports.GetEntry(e.ItemIndex);
-                var function = _mappedImage.Exports.GetFunction(entry.Ordinal);
+            ImageExportEntry entry = this._mappedImage.Exports.GetEntry(e.ItemIndex);
+            ImageExportFunction function = this._mappedImage.Exports.GetFunction(entry.Ordinal);
 
-                e.Item = new ListViewItem(new string[]
-                {
-                    entry.Ordinal.ToString(),
-                    !string.IsNullOrEmpty(function.ForwardedName) ? entry.Name + " > " + function.ForwardedName : entry.Name, 
-                    string.IsNullOrEmpty(function.ForwardedName) ?  
-                    "0x" + function.Function.Decrement(new IntPtr(_mappedImage.Memory)).ToString("x") :
-                    string.Empty
-                });
-            }
+            e.Item = new ListViewItem(new string[]
+            {
+                entry.Ordinal.ToString(),
+                !string.IsNullOrEmpty(function.ForwardedName) ? entry.Name + " > " + function.ForwardedName : entry.Name, 
+                string.IsNullOrEmpty(function.ForwardedName) ? "0x" + function.Function.Decrement(new IntPtr(this._mappedImage.Memory)).ToString("x") : string.Empty
+            });
         }
 
         private void listExports_DoubleClick(object sender, EventArgs e)

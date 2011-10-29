@@ -10,9 +10,9 @@ namespace ProcessHacker.Native.Memory
     /// </summary>
     public sealed class PhysicalPages : BaseObject
     {
-        private ProcessHandle _processHandle;
-        private int _count;
-        private IntPtr[] _pfnArray;
+        private readonly ProcessHandle _processHandle;
+        private readonly int _count;
+        private readonly IntPtr[] _pfnArray;
 
         /// <summary>
         /// Allocates physical pages.

@@ -781,7 +781,6 @@
             // 
             this.listNetwork.ContextMenuStrip = this.contextMenuStripNetwork;
             this.listNetwork.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listNetwork.DoubleBuffered = true;
             this.listNetwork.Location = new System.Drawing.Point(3, 3);
             this.listNetwork.Name = "listNetwork";
             this.listNetwork.Provider = null;
@@ -882,7 +881,6 @@
             this.toolStrip.Size = new System.Drawing.Size(804, 28);
             this.toolStrip.TabIndex = 5;
             this.toolStrip.Text = "toolStrip1";
-            this.toolStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolStrip_ItemClicked);
             // 
             // refreshToolStripButton
             // 
@@ -949,6 +947,7 @@
             // statusStrip1
             // 
             this.statusStrip1.AllowItemReorder = true;
+            this.statusStrip1.BackColor = System.Drawing.SystemColors.Control;
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusMemory,
             this.statusCPU,
@@ -1436,12 +1435,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(804, 568);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStripEx1);
-            this.DoubleBuffered = true;
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStripEx1;
@@ -1449,7 +1449,6 @@
             this.Text = "Process Hacker";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HackerWindow_FormClosing);
             this.Load += new System.EventHandler(this.HackerWindow_Load);
-            this.SizeChanged += new System.EventHandler(this.HackerWindow_SizeChanged);
             this.VisibleChanged += new System.EventHandler(this.HackerWindow_VisibleChanged);
             this.tabControl.ResumeLayout(false);
             this.tabProcesses.ResumeLayout(false);

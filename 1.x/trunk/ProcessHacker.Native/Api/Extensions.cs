@@ -186,7 +186,7 @@ namespace ProcessHacker.Native
                     if (KProcessHacker.Instance != null)
                         str.Buffer = str.Buffer.Increment(oniMem.Memory.Decrement(baseAddress));
 
-                    return str.Read();
+                    return str.Text;
                 }
             }
 
@@ -315,7 +315,7 @@ namespace ProcessHacker.Native
                         if (KProcessHacker.Instance != null)
                             str.Buffer = str.Buffer.Increment(otiMem.Memory.Decrement(baseAddress));
 
-                        info.TypeName = str.Read();
+                        info.TypeName = str.Text;
 
                         Windows.ObjectTypesLock.AcquireExclusive();
 
@@ -383,7 +383,7 @@ namespace ProcessHacker.Native
 
                                 var oni = oniMem.ReadStruct<ObjectNameInformation>();
 
-                                info.OrigName = oni.Name.Read();
+                                info.OrigName = oni.Name.Text;
                             }
                         }
                         catch (DllNotFoundException)
@@ -482,10 +482,9 @@ namespace ProcessHacker.Native
                     case "TmEn":
                         {
                             using (var enHandleDup = new NativeHandle<EnlistmentAccess>(process, handle, EnlistmentAccess.QueryInformation))
+                            using (EnlistmentHandle enHandle = EnlistmentHandle.FromHandle(enHandleDup))
                             {
-                                var enHandle = EnlistmentHandle.FromHandle(enHandleDup);
-
-                                info.BestName = enHandle.GetBasicInformation().EnlistmentId.ToString("B");
+                                info.BestName = enHandle.BasicInformation.EnlistmentId.ToString("B");
                             }
                         }
                         break;
@@ -496,24 +495,23 @@ namespace ProcessHacker.Native
                             {
                                 var rmHandle = ResourceManagerHandle.FromHandle(rmHandleDup);
 
-                                info.BestName = rmHandle.GetDescription();
+                                info.BestName = rmHandle.Description;
 
                                 if (string.IsNullOrEmpty(info.BestName))
-                                    info.BestName = rmHandle.GetGuid().ToString("B");
+                                    info.BestName = rmHandle.Guid.ToString("B");
                             }
                         }
                         break;
 
                     case "TmTm":
                         {
-                            using (var tmHandleDup = new NativeHandle<TmAccess>(process, handle, TmAccess.QueryInformation))
+                            using (NativeHandle<TmAccess> tmHandleDup = new NativeHandle<TmAccess>(process, handle, TmAccess.QueryInformation))
+                            using (TmHandle tmHandle = TmHandle.FromHandle(tmHandleDup))
                             {
-                                var tmHandle = TmHandle.FromHandle(tmHandleDup);
-
-                                info.BestName = FileUtils.GetFileName(FileUtils.GetFileName(tmHandle.GetLogFileName()));
+                                info.BestName = FileUtils.GetFileName(FileUtils.GetFileName(tmHandle.LogFileName));
 
                                 if (string.IsNullOrEmpty(info.BestName))
-                                    info.BestName = tmHandle.GetBasicInformation().TmIdentity.ToString("B");
+                                    info.BestName = tmHandle.BasicInformation.TmIdentity.ToString("B");
                             }
                         }
                         break;
@@ -522,12 +520,12 @@ namespace ProcessHacker.Native
                         {
                             using (var transactionHandleDup = new NativeHandle<TransactionAccess>(process, handle, TransactionAccess.QueryInformation))
                             {
-                                var transactionHandle = TransactionHandle.FromHandle(transactionHandleDup);
+                                TransactionHandle transactionHandle = TransactionHandle.FromHandle(transactionHandleDup);
 
-                                info.BestName = transactionHandle.GetDescription();
+                                info.BestName = transactionHandle.Description;
 
                                 if (string.IsNullOrEmpty(info.BestName))
-                                    info.BestName = transactionHandle.GetBasicInformation().TransactionId.ToString("B");
+                                    info.BestName = transactionHandle.BasicInformation.TransactionId.ToString("B");
                             }
                         }
                         break;
@@ -535,12 +533,10 @@ namespace ProcessHacker.Native
                     case "Token":
                         {
                             using (var tokenHandleDup = new NativeHandle<TokenAccess>(process, handle, TokenAccess.Query))
+                            using (TokenHandle tokenHandle = TokenHandle.FromHandle(tokenHandleDup))
+                            using (tokenHandle.User)
                             {
-                                var tokenHandle = TokenHandle.FromHandle(tokenHandleDup);
-                                var sid = tokenHandle.User;
-
-                                using (sid)
-                                    info.BestName = sid.GetFullName(true) + ": 0x" + tokenHandle.Statistics.AuthenticationId.ToString();
+                                info.BestName = tokenHandle.User.GetFullName(true) + ": 0x" + tokenHandle.Statistics.AuthenticationId;
                             }
                         }
                         break;

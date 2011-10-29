@@ -40,12 +40,10 @@ namespace ProcessHacker.Native.Security.AccessControl
             return acl.Memory;
         }
 
-        private MemoryRegion _memory;
+        private readonly MemoryRegion _memory;
 
         public Acl(int size)
         {
-            NtStatus status;
-
             // Reserve 8 bytes for the ACL header.
             if (size < 8)
                 throw new ArgumentException("Size must be greater than or equal to 8 bytes.");
@@ -54,11 +52,11 @@ namespace ProcessHacker.Native.Security.AccessControl
             _memory = new MemoryAlloc(size);
 
             // Initialize the ACL.
-            if ((status = Win32.RtlCreateAcl(
+            if (Win32.RtlCreateAcl(
                 _memory,
                 size,
                 Win32.AclRevision
-                )) >= NtStatus.Error)
+                ).IsError())
             {
                 // Dispose memory and disable ownership.
                 _memory.Dispose();
@@ -140,78 +138,61 @@ namespace ProcessHacker.Native.Security.AccessControl
 
         public void AddAccessAllowed(int accessMask, Sid sid)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlAddAccessAllowedAce(
+            Win32.RtlAddAccessAllowedAce(
                 this,
                 Win32.AclRevision,
                 accessMask,
                 sid
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         public void AddAccessAllowed(int accessMask, Sid sid, AceFlags flags)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlAddAccessAllowedAceEx(
+            Win32.RtlAddAccessAllowedAceEx(
                 this,
                 Win32.AclRevision,
                 flags,
                 accessMask,
                 sid
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         public void AddAccessDenied(int accessMask, Sid sid)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlAddAccessDeniedAce(
+            Win32.RtlAddAccessDeniedAce(
                 this,
                 Win32.AclRevision,
                 accessMask,
                 sid
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         public void AddAccessDenied(int accessMask, Sid sid, AceFlags flags)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlAddAccessDeniedAceEx(
+            Win32.RtlAddAccessDeniedAceEx(
                 this,
                 Win32.AclRevision,
                 flags,
                 accessMask,
                 sid
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         public void AddAuditAccess(int accessMask, Sid sid, bool auditSuccess, bool auditFailure)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlAddAuditAccessAce(
+            Win32.RtlAddAuditAccessAce(
                 this,
                 Win32.AclRevision,
                 accessMask,
                 sid,
                 auditSuccess,
                 auditFailure
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         public void AddAuditAccess(int accessMask, Sid sid, bool auditSuccess, bool auditFailure, AceFlags flags)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlAddAuditAccessAceEx(
+            Win32.RtlAddAuditAccessAceEx(
                 this,
                 Win32.AclRevision,
                 flags,
@@ -219,23 +200,19 @@ namespace ProcessHacker.Native.Security.AccessControl
                 sid,
                 auditSuccess,
                 auditFailure
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         public void AddCompound(AceType type, int accessMask, Sid serverSid, Sid clientSid)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlAddCompoundAce(
+            Win32.RtlAddCompoundAce(
                 this,
                 Win32.AclRevision,
                 type,
                 accessMask,
                 serverSid,
                 clientSid
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
         }
 
         public void AddRange(int index, IEnumerable<Ace> aceList)
@@ -248,7 +225,7 @@ namespace ProcessHacker.Native.Security.AccessControl
                 totalSize += ace.Size;
             }
 
-            using (var aceListMemory = new MemoryAlloc(totalSize))
+            using (MemoryAlloc aceListMemory = new MemoryAlloc(totalSize))
             {
                 int i = 0;
 
@@ -259,27 +236,22 @@ namespace ProcessHacker.Native.Security.AccessControl
                     i += ace.Size;
                 }
 
-                NtStatus status;
-
                 // Add the ACEs to the ACL.
-                if ((status = Win32.RtlAddAce(
+                Win32.RtlAddAce(
                     this,
                     Win32.AclRevision,
                     index,
                     aceListMemory,
                     totalSize
-                    )) >= NtStatus.Error)
-                    Win32.Throw(status);
+                    ).ThrowIf();
             }
         }
 
         public Ace GetAt(int index)
         {
-            NtStatus status;
             IntPtr ace;
 
-            if ((status = Win32.RtlGetAce(this, index, out ace)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlGetAce(this, index, out ace).ThrowIf();
 
             return Ace.GetAce(ace);
         }
@@ -297,26 +269,21 @@ namespace ProcessHacker.Native.Security.AccessControl
 
         public AclSizeInformation GetSizeInformation()
         {
-            NtStatus status;
             AclSizeInformation sizeInfo;
 
-            if ((status = Win32.RtlQueryInformationAcl(
+            Win32.RtlQueryInformationAcl(
                 this,
                 out sizeInfo,
-                Marshal.SizeOf(typeof(AclSizeInformation)),
+                AclSizeInformation.SizeOf,
                 AclInformationClass.AclSizeInformation
-                )) >= NtStatus.Error)
-                Win32.Throw(status);
+                ).ThrowIf();
 
             return sizeInfo;
         }
 
         public void RemoveAt(int index)
         {
-            NtStatus status;
-
-            if ((status = Win32.RtlDeleteAce(this, index)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.RtlDeleteAce(this, index).ThrowIf();
         }
     }
 }

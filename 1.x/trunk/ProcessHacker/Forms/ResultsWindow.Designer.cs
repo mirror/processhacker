@@ -44,10 +44,10 @@ namespace ProcessHacker
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ResultsWindow));
             this.listResults = new ProcessHacker.Components.ExtendedListView();
-            this.columnAddress = new System.Windows.Forms.ColumnHeader();
-            this.columnOffset = new System.Windows.Forms.ColumnHeader();
-            this.columnLength = new System.Windows.Forms.ColumnHeader();
-            this.columnString = new System.Windows.Forms.ColumnHeader();
+            this.columnAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnOffset = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnLength = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnString = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.labelText = new System.Windows.Forms.Label();
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
@@ -62,14 +62,15 @@ namespace ProcessHacker
             // listResults
             // 
             this.listResults.AllowColumnReorder = true;
-            this.listResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listResults.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnAddress,
             this.columnOffset,
             this.columnLength,
             this.columnString});
+            this.listResults.DoubleClickChecks = true;
             this.listResults.FullRowSelect = true;
             this.listResults.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listResults.HideSelection = false;
@@ -82,8 +83,8 @@ namespace ProcessHacker
             this.listResults.UseCompatibleStateImageBehavior = false;
             this.listResults.View = System.Windows.Forms.View.Details;
             this.listResults.VirtualMode = true;
-            this.listResults.DoubleClick += new System.EventHandler(this.listResults_DoubleClick);
             this.listResults.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listResults_RetrieveVirtualItem);
+            this.listResults.DoubleClick += new System.EventHandler(this.listResults_DoubleClick);
             // 
             // columnAddress
             // 
@@ -187,6 +188,7 @@ namespace ProcessHacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(488, 343);
             this.Controls.Add(this.buttonFilter);
             this.Controls.Add(this.buttonIntersect);
@@ -195,12 +197,13 @@ namespace ProcessHacker
             this.Controls.Add(this.labelText);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.listResults);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Menu = this.mainMenu;
             this.Name = "ResultsWindow";
             this.Text = "Results";
-            this.Load += new System.EventHandler(this.ResultsWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ResultsWindow_FormClosing);
+            this.Load += new System.EventHandler(this.ResultsWindow_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

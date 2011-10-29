@@ -48,12 +48,12 @@
             // 
             // textGuid
             // 
-            this.textGuid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textGuid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textGuid.Location = new System.Drawing.Point(49, 6);
             this.textGuid.Name = "textGuid";
             this.textGuid.ReadOnly = true;
-            this.textGuid.Size = new System.Drawing.Size(244, 20);
+            this.textGuid.Size = new System.Drawing.Size(244, 22);
             this.textGuid.TabIndex = 1;
             // 
             // label2
@@ -61,28 +61,30 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 35);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(78, 13);
+            this.label2.Size = new System.Drawing.Size(82, 13);
             this.label2.TabIndex = 0;
             this.label2.Text = "Log File Name:";
             // 
             // textLogFileName
             // 
-            this.textLogFileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textLogFileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textLogFileName.Location = new System.Drawing.Point(90, 32);
             this.textLogFileName.Name = "textLogFileName";
             this.textLogFileName.ReadOnly = true;
-            this.textLogFileName.Size = new System.Drawing.Size(203, 20);
+            this.textLogFileName.Size = new System.Drawing.Size(203, 22);
             this.textLogFileName.TabIndex = 1;
             // 
             // TmTmProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.textLogFileName);
             this.Controls.Add(this.textGuid);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TmTmProperties";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(299, 62);

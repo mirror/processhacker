@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Objects
@@ -46,9 +45,19 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        public DriverBasicInformation GetBasicInformation()
+        public string DriverName
         {
-            unsafe
+            get { return this.GetInformationUnicodeString(DriverInformationClass.DriverNameInformation); }
+        }
+
+        public string ServiceKeyName
+        {
+            get { return this.GetInformationUnicodeString(DriverInformationClass.DriverServiceKeyNameInformation); }
+        }
+
+        public unsafe DriverBasicInformation BasicInformation
+        {
+            get
             {
                 DriverBasicInformation basicInfo;
                 int retLength;
@@ -57,17 +66,12 @@ namespace ProcessHacker.Native.Objects
                     this,
                     DriverInformationClass.DriverBasicInformation,
                     new IntPtr(&basicInfo),
-                    Marshal.SizeOf(typeof(DriverBasicInformation)),
+                    DriverBasicInformation.SizeOf,
                     out retLength
                     );
 
                 return basicInfo;
             }
-        }
-
-        public string GetDriverName()
-        {
-            return this.GetInformationUnicodeString(DriverInformationClass.DriverNameInformation);
         }
 
         private string GetInformationUnicodeString(DriverInformationClass infoClass)
@@ -99,13 +103,8 @@ namespace ProcessHacker.Native.Objects
                         );
                 }
 
-                return data.ReadStruct<UnicodeString>().Read();
+                return data.ReadStruct<UnicodeString>().Text;
             }
-        }
-
-        public string GetServiceKeyName()
-        {
-            return this.GetInformationUnicodeString(DriverInformationClass.DriverServiceKeyNameInformation);
         }
     }
 }

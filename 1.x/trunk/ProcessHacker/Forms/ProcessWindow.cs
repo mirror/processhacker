@@ -41,8 +41,8 @@ namespace ProcessHacker
 {
     public partial class ProcessWindow : Form
     {
-        private ProcessItem _processItem;
-        private int _pid;
+        private readonly ProcessItem _processItem;
+        private readonly int _pid;
         private ProcessHandle _processHandle;
         private Bitmap _processImage;
 
@@ -252,8 +252,7 @@ namespace ProcessHacker
             Application.DoEvents();
 
             // add our handler to the process provider
-            Program.ProcessProvider.Updated +=
-                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+            Program.ProcessProvider.Updated += this.ProcessProvider_Updated;
 
             // Check if window was closed before this began executing, bail out if true.
             if (!this.IsHandleCreated)
@@ -377,8 +376,7 @@ namespace ProcessHacker
                 _processImage.Dispose();
             }
 
-            Program.ProcessProvider.Updated -=
-                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+            Program.ProcessProvider.Updated -= this.ProcessProvider_Updated;
 
             Settings.Instance.EnvironmentListViewColumns = ColumnSettings.SaveSettings(listEnvironment);
             Settings.Instance.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
@@ -651,8 +649,6 @@ namespace ProcessHacker
             }
 
             listEnvironment.ListViewItemSorter = new SortedListViewComparer(listEnvironment);
-            listEnvironment.SetDoubleBuffered(true);
-            listEnvironment.SetTheme("explorer");
             listEnvironment.ContextMenu = listEnvironment.GetCopyMenu();
             ColumnSettings.LoadSettings(Settings.Instance.EnvironmentListViewColumns, listEnvironment);
         }
@@ -662,33 +658,28 @@ namespace ProcessHacker
             listThreads.BeginUpdate();
             _threadP = new ThreadProvider(_pid);
             Program.SecondaryProviderThread.Add(_threadP);
-            _threadP.Updated += new ThreadProvider.ProviderUpdateOnce(_threadP_Updated);
+            _threadP.Updated += this._threadP_Updated;
             listThreads.Provider = _threadP;
 
             listModules.BeginUpdate();
             _moduleP = new ModuleProvider(_pid);
             Program.SecondaryProviderThread.Add(_moduleP);
-            _moduleP.Updated += new ModuleProvider.ProviderUpdateOnce(_moduleP_Updated);
+            _moduleP.Updated += this._moduleP_Updated;
             listModules.Provider = _moduleP;
 
             listMemory.BeginUpdate();
             _memoryP = new MemoryProvider(_pid);
             Program.SecondaryProviderThread.Add(_memoryP);
             _memoryP.IgnoreFreeRegions = true;
-            _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
+            _memoryP.Updated += this._memoryP_Updated;
             listMemory.Provider = _memoryP;
 
             listHandles.BeginUpdate();
             _handleP = new HandleProvider(_pid);
             Program.SecondaryProviderThread.Add(_handleP);
             _handleP.HideHandlesWithNoName = Settings.Instance.HideHandlesWithNoName;
-            _handleP.Updated += new HandleProvider.ProviderUpdateOnce(_handleP_Updated);
+            _handleP.Updated += this._handleP_Updated;
             listHandles.Provider = _handleP;
-
-            listThreads.List.SetTheme("explorer");
-            listModules.List.SetTheme("explorer");
-            listMemory.List.SetTheme("explorer");
-            listHandles.List.SetTheme("explorer");
 
             this.InitializeShortcuts();
         }
@@ -705,7 +696,6 @@ namespace ProcessHacker
         private void UpdateEnvironmentVariables()
         {
             listEnvironment.Items.Clear();
-
             listEnvironment.BeginUpdate();
 
             WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
@@ -714,7 +704,7 @@ namespace ProcessHacker
                 {
                     using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
                     {
-                        foreach (var pair in phandle.GetEnvironmentVariables())
+                        foreach (KeyValuePair<string, string> pair in phandle.GetEnvironmentVariables())
                         {
                             if (!string.IsNullOrEmpty(pair.Key))
                             {
@@ -723,10 +713,7 @@ namespace ProcessHacker
                                     // Work around delegate variable capturing.
                                     var localPair = pair;
 
-                                    this.BeginInvoke(new MethodInvoker(() =>
-                                    {
-                                        listEnvironment.Items.Add(new ListViewItem(new string[] { localPair.Key, localPair.Value }));
-                                    }));
+                                    this.BeginInvoke(new MethodInvoker(() => this.listEnvironment.Items.Add(new ListViewItem(new[] { localPair.Key, localPair.Value }))));
                                 }
                             }
                         }
@@ -825,64 +812,60 @@ namespace ProcessHacker
         private void PerformSearch(string text)
         {
             Point location = this.Location;
-            System.Drawing.Size size = this.Size;
+            Size size = this.Size;
 
-            ResultsWindow rw = Program.GetResultsWindow(_pid, 
-                new Program.ResultsWindowInvokeAction(delegate(ResultsWindow f)
+            Program.GetResultsWindow(_pid, f =>
             {
-                if (text == "&New Results Window...")
+                switch (text)
                 {
-                    f.Show();
-                }
-                else if (text == "&Literal...")
-                {
-                    if (f.EditSearch(SearchType.Literal, location, size) == DialogResult.OK)
-                    {
+                    case "&New Results Window...":
+                        f.Show();
+                        break;
+                    case "&Literal...":
+                        if (f.EditSearch(SearchType.Literal, location, size) == DialogResult.OK)
+                        {
+                            f.Show();
+                            f.StartSearch();
+                        }
+                        else
+                        {
+                            f.Close();
+                        }
+                        break;
+                    case "&Regex...":
+                        if (f.EditSearch(SearchType.Regex, location, size) == DialogResult.OK)
+                        {
+                            f.Show();
+                            f.StartSearch();
+                        }
+                        else
+                        {
+                            f.Close();
+                        }
+                        break;
+                    case "&String Scan...":
+                        f.SearchOptions.Type = SearchType.String;
                         f.Show();
                         f.StartSearch();
-                    }
-                    else
-                    {
-                        f.Close();
-                    }
-                }
-                else if (text == "&Regex...")
-                {
-                    if (f.EditSearch(SearchType.Regex, location, size) == DialogResult.OK)
-                    {
+                        break;
+                    case "&Heap Scan...":
+                        f.SearchOptions.Type = SearchType.Heap;
                         f.Show();
                         f.StartSearch();
-                    }
-                    else
-                    {
-                        f.Close();
-                    }
+                        break;
+                    case "S&truct...":
+                        if (f.EditSearch(SearchType.Struct, location, size) == DialogResult.OK)
+                        {
+                            f.Show();
+                            f.StartSearch();
+                        }
+                        else
+                        {
+                            f.Close();
+                        }
+                        break;
                 }
-                else if (text == "&String Scan...")
-                {
-                    f.SearchOptions.Type = SearchType.String;
-                    f.Show();
-                    f.StartSearch();
-                }
-                else if (text == "&Heap Scan...")
-                {
-                    f.SearchOptions.Type = SearchType.Heap;
-                    f.Show();
-                    f.StartSearch();
-                }
-                else if (text == "S&truct...")
-                {
-                    if (f.EditSearch(SearchType.Struct, location, size) == DialogResult.OK)
-                    {
-                        f.Show();
-                        f.StartSearch();
-                    }
-                    else
-                    {
-                        f.Close();
-                    }
-                }
-            }));
+            });
 
             buttonSearch.Text = text;
         }
@@ -1007,15 +990,18 @@ namespace ProcessHacker
 
         private void buttonTerminate_Click(object sender, EventArgs e)
         {
-            ProcessActions.Terminate(this, new int[] { _processItem.Pid }, new string[] { _processItem.Name }, true);
+            ProcessActions.Terminate(this, new[] { _processItem.Pid }, new[] { _processItem.Name }, true);
         }
 
         private void buttonEditDEP_Click(object sender, EventArgs e)
         {
-            EditDEPWindow w = new EditDEPWindow(_pid);
-
-            w.TopMost = this.TopMost;
-            w.ShowDialog();
+            using (EditDEPWindow w = new EditDEPWindow(_pid)
+            {
+                TopMost = this.TopMost
+            })
+            {
+                w.ShowDialog();
+            }
 
             this.UpdateDepStatus();
         }
@@ -1024,7 +1010,7 @@ namespace ProcessHacker
         {
             try
             {
-                using (ComboBoxPickerWindow picker = new ComboBoxPickerWindow(new string[] { "Protect", "Unprotect" }))
+                using (ComboBoxPickerWindow picker = new ComboBoxPickerWindow(new[] { "Protect", "Unprotect" }))
                 {
                     picker.Message = "Select an action below:";
                     picker.SelectedItem = string.Equals(this.textProtected.Text, "Protected", StringComparison.OrdinalIgnoreCase) ? "Protect" : "Unprotect";
@@ -1219,56 +1205,60 @@ namespace ProcessHacker
         {
             if (_memoryP.RunCount > 1)
             {
-                this.BeginInvoke(new MethodInvoker(delegate
+                this.BeginInvoke(new MethodInvoker(() =>
                 {
-                    listMemory.EndUpdate();
-                    listMemory.Refresh();
-                    checkHideFreeRegions.Enabled = true;
+                    this.listMemory.EndUpdate();
+                    this.listMemory.Refresh();
+                    this.checkHideFreeRegions.Enabled = true;
                     this.Cursor = Cursors.Default;
                 }));
-                _memoryP.Updated -= new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
+
+                _memoryP.Updated -= this._memoryP_Updated;
             }
         }
 
         private void _handleP_Updated()
         {
-            if (_handleP.RunCount > 1)
+            if (this._handleP.RunCount <= 1) 
+                return;
+
+            this.BeginInvoke(new MethodInvoker(() =>
             {
-                this.BeginInvoke(new MethodInvoker(delegate
-                {
-                    listHandles.EndUpdate();
-                    listHandles.Refresh();
-                    checkHideHandlesNoName.Enabled = true;
-                    this.Cursor = Cursors.Default;
-                }));
-                _handleP.Updated -= new HandleProvider.ProviderUpdateOnce(_handleP_Updated);
-            }
+                this.listHandles.EndUpdate();
+                this.listHandles.Refresh();
+                this.checkHideHandlesNoName.Enabled = true;
+                this.Cursor = Cursors.Default;
+            }));
+
+            this._handleP.Updated -= this._handleP_Updated;
         }
 
         private void _moduleP_Updated()
         {
-            if (_moduleP.RunCount > 1)
+            if (this._moduleP.RunCount <= 1) 
+                return;
+
+            this.BeginInvoke(new MethodInvoker(() =>
             {
-                this.BeginInvoke(new MethodInvoker(delegate
-                {
-                    listModules.EndUpdate();
-                    listModules.Refresh();
-                }));
-                _moduleP.Updated -= new ModuleProvider.ProviderUpdateOnce(_moduleP_Updated);
-            }
+                this.listModules.EndUpdate();
+                this.listModules.Refresh();
+            }));
+
+            this._moduleP.Updated -= this._moduleP_Updated;
         }
 
         private void _threadP_Updated()
         {
-            if (_threadP.RunCount > 1)
+            if (this._threadP.RunCount <= 1) 
+                return;
+
+            this.BeginInvoke(new MethodInvoker(() =>
             {
-                this.BeginInvoke(new MethodInvoker(delegate
-                {
-                    listThreads.EndUpdate();
-                    listThreads.Refresh();
-                }));
-                _threadP.Updated -= new ThreadProvider.ProviderUpdateOnce(_threadP_Updated);
-            }
+                this.listThreads.EndUpdate();
+                this.listThreads.Refresh();
+            }));
+
+            this._threadP.Updated -= this._threadP_Updated;
         }
 
         #endregion
@@ -1277,32 +1267,32 @@ namespace ProcessHacker
 
         private void newWindowSearchMenuItem_Click(object sender, EventArgs e)
         {
-            PerformSearch(newWindowSearchMenuItem.Text);
+            this.PerformSearch(this.newWindowToolStripMenuItem.Text);
         }
 
         private void literalSearchMenuItem_Click(object sender, EventArgs e)
         {
-            PerformSearch(literalSearchMenuItem.Text);
+            this.PerformSearch(this.literalToolStripMenuItem.Text);
         }
 
         private void regexSearchMenuItem_Click(object sender, EventArgs e)
         {
-            PerformSearch(regexSearchMenuItem.Text);
+            this.PerformSearch(this.regexToolStripMenuItem.Text);
         }
 
         private void stringScanMenuItem_Click(object sender, EventArgs e)
         {
-            PerformSearch(stringScanMenuItem.Text);
+            this.PerformSearch(this.stringScanToolStripMenuItem.Text);
         }
 
         private void heapScanMenuItem_Click(object sender, EventArgs e)
         {
-            PerformSearch(heapScanMenuItem.Text);
+            this.PerformSearch(this.heapScanToolStripMenuItem.Text);
         }
 
         private void structSearchMenuItem_Click(object sender, EventArgs e)
         {
-            PerformSearch(structSearchMenuItem.Text);
+            this.PerformSearch(this.structToolStripMenuItem.Text);
         }
 
         #endregion      
@@ -1312,17 +1302,25 @@ namespace ProcessHacker
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_threadP != null)
+            {
                 if (_threadP.Enabled = tabControl.SelectedTab == tabThreads)
                     _threadP.Boost();
+            }
             if (_moduleP != null)
+            {
                 if (_moduleP.Enabled = tabControl.SelectedTab == tabModules)
                     _moduleP.Boost();
+            }
             if (_memoryP != null)
+            {
                 if (_memoryP.Enabled = tabControl.SelectedTab == tabMemory)
                     _memoryP.Boost();
+            }
             if (_handleP != null)
+            {
                 if (_handleP.Enabled = tabControl.SelectedTab == tabHandles)
                     _handleP.Boost();
+            }
 
             if (tabControl.SelectedTab == tabStatistics)
             {
@@ -1371,26 +1369,26 @@ namespace ProcessHacker
                 if (this.IsHandleCreated)
                 {
                     this.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        NtStatus exitStatus = _processHandle.GetExitStatus();
+                        string exitString = exitStatus.ToString();
+                        long exitLong;
+
+                        // We want "Success" instead of "Wait0" (both are 0x0).
+                        if (exitString == "Wait0")
+                            exitString = "Success";
+
+                        // If we have a NT status string, display it. 
+                        // Otherwise, display the NT status value in hex.
+                        if (!long.TryParse(exitString, out exitLong))
                         {
-                            NtStatus exitStatus = _processHandle.GetExitStatus();
-                            string exitString = exitStatus.ToString();
-                            long exitLong;
-
-                            // We want "Success" instead of "Wait0" (both are 0x0).
-                            if (exitString == "Wait0")
-                                exitString = "Success";
-
-                            // If we have a NT status string, display it. 
-                            // Otherwise, display the NT status value in hex.
-                            if (!long.TryParse(exitString, out exitLong))
-                            {
-                                this.Text += " (exited with status " + exitString + ")";
-                            }
-                            else
-                            {
-                                this.Text += " (exited with status 0x" + exitLong.ToString("x8") + ")";
-                            }
-                        }));
+                            this.Text += " (exited with status " + exitString + ")";
+                        }
+                        else
+                        {
+                            this.Text += " (exited with status 0x" + exitLong.ToString("x8") + ")";
+                        }
+                    }));
                 }
             }
         }

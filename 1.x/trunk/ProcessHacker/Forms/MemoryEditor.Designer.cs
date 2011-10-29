@@ -57,20 +57,20 @@ namespace ProcessHacker
             this.menuItem4 = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.buttonStruct = new System.Windows.Forms.Button();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.hexBoxMemory = new Be.Windows.Forms.HexBox();
             this.utilitiesButtonMemory = new ProcessHacker.Components.UtilitiesButton();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // labelHexSelection
             // 
-            this.labelHexSelection.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelHexSelection.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.labelHexSelection.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.labelHexSelection.Location = new System.Drawing.Point(12, 2);
             this.labelHexSelection.Name = "labelHexSelection";
             this.labelHexSelection.ReadOnly = true;
-            this.labelHexSelection.Size = new System.Drawing.Size(751, 13);
+            this.labelHexSelection.Size = new System.Drawing.Size(751, 15);
             this.labelHexSelection.TabIndex = 0;
             this.labelHexSelection.Text = "Selection:";
             // 
@@ -78,7 +78,7 @@ namespace ProcessHacker
             // 
             this.buttonValues.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonValues.Image = global::ProcessHacker.Properties.Resources.information;
-            this.buttonValues.Location = new System.Drawing.Point(709, 328);
+            this.buttonValues.Location = new System.Drawing.Point(709, 202);
             this.buttonValues.Name = "buttonValues";
             this.buttonValues.Size = new System.Drawing.Size(24, 24);
             this.buttonValues.TabIndex = 9;
@@ -90,7 +90,7 @@ namespace ProcessHacker
             // 
             this.buttonGoToMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonGoToMemory.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonGoToMemory.Location = new System.Drawing.Point(275, 330);
+            this.buttonGoToMemory.Location = new System.Drawing.Point(275, 204);
             this.buttonGoToMemory.Name = "buttonGoToMemory";
             this.buttonGoToMemory.Size = new System.Drawing.Size(47, 23);
             this.buttonGoToMemory.TabIndex = 7;
@@ -102,18 +102,18 @@ namespace ProcessHacker
             // textGoTo
             // 
             this.textGoTo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.textGoTo.Location = new System.Drawing.Point(188, 332);
+            this.textGoTo.Location = new System.Drawing.Point(188, 206);
             this.textGoTo.Name = "textGoTo";
-            this.textGoTo.Size = new System.Drawing.Size(81, 20);
+            this.textGoTo.Size = new System.Drawing.Size(81, 22);
             this.textGoTo.TabIndex = 6;
-            this.textGoTo.Leave += new System.EventHandler(this.textGoTo_Leave);
             this.textGoTo.Enter += new System.EventHandler(this.textGoTo_Enter);
+            this.textGoTo.Leave += new System.EventHandler(this.textGoTo_Leave);
             // 
             // buttonTopFind
             // 
             this.buttonTopFind.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonTopFind.Image = global::ProcessHacker.Properties.Resources.arrow_up;
-            this.buttonTopFind.Location = new System.Drawing.Point(159, 330);
+            this.buttonTopFind.Location = new System.Drawing.Point(159, 204);
             this.buttonTopFind.Name = "buttonTopFind";
             this.buttonTopFind.Size = new System.Drawing.Size(23, 23);
             this.buttonTopFind.TabIndex = 5;
@@ -125,7 +125,7 @@ namespace ProcessHacker
             // 
             this.buttonNextFind.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonNextFind.Image = global::ProcessHacker.Properties.Resources.arrow_right;
-            this.buttonNextFind.Location = new System.Drawing.Point(130, 330);
+            this.buttonNextFind.Location = new System.Drawing.Point(130, 204);
             this.buttonNextFind.Name = "buttonNextFind";
             this.buttonNextFind.Size = new System.Drawing.Size(23, 23);
             this.buttonNextFind.TabIndex = 4;
@@ -136,21 +136,21 @@ namespace ProcessHacker
             // textSearchMemory
             // 
             this.textSearchMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.textSearchMemory.Location = new System.Drawing.Point(48, 332);
+            this.textSearchMemory.Location = new System.Drawing.Point(48, 206);
             this.textSearchMemory.Name = "textSearchMemory";
-            this.textSearchMemory.Size = new System.Drawing.Size(76, 20);
+            this.textSearchMemory.Size = new System.Drawing.Size(76, 22);
             this.textSearchMemory.TabIndex = 3;
             this.textSearchMemory.TextChanged += new System.EventHandler(this.textSearchMemory_TextChanged);
-            this.textSearchMemory.Leave += new System.EventHandler(this.textSearchMemory_Leave);
             this.textSearchMemory.Enter += new System.EventHandler(this.textSearchMemory_Enter);
+            this.textSearchMemory.Leave += new System.EventHandler(this.textSearchMemory_Leave);
             // 
             // labelFind
             // 
             this.labelFind.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelFind.AutoSize = true;
-            this.labelFind.Location = new System.Drawing.Point(12, 335);
+            this.labelFind.Location = new System.Drawing.Point(12, 209);
             this.labelFind.Name = "labelFind";
-            this.labelFind.Size = new System.Drawing.Size(30, 13);
+            this.labelFind.Size = new System.Drawing.Size(33, 13);
             this.labelFind.TabIndex = 2;
             this.labelFind.Text = "Find:";
             // 
@@ -211,7 +211,7 @@ namespace ProcessHacker
             // 
             this.buttonStruct.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonStruct.Image = global::ProcessHacker.Properties.Resources.bricks;
-            this.buttonStruct.Location = new System.Drawing.Point(679, 328);
+            this.buttonStruct.Location = new System.Drawing.Point(679, 202);
             this.buttonStruct.Name = "buttonStruct";
             this.buttonStruct.Size = new System.Drawing.Size(24, 24);
             this.buttonStruct.TabIndex = 8;
@@ -221,9 +221,9 @@ namespace ProcessHacker
             // 
             // hexBoxMemory
             // 
-            this.hexBoxMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.hexBoxMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.hexBoxMemory.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.hexBoxMemory.HexCasing = Be.Windows.Forms.HexCasing.Lower;
             this.hexBoxMemory.LineInfoForeColor = System.Drawing.Color.Empty;
@@ -231,7 +231,7 @@ namespace ProcessHacker
             this.hexBoxMemory.Location = new System.Drawing.Point(12, 21);
             this.hexBoxMemory.Name = "hexBoxMemory";
             this.hexBoxMemory.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hexBoxMemory.Size = new System.Drawing.Size(751, 301);
+            this.hexBoxMemory.Size = new System.Drawing.Size(751, 175);
             this.hexBoxMemory.StringViewVisible = true;
             this.hexBoxMemory.TabIndex = 1;
             this.hexBoxMemory.UseFixedBytesPerLine = true;
@@ -243,7 +243,7 @@ namespace ProcessHacker
             // 
             this.utilitiesButtonMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.utilitiesButtonMemory.HexBox = this.hexBoxMemory;
-            this.utilitiesButtonMemory.Location = new System.Drawing.Point(739, 328);
+            this.utilitiesButtonMemory.Location = new System.Drawing.Point(739, 202);
             this.utilitiesButtonMemory.Name = "utilitiesButtonMemory";
             this.utilitiesButtonMemory.Size = new System.Drawing.Size(24, 24);
             this.utilitiesButtonMemory.TabIndex = 10;
@@ -253,7 +253,8 @@ namespace ProcessHacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(775, 364);
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.ClientSize = new System.Drawing.Size(775, 238);
             this.Controls.Add(this.hexBoxMemory);
             this.Controls.Add(this.labelFind);
             this.Controls.Add(this.utilitiesButtonMemory);
@@ -265,12 +266,13 @@ namespace ProcessHacker
             this.Controls.Add(this.buttonNextFind);
             this.Controls.Add(this.buttonStruct);
             this.Controls.Add(this.buttonValues);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Menu = this.mainMenu;
             this.Name = "MemoryEditor";
             this.Text = "Memory Editor";
-            this.Load += new System.EventHandler(this.MemoryEditor_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MemoryEditor_FormClosing);
+            this.Load += new System.EventHandler(this.MemoryEditor_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

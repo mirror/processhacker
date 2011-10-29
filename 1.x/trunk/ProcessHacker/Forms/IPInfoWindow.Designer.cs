@@ -32,7 +32,7 @@ namespace ProcessHacker
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IPInfoWindow));
             this.buttonClose = new System.Windows.Forms.Button();
-            this.listInfo = new ExtendedListView();
+            this.listInfo = new ProcessHacker.Components.ExtendedListView();
             this.labelInfo = new System.Windows.Forms.Label();
             this.labelStatus = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -51,9 +51,10 @@ namespace ProcessHacker
             // 
             // listInfo
             // 
-            this.listInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listInfo.DoubleClickChecks = true;
             this.listInfo.FullRowSelect = true;
             this.listInfo.Location = new System.Drawing.Point(12, 31);
             this.listInfo.Name = "listInfo";
@@ -68,7 +69,7 @@ namespace ProcessHacker
             this.labelInfo.AutoSize = true;
             this.labelInfo.Location = new System.Drawing.Point(12, 9);
             this.labelInfo.Name = "labelInfo";
-            this.labelInfo.Size = new System.Drawing.Size(35, 13);
+            this.labelInfo.Size = new System.Drawing.Size(38, 13);
             this.labelInfo.TabIndex = 3;
             this.labelInfo.Text = "label1";
             // 
@@ -78,7 +79,7 @@ namespace ProcessHacker
             this.labelStatus.AutoSize = true;
             this.labelStatus.Location = new System.Drawing.Point(12, 334);
             this.labelStatus.Name = "labelStatus";
-            this.labelStatus.Size = new System.Drawing.Size(56, 13);
+            this.labelStatus.Size = new System.Drawing.Size(61, 13);
             this.labelStatus.TabIndex = 4;
             this.labelStatus.Text = "Working...";
             // 
@@ -86,11 +87,13 @@ namespace ProcessHacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(463, 364);
             this.Controls.Add(this.listInfo);
             this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.labelInfo);
             this.Controls.Add(this.buttonClose);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -99,8 +102,8 @@ namespace ProcessHacker
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "IP information";
-            this.Load += new System.EventHandler(this.IPInfoWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.IPInfoWindow_FormClosing);
+            this.Load += new System.EventHandler(this.IPInfoWindow_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

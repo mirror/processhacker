@@ -33,9 +33,9 @@ namespace ProcessHacker
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TerminatorWindow));
             this.labelProgress = new System.Windows.Forms.Label();
-            this.listTests = new ExtendedListView();
-            this.columnID = new System.Windows.Forms.ColumnHeader();
-            this.columnDescription = new System.Windows.Forms.ColumnHeader();
+            this.listTests = new ProcessHacker.Components.ExtendedListView();
+            this.columnID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.buttonRun = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -45,7 +45,7 @@ namespace ProcessHacker
             this.labelProgress.AutoSize = true;
             this.labelProgress.Location = new System.Drawing.Point(12, 9);
             this.labelProgress.Name = "labelProgress";
-            this.labelProgress.Size = new System.Drawing.Size(53, 13);
+            this.labelProgress.Size = new System.Drawing.Size(55, 13);
             this.labelProgress.TabIndex = 0;
             this.labelProgress.Text = "Message.";
             // 
@@ -54,6 +54,7 @@ namespace ProcessHacker
             this.listTests.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnID,
             this.columnDescription});
+            this.listTests.DoubleClickChecks = true;
             this.listTests.FullRowSelect = true;
             this.listTests.Location = new System.Drawing.Point(12, 38);
             this.listTests.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -99,10 +100,12 @@ namespace ProcessHacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(466, 437);
             this.Controls.Add(this.buttonRun);
             this.Controls.Add(this.listTests);
             this.Controls.Add(this.labelProgress);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.MaximizeBox = false;

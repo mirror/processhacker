@@ -57,8 +57,10 @@ namespace ProcessHacker.Common.Threading
             _cancelled = false;
             _running = true;
 
-            _thread = new Thread(this.ThreadStart);
-            _thread.IsBackground = true;
+            _thread = new Thread(this.ThreadStart)
+            {
+                IsBackground = true
+            };
             _thread.Start(param);
         }
 

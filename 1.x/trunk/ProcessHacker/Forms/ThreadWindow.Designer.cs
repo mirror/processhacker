@@ -2,7 +2,7 @@
 
 namespace ProcessHacker
 {
-    partial class ThreadWindow
+    sealed partial class ThreadWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -36,20 +36,19 @@ namespace ProcessHacker
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ThreadWindow));
             this.fileModule = new ProcessHacker.Components.FileNameBox();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonWalk = new System.Windows.Forms.Button();
-            this.listViewCallStack = new ExtendedListView();
-            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
+            this.listViewCallStack = new ProcessHacker.Components.ExtendedListView();
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // fileModule
             // 
-            this.fileModule.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileModule.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.fileModule.Location = new System.Drawing.Point(63, 347);
             this.fileModule.Name = "fileModule";
             this.fileModule.ReadOnly = true;
@@ -62,7 +61,7 @@ namespace ProcessHacker
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 353);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(45, 13);
+            this.label1.Size = new System.Drawing.Size(50, 13);
             this.label1.TabIndex = 8;
             this.label1.Text = "Module:";
             // 
@@ -80,12 +79,13 @@ namespace ProcessHacker
             // 
             // listViewCallStack
             // 
-            this.listViewCallStack.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewCallStack.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listViewCallStack.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader3,
             this.columnHeader4});
+            this.listViewCallStack.DoubleClickChecks = true;
             this.listViewCallStack.FullRowSelect = true;
             this.listViewCallStack.HideSelection = false;
             this.listViewCallStack.Location = new System.Drawing.Point(12, 12);
@@ -111,19 +111,21 @@ namespace ProcessHacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(399, 383);
             this.Controls.Add(this.fileModule);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonWalk);
             this.Controls.Add(this.listViewCallStack);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ThreadWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Thread";
-            this.Load += new System.EventHandler(this.ThreadWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ThreadWindow_FormClosing);
+            this.Load += new System.EventHandler(this.ThreadWindow_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -34,7 +34,7 @@ namespace ProcessHacker.Native.Objects
     public sealed class SamServerHandle : SamHandle<SamServerAccess>
     {
         private static WeakReference<SamServerHandle> _connectServerHandle;
-        private static int _connectServerHandleMisses = 0;
+        private static int _connectServerHandleMisses;
 
         public static SamServerHandle ConnectServerHandle
         {
@@ -53,9 +53,7 @@ namespace ProcessHacker.Native.Objects
                     System.Threading.Interlocked.Increment(ref _connectServerHandleMisses);
 
                     connectHandle = new SamServerHandle(SamServerAccess.GenericRead | SamServerAccess.GenericExecute);
-
-                    if (connectHandle != null)
-                        _connectServerHandle = new WeakReference<SamServerHandle>(connectHandle);
+                    _connectServerHandle = new WeakReference<SamServerHandle>(connectHandle);
                 }
 
                 return connectHandle;
@@ -130,7 +128,7 @@ namespace ProcessHacker.Native.Objects
                     {
                         SamSidEnumeration data = bufferAlloc.ReadStruct<SamSidEnumeration>(0, SamSidEnumeration.SizeOf, i);
 
-                        if (!callback(data.Name.Read()))
+                        if (!callback(data.Name.Text))
                             return;
                     }
                 }

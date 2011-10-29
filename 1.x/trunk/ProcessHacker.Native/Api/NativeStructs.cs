@@ -99,6 +99,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct AclSizeInformation
     {
+        public static readonly int SizeOf;
+
+        static AclSizeInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(AclSizeInformation));
+        }
+
         public int AceCount;
         public int AclBytesInUse;
         public int AclBytesFree;
@@ -260,6 +267,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ContextAmd64
     {
+        public static readonly int SizeOf;
+
+        static ContextAmd64()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ContextAmd64));
+        }
+
         public long P1Home;
         public long P2Home;
         public long P3Home;
@@ -445,6 +459,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct EnlistmentBasicInformation
     {
+        public static readonly int SizeOf;
+
+        static EnlistmentBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(EnlistmentBasicInformation));
+        }
+
         public Guid EnlistmentId;
         public Guid TransactionId;
         public Guid ResourceManagerId;
@@ -453,6 +474,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct EventBasicInformation
     {
+        public static readonly int SizeOf;
+
+        static EventBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(EventBasicInformation));
+        }  
+
         public EventType EventType;
         public int EventState;
     }
@@ -515,6 +543,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct FileCompletionInformation
     {
+        public static readonly int SizeOf;
+
+        static FileCompletionInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(FileCompletionInformation));
+        }
+
         public IntPtr Port;
         public IntPtr Key;
     }
@@ -548,6 +583,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct FileDispositionInformation
     {
+        public static readonly int SizeOf;
+
+        static FileDispositionInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(FileDispositionInformation));
+        }
+
         [MarshalAs(UnmanagedType.I1)]
         public bool DeleteFile;
     }
@@ -561,6 +603,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct FileEndOfFileInformation
     {
+        public static readonly int SizeOf;
+
+        static FileEndOfFileInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(FileEndOfFileInformation));
+        }
+
         public long EndOfFile;
     }
 
@@ -568,10 +617,12 @@ namespace ProcessHacker.Native.Api
     public struct FileFsAttributeInformation
     {
         public static readonly int SizeOf;
+        public static readonly int FileSystemNameOffset;
 
         static FileFsAttributeInformation()
         {
             SizeOf = Marshal.SizeOf(typeof(FileFsAttributeInformation));
+            FileSystemNameOffset = Marshal.OffsetOf(typeof(FileFsAttributeInformation), "FileSystemName").ToInt32();
         }
 
         public int FileSystemAttributes;
@@ -592,11 +643,22 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct FileFsVolumeInformation
     {
+        public static readonly int SizeOf;
+        public static readonly int VolumeLabelOffset;
+
+        static FileFsVolumeInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(FileFsVolumeInformation));
+            VolumeLabelOffset = Marshal.OffsetOf(typeof(FileFsVolumeInformation), "VolumeLabel").ToInt32();
+        }
+
         public long VolumeCreationTime;
         public int VolumeSerialNumber;
         public int VolumeLabelLength;
+
         [MarshalAs(UnmanagedType.I1)]
         public bool SupportsObjects;
+
         public short VolumeLabel;
         // Volume label string follows (WCHAR).
     }
@@ -1165,6 +1227,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct JobObjectBasicAccountingInformation
     {
+        public static readonly int SizeOf;
+
+        static JobObjectBasicAccountingInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(JobObjectBasicAccountingInformation));
+        }
+
         public long TotalUserTime;
         public long TotalKernelTime;
         public long ThisPeriodTotalUserTime;
@@ -1178,6 +1247,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct JobObjectBasicAndIoAccountingInformation
     {
+        public static readonly int SizeOf;
+
+        static JobObjectBasicAndIoAccountingInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(JobObjectBasicAndIoAccountingInformation));
+        }
+
         public JobObjectBasicAccountingInformation BasicInfo;
         public IoCounters IoInfo;
     }
@@ -1185,6 +1261,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct JobObjectBasicLimitInformation
     {
+        public static readonly int SizeOf;
+
+        static JobObjectBasicLimitInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(JobObjectBasicLimitInformation));
+        }
+
         public long PerProcessUserTimeLimit;
         public long PerJobUserTimeLimit;
         public JobObjectLimitFlags LimitFlags;
@@ -1213,6 +1296,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct JobObjectExtendedLimitInformation
     {
+        public static readonly int SizeOf;
+
+        static JobObjectExtendedLimitInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(JobObjectExtendedLimitInformation));
+        }
+
         public JobObjectBasicLimitInformation BasicLimitInformation;
         public IoCounters IoInfo;
         public int ProcessMemoryLimit;
@@ -1353,6 +1443,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct KnownAceStruct
     {
+        public static readonly int SizeOf;
+
+        static KnownAceStruct()
+        {
+            SizeOf = Marshal.SizeOf(typeof(KnownAceStruct));
+        }
+
         public AceHeader Header;
         public int Mask;
         public int SidStart;
@@ -1474,8 +1571,14 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct LdrDataTableEntry
     {
-        public static readonly int LoadCountOffset =
-            Marshal.OffsetOf(typeof(LdrDataTableEntry), "LoadCount").ToInt32();
+        public static readonly int SizeOf;
+        public static readonly int LoadCountOffset;
+
+        static LdrDataTableEntry()
+        {
+            SizeOf = Marshal.SizeOf(typeof(LdrDataTableEntry));
+            LoadCountOffset = Marshal.OffsetOf(typeof(LdrDataTableEntry), "LoadCount").ToInt32();
+        }
 
         public ListEntry InLoadOrderLinks;
         public ListEntry InMemoryOrderLinks;
@@ -1570,11 +1673,9 @@ namespace ProcessHacker.Native.Api
         /// <returns>A new LUID.</returns>
         public static Luid Allocate()
         {
-            NtStatus status;
             Luid luid;
 
-            if ((status = Win32.NtAllocateLocallyUniqueId(out luid)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtAllocateLocallyUniqueId(out luid).ThrowIf();
 
             return luid;
         }
@@ -1631,9 +1732,18 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct MutantBasicInformation
     {
+        public static readonly int SizeOf;
+
+        static MutantBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(MutantBasicInformation));
+        }
+
         public int CurrentCount;
+
         [MarshalAs(UnmanagedType.U1)]
         public bool OwnedByCaller;
+
         [MarshalAs(UnmanagedType.U1)]
         public bool AbandonedState;
     }
@@ -1641,6 +1751,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct MutantOwnerInformation
     {
+        public static readonly int SizeOf;
+
+        static MutantOwnerInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(MutantOwnerInformation));
+        }
+
         public ClientId ClientId;
     }
 
@@ -1691,7 +1808,7 @@ namespace ProcessHacker.Native.Api
             if (!string.IsNullOrEmpty(objectName))
             {
                 UnicodeString unicodeString = new UnicodeString(objectName);
-                IntPtr unicodeStringMemory = Marshal.AllocHGlobal(UnicodeString.SizeOf);
+                IntPtr unicodeStringMemory = MemoryAlloc.PrivateHeap.Allocate(UnicodeString.SizeOf);
 
                 Marshal.StructureToPtr(unicodeString, unicodeStringMemory, false);
                 this.ObjectName = unicodeStringMemory;
@@ -1710,7 +1827,7 @@ namespace ProcessHacker.Native.Api
             // Security QOS
             if (securityQos.HasValue)
             {
-                this.PtrSecurityQualityOfService = Marshal.AllocHGlobal(SecurityQualityOfService.SizeOf);
+                this.PtrSecurityQualityOfService = MemoryAlloc.PrivateHeap.Allocate(SecurityQualityOfService.SizeOf);
                 Marshal.StructureToPtr(securityQos.Value, this.PtrSecurityQualityOfService, false);
             }
         }
@@ -1727,14 +1844,14 @@ namespace ProcessHacker.Native.Api
             // Object name
             if (this.ObjectName != IntPtr.Zero)
             {
-                Marshal.FreeHGlobal(this.ObjectName);
+                MemoryAlloc.PrivateHeap.Free(this.ObjectName);
                 this.ObjectName = IntPtr.Zero;
             }
 
             // Security QOS
             if (this.PtrSecurityQualityOfService != IntPtr.Zero)
             {
-                Marshal.FreeHGlobal(this.PtrSecurityQualityOfService);
+                MemoryAlloc.PrivateHeap.Free(this.PtrSecurityQualityOfService);
                 this.PtrSecurityQualityOfService = IntPtr.Zero;
             }
         }
@@ -1918,6 +2035,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct PebLdrData
     {
+        public static readonly int SizeOf;
+
+        static PebLdrData()
+        {
+            SizeOf = Marshal.SizeOf(typeof(PebLdrData));
+        }
+
         public int Length;
         [MarshalAs(UnmanagedType.I1)]
         public bool Initialized;
@@ -1944,6 +2068,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct PortMessageStruct
     {
+        public static readonly int SizeOf;
+
+        static PortMessageStruct()
+        {
+            SizeOf = Marshal.SizeOf(typeof(PortMessageStruct));
+        }
+
         public short DataLength;
         public short TotalLength;
         public PortMessageType Type;
@@ -2003,6 +2134,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessHandleTracingEnable
     {
+        public static readonly int SizeOf;
+
+        static ProcessHandleTracingEnable()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ProcessHandleTracingEnable));
+        }
+
         public int Flags; // No flags. Set to 0.
     }
 
@@ -2296,26 +2434,32 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct RtlUserProcessParameters
     {
-        public static readonly int CurrentDirectoryOffset =
-            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "CurrentDirectory").ToInt32();
-        public static readonly int DllPathOffset =
-            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "DllPath").ToInt32();
-        public static readonly int ImagePathNameOffset =
-            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "ImagePathName").ToInt32();
-        public static readonly int CommandLineOffset =
-            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "CommandLine").ToInt32();
-        public static readonly int EnvironmentOffset =
-            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "Environment").ToInt32();
-        public static readonly int WindowTitleOffset =
-            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "WindowTitle").ToInt32();
-        public static readonly int DesktopInfoOffset =
-            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "DesktopInfo").ToInt32();
-        public static readonly int ShellInfoOffset =
-            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "ShellInfo").ToInt32();
-        public static readonly int RuntimeDataOffset =
-            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "RuntimeData").ToInt32();
-        public static readonly int CurrentDirectoriesOffset =
-            Marshal.OffsetOf(typeof(RtlUserProcessParameters), "CurrentDirectories").ToInt32();
+        public static readonly int SizeOf;
+        public static readonly int CurrentDirectoryOffset;
+        public static readonly int DllPathOffset;
+        public static readonly int ImagePathNameOffset;
+        public static readonly int CommandLineOffset;
+        public static readonly int EnvironmentOffset;
+        public static readonly int WindowTitleOffset;
+        public static readonly int DesktopInfoOffset;
+        public static readonly int ShellInfoOffset;
+        public static readonly int RuntimeDataOffset;
+        public static readonly int CurrentDirectoriesOffset;
+
+        static RtlUserProcessParameters()
+        {
+            SizeOf = Marshal.SizeOf(typeof(RtlUserProcessParameters));
+            CurrentDirectoryOffset = Marshal.OffsetOf(typeof(RtlUserProcessParameters), "CurrentDirectory").ToInt32();
+            DllPathOffset = Marshal.OffsetOf(typeof(RtlUserProcessParameters), "DllPath").ToInt32();
+            ImagePathNameOffset = Marshal.OffsetOf(typeof(RtlUserProcessParameters), "ImagePathName").ToInt32();
+            CommandLineOffset = Marshal.OffsetOf(typeof(RtlUserProcessParameters), "CommandLine").ToInt32();
+            EnvironmentOffset = Marshal.OffsetOf(typeof(RtlUserProcessParameters), "Environment").ToInt32();
+            WindowTitleOffset = Marshal.OffsetOf(typeof(RtlUserProcessParameters), "WindowTitle").ToInt32();
+            DesktopInfoOffset = Marshal.OffsetOf(typeof(RtlUserProcessParameters), "DesktopInfo").ToInt32();
+            ShellInfoOffset = Marshal.OffsetOf(typeof(RtlUserProcessParameters), "ShellInfo").ToInt32();
+            RuntimeDataOffset = Marshal.OffsetOf(typeof(RtlUserProcessParameters), "RuntimeData").ToInt32();
+            CurrentDirectoriesOffset = Marshal.OffsetOf(typeof(RtlUserProcessParameters), "CurrentDirectories").ToInt32();
+        }
 
         public struct CurDir
         {
@@ -2634,6 +2778,20 @@ namespace ProcessHacker.Native.Api
 
         public int NumberOfHandles;
         public SystemHandleEntry Handles;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SystemProcessImageNameInformation
+    {
+        public static readonly int SizeOf;
+
+        static SystemProcessImageNameInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(SystemProcessImageNameInformation));
+        }
+
+        public int ProcessId;
+        public UnicodeString ImageName;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -3037,6 +3195,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ThreadBasicInformation
     {
+        public static readonly int SizeOf;
+
+        static ThreadBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(ThreadBasicInformation));
+        }
+
         public NtStatus ExitStatus;
         public IntPtr TebBaseAddress;
         public ClientId ClientId;
@@ -3050,19 +3215,26 @@ namespace ProcessHacker.Native.Api
     {
         public static readonly int SizeOf;
 
-        public LargeInteger RemainingTime;
-        [MarshalAs(UnmanagedType.I1)]
-        public bool TimerState;
-
         static TimerBasicInformation()
         {
             SizeOf = Marshal.SizeOf(typeof(TimerBasicInformation));
         }
+
+        public LargeInteger RemainingTime;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool TimerState;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct TmBasicInformation
     {
+        public static readonly int SizeOf;
+
+        static TmBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(TmBasicInformation));
+        }
+
         public Guid TmIdentity;
         public long VirtualClock;
     }
@@ -3070,6 +3242,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TmLogInformation
     {
+        public static readonly int SizeOf;
+
+        static TmLogInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(TmLogInformation));
+        }
+
         public Guid LogIdentity;
     }
 
@@ -3093,6 +3272,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TmRecoveryInformation
     {
+        public static readonly int SizeOf;
+
+        static TmRecoveryInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(TmRecoveryInformation));
+        }
+
         public long LastRecoveredLsn;
     }
 
@@ -3231,6 +3417,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TransactionBasicInformation
     {
+        public static readonly int SizeOf;
+
+        static TransactionBasicInformation()
+        {
+            SizeOf = Marshal.SizeOf(typeof(TransactionBasicInformation));
+        }
+
         public Guid TransactionId;
         public TransactionState State;
         public TransactionOutcome Outcome;
@@ -3390,12 +3583,15 @@ namespace ProcessHacker.Native.Api
             return this.Hash(HashStringAlgorithm.Default);
         }
 
-        public string Read()
+        public string Text
         {
-            if (this.Length == 0)
-                return string.Empty;
+            get
+            {
+                if (this.Length == 0)
+                    return string.Empty;
 
-            return Marshal.PtrToStringUni(this.Buffer, this.Length / 2);
+                return Marshal.PtrToStringUni(this.Buffer, this.Length / 2);
+            }
         }
 
         public string Read(ProcessHandle processHandle)
@@ -3437,7 +3633,7 @@ namespace ProcessHacker.Native.Api
 
         public override string ToString()
         {
-            return this.Read();
+            return this.Text;
         }
 
         public AnsiString ToUpperAnsiString()
@@ -3476,6 +3672,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct VmCountersEx
     {
+        public static readonly int SizeOf;
+
+        static VmCountersEx()
+        {
+            SizeOf = Marshal.SizeOf(typeof(VmCountersEx));
+        }
+
         public IntPtr PeakVirtualSize;
         public IntPtr VirtualSize;
         public int PageFaultCount;
@@ -3493,6 +3696,13 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct VmCountersEx64
     {
+        public static readonly int SizeOf;
+
+        static VmCountersEx64()
+        {
+            SizeOf = Marshal.SizeOf(typeof(VmCountersEx64));
+        }
+
         public VmCountersEx64(VmCountersEx vm)
         {
             this.PeakVirtualSize = vm.PeakVirtualSize.ToInt64();

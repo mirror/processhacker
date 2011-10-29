@@ -21,10 +21,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
@@ -48,14 +45,12 @@ namespace ProcessHacker.Native.Objects
 
         public static IoCompletionHandle Create(IoCompletionAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, int count)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateIoCompletion(out handle, access, ref oa, count)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtCreateIoCompletion(out handle, access, ref oa, count).ThrowIf();
             }
             finally
             {
@@ -71,14 +66,12 @@ namespace ProcessHacker.Native.Objects
 
         public IoCompletionHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, IoCompletionAccess access)
         {
-            NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenIoCompletion(out handle, access, ref oa)) >= NtStatus.Error)
-                    Win32.Throw(status);
+                Win32.NtOpenIoCompletion(out handle, access, ref oa).ThrowIf();
             }
             finally
             {
@@ -99,23 +92,20 @@ namespace ProcessHacker.Native.Objects
 
         public bool Remove(out IoStatusBlock isb, out IntPtr keyContext, out IntPtr apcContext, long timeout, bool relative)
         {
-            NtStatus status;
             long realTimeout = relative ? -timeout : timeout;
 
-            if ((status = Win32.NtRemoveIoCompletion(
-                this, out keyContext, out apcContext, out isb, ref realTimeout)) >= NtStatus.Error)
-                Win32.Throw(status);
-
-            return status != NtStatus.Timeout;
+            return Win32.NtRemoveIoCompletion(this, out keyContext, out apcContext, out isb, ref realTimeout) != NtStatus.Timeout;
         }
 
         public void Set(IntPtr keyContext, IntPtr apcContext, NtStatus ioStatus, IntPtr ioInformation)
         {
-            NtStatus status;
-
-            if ((status = Win32.NtSetIoCompletion(
-                this, keyContext, apcContext, ioStatus, ioInformation)) >= NtStatus.Error)
-                Win32.Throw(status);
+            Win32.NtSetIoCompletion(
+                this, 
+                keyContext, 
+                apcContext, 
+                ioStatus, 
+                ioInformation
+                ).ThrowIf();
         }
     }
 }

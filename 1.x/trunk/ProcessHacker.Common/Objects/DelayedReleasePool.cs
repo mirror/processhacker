@@ -56,8 +56,8 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         private struct DelayedReleaseObject
         {
-            private DelayedReleaseFlags _flags;
-            private BaseObject _object;
+            private readonly DelayedReleaseFlags _flags;
+            private readonly BaseObject _object;
 
             public DelayedReleaseObject(DelayedReleaseFlags flags, BaseObject obj)
             {
@@ -86,14 +86,7 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         public static DelayedReleasePool CurrentPool
         {
-            get
-            {
-                if (_currentPool == null)
-                    _currentPool = new DelayedReleasePool();
-
-                return _currentPool;
-            }
-            private set { _currentPool = value; }
+            get { return _currentPool ?? (_currentPool = new DelayedReleasePool()); }
         }
 
         /// <summary>
@@ -104,10 +97,7 @@ namespace ProcessHacker.Common.Objects
             get
             {
                 // No locking needed because the stack is thread-local.
-                if (_poolStack == null)
-                    _poolStack = new Stack<DelayedReleasePool>();
-
-                return _poolStack;
+                return _poolStack ?? (_poolStack = new Stack<DelayedReleasePool>());
             }
         }
 
@@ -117,6 +107,9 @@ namespace ProcessHacker.Common.Objects
         /// <param name="pool">The current delayed release pool.</param>
         private static void PopPool(DelayedReleasePool pool)
         {
+            if (pool == null) 
+                throw new ArgumentNullException("pool");
+
             if (_currentPool != pool)
                 throw new OutOfOrderException(
                     "Attempted to pop a pool when it wasn't on top of the stack. " +
@@ -136,8 +129,8 @@ namespace ProcessHacker.Common.Objects
             _currentPool = pool;
         }
 
-        private int _creatorThreadId;
-        private List<DelayedReleaseObject> _objects = new List<DelayedReleaseObject>();
+        private readonly int _creatorThreadId;
+        private readonly List<DelayedReleaseObject> _objects = new List<DelayedReleaseObject>();
 
         /// <summary>
         /// Creates a delayed release pool and sets it as the currently active pool.
@@ -195,11 +188,12 @@ namespace ProcessHacker.Common.Objects
         /// <param name="managed">Whether to release managed resources.</param>
         public void Drain(bool managed)
         {
-            foreach (var obj in _objects)
+            foreach (DelayedReleaseObject obj in _objects)
             {
-                if ((obj.Flags & DelayedReleaseFlags.Dispose) == DelayedReleaseFlags.Dispose)
+                if (obj.Flags.HasFlag(DelayedReleaseFlags.Dispose))
                     obj.Object.Dispose();
-                if ((obj.Flags & DelayedReleaseFlags.Dereference) == DelayedReleaseFlags.Dereference)
+
+                if (obj.Flags.HasFlag(DelayedReleaseFlags.Dereference))
                     obj.Object.Dereference(managed);
             }
 

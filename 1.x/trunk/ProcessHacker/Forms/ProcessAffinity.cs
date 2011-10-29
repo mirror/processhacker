@@ -30,11 +30,12 @@ namespace ProcessHacker
 {
     public partial class ProcessAffinity : Form
     {
-        private int _pid;
+        private readonly int _pid;
 
         public ProcessAffinity(int pid)
         {
             InitializeComponent();
+
             this.AddEscapeToClose();
             this.SetTopMost();
 
@@ -45,21 +46,20 @@ namespace ProcessHacker
                 using (ProcessHandle phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
                 {
                     long systemMask;
-                    long processMask;
 
-                    processMask = phandle.GetAffinityMask(out systemMask);
+                    long processMask = phandle.GetAffinityMask(out systemMask);
 
                     for (int i = 0; (systemMask & (1 << i)) != 0; i++)
                     {
-                        CheckBox c = new CheckBox();
-
-                        c.Name = "cpu" + i.ToString();
-                        c.Text = "CPU " + i.ToString();
-                        c.Tag = i;
-
-                        c.FlatStyle = FlatStyle.System;
-                        c.Checked = (processMask & (1 << i)) != 0;
-                        c.Margin = new Padding(3, 3, 3, 0);
+                        CheckBox c = new CheckBox
+                        {
+                            Name = "cpu" + i, 
+                            Text = "CPU " + i, 
+                            Tag = i, 
+                            FlatStyle = FlatStyle.System, 
+                            Checked = (processMask & (1 << i)) != 0, 
+                            Margin = new Padding(3, 3, 3, 0)
+                        };
 
                         flowPanel.Controls.Add(c);
                     }

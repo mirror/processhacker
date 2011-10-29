@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;     
 using ProcessHacker.Native;     
 using ProcessHacker.Native.Objects;
@@ -13,8 +8,8 @@ namespace ProcessHacker
 {
     public partial class ProtectProcessWindow : Form
     {
-        private int _pid;
-        private bool _isProtected;
+        private readonly int _pid;
+        private readonly bool _isProtected;
 
         public ProtectProcessWindow(int pid)
         {
@@ -59,7 +54,7 @@ namespace ProcessHacker
         {
             try
             {
-                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                     KProcessHacker.Instance.ProtectQuery(phandle, out allowKernelMode, out processAccess, out threadAccess);
 
                 return true;
@@ -86,7 +81,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                         KProcessHacker.Instance.ProtectRemove(phandle);
                 }
                 catch
@@ -106,7 +101,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                         KProcessHacker.Instance.ProtectAdd(
                             phandle,
                             !checkDontAllowKernelMode.Checked,

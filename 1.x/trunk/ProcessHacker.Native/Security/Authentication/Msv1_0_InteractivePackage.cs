@@ -20,9 +20,6 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Security.Authentication
@@ -80,27 +77,24 @@ namespace ProcessHacker.Native.Security.Authentication
 
         public MemoryRegion GetAuthData()
         {
-            MemoryAlloc data;
-            int dataSize;
-            int domainNameOffset;
-            int userNameOffset;
-            int passwordOffset;
-            string lDomainName = _domainName != null ? _domainName : "";
-            string lUserName = _userName != null ? _userName : "";
-            string lPassword = _password != null ? _password : "";
+            string lDomainName = !string.IsNullOrEmpty(_domainName) ? _domainName : string.Empty;
+            string lUserName = !string.IsNullOrEmpty(_userName) ? _userName : string.Empty;
+            string lPassword = !string.IsNullOrEmpty(_password) ? _password : string.Empty;
 
             // The structure plus the strings must be stored in the same buffer, 
             // so we have to do some computation.
 
-            domainNameOffset = Marshal.SizeOf(typeof(Msv1_0_InteractiveLogon));
-            userNameOffset = domainNameOffset + lDomainName.Length * 2;
-            passwordOffset = userNameOffset + lUserName.Length * 2;
-            dataSize = passwordOffset + lPassword.Length * 2;
-            data = new MemoryAlloc(dataSize);
+            int domainNameOffset = Msv1_0_InteractiveLogon.SizeOf;
+            int userNameOffset = domainNameOffset + lDomainName.Length * 2;
+            int passwordOffset = userNameOffset + lUserName.Length * 2;
+            int dataSize = passwordOffset + lPassword.Length * 2;
 
-            Msv1_0_InteractiveLogon info = new Msv1_0_InteractiveLogon();
+            MemoryAlloc data = new MemoryAlloc(dataSize);
 
-            info.MessageType = Msv1_0_LogonSubmitType.Interactive;
+            Msv1_0_InteractiveLogon info = new Msv1_0_InteractiveLogon
+            {
+                MessageType = Msv1_0_LogonSubmitType.Interactive
+            };
 
             info.LogonDomainName.MaximumLength = info.LogonDomainName.Length = (ushort)(lDomainName.Length * 2);
             info.LogonDomainName.Buffer = data.Memory.Increment(domainNameOffset);
@@ -114,7 +108,7 @@ namespace ProcessHacker.Native.Security.Authentication
             info.Password.Buffer = data.Memory.Increment(passwordOffset);
             data.WriteUnicodeString(passwordOffset, lPassword);
 
-            data.WriteStruct<Msv1_0_InteractiveLogon>(info);
+            data.WriteStruct(info);
 
             return data;
         }
@@ -136,9 +130,9 @@ namespace ProcessHacker.Native.Security.Authentication
             if (info.Password.Buffer.CompareTo(buffer.Size) < 0)
                 info.Password.Buffer = info.Password.Buffer.Increment(buffer);
 
-            _domainName = info.LogonDomainName.Read();
-            _userName = info.UserName.Read();
-            _password = info.Password.Read();
+            _domainName = info.LogonDomainName.Text;
+            _userName = info.UserName.Text;
+            _password = info.Password.Text;
         }
     }
 }

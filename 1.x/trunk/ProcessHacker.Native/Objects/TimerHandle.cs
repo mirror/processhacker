@@ -110,20 +110,23 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets information about the timer.
         /// </summary>
-        public TimerBasicInformation GetBasicInformation()
+        public TimerBasicInformation BasicInformation
         {
-            TimerBasicInformation tbi;
-            int retLength;
+            get
+            {
+                TimerBasicInformation tbi;
+                int retLength;
 
-            Win32.NtQueryTimer(
-                this, 
-                TimerInformationClass.TimerBasicInformation,
-                out tbi, 
-                TimerBasicInformation.SizeOf, 
-                out retLength
-                ).ThrowIf();
+                Win32.NtQueryTimer(
+                    this,
+                    TimerInformationClass.TimerBasicInformation,
+                    out tbi,
+                    TimerBasicInformation.SizeOf,
+                    out retLength
+                    ).ThrowIf();
 
-            return tbi;
+                return tbi;
+            }
         }
 
         /// <summary>

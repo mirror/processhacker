@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ProcessHacker.Common.Messaging
 {
     public class Message
     {
-        private object _tag;
-
-        public object Tag
-        {
-            get { return _tag; }
-            set { _tag = value; }
-        }
+        public object Tag { get; set; }
     }
 
     public class ActionMessage : Message
     {
-        private Action _action;
+        private readonly Action _action;
 
         public ActionMessage(Action action)
         {

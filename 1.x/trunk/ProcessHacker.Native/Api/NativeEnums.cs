@@ -210,6 +210,7 @@ namespace ProcessHacker.Native.Api
         MaxDebugObjectInfoClass
     }
 
+    [Flags]
     public enum DeviceControlAccess : int
     {
         Any = 0,

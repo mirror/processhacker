@@ -42,7 +42,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 3);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(54, 13);
+            this.label1.Size = new System.Drawing.Size(61, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Attributes:";
             // 
@@ -69,7 +69,7 @@
             this.labelAttributes.AutoSize = true;
             this.labelAttributes.Location = new System.Drawing.Point(75, 3);
             this.labelAttributes.Name = "labelAttributes";
-            this.labelAttributes.Size = new System.Drawing.Size(36, 13);
+            this.labelAttributes.Size = new System.Drawing.Size(38, 13);
             this.labelAttributes.TabIndex = 0;
             this.labelAttributes.Text = "Image";
             // 
@@ -77,10 +77,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.labelAttributes);
             this.Controls.Add(this.labelSize);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SectionProperties";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(185, 50);

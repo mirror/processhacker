@@ -263,15 +263,18 @@ namespace ProcessHacker
 
         private void runAsAdministratorMenuItem_Click(object sender, EventArgs e)
         {
-            PromptBox box = new PromptBox();
-
-            box.Text = "Enter the command to start";
-            box.TextBox.AutoCompleteSource = AutoCompleteSource.AllSystemSources;
-            box.TextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-
-            if (box.ShowDialog() == DialogResult.OK)
+            using (PromptBox box = new PromptBox
             {
-                Program.StartProgramAdmin(box.Value, "", null, ShowWindowType.Show, this.Handle);
+                Text = "Enter the command to start"
+            })
+            {
+                box.TextBox.AutoCompleteSource = AutoCompleteSource.AllSystemSources;
+                box.TextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+                if (box.ShowDialog() == DialogResult.OK)
+                {
+                    Program.StartProgramAdmin(box.Value, "", null, ShowWindowType.Show, this.Handle);
+                }
             }
         }
 
@@ -283,10 +286,7 @@ namespace ProcessHacker
 
         private void showDetailsForAllProcessesMenuItem_Click(object sender, EventArgs e)
         {
-            Program.StartProcessHackerAdmin("-v", () =>
-                {
-                    this.Exit();
-                }, this.Handle);
+            Program.StartProcessHackerAdmin("-v", this.Exit, this.Handle);
         }
 
         private void findHandlesMenuItem_Click(object sender, EventArgs e)
@@ -442,52 +442,54 @@ namespace ProcessHacker
 
         private void verifyFileSignatureMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-
-            ofd.CheckFileExists = true;
-            ofd.CheckPathExists = true;
-            ofd.Filter = "Executable files (*.exe;*.dll;*.sys;*.scr;*.cpl)|*.exe;*.dll;*.sys;*.scr;*.cpl|All files (*.*)|*.*";
-
-            if (ofd.ShowDialog() == DialogResult.OK)
+            using (OpenFileDialog ofd = new OpenFileDialog
             {
-                try
+                CheckFileExists = true,
+                CheckPathExists = true,
+                Filter = "Executable files (*.exe;*.dll;*.sys;*.scr;*.cpl)|*.exe;*.dll;*.sys;*.scr;*.cpl|All files (*.*)|*.*"
+            })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    var result = Cryptography.VerifyFile(ofd.FileName);
-                    string message = string.Empty;
-
-                    switch (result)
+                    try
                     {
-                        case VerifyResult.Distrust:
-                            message = "is not trusted";
-                            break;
-                        case VerifyResult.Expired:
-                            message = "has an expired certificate";
-                            break;
-                        case VerifyResult.NoSignature:
-                            message = "does not have a digital signature";
-                            break;
-                        case VerifyResult.Revoked:
-                            message = "has a revoked certificate";
-                            break;
-                        case VerifyResult.SecuritySettings:
-                            message = "could not be verified due to security settings";
-                            break;
-                        case VerifyResult.Trusted:
-                            message = "is trusted";
-                            break;
-                        case VerifyResult.Unknown:
-                            message = "could not be verified";
-                            break;
-                        default:
-                            message = "could not be verified";
-                            break;
-                    }
+                        var result = Cryptography.VerifyFile(ofd.FileName);
+                        string message = string.Empty;
 
-                    PhUtils.ShowInformation("The file \"" + ofd.FileName + "\" " + message + ".");
-                }
-                catch (Exception ex)
-                {
-                    PhUtils.ShowException("Unable to verify the file", ex);
+                        switch (result)
+                        {
+                            case VerifyResult.Distrust:
+                                message = "is not trusted";
+                                break;
+                            case VerifyResult.Expired:
+                                message = "has an expired certificate";
+                                break;
+                            case VerifyResult.NoSignature:
+                                message = "does not have a digital signature";
+                                break;
+                            case VerifyResult.Revoked:
+                                message = "has a revoked certificate";
+                                break;
+                            case VerifyResult.SecuritySettings:
+                                message = "could not be verified due to security settings";
+                                break;
+                            case VerifyResult.Trusted:
+                                message = "is trusted";
+                                break;
+                            case VerifyResult.Unknown:
+                                message = "could not be verified";
+                                break;
+                            default:
+                                message = "could not be verified";
+                                break;
+                        }
+
+                        PhUtils.ShowInformation("The file \"" + ofd.FileName + "\" " + message + ".");
+                    }
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowException("Unable to verify the file", ex);
+                    }
                 }
             }
         }
@@ -1155,7 +1157,7 @@ namespace ProcessHacker
                     {
                         // GetWindowLong
                         // Shell_TrayWnd
-                        if (handle.IsWindow() && handle.IsVisible() && handle.IsParent())
+                        if (handle.IsWindow && handle.IsVisible && handle.IsParent)
                         {
                             int pid;
                             Win32.GetWindowThreadProcessId(handle, out pid);
@@ -1180,7 +1182,7 @@ namespace ProcessHacker
                         windowToolStripMenuItem1.Enabled = true;
                         //windowToolStripMenuItem1.EnableAll();
 
-                        switch (windowHandle.GetPlacement().ShowState)
+                        switch (windowHandle.Placement.ShowState)
                         {
                             case ShowWindowType.ShowMinimized:
                                 minimizeToolStripMenuItem.Enabled = false;
@@ -1501,6 +1503,7 @@ namespace ProcessHacker
                         td.MainInstruction = "Creating the dump file...";
                         td.ShowMarqueeProgressBar = true;
                         td.EnableHyperlinks = true;
+                        td.PositionRelativeToWindow = true;
                         td.CallbackTimer = true;
                         td.Callback = (taskDialog, args, userData) =>
                             {
@@ -1781,9 +1784,9 @@ namespace ProcessHacker
 
         private void bringToFrontProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow)
             {
-                WindowPlacement placement = windowHandle.GetPlacement();
+                WindowPlacement placement = windowHandle.Placement;
 
                 if (placement.ShowState == ShowWindowType.ShowMinimized)
                     windowHandle.Show(ShowWindowType.Restore);
@@ -1794,7 +1797,7 @@ namespace ProcessHacker
 
         private void restoreProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow)
             {
                 windowHandle.Show(ShowWindowType.Restore);
             }
@@ -1802,7 +1805,7 @@ namespace ProcessHacker
 
         private void minimizeProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow)
             {
                 windowHandle.Show(ShowWindowType.ShowMinimized);
             }
@@ -1810,7 +1813,7 @@ namespace ProcessHacker
 
         private void maximizeProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow)
             {
                 windowHandle.Show(ShowWindowType.ShowMaximized);
             }
@@ -1818,7 +1821,7 @@ namespace ProcessHacker
 
         private void closeProcessMenuItem_Click(object sender, EventArgs e)
         {
-            if (!windowHandle.IsInvalid && windowHandle.IsWindow())
+            if (!windowHandle.IsInvalid && windowHandle.IsWindow)
             {
                 windowHandle.PostMessage(WindowMessage.Close, 0, 0);
                 //windowHandle.Close();
@@ -3401,29 +3404,9 @@ namespace ProcessHacker
             this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
         }
 
-        private void HackerWindow_SizeChanged(object sender, EventArgs e)
-        {
-            tabControl.Invalidate(false);
-        }
-
         private void HackerWindow_VisibleChanged(object sender, EventArgs e)
         {
             treeProcesses.Draw = this.Visible;
-        }
-
-        private void refreshToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void stoppedSMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void toolStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
         }
 
         private void contextMenuStripService_Opening(object sender, System.ComponentModel.CancelEventArgs e)

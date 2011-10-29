@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Text;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Objects
@@ -10,7 +8,7 @@ namespace ProcessHacker.Native.Objects
 
     public struct WindowHandle : IEquatable<WindowHandle>, IEquatable<IntPtr>, System.Windows.Forms.IWin32Window
     {
-        private static WindowHandle _zero = new WindowHandle(IntPtr.Zero);
+        private static readonly WindowHandle _zero = new WindowHandle(IntPtr.Zero);
 
         public static WindowHandle Zero
         {
@@ -54,7 +52,7 @@ namespace ProcessHacker.Native.Objects
             return windowHandle.Handle;
         }
 
-        private IntPtr _handle;
+        private readonly IntPtr _handle;
 
         public WindowHandle(IntPtr handle)
         {
@@ -106,70 +104,83 @@ namespace ProcessHacker.Native.Objects
             return this.Handle.Equals(other);
         }
 
-        public ClientId GetClientId()
+        public ClientId ClientId
         {
-            int tid, pid;
-
-            tid = Win32.GetWindowThreadProcessId(this, out pid);
-
-            return new ClientId(pid, tid);
-        }
-
-        public WindowHandle GetParent()
-        {
-            return new WindowHandle(Win32.GetParent(this));
-        }
-
-        public WindowPlacement GetPlacement()
-        {
-            WindowPlacement placement = new WindowPlacement();
-
-            placement.Length = Marshal.SizeOf(placement);
-            Win32.GetWindowPlacement(this, ref placement);
-
-            return placement;
-        }
-
-        public Rectangle GetRectangle()
-        {
-            Rect rect;
-
-            if (!Win32.GetWindowRect(this, out rect))
-                return Rectangle.Empty;
-            else
-                return rect.ToRectangle();
-        }
-
-        public string GetText()
-        {
-            int retChars;
-
-            using (var data = new MemoryAlloc(0x200))
+            get
             {
-                retChars = Win32.InternalGetWindowText(this, data, data.Size / 2);
+                int pid;
 
-                return data.ReadUnicodeString(0, retChars);
+                int tid = Win32.GetWindowThreadProcessId(this, out pid);
+
+                return new ClientId(pid, tid);
             }
         }
 
-        public bool IsHung()
+        public WindowHandle Parent
         {
-            return Win32.IsHungAppWindow(this);
+            get { return new WindowHandle(Win32.GetParent(this)); }
         }
 
-        public bool IsParent()
+        public WindowPlacement Placement
         {
-            return this.GetParent().Equals(WindowHandle.Zero);
+            get
+            {
+                WindowPlacement placement = new WindowPlacement
+                {
+                    Length = WindowPlacement.SizeOf
+                };
+
+
+                Win32.GetWindowPlacement(this, ref placement);
+
+                return placement;
+            }
         }
 
-        public bool IsWindow()
+        public Rectangle Rectangle
         {
-            return Win32.IsWindow(this);
+            get
+            {
+                Rect rect;
+
+                if (!Win32.GetWindowRect(this, out rect))
+                    return Rectangle.Empty;
+
+                return rect.ToRectangle();
+            }
         }
 
-        public bool IsVisible()
+        public string Text
         {
-            return Win32.IsWindowVisible(this);
+            get
+            {
+                using (MemoryAlloc data = new MemoryAlloc(0x200))
+                {
+                    int retChars = Win32.InternalGetWindowText(this, data, data.Size/2);
+
+                    return data.ReadUnicodeString(0, retChars);
+                }
+            }
+        }
+
+        public bool IsHung
+        {
+            get { return Win32.IsHungAppWindow(this); }
+        }
+
+        public bool IsParent
+        {
+            get { return this.Parent.Equals(Zero); }
+        }
+
+        public bool IsWindow
+        {
+            get { return Win32.IsWindow(this); }
+        }
+
+        public bool IsVisible
+        {
+            get { return Win32.IsWindowVisible(this); }
         }
 
         public bool PostMessage(WindowMessage message, int wParam, int lParam)
