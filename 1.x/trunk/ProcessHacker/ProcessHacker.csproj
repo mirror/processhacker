@@ -88,6 +88,12 @@
     <Compile Include="Components\Be.Windows.Forms.HexBox\IByteProvider.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\MemoryDataBlock.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\NativeMethods.cs" />
+    <Compile Include="Components\HandleDetails.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\HandleDetails.Designer.cs">
+      <DependentUpon>HandleDetails.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\MenuStripEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -205,6 +211,18 @@
     <Compile Include="Forms\HackerWindow.Designer.cs">
       <DependentUpon>HackerWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Ui\ChooseProcessDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Ui\ChooseProcessDialog.Designer.cs">
+      <DependentUpon>ChooseProcessDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Ui\HandlePropertiesWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Ui\HandlePropertiesWindow.Designer.cs">
+      <DependentUpon>HandlePropertiesWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program\Program.cs" />
     <Compile Include="Forms\PromptBox.cs">
       <SubType>Form</SubType>
@@ -213,6 +231,9 @@
       <DependentUpon>PromptBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Components\HandleDetails.resx">
+      <DependentUpon>HandleDetails.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\Tracker.resx">
       <DependentUpon>Tracker.cs</DependentUpon>
     </EmbeddedResource>
@@ -222,6 +243,12 @@
     <EmbeddedResource Include="Forms\HackerWindow.resx">
       <DependentUpon>HackerWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Ui\ChooseProcessDialog.resx">
+      <DependentUpon>ChooseProcessDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Ui\HandlePropertiesWindow.resx">
+      <DependentUpon>HandlePropertiesWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

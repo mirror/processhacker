@@ -116,6 +116,8 @@ namespace ProcessHacker.Api
                     {
                         _dialogWindowParentHandle = Win32.GetParent(hwndDlg);
                         Win32.SetParent(this.Handle, hwndDlg);
+
+                        this.Refresh();
                     }
                     break;
                 case WindowMessage.Notify:
@@ -156,7 +158,6 @@ namespace ProcessHacker.Api
                     break;
                 case PropSheetPageCallbackMessage.Release:
                     _keepAliveList.Remove(this);
-                    this.Dispose();
                     break;
             }
 

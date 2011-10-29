@@ -100,6 +100,12 @@ namespace ProcessHacker.Native.Security.AccessControl
                 Win32.EditSecurity(owner != null ? owner.Handle : IntPtr.Zero, osi);
         }
 
+
+        public static SecurityEditor EditSecurity2(IWin32Window owner, ISecurable securable, string name, IEnumerable<AccessEntry> accessEntries)
+        {
+            return new SecurityEditor(securable, name, accessEntries);
+        }
+
         public static ISecurable GetSecurableWrapper(IntPtr handle)
         {
             return GetSecurableWrapper(access => new NativeHandle<StandardRights>(handle, access));

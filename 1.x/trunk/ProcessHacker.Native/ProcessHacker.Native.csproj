@@ -278,18 +278,6 @@
     <Compile Include="Threading\Semaphore.cs" />
     <Compile Include="Threading\Timer.cs" />
     <Compile Include="Threading\Waiter.cs" />
-    <Compile Include="Ui\ChooseProcessDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Ui\ChooseProcessDialog.Designer.cs">
-      <DependentUpon>ChooseProcessDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Ui\HandlePropertiesWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Ui\HandlePropertiesWindow.Designer.cs">
-      <DependentUpon>HandlePropertiesWindow.cs</DependentUpon>
-    </Compile>
     <Compile Include="NativeObject.cs" />
     <Compile Include="Windows.cs" />
     <Compile Include="OSVersion.cs" />
@@ -298,14 +286,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Ui\ChooseProcessDialog.resx">
-      <DependentUpon>ChooseProcessDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Ui\HandlePropertiesWindow.resx">
-      <DependentUpon>HandlePropertiesWindow.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ProcessHacker.Common\ProcessHacker.Common.csproj">

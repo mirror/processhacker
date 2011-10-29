@@ -29,9 +29,7 @@
 //#define EXTENDED_FINALIZER
 
 /* If enabled, the object system will keep a list of live objects. */
-#if DEBUG
-#define DEBUG_ENABLE_LIVE_LIST
-#endif
+//#define DEBUG_ENABLE_LIVE_LIST
 
 using System;
 using System.ComponentModel;
