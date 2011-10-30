@@ -37,7 +37,7 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                this.Handle = KProcessHacker.Instance.KphOpenDriver(oa).ToIntPtr();
+                this.Handle = IntPtr.Zero;// KProcessHacker.Instance.KphOpenDriver(oa).ToIntPtr();
             }
             finally
             {
@@ -59,16 +59,16 @@ namespace ProcessHacker.Native.Objects
         {
             get
             {
-                DriverBasicInformation basicInfo;
+                DriverBasicInformation basicInfo = new DriverBasicInformation();
                 int retLength;
 
-                KProcessHacker.Instance.KphQueryInformationDriver(
-                    this,
-                    DriverInformationClass.DriverBasicInformation,
-                    new IntPtr(&basicInfo),
-                    DriverBasicInformation.SizeOf,
-                    out retLength
-                    );
+                //KProcessHacker.Instance.KphQueryInformationDriver(
+                //    this,
+                //    DriverInformationClass.DriverBasicInformation,
+                //    new IntPtr(&basicInfo),
+                //    DriverBasicInformation.SizeOf,
+                //    out retLength
+                //    );
 
                 return basicInfo;
             }
@@ -80,28 +80,28 @@ namespace ProcessHacker.Native.Objects
             {
                 int retLength = 0;
 
-                try
-                {
-                    KProcessHacker.Instance.KphQueryInformationDriver(
-                        this,
-                        infoClass,
-                        data,
-                        data.Size,
-                        out retLength
-                        );
-                }
-                catch (WindowsException)
-                {
-                    data.ResizeNew(retLength);
+                //try
+                //{
+                //    KProcessHacker.Instance.KphQueryInformationDriver(
+                //        this,
+                //        infoClass,
+                //        data,
+                //        data.Size,
+                //        out retLength
+                //        );
+                //}
+                //catch (WindowsException)
+                //{
+                //    data.ResizeNew(retLength);
 
-                    KProcessHacker.Instance.KphQueryInformationDriver(
-                        this,
-                        infoClass,
-                        data,
-                        data.Size,
-                        out retLength
-                        );
-                }
+                //    KProcessHacker.Instance.KphQueryInformationDriver(
+                //        this,
+                //        infoClass,
+                //        data,
+                //        data.Size,
+                //        out retLength
+                //        );
+                //}
 
                 return data.ReadStruct<UnicodeString>().Text;
             }

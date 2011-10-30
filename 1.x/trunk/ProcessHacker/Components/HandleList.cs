@@ -138,20 +138,8 @@ namespace ProcessHacker.Components
                                                     break;
                                                 case "process":
                                                     {
-                                                        int pid;
-
-                                                        if (KProcessHacker.Instance != null)
-                                                        {
-                                                            pid = KProcessHacker.Instance.KphGetProcessId(phandle, handle);
-                                                        }
-                                                        else
-                                                        {
-                                                            dupHandle =
-                                                                new GenericHandle(
-                                                                    phandle, handle,
-                                                                    (int)OSVersion.MinProcessQueryInfoAccess);
-                                                            pid = ProcessHandle.FromHandle(dupHandle).ProcessId;
-                                                        }
+                                                        dupHandle = new GenericHandle(phandle, handle, (int)OSVersion.MinProcessQueryInfoAccess);
+                                                        int pid = ProcessHandle.FromHandle(dupHandle).ProcessId;
 
                                                         Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid], Program.FocusWindow);
                                                     }
@@ -239,8 +227,6 @@ namespace ProcessHacker.Components
 
                     GCHandle gch = GCHandle.Alloc(pages, GCHandleType.Pinned);
                     header.phpage = gch.AddrOfPinnedObject();
-
-                    
 
                     PropertySheetW(ref header);
 
@@ -359,7 +345,7 @@ namespace ProcessHacker.Components
             GenericViewMenu.AddMenuItems(copyHandleMenuItem.MenuItems, listHandles, null);
             ColumnSettings.LoadSettings(Settings.Instance.HandleListViewColumns, listHandles);
 
-            if (KProcessHacker.Instance == null)
+            //if (KProcessHacker.Instance == null)
             {
                 protectedMenuItem.Visible = false;
                 inheritMenuItem.Visible = false;
@@ -667,8 +653,8 @@ namespace ProcessHacker.Components
 
             try
             {
-                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                    KProcessHacker.Instance.SetHandleAttributes(phandle, new IntPtr(item.Handle.Handle), flags);
+                //using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    //KProcessHacker.Instance.SetHandleAttributes(phandle, new IntPtr(item.Handle.Handle), flags);
             }
             catch (Exception ex)
             {
@@ -688,8 +674,8 @@ namespace ProcessHacker.Components
 
             try
             {
-                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                    KProcessHacker.Instance.SetHandleAttributes(phandle, new IntPtr(item.Handle.Handle), flags);
+                //using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    //KProcessHacker.Instance.SetHandleAttributes(phandle, new IntPtr(item.Handle.Handle), flags);
             }
             catch (Exception ex)
             {

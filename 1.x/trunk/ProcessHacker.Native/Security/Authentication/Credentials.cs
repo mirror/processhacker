@@ -57,9 +57,9 @@ namespace ProcessHacker.Native.Security.Authentication
             out string password
             )
         {
-            using (var domainNameBuffer = new MemoryAlloc(0x100))
-            using (var userNameBuffer = new MemoryAlloc(0x100))
-            using (var passwordBuffer = new MemoryAlloc(0x100))
+            using (MemoryAlloc domainNameBuffer = new MemoryAlloc(0x100))
+            using (MemoryAlloc userNameBuffer = new MemoryAlloc(0x100))
+            using (MemoryAlloc passwordBuffer = new MemoryAlloc(0x100))
             {
                 int domainNameSize = domainNameBuffer.Size / 2 - 1;
                 int userNameSize = userNameBuffer.Size / 2 - 1;

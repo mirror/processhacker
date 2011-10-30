@@ -451,6 +451,7 @@ namespace ProcessHacker
                                 fpResult.ElevationType = thandle.ElevationType;
                             }
                             catch { }
+
                             try
                             {
                                 fpResult.IsElevated = thandle.IsElevated;
@@ -477,37 +478,42 @@ namespace ProcessHacker
                     }
 
                     // Get the process' job if we have KProcessHacker. 
-                    // Otherwise, don't do anything.
+                    //if (KProcessHacker.Instance != null)
+                    //{
+                    //    try
+                    //    {
+                    //        using (JobObjectHandle jhandle = queryLimitedHandle.GetJobObject(JobObjectAccess.Query))
+                    //        {
+                    //            JobObjectBasicLimitInformation limits = jhandle.BasicLimitInformation;
 
-                    if (KProcessHacker.Instance != null)
+                    //            fpResult.IsInJob = true;
+                    //            fpResult.JobName = jhandle.ObjectName;
+
+                    //            // This is what Process Explorer does...
+                    //            if (limits.LimitFlags != JobObjectLimitFlags.SilentBreakawayOk)
+                    //            {
+                    //                fpResult.IsInSignificantJob = true;
+                    //            }
+                    //        }
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        Logging.Log(ex);
+                    //        fpResult.IsInJob = false;
+                    //        fpResult.IsInSignificantJob = false;
+                    //    }
+                    //}
+
+                    try
                     {
-                        try
-                        {
-                            using (JobObjectHandle jhandle = queryLimitedHandle.GetJobObject(JobObjectAccess.Query))
-                            {
-                                JobObjectBasicLimitInformation limits = jhandle.BasicLimitInformation;
-
-                                fpResult.IsInJob = true;
-                                fpResult.JobName = jhandle.ObjectName;
-
-                                // This is what Process Explorer does...
-                                if (limits.LimitFlags != JobObjectLimitFlags.SilentBreakawayOk)
-                                {
-                                    fpResult.IsInSignificantJob = true;
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logging.Log(ex);
-                            fpResult.IsInJob = false;
-                            fpResult.IsInSignificantJob = false;
-                        }
+                        fpResult.IsInJob = queryLimitedHandle.IsInJob();
                     }
-                    else
+                    catch { }
+
+                    if (pid > 4)
                     {
-                        try { fpResult.IsInJob = queryLimitedHandle.IsInJob(); }
-                        catch { }
+                        fpResult.CmdLine = queryLimitedHandle.CommandLine;
+                        fpResult.IsPosix = queryLimitedHandle.IsPosix;
                     }
                 }
             }
@@ -527,20 +533,6 @@ namespace ProcessHacker
                 try
                 {
                     fpResult.VersionInfo = new ImageVersionInfo(FileVersionInfo.GetVersionInfo(fileName));
-                }
-                catch
-                { }
-            }
-
-            if (pid > 4)
-            {
-                try
-                {
-                    using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
-                    {
-                        fpResult.CmdLine = phandle.CommandLine;
-                        fpResult.IsPosix = phandle.IsPosix;
-                    }
                 }
                 catch
                 { }

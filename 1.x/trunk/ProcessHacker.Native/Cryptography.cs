@@ -106,14 +106,12 @@ namespace ProcessHacker.Native
             // Well, here's a shitload of indirection for you...
 
             // 1. State data -> Provider data
-
             IntPtr provData = Win32.WTHelperProvDataFromStateData(stateData);
 
             if (provData == IntPtr.Zero)
                 return null;
 
             // 2. Provider data -> Provider signer
-
             IntPtr signerInfo = Win32.WTHelperGetProvSignerFromChain(provData, 0, false, 0);
 
             if (signerInfo == IntPtr.Zero)
@@ -127,25 +125,22 @@ namespace ProcessHacker.Native
                 return null;
 
             // 3. Provider signer -> Provider cert
-
             CryptProviderCert cert = (CryptProviderCert)Marshal.PtrToStructure(sngr.CertChain, typeof(CryptProviderCert));
 
             if (cert.Cert == IntPtr.Zero)
                 return null;
 
             // 4. Provider cert -> Cert context
-
             CertContext context = (CertContext)Marshal.PtrToStructure(cert.Cert, typeof(CertContext));
 
             if (context.CertInfo != IntPtr.Zero)
             {
                 // 5. Cert context -> Cert info
-
                 CertInfo certInfo = (CertInfo)Marshal.PtrToStructure(context.CertInfo, typeof(CertInfo));
 
                 unsafe
                 {
-                    using (var buffer = new MemoryAlloc(0x200))
+                    using (MemoryAlloc buffer = new MemoryAlloc(0x200))
                     {
                         int length;
 
@@ -173,13 +168,12 @@ namespace ProcessHacker.Native
                         }
 
                         string name = buffer.ReadUnicodeString(0);
-                        string value;
 
                         // 7. Subject X.500 string -> CN or OU value
 
-                        value = GetX500Value(name, "CN");
+                        string value = GetX500Value(name, "CN");
 
-                        if (value == null)
+                        if (string.IsNullOrEmpty(value))
                             value = GetX500Value(name, "OU");
 
                         return value;
@@ -220,7 +214,7 @@ namespace ProcessHacker.Native
 
         public static VerifyResult VerifyFile(string fileName, out string signerName)
         {
-            VerifyResult result = VerifyResult.NoSignature;
+            VerifyResult result;
 
             using (MemoryAlloc strMem = new MemoryAlloc(fileName.Length * 2 + 2))
             {

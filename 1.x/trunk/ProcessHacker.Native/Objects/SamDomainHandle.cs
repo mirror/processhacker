@@ -260,7 +260,7 @@ namespace ProcessHacker.Native.Objects
                 out sid
                 ).ThrowIf();
 
-            using (var sidAlloc = new SamMemoryAlloc(sid))
+            using (SamMemoryAlloc sidAlloc = new SamMemoryAlloc(sid))
                 return new Sid(sidAlloc);
         }
 

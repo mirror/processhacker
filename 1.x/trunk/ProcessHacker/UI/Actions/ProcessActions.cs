@@ -185,7 +185,7 @@ namespace ProcessHacker.UI.Actions
             if (Settings.Instance.ElevationLevel == (int)ElevationLevel.Never)
                 return ElevationAction.NotRequired;
 
-            if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited && KProcessHacker.Instance == null)
+            if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited)
             {
                 try
                 {

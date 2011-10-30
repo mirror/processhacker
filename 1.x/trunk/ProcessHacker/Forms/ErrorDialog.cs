@@ -82,8 +82,8 @@ namespace ProcessHacker
                 Program.HackerWindow.ExecuteOnIcons(icon => icon.Dispose());
 
                 // Make sure KPH connection is closed.
-                if (ProcessHacker.Native.KProcessHacker.Instance != null)
-                    ProcessHacker.Native.KProcessHacker.Instance.Close();
+                if (ProcessHacker.Native.KProcessHacker2.Instance != null)
+                    ProcessHacker.Native.KProcessHacker2.Instance.Close();
             }
             catch (Exception ex)
             {

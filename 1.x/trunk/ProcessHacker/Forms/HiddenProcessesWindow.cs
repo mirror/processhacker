@@ -206,73 +206,73 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        var handles = csrhandle.GetHandles();
+                        //var handles = csrhandle.GetHandles();
 
-                        foreach (ProcessHandleInformation handle in handles)
-                        {
-                            int pid;
-                            bool isThread = false;
+                        //foreach (ProcessHandleInformation handle in handles)
+                        //{
+                        //    int pid = 0;
+                        //    bool isThread = false;
 
-                            try
-                            {
-                                pid = KProcessHacker.Instance.KphGetProcessId(csrhandle, handle.Handle);
+                        //    try
+                        //    {
+                        //        pid = 0;//pid = KProcessHacker.Instance.KphGetProcessId(csrhandle, handle.Handle);
 
-                                // HACK: Using exception for program flow!
-                                if (pid == 0)
-                                    throw new Exception();
-                            }
-                            catch
-                            {
-                                // Probably not a process handle.
-                                // Try opening it as a thread.
-                                try
-                                {
-                                    int tid = KProcessHacker.Instance.KphGetThreadId(csrhandle, handle.Handle, out pid);
-                                    isThread = true;
+                        //        // HACK: Using exception for program flow!
+                        //        if (pid == 0)
+                        //            throw new Exception();
+                        //    }
+                        //    catch
+                        //    {
+                        //        // Probably not a process handle.
+                        //        // Try opening it as a thread.
+                        //        try
+                        //        {
+                        //            int tid =0;// KProcessHacker.Instance.KphGetThreadId(csrhandle, handle.Handle, out pid);
+                        //            isThread = true;
 
-                                    if (tid == 0)
-                                        throw new Exception();
-                                }
-                                catch
-                                {
-                                    continue;
-                                }
-                            }
+                        //            if (tid == 0)
+                        //                throw new Exception();
+                        //        }
+                        //        catch
+                        //        {
+                        //            continue;
+                        //        }
+                        //    }
 
-                            // Avoid duplicate PIDs.
-                            if (foundPids.Contains(pid))
-                                continue;
+                        //    // Avoid duplicate PIDs.
+                        //    if (foundPids.Contains(pid))
+                        //        continue;
 
-                            foundPids.Add(pid);
+                        //    foundPids.Add(pid);
 
-                            try
-                            {
-                                ProcessHandle phandle;
+                        //    try
+                        //    {
+                        //        ProcessHandle phandle;
 
-                                if (!isThread)
-                                {
-                                    var dupHandle = new NativeHandle<ProcessAccess>(csrhandle, handle.Handle, Program.MinProcessQueryRights);
-                                    phandle = ProcessHandle.FromHandle(dupHandle);
-                                }
-                                else
-                                {
-                                    using (var dupHandle = new NativeHandle<ThreadAccess>(csrhandle, handle.Handle, Program.MinThreadQueryRights))
-                                        phandle = ThreadHandle.FromHandle(dupHandle).GetProcess(Program.MinProcessQueryRights);
-                                }
+                        //        if (!isThread)
+                        //        {
+                        //            var dupHandle = new NativeHandle<ProcessAccess>(csrhandle, handle.Handle, Program.MinProcessQueryRights);
+                        //            phandle = ProcessHandle.FromHandle(dupHandle);
+                        //        }
+                        //        else
+                        //        {
+                        //            using (var dupHandle = new NativeHandle<ThreadAccess>(csrhandle, handle.Handle, Program.MinThreadQueryRights))
+                        //                phandle = ThreadHandle.FromHandle(dupHandle).GetProcess(Program.MinProcessQueryRights);
+                        //        }
 
-                                AddProcessItem(
-                                    phandle,
-                                    pid,
-                                    ref totalCount, ref hiddenCount, ref terminatedCount,
-                                    processes.ContainsKey
-                                    );
-                                phandle.Dispose();
-                            }
-                            catch (WindowsException ex2)
-                            {
-                                AddErrorItem(ex2, pid, ref totalCount, ref hiddenCount, ref terminatedCount);
-                            }
-                        }
+                        //        AddProcessItem(
+                        //            phandle,
+                        //            pid,
+                        //            ref totalCount, ref hiddenCount, ref terminatedCount,
+                        //            processes.ContainsKey
+                        //            );
+                        //        phandle.Dispose();
+                        //    }
+                        //    catch (WindowsException ex2)
+                        //    {
+                        //        AddErrorItem(ex2, pid, ref totalCount, ref hiddenCount, ref terminatedCount);
+                        //    }
+                        //}
                     }
                     catch (WindowsException ex)
                     {
@@ -338,43 +338,43 @@ namespace ProcessHacker
 
             foreach (var csrProcess in csrProcesses)
             {
-                foreach (var handle in csrProcess.GetHandles())
-                {
-                    try
-                    {
-                        // Assume that the handle is a process handle.
-                        int handlePid = KProcessHacker.Instance.KphGetProcessId(csrProcess, handle.Handle);
+            //    foreach (var handle in csrProcess.GetHandles())
+            //    {
+            //        try
+            //        {
+            //            // Assume that the handle is a process handle.
+            //            int handlePid = 0;// KProcessHacker.Instance.KphGetProcessId(csrProcess, handle.Handle);
 
-                        if (handlePid == pid)
-                            return ProcessHandle.FromHandle(
-                                new NativeHandle<ProcessAccess>(csrProcess, handle.Handle, access)
-                                );
-                        else if (handlePid == 0)
-                            throw new Exception(); // HACK
-                    }
-                    catch
-                    {
-                        try
-                        {
-                            // Assume that the handle is a thread handle.
-                            int handlePid;
+            //            if (handlePid == pid)
+            //                return ProcessHandle.FromHandle(
+            //                    new NativeHandle<ProcessAccess>(csrProcess, handle.Handle, access)
+            //                    );
+            //            else if (handlePid == 0)
+            //                throw new Exception(); // HACK
+            //        }
+            //        catch
+            //        {
+            //            try
+            //            {
+            //                // Assume that the handle is a thread handle.
+            //                int handlePid = 0;
 
-                            int tid = KProcessHacker.Instance.KphGetThreadId(csrProcess, handle.Handle, out handlePid);
+            //                int tid = 0;// KProcessHacker.Instance.KphGetThreadId(csrProcess, handle.Handle, out handlePid);
 
-                            if (tid == 0)
-                                throw new Exception();
+            //                if (tid == 0)
+            //                    throw new Exception();
 
-                            if (handlePid == pid)
-                            {
-                                using (var dupHandle =
-                                    new NativeHandle<ThreadAccess>(csrProcess, handle.Handle, Program.MinThreadQueryRights))
-                                    return ThreadHandle.FromHandle(dupHandle).GetProcess(access);
-                            }
-                        }
-                        catch
-                        { }
-                    }
-                }
+            //                if (handlePid == pid)
+            //                {
+            //                    using (var dupHandle =
+            //                        new NativeHandle<ThreadAccess>(csrProcess, handle.Handle, Program.MinThreadQueryRights))
+            //                        return ThreadHandle.FromHandle(dupHandle).GetProcess(access);
+            //                }
+            //            }
+            //            catch
+            //            { }
+            //        }
+            //    }
 
                 csrProcess.Dispose();
             }

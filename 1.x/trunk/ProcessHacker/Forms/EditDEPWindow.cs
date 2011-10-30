@@ -64,7 +64,7 @@ namespace ProcessHacker
 
                     comboStatus.SelectedItem = str;
 
-                    if (KProcessHacker.Instance != null)
+                    if (KProcessHacker2.Instance != null)
                         checkPermanent.Visible = true;
                 }
             }
@@ -74,7 +74,7 @@ namespace ProcessHacker
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            if (KProcessHacker.Instance != null)
+            if (KProcessHacker2.Instance != null)
                 this.SetDepStatusKph();
             else
                 this.SetDepStatusNoKph();
@@ -84,16 +84,20 @@ namespace ProcessHacker
         {
             DepStatus depStatus;
 
-            if (comboStatus.SelectedItem.ToString() == "Disabled")
-                depStatus = 0;
-            else if (comboStatus.SelectedItem.ToString() == "Enabled")
-                depStatus = DepStatus.Enabled;
-            else if (comboStatus.SelectedItem.ToString() == "Enabled, DEP-ATL thunk emulation disabled")
-                depStatus = DepStatus.Enabled | DepStatus.AtlThunkEmulationDisabled;
-            else
+            switch (this.comboStatus.SelectedItem.ToString())
             {
-                PhUtils.ShowError("Invalid value.");
-                return;
+                case "Disabled":
+                    depStatus = 0;
+                    break;
+                case "Enabled":
+                    depStatus = DepStatus.Enabled;
+                    break;
+                case "Enabled, DEP-ATL thunk emulation disabled":
+                    depStatus = DepStatus.Enabled | DepStatus.AtlThunkEmulationDisabled;
+                    break;
+                default:
+                    PhUtils.ShowError("Invalid value.");
+                    return;
             }
 
             if (checkPermanent.Checked)

@@ -48,7 +48,7 @@ namespace ProcessHacker.Native.Objects
         {
             this.Handle = Win32.OpenWindowStation(name, false, access);
 
-            if (this.Handle == System.IntPtr.Zero)
+            if (this.Handle == IntPtr.Zero)
                 Win32.Throw();
         }
 

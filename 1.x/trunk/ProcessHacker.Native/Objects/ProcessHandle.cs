@@ -169,36 +169,24 @@ namespace ProcessHacker.Native.Objects
             )
         {
             ProcessHandle phandle;
-            ThreadHandle thandle;
             SectionImageInformation imageInfo;
 
             // If we don't have a desktop, use the current one.
             if (startupInfo.Desktop == null)
-                startupInfo.Desktop = ProcessHandle.Current.GetPebString(PebOffset.DesktopName);
+                startupInfo.Desktop = Current.GetPebString(PebOffset.DesktopName);
 
             // Open the file, create a section, and create a process.
-            using (var fhandle = new FileHandle(
-                fileName,
-                FileShareMode.Read | FileShareMode.Delete,
-                FileAccess.Execute | (FileAccess)StandardRights.Synchronize
-                ))
+            using (FileHandle fhandle = new FileHandle(fileName, FileShareMode.Read | FileShareMode.Delete, FileAccess.Execute | (FileAccess)StandardRights.Synchronize))
+            using (SectionHandle shandle = SectionHandle.Create(SectionAccess.All, SectionAttributes.Image, MemoryProtection.Execute, fhandle))
             {
-                using (SectionHandle shandle = SectionHandle.Create(
-                    SectionAccess.All,
-                    SectionAttributes.Image,
-                    MemoryProtection.Execute,
-                    fhandle
-                    ))
-                {
-                    imageInfo = shandle.GetImageInformation();
+                imageInfo = shandle.GetImageInformation();
 
-                    phandle = Create(
-                        ProcessAccess.All,
-                        parentProcess,
-                        inheritHandles,
-                        shandle
-                        );
-                }
+                phandle = Create(
+                    ProcessAccess.All,
+                    parentProcess,
+                    inheritHandles,
+                    shandle
+                    );
             }
 
             IntPtr peb = phandle.GetBasicInformation().PebBaseAddress;
@@ -209,7 +197,7 @@ namespace ProcessHacker.Native.Objects
                 peb,
                 creationFlags,
                 FileUtils.GetFileName(fileName),
-                ProcessHandle.Current.GetPebString(PebOffset.DllPath),
+                Current.GetPebString(PebOffset.DllPath),
                 currentDirectory,
                 fileName,
                 environment,
@@ -223,7 +211,7 @@ namespace ProcessHacker.Native.Objects
             // TODO: Duplicate the console handles (stdin, stdout, stderr).
 
             // Create the initial thread.
-            thandle = ThreadHandle.CreateUserThread(
+            ThreadHandle thandle = ThreadHandle.CreateUserThread(
                 phandle,
                 true,
                 imageInfo.StackCommit.Increment(imageInfo.StackReserved).ToInt32(),
@@ -541,11 +529,11 @@ namespace ProcessHacker.Native.Objects
         public ProcessHandle(int pid, ProcessAccess access)
         {
             // If we have KPH, use it.
-            if (KProcessHacker.Instance != null)
+            if (KProcessHacker2.Instance != null)
             {
                 try
                 {
-                    this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcess(pid, access));
+                    this.Handle = KProcessHacker2.Instance.KphOpenProcess(pid, access);
                 }
                 catch (WindowsException)
                 {
@@ -553,8 +541,7 @@ namespace ProcessHacker.Native.Objects
                     // some part of ObReferenceObjectByHandle is hooked. We can 
                     // open the process with SYNCHRONIZE access and set the granted access 
                     // using KPH.
-                    this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcess(pid, (ProcessAccess)StandardRights.Synchronize));
-                    KProcessHacker.Instance.KphSetHandleGrantedAccess(this.Handle, (int)access);
+                    this.Handle = KProcessHacker2.Instance.KphOpenProcess(pid, (ProcessAccess)StandardRights.Synchronize);
                 }
             }
             else
@@ -567,19 +554,6 @@ namespace ProcessHacker.Native.Objects
                 this.MarkAsInvalid();
                 Win32.Throw();
             }
-        }
-
-        /// <summary>
-        /// Opens a thread's process.
-        /// </summary>
-        /// <param name="threadHandle">A handle to a thread.</param>
-        /// <param name="access">The desired access to the process.</param>
-        public ProcessHandle(ThreadHandle threadHandle, ProcessAccess access)
-        {
-            if (KProcessHacker.Instance == null)
-                throw new NotSupportedException();
-
-            this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenThreadProcess(threadHandle, access));
         }
 
         /// <summary>
@@ -820,9 +794,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A handle to the new thread.</returns>
         public ThreadHandle CreateThreadWin32(IntPtr startAddress, IntPtr parameter, bool createSuspended, out int threadId)
         {
-            IntPtr threadHandle;
-
-            if ((threadHandle = Win32.CreateRemoteThread(
+            IntPtr threadHandle = Win32.CreateRemoteThread(
                 this,
                 IntPtr.Zero,
                 IntPtr.Zero,
@@ -830,7 +802,9 @@ namespace ProcessHacker.Native.Objects
                 parameter,
                 createSuspended ? ProcessCreationFlags.CreateSuspended : 0,
                 out threadId
-                )) == IntPtr.Zero)
+                );
+
+            if (threadHandle == IntPtr.Zero)
                 Win32.Throw();
 
             return new ThreadHandle(threadHandle, true);
@@ -1267,7 +1241,7 @@ namespace ProcessHacker.Native.Objects
                 if (value.HasFlag(DepStatus.Permanent))
                     executeOptions |= MemExecuteOptions.Permanent;
 
-                KProcessHacker.Instance.SetExecuteOptions(this, executeOptions);
+                //KProcessHacker.Instance.SetExecuteOptions(this, executeOptions);
             }
         }
 
@@ -1401,45 +1375,45 @@ namespace ProcessHacker.Native.Objects
         /// Gets the handles owned by the process.
         /// </summary>
         /// <returns>An array of handle information structures.</returns>
-        public ProcessHandleInformation[] GetHandles()
-        {
-            int returnLength = 0;
-            int attempts = 0;
+        //public ProcessHandleInformation[] GetHandles()
+        //{
+        //    int returnLength = 0;
+        //    int attempts = 0;
 
-            using (MemoryAlloc data = new MemoryAlloc(0x1000))
-            {
-                while (true)
-                {
-                    try
-                    {
-                        KProcessHacker.Instance.KphQueryProcessHandles(this, data, data.Size, out returnLength);
-                    }
-                    catch (WindowsException ex)
-                    {
-                        if (attempts > 3)
-                            throw ex;
+        //    using (MemoryAlloc data = new MemoryAlloc(0x1000))
+        //    {
+        //        while (true)
+        //        {
+        //            try
+        //            {
+        //                //KProcessHacker.Instance.KphQueryProcessHandles(this, data, data.Size, out returnLength);
+        //            }
+        //            catch (WindowsException ex)
+        //            {
+        //                if (attempts > 3)
+        //                    throw ex;
 
-                        if (
-                            ex.Status == NtStatus.BufferTooSmall &&
-                            returnLength > data.Size
-                            )
-                            data.ResizeNew(returnLength);
+        //                if (
+        //                    ex.Status == NtStatus.BufferTooSmall &&
+        //                    returnLength > data.Size
+        //                    )
+        //                    data.ResizeNew(returnLength);
 
-                        attempts++;
+        //                attempts++;
 
-                        continue;
-                    }
+        //                continue;
+        //            }
 
-                    int handleCount = data.ReadInt32(0);
-                    ProcessHandleInformation[] handles = new ProcessHandleInformation[handleCount];
+        //            int handleCount = data.ReadInt32(0);
+        //            ProcessHandleInformation[] handles = new ProcessHandleInformation[handleCount];
 
-                    for (int i = 0; i < handleCount; i++)
-                        handles[i] = data.ReadStruct<ProcessHandleInformation>(sizeof(int), ProcessHandleInformation.SizeOf, i);
+        //            for (int i = 0; i < handleCount; i++)
+        //                handles[i] = data.ReadStruct<ProcessHandleInformation>(sizeof(int), ProcessHandleInformation.SizeOf, i);
 
-                    return handles;
-                }
-            }
-        }
+        //            return handles;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Gets a collection of handle stack traces. This requires 
@@ -1467,12 +1441,14 @@ namespace ProcessHacker.Native.Objects
 
             using (MemoryAlloc data = new MemoryAlloc(0x10000))
             {
-                ProcessHandleTracingQuery query = new ProcessHandleTracingQuery();
-
                 // If Handle is not NULL, NtQueryInformationProcess will 
                 // get a specific stack trace. Otherwise, it will get 
                 // all of the stack traces.
-                query.Handle = handle;
+                ProcessHandleTracingQuery query = new ProcessHandleTracingQuery
+                {
+                    Handle = handle
+                };
+
                 data.WriteStruct(query);
 
                 for (int i = 0; i < 8; i++)
@@ -2220,32 +2196,23 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The number of bytes read.</returns>
         public int ReadMemory(IntPtr baseAddress, IntPtr buffer, int length)
         {
-            int retLength;
-
             if (this.Handle == Current)
             {
                 Win32.RtlMoveMemory(buffer, baseAddress, length.ToIntPtr());
                 return length;
             }
 
-            if (KProcessHacker.Instance != null)
-            {
-                KProcessHacker.Instance.KphReadVirtualMemory(this, baseAddress.ToInt32(), buffer, length, out retLength);
-            }
-            else
-            {
-                IntPtr retLengthIntPtr;
+            IntPtr retLengthIntPtr;
 
-                Win32.NtReadVirtualMemory(
-                    this,
-                    baseAddress,
-                    buffer,
-                    length.ToIntPtr(),
-                    out retLengthIntPtr
-                    ).ThrowIf();
+            Win32.NtReadVirtualMemory(
+                this,
+                baseAddress,
+                buffer,
+                length.ToIntPtr(),
+                out retLengthIntPtr
+                ).ThrowIf();
 
-                retLength = retLengthIntPtr.ToInt32();
-            }
+            int retLength = retLengthIntPtr.ToInt32();
 
             return retLength;
         }
@@ -2285,118 +2252,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void Resume()
         {
-            if (KProcessHacker.Instance != null && OSVersion.HasPsSuspendResumeProcess)
-            {
-                KProcessHacker.Instance.KphResumeProcess(this);
-            }
-            else
-            {
-                Win32.NtResumeProcess(this).ThrowIf();
-            }
-        }
-
-
-
-
-        /// <summary>
-        /// Gets information about the process in an Int32.
-        /// </summary>
-        /// <param name="infoClass">The class of information to retrieve.</param>
-        /// <returns>An int.</returns>
-        private int GetInformationInt32(ProcessInformationClass infoClass)
-        {
-            int value;
-            int retLength;
-            if (KProcessHacker.Instance != null && infoClass == ProcessInformationClass.ProcessIoPriority)
-            {
-                unsafe
-                {
-                    KProcessHacker.Instance.KphQueryInformationProcess(
-                        this, 
-                        infoClass, 
-                        new IntPtr(&value), 
-                        sizeof(int), 
-                        out retLength
-                        );
-
-                    return value;
-                }
-            }
-
-            Win32.NtQueryInformationProcess(
-                this,
-                infoClass,
-                out value,
-                sizeof(int),
-                out retLength
-                ).ThrowIf();
-
-            return value;
-        }
-
-        /// <summary>
-        /// Gets information about the process in an IntPtr.
-        /// </summary>
-        /// <param name="infoClass">The class of information to retrieve.</param>
-        /// <returns>An IntPtr.</returns>
-        private IntPtr GetInformationIntPtr(ProcessInformationClass infoClass)
-        {
-            IntPtr value;
-            int retLength;
-
-            Win32.NtQueryInformationProcess(
-                this,
-                infoClass,
-                out value,
-                IntPtr.Size,
-                out retLength
-                ).ThrowIf();
-
-            return value;
-        }
-
-        private string GetInformationUnicodeString(ProcessInformationClass infoClass)
-        {
-            int retLen;
-
-            Win32.NtQueryInformationProcess(this, infoClass, IntPtr.Zero, 0, out retLen);
-
-            using (MemoryAlloc data = new MemoryAlloc(retLen))
-            {
-                Win32.NtQueryInformationProcess(this, infoClass, data, retLen, out retLen).ThrowIf();
-
-                return data.ReadStruct<UnicodeString>().Text;
-            }
-        }
-
-        /// <summary>
-        /// Sets information about the process in an Int32.
-        /// </summary>
-        /// <param name="infoClass">The class of information to set.</param>
-        /// <param name="value">The value to set.</param>
-        private void SetInformationInt32(ProcessInformationClass infoClass, int value)
-        {
-            if (
-                KProcessHacker.Instance != null &&
-                infoClass == ProcessInformationClass.ProcessIoPriority
-                )
-            {
-                unsafe
-                {
-                    KProcessHacker.Instance.KphSetInformationProcess(
-                        this, infoClass, new IntPtr(&value), sizeof(int)
-                        );
-                }
-            }
-            else
-            {
-                Win32.NtSetInformationProcess(
-                    this, 
-                    infoClass, 
-                    ref value, 
-                    sizeof(int)
-                    ).ThrowIf();
-            }
+            Win32.NtResumeProcess(this).ThrowIf();
         }
 
         /// <summary>
@@ -2454,14 +2310,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void Suspend()
         {
-            if (KProcessHacker.Instance != null && OSVersion.HasPsSuspendResumeProcess)
-            {
-                KProcessHacker.Instance.KphSuspendProcess(this);
-            }
-            else
-            {
-                Win32.NtSuspendProcess(this).ThrowIf();
-            }
+            Win32.NtSuspendProcess(this).ThrowIf();
         }
 
         /// <summary>
@@ -2478,14 +2327,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="exitStatus">The exit status.</param>
         public void Terminate(NtStatus exitStatus)
         {
-            if (KProcessHacker.Instance != null)
-            {
-                KProcessHacker.Instance.KphTerminateProcess(this, exitStatus);
-            }
-            else
-            {
-                Win32.NtTerminateProcess(this, exitStatus).ThrowIf();
-            }
+            Win32.NtTerminateProcess(this, exitStatus).ThrowIf();
         }
 
         /// <summary>
@@ -2511,8 +2353,10 @@ namespace ProcessHacker.Native.Objects
         /// <param name="type">The type of minidump to write.</param>
         public void WriteDump(string fileName, MinidumpType type)
         {
-            using (var fhandle = FileHandle.CreateWin32(fileName, FileAccess.GenericWrite))
+            using (FileHandle fhandle = FileHandle.CreateWin32(fileName, FileAccess.GenericWrite))
+            {
                 this.WriteDump(fhandle, type);
+            }
         }
 
         /// <summary>
@@ -2569,34 +2413,94 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The length, in bytes, that was written.</returns>
         public int WriteMemory(IntPtr baseAddress, IntPtr buffer, int length)
         {
-            int retLength;
-
             if (this.Handle == Current)
             {
                 Win32.RtlMoveMemory(baseAddress, buffer, length.ToIntPtr());
                 return length;
             }
 
-            if (KProcessHacker.Instance != null)
+            IntPtr retLengthIntPtr;
+
+            Win32.NtWriteVirtualMemory(
+                this,
+                baseAddress,
+                buffer,
+                length.ToIntPtr(),
+                out retLengthIntPtr
+                ).ThrowIf();
+
+            return retLengthIntPtr.ToInt32();
+        }
+
+        /// <summary>
+        /// Gets information about the process in an Int32.
+        /// </summary>
+        /// <param name="infoClass">The class of information to retrieve.</param>
+        /// <returns>An int.</returns>
+        private int GetInformationInt32(ProcessInformationClass infoClass)
+        {
+            int value;
+            int retLength;
+
+            Win32.NtQueryInformationProcess(
+                this,
+                infoClass,
+                out value,
+                sizeof(int),
+                out retLength
+                ).ThrowIf();
+
+            return value;
+        }
+
+        /// <summary>
+        /// Gets information about the process in an IntPtr.
+        /// </summary>
+        /// <param name="infoClass">The class of information to retrieve.</param>
+        /// <returns>An IntPtr.</returns>
+        private IntPtr GetInformationIntPtr(ProcessInformationClass infoClass)
+        {
+            IntPtr value;
+            int retLength;
+
+            Win32.NtQueryInformationProcess(
+                this,
+                infoClass,
+                out value,
+                IntPtr.Size,
+                out retLength
+                ).ThrowIf();
+
+            return value;
+        }
+
+        private string GetInformationUnicodeString(ProcessInformationClass infoClass)
+        {
+            int retLen;
+
+            Win32.NtQueryInformationProcess(this, infoClass, IntPtr.Zero, 0, out retLen);
+
+            using (MemoryAlloc data = new MemoryAlloc(retLen))
             {
-                KProcessHacker.Instance.KphWriteVirtualMemory(this, baseAddress.ToInt32(), buffer, length, out retLength);
+                Win32.NtQueryInformationProcess(this, infoClass, data, retLen, out retLen).ThrowIf();
+
+                return data.ReadStruct<UnicodeString>().Text;
             }
-            else
-            {
-                IntPtr retLengthIntPtr;
+        }
 
-                Win32.NtWriteVirtualMemory(
-                    this,
-                    baseAddress,
-                    buffer,
-                    length.ToIntPtr(),
-                    out retLengthIntPtr
-                    ).ThrowIf();
-
-                retLength = retLengthIntPtr.ToInt32();
-            }
-
-            return retLength;
+        /// <summary>
+        /// Sets information about the process in an Int32.
+        /// </summary>
+        /// <param name="infoClass">The class of information to set.</param>
+        /// <param name="value">The value to set.</param>
+        private void SetInformationInt32(ProcessInformationClass infoClass, int value)
+        {
+            Win32.NtSetInformationProcess(
+                this,
+                infoClass,
+                ref value,
+                sizeof(int)
+                ).ThrowIf();
         }
     }
 
@@ -2617,7 +2521,7 @@ namespace ProcessHacker.Native.Objects
             _type = entry.Type;
 
             // Find the first occurrence of a NULL to find where the trace stops.
-            int zeroIndex = Array.IndexOf<IntPtr>(entry.Stacks, IntPtr.Zero);
+            int zeroIndex = Array.IndexOf(entry.Stacks, IntPtr.Zero);
 
             // If there was no NULL, copy the entire array.
             if (zeroIndex == -1)

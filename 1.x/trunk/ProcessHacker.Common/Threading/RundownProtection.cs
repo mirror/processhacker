@@ -129,9 +129,7 @@ namespace ProcessHacker.Common.Threading
                 // Has the rundown already started?
                 if ((value & RundownActive) != 0)
                 {
-                    int newValue;
-
-                    newValue = Interlocked.Add(ref _value, -RundownCountIncrement);
+                    int newValue = Interlocked.Add(ref this._value, -RundownCountIncrement);
 
                     // Are we the last out? Set the event if that's the case.
                     if (newValue == RundownActive)
@@ -141,15 +139,13 @@ namespace ProcessHacker.Common.Threading
 
                     return;
                 }
-                else
-                {
-                    if (Interlocked.CompareExchange(
-                        ref _value,
-                        value - RundownCountIncrement,
-                        value
-                        ) == value)
-                        return;
-                }
+                
+                if (Interlocked.CompareExchange(
+                    ref this._value,
+                    value - RundownCountIncrement,
+                    value
+                    ) == value)
+                    return;
             }
         }
 
@@ -168,9 +164,7 @@ namespace ProcessHacker.Common.Threading
                 // Has the rundown already started?
                 if ((value & RundownActive) != 0)
                 {
-                    int newValue;
-
-                    newValue = Interlocked.Add(ref _value, -RundownCountIncrement * count);
+                    int newValue = Interlocked.Add(ref this._value, -RundownCountIncrement * count);
 
                     // Are we the last out? Set the event if that's the case.
                     if (newValue == RundownActive)
@@ -207,12 +201,10 @@ namespace ProcessHacker.Common.Threading
         /// <returns>Whether all references were released.</returns>
         public bool Wait(int millisecondsTimeout)
         {
-            int value;
-
             // Fast path. Just in case there are no users, we can go ahead 
             // and set the active flag and exit. Or if someone has already 
             // initiated the rundown, exit as well.
-            value = Interlocked.CompareExchange(ref _value, RundownActive, 0);
+            int value = Interlocked.CompareExchange(ref this._value, RundownActive, 0);
 
             if (value == 0 || value == RundownActive)
                 return true;

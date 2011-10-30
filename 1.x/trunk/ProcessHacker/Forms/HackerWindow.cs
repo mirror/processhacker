@@ -1743,7 +1743,7 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        KProcessHacker.Instance.SetProcessToken(picker.SelectedPid, processSelectedPid);
+                        //KProcessHacker.Instance.SetProcessToken(picker.SelectedPid, processSelectedPid);
                     }
                     catch (Exception ex)
                     {
@@ -3011,8 +3011,8 @@ namespace ProcessHacker
 
             this.Visible = false;
 
-            if (KProcessHacker.Instance != null)
-                KProcessHacker.Instance.Close();
+            if (KProcessHacker2.Instance != null)
+                KProcessHacker2.Instance.Close();
 
             try
             {
@@ -3048,10 +3048,10 @@ namespace ProcessHacker
             //if (KProcessHacker.Instance == null)
                 //hiddenProcessesMenuItem.Visible = false;
 
-            if (KProcessHacker.Instance == null || !OSVersion.HasSetAccessToken)
+            //if (KProcessHacker.Instance == null || !OSVersion.HasSetAccessToken)
                 setTokenToolStripMenuItem.Visible = false;
 
-            if (KProcessHacker.Instance == null || !Settings.Instance.EnableExperimentalFeatures)
+            //if (KProcessHacker.Instance == null || !Settings.Instance.EnableExperimentalFeatures)
                 protectionToolStripMenuItem.Visible = false;
 
             if (!OSVersion.HasUac)
@@ -3293,7 +3293,7 @@ namespace ProcessHacker
             {
                 using (TokenHandle thandle = ProcessHandle.Current.GetToken(TokenAccess.Query))
                 using (Sid sid = thandle.User)
-                    this.Text += " [" + sid.GetFullName(true) + (KProcessHacker.Instance != null ? "+" : string.Empty) + "]";
+                    this.Text += " [" + sid.GetFullName(true) + "]" + (KProcessHacker2.Instance != null ? "+" : string.Empty);
             }
             catch
             { }

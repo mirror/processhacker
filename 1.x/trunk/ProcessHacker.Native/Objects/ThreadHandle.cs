@@ -299,24 +299,24 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the thread.</param>
         public ThreadHandle(int tid, ThreadAccess access)
         {
-            if (KProcessHacker.Instance != null)
-            {
-                try
-                {
-                    this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenThread(tid, access));
-                }
-                catch (WindowsException)
-                {
-                    // Open the thread with minimum access (SYNCHRONIZE) and set the granted access.
-                    this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenThread(tid, 
-                        (ThreadAccess)StandardRights.Synchronize));
-                    KProcessHacker.Instance.KphSetHandleGrantedAccess(this.Handle, (int)access);
-                }
-            }
-            else
-            {
+            //if (KProcessHacker.Instance != null)
+            //{
+            //    try
+            //    {
+            //        this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenThread(tid, access));
+            //    }
+            //    catch (WindowsException)
+            //    {
+            //        // Open the thread with minimum access (SYNCHRONIZE) and set the granted access.
+            //        this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenThread(tid, 
+            //            (ThreadAccess)StandardRights.Synchronize));
+            //        KProcessHacker.Instance.KphSetHandleGrantedAccess(this.Handle, (int)access);
+            //    }
+            //}
+            //else
+            //{
                 this.Handle = Win32.OpenThread(access, false, tid);
-            }
+            //}
 
             if (this.Handle == IntPtr.Zero)
             {
@@ -405,24 +405,24 @@ namespace ProcessHacker.Native.Objects
         /// <returns>An array of function addresses.</returns>
         public IntPtr[] CaptureKernelStack(int skipCount)
         {
-            IntPtr[] stack = new IntPtr[62 - skipCount]; // 62 limit for XP and Server 2003
-            int hash;
+            //IntPtr[] stack = new IntPtr[62 - skipCount]; // 62 limit for XP and Server 2003
+            //int hash;
 
             // Capture a kernel-mode stack trace.
-            int captured = KProcessHacker.Instance.KphCaptureStackBackTraceThread(
-                this,
-                skipCount,
-                stack.Length,
-                stack,
-                out hash
-                );
+            //int captured = KProcessHacker.Instance.KphCaptureStackBackTraceThread(
+            //    this,
+            //    skipCount,
+            //    stack.Length,
+            //    stack,
+            //    out hash
+            //    );
 
             // Create a new array with only the frames we captured.
-            IntPtr[] newStack = new IntPtr[captured];
+            //IntPtr[] newStack = new IntPtr[captured];
 
-            Array.Copy(stack, 0, newStack, 0, captured);
+            //Array.Copy(stack, 0, newStack, 0, captured);
 
-            return newStack;
+            return null;// newStack;
         }
 
         /// <summary>
@@ -465,7 +465,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="exitStatus">The exit status.</param>
         public void DangerousTerminate(NtStatus exitStatus)
         {
-            KProcessHacker.Instance.KphDangerousTerminateThread(this, exitStatus);
+            //KProcessHacker.Instance.KphDangerousTerminateThread(this, exitStatus);
         }
 
         /// <summary>
@@ -532,15 +532,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="context">A Context structure. The ContextFlags must be set appropriately.</param>
         public unsafe void GetContext(ref Context context)
         {
-            if (KProcessHacker.Instance != null)
-            {
-                fixed (Context* contextPtr = &context)
-                    KProcessHacker.Instance.KphGetContextThread(this, contextPtr);
-            }
-            else
-            {
-                Win32.NtGetContextThread(this, ref context).ThrowIf();
-            }
+            Win32.NtGetContextThread(this, ref context).ThrowIf();
         }
 
         /// <summary>
@@ -627,18 +619,6 @@ namespace ProcessHacker.Native.Objects
         {
             int value;
             int retLength;
-
-            if (KProcessHacker.Instance != null && infoClass == ThreadInformationClass.ThreadIoPriority)
-            {
-                unsafe
-                {
-                    KProcessHacker.Instance.KphQueryInformationThread(
-                        this, infoClass, new IntPtr(&value), sizeof(int), out retLength
-                        );
-
-                    return value;
-                }
-            }
             
             Win32.NtQueryInformationThread(
                 this, 
@@ -892,12 +872,7 @@ namespace ProcessHacker.Native.Objects
 
         public void RemoteCall(IntPtr address, IntPtr[] arguments, bool alreadySuspended)
         {
-            ProcessHandle processHandle;
-
-            if (KProcessHacker.Instance != null)
-                processHandle = this.GetProcess(ProcessAccess.VmWrite);
-            else
-                processHandle = new ProcessHandle(this.GetProcessId(), ProcessAccess.VmWrite);
+            ProcessHandle processHandle = new ProcessHandle(this.GetProcessId(), ProcessAccess.VmWrite);
 
             using (processHandle)
                 this.RemoteCall(processHandle, address, arguments, alreadySuspended);
@@ -951,16 +926,9 @@ namespace ProcessHacker.Native.Objects
         /// Sets the thread's context.
         /// </summary>
         /// <param name="context">A CONTEXT struct.</param>
-        public unsafe void SetContext(Context context)
+        public void SetContext(Context context)
         {
-            if (KProcessHacker.Instance != null)
-            {
-                KProcessHacker.Instance.KphSetContextThread(this, &context);
-            }
-            else
-            {
-                Win32.NtSetContextThread(this, ref context).ThrowIf();
-            }
+            Win32.NtSetContextThread(this, ref context).ThrowIf();
         }
 
         /// <summary>
@@ -1000,27 +968,12 @@ namespace ProcessHacker.Native.Objects
 
         private void SetInformationInt32(ThreadInformationClass infoClass, int value)
         {
-            if (KProcessHacker.Instance != null && infoClass == ThreadInformationClass.ThreadIoPriority)
-            {
-                unsafe
-                {
-                    KProcessHacker.Instance.KphSetInformationThread(
-                        this, 
-                        infoClass, 
-                        new IntPtr(&value), 
-                        sizeof(int)
-                        );
-                }
-            }
-            else
-            {
-                Win32.NtSetInformationThread(
-                    this, 
-                    infoClass, 
-                    ref value, 
-                    sizeof(int)
-                    ).ThrowIf();
-            }
+            Win32.NtSetInformationThread(
+                this,
+                infoClass,
+                ref value,
+                sizeof(int)
+                ).ThrowIf();
         }
 
         private void SetInformationIntPtr(ThreadInformationClass infoClass, IntPtr value)
@@ -1099,20 +1052,6 @@ namespace ProcessHacker.Native.Objects
         /// <param name="exitStatus">The exit status.</param>
         public void Terminate(NtStatus exitStatus)
         {
-            if (KProcessHacker.Instance != null)
-            {
-                try
-                {
-                    KProcessHacker.Instance.KphTerminateThread(this, exitStatus);
-                    return;
-                }
-                catch (WindowsException ex)
-                {
-                    if (ex.ErrorCode != Win32Error.NotSupported)
-                        throw ex;
-                }
-            }
-
             Win32.NtTerminateThread(this, exitStatus).ThrowIf();
         }
 
@@ -1136,23 +1075,14 @@ namespace ProcessHacker.Native.Objects
         /// </param>
         public void WalkStack(WalkStackDelegate walkStackCallback, OSArch architecture)
         {
-            if (KProcessHacker.Instance != null)
+            // We need to duplicate the handle to get QueryInformation access.
+            using (NativeHandle<ThreadAccess> dupThreadHandle = this.Duplicate(OSVersion.MinThreadQueryInfoAccess))
+            using (ProcessHandle phandle = new ProcessHandle(
+                FromHandle(dupThreadHandle).GetBasicInformation().ClientId.ProcessId,
+                ProcessAccess.QueryInformation | ProcessAccess.VmRead
+                ))
             {
-                // Use KPH to open the parent process.
-                using (ProcessHandle phandle = this.GetProcess(ProcessAccess.QueryInformation | ProcessAccess.VmRead))
-                    this.WalkStack(phandle, walkStackCallback, architecture);
-            }
-            else
-            {
-                // We need to duplicate the handle to get QueryInformation access.
-                using (NativeHandle<ThreadAccess> dupThreadHandle = this.Duplicate(OSVersion.MinThreadQueryInfoAccess))
-                using (ProcessHandle phandle = new ProcessHandle(
-                    FromHandle(dupThreadHandle).GetBasicInformation().ClientId.ProcessId,
-                    ProcessAccess.QueryInformation | ProcessAccess.VmRead
-                    ))
-                {
-                    this.WalkStack(phandle, walkStackCallback, architecture);
-                }
+                this.WalkStack(phandle, walkStackCallback, architecture);
             }
         }
 
@@ -1194,14 +1124,14 @@ namespace ProcessHacker.Native.Objects
             // Use KPH for reading memory if we can.
             ReadProcessMemoryProc64 readMemoryProc = null;
 
-            if (KProcessHacker.Instance != null)
-            {
-                readMemoryProc = 
-                    (IntPtr processHandle, ulong baseAddress, IntPtr buffer, int size, out int bytesRead) 
-                        => KProcessHacker.Instance.KphReadVirtualMemorySafe(
-                        ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead
-                        ).IsSuccess();
-            }
+            //if (KProcessHacker.Instance != null)
+            //{
+            //    readMemoryProc = 
+            //        (IntPtr processHandle, ulong baseAddress, IntPtr buffer, int size, out int bytesRead) 
+            //            => KProcessHacker.Instance.KphReadVirtualMemorySafe(
+            //            ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead
+            //            ).IsSuccess();
+            //}
 
             try
             {

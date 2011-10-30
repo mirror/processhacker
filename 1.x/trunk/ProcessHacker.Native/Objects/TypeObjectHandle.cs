@@ -15,7 +15,7 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                this.Handle = KProcessHacker.Instance.KphOpenType(oa).ToIntPtr();
+                //this.Handle = KProcessHacker.Instance.KphOpenType(oa).ToIntPtr();
             }
             finally
             {

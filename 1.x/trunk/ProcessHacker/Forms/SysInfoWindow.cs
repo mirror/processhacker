@@ -28,16 +28,15 @@ using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Symbols;
 
 namespace ProcessHacker
 {
     public partial class SysInfoWindow : Form
     {
-        private static IntPtr _mmSizeOfPagedPoolInBytes;
-        private static IntPtr _mmMaximumNonPagedPoolInBytes;
+        //private static IntPtr _mmSizeOfPagedPoolInBytes;
+        //private static IntPtr _mmMaximumNonPagedPoolInBytes;
 
-        private Components.Plotter[] _cpuPlotters;
+        private Plotter[] _cpuPlotters;
         private readonly uint _noOfCPUs = Program.ProcessProvider.System.NumberOfProcessors;
         private readonly uint _pages = (uint)Program.ProcessProvider.System.NumberOfPhysicalPages;
         private readonly uint _pageSize = (uint)Program.ProcessProvider.System.PageSize;
@@ -52,22 +51,22 @@ namespace ProcessHacker
             this.Location = Utils.FitRectangle(new Rectangle(Settings.Instance.SysInfoWindowLocation, this.Size), this).Location;
 
             // Load the pool limit addresses.
-            if (_mmSizeOfPagedPoolInBytes == IntPtr.Zero && KProcessHacker.Instance != null)
-            {
-                WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
-                {
-                    try
-                    {
-                        SymbolProvider symbols = new SymbolProvider();
+            //if (_mmSizeOfPagedPoolInBytes == IntPtr.Zero && KProcessHacker.Instance != null)
+            //{
+            //    WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
+            //    {
+            //        try
+            //        {
+            //            SymbolProvider symbols = new SymbolProvider();
 
-                        symbols.LoadModule(Windows.KernelFileName, Windows.KernelBase);
-                        _mmSizeOfPagedPoolInBytes = symbols.GetSymbolFromName("MmSizeOfPagedPoolInBytes").Address.ToIntPtr();
-                        _mmMaximumNonPagedPoolInBytes = symbols.GetSymbolFromName("MmMaximumNonPagedPoolInBytes").Address.ToIntPtr();
-                    }
-                    catch
-                    { }
-                }), "load-mm-addresses");
-            }
+            //            symbols.LoadModule(Windows.KernelFileName, Windows.KernelBase);
+            //            _mmSizeOfPagedPoolInBytes = symbols.GetSymbolFromName("MmSizeOfPagedPoolInBytes").Address.ToIntPtr();
+            //            _mmMaximumNonPagedPoolInBytes = symbols.GetSymbolFromName("MmMaximumNonPagedPoolInBytes").Address.ToIntPtr();
+            //        }
+            //        catch
+            //        { }
+            //    }), "load-mm-addresses");
+            //}
 
             this.LoadStage1();
         }
@@ -231,23 +230,23 @@ namespace ProcessHacker
             int retLength;
 
             // Read the two variables, stored in kernel-mode memory.
-            KProcessHacker.Instance.KphReadVirtualMemoryUnsafe(
-                ProcessHacker.Native.Objects.ProcessHandle.Current,
-                _mmSizeOfPagedPoolInBytes.ToInt32(),
-                &pagedLocal,
-                sizeof(int),
-                out retLength
-                );
-            KProcessHacker.Instance.KphReadVirtualMemoryUnsafe(
-                ProcessHacker.Native.Objects.ProcessHandle.Current,
-                _mmMaximumNonPagedPoolInBytes.ToInt32(),
-                &nonPagedLocal,
-                sizeof(int),
-                out retLength
-                );
+            //KProcessHacker.Instance.KphReadVirtualMemoryUnsafe(
+            //    ProcessHacker.Native.Objects.ProcessHandle.Current,
+            //    _mmSizeOfPagedPoolInBytes.ToInt32(),
+            //    &pagedLocal,
+            //    sizeof(int),
+            //    out retLength
+            //    );
+            //KProcessHacker.Instance.KphReadVirtualMemoryUnsafe(
+            //    ProcessHacker.Native.Objects.ProcessHandle.Current,
+            //    _mmMaximumNonPagedPoolInBytes.ToInt32(),
+            //    &nonPagedLocal,
+            //    sizeof(int),
+            //    out retLength
+            //    );
 
-            paged = pagedLocal;
-            nonPaged = nonPagedLocal;
+            paged = 0;// pagedLocal;
+            nonPaged = 0;// nonPagedLocal;
         }
 
         private void UpdateInfo()
@@ -309,34 +308,34 @@ namespace ProcessHacker
             long pagedLimit = 0;
             long nonPagedLimit = 0;
 
-            if (
-                _mmSizeOfPagedPoolInBytes != IntPtr.Zero &&
-                _mmMaximumNonPagedPoolInBytes != IntPtr.Zero &&
-                KProcessHacker.Instance != null
-                )
-            {
-                try
-                {
-                    int pl, npl;
+            //if (
+            //    _mmSizeOfPagedPoolInBytes != IntPtr.Zero &&
+            //    _mmMaximumNonPagedPoolInBytes != IntPtr.Zero &&
+            //    KProcessHacker.Instance != null
+            //    )
+            //{
+            //    try
+            //    {
+            //        int pl, npl;
 
-                    this.GetPoolLimits(out pl, out npl);
-                    pagedLimit = pl;
-                    nonPagedLimit = npl;
-                }
-                catch
-                { }
-            }
+            //        this.GetPoolLimits(out pl, out npl);
+            //        pagedLimit = pl;
+            //        nonPagedLimit = npl;
+            //    }
+            //    catch
+            //    { }
+            //}
 
             if (pagedLimit != 0)
                 labelKPPL.Text = Utils.FormatSize(pagedLimit);
-            else if (KProcessHacker.Instance == null)
+            else if (KProcessHacker2.Instance == null)
                 labelKPPL.Text = "no driver";
             else
                 labelKPPL.Text = "no symbols";
 
             if (nonPagedLimit != 0)
                 labelKPNPL.Text = Utils.FormatSize(nonPagedLimit);
-            else if (KProcessHacker.Instance == null)
+            else if (KProcessHacker2.Instance == null)
                 labelKPNPL.Text = "no driver";
             else
                 labelKPNPL.Text = "no symbols";

@@ -170,30 +170,29 @@ namespace ProcessHacker.FormHelper
             {
                 // Don't get handles from processes in other session 
                 // if we don't have KPH to reduce freezes.
-                if (KProcessHacker.Instance == null)
+
+                try
                 {
-                    try
+                    if (isCurrentSessionIdCache.ContainsKey(currhandle.ProcessId))
                     {
-                        if (isCurrentSessionIdCache.ContainsKey(currhandle.ProcessId))
-                        {
-                            if (!isCurrentSessionIdCache[currhandle.ProcessId])
-                                return;
-                        }
-                        else
-                        {
-                            bool isCurrentSessionId = Win32.GetProcessSessionId(currhandle.ProcessId) == Program.CurrentSessionId;
-
-                            isCurrentSessionIdCache.Add(currhandle.ProcessId, isCurrentSessionId);
-
-                            if (!isCurrentSessionId)
-                                return;
-                        }
+                        if (!isCurrentSessionIdCache[currhandle.ProcessId])
+                            return;
                     }
-                    catch
+                    else
                     {
-                        return;
+                        bool isCurrentSessionId = Win32.GetProcessSessionId(currhandle.ProcessId) == Program.CurrentSessionId;
+
+                        isCurrentSessionIdCache.Add(currhandle.ProcessId, isCurrentSessionId);
+
+                        if (!isCurrentSessionId)
+                            return;
                     }
                 }
+                catch
+                {
+                    return;
+                }
+
 
                 if (!processHandles.ContainsKey(currhandle.ProcessId))
                     processHandles.Add(currhandle.ProcessId, new ProcessHandle(currhandle.ProcessId, Program.MinProcessGetHandleInformationRights));

@@ -75,8 +75,8 @@ namespace ProcessHackerRestartRecovery
                 ProcessHacker.Program.HackerWindow.ExecuteOnIcons(icon => icon.Dispose());
 
                 // Make sure KPH connection is closed.
-                if (KProcessHacker.Instance != null)
-                    KProcessHacker.Instance.Close();
+                if (KProcessHacker2.Instance != null)
+                    KProcessHacker2.Instance.Close();
             }
             catch { }
 

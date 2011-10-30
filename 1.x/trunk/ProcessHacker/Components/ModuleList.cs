@@ -314,7 +314,7 @@ namespace ProcessHacker.Components
                 {
                     //menuModule.DisableAll();
 
-                    if (KProcessHacker.Instance != null)
+                    //if (KProcessHacker.Instance != null)
                         unloadMenuItem.Enabled = true;
 
                     inspectModuleMenuItem.Enabled = true;

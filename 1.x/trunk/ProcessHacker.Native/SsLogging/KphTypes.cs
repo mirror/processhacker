@@ -58,20 +58,6 @@ namespace ProcessHacker.Native.SsLogging
         Log
     }
 
-    public class KphSsClientEntryHandle : KphHandle
-    {
-        internal KphSsClientEntryHandle(IntPtr handle)
-            : base(handle)
-        { }
-    }
-
-    public class KphSsRuleSetEntryHandle : KphHandle
-    {
-        internal KphSsRuleSetEntryHandle(IntPtr handle)
-            : base(handle)
-        { }
-    }
-
     [StructLayout(LayoutKind.Sequential)]
     public struct KphSsArgumentBlock
     {

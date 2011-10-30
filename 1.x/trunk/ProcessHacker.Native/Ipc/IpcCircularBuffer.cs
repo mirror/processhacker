@@ -28,7 +28,7 @@ using ProcessHacker.Native.Threading;
 
 namespace ProcessHacker.Native.Ipc
 {
-    public unsafe class IpcCircularBuffer
+    public unsafe class IpcCircularBuffer : IDisposable
     {
         [StructLayout(LayoutKind.Sequential)]
         public struct BufferHeader
@@ -180,7 +180,7 @@ namespace ProcessHacker.Native.Ipc
             using (MemoryAlloc data = new MemoryAlloc(size))
             {
                 data.WriteStruct(s);
-                this.Write((MemoryRegion)data);
+                this.Write(data);
             }
         }
 
@@ -224,6 +224,15 @@ namespace ProcessHacker.Native.Ipc
 
             // Release the read semaphore to allow a reader to read one more block.
             _readSemaphore.Release();
+        }
+
+        public void Dispose()
+        {
+            if (_readSemaphore != null)
+                _readSemaphore.Dispose();
+
+            if (_writeSemaphore != null)
+                _writeSemaphore.Dispose();
         }
     }
 }

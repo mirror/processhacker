@@ -184,12 +184,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ClientId
     {
-        public static readonly int SizeOf;
-
-        static ClientId()
-        {
-            SizeOf = Marshal.SizeOf(typeof(ClientId));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(ClientId));
 
         public ClientId(int processId, int threadId)
         {
@@ -1776,12 +1771,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectAttributes : IDisposable
     {
-        public static readonly int SizeOf;
-
-        static ObjectAttributes()
-        {
-            SizeOf = Marshal.SizeOf(typeof(ObjectAttributes));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(ObjectAttributes));
 
         public ObjectAttributes(
             string objectName,
@@ -1798,7 +1788,7 @@ namespace ProcessHacker.Native.Api
             SecurityQualityOfService? securityQos
             )
         {
-            this.Length = ObjectAttributes.SizeOf;
+            this.Length = SizeOf;
             this.RootDirectory = IntPtr.Zero;
             this.ObjectName = IntPtr.Zero;
             this.PtrSecurityDescriptor = IntPtr.Zero;
@@ -1887,15 +1877,22 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectDirectoryInformation
     {
-        public static readonly int SizeOf;
-
-        static ObjectDirectoryInformation()
-        {
-            SizeOf = Marshal.SizeOf(typeof(ObjectDirectoryInformation));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(ObjectDirectoryInformation));
 
         public UnicodeString Name;
         public UnicodeString TypeName;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ObjectHandleFlagInformation
+    {
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(ObjectHandleFlagInformation));
+
+        [MarshalAs(UnmanagedType.Bool)]
+        public bool Inherit;
+                
+        [MarshalAs(UnmanagedType.Bool)]
+        public bool ProtectFromClose;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2109,7 +2106,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessBasicInformation
     {
-        public static readonly int SizeOf;
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(ProcessBasicInformation));
 
         public NtStatus ExitStatus;
         public IntPtr PebBaseAddress;
@@ -2117,11 +2114,6 @@ namespace ProcessHacker.Native.Api
         public int BasePriority;
         public IntPtr UniqueProcessId;
         public IntPtr InheritedFromUniqueProcessId;
-
-        static ProcessBasicInformation()
-        {
-            SizeOf = Marshal.SizeOf(typeof(ProcessBasicInformation));
-        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2134,12 +2126,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessHandleTracingEnable
     {
-        public static readonly int SizeOf;
-
-        static ProcessHandleTracingEnable()
-        {
-            SizeOf = Marshal.SizeOf(typeof(ProcessHandleTracingEnable));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(ProcessHandleTracingEnable));
 
         public int Flags; // No flags. Set to 0.
     }
@@ -2561,7 +2548,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SecurityDescriptorStruct
     {
-        public static readonly int SizeOf;
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(SecurityDescriptorStruct));
 
         public byte Revision;
         public byte Sbz1;
@@ -2570,11 +2557,6 @@ namespace ProcessHacker.Native.Api
         public IntPtr Group; // Sid*
         public IntPtr Sacl; // Acl*
         public IntPtr Dacl; // Acl*
-
-        static SecurityDescriptorStruct()
-        {
-            SizeOf = Marshal.SizeOf(typeof(SecurityDescriptorStruct));
-        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2592,12 +2574,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SecurityQualityOfService
     {
-        public static readonly int SizeOf;
-
-        static SecurityQualityOfService()
-        {
-            SizeOf = Marshal.SizeOf(typeof(SecurityQualityOfService));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(SecurityQualityOfService));
 
         public SecurityQualityOfService(
             SecurityImpersonationLevel impersonationLevel,
@@ -2605,7 +2582,7 @@ namespace ProcessHacker.Native.Api
             bool effectiveOnly
             )
         {
-            this.Length = SecurityQualityOfService.SizeOf;
+            this.Length = SizeOf;
             this.ImpersonationLevel = impersonationLevel;
             this.ContextTrackingMode = dynamicTracking;
             this.EffectiveOnly = effectiveOnly;
@@ -2773,8 +2750,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemHandleInformation
     {
-        public static readonly int HandlesOffset =
-            Marshal.OffsetOf(typeof(SystemHandleInformation), "Handles").ToInt32();
+        public static readonly int HandlesOffset = Marshal.OffsetOf(typeof(SystemHandleInformation), "Handles").ToInt32();
 
         public int NumberOfHandles;
         public SystemHandleEntry Handles;
@@ -2783,12 +2759,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemProcessImageNameInformation
     {
-        public static readonly int SizeOf;
-
-        static SystemProcessImageNameInformation()
-        {
-            SizeOf = Marshal.SizeOf(typeof(SystemProcessImageNameInformation));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(SystemProcessImageNameInformation));
 
         public int ProcessId;
         public UnicodeString ImageName;
@@ -3195,12 +3166,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ThreadBasicInformation
     {
-        public static readonly int SizeOf;
-
-        static ThreadBasicInformation()
-        {
-            SizeOf = Marshal.SizeOf(typeof(ThreadBasicInformation));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(ThreadBasicInformation));
 
         public NtStatus ExitStatus;
         public IntPtr TebBaseAddress;
@@ -3479,12 +3445,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct UnicodeString : IComparable<UnicodeString>, IEquatable<UnicodeString>, IDisposable
     {
-        public static readonly int SizeOf;
-
-        static UnicodeString()
-        {
-            SizeOf = Marshal.SizeOf(typeof(UnicodeString));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(UnicodeString));
 
         public UnicodeString(string str)
         {
@@ -3672,12 +3633,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct VmCountersEx
     {
-        public static readonly int SizeOf;
-
-        static VmCountersEx()
-        {
-            SizeOf = Marshal.SizeOf(typeof(VmCountersEx));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(VmCountersEx));
 
         public IntPtr PeakVirtualSize;
         public IntPtr VirtualSize;
@@ -3696,12 +3652,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct VmCountersEx64
     {
-        public static readonly int SizeOf;
-
-        static VmCountersEx64()
-        {
-            SizeOf = Marshal.SizeOf(typeof(VmCountersEx64));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(VmCountersEx64));
 
         public VmCountersEx64(VmCountersEx vm)
         {

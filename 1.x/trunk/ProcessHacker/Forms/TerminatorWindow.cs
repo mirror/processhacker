@@ -63,7 +63,7 @@ namespace ProcessHacker
             this.AddTest("TD1", "Debugs the process and closes the debug object");
             this.AddTest("TP3", "Terminates the process in kernel-mode (if possible)");
             this.AddTest("TT3", "Terminates the process' threads in kernel-mode (if possible)");
-            if (KProcessHacker.Instance != null)
+            if (KProcessHacker2.Instance != null)
                 this.AddTest("TT4", "Terminates the process' threads using a dangerous kernel-mode method");
             this.AddTest("M1", "Writes garbage to the process' memory regions");
             this.AddTest("M2", "Sets the page protection of the process' memory regions to PAGE_NOACCESS"); 
@@ -210,24 +210,24 @@ namespace ProcessHacker
 
         private void TJ1()
         {
-            if (KProcessHacker.Instance != null)
-            {
-                try
-                {
-                    using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                    {
-                        JobObjectHandle jhandle = phandle.GetJobObject(JobObjectAccess.Query | JobObjectAccess.Terminate);
+            //if (KProcessHacker.Instance != null)
+            //{
+            //    try
+            //    {
+            //        using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+            //        {
+            //            JobObjectHandle jhandle = phandle.GetJobObject(JobObjectAccess.Query | JobObjectAccess.Terminate);
 
-                        // Make sure we're not terminating more than one process
-                        if (jhandle.ProcessIdList.Length == 1)
-                        {
-                            jhandle.Terminate();
-                        }
-                    }
-                }
-                catch
-                { }
-            }
+            //            // Make sure we're not terminating more than one process
+            //            if (jhandle.ProcessIdList.Length == 1)
+            //            {
+            //                jhandle.Terminate();
+            //            }
+            //        }
+            //    }
+            //    catch
+            //    { }
+            //}
 
             using (JobObjectHandle jhandle = JobObjectHandle.Create(JobObjectAccess.AssignProcess | JobObjectAccess.Terminate))
             {

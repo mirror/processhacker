@@ -232,7 +232,7 @@ namespace ProcessHacker
                     // Don't load KPH if we're going to install/uninstall it.
                     !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph")
                     )
-                    KProcessHacker.Instance = new KProcessHacker("KProcessHacker2");
+                    KProcessHacker2.Instance = new KProcessHacker2();
             }
             catch
             { }
@@ -240,12 +240,12 @@ namespace ProcessHacker
             MinProcessQueryRights = OSVersion.MinProcessQueryInfoAccess;
             MinThreadQueryRights = OSVersion.MinThreadQueryInfoAccess;
 
-            if (KProcessHacker.Instance != null)
-            {
-                MinProcessGetHandleInformationRights = MinProcessQueryRights;
-                MinProcessReadMemoryRights = MinProcessQueryRights;
-                MinProcessWriteMemoryRights = MinProcessQueryRights;
-            }
+            //if (KProcessHacker2.Instance != null)
+            //{
+            //    MinProcessGetHandleInformationRights = MinProcessQueryRights;
+            //    MinProcessReadMemoryRights = MinProcessQueryRights;
+            //    MinProcessWriteMemoryRights = MinProcessQueryRights;
+            //}
 
             try
             {
@@ -931,8 +931,8 @@ namespace ProcessHacker
             else
                 info.AppendLine("Settings file: (not initialized)");
 
-            if (KProcessHacker.Instance != null)
-                info.AppendLine("KProcessHacker: " + KProcessHacker.Instance.Features.ToString());
+            if (KProcessHacker2.Instance != null)
+                info.AppendLine("KProcessHacker: " + KProcessHacker2.Instance.Features.ToString());
             else
                 info.AppendLine("KProcessHacker: not running");
 

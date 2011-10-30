@@ -11,8 +11,6 @@
     /// <remarks>This is a managed wrapper over the native LoadLibrary, GetProcAddress, and FreeLibrary calls.</remarks>
     public sealed class NativeLibrary : NativeHandle
     {
-        public WindowsException LastWin32Result { get; private set; }
-
         /// <summary>
         /// LoadLibraryEx constructor to load a dll and be responsible for freeing it.
         /// </summary>
@@ -27,16 +25,12 @@
 
             NtStatus result = Win32.LdrLoadDll(null, (int)flags, ref str, out ptr);
 
-                if (result.IsError())
-                {
-                    //this.LastWin32Result = result.ReturnException();
+            if (result.IsError())
+            {
+                this.MarkAsInvalid();
+            }
 
-                    this.MarkAsInvalid();
-                }
-
-                str.Dispose();
-
-            
+            str.Dispose();
         }
 
         /// <summary>
@@ -102,9 +96,6 @@
 
                 NtStatus result = Win32.LdrGetProcedureAddress(this, functionPtr, 0, out functionPtr);
 
-               //if (result.IsError())
-                   //this.LastWin32Result = result.ReturnException();
-
                 return functionPtr;
             }
         }
@@ -114,9 +105,6 @@
             IntPtr functionPtr;
 
             NtStatus result = Win32.LdrGetProcedureAddress(this, IntPtr.Zero, procedureNumber, out functionPtr);
-
-            //if (result.IsError())
-                //this.LastWin32Result = result.ReturnException();
 
             return functionPtr;
         }

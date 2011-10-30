@@ -89,14 +89,7 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                if (KProcessHacker.Instance != null)
-                {
-                    handle = KProcessHacker.Instance.KphOpenDirectoryObject(access, oa).ToIntPtr();
-                }
-                else
-                {
-                    Win32.NtOpenDirectoryObject(out handle, access, ref oa).ThrowIf();
-                }
+                Win32.NtOpenDirectoryObject(out handle, access, ref oa).ThrowIf();
             }
             finally
             {

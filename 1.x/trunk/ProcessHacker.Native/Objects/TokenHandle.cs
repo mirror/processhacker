@@ -204,17 +204,10 @@ namespace ProcessHacker.Native.Objects
         {
             IntPtr h;
 
-            if (KProcessHacker.Instance != null)
+            if (!Win32.OpenProcessToken(handle, access, out h))
             {
-                h = new IntPtr(KProcessHacker.Instance.KphOpenProcessToken(handle, access));
-            }
-            else
-            {
-                if (!Win32.OpenProcessToken(handle, access, out h))
-                {
-                    this.MarkAsInvalid();
-                    Win32.Throw();
-                }
+                this.MarkAsInvalid();
+                Win32.Throw();
             }
 
             this.Handle = h;

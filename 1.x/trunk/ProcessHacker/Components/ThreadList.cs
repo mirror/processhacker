@@ -351,7 +351,7 @@ namespace ProcessHacker.Components
         {
             if (
                 // If KProcessHacker isn't available, hide Force Terminate.
-                KProcessHacker.Instance != null &&
+                //KProcessHacker.Instance != null &&
                 // Terminating a system thread is the same as Force Terminate, 
                 // so hide it if we're viewing PID 4.
                 _pid != 4
@@ -623,10 +623,7 @@ namespace ProcessHacker.Components
                 return;
 
             // Can't view system thread stacks if KPH isn't present.
-            if (
-                _pid == 4 && 
-                KProcessHacker.Instance == null
-                )
+            if (_pid == 4)
             {
                 PhUtils.ShowError(
                     "Process Hacker cannot view system thread stacks without KProcessHacker. " + 
@@ -654,18 +651,10 @@ namespace ProcessHacker.Components
                 ProcessHandle phandle = null;
 
                 // If we have KPH, we don't need much access.
-                if (KProcessHacker.Instance != null)
-                {
-                    if ((_provider.ProcessAccess & ProcessAccess.QueryLimitedInformation) != 0 || 
-                        (_provider.ProcessAccess & ProcessAccess.QueryInformation) != 0)
-                        phandle = _provider.ProcessHandle;
-                }
-                else
-                {
-                    if ((_provider.ProcessAccess & (ProcessAccess.QueryInformation | ProcessAccess.VmRead)) != 0)
-                        phandle = _provider.ProcessHandle;
-                }
-
+                if ((_provider.ProcessAccess & ProcessAccess.QueryLimitedInformation) != 0 ||
+                    (_provider.ProcessAccess & ProcessAccess.QueryInformation) != 0)
+                    phandle = _provider.ProcessHandle;
+              
                 // If we have KPH load kernel modules so we can get the kernel-mode stack.
                 try
                 {
@@ -695,7 +684,7 @@ namespace ProcessHacker.Components
 
             // Special case for system threads.
             if (
-                KProcessHacker.Instance != null &&
+               // KProcessHacker.Instance != null &&
                 _pid == 4
                 )
             {
@@ -734,7 +723,6 @@ namespace ProcessHacker.Components
                 return;
 
             if (Program.ElevationType == TokenElevationType.Limited && 
-                KProcessHacker.Instance == null &&
                 Settings.Instance.ElevationLevel != (int)ElevationLevel.Never)
             {
                 try
@@ -820,16 +808,13 @@ namespace ProcessHacker.Components
             //        return;
             //}
 
-            if (Program.ElevationType == TokenElevationType.Limited &&
-                KProcessHacker.Instance == null &&
-                Settings.Instance.ElevationLevel != (int)ElevationLevel.Never)
+            if (Program.ElevationType == TokenElevationType.Limited && Settings.Instance.ElevationLevel != (int)ElevationLevel.Never)
             {
                 try
                 {
                     foreach (ListViewItem item in listThreads.SelectedItems)
                     {
-                        using (var thandle = new ThreadHandle(int.Parse(item.SubItems[0].Text),
-                            ThreadAccess.SuspendResume))
+                        using (var thandle = new ThreadHandle(int.Parse(item.SubItems[0].Text), ThreadAccess.SuspendResume))
                         { }
                     }
                 }
@@ -840,8 +825,7 @@ namespace ProcessHacker.Components
                     foreach (ListViewItem item in listThreads.SelectedItems)
                         objects += item.SubItems[0].Text + ",";
 
-                    Program.StartProcessHackerAdmin("-e -type thread -action suspend -obj \"" +
-                        objects + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
+                    Program.StartProcessHackerAdmin("-e -type thread -action suspend -obj \"" + objects + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
 
                     return;
                 }
@@ -877,9 +861,7 @@ namespace ProcessHacker.Components
             //        return;
             //}
 
-            if (Program.ElevationType == TokenElevationType.Limited &&
-                KProcessHacker.Instance == null &&
-                Settings.Instance.ElevationLevel != (int)ElevationLevel.Never)
+            if (Program.ElevationType == TokenElevationType.Limited && Settings.Instance.ElevationLevel != (int)ElevationLevel.Never)
             {
                 try
                 {

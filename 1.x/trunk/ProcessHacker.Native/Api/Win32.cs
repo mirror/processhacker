@@ -95,7 +95,12 @@ namespace ProcessHacker.Native.Api
         /// </summary>
         public static void Throw()
         {
-            Throw(GetLastErrorCode());
+            Win32Error last = GetLastErrorCode();
+
+            if (last != Win32Error.Success)
+            {
+                Throw(last);
+            }
         }
 
         public static void Throw(NtStatus status)
@@ -148,34 +153,15 @@ namespace ProcessHacker.Native.Api
             DuplicateOptions options
             )
         {
-            if (KProcessHacker.Instance != null)
-            {
-                int target;
-
-                KProcessHacker.Instance.KphDuplicateObject(
-                    sourceProcessHandle.ToInt32(),
-                    sourceHandle.ToInt32(),
-                    targetProcessHandle.ToInt32(),
-                    out target,
-                    desiredAccess,
-                    handleAttributes,
-                    options
-                    );
-
-                targetHandle = new IntPtr(target);
-            }
-            else
-            {
-                NtDuplicateObject(
-                    sourceProcessHandle,
-                    sourceHandle,
-                    targetProcessHandle,
-                    out targetHandle,
-                    desiredAccess,
-                    handleAttributes,
-                    options
-                    ).ThrowIf();
-            }
+            NtDuplicateObject(
+                sourceProcessHandle,
+                sourceHandle,
+                targetProcessHandle,
+                out targetHandle,
+                desiredAccess,
+                handleAttributes,
+                options
+                ).ThrowIf();
         }
 
         #endregion
@@ -288,13 +274,11 @@ namespace ProcessHacker.Native.Api
         {
             IntPtr processes;
             int count;
-            int[] pids;
-            IntPtr[] sids;
 
             WTSEnumerateProcesses(IntPtr.Zero, 0, 1, out processes, out count);
 
-            pids = new int[count];
-            sids = new IntPtr[count];
+            int[] pids = new int[count];
+            IntPtr[] sids = new IntPtr[count];
 
             WtsMemoryAlloc data = new WtsMemoryAlloc(processes);
             WtsProcessInfo* dataP = (WtsProcessInfo*)data.Memory;
@@ -305,7 +289,12 @@ namespace ProcessHacker.Native.Api
                 sids[i] = dataP[i].Sid;
             }
 
-            return new WtsEnumProcessesFastData() { PIDs = pids, SIDs = sids, Memory = data };
+            return new WtsEnumProcessesFastData
+            {
+                PIDs = pids,
+                SIDs = sids,
+                Memory = data
+            };
         }
 
         #endregion

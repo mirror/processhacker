@@ -166,8 +166,6 @@ namespace ProcessHacker.Native.SsLogging
         private readonly SemaphoreHandle _readSemaphore;
         private readonly SemaphoreHandle _writeSemaphore;
         private int _cursor;
-        private readonly KphSsClientEntryHandle _clientEntryHandle;
-        private readonly KphSsRuleSetEntryHandle _ruleSetEntryHandle;
 
         public SsLogger(int bufferedBlockCount, bool includeAll)
         {
@@ -182,57 +180,57 @@ namespace ProcessHacker.Native.SsLogging
             _writeSemaphore = SemaphoreHandle.Create(SemaphoreAccess.All, bufferedBlockCount, bufferedBlockCount);
 
             // Create the client entry.
-            _clientEntryHandle = KProcessHacker.Instance.SsCreateClientEntry(
-                ProcessHandle.Current,
-                _readSemaphore,
-                _writeSemaphore,
-                _buffer,
-                _buffer.Size
-                );
+            //_clientEntryHandle = KProcessHacker.Instance.SsCreateClientEntry(
+            //    ProcessHandle.Current,
+            //    _readSemaphore,
+            //    _writeSemaphore,
+            //    _buffer,
+            //    _buffer.Size
+            //    );
 
             // Create the ruleset entry.
-            _ruleSetEntryHandle = KProcessHacker.Instance.SsCreateRuleSetEntry(
-                _clientEntryHandle,
-                includeAll ? KphSsFilterType.Include : KphSsFilterType.Exclude,
-                KphSsRuleSetAction.Log
-                );
+            //_ruleSetEntryHandle = KProcessHacker.Instance.SsCreateRuleSetEntry(
+            //    _clientEntryHandle,
+            //    includeAll ? KphSsFilterType.Include : KphSsFilterType.Exclude,
+            //    KphSsRuleSetAction.Log
+            //    );
         }
 
-        public IntPtr AddNumberRule(FilterType filterType, int number)
-        {
-            return KProcessHacker.Instance.SsAddNumberRule(
-                _ruleSetEntryHandle,
-                filterType.ToKphSs(),
-                number
-                );
-        }
+        //public IntPtr AddNumberRule(FilterType filterType, int number)
+        //{
+        //    return KProcessHacker.Instance.SsAddNumberRule(
+        //        _ruleSetEntryHandle,
+        //        filterType.ToKphSs(),
+        //        number
+        //        );
+        //}
 
-        public IntPtr AddPreviousModeRule(FilterType filterType, KProcessorMode previousMode)
-        {
-            return KProcessHacker.Instance.SsAddPreviousModeRule(
-                _ruleSetEntryHandle,
-                filterType.ToKphSs(),
-                previousMode
-                );
-        }
+        //public IntPtr AddPreviousModeRule(FilterType filterType, KProcessorMode previousMode)
+        //{
+        //    return KProcessHacker.Instance.SsAddPreviousModeRule(
+        //        _ruleSetEntryHandle,
+        //        filterType.ToKphSs(),
+        //        previousMode
+        //        );
+        //}
 
-        public IntPtr AddProcessIdRule(FilterType filterType, int pid)
-        {
-            return KProcessHacker.Instance.SsAddProcessIdRule(
-                _ruleSetEntryHandle,
-                filterType.ToKphSs(),
-                pid.ToIntPtr()
-                );
-        }
+        //public IntPtr AddProcessIdRule(FilterType filterType, int pid)
+        //{
+        //    return KProcessHacker.Instance.SsAddProcessIdRule(
+        //        _ruleSetEntryHandle,
+        //        filterType.ToKphSs(),
+        //        pid.ToIntPtr()
+        //        );
+        //}
 
-        public IntPtr AddThreadIdRule(FilterType filterType, int tid)
-        {
-            return KProcessHacker.Instance.SsAddProcessIdRule(
-                _ruleSetEntryHandle,
-                filterType.ToKphSs(),
-                tid.ToIntPtr()
-                );
-        }
+        //public IntPtr AddThreadIdRule(FilterType filterType, int tid)
+        //{
+        //    return KProcessHacker.Instance.SsAddProcessIdRule(
+        //        _ruleSetEntryHandle,
+        //        filterType.ToKphSs(),
+        //        tid.ToIntPtr()
+        //        );
+        //}
 
         private void BufferWorkerThreadStart()
         {
@@ -299,20 +297,23 @@ namespace ProcessHacker.Native.SsLogging
             KphSsClientInformation info;
             int retLength;
 
-            KProcessHacker.Instance.SsQueryClientEntry(
-                _clientEntryHandle,
-                out info,
-                KphSsClientInformation.SizeOf,
-                out retLength
-                );
+            //KProcessHacker.Instance.SsQueryClientEntry(
+            //    _clientEntryHandle,
+            //    out info,
+            //    KphSsClientInformation.SizeOf,
+            //    out retLength
+            //    );
 
-            blocksWritten = info.NumberOfBlocksWritten;
-            blocksDropped = info.NumberOfBlocksDropped;
+            //blocksWritten = info.NumberOfBlocksWritten;
+            //blocksDropped = info.NumberOfBlocksDropped;
+            
+            blocksWritten = 0;
+            blocksDropped = 0;
         }
 
         public void RemoveRule(IntPtr handle)
         {
-            KProcessHacker.Instance.SsRemoveRule(_ruleSetEntryHandle, handle);
+            //KProcessHacker.Instance.SsRemoveRule(_ruleSetEntryHandle, handle);
         }
 
         public void Start()
@@ -321,8 +322,8 @@ namespace ProcessHacker.Native.SsLogging
             {
                 if (!_started)
                 {
-                    KProcessHacker.Instance.SsRef();
-                    KProcessHacker.Instance.SsEnableClientEntry(_clientEntryHandle, true);
+                    //KProcessHacker.Instance.SsRef();
+                    //KProcessHacker.Instance.SsEnableClientEntry(_clientEntryHandle, true);
                     _started = true;
 
                     _terminating = false;
@@ -345,8 +346,8 @@ namespace ProcessHacker.Native.SsLogging
             {
                 if (_started)
                 {
-                    KProcessHacker.Instance.SsEnableClientEntry(_clientEntryHandle, false);
-                    KProcessHacker.Instance.SsUnref();
+                    //KProcessHacker.Instance.SsEnableClientEntry(_clientEntryHandle, false);
+                    //KProcessHacker.Instance.SsUnref();
                     _started = false;
 
                     // Tell the worker thread to stop.

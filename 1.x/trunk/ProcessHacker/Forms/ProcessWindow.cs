@@ -735,24 +735,24 @@ namespace ProcessHacker
             textProtected.Enabled = true;
             buttonEditProtected.Enabled = true;
 
-            if (KProcessHacker.Instance != null && OSVersion.HasProtectedProcesses)
-            {
-                try
-                {
-                    textProtected.Text = KProcessHacker.Instance.GetProcessProtected(_pid) ? "Protected" : "Not Protected";
-                }
-                catch (Exception ex)
-                {
-                    textProtected.Text = "(" + ex.Message + ")";
-                    buttonEditProtected.Enabled = false;
-                }
-            }
-            else
-            {
-                labelProtected.Enabled = false;
-                textProtected.Enabled = false;
-                buttonEditProtected.Enabled = false;
-            }
+            //if (KProcessHacker.Instance != null && OSVersion.HasProtectedProcesses)
+            //{
+            //    try
+            //    {
+            //        textProtected.Text = KProcessHacker.Instance.GetProcessProtected(_pid) ? "Protected" : "Not Protected";
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        textProtected.Text = "(" + ex.Message + ")";
+            //        buttonEditProtected.Enabled = false;
+            //    }
+            //}
+            //else
+            //{
+
+            labelProtected.Enabled = false;
+            textProtected.Enabled = false;
+            buttonEditProtected.Enabled = false;
         }
 
         public void UpdateDepStatus()
@@ -802,10 +802,7 @@ namespace ProcessHacker
             }
 
             // Can't set DEP status on processes in other sessions without KPH.
-            if (
-                KProcessHacker.Instance == null && 
-                _processItem.SessionId != Program.CurrentSessionId
-                )
+            //if (KProcessHacker.Instance == null && _processItem.SessionId != Program.CurrentSessionId)
                 buttonEditDEP.Enabled = false;
         }
 
@@ -1017,7 +1014,7 @@ namespace ProcessHacker
 
                     if (picker.ShowDialog() == DialogResult.OK)
                     {
-                        KProcessHacker.Instance.SetProcessProtected(_pid, string.Equals(picker.SelectedItem, "Protect", StringComparison.OrdinalIgnoreCase));
+                        //KProcessHacker.Instance.SetProcessProtected(_pid, string.Equals(picker.SelectedItem, "Protect", StringComparison.OrdinalIgnoreCase));
                         this.UpdateProtected();
                     }
                 }

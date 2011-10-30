@@ -73,23 +73,7 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    try
-                    {
-                        _phandle = new ProcessHandle(_pid,
-                            ProcessAccess.QueryInformation | ProcessAccess.VmRead
-                            );
-                    }
-                    catch
-                    {
-                        if (KProcessHacker.Instance != null)
-                        {
-                            _phandle = new ProcessHandle(_pid, Program.MinProcessReadMemoryRights);
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
+                    _phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead);
                 }
             }
             catch (Exception ex)
@@ -103,23 +87,7 @@ namespace ProcessHacker
 
             try
             {
-                try
-                {
-                    _thandle = new ThreadHandle(_tid, ThreadAccess.GetContext | ThreadAccess.SuspendResume);
-                }
-                catch
-                {
-                    if (KProcessHacker.Instance != null)
-                    {
-                        _thandle = new ThreadHandle(_tid,
-                            Program.MinThreadQueryRights | ThreadAccess.SuspendResume
-                            );
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _thandle = new ThreadHandle(_tid, ThreadAccess.GetContext | ThreadAccess.SuspendResume);
             }
             catch (Exception ex)
             {
@@ -171,9 +139,9 @@ namespace ProcessHacker
                 try
                 {
                     // Process the kernel-mode stack (if KPH is present).
-                    if (KProcessHacker.Instance != null)
+                    //if (KProcessHacker.Instance != null)
                     {
-                        this.WalkKernelStack();
+                        //this.WalkKernelStack();
                     }
 
                     // Process the user-mode stack.

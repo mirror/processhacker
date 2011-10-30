@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Windows.Forms;     
-using ProcessHacker.Native;     
-using ProcessHacker.Native.Objects;
+using System.Windows.Forms;
 using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
@@ -23,19 +21,19 @@ namespace ProcessHacker
             ProcessAccess processAccess;
             ThreadAccess threadAccess;
 
-            if (ProtectQuery(_pid, out allowKernelMode, out processAccess, out threadAccess))
-            {
-                checkProtect.Checked = _isProtected = true;
-                checkDontAllowKernelMode.Checked = !allowKernelMode;
-            }
+            //if (ProtectQuery(_pid, out allowKernelMode, out processAccess, out threadAccess))
+            //{
+            //    checkProtect.Checked = _isProtected = true;
+            //    checkDontAllowKernelMode.Checked = !allowKernelMode;
+            //}
 
             foreach (string value in Enum.GetNames(typeof(ProcessAccess)))
             {
                 if (value == "All")
                     continue;
 
-                listProcessAccess.Items.Add(value,
-                    (processAccess & (ProcessAccess)Enum.Parse(typeof(ProcessAccess), value)) != 0);
+                //listProcessAccess.Items.Add(value,
+                    //(processAccess & (ProcessAccess)Enum.Parse(typeof(ProcessAccess), value)) != 0);
             }
 
             foreach (string value in Enum.GetNames(typeof(ThreadAccess)))
@@ -43,31 +41,31 @@ namespace ProcessHacker
                 if (value == "All")
                     continue;
 
-                listThreadAccess.Items.Add(value,
-                    (threadAccess & (ThreadAccess)Enum.Parse(typeof(ThreadAccess), value)) != 0);
+                //listThreadAccess.Items.Add(value,
+                    //(threadAccess & (ThreadAccess)Enum.Parse(typeof(ThreadAccess), value)) != 0);
             }
 
             checkProtect_CheckedChanged(null, null);
         }
 
-        private bool ProtectQuery(int pid, out bool allowKernelMode, out ProcessAccess processAccess, out ThreadAccess threadAccess)
-        {
-            try
-            {
-                using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
-                    KProcessHacker.Instance.ProtectQuery(phandle, out allowKernelMode, out processAccess, out threadAccess);
+        //private bool ProtectQuery(int pid, out bool allowKernelMode, out ProcessAccess processAccess, out ThreadAccess threadAccess)
+        //{
+        //    try
+        //    {
+                //using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                    //KProcessHacker.Instance.ProtectQuery(phandle, out allowKernelMode, out processAccess, out threadAccess);
 
-                return true;
-            }
-            catch
-            {
-                allowKernelMode = true;
-                processAccess = 0;
-                threadAccess = 0;
+        //        return true;
+        //    }
+        //    catch
+        //    {
+        //        allowKernelMode = true;
+        //        processAccess = 0;
+        //        threadAccess = 0;
 
-                return false;
-            }
-        }
+        //        return false;
+        //    }
+        //}
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
@@ -81,8 +79,8 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                        KProcessHacker.Instance.ProtectRemove(phandle);
+                    //using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                        //KProcessHacker.Instance.ProtectRemove(phandle);
                 }
                 catch
                 { }
@@ -101,13 +99,13 @@ namespace ProcessHacker
 
                 try
                 {
-                    using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                        KProcessHacker.Instance.ProtectAdd(
-                            phandle,
-                            !checkDontAllowKernelMode.Checked,
-                            processAccess, 
-                            threadAccess
-                            );
+                    //using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                        //KProcessHacker.Instance.ProtectAdd(
+                            //phandle,
+                            //!checkDontAllowKernelMode.Checked,
+                            //processAccess, 
+                            //threadAccess
+                            //);
                 }
                 catch
                 { }

@@ -130,7 +130,7 @@ namespace ProcessHacker.Common
         /// <returns>True if the array contains the value, otherwise false.</returns>
         public static bool Contains<T>(this T[] array, T value)
         {
-            return Array.IndexOf<T>(array, value) != -1;
+            return Array.IndexOf(array, value) != -1;
         }
 
         /// <summary>
@@ -195,8 +195,8 @@ namespace ProcessHacker.Common
         {
             if (s.Length <= len)
                 return s;
-            else
-                return s.Substring(0, len - 4) + " ...";
+            
+            return s.Substring(0, len - 4) + " ...";
         }
 
         /// <summary>
@@ -213,19 +213,6 @@ namespace ProcessHacker.Common
                 sb.Append((char)('A' + r.Next(25)));
 
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Clears and cleans up resources held by the menu items.
-        /// </summary>
-        public static void DisposeAndClear(this Menu.MenuItemCollection items)
-        {
-            //foreach (MenuItem item in items)
-            //{
-            //    item.Dispose();
-            //}
-
-            items.Clear();
         }
 
         /// <summary>
@@ -534,7 +521,7 @@ namespace ProcessHacker.Common
             double months = span.TotalDays * 12 / 365;
             double years = months / 12;
             double centuries = years / 100;
-            string str = "";
+            string str;
 
             // Start from the most general time unit and see if they can be used 
             // without any fractional component.
@@ -618,7 +605,7 @@ namespace ProcessHacker.Common
         public static string FormatSize(uint size)
         {
             int i = 0;
-            double s = (double)size;
+            double s = size;
 
             while (s > 1024 && i < SizeUnitNames.Length && i < UnitSpecifier)
             {
@@ -657,7 +644,7 @@ namespace ProcessHacker.Common
         public static string FormatSize(ulong size)
         {
             int i = 0;
-            double s = (double)size;
+            double s = size;
 
             while (s > 1024 && i < SizeUnitNames.Length && i < UnitSpecifier)
             {
@@ -1121,7 +1108,7 @@ namespace ProcessHacker.Common
             if (s.Read(buffer, 0, length) == 0)
                 throw new EndOfStreamException();
 
-            return System.Text.Encoding.ASCII.GetString(buffer);
+            return Encoding.ASCII.GetString(buffer);
         }
 
         public static uint ReadUInt32(Stream s, Endianness type)
@@ -1158,7 +1145,7 @@ namespace ProcessHacker.Common
                 if (b == 0 && b2 == 0)
                     break;
 
-                str.Append(Encoding.Unicode.GetChars(new byte[] { (byte)b, (byte)b2 }));
+                str.Append(Encoding.Unicode.GetChars(new[] { (byte)b, (byte)b2 }));
             }
 
             return str.ToString();
@@ -1187,7 +1174,7 @@ namespace ProcessHacker.Common
                 if (b2 == -1)
                     break;
 
-                str.Append(Encoding.Unicode.GetChars(new byte[] { (byte)b, (byte)b2 }));
+                str.Append(Encoding.Unicode.GetChars(new[] { (byte)b, (byte)b2 }));
                 i += 2;
             }
 
@@ -1324,6 +1311,7 @@ namespace ProcessHacker.Common
         /// Calculates the size of a structure.
         /// </summary>
         /// <param name="alignment">A power-of-two whole-structure alignment to apply.</param>
+        /// <param name="size"></param>
         /// <returns>The size of the structure.</returns>
         public static int SizeOf(int alignment, int size)
         {
@@ -1393,17 +1381,14 @@ namespace ProcessHacker.Common
 
         public static int ToInt32(this byte[] data, Endianness type)
         {
-            if (type == Endianness.Little)
+            switch (type)
             {
-                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
-            }
-            else if (type == Endianness.Big)
-            {
-                return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | (data[3]);
-            }
-            else
-            {
-                throw new ArgumentException();
+                case Endianness.Little:
+                    return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
+                case Endianness.Big:
+                    return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | (data[3]);
+                default:
+                    throw new ArgumentException();
             }
         }
 
@@ -1414,19 +1399,16 @@ namespace ProcessHacker.Common
 
         public static long ToInt64(this byte[] data, Endianness type)
         {
-            if (type == Endianness.Little)
+            switch (type)
             {
-                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24) |
-                    (data[4] << 32) | (data[5] << 40) | (data[6] << 48) | (data[7] << 56);
-            }
-            else if (type == Endianness.Big)
-            {
-                return (data[0] << 56) | (data[1] << 48) | (data[2] << 40) | (data[3] << 32) |
-                    (data[4] << 24) | (data[5] << 16) | (data[6] << 8) | (data[7]);
-            }
-            else
-            {
-                throw new ArgumentException();
+                case Endianness.Little:
+                    return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24) |
+                           (data[4] << 32) | (data[5] << 40) | (data[6] << 48) | (data[7] << 56);
+                case Endianness.Big:
+                    return (data[0] << 56) | (data[1] << 48) | (data[2] << 40) | (data[3] << 32) |
+                           (data[4] << 24) | (data[5] << 16) | (data[6] << 8) | (data[7]);
+                default:
+                    throw new ArgumentException();
             }
         }
 

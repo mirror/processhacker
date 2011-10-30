@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ProcessHacker.Native.Mfs
 {
+    [Serializable]
     public class MfsException : Exception
     {
         public MfsException()
-            : base()
         { }
 
         public MfsException(string message)
@@ -19,6 +17,7 @@ namespace ProcessHacker.Native.Mfs
         { }
     }
 
+    [Serializable]
     public class MfsInvalidFileSystemException : MfsException
     {
         public MfsInvalidFileSystemException()
@@ -33,7 +32,8 @@ namespace ProcessHacker.Native.Mfs
             : base(message, innerException)
         { }
     }
-
+       
+    [Serializable]
     public class MfsInvalidOperationException : MfsException
     {
         public MfsInvalidOperationException()

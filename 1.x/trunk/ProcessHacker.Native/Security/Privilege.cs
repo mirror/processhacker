@@ -121,8 +121,7 @@ namespace ProcessHacker.Native.Security
         {
             get
             {
-                return (_attributes & SePrivilegeAttributes.Disabled)
-                    != SePrivilegeAttributes.Disabled;
+                return (_attributes & SePrivilegeAttributes.Disabled)!= SePrivilegeAttributes.Disabled;
             }
             set
             {
@@ -134,7 +133,7 @@ namespace ProcessHacker.Native.Security
         {
             get
             {
-                if (_displayName == null)
+                if (string.IsNullOrEmpty(_displayName))
                 {
                     _displayName = LsaPolicyHandle.LookupPolicyHandle.LookupPrivilegeDisplayName(this.Name);
                 }
@@ -178,7 +177,7 @@ namespace ProcessHacker.Native.Security
         {
             get
             {
-                if (_name == null)
+                if (string.IsNullOrEmpty(_name))
                 {
                     _name = LsaPolicyHandle.LookupPolicyHandle.LookupPrivilegeName(_luid);
                 }

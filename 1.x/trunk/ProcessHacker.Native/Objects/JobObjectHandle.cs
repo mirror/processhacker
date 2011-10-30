@@ -67,15 +67,15 @@ namespace ProcessHacker.Native.Objects
         {
             try
             {
-                return new IntPtr(KProcessHacker.Instance.KphOpenProcessJob(processHandle, access));
+                return KProcessHacker2.Instance.KphOpenProcessJob(processHandle, (TokenAccess)access);
             }
             catch (WindowsException)
             {
                 // Use KPH to set the handle's granted access.
-                IntPtr handle = new IntPtr(KProcessHacker.Instance.KphOpenProcessJob(processHandle, (JobObjectAccess)StandardRights.Synchronize));
+                IntPtr handle = KProcessHacker2.Instance.KphOpenProcessJob(processHandle, (TokenAccess)StandardRights.Synchronize);
                 
-                if (handle != IntPtr.Zero)
-                    KProcessHacker.Instance.KphSetHandleGrantedAccess(handle, (int)access);
+                //if (handle != IntPtr.Zero)
+                    //KProcessHacker2.Instance.KphSetHandleGrantedAccess(handle, (int)access);
 
                 return handle;
             }

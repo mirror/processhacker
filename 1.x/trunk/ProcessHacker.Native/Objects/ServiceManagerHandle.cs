@@ -60,15 +60,25 @@ namespace ProcessHacker.Native.Objects
                 ServiceErrorControl.Ignore, binaryPath, null, null, null);
         }
 
-        public ServiceHandle CreateService(string name, string displayName,
-            ServiceType type, ServiceStartType startType, ServiceErrorControl errorControl,
-            string binaryPath, string group, string accountName, string password)
+        public ServiceHandle CreateService(string name, string displayName, ServiceType type, ServiceStartType startType, ServiceErrorControl errorControl, string binaryPath, string group, string accountName, string password)
         {
-            IntPtr service;
+            IntPtr service = Win32.CreateService(
+                this, 
+                name, 
+                displayName, 
+                ServiceAccess.All,
+                type, 
+                startType, 
+                errorControl, 
+                binaryPath, 
+                group,
+                IntPtr.Zero, 
+                IntPtr.Zero, 
+                accountName, 
+                password
+                );
 
-            if ((service = Win32.CreateService(this, name, displayName, ServiceAccess.All,
-                type, startType, errorControl, binaryPath, group,
-                IntPtr.Zero, IntPtr.Zero, accountName, password)) == IntPtr.Zero)
+            if (service == IntPtr.Zero)
                 Win32.Throw();
 
             return new ServiceHandle(service, true);

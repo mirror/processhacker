@@ -59,6 +59,7 @@ namespace ProcessHacker
         public bool IsGuiThread;
         public bool JustResolved;
 
+        public ThreadHandle ThreadQueryHandle;
         public ThreadHandle ThreadQueryLimitedHandle;
     }
 
@@ -120,16 +121,8 @@ namespace ProcessHacker
             {
                 try
                 {
-                    if (KProcessHacker.Instance != null)
-                    {
-                        _processAccess = Program.MinProcessReadMemoryRights;
-                        _processHandle = new ProcessHandle(_pid, _processAccess);
-                    }
-                    else
-                    {
-                        _processAccess = Program.MinProcessQueryRights;
-                        _processHandle = new ProcessHandle(_pid, _processAccess);
-                    }
+                    _processAccess = Program.MinProcessQueryRights;
+                    _processHandle = new ProcessHandle(_pid, _processAccess);
                 }
                 catch (WindowsException ex)
                 {
@@ -159,8 +152,8 @@ namespace ProcessHacker
             if (Interlocked.CompareExchange(ref _kernelSymbolsLoaded, 1, 0) == 1)
                 return;
 
-            if (KProcessHacker.Instance != null || force)
-                _symbols.LoadKernelModules();
+            //if (KProcessHacker.Instance != null || force)
+                //_symbols.LoadKernelModules();
         }
 
         private void LoadSymbols()
@@ -405,6 +398,7 @@ namespace ProcessHacker
 
                     try
                     {
+                        item.ThreadQueryHandle = new ThreadHandle(tid, OSVersion.MinThreadQueryInfoAccess);
                         item.ThreadQueryLimitedHandle = new ThreadHandle(tid, Program.MinThreadQueryRights);
 
                         try
@@ -413,17 +407,18 @@ namespace ProcessHacker
                             item.Priority = item.ThreadQueryLimitedHandle.GetBasePriorityWin32().ToString();
                         }
                         catch
-                        { }
-
-                        if (KProcessHacker.Instance != null)
                         {
-                            try
-                            {
-                                item.IsGuiThread = KProcessHacker.Instance.KphGetThreadWin32Thread(item.ThreadQueryLimitedHandle) != 0;
-                            }
-                            catch
-                            { }
                         }
+
+                        //if (KProcessHacker.Instance != null)
+                        //{
+                        //    try
+                        //    {
+                        //        item.IsGuiThread = KProcessHacker.Instance.KphGetThreadWin32Thread(item.ThreadQueryLimitedHandle) != 0;
+                        //    }
+                        //    catch
+                        //    { }
+                        //}
 
                         if (OSVersion.HasCycleTime)
                         {
@@ -432,37 +427,17 @@ namespace ProcessHacker
                                 item.Cycles = item.ThreadQueryLimitedHandle.GetCycleTime();
                             }
                             catch
-                            { }
-                        }
-                    }
-                    catch
-                    { }
-
-                    if (KProcessHacker.Instance != null && item.ThreadQueryLimitedHandle != null)
-                    {
-                        try
-                        {
-                            item.StartAddressI =
-                                KProcessHacker.Instance.GetThreadStartAddress(item.ThreadQueryLimitedHandle).ToIntPtr();
-                        }
-                        catch
-                        { }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            using (ThreadHandle thandle =
-                                new ThreadHandle(tid, ThreadAccess.QueryInformation))
                             {
-                                item.StartAddressI = thandle.GetWin32StartAddress();
                             }
                         }
-                        catch
-                        {
-                            item.StartAddressI = t.StartAddress;
-                        }
+
+                        item.StartAddressI = item.ThreadQueryLimitedHandle.GetWin32StartAddress();
                     }
+                    catch
+                    {
+                        item.StartAddressI = t.StartAddress;
+                    }
+
 
                     if (_moduleLoadCompletedEvent.Wait(0))
                     {
@@ -504,16 +479,6 @@ namespace ProcessHacker
                     }
                     catch
                     { }
-
-                    if (KProcessHacker.Instance != null)
-                    {
-                        try
-                        {
-                            newitem.IsGuiThread = KProcessHacker.Instance.KphGetThreadWin32Thread(newitem.ThreadQueryLimitedHandle) != 0;
-                        }
-                        catch
-                        { }
-                    }
 
                     if (OSVersion.HasCycleTime)
                     {

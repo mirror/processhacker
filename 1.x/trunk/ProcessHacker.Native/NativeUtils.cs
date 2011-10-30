@@ -242,7 +242,7 @@ namespace ProcessHacker.Native
 
             try
             {
-                return new NativeHandle(KProcessHacker.Instance.KphOpenNamedObject(access, oa).ToIntPtr(), true);
+                return null;// new NativeHandle(KProcessHacker.Instance.KphOpenNamedObject(access, oa).ToIntPtr(), true);
             }
             finally
             {
