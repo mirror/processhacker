@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -66,8 +65,6 @@ namespace ProcessHacker.Native.Objects
         {
             return new TimerHandle(handle, false);
         }
-
-        private TimerApcRoutine _routine;
 
         private TimerHandle(IntPtr handle, bool owned)
             : base(handle, owned)
@@ -210,7 +207,6 @@ namespace ProcessHacker.Native.Objects
             bool previousState;
 
             // Keep the APC routine alive.
-            _routine = routine;
 
             Win32.NtSetTimer(
                 this,

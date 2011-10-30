@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Objects;
 
@@ -129,8 +128,10 @@ namespace ProcessHacker
                 throw new ArgumentNullException("dictionary");
 
             _dictionary = dictionary;
-            _listEntry = new LinkedListEntry<IProvider>();
-            _listEntry.Value = this;
+            _listEntry = new LinkedListEntry<IProvider>
+            {
+                Value = this
+            };
         }
 
         protected override void DisposeObject(bool disposing)

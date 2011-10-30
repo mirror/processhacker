@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ProcessHacker.Common
+﻿namespace ProcessHacker.Common
 {
     public static class LibC
     {

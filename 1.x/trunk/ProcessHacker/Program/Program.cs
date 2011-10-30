@@ -60,7 +60,10 @@ namespace ProcessHacker
         /// <summary>
         /// The Results Window ID Generator
         /// </summary>
-        public static IdGenerator ResultsIds = new IdGenerator() { Sort = true };
+        public static IdGenerator ResultsIds = new IdGenerator
+        { 
+            Sort = true 
+        };
 
         public static Dictionary<string, Structs.StructDef> Structs = new Dictionary<string, ProcessHacker.Structs.StructDef>();
 
@@ -72,7 +75,7 @@ namespace ProcessHacker
         public static Dictionary<string, ResultsWindow> ResultsWindows = new Dictionary<string, ResultsWindow>();
         public static Dictionary<string, Thread> ResultsThreads = new Dictionary<string, Thread>();
 
-        public static bool PEWindowsThreaded = false;
+        public static bool PEWindowsThreaded = true;
         public static Dictionary<string, PEWindow> PEWindows = new Dictionary<string, PEWindow>();
         public static Dictionary<string, Thread> PEThreads = new Dictionary<string, Thread>();
 
@@ -175,8 +178,6 @@ namespace ProcessHacker
             catch
             { }
 
-            ThreadPool.SetMinThreads(1, 1);
-            //ThreadPool.SetMaxThreads(2, 2);
             WorkQueue.GlobalWorkQueue.MaxWorkerThreads = Environment.ProcessorCount;
 
             // Create or open the Process Hacker mutex, used only by the installer.
@@ -376,10 +377,6 @@ namespace ProcessHacker
             catch
             {
                 // Settings file is probably corrupt. Ask the user.
-
-                try { ThemingScope.Activate(); }
-                catch { }
-
                 DialogResult result;
 
                 if (OSVersion.HasTaskDialogs)
@@ -755,7 +752,7 @@ namespace ProcessHacker
 
         public static void StartProcessHackerAdmin(string args, MethodInvoker successAction, IntPtr hWnd)
         {
-            StartProgramAdmin(ProcessHandle.Current.GetMainModule().FileName, args, successAction, ShowWindowType.Show, hWnd);
+            StartProgramAdmin(ProcessHandle.Current.MainModule.FileName, args, successAction, ShowWindowType.Show, hWnd);
         }
 
         public static WaitResult StartProcessHackerAdminWait(string args, IntPtr hWnd, uint timeout)
@@ -768,7 +765,7 @@ namespace ProcessHacker
             ShellExecuteInfo info = new ShellExecuteInfo
             {
                 cbSize = ShellExecuteInfo.SizeOf,
-                lpFile = ProcessHandle.Current.GetMainModule().FileName, 
+                lpFile = ProcessHandle.Current.MainModule.FileName, 
                 nShow = ShowWindowType.Show,
                 fMask = 0x40, // SEE_MASK_NOCLOSEPROCESS
                 lpVerb = "runas", 
@@ -908,9 +905,6 @@ namespace ProcessHacker
 
                 workerThreads = maxWorkerThreads - workerThreads;
                 completionPortThreads = maxCompletionPortThreads - completionPortThreads;
-
-                ThreadPool.SetMaxThreads(0, 0);
-                ThreadPool.SetMaxThreads(workerThreads, completionPortThreads);
             }
         }
 
@@ -975,11 +969,11 @@ namespace ProcessHacker
 
             info.AppendLine();
             info.AppendLine("PROCESS HACKER THREAD POOL");
-            info.AppendLine("Worker thread maximum: " + WorkQueue.GlobalWorkQueue.MaxWorkerThreads.ToString());
-            info.AppendLine("Worker thread minimum: " + WorkQueue.GlobalWorkQueue.MinWorkerThreads.ToString());
-            info.AppendLine("Busy worker threads: " + WorkQueue.GlobalWorkQueue.BusyCount.ToString());
-            info.AppendLine("Total worker threads: " + WorkQueue.GlobalWorkQueue.WorkerCount.ToString());
-            info.AppendLine("Queued work items: " + WorkQueue.GlobalWorkQueue.QueuedCount.ToString());
+            info.AppendLine("Worker thread maximum: " + WorkQueue.GlobalWorkQueue.MaxWorkerThreads);
+            info.AppendLine("Worker thread minimum: " + WorkQueue.GlobalWorkQueue.MinWorkerThreads);
+            info.AppendLine("Busy worker threads: " + WorkQueue.GlobalWorkQueue.BusyCount);
+            info.AppendLine("Total worker threads: " + WorkQueue.GlobalWorkQueue.WorkerCount);
+            info.AppendLine("Queued work items: " + WorkQueue.GlobalWorkQueue.QueuedCount);
 
             foreach (WorkQueue.WorkItem workItem in WorkQueue.GlobalWorkQueue.GetQueuedWorkItems())
             {
@@ -1105,7 +1099,7 @@ namespace ProcessHacker
 
             if (MemoryEditorsThreaded)
             {
-                Thread t = new Thread(new ThreadStart(delegate
+                Thread t = new Thread(() =>
                 {
                     ed = new MemoryEditor(PID, address, length);
 
@@ -1115,7 +1109,7 @@ namespace ProcessHacker
                         Application.Run(ed);
 
                     Program.MemoryEditorsThreads.Remove(id);
-                }), Utils.SixteenthStackSize);
+                }, Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
@@ -1153,19 +1147,19 @@ namespace ProcessHacker
 
             if (ResultsWindowsThreaded)
             {
-                Thread t = new Thread(new ThreadStart(delegate
+                Thread t = new Thread(() =>
                 {
                     rw = new ResultsWindow(PID);
 
                     id = rw.Id;
 
                     if (!rw.IsDisposed)
-                        action(rw); 
+                        action(rw);
                     if (!rw.IsDisposed)
                         Application.Run(rw);
 
                     Program.ResultsThreads.Remove(id);
-                }), Utils.SixteenthStackSize);
+                }, Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
@@ -1214,7 +1208,7 @@ namespace ProcessHacker
 
             if (PEWindowsThreaded)
             {
-                Thread t = new Thread(new ThreadStart(delegate
+                Thread t = new Thread(() =>
                 {
                     pw = new PEWindow(path);
 
@@ -1224,7 +1218,7 @@ namespace ProcessHacker
                         Application.Run(pw);
 
                     Program.PEThreads.Remove(path);
-                }), Utils.SixteenthStackSize);
+                }, Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
@@ -1270,7 +1264,7 @@ namespace ProcessHacker
 
             if (PWindowsThreaded)
             {
-                Thread t = new Thread(new ThreadStart(delegate
+                Thread t = new Thread(() =>
                 {
                     pw = new ProcessWindow(process);
 
@@ -1280,7 +1274,7 @@ namespace ProcessHacker
                         Application.Run(pw);
 
                     Program.PThreads.Remove(process.Pid);
-                }), Utils.SixteenthStackSize);
+                }, Utils.SixteenthStackSize);
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();

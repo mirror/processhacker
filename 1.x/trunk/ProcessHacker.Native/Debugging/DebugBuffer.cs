@@ -195,7 +195,7 @@ namespace ProcessHacker.Native.Debugging
         /// <param name="flags">The information to query.</param>
         public void Query(RtlQueryProcessDebugFlags flags)
         {
-            this.Query(ProcessHandle.GetCurrentId(), flags);
+            this.Query(ProcessHandle.CurrentId, flags);
         }
 
         /// <summary>

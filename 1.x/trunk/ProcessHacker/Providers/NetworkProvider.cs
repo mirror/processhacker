@@ -116,10 +116,12 @@ namespace ProcessHacker
             foreach (string s in preKeyDict.Keys)
             {
                 var connection = preKeyDict[s].Value;
-                NetworkItem item = new NetworkItem();
+                NetworkItem item = new NetworkItem
+                {
+                    Id = s + "-" + preKeyDict[s].Key.ToString(), 
+                    Connection = connection
+                };
 
-                item.Id = s + "-" + preKeyDict[s].Key.ToString();
-                item.Connection = connection;
                 keyDict.Add(s + "-" + preKeyDict[s].Key.ToString(), item);
             }
 

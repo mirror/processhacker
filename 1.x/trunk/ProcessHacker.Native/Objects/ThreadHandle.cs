@@ -153,7 +153,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A client ID.</returns>
         public static ClientId GetCurrentCid()
         {
-            return new ClientId(ProcessHandle.GetCurrentId(), GetCurrentId());
+            return new ClientId(ProcessHandle.CurrentId, GetCurrentId());
         }
 
         /// <summary>
@@ -1274,21 +1274,34 @@ namespace ProcessHacker.Native.Objects
                 // x64 stack walk.
                 else if (OSVersion.Architecture == OSArch.Amd64)
                 {
-                    ContextAmd64 context = new ContextAmd64();
+                    ContextAmd64 context = new ContextAmd64
+                    {
+                        ContextFlags = ContextFlagsAmd64.All
+                    };
 
-                    context.ContextFlags = ContextFlagsAmd64.All;
                     // Get the context.
                     this.GetContext(ref context);
 
                     // Set up the initial stack frame structure.
-                    var stackFrame = new StackFrame64();
+                    StackFrame64 stackFrame = new StackFrame64
+                    {
+                        AddrPC =
+                        {
+                            Mode = AddressMode.AddrModeFlat,
+                            Offset = (ulong)context.Rip
+                        },
+                        AddrStack =
+                        {
+                            Mode = AddressMode.AddrModeFlat,
+                            Offset = (ulong)context.Rsp
+                        },
+                        AddrFrame =
+                        {
+                            Mode = AddressMode.AddrModeFlat,
+                            Offset = (ulong)context.Rbp
+                        }
+                    };
 
-                    stackFrame.AddrPC.Mode = AddressMode.AddrModeFlat;
-                    stackFrame.AddrPC.Offset = (ulong)context.Rip;
-                    stackFrame.AddrStack.Mode = AddressMode.AddrModeFlat;
-                    stackFrame.AddrStack.Offset = (ulong)context.Rsp;
-                    stackFrame.AddrFrame.Mode = AddressMode.AddrModeFlat;
-                    stackFrame.AddrFrame.Offset = (ulong)context.Rbp;
 
                     while (true)
                     {

@@ -27,20 +27,19 @@
 using System;
 using System.Collections;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 
 namespace Aga.Controls
 {
 	public class GifFrame
 	{
-		private Image _image;
+		private readonly Image _image;
 		public Image Image
 		{
 			get { return _image; }
 		}
 
-		private int _delay;
+		private readonly int _delay;
 		public int Delay
 		{
 			get { return _delay; }

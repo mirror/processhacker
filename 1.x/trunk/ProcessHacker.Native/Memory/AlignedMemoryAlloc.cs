@@ -24,7 +24,7 @@ namespace ProcessHacker.Native
 
         protected override void Free()
         {
-            MemoryAlloc.PrivateHeap.Free(_realMemory);
+            PrivateHeap.Free(_realMemory);
         }
 
         public override void Resize(int newSize)

@@ -129,20 +129,28 @@ namespace ProcessHacker.FormHelper
         protected abstract void DoWork();
                             
         private bool cancelledFlag;
+
         protected bool CancelRequested
         {
             get
             {
-                lock (this._asyncLock) { return this.cancelledFlag; }
+                lock (this._asyncLock)
+                {
+                    return this.cancelledFlag;
+                }
             }
         }
 
         private bool completeFlag;
+
         protected bool HasCompleted
         {
             get
             {
-                lock (this._asyncLock) { return this.completeFlag; }
+                lock (this._asyncLock)
+                {
+                    return this.completeFlag;
+                }
             }
         }
 

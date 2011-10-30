@@ -107,18 +107,19 @@ namespace ProcessHacker
 
             foreach (IntPtr address in memoryInfo.Keys)
             {
-                var info = memoryInfo[address];
+                MemoryBasicInformation info = memoryInfo[address];
 
                 if (!this.Dictionary.ContainsKey(address))
                 {
-                    MemoryItem item = new MemoryItem();
-
-                    item.RunId = this.RunCount;
-                    item.Address = address;
-                    item.Size = info.RegionSize.ToInt64();
-                    item.Type = info.Type;
-                    item.State = info.State;
-                    item.Protection = info.Protect;
+                    MemoryItem item = new MemoryItem
+                    {
+                        RunId = this.RunCount,
+                        Address = address,
+                        Size = info.RegionSize.ToInt64(),
+                        Type = info.Type,
+                        State = info.State,
+                        Protection = info.Protect
+                    };
 
                     if (modules.ContainsKey(item.Address))
                     {

@@ -339,6 +339,15 @@ namespace ProcessHacker.Native.Objects
         /// Marks the handle as invalid. This method must only be called from 
         /// within a derived class constructor.
         /// </summary>
+        protected bool IsValid
+        {
+            get { return this._handle != IntPtr.Zero; }
+        }
+
+        /// <summary>
+        /// Marks the handle as invalid. This method must only be called from 
+        /// within a derived class constructor.
+        /// </summary>
         protected void MarkAsInvalid()
         {
             this.DisableOwnership(false);

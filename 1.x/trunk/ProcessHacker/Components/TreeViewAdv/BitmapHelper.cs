@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
@@ -10,7 +8,7 @@ namespace Aga.Controls
 	public static class BitmapHelper
 	{
 		[StructLayout(LayoutKind.Sequential)]
-		private struct PixelData
+        public struct PixelData
 		{
 			public byte B;
 			public byte G;

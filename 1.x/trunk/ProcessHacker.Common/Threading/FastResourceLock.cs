@@ -201,21 +201,24 @@ namespace ProcessHacker.Common.Threading
         private IntPtr _exclusiveWakeEvent;
 
 #if ENABLE_STATISTICS
-        private int _acqExclCount = 0;
-        private int _acqShrdCount = 0;
-        private int _acqExclContCount = 0;
-        private int _acqShrdContCount = 0;
-        private int _acqExclSlpCount = 0;
-        private int _acqShrdSlpCount = 0;
-        private int _peakExclWtrsCount = 0;
-        private int _peakShrdWtrsCount = 0;
+        private int _acqExclCount;
+        private int _acqShrdCount;
+        private int _acqExclContCount;
+        private int _acqShrdContCount;
+        private int _acqExclSlpCount;
+        private int _acqShrdSlpCount;
+        private int _peakExclWtrsCount;
+        private int _peakShrdWtrsCount;
 #endif
 
         /// <summary>
         /// Creates a FastResourceLock.
         /// </summary>
         public FastResourceLock()
-        {
+        {     
+#if ENABLE_STATISTICS
+            this._acqExclContCount = 0;
+#endif
             _value = 0;
 
 #if !DEFER_EVENT_CREATION
@@ -350,8 +353,8 @@ namespace ProcessHacker.Common.Threading
 
                         Interlocked2.Set(
                             ref _peakExclWtrsCount,
-                            (p) => p < exclWtrsCount,
-                            (p) => exclWtrsCount
+                            p => p < exclWtrsCount,
+                            p => exclWtrsCount
                             );
 
 #endif
@@ -460,8 +463,8 @@ namespace ProcessHacker.Common.Threading
 
                         Interlocked2.Set(
                             ref _peakShrdWtrsCount,
-                            (p) => p < shrdWtrsCount,
-                            (p) => shrdWtrsCount
+                            p => p < shrdWtrsCount,
+                            p => shrdWtrsCount
                             );
 
 #endif
@@ -548,7 +551,7 @@ namespace ProcessHacker.Common.Threading
         public Statistics GetStatistics()
         {
 #if ENABLE_STATISTICS
-            return new Statistics()
+            return new Statistics
             {
                 AcqExcl = _acqExclCount,
                 AcqShrd = _acqShrdCount,
@@ -821,18 +824,17 @@ namespace ProcessHacker.Common.Threading
                     value
                     ) == value;
             }
-            else if (((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 0)
+
+            if (((value >> LockSharedOwnersShift) & LockSharedOwnersMask) != 0)
             {
                 return Interlocked.CompareExchange(
-                    ref _value,
+                    ref this._value,
                     value + LockSharedOwnersIncrement,
                     value
                     ) == value;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         /// <summary>

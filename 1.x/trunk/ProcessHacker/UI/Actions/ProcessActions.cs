@@ -180,17 +180,12 @@ namespace ProcessHacker.UI.Actions
             return result == DialogResult.Yes;
         }
 
-        private static ElevationAction PromptForElevation(IWin32Window window, int[] pids, string[] names,
-            ProcessAccess access, string elevateAction, string action)
+        private static ElevationAction PromptForElevation(IWin32Window window, int[] pids, string[] names, ProcessAccess access, string elevateAction, string action)
         {
             if (Settings.Instance.ElevationLevel == (int)ElevationLevel.Never)
                 return ElevationAction.NotRequired;
 
-            if (
-                OSVersion.HasUac &&
-                Program.ElevationType == ProcessHacker.Native.Api.TokenElevationType.Limited &&
-                KProcessHacker.Instance == null
-                )
+            if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited && KProcessHacker.Instance == null)
             {
                 try
                 {

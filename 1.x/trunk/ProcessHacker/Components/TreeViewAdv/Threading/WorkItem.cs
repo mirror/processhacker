@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace Aga.Controls.Threading
 {
 	public sealed class WorkItem
 	{
-		private WaitCallback _callback;
-		private object _state;
-		private ExecutionContext _ctx;
+		private readonly WaitCallback _callback;
+		private readonly object _state;
+		private readonly ExecutionContext _ctx;
 
 		internal WorkItem(WaitCallback wc, object state, ExecutionContext ctx)
 		{

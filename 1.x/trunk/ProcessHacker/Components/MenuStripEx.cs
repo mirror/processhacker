@@ -1,5 +1,4 @@
 ﻿using System.Windows.Forms;
-using ProcessHacker.Common;
 
 namespace System
 {

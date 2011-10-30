@@ -56,7 +56,7 @@ namespace ProcessHacker.Native
             new Guid("{fc451c16-ac75-11d1-b4b8-00c04fb66ea0}");
         public static readonly Guid WintrustActionGenericVerifyV2 = 
             new Guid("{00aac56b-cd44-11d0-8cc2-00c04fc295ee}");
-        public static readonly System.Guid WintrustActionTrustProviderTest = 
+        public static readonly Guid WintrustActionTrustProviderTest = 
             new Guid("{573e31f8-ddba-11d0-8ccb-00c04fc295ee}");
 
         private static string GetX500Value(string subject, string keyName)
@@ -192,20 +192,23 @@ namespace ProcessHacker.Native
 
         public static VerifyResult StatusToVerifyResult(uint status)
         {
-            if (status == 0)
-                return VerifyResult.Trusted;
-            else if (status == 0x800b0100)
-                return VerifyResult.NoSignature;
-            else if (status == 0x800b0101)
-                return VerifyResult.Expired;
-            else if (status == 0x800b010c)
-                return VerifyResult.Revoked;
-            else if (status == 0x800b0111)
-                return VerifyResult.Distrust;
-            else if (status == 0x80092026)
-                return VerifyResult.SecuritySettings;
-            else
-                return VerifyResult.SecuritySettings;
+            switch (status)
+            {
+                case 0:
+                    return VerifyResult.Trusted;
+                case 0x800b0100:
+                    return VerifyResult.NoSignature;
+                case 0x800b0101:
+                    return VerifyResult.Expired;
+                case 0x800b010c:
+                    return VerifyResult.Revoked;
+                case 0x800b0111:
+                    return VerifyResult.Distrust;
+                case 0x80092026:
+                    return VerifyResult.SecuritySettings;
+                default:
+                    return VerifyResult.SecuritySettings;
+            }
         }
 
         public static VerifyResult VerifyFile(string fileName)

@@ -479,7 +479,7 @@ namespace ProcessHacker
                 {
                     using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                     {
-                        labelProcessTypeValue.Text = phandle.IsWow64() ? "32-bit" : "64-bit";
+                        labelProcessTypeValue.Text = phandle.IsWow64 ? "32-bit" : "64-bit";
                     }
                 }
                 catch (Exception ex)
@@ -763,7 +763,7 @@ namespace ProcessHacker
             {
                 using (var phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation))
                 {
-                    var depStatus = phandle.GetDepStatus();
+                    var depStatus = phandle.DepStatus;
                     string str;
 
                     if ((depStatus & DepStatus.Enabled) != 0)

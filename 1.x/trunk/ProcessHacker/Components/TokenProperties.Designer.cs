@@ -100,7 +100,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(575, 433);
+            this.tabControl.Size = new System.Drawing.Size(431, 433);
             this.tabControl.TabIndex = 3;
             // 
             // tabGeneral
@@ -111,7 +111,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.tabGeneral.Size = new System.Drawing.Size(567, 407);
+            this.tabGeneral.Size = new System.Drawing.Size(423, 407);
             this.tabGeneral.TabIndex = 2;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -126,7 +126,7 @@
             this.groupSource.Controls.Add(this.textSourceLUID);
             this.groupSource.Location = new System.Drawing.Point(6, 247);
             this.groupSource.Name = "groupSource";
-            this.groupSource.Size = new System.Drawing.Size(555, 75);
+            this.groupSource.Size = new System.Drawing.Size(411, 75);
             this.groupSource.TabIndex = 15;
             this.groupSource.TabStop = false;
             this.groupSource.Text = "Source";
@@ -156,7 +156,7 @@
             this.textSourceName.Location = new System.Drawing.Point(73, 19);
             this.textSourceName.Name = "textSourceName";
             this.textSourceName.ReadOnly = true;
-            this.textSourceName.Size = new System.Drawing.Size(476, 22);
+            this.textSourceName.Size = new System.Drawing.Size(332, 22);
             this.textSourceName.TabIndex = 1;
             // 
             // textSourceLUID
@@ -189,7 +189,7 @@
             this.groupToken.Controls.Add(this.textUserSID);
             this.groupToken.Location = new System.Drawing.Point(6, 8);
             this.groupToken.Name = "groupToken";
-            this.groupToken.Size = new System.Drawing.Size(555, 233);
+            this.groupToken.Size = new System.Drawing.Size(411, 233);
             this.groupToken.TabIndex = 14;
             this.groupToken.TabStop = false;
             this.groupToken.Text = "Token";
@@ -198,7 +198,7 @@
             // 
             this.buttonPermissions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonPermissions.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonPermissions.Location = new System.Drawing.Point(474, 201);
+            this.buttonPermissions.Location = new System.Drawing.Point(330, 201);
             this.buttonPermissions.Name = "buttonPermissions";
             this.buttonPermissions.Size = new System.Drawing.Size(75, 23);
             this.buttonPermissions.TabIndex = 18;
@@ -242,7 +242,7 @@
             this.textPrimaryGroup.Location = new System.Drawing.Point(88, 97);
             this.textPrimaryGroup.Name = "textPrimaryGroup";
             this.textPrimaryGroup.ReadOnly = true;
-            this.textPrimaryGroup.Size = new System.Drawing.Size(461, 22);
+            this.textPrimaryGroup.Size = new System.Drawing.Size(317, 22);
             this.textPrimaryGroup.TabIndex = 16;
             // 
             // textUser
@@ -252,7 +252,7 @@
             this.textUser.Location = new System.Drawing.Point(88, 19);
             this.textUser.Name = "textUser";
             this.textUser.ReadOnly = true;
-            this.textUser.Size = new System.Drawing.Size(461, 22);
+            this.textUser.Size = new System.Drawing.Size(317, 22);
             this.textUser.TabIndex = 1;
             // 
             // textElevated
@@ -279,7 +279,7 @@
             this.textOwner.Location = new System.Drawing.Point(88, 71);
             this.textOwner.Name = "textOwner";
             this.textOwner.ReadOnly = true;
-            this.textOwner.Size = new System.Drawing.Size(461, 22);
+            this.textOwner.Size = new System.Drawing.Size(317, 22);
             this.textOwner.TabIndex = 14;
             // 
             // label2
@@ -298,7 +298,7 @@
             this.textVirtualized.Location = new System.Drawing.Point(88, 175);
             this.textVirtualized.Name = "textVirtualized";
             this.textVirtualized.ReadOnly = true;
-            this.textVirtualized.Size = new System.Drawing.Size(461, 22);
+            this.textVirtualized.Size = new System.Drawing.Size(317, 22);
             this.textVirtualized.TabIndex = 11;
             // 
             // textSessionID
@@ -343,7 +343,7 @@
             this.textUserSID.Location = new System.Drawing.Point(88, 45);
             this.textUserSID.Name = "textUserSID";
             this.textUserSID.ReadOnly = true;
-            this.textUserSID.Size = new System.Drawing.Size(461, 22);
+            this.textUserSID.Size = new System.Drawing.Size(317, 22);
             this.textUserSID.TabIndex = 6;
             // 
             // tabAdvanced
@@ -363,7 +363,7 @@
             this.tabAdvanced.Location = new System.Drawing.Point(4, 22);
             this.tabAdvanced.Name = "tabAdvanced";
             this.tabAdvanced.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAdvanced.Size = new System.Drawing.Size(567, 407);
+            this.tabAdvanced.Size = new System.Drawing.Size(423, 407);
             this.tabAdvanced.TabIndex = 3;
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
@@ -373,7 +373,7 @@
             this.textMemoryAvailable.Location = new System.Drawing.Point(118, 136);
             this.textMemoryAvailable.Name = "textMemoryAvailable";
             this.textMemoryAvailable.ReadOnly = true;
-            this.textMemoryAvailable.Size = new System.Drawing.Size(191, 22);
+            this.textMemoryAvailable.Size = new System.Drawing.Size(284, 22);
             this.textMemoryAvailable.TabIndex = 1;
             // 
             // textMemoryUsed
@@ -381,7 +381,7 @@
             this.textMemoryUsed.Location = new System.Drawing.Point(118, 110);
             this.textMemoryUsed.Name = "textMemoryUsed";
             this.textMemoryUsed.ReadOnly = true;
-            this.textMemoryUsed.Size = new System.Drawing.Size(191, 22);
+            this.textMemoryUsed.Size = new System.Drawing.Size(284, 22);
             this.textMemoryUsed.TabIndex = 1;
             // 
             // textAuthenticationId
@@ -389,7 +389,7 @@
             this.textAuthenticationId.Location = new System.Drawing.Point(118, 84);
             this.textAuthenticationId.Name = "textAuthenticationId";
             this.textAuthenticationId.ReadOnly = true;
-            this.textAuthenticationId.Size = new System.Drawing.Size(191, 22);
+            this.textAuthenticationId.Size = new System.Drawing.Size(284, 22);
             this.textAuthenticationId.TabIndex = 1;
             // 
             // textTokenId
@@ -397,7 +397,7 @@
             this.textTokenId.Location = new System.Drawing.Point(118, 58);
             this.textTokenId.Name = "textTokenId";
             this.textTokenId.ReadOnly = true;
-            this.textTokenId.Size = new System.Drawing.Size(191, 22);
+            this.textTokenId.Size = new System.Drawing.Size(284, 22);
             this.textTokenId.TabIndex = 1;
             // 
             // textImpersonationLevel
@@ -405,7 +405,7 @@
             this.textImpersonationLevel.Location = new System.Drawing.Point(118, 32);
             this.textImpersonationLevel.Name = "textImpersonationLevel";
             this.textImpersonationLevel.ReadOnly = true;
-            this.textImpersonationLevel.Size = new System.Drawing.Size(191, 22);
+            this.textImpersonationLevel.Size = new System.Drawing.Size(284, 22);
             this.textImpersonationLevel.TabIndex = 1;
             // 
             // textTokenType
@@ -413,7 +413,7 @@
             this.textTokenType.Location = new System.Drawing.Point(118, 6);
             this.textTokenType.Name = "textTokenType";
             this.textTokenType.ReadOnly = true;
-            this.textTokenType.Size = new System.Drawing.Size(191, 22);
+            this.textTokenType.Size = new System.Drawing.Size(284, 22);
             this.textTokenType.TabIndex = 1;
             // 
             // label13
@@ -475,7 +475,7 @@
             this.tabGroups.Location = new System.Drawing.Point(4, 22);
             this.tabGroups.Name = "tabGroups";
             this.tabGroups.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGroups.Size = new System.Drawing.Size(567, 407);
+            this.tabGroups.Size = new System.Drawing.Size(423, 407);
             this.tabGroups.TabIndex = 1;
             this.tabGroups.Text = "Groups";
             this.tabGroups.UseVisualStyleBackColor = true;
@@ -486,7 +486,7 @@
             this.tabPrivileges.Location = new System.Drawing.Point(4, 22);
             this.tabPrivileges.Name = "tabPrivileges";
             this.tabPrivileges.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPrivileges.Size = new System.Drawing.Size(567, 407);
+            this.tabPrivileges.Size = new System.Drawing.Size(423, 407);
             this.tabPrivileges.TabIndex = 0;
             this.tabPrivileges.Text = "Privileges";
             this.tabPrivileges.UseVisualStyleBackColor = true;
@@ -504,7 +504,7 @@
             this.listPrivileges.Location = new System.Drawing.Point(3, 3);
             this.listPrivileges.Name = "listPrivileges";
             this.listPrivileges.ShowItemToolTips = true;
-            this.listPrivileges.Size = new System.Drawing.Size(561, 401);
+            this.listPrivileges.Size = new System.Drawing.Size(417, 401);
             this.listPrivileges.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listPrivileges.TabIndex = 0;
             this.listPrivileges.UseCompatibleStateImageBehavior = false;
@@ -578,7 +578,7 @@
             this.Controls.Add(this.tabControl);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TokenProperties";
-            this.Size = new System.Drawing.Size(575, 433);
+            this.Size = new System.Drawing.Size(431, 433);
             this.tabControl.ResumeLayout(false);
             this.tabGeneral.ResumeLayout(false);
             this.groupSource.ResumeLayout(false);

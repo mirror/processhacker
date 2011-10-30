@@ -307,9 +307,9 @@ namespace ProcessHacker
                         sb.AppendLine("Version info section failed! " + ex2.Message);
                     }
 
-                    sb.AppendLine("Started: " + phandle.GetCreateTime().ToString());
+                    sb.AppendLine("Started: " + phandle.CreateTime);
 
-                    var memoryInfo = phandle.GetMemoryStatistics();
+                    var memoryInfo = phandle.MemoryStatistics;
 
                     sb.AppendLine("WS: " + Utils.FormatSize(memoryInfo.WorkingSetSize));
                     sb.AppendLine("Pagefile usage: " + Utils.FormatSize(memoryInfo.PagefileUsage));
@@ -324,7 +324,7 @@ namespace ProcessHacker
             {
                 using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                 {
-                    var commandLine = phandle.GetCommandLine();
+                    var commandLine = phandle.CommandLine;
                     var currentDirectory = phandle.GetPebString(PebOffset.CurrentDirectoryPath);
 
                     sb.AppendLine("Command line: " + commandLine);

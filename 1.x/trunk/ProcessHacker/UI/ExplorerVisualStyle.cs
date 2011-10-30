@@ -12,7 +12,7 @@
             get
             {
                 if (!visualStylesEnabled.HasValue)
-                    visualStylesEnabled = (System.Windows.Forms.Application.RenderWithVisualStyles && VisualStyleInformation.IsEnabledByUser);
+                    visualStylesEnabled = (Windows.Forms.Application.RenderWithVisualStyles && VisualStyleInformation.IsEnabledByUser);
 
                 return visualStylesEnabled.Value;
             }

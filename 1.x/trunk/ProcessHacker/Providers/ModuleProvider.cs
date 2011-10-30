@@ -62,15 +62,13 @@ namespace ProcessHacker
 
             try
             {
-                _processHandle = new ProcessHandle(_pid,
-                    ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
+                _processHandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
             }
             catch
             {
                 try
                 {
-                    _processHandle = new ProcessHandle(_pid,
-                        Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
+                    _processHandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
                 }
                 catch
                 { }
@@ -80,7 +78,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    _isWow64 = _processHandle.IsWow64();
+                    _isWow64 = _processHandle.IsWow64;
                 }
                 catch
                 { }
@@ -204,10 +202,13 @@ namespace ProcessHacker
                 if (!Dictionary.ContainsKey(b))
                 {
                     var m = modules[b];
-                    ModuleItem item = new ModuleItem();
 
-                    item.RunId = this.RunCount;
-                    item.Name = m.BaseName;
+                    ModuleItem item = new ModuleItem
+                    {
+                        RunId = this.RunCount,
+                        Name = m.BaseName
+                    };
+
 
                     try
                     {

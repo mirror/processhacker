@@ -115,7 +115,6 @@
     <Compile Include="Components\TreeViewAdv\ResourceHelper.cs" />
     <Compile Include="Components\TreeViewAdv\StringCollectionEditor.cs" />
     <Compile Include="Components\TreeViewAdv\TextHelper.cs" />
-    <Compile Include="Components\TreeViewAdv\Threading\AbortableThreadPool.cs" />
     <Compile Include="Components\TreeViewAdv\Threading\WorkItem.cs" />
     <Compile Include="Components\TreeViewAdv\Threading\WorkItemStatus.cs" />
     <Compile Include="Components\TreeViewAdv\TimeCounter.cs" />
@@ -751,7 +750,6 @@
     <Compile Include="UI\Icons\IoHistoryIcon.cs" />
     <Compile Include="UI\Icons\CpuHistoryIcon.cs" />
     <Compile Include="UI\Icons\ProviderIcon.cs" />
-    <Compile Include="Program\ThemingScope.cs" />
     <Compile Include="UI\Actions\ServiceActions.cs" />
     <Compile Include="Components\ColorModifier.cs">
       <SubType>UserControl</SubType>

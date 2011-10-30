@@ -24,7 +24,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Reflection;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using ProcessHacker.Common;
@@ -156,7 +155,7 @@ namespace ProcessHacker.Components
                         else
                         {
                             using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
-                                _mainModule = FileUtils.GetFileName(phandle.GetMainModule().FileName);
+                                _mainModule = FileUtils.GetFileName(phandle.MainModule.FileName);
                         }
 
                         this.SetMainModule(_mainModule);
@@ -247,11 +246,11 @@ namespace ProcessHacker.Components
                 (item.Flags & LdrpDataTableEntryFlags.CorImage) != 0
                 )
                 return Settings.Instance.ColorDotNetProcesses;
-            else if (Settings.Instance.UseColorRelocatedDlls &&
+            if (Settings.Instance.UseColorRelocatedDlls &&
                 (item.Flags & LdrpDataTableEntryFlags.ImageNotAtBase) != 0
                 )
                 return Settings.Instance.ColorRelocatedDlls;
-           
+
             return SystemColors.Window;
         }
 

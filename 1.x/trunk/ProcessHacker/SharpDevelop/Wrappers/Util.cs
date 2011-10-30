@@ -13,7 +13,7 @@ using ProcessHacker.Native;
 
 namespace Debugger.Wrappers
 {
-	public delegate void UnmanagedStringGetter(uint pStringLenght, out uint stringLenght, System.IntPtr pString);
+	public delegate void UnmanagedStringGetter(uint pStringLenght, out uint stringLenght, IntPtr pString);
 	
 	public static class Util
 	{

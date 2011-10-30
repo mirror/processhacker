@@ -214,20 +214,20 @@ namespace ProcessHacker.Common.Threading
         private WaitBlock* _firstSharedWaiter;
 
 #if ENABLE_STATISTICS
-        private int _exclusiveWaitersCount = 0;
-        private int _sharedWaitersCount = 0;
+        private int _exclusiveWaitersCount;
+        private int _sharedWaitersCount;
 
-        private int _acqExclCount = 0;
-        private int _acqShrdCount = 0;
-        private int _acqExclContCount = 0;
-        private int _acqShrdContCount = 0;
-        private int _acqExclBlkCount = 0;
-        private int _acqShrdBlkCount = 0;
-        private int _acqExclSlpCount = 0;
-        private int _acqShrdSlpCount = 0;
-        private int _insWaitBlkRetryCount = 0;
-        private int _peakExclWtrsCount = 0;
-        private int _peakShrdWtrsCount = 0;
+        private int _acqExclCount;
+        private int _acqShrdCount;
+        private int _acqExclContCount;
+        private int _acqShrdContCount;
+        private int _acqExclBlkCount;
+        private int _acqShrdBlkCount;
+        private int _acqExclSlpCount;
+        private int _acqShrdSlpCount;
+        private int _insWaitBlkRetryCount;
+        private int _peakExclWtrsCount;
+        private int _peakShrdWtrsCount;
 #endif
 
         /// <summary>
@@ -1134,7 +1134,7 @@ namespace ProcessHacker.Common.Threading
         private void WakeShared()
         {
             WaitBlock wakeList = new WaitBlock();
-            WaitBlock* wb = null;
+            WaitBlock* wb;
 
             wakeList.Flink = &wakeList;
             wakeList.Blink = &wakeList;

@@ -24,7 +24,6 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 using ProcessHacker.Native.Api;
 
 namespace TaskbarLib.Interop

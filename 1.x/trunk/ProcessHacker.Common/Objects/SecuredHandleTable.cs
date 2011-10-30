@@ -101,7 +101,7 @@ namespace ProcessHacker.Common.Objects
         public IRefCounted ReferenceByHandle<TAccess>(int handle, TAccess access)
             where TAccess : struct
         {
-            return this.ReferenceByHandle<TAccess>(handle, access, false);
+            return this.ReferenceByHandle(handle, access, false);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace ProcessHacker.Common.Objects
                 return null;
 
             // Check the access.
-            if (entry.AreAllAccessesGranted<TAccess>(access))
+            if (entry.AreAllAccessesGranted(access))
             {
                 // OK, return the object.
                 return obj;
@@ -183,7 +183,7 @@ namespace ProcessHacker.Common.Objects
             where T : class, IRefCounted
             where TAccess : struct
         {
-            IRefCounted obj = this.ReferenceByHandle<TAccess>(handle, access, throwOnAccessDenied);
+            IRefCounted obj = this.ReferenceByHandle(handle, access, throwOnAccessDenied);
 
             if (obj == null)
                 return null;

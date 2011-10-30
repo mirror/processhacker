@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 namespace Aga.Controls.Tree
 {
 	internal class FixedRowHeightLayout : IRowLayout
 	{
-		private TreeViewAdv _treeView;
+		private readonly TreeViewAdv _treeView;
 
 		public FixedRowHeightLayout(TreeViewAdv treeView, int rowHeight)
 		{

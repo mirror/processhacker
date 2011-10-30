@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ProcessHacker.Common.Threading
 {
-    public class WaitableQueue<T> : IEnumerable, IEnumerable<T>
+    public class WaitableQueue<T> : IEnumerable<T>
     {
         private readonly Queue<T> _queue = new Queue<T>();
         private readonly SemaphorePair _pair;
@@ -47,10 +47,8 @@ namespace ProcessHacker.Common.Threading
 
         public bool Dequeue(int timeout, out T item)
         {
-            bool waitResult = true;
-
             // Wait for an item to dequeue.
-            waitResult = _pair.WaitRead(timeout);
+            bool waitResult = _pair.WaitRead(timeout);
 
             // Dequeue an item if we waited successfully, 
             // otherwise pass the default value back.

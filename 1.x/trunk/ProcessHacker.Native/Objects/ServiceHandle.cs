@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 using ProcessHacker.Native.Security.AccessControl;
@@ -114,7 +113,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="control">The message.</param>
         public void Control(ServiceControl control)
         {
-            ServiceStatus status = new ServiceStatus();
+            ServiceStatus status;
 
             if (!Win32.ControlService(this, control, out status))
                 Win32.Throw();
@@ -134,7 +133,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public QueryServiceConfig GetConfig()
         {
-            int requiredSize = 0;
+            int requiredSize;
 
             Win32.QueryServiceConfig(this, IntPtr.Zero, 0, out requiredSize);
 

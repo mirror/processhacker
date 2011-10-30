@@ -277,6 +277,7 @@ namespace ProcessHacker.Native
         /// </summary>
         /// <typeparam name="T">The type of the struct.</typeparam>
         /// <param name="offset">The offset to add before reading.</param>
+        /// <param name="size"></param>
         /// <param name="index">The index at which to begin reading to the struct. This is multiplied by  
         /// the size of the struct.</param>
         /// <returns>The new struct.</returns>

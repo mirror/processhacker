@@ -103,7 +103,7 @@ namespace ProcessHacker
                 var oldIcon = this.Icon;
 
                 this.Icon = newIcon;
-                ProcessHacker.Native.Api.Win32.DestroyIcon(oldIcon.Handle);
+                Native.Api.Win32.DestroyIcon(oldIcon.Handle);
             }
 
             string mostCpuProcess = _provider.MostCpuHistory[0];

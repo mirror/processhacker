@@ -58,12 +58,9 @@ namespace ProcessHacker.Components
         {
             try
             {
-                HandlePropertiesWindow window = new HandlePropertiesWindow(handleInfo);
                 IntPtr handle = new IntPtr(handleInfo.Handle);
                 ProcessHandle phandle = new ProcessHandle(handleInfo.ProcessId, ProcessAccess.DupHandle);
                 GenericHandle dupHandle = null;
-
-                string tName = null;
 
                 // Try to get a handle, since we need one for security editing.
                 try
@@ -73,11 +70,13 @@ namespace ProcessHacker.Components
                 catch
                 { }
 
-                PropSheetHeader64 header = new PropSheetHeader64();
-                header.dwSize = (uint)PropSheetHeader64.SizeOf;
-                header.nPages = 2;
-                header.dwFlags = (uint)PropSheetFlags.PSH_DEFAULT;
-                header.pszCaption = "Handle Properties";
+                PropSheetHeader64 header = new PropSheetHeader64
+                {
+                    dwSize = (uint)PropSheetHeader64.SizeOf, 
+                    nPages = 2, 
+                    dwFlags = (uint)PropSheetFlags.PSH_DEFAULT, 
+                    pszCaption = "Handle Properties"
+                };
 
                 using (HandleDetails hw = new HandleDetails())
                 {

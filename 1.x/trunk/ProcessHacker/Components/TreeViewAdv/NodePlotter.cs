@@ -57,10 +57,12 @@ namespace ProcessHacker.Components
 
             if (_plotter == null)
             {
-                _plotter = new Plotter();
-                _plotter.BackColor = Color.Black;
-                _plotter.ShowGrid = false;
-                _plotter.OverlaySecondLine = false;
+                _plotter = new Plotter
+                {
+                    BackColor = Color.Black, 
+                    ShowGrid = false, 
+                    OverlaySecondLine = false
+                };
             }
 
             if (info.UseLongData)

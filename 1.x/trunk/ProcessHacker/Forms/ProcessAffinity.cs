@@ -93,7 +93,7 @@ namespace ProcessHacker
             try
             {
                 using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.SetInformation))
-                    phandle.SetAffinityMask(newMask);
+                    phandle.AffinityMask = newMask;
 
                 this.Close();
             }

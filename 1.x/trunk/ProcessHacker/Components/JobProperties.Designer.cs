@@ -110,7 +110,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(646, 434);
+            this.tabControl.Size = new System.Drawing.Size(456, 434);
             this.tabControl.TabIndex = 0;
             // 
             // tabGeneral
@@ -125,7 +125,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(638, 408);
+            this.tabGeneral.Size = new System.Drawing.Size(448, 408);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -134,7 +134,7 @@
             // 
             this.buttonTerminate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonTerminate.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonTerminate.Location = new System.Drawing.Point(557, 6);
+            this.buttonTerminate.Location = new System.Drawing.Point(367, 6);
             this.buttonTerminate.Name = "buttonTerminate";
             this.buttonTerminate.Size = new System.Drawing.Size(75, 23);
             this.buttonTerminate.TabIndex = 5;
@@ -167,7 +167,7 @@
             this.textJobName.Location = new System.Drawing.Point(50, 6);
             this.textJobName.Name = "textJobName";
             this.textJobName.ReadOnly = true;
-            this.textJobName.Size = new System.Drawing.Size(501, 22);
+            this.textJobName.Size = new System.Drawing.Size(311, 22);
             this.textJobName.TabIndex = 2;
             // 
             // label1
@@ -194,7 +194,7 @@
             this.listLimits.MultiSelect = false;
             this.listLimits.Name = "listLimits";
             this.listLimits.ShowItemToolTips = true;
-            this.listLimits.Size = new System.Drawing.Size(626, 237);
+            this.listLimits.Size = new System.Drawing.Size(436, 237);
             this.listLimits.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listLimits.TabIndex = 0;
             this.listLimits.UseCompatibleStateImageBehavior = false;
@@ -224,7 +224,7 @@
             this.listProcesses.MultiSelect = false;
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.ShowItemToolTips = true;
-            this.listProcesses.Size = new System.Drawing.Size(626, 96);
+            this.listProcesses.Size = new System.Drawing.Size(436, 96);
             this.listProcesses.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listProcesses.TabIndex = 0;
             this.listProcesses.UseCompatibleStateImageBehavior = false;
@@ -245,7 +245,7 @@
             this.tabStatistics.Location = new System.Drawing.Point(4, 22);
             this.tabStatistics.Name = "tabStatistics";
             this.tabStatistics.Padding = new System.Windows.Forms.Padding(3);
-            this.tabStatistics.Size = new System.Drawing.Size(638, 408);
+            this.tabStatistics.Size = new System.Drawing.Size(448, 408);
             this.tabStatistics.TabIndex = 2;
             this.tabStatistics.Text = "Statistics";
             this.tabStatistics.UseVisualStyleBackColor = true;
@@ -260,7 +260,7 @@
             this.flowStatistics.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowStatistics.Location = new System.Drawing.Point(3, 3);
             this.flowStatistics.Name = "flowStatistics";
-            this.flowStatistics.Size = new System.Drawing.Size(632, 402);
+            this.flowStatistics.Size = new System.Drawing.Size(442, 402);
             this.flowStatistics.TabIndex = 2;
             // 
             // groupGeneral
@@ -734,7 +734,7 @@
             this.Controls.Add(this.tabControl);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "JobProperties";
-            this.Size = new System.Drawing.Size(646, 434);
+            this.Size = new System.Drawing.Size(456, 434);
             this.tabControl.ResumeLayout(false);
             this.tabGeneral.ResumeLayout(false);
             this.tabGeneral.PerformLayout();

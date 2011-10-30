@@ -48,7 +48,7 @@ namespace ProcessHacker.Native.Objects
             )
         {
             using (var administratorsSid = Sid.GetWellKnownSid(WellKnownSidType.WinBuiltinAdministratorsSid))
-            using (var thandle = TokenHandle.OpenCurrentPrimary(TokenAccess.Query))
+            using (var thandle = OpenCurrentPrimary(TokenAccess.Query))
                 return Create(access, 0, thandle, tokenType, user, groups, privileges, administratorsSid, administratorsSid);
         }
 

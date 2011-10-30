@@ -370,9 +370,9 @@ namespace ProcessHacker
                 {
                     using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                     {
-                        bw.Write("CommandLine", phandle.GetCommandLine());
+                        bw.Write("CommandLine", phandle.CommandLine);
                         bw.Write("CurrentDirectory", phandle.GetPebString(PebOffset.CurrentDirectoryPath));
-                        bw.Write("IsPosix", phandle.IsPosix());
+                        bw.Write("IsPosix", phandle.IsPosix);
                     }
                 }
                 catch
@@ -383,14 +383,14 @@ namespace ProcessHacker
                     using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                     {
                         if (OSVersion.Architecture == OSArch.Amd64)
-                            bw.Write("IsWow64", phandle.IsWow64());
+                            bw.Write("IsWow64", phandle.IsWow64);
                     }
 
                     using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
                     {
-                        bw.Write("IsBeingDebugged", phandle.IsBeingDebugged());
+                        bw.Write("IsBeingDebugged", phandle.IsBeingDebugged);
                         bw.Write("IsCritical", phandle.IsCritical);
-                        bw.Write("DepStatus", (int)phandle.GetDepStatus());
+                        bw.Write("DepStatus", (int)phandle.DepStatus);
                     }
                 }
                 catch
@@ -488,17 +488,17 @@ namespace ProcessHacker
             if (pid <= 0)
                 return;
 
-            using (var modules = processMo.CreateChild("Modules"))
+            using (MemoryObject modules = processMo.CreateChild("Modules"))
             {
                 if (pid != 4)
                 {
                     var baseAddressList = new Dictionary<IntPtr, object>();
                     bool isWow64 = false;
 
-                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
+                    using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | ProcessAccess.VmRead))
                     {
                         if (OSVersion.Architecture == OSArch.Amd64)
-                            isWow64 = phandle.IsWow64();
+                            isWow64 = phandle.IsWow64;
 
                         phandle.EnumModules(module =>
                         {
@@ -514,7 +514,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                        using (ProcessHandle phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
                         {
                             phandle.EnumMemory(memory =>
                             {

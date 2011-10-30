@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ProcessHacker.Common
 {
@@ -121,14 +119,11 @@ namespace ProcessHacker.Common
         {
             fixed (char* buffer = this.Buffer)
             {
-                int result;
-
-                result = LibC.WMemCmp(buffer, str.Buffer, this.Length < str.Length ? this.Length : str.Length);
+                int result = LibC.WMemCmp(buffer, str.Buffer, this.Length < str.Length ? this.Length : str.Length);
 
                 if (result == 0)
                     return this.Length - str.Length;
-                else
-                    return result;
+                return result;
             }
         }
 
@@ -145,10 +140,9 @@ namespace ProcessHacker.Common
         {
             if (other is String255)
                 return this.Equals((String255)other);
-            else if (other is string)
+            if (other is string)
                 return this.Equals((string)other);
-            else
-                return false;
+            return false;
         }
 
         public bool Equals(String255 other)
@@ -195,8 +189,8 @@ namespace ProcessHacker.Common
 
                 if (ptr != null)
                     return (int)(ptr - buffer);
-                else
-                    return -1;
+                
+                return -1;
             }
         }
 
@@ -204,12 +198,9 @@ namespace ProcessHacker.Common
         {
             int hashCode = 0x15051505;
 
-            fixed (char* buffer = this.Buffer)
+            for (int i = 0; i < this.Length; i += 4)
             {
-                for (int i = 0; i < this.Length; i += 4)
-                {
-                    hashCode += hashCode ^ (hashCode << ((i % 4) * 8));
-                }
+                hashCode += hashCode ^ (hashCode << ((i % 4) * 8));
             }
 
             return hashCode;

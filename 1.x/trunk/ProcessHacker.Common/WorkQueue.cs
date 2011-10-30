@@ -261,12 +261,6 @@ namespace ProcessHacker.Common
         private volatile bool _isJoining;
 
         /// <summary>
-        /// Creates a new work queue.
-        /// </summary>
-        public WorkQueue()
-        { }
-
-        /// <summary>
         /// Gets the number of worker threads that are currently busy.
         /// </summary>
         public int BusyCount
@@ -413,11 +407,8 @@ namespace ProcessHacker.Common
                     workItem.Enabled = false;
                     return true;
                 }
-                else
-                {
-                    // The work item is no longer in the queue.
-                    return false;
-                }
+                // The work item is no longer in the queue.
+                return false;
             }
         }
 
@@ -565,17 +556,14 @@ namespace ProcessHacker.Common
                         // Work arrived. Go back so we can perform it.
                         continue;
                     }
-                    else
+                    // No work arrived during the timeout period. Delete the thread.
+                    lock (this._workerThreads)
                     {
-                        // No work arrived during the timeout period. Delete the thread.
-                        lock (_workerThreads)
+                        // Check the minimum.
+                        if (this._workerThreads.Count > this._minWorkerThreads)
                         {
-                            // Check the minimum.
-                            if (_workerThreads.Count > _minWorkerThreads)
-                            {
-                                this.DestroyWorkerThread();
-                                return;
-                            }
+                            this.DestroyWorkerThread();
+                            return;
                         }
                     }
                 }

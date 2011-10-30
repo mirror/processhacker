@@ -256,8 +256,10 @@ namespace ProcessHacker.Components
             buttonPermissions.Visible = false;
             listPrivileges.ContextMenu = listPrivileges.GetCopyMenu();
 
-            _groups = new TokenGroupsList(null);
-            _groups.Dock = DockStyle.Fill;
+            _groups = new TokenGroupsList(null)
+            {
+                Dock = DockStyle.Fill
+            };
             tabGroups.Controls.Add(_groups);
         }
 

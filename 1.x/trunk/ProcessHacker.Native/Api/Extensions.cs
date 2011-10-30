@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -30,7 +29,7 @@ namespace ProcessHacker.Native
 {
     public static class NativeExtensions
     {
-        private static bool NphNotAvailable = false;
+        private static bool NphNotAvailable;
 
         public static ObjectBasicInformation GetBasicInfo(this SystemHandleEntry thisHandle)
         {
@@ -116,13 +115,11 @@ namespace ProcessHacker.Native
 
                 return "Non-existent process (" + clientId.ProcessId.ToString() + "): " + clientId.ThreadId.ToString();
             }
-            else
-            {
-                if (!string.IsNullOrEmpty(processName))
-                    return processName + " (" + clientId.ProcessId.ToString() + ")";
+            
+            if (!string.IsNullOrEmpty(processName))
+                return processName + " (" + clientId.ProcessId.ToString() + ")";
                 
-                return "Non-existent process (" + clientId.ProcessId.ToString() + ")";
-            }
+            return "Non-existent process (" + clientId.ProcessId.ToString() + ")";
         }
 
         private static string GetObjectNameNt(ProcessHandle process, IntPtr handle, GenericHandle dupHandle)
@@ -180,8 +177,8 @@ namespace ProcessHacker.Native
                             ).ThrowIf();
                     }
 
-                    var oni = oniMem.ReadStruct<ObjectNameInformation>();
-                    var str = oni.Name;
+                    ObjectNameInformation oni = oniMem.ReadStruct<ObjectNameInformation>();
+                    UnicodeString str = oni.Name;
 
                     if (KProcessHacker.Instance != null)
                         str.Buffer = str.Buffer.Increment(oniMem.Memory.Decrement(baseAddress));
@@ -215,7 +212,7 @@ namespace ProcessHacker.Native
         {
             IntPtr handle = new IntPtr(thisHandle.Handle);
             IntPtr objectHandleI;
-            int retLength = 0;
+            int retLength;
             GenericHandle objectHandle = null;
 
             if (thisHandle.Handle == 0 || thisHandle.Handle == -1 || thisHandle.Handle == -2)
@@ -309,8 +306,8 @@ namespace ProcessHacker.Native
                                 ).ThrowIf();
                         }
 
-                        var oti = otiMem.ReadStruct<ObjectTypeInformation>();
-                        var str = oti.Name;
+                        ObjectTypeInformation oti = otiMem.ReadStruct<ObjectTypeInformation>();
+                        UnicodeString str = oti.Name;
 
                         if (KProcessHacker.Instance != null)
                             str.Buffer = str.Buffer.Increment(otiMem.Memory.Decrement(baseAddress));
@@ -441,7 +438,7 @@ namespace ProcessHacker.Native
                             }
                             else
                             {
-                                using (var processHandle = new NativeHandle<ProcessAccess>(process, handle, OSVersion.MinProcessQueryInfoAccess))
+                                using (NativeHandle<ProcessAccess> processHandle = new NativeHandle<ProcessAccess>(process, handle, OSVersion.MinProcessQueryInfoAccess))
                                 {
                                     if ((processId = Win32.GetProcessId(processHandle)) == 0)
                                         Win32.Throw();
@@ -481,7 +478,7 @@ namespace ProcessHacker.Native
 
                     case "TmEn":
                         {
-                            using (var enHandleDup = new NativeHandle<EnlistmentAccess>(process, handle, EnlistmentAccess.QueryInformation))
+                            using (NativeHandle<EnlistmentAccess> enHandleDup = new NativeHandle<EnlistmentAccess>(process, handle, EnlistmentAccess.QueryInformation))
                             using (EnlistmentHandle enHandle = EnlistmentHandle.FromHandle(enHandleDup))
                             {
                                 info.BestName = enHandle.BasicInformation.EnlistmentId.ToString("B");

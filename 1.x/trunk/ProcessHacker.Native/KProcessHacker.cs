@@ -113,7 +113,7 @@ namespace ProcessHacker.Native
         }
 
         [Flags]
-        public enum KphFeatures : int
+        public enum KphFeatures
         {
             PsTerminateProcess = 0x1,
             PspTerminateThreadByPointer = 0x2

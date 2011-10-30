@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
@@ -30,11 +27,9 @@ namespace ProcessHacker.Components
             get { return _icon; }
             set
             {
-                Image oldImage;
-
                 _icon = value;
 
-                oldImage = pictureIcon.Image;
+                Image oldImage = this.pictureIcon.Image;
 
                 pictureIcon.Image = this.GetBitmap(_icon);
 

@@ -154,7 +154,7 @@ namespace ProcessHacker.Native
 
                 status.ThrowIf();
 
-                return FileUtils.GetFileName(info.ImageName.Text);
+                return GetFileName(info.ImageName.Text);
             }
         }
 
@@ -198,7 +198,7 @@ namespace ProcessHacker.Native
                         fileName = pair.Value + "\\" + fileName.Substring(pair.Key.Length + 1);
                         break;
                     }
-                    else if (fileName == pair.Key)
+                    if (fileName == pair.Key)
                     {
                         fileName = pair.Value;
                         break;

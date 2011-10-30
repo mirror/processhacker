@@ -170,7 +170,7 @@ namespace ProcessHacker.Native.Objects
         {
             IntPtr handle = Win32.CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, IntPtr.Zero);
 
-            if (handle == NativeHandle.MinusOne)
+            if (handle != MinusOne)
                 Win32.Throw();
 
             return new FileHandle(handle, true);
@@ -810,8 +810,8 @@ namespace ProcessHacker.Native.Objects
 
                             if (info.NextEntryOffset == 0)
                                 break;
-                            else
-                                i += info.NextEntryOffset;
+                            
+                            i += info.NextEntryOffset;
                         }
 
                         firstTime = false;

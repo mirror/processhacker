@@ -61,7 +61,7 @@ namespace ProcessHacker.Common.Objects
     /// the object will be freed.
     /// </para>
     /// </remarks>
-    public abstract class BaseObject : IDisposable, IRefCounted
+    public abstract class BaseObject : IRefCounted
     {
         private const int ObjectOwned = 0x1;
         private const int ObjectOwnedByGc = 0x2;
@@ -70,12 +70,12 @@ namespace ProcessHacker.Common.Objects
         private const int ObjectRefCountMask = 0x1fffffff;
         private const int ObjectRefCountIncrement = 0x8;
 
-        private static int _createdCount = 0;
-        private static int _freedCount = 0;
-        private static int _disposedCount = 0;
-        private static int _finalizedCount = 0;
-        private static int _referencedCount = 0;
-        private static int _dereferencedCount = 0;
+        private static int _createdCount;
+        private static int _freedCount;
+        private static int _disposedCount;
+        private static int _finalizedCount;
+        private static int _referencedCount;
+        private static int _dereferencedCount;
 
 #if DEBUG_ENABLE_LIVE_LIST
         private static System.Collections.Generic.List<WeakReference<BaseObject>> _liveList =
@@ -128,7 +128,7 @@ namespace ProcessHacker.Common.Objects
             T oldObj;
 
             // Swap the reference.
-            oldObj = Interlocked.Exchange<T>(ref reference, newObj);
+            oldObj = Interlocked.Exchange(ref reference, newObj);
             // Reference the new object.
             if (newObj != null)
                 newObj.Reference();

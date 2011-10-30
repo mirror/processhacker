@@ -95,7 +95,7 @@ namespace ProcessHacker.Components
             }
         }
 
-        private void listNetwork_SelectedIndexChanged(object sender, System.EventArgs e)
+        private void listNetwork_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.SelectedIndexChanged != null)
                 this.SelectedIndexChanged(sender, e);
@@ -342,7 +342,7 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(NetworkItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, (int)item.Tag > 0 && _runCount > 0)
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, item.Tag > 0 && _runCount > 0)
             {
                 Name = item.Id, 
                 Tag = item

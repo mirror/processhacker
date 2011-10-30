@@ -20,7 +20,6 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Threading;
 
 namespace ProcessHacker.Common.Threading
@@ -181,15 +180,13 @@ namespace ProcessHacker.Common.Threading
 
                     return;
                 }
-                else
-                {
-                    if (Interlocked.CompareExchange(
-                        ref _value,
-                        value - RundownCountIncrement * count,
-                        value
-                        ) == value)
-                        return;
-                }
+                
+                if (Interlocked.CompareExchange(
+                    ref this._value,
+                    value - RundownCountIncrement * count,
+                    value
+                    ) == value)
+                    return;
             }
         }
 
@@ -233,8 +230,8 @@ namespace ProcessHacker.Common.Threading
             // Wait for the event, but only if we had users.
             if ((value & ~RundownActive) != 0)
                 return _wakeEvent.Wait(millisecondsTimeout);
-            else
-                return true;
+            
+            return true;
         }
     }
 }

@@ -183,7 +183,6 @@ namespace ProcessHacker.Common
                     return "Normal";
                 case ProcessPriorityClass.RealTime:
                     return "Realtime";
-                case ProcessPriorityClass.Unknown:
                 default:
                     return string.Empty;
             }
@@ -191,7 +190,7 @@ namespace ProcessHacker.Common
 
         public static string GetBestUserName(string userName, bool includeDomain)
         {
-            if (userName == null)
+            if (string.IsNullOrEmpty(userName))
                 return string.Empty;
 
             if (!userName.Contains("\\", StringComparison.OrdinalIgnoreCase))
@@ -229,7 +228,7 @@ namespace ProcessHacker.Common
             var window = WindowHandle.GetForegroundWindow();
 
             // Make sure the foreground window belongs to us.
-            if (window.ClientId.ProcessId == ProcessHandle.GetCurrentId())
+            if (window.ClientId.ProcessId == ProcessHandle.CurrentId)
                 return window;
             
             return new WindowFromHandle(Program.HackerWindowHandle);
@@ -351,7 +350,7 @@ namespace ProcessHacker.Common
         {
             try
             {
-                System.Net.IPHostEntry entry = System.Net.Dns.GetHostEntry("www.msftncsi.com");
+                IPHostEntry entry = Dns.GetHostEntry("www.msftncsi.com");
                 return true;
                
                 //http://www.msftncsi.com/ncsi.txt 
@@ -519,7 +518,7 @@ namespace ProcessHacker.Common
                 };
                 td.DefaultButton = (int)DialogResult.No;
 
-                return td.Show(PhUtils.GetForegroundWindow()) == (int)DialogResult.Yes;
+                return td.Show(GetForegroundWindow()) == (int)DialogResult.Yes;
             }
             
             return MessageBox.Show(

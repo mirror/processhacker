@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Threading
 {
@@ -12,7 +9,7 @@ namespace ProcessHacker.Native.Threading
     {
         public static void QueueWorkItem(Action<object> work, object argument)
         {
-            Win32.RtlQueueWorkItem((context) => work(argument), IntPtr.Zero, WtFlags.ExecuteDefault).ThrowIf(); 
+            Win32.RtlQueueWorkItem(context => work(argument), IntPtr.Zero, WtFlags.ExecuteDefault).ThrowIf(); 
         }
 
         public static IntPtr RegisterWait(IntPtr handle, RegisterWaitCallback callback, object argument, int timeoutMilliseconds)

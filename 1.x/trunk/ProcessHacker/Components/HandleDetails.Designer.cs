@@ -136,7 +136,7 @@
             this.groupBasicInfo.Location = new System.Drawing.Point(6, 6);
             this.groupBasicInfo.Name = "groupBasicInfo";
             this.groupBasicInfo.Size = new System.Drawing.Size(430, 102);
-            this.groupBasicInfo.TabIndex = 4;
+            this.groupBasicInfo.TabIndex = 0;
             this.groupBasicInfo.TabStop = false;
             this.groupBasicInfo.Text = "Basic Information";
             // 
@@ -148,7 +148,7 @@
             this.textGrantedAccess.Location = new System.Drawing.Point(98, 76);
             this.textGrantedAccess.Name = "textGrantedAccess";
             this.textGrantedAccess.Size = new System.Drawing.Size(326, 15);
-            this.textGrantedAccess.TabIndex = 1;
+            this.textGrantedAccess.TabIndex = 20;
             // 
             // textAddress
             // 
@@ -186,7 +186,7 @@
             this.label4.Location = new System.Drawing.Point(6, 76);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(88, 13);
-            this.label4.TabIndex = 0;
+            this.label4.TabIndex = 21;
             this.label4.Text = "Granted Access:";
             // 
             // label3

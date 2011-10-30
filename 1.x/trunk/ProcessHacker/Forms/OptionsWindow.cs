@@ -32,6 +32,7 @@ using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Threading;
 using ProcessHacker.UI;
 
 namespace ProcessHacker
@@ -326,7 +327,7 @@ namespace ProcessHacker
                     ))
                 {
                     if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", string.Empty)).Trim('"').Equals(
-                        ProcessHandle.Current.GetMainModule().FileName, StringComparison.OrdinalIgnoreCase))
+                        ProcessHandle.Current.MainModule.FileName, StringComparison.OrdinalIgnoreCase))
                     {
                         checkReplaceTaskManager.Checked = true;
                     }
@@ -465,7 +466,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    string fileName = ProcessHandle.Current.GetMainModule().FileName;
+                    string fileName = ProcessHandle.Current.MainModule.FileName;
 
                     using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
                         "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",
@@ -576,7 +577,8 @@ namespace ProcessHacker
             // Avoid cross-thread operation.
             IntPtr thisHandle = this.Handle;
 
-            Thread t = new Thread(() =>
+
+            NativeThreadPool.QueueWorkItem(o =>
             {
                 Program.StartProcessHackerAdminWait(args, thisHandle, 0xffffffff);
 
@@ -589,9 +591,7 @@ namespace ProcessHacker
                     buttonApply.Enabled = false;
                     buttonOK.Select();
                 }));
-            }, Utils.SixteenthStackSize);
-
-            t.Start();
+            }, null);
         }
 
         private void buttonEnableAll_Click(object sender, EventArgs e)
@@ -637,7 +637,7 @@ namespace ProcessHacker
             {
                 Settings.Instance.Reset();
                 Program.GlobalMutex.Dispose();
-                Program.TryStart(ProcessHandle.Current.GetMainModule().FileName);
+                Program.TryStart(ProcessHandle.Current.MainModule.FileName);
                 Program.HackerWindow.Exit(false);
             }
         }

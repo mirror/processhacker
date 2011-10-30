@@ -263,7 +263,7 @@ namespace ProcessHacker.Native.Security
 
         public LuidAndAttributes ToLuidAndAttributes()
         {
-            return new LuidAndAttributes()
+            return new LuidAndAttributes
             {
                 Attributes = _attributes,
                 Luid = _luid

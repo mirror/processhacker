@@ -376,7 +376,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    return PhUtils.FormatPriorityClass(_pitem.ProcessQueryHandle.GetPriorityClass());
+                    return PhUtils.FormatPriorityClass(_pitem.ProcessQueryHandle.PriorityClass);
                 }
                 catch
                 {
@@ -630,7 +630,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    return _pitem.ProcessQueryHandle.GetPagePriority();
+                    return _pitem.ProcessQueryHandle.PagePriority;
                 }
                 catch
                 {

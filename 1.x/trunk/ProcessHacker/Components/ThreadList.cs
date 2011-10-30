@@ -638,7 +638,7 @@ namespace ProcessHacker.Components
             }
 
             // Suspending PH threads is not a good idea :(
-            if (_pid == ProcessHandle.GetCurrentId())
+            if (_pid == ProcessHandle.CurrentId)
             {
                 if (!PhUtils.ShowConfirmMessage(
                     "inspect",

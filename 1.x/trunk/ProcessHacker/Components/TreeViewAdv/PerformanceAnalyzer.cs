@@ -24,7 +24,7 @@ namespace Aga.Controls
 			}
 		}
 
-		private static Dictionary<string, PerformanceInfo> _performances = new Dictionary<string, PerformanceInfo>();
+		private static readonly Dictionary<string, PerformanceInfo> _performances = new Dictionary<string, PerformanceInfo>();
 
 		public static IEnumerable<PerformanceInfo> Performances
 		{
@@ -37,10 +37,11 @@ namespace Aga.Controls
 		[Conditional("DEBUG")]
 		public static void Start(string pieceOfCode)
 		{
-			PerformanceInfo info = null;
-			lock(_performances)
+		    lock(_performances)
 			{
-				if (_performances.ContainsKey(pieceOfCode))
+			    PerformanceInfo info;
+
+			    if (_performances.ContainsKey(pieceOfCode))
 					info = _performances[pieceOfCode];
 				else
 				{

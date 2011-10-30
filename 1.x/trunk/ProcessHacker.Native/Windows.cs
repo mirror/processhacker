@@ -157,12 +157,12 @@ namespace ProcessHacker.Native
             {
                 _kernelModulesBuffer.ResizeNew(retLength);
 
-                Win32.NtQuerySystemInformation(
+                status = Win32.NtQuerySystemInformation(
                     SystemInformationClass.SystemModuleInformation,
                     _kernelModulesBuffer,
                     _kernelModulesBuffer.Size,
                     out retLength
-                    ).ThrowIf();
+                    );
             }
 
             status.ThrowIf();

@@ -35,6 +35,7 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Debugging;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Threading;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
 using TaskbarLib;
@@ -496,29 +497,31 @@ namespace ProcessHacker
 
         private void openMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-
-            ofd.Filter = "Process Hacker Dump Files (*.phi)|*.phi|All Files (*.*)|*.*";
-
-            if (ofd.ShowDialog() == DialogResult.OK)
+            using (OpenFileDialog ofd = new OpenFileDialog
             {
-                DumpHackerWindow dhw = null;
+                Filter = "Process Hacker Dump Files (*.phi)|*.phi|All Files (*.*)|*.*"
+            })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    DumpHackerWindow dhw = null;
 
-                try
-                {
-                    dhw = new DumpHackerWindow(ofd.FileName);
-                }
-                catch (ProcessHacker.Native.Mfs.MfsInvalidFileSystemException)
-                {
-                    PhUtils.ShowError("Unable to open the dump file: the dump file is invalid.");
-                }
-                catch (Exception ex)
-                {
-                    PhUtils.ShowException("Unable to open the dump file", ex);
-                }
+                    try
+                    {
+                        dhw = new DumpHackerWindow(ofd.FileName);
+                    }
+                    catch (ProcessHacker.Native.Mfs.MfsInvalidFileSystemException)
+                    {
+                        PhUtils.ShowError("Unable to open the dump file: the dump file is invalid.");
+                    }
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowException("Unable to open the dump file", ex);
+                    }
 
-                if (dhw != null)
-                    dhw.Show();
+                    if (dhw != null)
+                        dhw.Show();
+                }
             }
         }
 
@@ -802,7 +805,7 @@ namespace ProcessHacker
 
         private void selectAllNetworkMenuItem_Click(object sender, EventArgs e)
         {
-            Utils.SelectAll(listNetwork.List.Items);
+            this.listNetwork.List.Items.SelectAll();
         }
 
         #endregion
@@ -1036,7 +1039,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            switch (phandle.GetPriorityClass())
+                            switch (phandle.PriorityClass)
                             {
                                 case ProcessPriorityClass.RealTime:
                                     realTimeToolStripMenuItem.Checked = true;
@@ -1574,11 +1577,14 @@ namespace ProcessHacker
 
         private void terminatorProcessMenuItem_Click(object sender, EventArgs e)
         {
-            TerminatorWindow w = new TerminatorWindow(processSelectedPid);
-
-            w.Text = "Terminator - " + Program.ProcessProvider.Dictionary[processSelectedPid].Name +
-                " (PID " + processSelectedPid.ToString() + ")";
-            w.ShowDialog();
+            using (TerminatorWindow w = new TerminatorWindow(processSelectedPid)
+            {
+                Text = "Terminator - " + Program.ProcessProvider.Dictionary[this.processSelectedPid].Name +
+                       " (PID " + this.processSelectedPid.ToString() + ")"
+            })
+            {
+                w.ShowDialog();
+            }
         }
 
         #region Run As
@@ -1674,23 +1680,24 @@ namespace ProcessHacker
 
         private void injectDllProcessMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-
-            ofd.Filter = "DLL Files (*.dll)|*.dll|All Files (*.*)|*.*";
-
-            if (ofd.ShowDialog() == DialogResult.OK)
+            using (OpenFileDialog ofd = new OpenFileDialog
             {
-                try
+                Filter = "DLL Files (*.dll)|*.dll|All Files (*.*)|*.*"
+            })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    using (var phandle = new ProcessHandle(processSelectedPid,
-                        ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
+                    try
                     {
-                        phandle.InjectDll(ofd.FileName, 5000);
+                        using (ProcessHandle phandle = new ProcessHandle(processSelectedPid, ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
+                        {
+                            phandle.InjectDll(ofd.FileName, 5000);
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    PhUtils.ShowException("Unable to inject the DLL", ex);
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowException("Unable to inject the DLL", ex);
+                    }
                 }
             }
         }
@@ -1727,19 +1734,21 @@ namespace ProcessHacker
 
         private void setTokenProcessMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessPickerWindow picker = new ProcessPickerWindow();
-
-            picker.Label = "Select the source of the token:";
-
-            if (picker.ShowDialog() == DialogResult.OK)
+            using (ProcessPickerWindow picker = new ProcessPickerWindow
             {
-                try
+                Label = "Select the source of the token:"
+            })
+            {
+                if (picker.ShowDialog() == DialogResult.OK)
                 {
-                    KProcessHacker.Instance.SetProcessToken(picker.SelectedPid, processSelectedPid);
-                }
-                catch (Exception ex)
-                {
-                    PhUtils.ShowException("Unable to set the process token", ex);
+                    try
+                    {
+                        KProcessHacker.Instance.SetProcessToken(picker.SelectedPid, processSelectedPid);
+                    }
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowException("Unable to set the process token", ex);
+                    }
                 }
             }
         }
@@ -1909,41 +1918,41 @@ namespace ProcessHacker
             Program.ProcessProvider.DictionaryRemoved += processP_DictionaryRemoved;
             Program.ProcessProvider.Updated -= processP_Updated;
 
-            try { ProcessHandle.Current.SetPriorityClass(ProcessPriorityClass.High); }
-            catch { }
+            ProcessHandle.Current.PriorityClass = ProcessPriorityClass.High;
 
             _enableNetworkProviderSync.Increment();
             _refreshHighlightingSync.Increment();
 
             if (Program.ProcessProvider.RunCount >= 1)
-                this.BeginInvoke(new MethodInvoker(delegate
+                this.BeginInvoke(new MethodInvoker(() =>
                 {
-                    treeProcesses.Tree.EndCompleteUpdate();
-                    treeProcesses.Tree.EndUpdate();
+                    this.treeProcesses.Tree.EndCompleteUpdate();
+                    this.treeProcesses.Tree.EndUpdate();
 
                     if (Settings.Instance.ScrollDownProcessTree)
                     {
                         // HACK
                         try
                         {
-                            foreach (var process in treeProcesses.Model.Roots)
+                            foreach (var process in this.treeProcesses.Model.Roots)
                             {
                                 if (
                                     string.Equals(process.Name, "explorer.exe",
-                                    StringComparison.OrdinalIgnoreCase) &&
+                                                  StringComparison.OrdinalIgnoreCase) &&
                                     process.ProcessItem.Username == Program.CurrentUsername)
                                 {
-                                    treeProcesses.FindTreeNode(process).EnsureVisible2();
+                                    this.treeProcesses.FindTreeNode(process).EnsureVisible2();
 
                                     break;
                                 }
                             }
                         }
                         catch
-                        { }
+                        {
+                        }
                     }
 
-                    treeProcesses.Invalidate();
+                    this.treeProcesses.Invalidate();
                     Program.ProcessProvider.Boost();
                     this.Cursor = Cursors.Default;
                 }));
@@ -1951,10 +1960,7 @@ namespace ProcessHacker
 
         private void processP_InfoUpdater()
         {
-            this.BeginInvoke(new MethodInvoker(delegate
-            {
-                UpdateStatusInfo();
-            }));
+            this.BeginInvoke(new MethodInvoker(this.UpdateStatusInfo));
         }
 
         private void processP_FileProcessingReceived(int stage, int pid)
@@ -2009,10 +2015,7 @@ namespace ProcessHacker
 
         private void serviceP_Updated()
         {
-            listServices.BeginInvoke(new MethodInvoker(delegate
-            {
-                listServices.List.EndUpdate();
-            }));
+            listServices.BeginInvoke(new MethodInvoker(() => this.listServices.List.EndUpdate()));
 
             HighlightingContext.StateHighlighting = true;
 
@@ -2153,9 +2156,6 @@ namespace ProcessHacker
 
         #region Service Context Menu
 
-
-
-
         private void goToProcessServiceMenuItem_Click(object sender, EventArgs e)
         {
             this.SelectProcess(
@@ -2215,7 +2215,7 @@ namespace ProcessHacker
 
         private void selectAllServiceMenuItem_Click(object sender, EventArgs e)
         {
-            Utils.SelectAll(listServices.Items);
+            this.listServices.Items.SelectAll();
         }
 
         #endregion
@@ -2711,15 +2711,11 @@ namespace ProcessHacker
         {
             checkForUpdatesMenuItem.Enabled = false;
 
-            Thread t = new Thread(() =>
+            NativeThreadPool.QueueWorkItem(o =>
             {
                 Updater.Update(this, interactive);
                 this.BeginInvoke(new MethodInvoker(() => this.checkForUpdatesMenuItem.Enabled = true));
-            }, Utils.SixteenthStackSize)
-            {
-                IsBackground = true
-            };
-            t.Start();
+            }, null);
         }
 
         private void UpdateSessions()
@@ -2841,7 +2837,7 @@ namespace ProcessHacker
             try
             {
                 using (ProcessHandle phandle = new ProcessHandle(processSelectedPid, ProcessAccess.SetInformation))
-                    phandle.SetPriorityClass(priority);
+                    phandle.PriorityClass = priority;
             }
             catch (Exception ex)
             {

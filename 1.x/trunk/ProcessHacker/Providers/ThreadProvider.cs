@@ -202,7 +202,7 @@ namespace ProcessHacker
                         {
                             using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                             {
-                                if (OSVersion.Architecture == OSArch.I386 || !phandle.IsWow64())
+                                if (OSVersion.Architecture == OSArch.I386 || !phandle.IsWow64)
                                 {
                                     // Load the process' modules.
                                     try { _symbols.LoadProcessModules(phandle); }
@@ -217,7 +217,7 @@ namespace ProcessHacker
 
                                 // If the process is CSRSS we should load kernel modules 
                                 // due to the presence of kernel-mode threads.
-                                if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
+                                if (phandle.KnownProcessType == KnownProcess.WindowsSubsystem)
                                     this.LoadKernelSymbols(true);
                             }
                         }
@@ -283,9 +283,11 @@ namespace ProcessHacker
 
         private void ResolveThreadStartAddress(int tid, ulong startAddress)
         {
-            ResolveMessage result = new ResolveMessage();
+            ResolveMessage result = new ResolveMessage
+            {
+                Tid = tid
+            };
 
-            result.Tid = tid;
 
             _moduleLoadCompletedEvent.Wait();
 
@@ -389,16 +391,17 @@ namespace ProcessHacker
             // look for new threads
             foreach (int tid in threads.Keys)
             {
-                var t = threads[tid];
+                SystemThreadInformation t = threads[tid];
 
                 if (!Dictionary.ContainsKey(tid))
                 {
-                    ThreadItem item = new ThreadItem();
-
-                    item.RunId = this.RunCount;
-                    item.Tid = tid;
-                    item.ContextSwitches = t.ContextSwitchCount;
-                    item.WaitReason = t.WaitReason;
+                    ThreadItem item = new ThreadItem
+                    {
+                        RunId = this.RunCount,
+                        Tid = tid,
+                        ContextSwitches = t.ContextSwitchCount,
+                        WaitReason = t.WaitReason
+                    };
 
                     try
                     {

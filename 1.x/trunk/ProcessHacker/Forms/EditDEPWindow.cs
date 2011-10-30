@@ -37,6 +37,7 @@ namespace ProcessHacker
         public EditDEPWindow(int PID)
         {
             InitializeComponent();
+
             this.AddEscapeToClose();
             this.SetTopMost();
 
@@ -46,7 +47,7 @@ namespace ProcessHacker
             {
                 using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation))
                 {
-                    var depStatus = phandle.GetDepStatus();
+                    var depStatus = phandle.DepStatus;
                     string str;
 
                     if ((depStatus & DepStatus.Enabled) != 0)
@@ -81,7 +82,7 @@ namespace ProcessHacker
 
         private void SetDepStatusKph()
         {
-            DepStatus depStatus = DepStatus.Enabled;
+            DepStatus depStatus;
 
             if (comboStatus.SelectedItem.ToString() == "Disabled")
                 depStatus = 0;
@@ -100,8 +101,8 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                    phandle.SetDepStatus(depStatus);
+                using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    phandle.DepStatus = depStatus;
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();

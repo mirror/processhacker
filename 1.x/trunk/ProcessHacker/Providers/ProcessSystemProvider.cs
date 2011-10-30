@@ -470,7 +470,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            fpResult.IsWow64 = queryLimitedHandle.IsWow64();
+                            fpResult.IsWow64 = queryLimitedHandle.IsWow64;
                         }
                         catch
                         { }
@@ -538,8 +538,8 @@ namespace ProcessHacker
                 {
                     using (ProcessHandle phandle = new ProcessHandle(pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                     {
-                        fpResult.CmdLine = phandle.GetCommandLine();
-                        fpResult.IsPosix = phandle.IsPosix();
+                        fpResult.CmdLine = phandle.CommandLine;
+                        fpResult.IsPosix = phandle.IsPosix;
                     }
                 }
                 catch
@@ -755,7 +755,7 @@ namespace ProcessHacker
                             // If all else failed, we get the main module file name.
                             try
                             {
-                                fileName = phandle.GetMainModule().FileName;
+                                fileName = phandle.MainModule.FileName;
                             }
                             catch
                             { }
@@ -767,12 +767,7 @@ namespace ProcessHacker
             }
             else
             {
-                try
-                {
-                    fileName = Windows.KernelFileName;
-                }
-                catch
-                { }
+                fileName = Windows.KernelFileName;
             }
 
             return fileName;
@@ -954,33 +949,31 @@ namespace ProcessHacker
 
                 if (!Dictionary.ContainsKey(pid))
                 {
-                    ProcessItem item = new ProcessItem();
-
                     // Set up basic process information.
-                    item.RunId = this.RunCount;
-                    item.Pid = pid;
-                    item.Process = processInfo;
-                    item.SessionId = processInfo.SessionId;
-                    item.ProcessingAttempts = 1;
+                    ProcessItem item = new ProcessItem
+                    {
+                        RunId = this.RunCount,
+                        Pid = pid,
+                        Process = processInfo,
+                        SessionId = processInfo.SessionId,
+                        ProcessingAttempts = 1,
+                        Name = procs[pid].Name,
+                        // Create the delta and history managers.
+                        CpuKernelDelta = new Int64Delta(processInfo.KernelTime),
+                        CpuUserDelta = new Int64Delta(processInfo.UserTime),
+                        IoReadDelta = new Int64Delta((long)processInfo.IoCounters.ReadTransferCount),
+                        IoWriteDelta = new Int64Delta((long)processInfo.IoCounters.WriteTransferCount),
+                        IoOtherDelta = new Int64Delta((long)processInfo.IoCounters.OtherTransferCount),
+                        CpuKernelHistory = new CircularBuffer<float>(this._historyMaxSize),
+                        CpuUserHistory = new CircularBuffer<float>(this._historyMaxSize),
+                        IoReadHistory = new CircularBuffer<long>(this._historyMaxSize),
+                        IoWriteHistory = new CircularBuffer<long>(this._historyMaxSize),
+                        IoOtherHistory = new CircularBuffer<long>(this._historyMaxSize),
+                        IoReadOtherHistory = new CircularBuffer<long>(this._historyMaxSize),
+                        PrivateMemoryHistory = new CircularBuffer<long>(this._historyMaxSize),
+                        WorkingSetHistory = new CircularBuffer<long>(this._historyMaxSize)
+                    };
 
-                    item.Name = procs[pid].Name;
-
-                    // Create the delta and history managers.
-
-                    item.CpuKernelDelta = new Int64Delta(processInfo.KernelTime);
-                    item.CpuUserDelta = new Int64Delta(processInfo.UserTime);
-                    item.IoReadDelta = new Int64Delta((long)processInfo.IoCounters.ReadTransferCount);
-                    item.IoWriteDelta = new Int64Delta((long)processInfo.IoCounters.WriteTransferCount);
-                    item.IoOtherDelta = new Int64Delta((long)processInfo.IoCounters.OtherTransferCount);
-
-                    item.CpuKernelHistory = new CircularBuffer<float>(_historyMaxSize);
-                    item.CpuUserHistory = new CircularBuffer<float>(_historyMaxSize);
-                    item.IoReadHistory = new CircularBuffer<long>(_historyMaxSize);
-                    item.IoWriteHistory = new CircularBuffer<long>(_historyMaxSize);
-                    item.IoOtherHistory = new CircularBuffer<long>(_historyMaxSize);
-                    item.IoReadOtherHistory = new CircularBuffer<long>(_historyMaxSize);
-                    item.PrivateMemoryHistory = new CircularBuffer<long>(_historyMaxSize);
-                    item.WorkingSetHistory = new CircularBuffer<long>(_historyMaxSize);
                     try
                     {
                         item.ProcessQueryHandle = new ProcessHandle(pid, (ProcessAccess)StandardRights.MaximumAllowed);
@@ -996,7 +989,7 @@ namespace ProcessHacker
                         {
                             try
                             {
-                                item.Name = item.ProcessQueryHandle.GetMainModule().BaseName;
+                                item.Name = item.ProcessQueryHandle.MainModule.BaseName;
                             }
                             catch
                             {
@@ -1057,7 +1050,7 @@ namespace ProcessHacker
                         {
                             try
                             {
-                                item.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
+                                item.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged;
                             }
                             catch
                             { }
@@ -1190,7 +1183,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            bool isBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
+                            bool isBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged;
 
                             if (isBeingDebugged != item.IsBeingDebugged)
                             {

@@ -43,11 +43,6 @@ namespace ProcessHacker.Common.Ui
     {
         private class DefaultComparer : ISortedListViewComparer
         {
-            public DefaultComparer(SortedListViewComparer sortedListComparer)
-            {
-
-            }
-
             public int Compare(ListViewItem x, ListViewItem y, int column)
             {
                 string sx, sy;
@@ -99,7 +94,7 @@ namespace ProcessHacker.Common.Ui
             _list.ColumnClick += this.list_ColumnClick;
             _sortColumn = 0;
             _sortOrder = SortOrder.Ascending;
-            _comparer = new DefaultComparer(this);
+            _comparer = new DefaultComparer();
             this.SetSortIcon();
         }
 
@@ -140,7 +135,7 @@ namespace ProcessHacker.Common.Ui
             set
             {
                 if (value == null)
-                    _comparer = new DefaultComparer(this);
+                    _comparer = new DefaultComparer();
                 else
                     _comparer = value;
             }
@@ -234,21 +229,7 @@ namespace ProcessHacker.Common.Ui
             // Avoid forcing handle creation before all other initialization 
             // has finished. This is done by handling the Layout event and 
             // performing the icon setting there.
-            _list.DoDelayed((control) => _list.Columns[_sortColumn].SetSortIcon(_sortOrder));
-        }
-
-        private ListViewItem GetItem(int index)
-        {
-            if (_virtualMode)
-            {
-                var args = new RetrieveVirtualItemEventArgs(index);
-                _retrieveVirtualItem(this, args);
-                return args.Item;
-            }
-            else
-            {
-                return _list.Items[index];
-            }
+            _list.DoDelayed(control => _list.Columns[_sortColumn].SetSortIcon(_sortOrder));
         }
 
         private int ModifySort(int result, SortOrder order)

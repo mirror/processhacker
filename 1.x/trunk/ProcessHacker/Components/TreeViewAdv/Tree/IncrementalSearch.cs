@@ -8,7 +8,7 @@ namespace Aga.Controls.Tree
 	{
 		private const int SearchTimeout = 300; //end of incremental search timeot in msec
 
-		private TreeViewAdv _tree;
+		private readonly TreeViewAdv _tree;
 		private TreeNodeAdv _currentNode;
         private string _searchString = string.Empty;
 		private DateTime _lastKeyPressed = DateTime.Now;
@@ -108,7 +108,7 @@ namespace Aga.Controls.Tree
 			}
 		}
 
-		private bool DoContinuousSearch()
+		private void DoContinuousSearch()
 		{
 			bool found = false;
 			if (!String.IsNullOrEmpty(_searchString))
@@ -132,7 +132,7 @@ namespace Aga.Controls.Tree
 					}
 				}
 			}
-			return found;
+		    return;
 		}
 
 	}

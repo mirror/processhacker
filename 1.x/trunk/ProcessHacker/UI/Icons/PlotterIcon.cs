@@ -90,7 +90,7 @@ namespace ProcessHacker
             }
 
             this.Icon = newIcon;
-            ProcessHacker.Native.Api.Win32.DestroyIcon(oldIcon.Handle);
+            Native.Api.Win32.DestroyIcon(oldIcon.Handle);
         }
 
         protected bool UseLongData

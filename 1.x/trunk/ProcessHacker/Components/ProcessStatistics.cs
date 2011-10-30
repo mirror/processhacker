@@ -24,7 +24,6 @@ using System;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
-using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Components
 {
@@ -100,11 +99,11 @@ namespace ProcessHacker.Components
             labelMemoryPPU.Text = Utils.FormatSize(item.Process.VirtualMemoryCounters.PeakPagefileUsage);
             labelMemoryPF.Text = ((ulong)item.Process.VirtualMemoryCounters.PageFaultCount).ToString("N0");
 
-            labelIOReads.Text = ((ulong)item.Process.IoCounters.ReadOperationCount).ToString("N0");
+            labelIOReads.Text = item.Process.IoCounters.ReadOperationCount.ToString("N0");
             labelIOReadBytes.Text = Utils.FormatSize(item.Process.IoCounters.ReadTransferCount);
-            labelIOWrites.Text = ((ulong)item.Process.IoCounters.WriteOperationCount).ToString("N0");
+            labelIOWrites.Text = item.Process.IoCounters.WriteOperationCount.ToString("N0");
             labelIOWriteBytes.Text = Utils.FormatSize(item.Process.IoCounters.WriteTransferCount);
-            labelIOOther.Text = ((ulong)item.Process.IoCounters.OtherOperationCount).ToString("N0");
+            labelIOOther.Text = item.Process.IoCounters.OtherOperationCount.ToString("N0");
             labelIOOtherBytes.Text = Utils.FormatSize(item.Process.IoCounters.OtherTransferCount);
 
             labelOtherHandles.Text = ((ulong)item.Process.HandleCount).ToString("N0");
@@ -123,7 +122,7 @@ namespace ProcessHacker.Components
 
                     if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
                     {
-                        labelMemoryPP.Text = item.ProcessQueryHandle.GetPagePriority().ToString();
+                        labelMemoryPP.Text = item.ProcessQueryHandle.PagePriority.ToString();
                         labelIOPriority.Text = item.ProcessQueryHandle.IoPriority.ToString();
                     }
                 }

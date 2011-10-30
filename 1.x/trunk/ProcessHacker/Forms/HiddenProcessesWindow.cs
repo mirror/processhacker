@@ -298,24 +298,24 @@ namespace ProcessHacker
             }
         }
 
-        private List<ProcessHandle> GetCsrProcesses()
+        private ProcessHandle[] GetCsrProcesses()
         {
             List<ProcessHandle> csrProcesses = new List<ProcessHandle>();
 
             try
             {
-                foreach (var process in Windows.GetProcesses())
+                foreach (KeyValuePair<int, SystemProcess> process in Windows.GetProcesses())
                 {
                     if (process.Key <= 4)
                         continue;
 
                     try
                     {
-                        var phandle = new ProcessHandle(process.Key,
+                        ProcessHandle phandle = new ProcessHandle(process.Key,
                             Program.MinProcessQueryRights | ProcessAccess.DupHandle
                             );
 
-                        if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
+                        if (phandle.KnownProcessType == KnownProcess.WindowsSubsystem)
                             csrProcesses.Add(phandle);
                         else
                             phandle.Dispose();
@@ -327,10 +327,9 @@ namespace ProcessHacker
             catch (Exception ex)
             {
                 PhUtils.ShowException("Unable to get the list of CSR processes", ex);
-                return new List<ProcessHandle>();
             }
 
-            return csrProcesses;
+            return csrProcesses.ToArray();
         }
 
         private ProcessHandle OpenProcessCsr(int pid, ProcessAccess access)
