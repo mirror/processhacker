@@ -22,6 +22,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ProcessHacker.Common;
@@ -76,12 +77,16 @@ namespace ProcessHacker
             // Maximum physical memory.
             indicatorPhysical.Maximum = (int)_pages;
 
+            PerformanceInformation info;
+            Win32.GetPerformanceInfo(out info, PerformanceInformation.SizeOf);
+
+            this.trackerMemory.Maximum = info.PhysicalTotal.ToInt32();
+
             // Set indicators color
             indicatorCpu.Color1 = Settings.Instance.PlotterCPUKernelColor;
             indicatorCpu.Color2 = Settings.Instance.PlotterCPUUserColor;
             indicatorIO.Color1 = Settings.Instance.PlotterIOROColor;
             indicatorPhysical.Color1 = Settings.Instance.PlotterMemoryWSColor;  
-
 
             // Set up the plotter controls.
             plotterCPU.Data1 = Program.ProcessProvider.CpuKernelHistory;
@@ -99,12 +104,16 @@ namespace ProcessHacker
                 "R+O: " + Utils.FormatSize(plotterIO.LongData1[i]) + "\n" +
                 "W: " + Utils.FormatSize(plotterIO.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
-            plotterMemory.LongData1 = Program.ProcessProvider.CommitHistory;
-            plotterMemory.LongData2 = Program.ProcessProvider.PhysicalMemoryHistory;
-            plotterMemory.GetToolTip = i =>
-                "Commit: " + Utils.FormatSize(plotterMemory.LongData1[i]) + "\n" +
-                "Phys. Memory: " + Utils.FormatSize(plotterMemory.LongData2[i]) + "\n" +
-                Program.ProcessProvider.TimeHistory[i].ToString();
+
+            this.trackerMemory.values.Add(0);
+            this.trackerMemory.DrawColor = Settings.Instance.PlotterMemoryPrivateColor;
+
+            //plotterMemory.LongData1 = Program.ProcessProvider.CommitHistory;
+            //plotterMemory.LongData2 = Program.ProcessProvider.PhysicalMemoryHistory;
+            //plotterMemory.GetToolTip = i =>
+            //    "Commit: " + Utils.FormatSize(plotterMemory.LongData1[i]) + "\n" +
+            //    "Phys. Memory: " + Utils.FormatSize(plotterMemory.LongData2[i]) + "\n" +
+            //    Program.ProcessProvider.TimeHistory[i].ToString();
 
             // Create a plotter per CPU.
             _cpuPlotters = new Plotter[_noOfCPUs];
@@ -117,7 +126,7 @@ namespace ProcessHacker
                 Plotter plotter;
 
                 tableCPUs.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 1.0f / _noOfCPUs));
-                _cpuPlotters[i] = plotter = new ProcessHacker.Components.Plotter();
+                _cpuPlotters[i] = plotter = new Plotter();
                 plotter.BackColor = Color.Black;
                 plotter.Dock = DockStyle.Fill;
                 plotter.Margin = new Padding(i == 0 ? 0 : 3, 0, 0, 0); // nice spacing
@@ -143,8 +152,7 @@ namespace ProcessHacker
             this.UpdateGraphs();
             this.UpdateInfo();
 
-            Program.ProcessProvider.Updated +=
-                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+            Program.ProcessProvider.Updated += this.ProcessProvider_Updated;
             
             //We need todo this here or TopMost property gets over-rided
             //by AlwaysOnTopCheckbox
@@ -159,11 +167,10 @@ namespace ProcessHacker
                 Settings.Instance.SysInfoWindowSize = this.Size;
             }
             
-            Program.ProcessProvider.Updated -=
-                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+            Program.ProcessProvider.Updated -= this.ProcessProvider_Updated;
             Settings.Instance.ShowOneGraphPerCPU = checkShowOneGraphPerCPU.Checked;   
         }
-
+        
         private void UpdateGraphs()
         {
             // Update the CPU indicator.         
@@ -190,18 +197,18 @@ namespace ProcessHacker
             plotterCPU.LineColor2 = Settings.Instance.PlotterCPUUserColor;
             plotterIO.LineColor1 = Settings.Instance.PlotterIOROColor;
             plotterIO.LineColor2 = Settings.Instance.PlotterIOWColor;
-            plotterMemory.LineColor1 = Settings.Instance.PlotterMemoryPrivateColor;
-            plotterMemory.LineColor2 = Settings.Instance.PlotterMemoryWSColor;
+            //plotterMemory.LineColor1 = Settings.Instance.PlotterMemoryPrivateColor;
+            //plotterMemory.LineColor2 = Settings.Instance.PlotterMemoryWSColor;
 
-            for (int i = 0; i < _cpuPlotters.Length; i++)
+            foreach (Plotter t in this._cpuPlotters)
             {
-                _cpuPlotters[i].LineColor1 = Settings.Instance.PlotterCPUKernelColor;
-                _cpuPlotters[i].LineColor2 = Settings.Instance.PlotterCPUUserColor;
-                _cpuPlotters[i].Text = ((_cpuPlotters[i].Data1[0] + _cpuPlotters[i].Data2[0]) * 100).ToString("F2") +
-                    "% (K: " + (_cpuPlotters[i].Data1[0] * 100).ToString("F2") +
-                    "%, U: " + (_cpuPlotters[i].Data2[0] * 100).ToString("F2") + "%)";
-                _cpuPlotters[i].MoveGrid();
-                _cpuPlotters[i].Draw();
+                t.LineColor1 = Settings.Instance.PlotterCPUKernelColor;
+                t.LineColor2 = Settings.Instance.PlotterCPUUserColor;
+                t.Text = ((t.Data1[0] + t.Data2[0]) * 100).ToString("F2") +
+                         "% (K: " + (t.Data1[0] * 100).ToString("F2") +
+                         "%, U: " + (t.Data2[0] * 100).ToString("F2") + "%)";
+                t.MoveGrid();
+                t.Draw();
             }
 
             plotterCPU.Text = ((plotterCPU.Data1[0] + plotterCPU.Data2[0]) * 100).ToString("F2") +
@@ -212,16 +219,36 @@ namespace ProcessHacker
             plotterIO.Text = "R+O: " + Utils.FormatSize(plotterIO.LongData1[0]) +
                 ", W: " + Utils.FormatSize(plotterIO.LongData2[0]);
 
+
+            PerformanceInformation info = new PerformanceInformation
+            {
+                cbSize = PerformanceInformation.SizeOf
+            };
+
+            Win32.GetPerformanceInfo(out info, info.cbSize);
+
+            //string physMemText = Utils.FormatSize((ulong)(_pages - perfInfo.AvailablePages) * _pageSize);
+            //string commitText = Utils.FormatSize((ulong)perfInfo.CommittedPages * _pageSize);
+
             // update the memory graph text
-            plotterMemory.Text = "Commit: " + Utils.FormatSize(plotterMemory.LongData1[0]) +
-                ", Phys. Mem: " + Utils.FormatSize(plotterMemory.LongData2[0]);
+            long memCount;
+            unchecked
+            {
+                memCount = ((Program.ProcessProvider.System.NumberOfPhysicalPages - Program.ProcessProvider.Performance.AvailablePages) * Program.ProcessProvider.System.PageSize);
+            }
+
+
+            this.trackerMemory.values.Add((int)memCount);
+            this.trackerMemory.Maximum = (int)((long)info.PhysicalTotal * (long)info.PageSize);
+            this.trackerMemory.Text = "Phys. Mem: " + Utils.FormatSize(memCount) + " / " + Utils.FormatSize((long)info.PhysicalTotal * (long)info.PageSize);
+
 
             plotterCPU.MoveGrid();
             plotterCPU.Draw();
             plotterIO.MoveGrid();
             plotterIO.Draw();
-            plotterMemory.MoveGrid();
-            plotterMemory.Draw();
+
+            trackerMemory.Draw();
         }
 
         private unsafe void GetPoolLimits(out int paged, out int nonPaged)

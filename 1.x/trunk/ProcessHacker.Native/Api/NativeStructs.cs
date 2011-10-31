@@ -1222,12 +1222,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct JobObjectBasicAccountingInformation
     {
-        public static readonly int SizeOf;
-
-        static JobObjectBasicAccountingInformation()
-        {
-            SizeOf = Marshal.SizeOf(typeof(JobObjectBasicAccountingInformation));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(JobObjectBasicAccountingInformation));
 
         public long TotalUserTime;
         public long TotalKernelTime;
@@ -1242,12 +1237,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct JobObjectBasicAndIoAccountingInformation
     {
-        public static readonly int SizeOf;
-
-        static JobObjectBasicAndIoAccountingInformation()
-        {
-            SizeOf = Marshal.SizeOf(typeof(JobObjectBasicAndIoAccountingInformation));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(JobObjectBasicAndIoAccountingInformation));
 
         public JobObjectBasicAccountingInformation BasicInfo;
         public IoCounters IoInfo;
@@ -1256,12 +1246,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct JobObjectBasicLimitInformation
     {
-        public static readonly int SizeOf;
-
-        static JobObjectBasicLimitInformation()
-        {
-            SizeOf = Marshal.SizeOf(typeof(JobObjectBasicLimitInformation));
-        }
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(JobObjectBasicLimitInformation));
 
         public long PerProcessUserTimeLimit;
         public long PerJobUserTimeLimit;
@@ -2671,7 +2656,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemBasicInformation
     {
-        public static readonly int SizeOf;
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(SystemBasicInformation));
 
         public int Reserved;
         public int TimerResolution;
@@ -2684,11 +2669,6 @@ namespace ProcessHacker.Native.Api
         public IntPtr MaximumUserModeAddress;
         public IntPtr ActiveProcessorsAffinityMask;
         public byte NumberOfProcessors;
-
-        static SystemBasicInformation()
-        {
-            SizeOf = Marshal.SizeOf(typeof(SystemBasicInformation));
-        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

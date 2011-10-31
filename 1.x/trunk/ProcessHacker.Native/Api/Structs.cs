@@ -647,30 +647,84 @@ namespace ProcessHacker.Native.Api
         public uint Flags;
     }
 
+    /// <summary>
+    /// Contains performance information.
+    /// </summary>
+    /// <remarks>http://msdn.microsoft.com/en-us/library/ms684824.aspx</remarks>
     [StructLayout(LayoutKind.Sequential)]
     public struct PerformanceInformation
     {
-        public static readonly int SizeOf;
+        public static readonly int SizeOf = Marshal.SizeOf(typeof(PerformanceInformation));
 
-        public int Size;
+        /// <summary>
+        /// The size of this structure, in bytes.
+        /// </summary>
+        public int cbSize;
+
+        /// <summary>
+        /// The number of pages currently committed by the system. Note that committing pages (using VirtualAlloc with MEM_COMMIT) changes this value immediately; however, the physical memory is not charged until the pages are accessed.
+        /// </summary>
         public IntPtr CommitTotal;
-        public IntPtr CommitLimit;
-        public IntPtr CommitPeak;
-        public IntPtr PhysicalTotal;
-        public IntPtr PhysicalAvailable;
-        public IntPtr SystemCache;
-        public IntPtr KernelTotal;
-        public IntPtr KernelPaged;
-        public IntPtr KernelNonPaged;
-        public IntPtr PageSize;
-        public int HandlesCount;
-        public int ProcessCount;
-        public int ThreadCount;
 
-        static PerformanceInformation()
-        {
-            SizeOf = Marshal.SizeOf(typeof(PerformanceInformation));
-        }
+        /// <summary>
+        /// The current maximum number of pages that can be committed by the system without extending the paging file(s). This number can change if memory is added or deleted, or if pagefiles have grown, shrunk, or been added. If the paging file can be extended, this is a soft limit.
+        /// </summary>
+        public IntPtr CommitLimit;
+
+        /// <summary>
+        /// The maximum number of pages that were simultaneously in the committed state since the last system reboot.
+        /// </summary>
+        public IntPtr CommitPeak;
+
+        /// <summary>
+        /// The amount of actual physical memory, in pages.
+        /// </summary>
+        public IntPtr PhysicalTotal;
+
+        /// <summary>
+        /// The amount of physical memory currently available, in pages. This is the amount of physical memory that can be immediately reused without having to write its contents to disk first. It is the sum of the size of the standby, free, and zero lists.
+        /// </summary>
+        public IntPtr PhysicalAvailable;
+
+        /// <summary>
+        /// The amount of system cache memory, in pages. This is the size of the standby list plus the system working set.
+        /// </summary>
+        public IntPtr SystemCache;
+
+        /// <summary>
+        /// The sum of the memory currently in the paged and nonpaged kernel pools, in pages.
+        /// </summary>
+        public IntPtr KernelTotal;
+
+        /// <summary>
+        /// The memory currently in the paged kernel pool, in pages.
+        /// </summary>
+        public IntPtr KernelPaged;
+
+        /// <summary>
+        /// The memory currently in the nonpaged kernel pool, in pages.
+        /// </summary>
+        public IntPtr KernelNonPaged;
+
+        /// <summary>
+        /// The size of a page, in bytes.
+        /// </summary>
+        public IntPtr PageSize;
+
+        /// <summary>
+        /// The current number of open handles.
+        /// </summary>
+        public uint HandlesCount;
+
+        /// <summary>
+        /// The current number of processes.
+        /// </summary>
+        public uint ProcessCount;
+
+        /// <summary>
+        /// The current number of threads.
+        /// </summary>
+        public uint ThreadCount;
     }
 
     [StructLayout(LayoutKind.Sequential)]

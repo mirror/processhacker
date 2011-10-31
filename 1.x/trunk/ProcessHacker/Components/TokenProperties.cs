@@ -31,10 +31,11 @@ using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.Native.Security.AccessControl;
 using ProcessHacker.UI;
+using ProcessHacker.Api;
 
 namespace ProcessHacker.Components
 {
-    public partial class TokenProperties : UserControl
+    public partial class TokenProperties : ProcessPropertySheetPage
     {
         private readonly IWithToken _object;
         private TokenGroupsList _groups;
@@ -80,7 +81,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        var type = thandle.ElevationType;
+                        TokenElevationType type = thandle.ElevationType;
 
                         switch (type)
                         {
@@ -485,9 +486,9 @@ namespace ProcessHacker.Components
 
         private void buttonLinkedToken_Click(object sender, EventArgs e)
         {
-            using (var thandle = _object.GetToken(TokenAccess.Query))
+            using (TokenHandle thandle = _object.GetToken(TokenAccess.Query))
             {
-                var token = new TokenWithLinkedToken(thandle);
+                TokenWithLinkedToken token = new TokenWithLinkedToken(thandle);
                 TokenWindow window = new TokenWindow(token);
 
                 window.ShowDialog();

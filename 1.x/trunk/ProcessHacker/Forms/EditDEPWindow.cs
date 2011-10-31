@@ -64,7 +64,7 @@ namespace ProcessHacker
 
                     comboStatus.SelectedItem = str;
 
-                    if (KProcessHacker2.Instance != null)
+                    if (KProcessHacker2.Instance.KphIsConnected)
                         checkPermanent.Visible = true;
                 }
             }
@@ -74,7 +74,7 @@ namespace ProcessHacker
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            if (KProcessHacker2.Instance != null)
+            if (KProcessHacker2.Instance.KphIsConnected)
                 this.SetDepStatusKph();
             else
                 this.SetDepStatusNoKph();

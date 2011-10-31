@@ -144,12 +144,12 @@ namespace ProcessHacker.Native
                     // Our buffer was too small. The required buffer length is stored in MaximumLength.
                     buffer.ResizeNew(info.ImageName.MaximumLength);
 
-                    Win32.NtQuerySystemInformation(
+                    status = Win32.NtQuerySystemInformation(
                         SystemInformationClass.SystemProcessImageName,
                         &info,
                         SystemProcessImageNameInformation.SizeOf,
                         null
-                        ).ThrowIf();
+                        );
                 }
 
                 status.ThrowIf();
@@ -189,9 +189,7 @@ namespace ProcessHacker.Native
             // resolve any native object name to a DOS drive letter.
             if (fileName.StartsWith("\\", StringComparison.OrdinalIgnoreCase))
             {
-                Dictionary<string, string> prefixes = _fileNamePrefixes;
-
-                foreach (KeyValuePair<string, string> pair in prefixes)
+                foreach (KeyValuePair<string, string> pair in _fileNamePrefixes)
                 {
                     if (fileName.StartsWith(pair.Key + "\\", StringComparison.OrdinalIgnoreCase))
                     {

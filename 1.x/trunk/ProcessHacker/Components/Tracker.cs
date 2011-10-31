@@ -16,8 +16,8 @@ namespace ProcessHacker
 
         private int mover;
 
-        public System.Collections.Generic.IList<int> values;
-        public System.Collections.Generic.IList<long> values2;
+        public System.Collections.Generic.List<int> values = new System.Collections.Generic.List<int>();
+        public System.Collections.Generic.List<long> values2 = new System.Collections.Generic.List<long>();
 
         private int mValue;
         private int mMinimum;

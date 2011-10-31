@@ -65,6 +65,28 @@
             this.labelPMT = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.labelPSC = new System.Windows.Forms.Label();
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
+            this.label37 = new System.Windows.Forms.Label();
+            this.label38 = new System.Windows.Forms.Label();
+            this.labelCPUContextSwitches = new System.Windows.Forms.Label();
+            this.labelCPUSystemCalls = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.labelCPUInterrupts = new System.Windows.Forms.Label();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
+            this.label16 = new System.Windows.Forms.Label();
+            this.labelIOOB = new System.Windows.Forms.Label();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.labelIOO = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.label32 = new System.Windows.Forms.Label();
+            this.labelIOR = new System.Windows.Forms.Label();
+            this.labelIOW = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.labelIORB = new System.Windows.Forms.Label();
+            this.labelIOWB = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.label15 = new System.Windows.Forms.Label();
@@ -75,6 +97,20 @@
             this.label10 = new System.Windows.Forms.Label();
             this.labelCacheCurrent = new System.Windows.Forms.Label();
             this.labelCachePeak = new System.Windows.Forms.Label();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
+            this.label20 = new System.Windows.Forms.Label();
+            this.labelPFCache = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.labelPFDZ = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.labelPFTotal = new System.Windows.Forms.Label();
+            this.labelPFTrans = new System.Windows.Forms.Label();
+            this.label31 = new System.Windows.Forms.Label();
+            this.labelPFCOW = new System.Windows.Forms.Label();
+            this.labelPFCacheTrans = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.label14 = new System.Windows.Forms.Label();
@@ -95,46 +131,10 @@
             this.label21 = new System.Windows.Forms.Label();
             this.labelKPNPU = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
-            this.label20 = new System.Windows.Forms.Label();
-            this.labelPFCache = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
-            this.labelPFDZ = new System.Windows.Forms.Label();
-            this.label27 = new System.Windows.Forms.Label();
-            this.label28 = new System.Windows.Forms.Label();
-            this.labelPFTotal = new System.Windows.Forms.Label();
-            this.labelPFTrans = new System.Windows.Forms.Label();
-            this.label31 = new System.Windows.Forms.Label();
-            this.labelPFCOW = new System.Windows.Forms.Label();
-            this.labelPFCacheTrans = new System.Windows.Forms.Label();
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
-            this.label16 = new System.Windows.Forms.Label();
-            this.labelIOOB = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
-            this.labelIOO = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.labelIOR = new System.Windows.Forms.Label();
-            this.labelIOW = new System.Windows.Forms.Label();
-            this.label35 = new System.Windows.Forms.Label();
-            this.labelIORB = new System.Windows.Forms.Label();
-            this.labelIOWB = new System.Windows.Forms.Label();
-            this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
-            this.label37 = new System.Windows.Forms.Label();
-            this.label38 = new System.Windows.Forms.Label();
-            this.labelCPUContextSwitches = new System.Windows.Forms.Label();
-            this.labelCPUSystemCalls = new System.Windows.Forms.Label();
-            this.label41 = new System.Windows.Forms.Label();
-            this.labelCPUInterrupts = new System.Windows.Forms.Label();
             this.checkAlwaysOnTop = new System.Windows.Forms.CheckBox();
             this.plotterCPU = new ProcessHacker.Components.Plotter();
             this.plotterIO = new ProcessHacker.Components.Plotter();
-            this.plotterMemory = new ProcessHacker.Components.Plotter();
+            this.trackerMemory = new ProcessHacker.Tracker();
             this.indicatorPhysical = new ProcessHacker.Components.Indicator();
             this.indicatorIO = new ProcessHacker.Components.Indicator();
             this.indicatorCpu = new ProcessHacker.Components.Indicator();
@@ -152,16 +152,16 @@
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.groupBox6.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
-            this.groupBox7.SuspendLayout();
-            this.tableLayoutPanel5.SuspendLayout();
-            this.groupBox8.SuspendLayout();
-            this.tableLayoutPanel6.SuspendLayout();
-            this.groupBox9.SuspendLayout();
-            this.tableLayoutPanel7.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.tableLayoutPanel8.SuspendLayout();
+            this.groupBox9.SuspendLayout();
+            this.tableLayoutPanel7.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
+            this.groupBox8.SuspendLayout();
+            this.tableLayoutPanel6.SuspendLayout();
+            this.groupBox7.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // gboxCPUPlotter
@@ -225,7 +225,7 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.plotterMemory);
+            this.groupBox1.Controls.Add(this.trackerMemory);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(89, 237);
             this.groupBox1.Name = "groupBox1";
@@ -605,6 +605,272 @@
             this.labelPSC.Text = "value";
             this.labelPSC.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // groupBox10
+            // 
+            this.groupBox10.AutoSize = true;
+            this.groupBox10.Controls.Add(this.tableLayoutPanel8);
+            this.groupBox10.Location = new System.Drawing.Point(204, 3);
+            this.groupBox10.MinimumSize = new System.Drawing.Size(195, 76);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(195, 76);
+            this.groupBox10.TabIndex = 8;
+            this.groupBox10.TabStop = false;
+            this.groupBox10.Text = "CPU";
+            // 
+            // tableLayoutPanel8
+            // 
+            this.tableLayoutPanel8.AutoSize = true;
+            this.tableLayoutPanel8.ColumnCount = 2;
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel8.Controls.Add(this.label37, 0, 0);
+            this.tableLayoutPanel8.Controls.Add(this.label38, 0, 2);
+            this.tableLayoutPanel8.Controls.Add(this.labelCPUContextSwitches, 1, 0);
+            this.tableLayoutPanel8.Controls.Add(this.labelCPUSystemCalls, 1, 2);
+            this.tableLayoutPanel8.Controls.Add(this.label41, 0, 1);
+            this.tableLayoutPanel8.Controls.Add(this.labelCPUInterrupts, 1, 1);
+            this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel8.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
+            this.tableLayoutPanel8.RowCount = 3;
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(189, 55);
+            this.tableLayoutPanel8.TabIndex = 1;
+            // 
+            // label37
+            // 
+            this.label37.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(3, 2);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(95, 13);
+            this.label37.TabIndex = 1;
+            this.label37.Text = "Context Switches";
+            // 
+            // label38
+            // 
+            this.label38.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(3, 39);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(69, 13);
+            this.label38.TabIndex = 1;
+            this.label38.Text = "System Calls";
+            // 
+            // labelCPUContextSwitches
+            // 
+            this.labelCPUContextSwitches.AutoEllipsis = true;
+            this.labelCPUContextSwitches.AutoSize = true;
+            this.labelCPUContextSwitches.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCPUContextSwitches.Location = new System.Drawing.Point(104, 0);
+            this.labelCPUContextSwitches.Name = "labelCPUContextSwitches";
+            this.labelCPUContextSwitches.Size = new System.Drawing.Size(82, 18);
+            this.labelCPUContextSwitches.TabIndex = 1;
+            this.labelCPUContextSwitches.Text = "value";
+            this.labelCPUContextSwitches.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelCPUSystemCalls
+            // 
+            this.labelCPUSystemCalls.AutoEllipsis = true;
+            this.labelCPUSystemCalls.AutoSize = true;
+            this.labelCPUSystemCalls.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCPUSystemCalls.Location = new System.Drawing.Point(104, 36);
+            this.labelCPUSystemCalls.Name = "labelCPUSystemCalls";
+            this.labelCPUSystemCalls.Size = new System.Drawing.Size(82, 19);
+            this.labelCPUSystemCalls.TabIndex = 1;
+            this.labelCPUSystemCalls.Text = "value";
+            this.labelCPUSystemCalls.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label41
+            // 
+            this.label41.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(3, 20);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(58, 13);
+            this.label41.TabIndex = 1;
+            this.label41.Text = "Interrupts";
+            // 
+            // labelCPUInterrupts
+            // 
+            this.labelCPUInterrupts.AutoEllipsis = true;
+            this.labelCPUInterrupts.AutoSize = true;
+            this.labelCPUInterrupts.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCPUInterrupts.Location = new System.Drawing.Point(104, 18);
+            this.labelCPUInterrupts.Name = "labelCPUInterrupts";
+            this.labelCPUInterrupts.Size = new System.Drawing.Size(82, 18);
+            this.labelCPUInterrupts.TabIndex = 1;
+            this.labelCPUInterrupts.Text = "value";
+            this.labelCPUInterrupts.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.tableLayoutPanel7);
+            this.groupBox9.Location = new System.Drawing.Point(204, 85);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(195, 121);
+            this.groupBox9.TabIndex = 7;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "I/O";
+            // 
+            // tableLayoutPanel7
+            // 
+            this.tableLayoutPanel7.ColumnCount = 2;
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel7.Controls.Add(this.label16, 0, 5);
+            this.tableLayoutPanel7.Controls.Add(this.labelIOOB, 0, 5);
+            this.tableLayoutPanel7.Controls.Add(this.label22, 0, 4);
+            this.tableLayoutPanel7.Controls.Add(this.label26, 0, 3);
+            this.tableLayoutPanel7.Controls.Add(this.labelIOO, 0, 4);
+            this.tableLayoutPanel7.Controls.Add(this.label30, 0, 0);
+            this.tableLayoutPanel7.Controls.Add(this.label32, 0, 2);
+            this.tableLayoutPanel7.Controls.Add(this.labelIOR, 1, 0);
+            this.tableLayoutPanel7.Controls.Add(this.labelIOW, 1, 2);
+            this.tableLayoutPanel7.Controls.Add(this.label35, 0, 1);
+            this.tableLayoutPanel7.Controls.Add(this.labelIORB, 1, 1);
+            this.tableLayoutPanel7.Controls.Add(this.labelIOWB, 1, 3);
+            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+            this.tableLayoutPanel7.RowCount = 6;
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(189, 100);
+            this.tableLayoutPanel7.TabIndex = 1;
+            // 
+            // label16
+            // 
+            this.label16.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(3, 83);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(67, 13);
+            this.label16.TabIndex = 7;
+            this.label16.Text = "Other Bytes";
+            // 
+            // labelIOOB
+            // 
+            this.labelIOOB.AutoEllipsis = true;
+            this.labelIOOB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelIOOB.Location = new System.Drawing.Point(76, 80);
+            this.labelIOOB.Name = "labelIOOB";
+            this.labelIOOB.Size = new System.Drawing.Size(115, 20);
+            this.labelIOOB.TabIndex = 6;
+            this.labelIOOB.Text = "value";
+            this.labelIOOB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label22
+            // 
+            this.label22.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(3, 65);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(37, 13);
+            this.label22.TabIndex = 5;
+            this.label22.Text = "Other";
+            // 
+            // label26
+            // 
+            this.label26.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(3, 49);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(65, 13);
+            this.label26.TabIndex = 3;
+            this.label26.Text = "Write Bytes";
+            // 
+            // labelIOO
+            // 
+            this.labelIOO.AutoEllipsis = true;
+            this.labelIOO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelIOO.Location = new System.Drawing.Point(76, 64);
+            this.labelIOO.Name = "labelIOO";
+            this.labelIOO.Size = new System.Drawing.Size(115, 16);
+            this.labelIOO.TabIndex = 4;
+            this.labelIOO.Text = "value";
+            this.labelIOO.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label30
+            // 
+            this.label30.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(3, 1);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(38, 13);
+            this.label30.TabIndex = 1;
+            this.label30.Text = "Reads";
+            // 
+            // label32
+            // 
+            this.label32.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(3, 33);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(40, 13);
+            this.label32.TabIndex = 1;
+            this.label32.Text = "Writes";
+            // 
+            // labelIOR
+            // 
+            this.labelIOR.AutoEllipsis = true;
+            this.labelIOR.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelIOR.Location = new System.Drawing.Point(76, 0);
+            this.labelIOR.Name = "labelIOR";
+            this.labelIOR.Size = new System.Drawing.Size(115, 16);
+            this.labelIOR.TabIndex = 1;
+            this.labelIOR.Text = "value";
+            this.labelIOR.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelIOW
+            // 
+            this.labelIOW.AutoEllipsis = true;
+            this.labelIOW.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelIOW.Location = new System.Drawing.Point(76, 32);
+            this.labelIOW.Name = "labelIOW";
+            this.labelIOW.Size = new System.Drawing.Size(115, 16);
+            this.labelIOW.TabIndex = 1;
+            this.labelIOW.Text = "value";
+            this.labelIOW.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label35
+            // 
+            this.label35.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(3, 17);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(63, 13);
+            this.label35.TabIndex = 1;
+            this.label35.Text = "Read Bytes";
+            // 
+            // labelIORB
+            // 
+            this.labelIORB.AutoEllipsis = true;
+            this.labelIORB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelIORB.Location = new System.Drawing.Point(76, 16);
+            this.labelIORB.Name = "labelIORB";
+            this.labelIORB.Size = new System.Drawing.Size(115, 16);
+            this.labelIORB.TabIndex = 1;
+            this.labelIORB.Text = "value";
+            this.labelIORB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelIOWB
+            // 
+            this.labelIOWB.AutoEllipsis = true;
+            this.labelIOWB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelIOWB.Location = new System.Drawing.Point(76, 48);
+            this.labelIOWB.Name = "labelIOWB";
+            this.labelIOWB.Size = new System.Drawing.Size(115, 16);
+            this.labelIOWB.TabIndex = 2;
+            this.labelIOWB.Text = "value";
+            this.labelIOWB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.tableLayoutPanel4);
@@ -722,6 +988,172 @@
             this.labelCachePeak.TabIndex = 1;
             this.labelCachePeak.Text = "value";
             this.labelCachePeak.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.tableLayoutPanel6);
+            this.groupBox8.Location = new System.Drawing.Point(405, 105);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(195, 121);
+            this.groupBox8.TabIndex = 6;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Page Faults";
+            // 
+            // tableLayoutPanel6
+            // 
+            this.tableLayoutPanel6.ColumnCount = 2;
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel6.Controls.Add(this.label20, 0, 5);
+            this.tableLayoutPanel6.Controls.Add(this.labelPFCache, 0, 5);
+            this.tableLayoutPanel6.Controls.Add(this.label24, 0, 4);
+            this.tableLayoutPanel6.Controls.Add(this.label25, 0, 3);
+            this.tableLayoutPanel6.Controls.Add(this.labelPFDZ, 0, 4);
+            this.tableLayoutPanel6.Controls.Add(this.label27, 0, 0);
+            this.tableLayoutPanel6.Controls.Add(this.label28, 0, 2);
+            this.tableLayoutPanel6.Controls.Add(this.labelPFTotal, 1, 0);
+            this.tableLayoutPanel6.Controls.Add(this.labelPFTrans, 1, 2);
+            this.tableLayoutPanel6.Controls.Add(this.label31, 0, 1);
+            this.tableLayoutPanel6.Controls.Add(this.labelPFCOW, 1, 1);
+            this.tableLayoutPanel6.Controls.Add(this.labelPFCacheTrans, 1, 3);
+            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
+            this.tableLayoutPanel6.RowCount = 6;
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(189, 100);
+            this.tableLayoutPanel6.TabIndex = 1;
+            // 
+            // label20
+            // 
+            this.label20.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(3, 83);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(38, 13);
+            this.label20.TabIndex = 7;
+            this.label20.Text = "Cache";
+            // 
+            // labelPFCache
+            // 
+            this.labelPFCache.AutoEllipsis = true;
+            this.labelPFCache.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelPFCache.Location = new System.Drawing.Point(101, 80);
+            this.labelPFCache.Name = "labelPFCache";
+            this.labelPFCache.Size = new System.Drawing.Size(90, 20);
+            this.labelPFCache.TabIndex = 6;
+            this.labelPFCache.Text = "value";
+            this.labelPFCache.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label24
+            // 
+            this.label24.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(3, 65);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(76, 13);
+            this.label24.TabIndex = 5;
+            this.label24.Text = "Demand Zero";
+            // 
+            // label25
+            // 
+            this.label25.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(3, 49);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(92, 13);
+            this.label25.TabIndex = 3;
+            this.label25.Text = "Cache Transition";
+            // 
+            // labelPFDZ
+            // 
+            this.labelPFDZ.AutoEllipsis = true;
+            this.labelPFDZ.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelPFDZ.Location = new System.Drawing.Point(101, 64);
+            this.labelPFDZ.Name = "labelPFDZ";
+            this.labelPFDZ.Size = new System.Drawing.Size(90, 16);
+            this.labelPFDZ.TabIndex = 4;
+            this.labelPFDZ.Text = "value";
+            this.labelPFDZ.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label27
+            // 
+            this.label27.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(3, 1);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(32, 13);
+            this.label27.TabIndex = 1;
+            this.label27.Text = "Total";
+            // 
+            // label28
+            // 
+            this.label28.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(3, 33);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(58, 13);
+            this.label28.TabIndex = 1;
+            this.label28.Text = "Transition";
+            // 
+            // labelPFTotal
+            // 
+            this.labelPFTotal.AutoEllipsis = true;
+            this.labelPFTotal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelPFTotal.Location = new System.Drawing.Point(101, 0);
+            this.labelPFTotal.Name = "labelPFTotal";
+            this.labelPFTotal.Size = new System.Drawing.Size(90, 16);
+            this.labelPFTotal.TabIndex = 1;
+            this.labelPFTotal.Text = "value";
+            this.labelPFTotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelPFTrans
+            // 
+            this.labelPFTrans.AutoEllipsis = true;
+            this.labelPFTrans.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelPFTrans.Location = new System.Drawing.Point(101, 32);
+            this.labelPFTrans.Name = "labelPFTrans";
+            this.labelPFTrans.Size = new System.Drawing.Size(90, 16);
+            this.labelPFTrans.TabIndex = 1;
+            this.labelPFTrans.Text = "value";
+            this.labelPFTrans.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label31
+            // 
+            this.label31.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(3, 17);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(85, 13);
+            this.label31.TabIndex = 1;
+            this.label31.Text = "Copy-On-Write";
+            // 
+            // labelPFCOW
+            // 
+            this.labelPFCOW.AutoEllipsis = true;
+            this.labelPFCOW.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelPFCOW.Location = new System.Drawing.Point(101, 16);
+            this.labelPFCOW.Name = "labelPFCOW";
+            this.labelPFCOW.Size = new System.Drawing.Size(90, 16);
+            this.labelPFCOW.TabIndex = 1;
+            this.labelPFCOW.Text = "value";
+            this.labelPFCOW.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelPFCacheTrans
+            // 
+            this.labelPFCacheTrans.AutoEllipsis = true;
+            this.labelPFCacheTrans.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelPFCacheTrans.Location = new System.Drawing.Point(101, 48);
+            this.labelPFCacheTrans.Name = "labelPFCacheTrans";
+            this.labelPFCacheTrans.Size = new System.Drawing.Size(90, 16);
+            this.labelPFCacheTrans.TabIndex = 2;
+            this.labelPFCacheTrans.Text = "value";
+            this.labelPFCacheTrans.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // groupBox7
             // 
@@ -962,438 +1394,6 @@
             this.label11.TabIndex = 5;
             this.label11.Text = "Non-Paged Usage";
             // 
-            // groupBox8
-            // 
-            this.groupBox8.Controls.Add(this.tableLayoutPanel6);
-            this.groupBox8.Location = new System.Drawing.Point(405, 105);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(195, 121);
-            this.groupBox8.TabIndex = 6;
-            this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "Page Faults";
-            // 
-            // tableLayoutPanel6
-            // 
-            this.tableLayoutPanel6.ColumnCount = 2;
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel6.Controls.Add(this.label20, 0, 5);
-            this.tableLayoutPanel6.Controls.Add(this.labelPFCache, 0, 5);
-            this.tableLayoutPanel6.Controls.Add(this.label24, 0, 4);
-            this.tableLayoutPanel6.Controls.Add(this.label25, 0, 3);
-            this.tableLayoutPanel6.Controls.Add(this.labelPFDZ, 0, 4);
-            this.tableLayoutPanel6.Controls.Add(this.label27, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.label28, 0, 2);
-            this.tableLayoutPanel6.Controls.Add(this.labelPFTotal, 1, 0);
-            this.tableLayoutPanel6.Controls.Add(this.labelPFTrans, 1, 2);
-            this.tableLayoutPanel6.Controls.Add(this.label31, 0, 1);
-            this.tableLayoutPanel6.Controls.Add(this.labelPFCOW, 1, 1);
-            this.tableLayoutPanel6.Controls.Add(this.labelPFCacheTrans, 1, 3);
-            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 18);
-            this.tableLayoutPanel6.Name = "tableLayoutPanel6";
-            this.tableLayoutPanel6.RowCount = 6;
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(189, 100);
-            this.tableLayoutPanel6.TabIndex = 1;
-            // 
-            // label20
-            // 
-            this.label20.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(3, 83);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(38, 13);
-            this.label20.TabIndex = 7;
-            this.label20.Text = "Cache";
-            // 
-            // labelPFCache
-            // 
-            this.labelPFCache.AutoEllipsis = true;
-            this.labelPFCache.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFCache.Location = new System.Drawing.Point(101, 80);
-            this.labelPFCache.Name = "labelPFCache";
-            this.labelPFCache.Size = new System.Drawing.Size(90, 20);
-            this.labelPFCache.TabIndex = 6;
-            this.labelPFCache.Text = "value";
-            this.labelPFCache.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label24
-            // 
-            this.label24.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(3, 65);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(76, 13);
-            this.label24.TabIndex = 5;
-            this.label24.Text = "Demand Zero";
-            // 
-            // label25
-            // 
-            this.label25.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(3, 49);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(92, 13);
-            this.label25.TabIndex = 3;
-            this.label25.Text = "Cache Transition";
-            // 
-            // labelPFDZ
-            // 
-            this.labelPFDZ.AutoEllipsis = true;
-            this.labelPFDZ.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFDZ.Location = new System.Drawing.Point(101, 64);
-            this.labelPFDZ.Name = "labelPFDZ";
-            this.labelPFDZ.Size = new System.Drawing.Size(90, 16);
-            this.labelPFDZ.TabIndex = 4;
-            this.labelPFDZ.Text = "value";
-            this.labelPFDZ.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label27
-            // 
-            this.label27.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(3, 1);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(32, 13);
-            this.label27.TabIndex = 1;
-            this.label27.Text = "Total";
-            // 
-            // label28
-            // 
-            this.label28.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(3, 33);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(58, 13);
-            this.label28.TabIndex = 1;
-            this.label28.Text = "Transition";
-            // 
-            // labelPFTotal
-            // 
-            this.labelPFTotal.AutoEllipsis = true;
-            this.labelPFTotal.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFTotal.Location = new System.Drawing.Point(101, 0);
-            this.labelPFTotal.Name = "labelPFTotal";
-            this.labelPFTotal.Size = new System.Drawing.Size(90, 16);
-            this.labelPFTotal.TabIndex = 1;
-            this.labelPFTotal.Text = "value";
-            this.labelPFTotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // labelPFTrans
-            // 
-            this.labelPFTrans.AutoEllipsis = true;
-            this.labelPFTrans.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFTrans.Location = new System.Drawing.Point(101, 32);
-            this.labelPFTrans.Name = "labelPFTrans";
-            this.labelPFTrans.Size = new System.Drawing.Size(90, 16);
-            this.labelPFTrans.TabIndex = 1;
-            this.labelPFTrans.Text = "value";
-            this.labelPFTrans.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label31
-            // 
-            this.label31.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(3, 17);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(85, 13);
-            this.label31.TabIndex = 1;
-            this.label31.Text = "Copy-On-Write";
-            // 
-            // labelPFCOW
-            // 
-            this.labelPFCOW.AutoEllipsis = true;
-            this.labelPFCOW.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFCOW.Location = new System.Drawing.Point(101, 16);
-            this.labelPFCOW.Name = "labelPFCOW";
-            this.labelPFCOW.Size = new System.Drawing.Size(90, 16);
-            this.labelPFCOW.TabIndex = 1;
-            this.labelPFCOW.Text = "value";
-            this.labelPFCOW.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // labelPFCacheTrans
-            // 
-            this.labelPFCacheTrans.AutoEllipsis = true;
-            this.labelPFCacheTrans.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelPFCacheTrans.Location = new System.Drawing.Point(101, 48);
-            this.labelPFCacheTrans.Name = "labelPFCacheTrans";
-            this.labelPFCacheTrans.Size = new System.Drawing.Size(90, 16);
-            this.labelPFCacheTrans.TabIndex = 2;
-            this.labelPFCacheTrans.Text = "value";
-            this.labelPFCacheTrans.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // groupBox9
-            // 
-            this.groupBox9.Controls.Add(this.tableLayoutPanel7);
-            this.groupBox9.Location = new System.Drawing.Point(204, 85);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(195, 121);
-            this.groupBox9.TabIndex = 7;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "I/O";
-            // 
-            // tableLayoutPanel7
-            // 
-            this.tableLayoutPanel7.ColumnCount = 2;
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel7.Controls.Add(this.label16, 0, 5);
-            this.tableLayoutPanel7.Controls.Add(this.labelIOOB, 0, 5);
-            this.tableLayoutPanel7.Controls.Add(this.label22, 0, 4);
-            this.tableLayoutPanel7.Controls.Add(this.label26, 0, 3);
-            this.tableLayoutPanel7.Controls.Add(this.labelIOO, 0, 4);
-            this.tableLayoutPanel7.Controls.Add(this.label30, 0, 0);
-            this.tableLayoutPanel7.Controls.Add(this.label32, 0, 2);
-            this.tableLayoutPanel7.Controls.Add(this.labelIOR, 1, 0);
-            this.tableLayoutPanel7.Controls.Add(this.labelIOW, 1, 2);
-            this.tableLayoutPanel7.Controls.Add(this.label35, 0, 1);
-            this.tableLayoutPanel7.Controls.Add(this.labelIORB, 1, 1);
-            this.tableLayoutPanel7.Controls.Add(this.labelIOWB, 1, 3);
-            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 18);
-            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
-            this.tableLayoutPanel7.RowCount = 6;
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(189, 100);
-            this.tableLayoutPanel7.TabIndex = 1;
-            // 
-            // label16
-            // 
-            this.label16.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(3, 83);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(67, 13);
-            this.label16.TabIndex = 7;
-            this.label16.Text = "Other Bytes";
-            // 
-            // labelIOOB
-            // 
-            this.labelIOOB.AutoEllipsis = true;
-            this.labelIOOB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIOOB.Location = new System.Drawing.Point(76, 80);
-            this.labelIOOB.Name = "labelIOOB";
-            this.labelIOOB.Size = new System.Drawing.Size(115, 20);
-            this.labelIOOB.TabIndex = 6;
-            this.labelIOOB.Text = "value";
-            this.labelIOOB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label22
-            // 
-            this.label22.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(3, 65);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(37, 13);
-            this.label22.TabIndex = 5;
-            this.label22.Text = "Other";
-            // 
-            // label26
-            // 
-            this.label26.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(3, 49);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(65, 13);
-            this.label26.TabIndex = 3;
-            this.label26.Text = "Write Bytes";
-            // 
-            // labelIOO
-            // 
-            this.labelIOO.AutoEllipsis = true;
-            this.labelIOO.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIOO.Location = new System.Drawing.Point(76, 64);
-            this.labelIOO.Name = "labelIOO";
-            this.labelIOO.Size = new System.Drawing.Size(115, 16);
-            this.labelIOO.TabIndex = 4;
-            this.labelIOO.Text = "value";
-            this.labelIOO.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label30
-            // 
-            this.label30.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(3, 1);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(38, 13);
-            this.label30.TabIndex = 1;
-            this.label30.Text = "Reads";
-            // 
-            // label32
-            // 
-            this.label32.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(3, 33);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(40, 13);
-            this.label32.TabIndex = 1;
-            this.label32.Text = "Writes";
-            // 
-            // labelIOR
-            // 
-            this.labelIOR.AutoEllipsis = true;
-            this.labelIOR.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIOR.Location = new System.Drawing.Point(76, 0);
-            this.labelIOR.Name = "labelIOR";
-            this.labelIOR.Size = new System.Drawing.Size(115, 16);
-            this.labelIOR.TabIndex = 1;
-            this.labelIOR.Text = "value";
-            this.labelIOR.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // labelIOW
-            // 
-            this.labelIOW.AutoEllipsis = true;
-            this.labelIOW.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIOW.Location = new System.Drawing.Point(76, 32);
-            this.labelIOW.Name = "labelIOW";
-            this.labelIOW.Size = new System.Drawing.Size(115, 16);
-            this.labelIOW.TabIndex = 1;
-            this.labelIOW.Text = "value";
-            this.labelIOW.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label35
-            // 
-            this.label35.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(3, 17);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(63, 13);
-            this.label35.TabIndex = 1;
-            this.label35.Text = "Read Bytes";
-            // 
-            // labelIORB
-            // 
-            this.labelIORB.AutoEllipsis = true;
-            this.labelIORB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIORB.Location = new System.Drawing.Point(76, 16);
-            this.labelIORB.Name = "labelIORB";
-            this.labelIORB.Size = new System.Drawing.Size(115, 16);
-            this.labelIORB.TabIndex = 1;
-            this.labelIORB.Text = "value";
-            this.labelIORB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // labelIOWB
-            // 
-            this.labelIOWB.AutoEllipsis = true;
-            this.labelIOWB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelIOWB.Location = new System.Drawing.Point(76, 48);
-            this.labelIOWB.Name = "labelIOWB";
-            this.labelIOWB.Size = new System.Drawing.Size(115, 16);
-            this.labelIOWB.TabIndex = 2;
-            this.labelIOWB.Text = "value";
-            this.labelIOWB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // groupBox10
-            // 
-            this.groupBox10.AutoSize = true;
-            this.groupBox10.Controls.Add(this.tableLayoutPanel8);
-            this.groupBox10.Location = new System.Drawing.Point(204, 3);
-            this.groupBox10.MinimumSize = new System.Drawing.Size(195, 76);
-            this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(195, 76);
-            this.groupBox10.TabIndex = 8;
-            this.groupBox10.TabStop = false;
-            this.groupBox10.Text = "CPU";
-            // 
-            // tableLayoutPanel8
-            // 
-            this.tableLayoutPanel8.AutoSize = true;
-            this.tableLayoutPanel8.ColumnCount = 2;
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel8.Controls.Add(this.label37, 0, 0);
-            this.tableLayoutPanel8.Controls.Add(this.label38, 0, 2);
-            this.tableLayoutPanel8.Controls.Add(this.labelCPUContextSwitches, 1, 0);
-            this.tableLayoutPanel8.Controls.Add(this.labelCPUSystemCalls, 1, 2);
-            this.tableLayoutPanel8.Controls.Add(this.label41, 0, 1);
-            this.tableLayoutPanel8.Controls.Add(this.labelCPUInterrupts, 1, 1);
-            this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel8.Location = new System.Drawing.Point(3, 18);
-            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
-            this.tableLayoutPanel8.RowCount = 3;
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(189, 55);
-            this.tableLayoutPanel8.TabIndex = 1;
-            // 
-            // label37
-            // 
-            this.label37.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(3, 2);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(95, 13);
-            this.label37.TabIndex = 1;
-            this.label37.Text = "Context Switches";
-            // 
-            // label38
-            // 
-            this.label38.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(3, 39);
-            this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(69, 13);
-            this.label38.TabIndex = 1;
-            this.label38.Text = "System Calls";
-            // 
-            // labelCPUContextSwitches
-            // 
-            this.labelCPUContextSwitches.AutoEllipsis = true;
-            this.labelCPUContextSwitches.AutoSize = true;
-            this.labelCPUContextSwitches.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCPUContextSwitches.Location = new System.Drawing.Point(104, 0);
-            this.labelCPUContextSwitches.Name = "labelCPUContextSwitches";
-            this.labelCPUContextSwitches.Size = new System.Drawing.Size(82, 18);
-            this.labelCPUContextSwitches.TabIndex = 1;
-            this.labelCPUContextSwitches.Text = "value";
-            this.labelCPUContextSwitches.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // labelCPUSystemCalls
-            // 
-            this.labelCPUSystemCalls.AutoEllipsis = true;
-            this.labelCPUSystemCalls.AutoSize = true;
-            this.labelCPUSystemCalls.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCPUSystemCalls.Location = new System.Drawing.Point(104, 36);
-            this.labelCPUSystemCalls.Name = "labelCPUSystemCalls";
-            this.labelCPUSystemCalls.Size = new System.Drawing.Size(82, 19);
-            this.labelCPUSystemCalls.TabIndex = 1;
-            this.labelCPUSystemCalls.Text = "value";
-            this.labelCPUSystemCalls.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label41
-            // 
-            this.label41.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(3, 20);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(58, 13);
-            this.label41.TabIndex = 1;
-            this.label41.Text = "Interrupts";
-            // 
-            // labelCPUInterrupts
-            // 
-            this.labelCPUInterrupts.AutoEllipsis = true;
-            this.labelCPUInterrupts.AutoSize = true;
-            this.labelCPUInterrupts.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCPUInterrupts.Location = new System.Drawing.Point(104, 18);
-            this.labelCPUInterrupts.Name = "labelCPUInterrupts";
-            this.labelCPUInterrupts.Size = new System.Drawing.Size(82, 18);
-            this.labelCPUInterrupts.TabIndex = 1;
-            this.labelCPUInterrupts.Text = "value";
-            this.labelCPUInterrupts.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // checkAlwaysOnTop
             // 
             this.checkAlwaysOnTop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -1413,6 +1413,7 @@
             this.plotterCPU.Data1 = null;
             this.plotterCPU.Data2 = null;
             this.plotterCPU.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterCPU.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.plotterCPU.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
             this.plotterCPU.GridSize = new System.Drawing.Size(12, 12);
             this.plotterCPU.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -1441,6 +1442,7 @@
             this.plotterIO.Data1 = null;
             this.plotterIO.Data2 = null;
             this.plotterIO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterIO.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.plotterIO.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
             this.plotterIO.GridSize = new System.Drawing.Size(12, 12);
             this.plotterIO.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -1463,33 +1465,20 @@
             this.plotterIO.UseLongData = true;
             this.plotterIO.UseSecondLine = true;
             // 
-            // plotterMemory
+            // trackerMemory
             // 
-            this.plotterMemory.BackColor = System.Drawing.Color.Black;
-            this.plotterMemory.Data1 = null;
-            this.plotterMemory.Data2 = null;
-            this.plotterMemory.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterMemory.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
-            this.plotterMemory.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterMemory.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterMemory.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterMemory.Location = new System.Drawing.Point(3, 18);
-            this.plotterMemory.LongData1 = null;
-            this.plotterMemory.LongData2 = null;
-            this.plotterMemory.MinMaxValue = ((long)(0));
-            this.plotterMemory.MoveStep = -1;
-            this.plotterMemory.Name = "plotterMemory";
-            this.plotterMemory.OverlaySecondLine = true;
-            this.plotterMemory.ShowGrid = true;
-            this.plotterMemory.Size = new System.Drawing.Size(736, 90);
-            this.plotterMemory.TabIndex = 5;
-            this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterMemory.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotterMemory.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotterMemory.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotterMemory.UseLongData = true;
-            this.plotterMemory.UseSecondLine = true;
+            this.trackerMemory.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.trackerMemory.Location = new System.Drawing.Point(3, 18);
+            this.trackerMemory.Name = "trackerMemory";
+            this.trackerMemory.Size = new System.Drawing.Size(736, 90);
+            this.trackerMemory.TabIndex = 6;
+            this.trackerMemory.Text = "tracker1";
+            this.trackerMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.trackerMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.trackerMemory.TextMargin = new System.Windows.Forms.Padding(3);
+            this.trackerMemory.TextPadding = new System.Windows.Forms.Padding(3);
+            this.trackerMemory.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.trackerMemory.UseSecondLine = false;
             // 
             // indicatorPhysical
             // 
@@ -1499,6 +1488,7 @@
             this.indicatorPhysical.Data1 = ((long)(0));
             this.indicatorPhysical.Data2 = ((long)(0));
             this.indicatorPhysical.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.indicatorPhysical.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.indicatorPhysical.ForeColor = System.Drawing.Color.Lime;
             this.indicatorPhysical.GraphWidth = 33;
             this.indicatorPhysical.Location = new System.Drawing.Point(3, 18);
@@ -1517,6 +1507,7 @@
             this.indicatorIO.Data1 = ((long)(0));
             this.indicatorIO.Data2 = ((long)(0));
             this.indicatorIO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.indicatorIO.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.indicatorIO.ForeColor = System.Drawing.Color.Lime;
             this.indicatorIO.GraphWidth = 33;
             this.indicatorIO.Location = new System.Drawing.Point(3, 18);
@@ -1535,6 +1526,7 @@
             this.indicatorCpu.Data1 = ((long)(500000000));
             this.indicatorCpu.Data2 = ((long)(500000000));
             this.indicatorCpu.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.indicatorCpu.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.indicatorCpu.ForeColor = System.Drawing.Color.Lime;
             this.indicatorCpu.GraphWidth = 33;
             this.indicatorCpu.Location = new System.Drawing.Point(3, 18);
@@ -1580,23 +1572,23 @@
             this.groupBox5.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
-            this.groupBox7.ResumeLayout(false);
-            this.tableLayoutPanel5.ResumeLayout(false);
-            this.tableLayoutPanel5.PerformLayout();
-            this.groupBox8.ResumeLayout(false);
-            this.tableLayoutPanel6.ResumeLayout(false);
-            this.tableLayoutPanel6.PerformLayout();
-            this.groupBox9.ResumeLayout(false);
-            this.tableLayoutPanel7.ResumeLayout(false);
-            this.tableLayoutPanel7.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             this.tableLayoutPanel8.ResumeLayout(false);
             this.tableLayoutPanel8.PerformLayout();
+            this.groupBox9.ResumeLayout(false);
+            this.tableLayoutPanel7.ResumeLayout(false);
+            this.tableLayoutPanel7.PerformLayout();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel4.PerformLayout();
+            this.groupBox8.ResumeLayout(false);
+            this.tableLayoutPanel6.ResumeLayout(false);
+            this.tableLayoutPanel6.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel5.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1612,7 +1604,6 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private ProcessHacker.Components.Plotter plotterIO;
         private System.Windows.Forms.GroupBox groupBox1;
-        private ProcessHacker.Components.Plotter plotterMemory;
         private System.Windows.Forms.FlowLayoutPanel flowInfo;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
@@ -1713,5 +1704,6 @@
         private System.Windows.Forms.Label labelKPNPL;
         private System.Windows.Forms.Label labelTotalsUptime;
         private System.Windows.Forms.Label label34;
+        private Tracker trackerMemory;
     }
 }

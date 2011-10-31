@@ -74,6 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\CircularBuffer.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\ByteCollection.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\DataBlock.cs" />
     <Compile Include="Components\Be.Windows.Forms.HexBox\DataMap.cs" />

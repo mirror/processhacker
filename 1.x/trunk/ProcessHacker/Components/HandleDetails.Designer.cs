@@ -204,7 +204,7 @@
             this.label2.Location = new System.Drawing.Point(6, 38);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(33, 13);
-            this.label2.TabIndex = 0;
+            this.label2.TabIndex = 2;
             this.label2.Text = "Type:";
             // 
             // label1

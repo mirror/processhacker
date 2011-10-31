@@ -231,6 +231,9 @@ namespace ProcessHacker.Native.Objects
 
             using (MemoryAlloc data = new MemoryAlloc(size))
             {
+                bool ret = Win32.QueryInformationJobObject(this, informationClass, data, data.Size, out retLength);
+                int res = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+
                 if (!Win32.QueryInformationJobObject(this, informationClass, data, data.Size, out retLength))
                 {
                     data.ResizeNew(retLength);

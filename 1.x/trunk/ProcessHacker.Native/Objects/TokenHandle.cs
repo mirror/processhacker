@@ -202,15 +202,22 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the token.</param>
         public TokenHandle(ProcessHandle handle, TokenAccess access)
         {
-            IntPtr h;
-
-            if (!Win32.OpenProcessToken(handle, access, out h))
+            if (KProcessHacker2.Instance.KphIsConnected)
             {
-                this.MarkAsInvalid();
-                Win32.Throw();
+                this.Handle = KProcessHacker2.Instance.KphOpenProcessToken(handle, access);
             }
+            else
+            {
+                IntPtr thandle;
 
-            this.Handle = h;
+                if (!Win32.OpenProcessToken(handle, access, out thandle))
+                {
+                    this.MarkAsInvalid();
+                    Win32.Throw();
+                }
+
+                this.Handle = thandle;
+            }
         }
 
         /// <summary>

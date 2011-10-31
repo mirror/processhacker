@@ -529,7 +529,7 @@ namespace ProcessHacker.Native.Objects
         public ProcessHandle(int pid, ProcessAccess access)
         {
             // If we have KPH, use it.
-            if (KProcessHacker2.Instance != null)
+            if (KProcessHacker2.Instance.KphIsConnected)
             {
                 try
                 {

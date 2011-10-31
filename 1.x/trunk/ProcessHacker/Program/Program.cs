@@ -149,6 +149,20 @@ namespace ProcessHacker
                 pArgs = new Dictionary<string, string>();
             }
 
+            try
+            {
+                if (
+                    // Only load KPH if it's enabled.
+                    Settings.Instance.EnableKPH && !NoKph &&
+                    // Don't load KPH if we're going to install/uninstall it.
+                    !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph")
+                    )
+                    KProcessHacker2.Instance = new KProcessHacker2();
+            }
+            catch
+            { }
+
+
             if (pArgs.ContainsKey("-h") || pArgs.ContainsKey("-help") || pArgs.ContainsKey("-?"))
             {
                 ShowCommandLineUsage();
@@ -223,19 +237,6 @@ namespace ProcessHacker
             {
                 Logging.Log(ex);
             }
-
-            try
-            {
-                if (
-                    // Only load KPH if it's enabled.
-                    Settings.Instance.EnableKPH && !NoKph &&
-                    // Don't load KPH if we're going to install/uninstall it.
-                    !pArgs.ContainsKey("-installkph") && !pArgs.ContainsKey("-uninstallkph")
-                    )
-                    KProcessHacker2.Instance = new KProcessHacker2();
-            }
-            catch
-            { }
 
             MinProcessQueryRights = OSVersion.MinProcessQueryInfoAccess;
             MinThreadQueryRights = OSVersion.MinThreadQueryInfoAccess;

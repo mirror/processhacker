@@ -65,9 +65,9 @@ namespace ProcessHacker.Components
                     }
                 }
 
-                var basicInfo = ObjectHandle.GetBasicInfo();
+                ObjectBasicInformation basicInfo = ObjectHandle.GetBasicInfo();
 
-                labelReferences.Text = "References: " + (basicInfo.PointerCount - 1).ToString();
+                labelReferences.Text = "References: " + (basicInfo.PointerCount - 1);
                 labelHandles.Text = "Handles: " + basicInfo.HandleCount.ToString();
                 labelPaged.Text = "Paged: " + basicInfo.PagedPoolUsage.ToString();
                 labelNonPaged.Text = "Non-Paged: " + basicInfo.NonPagedPoolUsage.ToString();
@@ -105,11 +105,17 @@ namespace ProcessHacker.Components
             }
             catch (Exception)
             { }
+
+            this.ActiveControl = this.label1;
         }
 
         public HandleDetails()
         {
             InitializeComponent();
+
+            this.ActiveControl = this.label1;
+
+            this.label1.Refresh();
         }
     }
 }

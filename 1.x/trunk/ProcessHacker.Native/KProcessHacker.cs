@@ -23,26 +23,25 @@
 // The private field 'field' is assigned but its value is never used
 #pragma warning disable 0414
 
-using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
-namespace ProcessHacker.Native
+namespace System
 {
     /// <summary>
     /// Provides an interface to KProcessHacker.
     /// </summary>
-    public sealed unsafe class KProcessHacker2
+    public sealed unsafe class KProcessHacker2 : IDisposable
     {
-        private static KProcessHacker2 _instance;
+        public static KProcessHacker2 Instance;
 
-        public static KProcessHacker2 Instance
+        public bool KphIsConnected
         {
-            get { return _instance; }
-            set { _instance = value; }
+            get { return _fileHandle != null; }
         }
 
         public static int KphCtlCode(int x)
@@ -51,7 +50,11 @@ namespace ProcessHacker.Native
         }
 
         public const int KphDeviceType = 0x9999;
+
+        // General
         public static readonly int IoCtlGetFeatures = KphCtlCode(0);
+
+        // Processes
         public static readonly int IoCtlOpenProcess = KphCtlCode(50);
         public static readonly int IoCtlOpenProcessToken = KphCtlCode(51);
         public static readonly int IoCtlOpenProcessJob = KphCtlCode(52);
@@ -63,6 +66,8 @@ namespace ProcessHacker.Native
         public static readonly int IoCtlReadVirtualMemoryUnsafe = KphCtlCode(58);
         public static readonly int IoCtlQueryInformationProcess = KphCtlCode(59);
         public static readonly int IoCtlSetInformationProcess = KphCtlCode(60);
+
+        // Threads
         public static readonly int IoCtlOpenThread = KphCtlCode(100);
         public static readonly int IoCtlOpenThreadProcess = KphCtlCode(101);
         public static readonly int IoCtlTerminateThread = KphCtlCode(102);
@@ -72,21 +77,25 @@ namespace ProcessHacker.Native
         public static readonly int IoCtlCaptureStackBackTraceThread = KphCtlCode(106);
         public static readonly int IoCtlQueryInformationThread = KphCtlCode(107);
         public static readonly int IoCtlSetInformationThread = KphCtlCode(108);
+
+        // Handles
         public static readonly int IoCtlEnumerateProcessHandles = KphCtlCode(150);
         public static readonly int IoCtlQueryInformationObject = KphCtlCode(151);
         public static readonly int IoCtlSetInformationObject = KphCtlCode(152);
         public static readonly int IoCtlDuplicateObject = KphCtlCode(153);
+
+        // Misc.
         public static readonly int IoCtlOpenDriver = KphCtlCode(200);
         public static readonly int IoCtlQueryInformationDriver = KphCtlCode(201);
 
         [Flags]
-        public enum KphFeatures : int
+        public enum KphFeatures
         {
             None = 0 // none so far
         }
 
         private readonly string _deviceName;
-        private readonly FileHandle _fileHandle;
+        private FileHandle _fileHandle;
         private readonly KphFeatures _features;
 
         /// <summary>
@@ -101,15 +110,6 @@ namespace ProcessHacker.Native
         /// </summary>
         /// <param name="deviceName">The name of the KProcessHacker service and device.</param>
         public KProcessHacker2(string deviceName)
-            : this(deviceName, Application.StartupPath + "\\kprocesshacker.sys")
-        { }
-
-        /// <summary>
-        /// Creates a connection to KProcessHacker.
-        /// </summary>
-        /// <param name="deviceName">The name of the KProcessHacker service and device.</param>
-        /// <param name="fileName">The file name of the KProcessHacker driver.</param>
-        public KProcessHacker2(string deviceName, string fileName)
         {
             _deviceName = deviceName;
 
@@ -129,50 +129,7 @@ namespace ProcessHacker.Native
                     ex.Status == NtStatus.ObjectNameNotFound
                     )
                 {
-                    // Attempt to load the driver, then try again.
-                    ServiceHandle shandle;
-                    bool created = false;
-
-                    try
-                    {
-                        using (shandle = new ServiceHandle(deviceName, ServiceAccess.Start))
-                        {
-                            shandle.Start();
-                        }
-                    }
-                    catch
-                    {
-                        using (ServiceManagerHandle scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
-                        {
-                            shandle = scm.CreateService(
-                                deviceName,
-                                deviceName,
-                                ServiceType.KernelDriver,
-                                fileName
-                                );
-                            shandle.Start();
-                            created = true;
-                        }
-                    }
-
-                    try
-                    {
-                        _fileHandle = new FileHandle(
-                            @"\Device\" + deviceName,
-                            0,
-                            FileAccess.GenericRead | FileAccess.GenericWrite
-                            );
-                    }
-                    finally
-                    {
-                        if (created)
-                        {
-                            // The SCM will delete the service when it is stopped.
-                            shandle.Delete();
-                        }
-
-                        shandle.Dispose();
-                    }
+                    LoadService();
                 }
                 else
                 {
@@ -194,19 +151,53 @@ namespace ProcessHacker.Native
             get { return _features; }
         }
 
-        /// <summary>
-        /// Closes the connection to KProcessHacker.
-        /// </summary>
-        public void Close()
-        {
-            _fileHandle.SetHandleFlags(Win32HandleFlags.ProtectFromClose, 0);
-            _fileHandle.Dispose();
-        }
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KphGetFeaturesInput
+        public void LoadService()
         {
-            public int* Features;
+            // Attempt to load the driver, then try again.
+            ServiceHandle shandle;
+            bool created = false;
+
+            try
+            {
+                using (shandle = new ServiceHandle(_deviceName, ServiceAccess.Start))
+                {
+                    shandle.Start();
+                }
+            }
+            catch
+            {
+                using (ServiceManagerHandle scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
+                {
+                    shandle = scm.CreateService(
+                        _deviceName,
+                        _deviceName,
+                        ServiceType.KernelDriver,
+                        Application.StartupPath + "\\kprocesshacker.sys"
+                        );
+                    shandle.Start();
+                    created = true;
+                }
+            }
+
+            try
+            {
+                _fileHandle = new FileHandle(
+                    @"\Device\" + _deviceName,
+                    0,
+                    FileAccess.GenericRead | FileAccess.GenericWrite
+                    );
+            }
+            finally
+            {
+                if (created)
+                {
+                    // The SCM will delete the service when it is stopped.
+                    shandle.Delete();
+                }
+
+                shandle.Dispose();
+            }
         }
 
         public KphFeatures KphGetFeatures()
@@ -218,14 +209,6 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(IoCtlGetFeatures, &input, sizeof(KphGetFeaturesInput), null, 0);
 
             return (KphFeatures)features;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KphOpenProcessInput
-        {
-            public IntPtr* ProcessHandle;
-            public int DesiredAccess;
-            public ClientId* ClientId;
         }
 
         public IntPtr KphOpenProcess(int pid, ProcessAccess desiredAccess)
@@ -245,14 +228,6 @@ namespace ProcessHacker.Native
             return processHandle;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KphOpenProcessTokenInput
-        {
-            public IntPtr ProcessHandle;
-            public int DesiredAccess;
-            public IntPtr* TokenHandle;
-        }
-
         public IntPtr KphOpenProcessToken(ProcessHandle processHandle, TokenAccess desiredAccess)
         {
             KphOpenProcessTokenInput input;
@@ -264,14 +239,6 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(IoCtlOpenProcessToken, &input, sizeof(KphOpenProcessTokenInput), null, 0);
 
             return tokenHandle;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KphOpenProcessJobInput
-        {
-            public IntPtr ProcessHandle;
-            public int DesiredAccess;
-            public IntPtr* JobHandle;
         }
 
         public IntPtr KphOpenProcessJob(ProcessHandle processHandle, TokenAccess desiredAccess)
@@ -287,12 +254,6 @@ namespace ProcessHacker.Native
             return jobHandle;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KphSuspendProcessInput
-        {
-            public IntPtr ProcessHandle;
-        }
-
         public void KphSuspendProcess(ProcessHandle processHandle)
         {
             KphSuspendProcessInput input;
@@ -301,11 +262,6 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(IoCtlSuspendProcess, &input, sizeof(KphSuspendProcessInput), null, 0);
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KphResumeProcessInput
-        {
-            public IntPtr ProcessHandle;
-        }
 
         public void KphResumeProcess(ProcessHandle processHandle)
         {
@@ -313,13 +269,6 @@ namespace ProcessHacker.Native
 
             input.ProcessHandle = processHandle;
             _fileHandle.IoControl(IoCtlResumeProcess, &input, sizeof(KphResumeProcessInput), null, 0);
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KphTerminateProcessInput
-        {
-            public IntPtr ProcessHandle;
-            public NtStatus ExitStatus;
         }
 
         public void KphTerminateProcess(ProcessHandle processHandle, NtStatus exitStatus)
@@ -331,83 +280,47 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(IoCtlTerminateProcess, &input, sizeof(KphTerminateProcessInput), null, 0);
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KphReadVirtualMemoryInput
+
+
+        public void KphReadVirtualMemory(ProcessHandle processHandle, IntPtr baseAddress, IntPtr buffer, IntPtr bufferSize, void* numberOfBytesRead)
         {
-            public IntPtr ProcessHandle;
-            public IntPtr BaseAddress;
-            public IntPtr Buffer;
-            public IntPtr BufferSize;
-            public IntPtr* NumberOfBytesRead;
+            KphReadVirtualMemoryInput input;
+
+            input.ProcessHandle = processHandle;
+            input.BaseAddress = baseAddress;
+            input.Buffer = buffer;
+            input.BufferSize = bufferSize;
+            input.NumberOfBytesRead = (IntPtr*)(&numberOfBytesRead);
+            _fileHandle.IoControl(IoCtlReadVirtualMemory, &input, sizeof(KphReadVirtualMemoryInput), null, 0);
         }
 
-        //public void KphReadVirtualMemory(ProcessHandle processHandle, IntPtr baseAddress, IntPtr buffer, IntPtr bufferSize, out IntPtr numberOfBytesRead)
-        //{
-        //    KphReadVirtualMemoryInput input;
-
-        //    input.ProcessHandle = processHandle;
-        //    input.BaseAddress = baseAddress;
-        //    input.Buffer = buffer;
-        //    input.BufferSize = bufferSize;
-        //    input.NumberOfBytesRead = &numberOfBytesRead;
-        //    _fileHandle.IoControl(IoCtlReadVirtualMemory, &input, sizeof(KphReadVirtualMemoryInput), null, 0);
-        //}
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KphWriteVirtualMemoryInput
+        public void KphWriteVirtualMemory(ProcessHandle processHandle, IntPtr baseAddress, IntPtr buffer, IntPtr bufferSize, void* numberOfBytesWritten)
         {
-            public IntPtr ProcessHandle;
-            public IntPtr BaseAddress;
-            public IntPtr Buffer;
-            public IntPtr BufferSize;
-            public IntPtr* NumberOfBytesWritten;
+            KphWriteVirtualMemoryInput input;
+
+            input.ProcessHandle = processHandle;
+            input.BaseAddress = baseAddress;
+            input.Buffer = buffer;
+            input.BufferSize = bufferSize;
+            input.NumberOfBytesWritten = (IntPtr*)(&numberOfBytesWritten);
+            _fileHandle.IoControl(IoCtlWriteVirtualMemory, &input, sizeof(KphWriteVirtualMemoryInput), null, 0);
         }
 
-        //public unsafe void KphWriteVirtualMemory(ProcessHandle processHandle, IntPtr baseAddress, IntPtr buffer, IntPtr bufferSize, out IntPtr numberOfBytesWritten)
-        //{
-        //    KphWriteVirtualMemoryInput input;
 
-        //    input.ProcessHandle = processHandle;
-        //    input.BaseAddress = baseAddress;
-        //    input.Buffer = buffer;
-        //    input.BufferSize = bufferSize;
-        //    input.NumberOfBytesWritten = &numberOfBytesWritten;
-        //    _fileHandle.IoControl(IoCtlWriteVirtualMemory, &input, sizeof(KphWriteVirtualMemoryInput), null, 0);
-        //}
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KphReadVirtualMemoryUnsafeInput
+        public void KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, IntPtr baseAddress, IntPtr buffer, IntPtr bufferSize, void* numberOfBytesRead)
         {
-            public IntPtr ProcessHandle;
-            public IntPtr BaseAddress;
-            public IntPtr Buffer;
-            public IntPtr BufferSize;
-            public IntPtr* NumberOfBytesRead;
+            KphReadVirtualMemoryUnsafeInput input;
+
+            input.ProcessHandle = processHandle;
+            input.BaseAddress = baseAddress;
+            input.Buffer = buffer;
+            input.BufferSize = bufferSize;
+
+            input.NumberOfBytesRead = (IntPtr*)(&numberOfBytesRead);
+
+            _fileHandle.IoControl(IoCtlReadVirtualMemoryUnsafe, &input, sizeof(KphReadVirtualMemoryUnsafeInput), null, 0);
         }
 
-        //public void KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, IntPtr baseAddress, IntPtr buffer, IntPtr bufferSize, out IntPtr numberOfBytesRead)
-        //{
-        //    KphReadVirtualMemoryUnsafeInput input;
-
-        //    input.ProcessHandle = processHandle;
-        //    input.BaseAddress = baseAddress;
-        //    input.Buffer = buffer;
-        //    input.BufferSize = bufferSize;
-
-        //    input.NumberOfBytesRead = &numberOfBytesRead;
-
-        //    //_fileHandle.IoControl(IoCtlReadVirtualMemoryUnsafe, &input, sizeof(KphReadVirtualMemoryUnsafeInput), null, 0);
-        //}
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KphQueryInformationProcessInput
-        {
-            public IntPtr ProcessHandle;
-            public KphProcessInformationClass ProcessInformationClass;
-            public IntPtr ProcessInformation;
-            public int ProcessInformationLength;
-            public int ReturnLength;
-        }
 
         public void KphQueryInformationProcess(ProcessHandle processHandle, KphProcessInformationClass processInformationClass, IntPtr processInformation, int processInformationLength, out int returnLength)
         {
@@ -422,6 +335,20 @@ namespace ProcessHacker.Native
             input.ReturnLength = returnLength;
 
             _fileHandle.IoControl(IoCtlQueryInformationProcess, &input, sizeof(KphQueryInformationProcessInput), null, 0);
+        }
+
+        public void Dispose()
+        {
+            if (_fileHandle != null)
+            {
+                try
+                {
+                    _fileHandle.SetHandleFlags(Win32HandleFlags.ProtectFromClose, 0);
+                    _fileHandle.Dispose();
+                }
+                catch (Exception)
+                { }
+            }
         }
     }
 
@@ -522,4 +449,337 @@ namespace ProcessHacker.Native
         public Guid Guid;
         public IntPtr SessionId;
     }
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct KphOpenProcessJobInput
+    {
+        public IntPtr ProcessHandle;
+        public int DesiredAccess;
+        public IntPtr* JobHandle;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct KphGetFeaturesInput
+    {
+        public int* Features;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct KphOpenProcessInput
+    {
+        public IntPtr* ProcessHandle;
+        public int DesiredAccess;
+        public ClientId* ClientId;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct KphOpenProcessTokenInput
+    {
+        public IntPtr ProcessHandle;
+        public int DesiredAccess;
+        public IntPtr* TokenHandle;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KphSuspendProcessInput
+    {
+        public IntPtr ProcessHandle;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KphResumeProcessInput
+    {
+        public IntPtr ProcessHandle;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KphTerminateProcessInput
+    {
+        public IntPtr ProcessHandle;
+        public NtStatus ExitStatus;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct KphReadVirtualMemoryInput
+    {
+        public IntPtr ProcessHandle;
+        public IntPtr BaseAddress;
+        public IntPtr Buffer;
+        public IntPtr BufferSize;
+        public IntPtr* NumberOfBytesRead;
+    }
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct KphWriteVirtualMemoryInput
+    {
+        public IntPtr ProcessHandle;
+        public IntPtr BaseAddress;
+        public IntPtr Buffer;
+        public IntPtr BufferSize;
+        public IntPtr* NumberOfBytesWritten;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct KphReadVirtualMemoryUnsafeInput
+    {
+        public IntPtr ProcessHandle;
+        public IntPtr BaseAddress;
+        public IntPtr Buffer;
+        public IntPtr BufferSize;
+        public IntPtr* NumberOfBytesRead;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KphQueryInformationProcessInput
+    {
+        public IntPtr ProcessHandle;
+        public KphProcessInformationClass ProcessInformationClass;
+        public IntPtr ProcessInformation;
+        public int ProcessInformationLength;
+        public int ReturnLength;
+    }
+
 }
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphOpenProcessToken(
+//    __in HANDLE ProcessHandle,
+//    __in ACCESS_MASK DesiredAccess,
+//    __out PHANDLE TokenHandle
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphOpenProcessJob(
+//    __in HANDLE ProcessHandle,
+//    __in ACCESS_MASK DesiredAccess,
+//    __out PHANDLE JobHandle
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphSuspendProcess(
+//    __in HANDLE ProcessHandle
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphResumeProcess(
+//    __in HANDLE ProcessHandle
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphTerminateProcess(
+//    __in HANDLE ProcessHandle,
+//    __in NTSTATUS ExitStatus
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphReadVirtualMemory(
+//    __in HANDLE ProcessHandle,
+//    __in PVOID BaseAddress,
+//    __out_bcount(BufferSize) PVOID Buffer,
+//    __in SIZE_T BufferSize,
+//    __out_opt PSIZE_T NumberOfBytesRead
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphWriteVirtualMemory(
+//    __in HANDLE ProcessHandle,
+//    __in_opt PVOID BaseAddress,
+//    __in_bcount(BufferSize) PVOID Buffer,
+//    __in SIZE_T BufferSize,
+//    __out_opt PSIZE_T NumberOfBytesWritten
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphReadVirtualMemoryUnsafe(
+//    __in_opt HANDLE ProcessHandle,
+//    __in PVOID BaseAddress,
+//    __out_bcount(BufferSize) PVOID Buffer,
+//    __in SIZE_T BufferSize,
+//    __out_opt PSIZE_T NumberOfBytesRead
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphQueryInformationProcess(
+//    __in HANDLE ProcessHandle,
+//    __in KPH_PROCESS_INFORMATION_CLASS ProcessInformationClass,
+//    __out_bcount(ProcessInformationLength) PVOID ProcessInformation,
+//    __in ULONG ProcessInformationLength,
+//    __out_opt PULONG ReturnLength
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphSetInformationProcess(
+//    __in HANDLE ProcessHandle,
+//    __in KPH_PROCESS_INFORMATION_CLASS ProcessInformationClass,
+//    __in_bcount(ProcessInformationLength) PVOID ProcessInformation,
+//    __in ULONG ProcessInformationLength
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphOpenThread(
+//    __out PHANDLE ThreadHandle,
+//    __in ACCESS_MASK DesiredAccess,
+//    __in PCLIENT_ID ClientId
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphOpenThreadProcess(
+//    __in HANDLE ThreadHandle,
+//    __in ACCESS_MASK DesiredAccess,
+//    __out PHANDLE ProcessHandle
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphTerminateThread(
+//    __in HANDLE ThreadHandle,
+//    __in NTSTATUS ExitStatus
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphTerminateThreadUnsafe(
+//    __in HANDLE ThreadHandle,
+//    __in NTSTATUS ExitStatus
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphGetContextThread(
+//    __in HANDLE ThreadHandle,
+//    __inout PCONTEXT ThreadContext
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphSetContextThread(
+//    __in HANDLE ThreadHandle,
+//    __in PCONTEXT ThreadContext
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphCaptureStackBackTraceThread(
+//    __in HANDLE ThreadHandle,
+//    __in ULONG FramesToSkip,
+//    __in ULONG FramesToCapture,
+//    __out_ecount(FramesToCapture) PVOID *BackTrace,
+//    __out_opt PULONG CapturedFrames,
+//    __out_opt PULONG BackTraceHash
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphQueryInformationThread(
+//    __in HANDLE ThreadHandle,
+//    __in KPH_THREAD_INFORMATION_CLASS ThreadInformationClass,
+//    __out_bcount(ProcessInformationLength) PVOID ThreadInformation,
+//    __in ULONG ThreadInformationLength,
+//    __out_opt PULONG ReturnLength
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphSetInformationThread(
+//    __in HANDLE ThreadHandle,
+//    __in KPH_THREAD_INFORMATION_CLASS ThreadInformationClass,
+//    __in_bcount(ThreadInformationLength) PVOID ThreadInformation,
+//    __in ULONG ThreadInformationLength
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphEnumerateProcessHandles(
+//    __in HANDLE ProcessHandle,
+//    __out_bcount(BufferLength) PVOID Buffer,
+//    __in_opt ULONG BufferLength,
+//    __out_opt PULONG ReturnLength
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphQueryInformationObject(
+//    __in HANDLE ProcessHandle,
+//    __in HANDLE Handle,
+//    __in KPH_OBJECT_INFORMATION_CLASS ObjectInformationClass,
+//    __out_bcount(ObjectInformationLength) PVOID ObjectInformation,
+//    __in ULONG ObjectInformationLength,
+//    __out_opt PULONG ReturnLength
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphSetInformationObject(
+//    __in HANDLE ProcessHandle,
+//    __in HANDLE Handle,
+//    __in KPH_OBJECT_INFORMATION_CLASS ObjectInformationClass,
+//    __in_bcount(ObjectInformationLength) PVOID ObjectInformation,
+//    __in ULONG ObjectInformationLength
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphDuplicateObject(
+//    __in HANDLE SourceProcessHandle,
+//    __in HANDLE SourceHandle,
+//    __in_opt HANDLE TargetProcessHandle,
+//    __out_opt PHANDLE TargetHandle,
+//    __in ACCESS_MASK DesiredAccess,
+//    __in ULONG HandleAttributes,
+//    __in ULONG Options
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphOpenDriver(
+//    __out PHANDLE DriverHandle,
+//    __in POBJECT_ATTRIBUTES ObjectAttributes
+//    );
+
+//PHLIBAPI
+//NTSTATUS
+//NTAPI
+//KphQueryInformationDriver(
+//    __in HANDLE DriverHandle,
+//    __in DRIVER_INFORMATION_CLASS DriverInformationClass,
+//    __out_bcount(DriverInformationLength) PVOID DriverInformation,
+//    __in ULONG DriverInformationLength,
+//    __out_opt PULONG ReturnLength
+//    );

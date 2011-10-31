@@ -27,6 +27,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
@@ -82,8 +83,8 @@ namespace ProcessHacker
                 Program.HackerWindow.ExecuteOnIcons(icon => icon.Dispose());
 
                 // Make sure KPH connection is closed.
-                if (ProcessHacker.Native.KProcessHacker2.Instance != null)
-                    ProcessHacker.Native.KProcessHacker2.Instance.Close();
+                if (KProcessHacker2.Instance != null)
+                   KProcessHacker2.Instance.Dispose();
             }
             catch (Exception ex)
             {

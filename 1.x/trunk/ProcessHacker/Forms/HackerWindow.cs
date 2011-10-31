@@ -74,11 +74,6 @@ namespace ProcessHacker
         public SysInfoWindow SysInfoWindow;
 
         /// <summary>
-        /// The UAC shield bitmap. Used for the various menu items which 
-        /// require UAC elevation.
-        /// </summary>
-        Bitmap uacShieldIcon;
-        /// <summary>
         /// A black icon which all notification icons are set to initially 
         /// before their first paint.
         /// </summary>
@@ -381,14 +376,13 @@ namespace ProcessHacker
 
         private void optionsMenuItem_Click(object sender, EventArgs e)
         {
-            OptionsWindow options = new OptionsWindow();
-
-            DialogResult result = options.ShowDialog();
-
-           if (result == DialogResult.OK)
-           {
-               this.LoadOtherSettings();
-           }
+            using (OptionsWindow options = new OptionsWindow())
+            {
+                if (options.ShowDialog() == DialogResult.OK)
+                {
+                    this.LoadOtherSettings();
+                }
+            }
         }
 
         private void freeMemoryMenuItem_Click(object sender, EventArgs e)
@@ -1743,7 +1737,7 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        //KProcessHacker.Instance.SetProcessToken(picker.SelectedPid, processSelectedPid);
+                        //KProcessHacker2.Instance.KphOpenProcessToken(picker, processSelectedPid);
                     }
                     catch (Exception ex)
                     {
@@ -2997,9 +2991,14 @@ namespace ProcessHacker
 
         public void Exit(bool saveSettings)
         {
-            //processP.Dispose();
-            //serviceP.Dispose();
-            //networkP.Dispose();
+            Program.ProcessProvider.Enabled = false;
+            Program.ProcessProvider.Dispose();
+
+            Program.ServiceProvider.Enabled = false;
+            Program.ServiceProvider.Dispose();
+
+            Program.NetworkProvider.Enabled = false;
+            Program.NetworkProvider.Dispose();
 
             this.ExecuteOnIcons(icon => icon.Visible = false);
             this.ExecuteOnIcons(icon => icon.Dispose());
@@ -3009,17 +3008,10 @@ namespace ProcessHacker
             if (saveSettings && !Program.CheckPreviousInstance())
                 SaveSettings();
 
-            this.Visible = false;
-
             if (KProcessHacker2.Instance != null)
-                KProcessHacker2.Instance.Close();
+                KProcessHacker2.Instance.Dispose();
 
-            try
-            {
-                Win32.ExitProcess(0);
-            }
-            catch
-            { }
+            Win32.NtTerminateProcess(ProcessHandle.Current, NtStatus.Success);
         }
 
         private void HackerWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -3031,7 +3023,7 @@ namespace ProcessHacker
                 )
             {
                 e.Cancel = true;
-                showHideMenuItem_Click(sender, null);
+                this.showHideProcessHackerToolStripMenuItem.PerformClick();
                 return;
             }
 
@@ -3113,7 +3105,7 @@ namespace ProcessHacker
         {
             if (Program.ElevationType == TokenElevationType.Limited)
             {
-                this.showDetailsForAllProcessesMenuItem.Image = uacShieldIcon = this.GetUacShieldIcon();
+                this.showDetailsForAllProcessesMenuItem.Image = this.GetUacShieldIcon();
                 //vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
                 //vistaMenu.SetImage(startServiceMenuItem, uacShieldIcon);
                 //vistaMenu.SetImage(continueServiceMenuItem, uacShieldIcon);

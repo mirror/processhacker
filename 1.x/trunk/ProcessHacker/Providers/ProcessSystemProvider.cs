@@ -431,7 +431,7 @@ namespace ProcessHacker
             };
 
             if (string.IsNullOrEmpty(fileName))
-                fileName = this.GetFileName(pid);
+                fileName = GetFileName(pid);
 
             fpResult.FileName = fileName;
 
@@ -478,31 +478,31 @@ namespace ProcessHacker
                     }
 
                     // Get the process' job if we have KProcessHacker. 
-                    //if (KProcessHacker.Instance != null)
-                    //{
-                    //    try
-                    //    {
-                    //        using (JobObjectHandle jhandle = queryLimitedHandle.GetJobObject(JobObjectAccess.Query))
-                    //        {
-                    //            JobObjectBasicLimitInformation limits = jhandle.BasicLimitInformation;
+                    if (KProcessHacker2.Instance != null)
+                    {
+                        try
+                        {
+                            using (JobObjectHandle jhandle = queryLimitedHandle.GetJobObject(JobObjectAccess.Query))
+                            {
+                                JobObjectBasicLimitInformation limits = jhandle.BasicLimitInformation;
 
-                    //            fpResult.IsInJob = true;
-                    //            fpResult.JobName = jhandle.ObjectName;
+                                fpResult.IsInJob = true;
+                                fpResult.JobName = jhandle.ObjectName;
 
-                    //            // This is what Process Explorer does...
-                    //            if (limits.LimitFlags != JobObjectLimitFlags.SilentBreakawayOk)
-                    //            {
-                    //                fpResult.IsInSignificantJob = true;
-                    //            }
-                    //        }
-                    //    }
-                    //    catch (Exception ex)
-                    //    {
-                    //        Logging.Log(ex);
-                    //        fpResult.IsInJob = false;
-                    //        fpResult.IsInSignificantJob = false;
-                    //    }
-                    //}
+                                // This is what Process Explorer does...
+                                if (limits.LimitFlags != JobObjectLimitFlags.SilentBreakawayOk)
+                                {
+                                    fpResult.IsInSignificantJob = true;
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logging.Log(ex);
+                            fpResult.IsInJob = false;
+                            fpResult.IsInSignificantJob = false;
+                        }
+                    }
 
                     try
                     {
@@ -696,7 +696,7 @@ namespace ProcessHacker
             return fpResult;
         }
 
-        private string GetFileName(int pid)
+        private static string GetFileName(int pid)
         {
             string fileName = null;
 

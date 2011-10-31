@@ -34,10 +34,10 @@ namespace ProcessHacker
 
             PerformanceInformation info = new PerformanceInformation
             {
-                Size = PerformanceInformation.SizeOf
+                cbSize = PerformanceInformation.SizeOf
             };
 
-            Win32.GetPerformanceInfo(out info, info.Size);
+            Win32.GetPerformanceInfo(out info, info.cbSize);
 
             this.MinMaxValue = info.CommitLimit.ToInt64();
         }

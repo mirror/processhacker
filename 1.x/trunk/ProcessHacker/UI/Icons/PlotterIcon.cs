@@ -41,7 +41,7 @@ namespace ProcessHacker
             _longDataHistory1 = new CircularBuffer<long>(20);
             _longDataHistory2 = new CircularBuffer<long>(20);
 
-            _plotter = new Plotter()
+            _plotter = new Plotter
             {
                 Size = this.Size,
                 ShowGrid = false,
