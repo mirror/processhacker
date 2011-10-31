@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Messaging;
 using ProcessHacker.Native;
@@ -207,8 +208,8 @@ namespace ProcessHacker
         public IList<float>[] CpusKernelHistory { get { return _cpusKernelHistory; } }
         public IList<float>[] CpusUserHistory { get { return _cpusUserHistory; } }
         public IList<float>[] CpusOtherHistory { get { return _cpusOtherHistory; } }
-        public IList<long> CommitHistory { get { return _commitHistory; } }
-        public IList<long> PhysicalMemoryHistory { get { return _physicalMemoryHistory; } }
+        public CircularList<int> CommitHistory { get { return _commitHistory; } }
+        public CircularList<int> PhysicalMemoryHistory { get { return _physicalMemoryHistory; } }
         public IList<DateTime> TimeHistory { get { return _timeHistory; } }
         public IList<string> MostCpuHistory { get { return _cpuMostUsageHistory; } }
         public IList<string> MostIoHistory { get { return _ioMostUsageHistory; } }
@@ -239,8 +240,8 @@ namespace ProcessHacker
         private readonly CircularBuffer<float>[] _cpusKernelHistory;
         private readonly CircularBuffer<float>[] _cpusUserHistory;
         private readonly CircularBuffer<float>[] _cpusOtherHistory;
-        private readonly CircularBuffer<long> _commitHistory;
-        private readonly CircularBuffer<long> _physicalMemoryHistory;
+        private readonly CircularList<int> _commitHistory;
+        private readonly CircularList<int> _physicalMemoryHistory;
         private readonly CircularBuffer<DateTime> _timeHistory;
         private readonly CircularBuffer<string> _cpuMostUsageHistory;
         private readonly CircularBuffer<string> _ioMostUsageHistory;
@@ -304,8 +305,7 @@ namespace ProcessHacker
 
             _cpuKernelDelta = new Int64Delta(this.ProcessorPerf.KernelTime);
             _cpuUserDelta = new Int64Delta(this.ProcessorPerf.UserTime);
-            _cpuOtherDelta = new Int64Delta(
-                this.ProcessorPerf.IdleTime + this.ProcessorPerf.DpcTime + this.ProcessorPerf.InterruptTime);
+            _cpuOtherDelta = new Int64Delta(this.ProcessorPerf.IdleTime + this.ProcessorPerf.DpcTime + this.ProcessorPerf.InterruptTime);
             _ioReadDelta = new Int64Delta(this.Performance.IoReadTransferCount);
             _ioWriteDelta = new Int64Delta(this.Performance.IoWriteTransferCount);
             _ioOtherDelta = new Int64Delta(this.Performance.IoOtherTransferCount);
@@ -319,8 +319,8 @@ namespace ProcessHacker
             _ioWriteHistory = new CircularBuffer<long>(_historyMaxSize);
             _ioOtherHistory = new CircularBuffer<long>(_historyMaxSize);
             _ioReadOtherHistory = new CircularBuffer<long>(_historyMaxSize);
-            _commitHistory = new CircularBuffer<long>(_historyMaxSize);
-            _physicalMemoryHistory = new CircularBuffer<long>(_historyMaxSize);
+            _commitHistory = new CircularList<int>(_historyMaxSize);
+            _physicalMemoryHistory = new CircularList<int>(_historyMaxSize);
             _timeHistory = new CircularBuffer<DateTime>(_historyMaxSize);
             _ioMostUsageHistory = new CircularBuffer<string>(_historyMaxSize);
             _cpuMostUsageHistory = new CircularBuffer<string>(_historyMaxSize);
@@ -349,6 +349,11 @@ namespace ProcessHacker
                 _cpusUserHistory[i] = new CircularBuffer<float>(_historyMaxSize);
                 _cpusOtherHistory[i] = new CircularBuffer<float>(_historyMaxSize);
             }
+
+            _cpuKernelHistory.Add(0);
+
+            _commitHistory.Add(0);
+            _physicalMemoryHistory.Add(0);
         }
 
         public SystemProcess DpcsProcess
@@ -365,6 +370,14 @@ namespace ProcessHacker
         {
             if (cb.Size != _historyMaxSize)
                 cb.Resize(_historyMaxSize);
+
+            cb.Add(value);
+        }
+
+        private void UpdateList<T>(CircularList<T> cb, T value)
+        {
+            //if (cb.Max != this.HistoryMaxSize)
+            cb.Max = this.HistoryMaxSize;
 
             cb.Add(value);
         }
@@ -889,9 +902,13 @@ namespace ProcessHacker
             UpdateCb(_ioWriteHistory, _ioWriteDelta.Delta);
             UpdateCb(_ioOtherHistory, _ioOtherDelta.Delta);
             UpdateCb(_ioReadOtherHistory, _ioReadDelta.Delta + _ioOtherDelta.Delta);
-            UpdateCb(_commitHistory, this._performance.CommittedPages * _system.PageSize);
-            UpdateCb(_physicalMemoryHistory, (this._system.NumberOfPhysicalPages - this._performance.AvailablePages) * _system.PageSize);
 
+            this.UpdateList(this.CommitHistory, (int)this.Performance.CommittedPages);
+
+            MEMORYSTATUSEX ex = new MEMORYSTATUSEX();
+            if (GlobalMemoryStatusEx(ex))
+                this.UpdateList(this.PhysicalMemoryHistory, ex.memoryLoad);
+            
             // set System Idle Process CPU time
             if (procs.ContainsKey(0))
             {
@@ -1247,5 +1264,33 @@ namespace ProcessHacker
             if (wtsEnumData.Memory != null)
                 wtsEnumData.Memory.Dispose();
         }
+
+
+        [DllImport("kernel32.dll", SetLastError = true), System.Security.SuppressUnmanagedCodeSecurity]
+        public static extern bool GlobalMemoryStatusEx([In, Out] MEMORYSTATUSEX buffer);
     }
+          
+    [StructLayout(LayoutKind.Sequential)]
+        public class MEMORYSTATUSEX
+        {
+            public static readonly int SizeOf = Marshal.SizeOf(typeof(MEMORYSTATUSEX));
+
+            private int length;
+            public int memoryLoad;
+            public ulong totalPhys;
+            public ulong availPhys;
+            public ulong totalPageFile;
+            public ulong availPageFile;
+            public ulong totalVirtual;
+            public ulong availVirtual;
+            public ulong availExtendedVirtual;
+
+            internal MEMORYSTATUSEX()
+            {
+                this.length = SizeOf;
+            }
+        }
+
+
+
 }

@@ -260,6 +260,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Forms\SysInfoWindow.resx">
+      <DependentUpon>SysInfoWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
@@ -448,9 +451,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\StructWindow.resx">
       <DependentUpon>StructWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SysInfoWindow.resx">
-      <DependentUpon>SysInfoWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TerminatorWindow.resx">
       <DependentUpon>TerminatorWindow.cs</DependentUpon>
@@ -739,6 +739,12 @@
     <Compile Include="Providers\IProvider.cs" />
     <Compile Include="Providers\Provider.cs" />
     <Compile Include="Providers\ProviderThread.cs" />
+    <Compile Include="Forms\SysInfoWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SysInfoWindow.designer.cs">
+      <DependentUpon>SysInfoWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Actions\ElevationLevel.cs" />
     <Compile Include="UI\Actions\SessionActions.cs" />
     <Compile Include="UI\AeroRenderer.cs" />
@@ -936,12 +942,6 @@
     </Compile>
     <Compile Include="Forms\StructWindow.Designer.cs">
       <DependentUpon>StructWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\SysInfoWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SysInfoWindow.Designer.cs">
-      <DependentUpon>SysInfoWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\TerminatorWindow.cs">
       <SubType>Form</SubType>

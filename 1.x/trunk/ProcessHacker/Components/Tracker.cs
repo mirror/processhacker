@@ -16,8 +16,8 @@ namespace ProcessHacker
 
         private int mover;
 
-        public System.Collections.Generic.List<int> values = new System.Collections.Generic.List<int>();
-        public System.Collections.Generic.List<long> values2 = new System.Collections.Generic.List<long>();
+        public System.Collections.Generic.IList<int> values;
+        public System.Collections.Generic.IList<long> values2;
 
         private int mValue;
         private int mMinimum;
@@ -170,7 +170,7 @@ namespace ProcessHacker
         protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.Clear(Color.Black);
-            //e.Graphics.SmoothingMode = Settings.Instance.PlotterSmoothingMode;
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
             int width = this.Width;
             int height = this.Height;
@@ -320,7 +320,7 @@ namespace ProcessHacker
             {
                 _text = value;
 
-                _textSize = this.CreateGraphics().GetCachedSize(this.Text, this.Font);
+                _textSize = TextRenderer.MeasureText(this.Text, this.Font);
                 _boxSize = new Size(_textSize.Width + _textPadding.Left + _textPadding.Right, _textSize.Height + _textPadding.Top + _textPadding.Bottom);
 
                 // work out Y
