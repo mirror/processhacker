@@ -15,11 +15,6 @@ img { border: 0; }
     font-weight: bold;
 }
 
-.summary
-{
-	max-width: 70%;
-}
-
 .center
 { 
 	text-align: center; 
@@ -27,7 +22,13 @@ img { border: 0; }
 
 .page
 { 
-	max-width: 80em;
+	/*max-width: 80em;*/
+	padding: 0;
+	padding-top: 0px;
+	padding-right: 10px;
+	padding-bottom: 5px;
+	padding-left: 10px;
+	
 	margin: 0 auto;
 }
 

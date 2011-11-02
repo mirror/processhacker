@@ -22,4 +22,29 @@
 	$LATEST_PH_SDK_SIZE = "2.4 MB";
 	$LATEST_PH_SDK_SHA1 = "23c9dc21aa4628bf911b768f4b242c10c54cd01c";
 	$LATEST_PH_SDK_MD5 = "d1cf4c0609b6c4d2cee2217bd89b479e";
+	
+	// How Many Topics you want to display?
+	$topicnumber = 5;
+	
+	define('IN_PHPBB', true);
+	$phpbb_root_path = './forums/';
+	$phpEx = substr(strrchr(__FILE__, '.'), 1);
+	
+	// import php functions
+	include($phpbb_root_path.'config.'.$phpEx); 
+	include($phpbb_root_path.'common.'.$phpEx);
+	include($phpbb_root_path.'includes/bbcode.'.$phpEx);
+	include($phpbb_root_path.'includes/functions_display.'.$phpEx);
+
+	// Start forum session
+	$user->session_begin();
+	$auth->acl($user->data);
+	$user->setup();
+	
+	// select database tables
+	$table_topics = $table_prefix. "topics";
+	$table_forums = $table_prefix. "forums";
+	$table_posts = $table_prefix. "posts";
+	$table_users = $table_prefix. "users";
+	$table_sessions = $table_prefix. "sessions";
 ?>

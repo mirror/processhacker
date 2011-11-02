@@ -14,6 +14,8 @@
 		<link rel="stylesheet" type="text/css" media="screen, print" href="/css/stylesheet.css">
 		<link rel="stylesheet" type="text/css" media="screen" href="/css/lytebox.css">
 		
+		<link rel="alternate" type="application/rss+xml" href="http://processhacker.sourceforge.net/forums/feed.php?f=1" title="Announcements RSS feed">
+		
 		<script src="/scripts/lytebox.js"></script>
 		
 		<title><?php echo $pagetitle ?> - Process Hacker</title>

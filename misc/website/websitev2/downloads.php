@@ -57,7 +57,7 @@ include("config.php");
 	</div>
 		
 		<div class="top-portlet">
-			<div class="summary">
+			<div class="summary" style="padding-bottom:40px;">
 				<p>The latest stable version of Process Hacker is <strong><?php echo $LATEST_PH_VERSION ?></strong></p>
 				<p>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver, so it works on 64-bit systems.</p>
 	
@@ -67,13 +67,13 @@ include("config.php");
 
 				<p><strong>Licence:</strong></p>
 				<h2>&#160;•&#160;GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></h2>	
-				</br>
+				</br>				
 			</div>
-			
+					
 			<div class="yui-g">
 				<div class="yui-u first">
 					<div class="portlet">
-						<ul style="width: 150px; float:right" class="downloads">		
+							<ul style="width: 150px; float:right" class="downloads">		
 							<li>
 								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">
 									Download
@@ -86,8 +86,10 @@ include("config.php");
 						<p>Size: <?php echo $LATEST_PH_SETUP_SIZE ?></p>
 						<p>SHA1: <?php echo $LATEST_PH_SETUP_SHA1 ?></p>
 						<p>MD5: <?php echo $LATEST_PH_SETUP_MD5 ?></p>
-					</div>	
-		
+					</div>
+				</div>
+				
+				<div class="yui-g">
 					<div class="portlet">
 						<ul style="width: 150px; float:right" class="downloads">						
 							<li>
@@ -102,14 +104,13 @@ include("config.php");
 						<p>Size: <?php echo $LATEST_PH_BIN_SIZE ?></p>
 						<p>SHA1: <?php echo $LATEST_PH_BIN_SHA1 ?></p>
 						<p>MD5: <?php echo $LATEST_PH_BIN_MD5 ?></p>
-					</div>      
+					</div>
 				</div>
-    
 				<div class="yui-u">
-				  <div id="structural-subscription-content-box"></div>
+					<div id="structural-subscription-content-box"></div>
 				</div>
 			</div>
-			
+
 			<div class="yui-g">
 				<div class="yui-u first">
 					<div class="portlet">
@@ -126,8 +127,11 @@ include("config.php");
 						<p>Size: <?php echo $LATEST_PH_SOURCE_SIZE ?></p>
 						<p>SHA1: <?php echo $LATEST_PH_SOURCE_SHA1 ?></p>
 						<p>MD5: <?php echo $LATEST_PH_SOURCE_MD5 ?></p>
+						
 					</div>	
+				</div>
 
+				<div class="yui-u">
 					<div class="portlet">
 						<ul style="width: 150px; float:right" class="downloads">						
 							<li>
@@ -142,10 +146,9 @@ include("config.php");
 						<p>Size: <?php echo $LATEST_PH_SDK_SIZE ?></p>
 						<p>SHA1: <?php echo $LATEST_PH_SDK_SHA1 ?></p>
 						<p>MD5: <?php echo $LATEST_PH_SDK_MD5 ?></p>  
-					</div>
-				</div>	
-
-			</div>
+					</div>      
+				</div>
+			</div>	
 		</div>
 	</div>
 </div>

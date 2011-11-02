@@ -3,32 +3,6 @@ $pagetitle = "Overview";
 
 include("header.php"); 
 include("config.php"); 
-
-// How Many Topics you want to display?
-$topicnumber = 5;
-
-// Forum Imports
-define('IN_PHPBB', true);
-$phpbb_root_path = './forums/';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-
-include($phpbb_root_path.'config.'.$phpEx); 
-include($phpbb_root_path.'common.'.$phpEx);
-include($phpbb_root_path.'includes/bbcode.'.$phpEx);
-include($phpbb_root_path.'includes/functions_display.'.$phpEx);
-
-// Start forum session management
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup();
-
-$table_topics = $table_prefix. "topics";
-$table_forums = $table_prefix. "forums";
-$table_posts = $table_prefix. "posts";
-$table_users = $table_prefix. "users";
-
-$table_sessions = $table_prefix. "sessions";
-
 ?>
 
 <div class="page">
@@ -121,7 +95,6 @@ $table_sessions = $table_prefix. "sessions";
 						<li>&#160;•&#160;Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
 					</ul>
 				</div>
-				
 			</div>
 			
 			<div class="yui-g">
