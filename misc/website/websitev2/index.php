@@ -9,7 +9,7 @@ include("config.php");
 	<div class="yui-d0">
 		<div class="watermark-apps-portlet">
 			<div class="flowed-block">
-				<img alt="" width="64" height="64" src="/images/logo.png">
+				<img alt="" width="64" height="64" src="/images/logo_64x64.png">
 			</div>
 			
 			<div class="flowed-block wide">

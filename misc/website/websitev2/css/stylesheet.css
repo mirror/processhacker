@@ -22,7 +22,7 @@ img { border: 0; }
 
 .page
 { 
-	/*max-width: 80em;*/
+	max-width: 80em;
 	padding: 0;
 	padding-top: 0px;
 	padding-right: 10px;
