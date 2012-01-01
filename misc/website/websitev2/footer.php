@@ -3,7 +3,7 @@
 			<img src="http://sflogo.sourceforge.net/sflogo.php?group_id=242527&amp;type=13" width="120" height="30" alt="Process Hacker is Hosted by SourceForge.net">
 			
 			<br>
-			Copyright &copy; 2008-2011 wj32
+			Copyright &copy; 2008-2012 wj32
 		</div>
 			
 		<!-- Piwik
