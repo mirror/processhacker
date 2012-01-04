@@ -39,6 +39,7 @@
 				<div class="yui-u first">
 					<img style="float: left; margin: 0 10px 5px 0;" src="./forums/download/file.php?avatar=2_1295726184.jpg" width="128" height="128" alt="User avatar">
 					<li><a style="color:#AA0000" href="http://sourceforge.net/users/wj32/"><strong>wj32</strong></a></li>
+					<li>Project Founder</li>
 					<div class="portlet">
 					</div>
 				</div>
@@ -48,7 +49,8 @@
 				<div class="yui-u first">
 					<img style="float: left; margin: 0 10px 5px 0;" src="./forums/download/file.php?avatar=54_1314248802.jpg" width="150" height="115" alt="User avatar">
 					<li><a style="color:#AA0000" href="http://sourceforge.net/users/dmex/"><strong>dmex</strong></a></li>
-						<div class="portlet">
+					<li>Director of Operations</li>
+					<div class="portlet">
 					</div>
 				</div>
 			</div>
@@ -56,6 +58,7 @@
 			<div class="yui-g" style="width: 80em;">
 				<div class="yui-u first">
 					<li><a style="color:#0000FF" href="http://sourceforge.net/users/xhmikosr/"><strong>XhmikosR</strong></a></li>
+					<li>Installer Developer, Tester</li>
 					<div class="portlet">
 					</div>
 				</div>
