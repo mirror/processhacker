@@ -82,7 +82,6 @@
             this.Controls.Add(this.labelSize);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SectionProperties";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(185, 50);

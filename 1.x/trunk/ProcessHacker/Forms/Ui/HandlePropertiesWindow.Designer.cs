@@ -64,7 +64,6 @@
             // 
             this.handleDetails1.BackColor = System.Drawing.Color.White;
             this.handleDetails1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.handleDetails1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.handleDetails1.Location = new System.Drawing.Point(3, 3);
             this.handleDetails1.Name = "handleDetails1";
             this.handleDetails1.Padding = new System.Windows.Forms.Padding(3);

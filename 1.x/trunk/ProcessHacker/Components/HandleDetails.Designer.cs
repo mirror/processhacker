@@ -79,7 +79,7 @@
             this.labelNonPaged.AutoSize = true;
             this.labelNonPaged.Location = new System.Drawing.Point(6, 42);
             this.labelNonPaged.Name = "labelNonPaged";
-            this.labelNonPaged.Size = new System.Drawing.Size(68, 13);
+            this.labelNonPaged.Size = new System.Drawing.Size(64, 13);
             this.labelNonPaged.TabIndex = 2;
             this.labelNonPaged.Text = "Non-Paged:";
             // 
@@ -88,7 +88,7 @@
             this.labelPaged.AutoSize = true;
             this.labelPaged.Location = new System.Drawing.Point(6, 21);
             this.labelPaged.Name = "labelPaged";
-            this.labelPaged.Size = new System.Drawing.Size(42, 13);
+            this.labelPaged.Size = new System.Drawing.Size(41, 13);
             this.labelPaged.TabIndex = 2;
             this.labelPaged.Text = "Paged:";
             // 
@@ -108,7 +108,7 @@
             this.labelHandles.AutoSize = true;
             this.labelHandles.Location = new System.Drawing.Point(6, 42);
             this.labelHandles.Name = "labelHandles";
-            this.labelHandles.Size = new System.Drawing.Size(52, 13);
+            this.labelHandles.Size = new System.Drawing.Size(49, 13);
             this.labelHandles.TabIndex = 2;
             this.labelHandles.Text = "Handles:";
             // 
@@ -117,7 +117,7 @@
             this.labelReferences.AutoSize = true;
             this.labelReferences.Location = new System.Drawing.Point(6, 21);
             this.labelReferences.Name = "labelReferences";
-            this.labelReferences.Size = new System.Drawing.Size(66, 13);
+            this.labelReferences.Size = new System.Drawing.Size(65, 13);
             this.labelReferences.TabIndex = 2;
             this.labelReferences.Text = "References:";
             // 
@@ -147,7 +147,7 @@
             this.textGrantedAccess.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textGrantedAccess.Location = new System.Drawing.Point(98, 76);
             this.textGrantedAccess.Name = "textGrantedAccess";
-            this.textGrantedAccess.Size = new System.Drawing.Size(326, 15);
+            this.textGrantedAccess.Size = new System.Drawing.Size(326, 13);
             this.textGrantedAccess.TabIndex = 20;
             // 
             // textAddress
@@ -157,7 +157,7 @@
             this.textAddress.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textAddress.Location = new System.Drawing.Point(98, 57);
             this.textAddress.Name = "textAddress";
-            this.textAddress.Size = new System.Drawing.Size(326, 15);
+            this.textAddress.Size = new System.Drawing.Size(326, 13);
             this.textAddress.TabIndex = 1;
             // 
             // textType
@@ -167,7 +167,7 @@
             this.textType.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textType.Location = new System.Drawing.Point(60, 38);
             this.textType.Name = "textType";
-            this.textType.Size = new System.Drawing.Size(364, 15);
+            this.textType.Size = new System.Drawing.Size(364, 13);
             this.textType.TabIndex = 1;
             // 
             // textName
@@ -177,7 +177,7 @@
             this.textName.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textName.Location = new System.Drawing.Point(60, 19);
             this.textName.Name = "textName";
-            this.textName.Size = new System.Drawing.Size(364, 15);
+            this.textName.Size = new System.Drawing.Size(364, 13);
             this.textName.TabIndex = 1;
             // 
             // label4
@@ -185,7 +185,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(6, 76);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(88, 13);
+            this.label4.Size = new System.Drawing.Size(86, 13);
             this.label4.TabIndex = 21;
             this.label4.Text = "Granted Access:";
             // 
@@ -194,7 +194,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(6, 57);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(88, 13);
+            this.label3.Size = new System.Drawing.Size(82, 13);
             this.label3.TabIndex = 0;
             this.label3.Text = "Object Address:";
             // 
@@ -203,7 +203,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 38);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(33, 13);
+            this.label2.Size = new System.Drawing.Size(34, 13);
             this.label2.TabIndex = 2;
             this.label2.Text = "Type:";
             // 
@@ -212,7 +212,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 19);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(39, 13);
+            this.label1.Size = new System.Drawing.Size(38, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Name:";
             // 
@@ -225,7 +225,6 @@
             this.Controls.Add(this.groupQuotaCharges);
             this.Controls.Add(this.groupReferences);
             this.Controls.Add(this.groupBasicInfo);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "HandleDetails";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(442, 429);

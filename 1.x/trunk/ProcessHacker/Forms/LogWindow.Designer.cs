@@ -154,7 +154,6 @@ namespace ProcessHacker
             this.Controls.Add(this.buttonCopy);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.listLog);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "LogWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Log";

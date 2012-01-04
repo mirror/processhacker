@@ -555,7 +555,6 @@
             this.Controls.Add(this.label7);
             this.Controls.Add(this.tableInformation);
             this.Controls.Add(this.listThreads);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "ThreadList";
             this.Size = new System.Drawing.Size(450, 460);
             this.tableInformation.ResumeLayout(false);

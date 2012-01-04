@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using System.Xml;
-using ProcessHacker.Common;
+﻿using System.Drawing;
 using ProcessHacker.Common.Settings;
 using System.Windows.Forms;
 
@@ -371,7 +366,7 @@ namespace ProcessHacker
         }
 
         private Font _font;
-        [SettingDefault("Segoe UI, 10pt")]
+        [SettingDefault("Microsoft Sans Serif, 8.25pt")]
         public Font Font
         {
             get { return this._font ?? (this._font = (Font)this["Font"]); }

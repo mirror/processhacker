@@ -108,7 +108,6 @@
             this.Controls.Add(this.labelMaximumCount);
             this.Controls.Add(this.labelCurrentCount);
             this.Controls.Add(this.label1);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SemaphoreProperties";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(196, 80);

@@ -88,7 +88,6 @@
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.textValue);
             this.Controls.Add(this.labelValue);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MinimumSize = new System.Drawing.Size(402, 109);
             this.Name = "PromptBox";
             this.ShowIcon = false;

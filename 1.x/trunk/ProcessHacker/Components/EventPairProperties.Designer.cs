@@ -64,7 +64,6 @@
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.buttonSetLow);
             this.Controls.Add(this.buttonSetHigh);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "EventPairProperties";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(212, 63);

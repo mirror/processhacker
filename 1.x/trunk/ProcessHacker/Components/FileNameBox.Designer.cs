@@ -42,7 +42,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textFileName.Location = new System.Drawing.Point(0, 2);
             this.textFileName.Name = "textFileName";
-            this.textFileName.Size = new System.Drawing.Size(277, 22);
+            this.textFileName.Size = new System.Drawing.Size(277, 20);
             this.textFileName.TabIndex = 0;
             this.textFileName.Leave += new System.EventHandler(this.textFileName_Leave);
             // 
@@ -80,7 +80,6 @@
             this.Controls.Add(this.buttonExplore);
             this.Controls.Add(this.buttonProperties);
             this.Controls.Add(this.textFileName);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "FileNameBox";
             this.Size = new System.Drawing.Size(328, 24);
             this.ResumeLayout(false);

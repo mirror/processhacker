@@ -574,24 +574,23 @@ namespace ProcessHacker
                           " -rect " + this.Location.X.ToString() + "," + this.Location.Y.ToString() + "," +
                           this.Size.Width.ToString() + "," + this.Size.Height.ToString();
 
-            // Avoid cross-thread operation.
-            IntPtr thisHandle = this.Handle;
-
-
-            NativeThreadPool.QueueWorkItem(o =>
+            NativeThreadPool.QueueWorkItem(thisHandle =>
             {
-                Program.StartProcessHackerAdminWait(args, thisHandle, 0xffffffff);
+                Program.StartProcessHackerAdminWait(args, (IntPtr)thisHandle, 0xffffffff);
 
                 this.BeginInvoke(new MethodInvoker(() =>
                 {
                     Settings.Instance.Reload();
                     this.LoadSettings();
+
                     if (!_dontApply)
                         this.ApplySettings();
+
                     buttonApply.Enabled = false;
                     buttonOK.Select();
                 }));
-            }, null);
+
+            }, this.Handle);
         }
 
         private void buttonEnableAll_Click(object sender, EventArgs e)

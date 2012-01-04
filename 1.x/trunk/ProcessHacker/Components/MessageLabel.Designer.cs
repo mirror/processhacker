@@ -61,7 +61,6 @@
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.Controls.Add(this.labelText);
             this.Controls.Add(this.pictureIcon);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "MessageLabel";
             this.Size = new System.Drawing.Size(186, 20);
             ((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();

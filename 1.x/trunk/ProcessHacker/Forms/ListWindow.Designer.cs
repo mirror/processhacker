@@ -84,7 +84,6 @@ namespace ProcessHacker
             this.ClientSize = new System.Drawing.Size(511, 310);
             this.Controls.Add(this.listView);
             this.Controls.Add(this.buttonClose);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

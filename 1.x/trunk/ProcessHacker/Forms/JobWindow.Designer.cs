@@ -65,7 +65,6 @@
             this.ClientSize = new System.Drawing.Size(468, 425);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.panelJob);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "JobWindow";

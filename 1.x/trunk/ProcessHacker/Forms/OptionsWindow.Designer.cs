@@ -67,14 +67,10 @@
             this.label11 = new System.Windows.Forms.Label();
             this.buttonDisableAll = new System.Windows.Forms.Button();
             this.buttonEnableAll = new System.Windows.Forms.Button();
-            this.listHighlightingColors = new ProcessHacker.Components.ExtendedListView();
-            this.columnDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.textHighlightingDuration = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
-            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.tabPlotting = new System.Windows.Forms.TabPage();
             this.textStep = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -85,12 +81,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
-            this.colorIORO = new ProcessHacker.Components.ColorModifier();
-            this.colorIOW = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
-            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
-            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.tabSymbols = new System.Windows.Forms.TabPage();
             this.checkUndecorate = new System.Windows.Forms.CheckBox();
             this.textSearchPath = new System.Windows.Forms.TextBox();
@@ -107,6 +97,16 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
             this.buttonReset = new System.Windows.Forms.Button();
+            this.listHighlightingColors = new ProcessHacker.Components.ExtendedListView();
+            this.columnDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorIORO = new ProcessHacker.Components.ColorModifier();
+            this.colorIOW = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
+            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -126,7 +126,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 8);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(89, 13);
+            this.label1.Size = new System.Drawing.Size(83, 13);
             this.label1.TabIndex = 13;
             this.label1.Text = "Update Interval:";
             // 
@@ -149,7 +149,7 @@
             0,
             0});
             this.textUpdateInterval.Name = "textUpdateInterval";
-            this.textUpdateInterval.Size = new System.Drawing.Size(66, 22);
+            this.textUpdateInterval.Size = new System.Drawing.Size(66, 20);
             this.textUpdateInterval.TabIndex = 0;
             this.textUpdateInterval.Value = new decimal(new int[] {
             1000,
@@ -176,7 +176,7 @@
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkShowProcessDomains.Location = new System.Drawing.Point(211, 246);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
-            this.checkShowProcessDomains.Size = new System.Drawing.Size(169, 18);
+            this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 12;
             this.checkShowProcessDomains.Text = "Show user/group domains";
             this.checkShowProcessDomains.UseVisualStyleBackColor = true;
@@ -197,7 +197,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 61);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(83, 13);
+            this.label2.Size = new System.Drawing.Size(80, 13);
             this.label2.TabIndex = 15;
             this.label2.Text = "Search Engine:";
             // 
@@ -207,7 +207,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textSearchEngine.Location = new System.Drawing.Point(136, 58);
             this.textSearchEngine.Name = "textSearchEngine";
-            this.textSearchEngine.Size = new System.Drawing.Size(339, 22);
+            this.textSearchEngine.Size = new System.Drawing.Size(339, 20);
             this.textSearchEngine.TabIndex = 2;
             // 
             // tabControl
@@ -261,7 +261,7 @@
             this.label20.AutoSize = true;
             this.label20.Location = new System.Drawing.Point(6, 140);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(116, 13);
+            this.label20.Size = new System.Drawing.Size(109, 13);
             this.label20.TabIndex = 19;
             this.label20.Text = "Toolbar Display Style:";
             // 
@@ -285,7 +285,7 @@
             this.checkScrollDownProcessTree.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkScrollDownProcessTree.Location = new System.Drawing.Point(211, 222);
             this.checkScrollDownProcessTree.Name = "checkScrollDownProcessTree";
-            this.checkScrollDownProcessTree.Size = new System.Drawing.Size(231, 18);
+            this.checkScrollDownProcessTree.Size = new System.Drawing.Size(213, 18);
             this.checkScrollDownProcessTree.TabIndex = 11;
             this.checkScrollDownProcessTree.Text = "Scroll down the process tree at startup";
             this.checkScrollDownProcessTree.UseVisualStyleBackColor = true;
@@ -296,7 +296,7 @@
             this.checkAllowOnlyOneInstance.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(6, 270);
             this.checkAllowOnlyOneInstance.Name = "checkAllowOnlyOneInstance";
-            this.checkAllowOnlyOneInstance.Size = new System.Drawing.Size(155, 18);
+            this.checkAllowOnlyOneInstance.Size = new System.Drawing.Size(143, 18);
             this.checkAllowOnlyOneInstance.TabIndex = 9;
             this.checkAllowOnlyOneInstance.Text = "Allow only one instance";
             this.checkAllowOnlyOneInstance.UseVisualStyleBackColor = true;
@@ -318,7 +318,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textImposterNames.Location = new System.Drawing.Point(136, 84);
             this.textImposterNames.Name = "textImposterNames";
-            this.textImposterNames.Size = new System.Drawing.Size(339, 22);
+            this.textImposterNames.Size = new System.Drawing.Size(339, 20);
             this.textImposterNames.TabIndex = 3;
             // 
             // label21
@@ -326,7 +326,7 @@
             this.label21.AutoSize = true;
             this.label21.Location = new System.Drawing.Point(6, 87);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(108, 13);
+            this.label21.Size = new System.Drawing.Size(100, 13);
             this.label21.TabIndex = 16;
             this.label21.Text = "Require Signatures:";
             // 
@@ -353,7 +353,7 @@
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(6, 113);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(82, 13);
+            this.label18.Size = new System.Drawing.Size(78, 13);
             this.label18.TabIndex = 17;
             this.label18.Text = "Max. Size Unit:";
             // 
@@ -363,7 +363,7 @@
             this.checkStartHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkStartHidden.Location = new System.Drawing.Point(6, 246);
             this.checkStartHidden.Name = "checkStartHidden";
-            this.checkStartHidden.Size = new System.Drawing.Size(96, 18);
+            this.checkStartHidden.Size = new System.Drawing.Size(89, 18);
             this.checkStartHidden.TabIndex = 8;
             this.checkStartHidden.Text = "Start hidden";
             this.checkStartHidden.UseVisualStyleBackColor = true;
@@ -374,7 +374,7 @@
             this.checkHideWhenClosed.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkHideWhenClosed.Location = new System.Drawing.Point(6, 222);
             this.checkHideWhenClosed.Name = "checkHideWhenClosed";
-            this.checkHideWhenClosed.Size = new System.Drawing.Size(124, 18);
+            this.checkHideWhenClosed.Size = new System.Drawing.Size(117, 18);
             this.checkHideWhenClosed.TabIndex = 7;
             this.checkHideWhenClosed.Text = "Hide when closed";
             this.checkHideWhenClosed.UseVisualStyleBackColor = true;
@@ -385,7 +385,7 @@
             this.checkHideWhenMinimized.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkHideWhenMinimized.Location = new System.Drawing.Point(6, 198);
             this.checkHideWhenMinimized.Name = "checkHideWhenMinimized";
-            this.checkHideWhenMinimized.Size = new System.Drawing.Size(143, 18);
+            this.checkHideWhenMinimized.Size = new System.Drawing.Size(131, 18);
             this.checkHideWhenMinimized.TabIndex = 6;
             this.checkHideWhenMinimized.Text = "Hide when minimized";
             this.checkHideWhenMinimized.UseVisualStyleBackColor = true;
@@ -395,7 +395,7 @@
             this.label23.AutoSize = true;
             this.label23.Location = new System.Drawing.Point(6, 34);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(129, 13);
+            this.label23.Size = new System.Drawing.Size(122, 13);
             this.label23.TabIndex = 14;
             this.label23.Text = "Processes in icon menu:";
             // 
@@ -408,7 +408,7 @@
             0,
             0});
             this.textIconMenuProcesses.Name = "textIconMenuProcesses";
-            this.textIconMenuProcesses.Size = new System.Drawing.Size(66, 22);
+            this.textIconMenuProcesses.Size = new System.Drawing.Size(66, 20);
             this.textIconMenuProcesses.TabIndex = 1;
             this.textIconMenuProcesses.Value = new decimal(new int[] {
             10,
@@ -458,7 +458,7 @@
             0,
             0});
             this.textMaxSamples.Name = "textMaxSamples";
-            this.textMaxSamples.Size = new System.Drawing.Size(72, 22);
+            this.textMaxSamples.Size = new System.Drawing.Size(72, 20);
             this.textMaxSamples.TabIndex = 22;
             this.textMaxSamples.Value = new decimal(new int[] {
             1000,
@@ -471,7 +471,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(6, 176);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(113, 13);
+            this.label6.Size = new System.Drawing.Size(106, 13);
             this.label6.TabIndex = 23;
             this.label6.Text = "Max. Sample History:";
             // 
@@ -494,7 +494,7 @@
             this.label22.AutoSize = true;
             this.label22.Location = new System.Drawing.Point(6, 203);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(57, 13);
+            this.label22.Size = new System.Drawing.Size(54, 13);
             this.label22.TabIndex = 10;
             this.label22.Text = "Elevation:";
             // 
@@ -601,7 +601,7 @@
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(6, 309);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(180, 13);
+            this.label11.Size = new System.Drawing.Size(165, 13);
             this.label11.TabIndex = 9;
             this.label11.Text = "Double-click an item to change it.";
             // 
@@ -629,33 +629,6 @@
             this.buttonEnableAll.UseVisualStyleBackColor = true;
             this.buttonEnableAll.Click += new System.EventHandler(this.buttonEnableAll_Click);
             // 
-            // listHighlightingColors
-            // 
-            this.listHighlightingColors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listHighlightingColors.CheckBoxes = true;
-            this.listHighlightingColors.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnDescription});
-            this.listHighlightingColors.DoubleClickChecks = false;
-            this.listHighlightingColors.FullRowSelect = true;
-            this.listHighlightingColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.listHighlightingColors.HideSelection = false;
-            this.listHighlightingColors.Location = new System.Drawing.Point(6, 60);
-            this.listHighlightingColors.MultiSelect = false;
-            this.listHighlightingColors.Name = "listHighlightingColors";
-            this.listHighlightingColors.ShowItemToolTips = true;
-            this.listHighlightingColors.Size = new System.Drawing.Size(469, 238);
-            this.listHighlightingColors.TabIndex = 3;
-            this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
-            this.listHighlightingColors.View = System.Windows.Forms.View.Details;
-            this.listHighlightingColors.DoubleClick += new System.EventHandler(this.listHighlightingColors_DoubleClick);
-            // 
-            // columnDescription
-            // 
-            this.columnDescription.Text = "Description";
-            this.columnDescription.Width = 250;
-            // 
             // textHighlightingDuration
             // 
             this.textHighlightingDuration.Increment = new decimal(new int[] {
@@ -675,7 +648,7 @@
             0,
             0});
             this.textHighlightingDuration.Name = "textHighlightingDuration";
-            this.textHighlightingDuration.Size = new System.Drawing.Size(66, 22);
+            this.textHighlightingDuration.Size = new System.Drawing.Size(66, 20);
             this.textHighlightingDuration.TabIndex = 0;
             this.textHighlightingDuration.Value = new decimal(new int[] {
             1,
@@ -688,7 +661,7 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(6, 9);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(125, 13);
+            this.label7.Size = new System.Drawing.Size(108, 13);
             this.label7.TabIndex = 6;
             this.label7.Text = "Highlighting Duration:";
             // 
@@ -697,7 +670,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(230, 36);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(99, 13);
+            this.label4.Size = new System.Drawing.Size(95, 13);
             this.label4.TabIndex = 8;
             this.label4.Text = "Removed Objects:";
             // 
@@ -706,25 +679,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(6, 36);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(75, 13);
+            this.label3.Size = new System.Drawing.Size(71, 13);
             this.label3.TabIndex = 7;
             this.label3.Text = "New Objects:";
-            // 
-            // colorRemovedProcesses
-            // 
-            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
-            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
-            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorRemovedProcesses.TabIndex = 2;
-            // 
-            // colorNewProcesses
-            // 
-            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorNewProcesses.Location = new System.Drawing.Point(130, 33);
-            this.colorNewProcesses.Name = "colorNewProcesses";
-            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorNewProcesses.TabIndex = 1;
             // 
             // tabPlotting
             // 
@@ -760,7 +717,7 @@
             0,
             0});
             this.textStep.Name = "textStep";
-            this.textStep.Size = new System.Drawing.Size(69, 22);
+            this.textStep.Size = new System.Drawing.Size(69, 20);
             this.textStep.TabIndex = 1;
             this.textStep.Value = new decimal(new int[] {
             3,
@@ -773,7 +730,7 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(6, 8);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(33, 13);
+            this.label8.Size = new System.Drawing.Size(32, 13);
             this.label8.TabIndex = 8;
             this.label8.Text = "Step:";
             // 
@@ -793,7 +750,7 @@
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(6, 141);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(98, 13);
+            this.label12.Size = new System.Drawing.Size(92, 13);
             this.label12.TabIndex = 13;
             this.label12.Text = "I/O Reads+Other:";
             // 
@@ -802,7 +759,7 @@
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(6, 166);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(62, 13);
+            this.label13.Size = new System.Drawing.Size(59, 13);
             this.label13.TabIndex = 14;
             this.label13.Text = "I/O Writes:";
             // 
@@ -811,7 +768,7 @@
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(6, 115);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(74, 13);
+            this.label14.Size = new System.Drawing.Size(69, 13);
             this.label14.TabIndex = 12;
             this.label14.Text = "Working Set:";
             // 
@@ -820,7 +777,7 @@
             this.label15.AutoSize = true;
             this.label15.Location = new System.Drawing.Point(6, 89);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(74, 13);
+            this.label15.Size = new System.Drawing.Size(72, 13);
             this.label15.TabIndex = 11;
             this.label15.Text = "Private Bytes:";
             // 
@@ -838,57 +795,9 @@
             this.label17.AutoSize = true;
             this.label17.Location = new System.Drawing.Point(6, 38);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(92, 13);
+            this.label17.Size = new System.Drawing.Size(91, 13);
             this.label17.TabIndex = 9;
             this.label17.Text = "CPU Kernel Time:";
-            // 
-            // colorIORO
-            // 
-            this.colorIORO.Color = System.Drawing.Color.Transparent;
-            this.colorIORO.Location = new System.Drawing.Point(124, 139);
-            this.colorIORO.Name = "colorIORO";
-            this.colorIORO.Size = new System.Drawing.Size(40, 20);
-            this.colorIORO.TabIndex = 6;
-            // 
-            // colorIOW
-            // 
-            this.colorIOW.Color = System.Drawing.Color.Transparent;
-            this.colorIOW.Location = new System.Drawing.Point(124, 165);
-            this.colorIOW.Name = "colorIOW";
-            this.colorIOW.Size = new System.Drawing.Size(40, 20);
-            this.colorIOW.TabIndex = 7;
-            // 
-            // colorMemoryWS
-            // 
-            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryWS.Location = new System.Drawing.Point(124, 113);
-            this.colorMemoryWS.Name = "colorMemoryWS";
-            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryWS.TabIndex = 5;
-            // 
-            // colorMemoryPB
-            // 
-            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryPB.Location = new System.Drawing.Point(124, 87);
-            this.colorMemoryPB.Name = "colorMemoryPB";
-            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
-            this.colorMemoryPB.TabIndex = 4;
-            // 
-            // colorCPUUT
-            // 
-            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUUT.Location = new System.Drawing.Point(124, 61);
-            this.colorCPUUT.Name = "colorCPUUT";
-            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUUT.TabIndex = 3;
-            // 
-            // colorCPUKT
-            // 
-            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUKT.Location = new System.Drawing.Point(124, 35);
-            this.colorCPUKT.Name = "colorCPUKT";
-            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
-            this.colorCPUKT.TabIndex = 2;
             // 
             // tabSymbols
             // 
@@ -923,7 +832,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textSearchPath.Location = new System.Drawing.Point(110, 34);
             this.textSearchPath.Name = "textSearchPath";
-            this.textSearchPath.Size = new System.Drawing.Size(365, 22);
+            this.textSearchPath.Size = new System.Drawing.Size(365, 20);
             this.textSearchPath.TabIndex = 2;
             // 
             // label10
@@ -931,7 +840,7 @@
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(6, 37);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(71, 13);
+            this.label10.Size = new System.Drawing.Size(68, 13);
             this.label10.TabIndex = 5;
             this.label10.Text = "Search path:";
             // 
@@ -953,7 +862,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textDbghelpPath.Location = new System.Drawing.Point(110, 8);
             this.textDbghelpPath.Name = "textDbghelpPath";
-            this.textDbghelpPath.Size = new System.Drawing.Size(284, 22);
+            this.textDbghelpPath.Size = new System.Drawing.Size(284, 20);
             this.textDbghelpPath.TabIndex = 0;
             // 
             // label9
@@ -961,7 +870,7 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(6, 11);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(98, 13);
+            this.label9.Size = new System.Drawing.Size(87, 13);
             this.label9.TabIndex = 4;
             this.label9.Text = "Dbghelp.dll path:";
             // 
@@ -997,7 +906,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(6, 32);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(59, 13);
+            this.label5.Size = new System.Drawing.Size(56, 13);
             this.label5.TabIndex = 24;
             this.label5.Text = "Check for:";
             // 
@@ -1075,6 +984,105 @@
             this.buttonReset.UseVisualStyleBackColor = true;
             this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
             // 
+            // listHighlightingColors
+            // 
+            this.listHighlightingColors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHighlightingColors.CheckBoxes = true;
+            this.listHighlightingColors.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnDescription});
+            this.listHighlightingColors.DoubleClickChecks = false;
+            this.listHighlightingColors.FullRowSelect = true;
+            this.listHighlightingColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listHighlightingColors.HideSelection = false;
+            this.listHighlightingColors.Location = new System.Drawing.Point(6, 60);
+            this.listHighlightingColors.MultiSelect = false;
+            this.listHighlightingColors.Name = "listHighlightingColors";
+            this.listHighlightingColors.ShowItemToolTips = true;
+            this.listHighlightingColors.Size = new System.Drawing.Size(469, 238);
+            this.listHighlightingColors.TabIndex = 3;
+            this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
+            this.listHighlightingColors.View = System.Windows.Forms.View.Details;
+            this.listHighlightingColors.DoubleClick += new System.EventHandler(this.listHighlightingColors_DoubleClick);
+            // 
+            // columnDescription
+            // 
+            this.columnDescription.Text = "Description";
+            this.columnDescription.Width = 250;
+            // 
+            // colorRemovedProcesses
+            // 
+            this.colorRemovedProcesses.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.colorRemovedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorRemovedProcesses.Location = new System.Drawing.Point(351, 34);
+            this.colorRemovedProcesses.Name = "colorRemovedProcesses";
+            this.colorRemovedProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorRemovedProcesses.TabIndex = 2;
+            // 
+            // colorNewProcesses
+            // 
+            this.colorNewProcesses.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.colorNewProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorNewProcesses.Location = new System.Drawing.Point(130, 33);
+            this.colorNewProcesses.Name = "colorNewProcesses";
+            this.colorNewProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorNewProcesses.TabIndex = 1;
+            // 
+            // colorIORO
+            // 
+            this.colorIORO.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.colorIORO.Color = System.Drawing.Color.Transparent;
+            this.colorIORO.Location = new System.Drawing.Point(124, 139);
+            this.colorIORO.Name = "colorIORO";
+            this.colorIORO.Size = new System.Drawing.Size(40, 20);
+            this.colorIORO.TabIndex = 6;
+            // 
+            // colorIOW
+            // 
+            this.colorIOW.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.colorIOW.Color = System.Drawing.Color.Transparent;
+            this.colorIOW.Location = new System.Drawing.Point(124, 165);
+            this.colorIOW.Name = "colorIOW";
+            this.colorIOW.Size = new System.Drawing.Size(40, 20);
+            this.colorIOW.TabIndex = 7;
+            // 
+            // colorMemoryWS
+            // 
+            this.colorMemoryWS.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryWS.Location = new System.Drawing.Point(124, 113);
+            this.colorMemoryWS.Name = "colorMemoryWS";
+            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryWS.TabIndex = 5;
+            // 
+            // colorMemoryPB
+            // 
+            this.colorMemoryPB.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryPB.Location = new System.Drawing.Point(124, 87);
+            this.colorMemoryPB.Name = "colorMemoryPB";
+            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryPB.TabIndex = 4;
+            // 
+            // colorCPUUT
+            // 
+            this.colorCPUUT.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUUT.Location = new System.Drawing.Point(124, 61);
+            this.colorCPUUT.Name = "colorCPUUT";
+            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUUT.TabIndex = 3;
+            // 
+            // colorCPUKT
+            // 
+            this.colorCPUKT.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUKT.Location = new System.Drawing.Point(124, 35);
+            this.colorCPUKT.Name = "colorCPUKT";
+            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUKT.TabIndex = 2;
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
@@ -1087,7 +1095,6 @@
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonOK);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

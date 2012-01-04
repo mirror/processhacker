@@ -369,7 +369,6 @@
             this.Controls.Add(this.checkImage);
             this.Controls.Add(this.checkPrivate);
             this.Controls.Add(this.tabControl);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

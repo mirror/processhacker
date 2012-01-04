@@ -22,7 +22,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ProcessHacker.Common;
@@ -38,10 +37,10 @@ namespace ProcessHacker
         private static IntPtr _mmSizeOfPagedPoolInBytes;
         private static IntPtr _mmMaximumNonPagedPoolInBytes;
 
-        private Plotter[] _cpuPlotters;
-        private uint _noOfCPUs = Program.ProcessProvider.System.NumberOfProcessors;
-        private int _pages = Program.ProcessProvider.System.NumberOfPhysicalPages;
-        private int _pageSize = Program.ProcessProvider.System.PageSize;
+        private readonly Plotter[] _cpuPlotters;
+        private readonly uint _noOfCPUs = Program.ProcessProvider.System.NumberOfProcessors;
+        private readonly int _pages = Program.ProcessProvider.System.NumberOfPhysicalPages;
+        private readonly int _pageSize = Program.ProcessProvider.System.PageSize;
 
         public SysInfoWindow()
         {     
@@ -152,7 +151,7 @@ namespace ProcessHacker
 
             Program.ProcessProvider.Updated += ProcessProvider_Updated;
 
-            //We need todo this here or TopMost property gets over-rided by AlwaysOnTopCheckbox
+            //We need to do this here or TopMost property gets over-rided by AlwaysOnTopCheckbox
             this.TopMost = Settings.Instance.AlwaysOnTop;
 
             this.UpdateGraphs();
@@ -204,7 +203,6 @@ namespace ProcessHacker
                         // update the I/O graph text
                         this.plotterIO.Text = "R+O: " + Utils.FormatSize(plotterIO.LongData1[0]) + ", W: " + Utils.FormatSize(plotterIO.LongData2[0]);
 
-
                         this.plotterCPU.MoveGrid();
                         this.plotterIO.MoveGrid();
 
@@ -224,7 +222,7 @@ namespace ProcessHacker
             SystemPerformanceInformation perfInfo = Program.ProcessProvider.Performance;
             int retLen;
 
-            PerformanceInformation info = new PerformanceInformation();
+            PerformanceInformation info;
             SystemCacheInformation cacheInfo;
 
             Win32.GetPerformanceInfo(out info, PerformanceInformation.SizeOf);
@@ -242,25 +240,17 @@ namespace ProcessHacker
                         this.indicatorPhysical.Data1 = _pages - perfInfo.AvailablePages;
                         this.indicatorPhysical.TextValue = physMemText;
 
-
-                        long memCount;
-                        unchecked
-                        {
-                            memCount = (Program.ProcessProvider.System.NumberOfPhysicalPages - Program.ProcessProvider.Performance.AvailablePages) * Program.ProcessProvider.System.PageSize;
-                        }
-
+                        long memCount = (Program.ProcessProvider.System.NumberOfPhysicalPages - Program.ProcessProvider.Performance.AvailablePages) * Program.ProcessProvider.System.PageSize;
+                        
                         this.trackerMemory.Text = "Phys. Mem: " + Utils.FormatSize(memCount) + " / " + Utils.FormatSize((long)info.PhysicalTotal * (long)info.PageSize);
-
-                        this.trackerCommit.Text = "Commit: " +
-                                                  Utils.FormatSize(Program.ProcessProvider.Performance.CommittedPages * Program.ProcessProvider.System.PageSize)
-                                                  + " / " + Utils.FormatSize(Program.ProcessProvider.Performance.CommitLimit * Program.ProcessProvider.System.PageSize);
-
+                        this.trackerCommit.Text = 
+                            "Commit: " +       
+                            Utils.FormatSize(Program.ProcessProvider.Performance.CommittedPages * Program.ProcessProvider.System.PageSize)     
+                            + " / " + Utils.FormatSize(Program.ProcessProvider.Performance.CommitLimit * Program.ProcessProvider.System.PageSize);
                         this.indicatorCommit.Color1 = Settings.Instance.PlotterMemoryWSColor;
                         this.indicatorCommit.TextValue = commitText;
                         this.indicatorCommit.Maximum = Program.ProcessProvider.Performance.CommitLimit * Program.ProcessProvider.System.PageSize;
                         this.indicatorCommit.Data1 = Program.ProcessProvider.Performance.CommittedPages * Program.ProcessProvider.System.PageSize;
-
-
                         break;
                     }
                 case 1:
@@ -278,7 +268,7 @@ namespace ProcessHacker
 
                         // Physical Memory
                         this.labelPMC.Text = physMemText;
-                        this.labelPSC.Text = info.SystemCache + " : " + Utils.FormatSize(info.SystemCache.ToInt32() * _pageSize);
+                        this.labelPSC.Text = Utils.FormatSize(info.SystemCache.ToInt32() * _pageSize);
                         this.labelPMT.Text = Utils.FormatSize(_pages * _pageSize);
 
                         // File cache
@@ -339,7 +329,6 @@ namespace ProcessHacker
                         this.labelCPUContextSwitches.Text = ((ulong)perfInfo.ContextSwitches).ToString("N0");
                         this.labelCPUInterrupts.Text = ((ulong)Program.ProcessProvider.ProcessorPerf.InterruptCount).ToString("N0");
                         this.labelCPUSystemCalls.Text = ((ulong)perfInfo.SystemCalls).ToString("N0");
-
                         break;
                     }
             }

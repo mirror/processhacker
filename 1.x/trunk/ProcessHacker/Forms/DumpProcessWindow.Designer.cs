@@ -440,7 +440,6 @@
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(483, 473);
             this.Controls.Add(this.tabControl);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "DumpProcessWindow";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Text = "Process";

@@ -105,7 +105,6 @@ namespace ProcessHacker
             this.Controls.Add(this.buttonRun);
             this.Controls.Add(this.listTests);
             this.Controls.Add(this.labelProgress);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.MaximizeBox = false;
