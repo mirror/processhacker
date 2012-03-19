@@ -72,38 +72,34 @@ include("config.php");
 					
 			<div class="yui-g">
 				<div class="yui-u first">
-					<div class="portlet">
-							<ul style="width: 150px; float:right" class="downloads">		
-							<li>
-								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">
-									Download
-								</a>
-							</li>
-						</ul>	
-						
+					<div class="portlet">						
 						<p><strong>Setup (recommended)</strong></p>
-						<p>processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe</p>		
 						<p>Size: <?php echo $LATEST_PH_SETUP_SIZE ?></p>
 						<p>SHA1: <?php echo $LATEST_PH_SETUP_SHA1 ?></p>
 						<p>MD5: <?php echo $LATEST_PH_SETUP_MD5 ?></p>
+						<ul style="width: 175px;" class="downloads">		
+							<li>
+								<a style="width: 200px;" href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">
+									processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe
+								</a>
+							</li>
+						</ul>
 					</div>
 				</div>
 				
 				<div class="yui-g">
 					<div class="portlet">
-						<ul style="width: 150px; float:right" class="downloads">						
+						<p><strong>Source Code</strong></p>
+						<p>Size: <?php echo $LATEST_PH_SOURCE_SIZE ?></p>
+						<p>SHA1: <?php echo $LATEST_PH_SOURCE_SHA1 ?></p>
+						<p>MD5: <?php echo $LATEST_PH_SOURCE_MD5 ?></p>
+						<ul style="width: 175px;" class="downloads">						
 							<li>
-								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">
-									Download
+								<a style="width: 200px;" href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download" title="Source Code">
+									processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip
 								</a>
 							</li>
 						</ul>
-						
-						<p><strong>Binaries (portable)</strong></p>
-						<p>processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip</p>
-						<p>Size: <?php echo $LATEST_PH_BIN_SIZE ?></p>
-						<p>SHA1: <?php echo $LATEST_PH_BIN_SHA1 ?></p>
-						<p>MD5: <?php echo $LATEST_PH_BIN_MD5 ?></p>
 					</div>
 				</div>
 				<div class="yui-u">
@@ -113,41 +109,37 @@ include("config.php");
 
 			<div class="yui-g">
 				<div class="yui-u first">
-					<div class="portlet">
-						<ul style="width: 150px; float:right" class="downloads">						
+					<div class="portlet">						
+						<p><strong>Binaries (portable)</strong></p>
+						<p>Size: <?php echo $LATEST_PH_BIN_SIZE ?></p>
+						<p>SHA1: <?php echo $LATEST_PH_BIN_SHA1 ?></p>
+						<p>MD5: <?php echo $LATEST_PH_SOURCE_MD5 ?></p>
+						<ul style="width: 150px;" class="downloads">	
 							<li>
-								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download" title="Source Code">
-									Download
+								<a style="width: 200px;" href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">
+									processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip
 								</a>
 							</li>
 						</ul>
-						
-						<p><strong>Source Code</strong></p>
-						<p>processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip</p>
-						<p>Size: <?php echo $LATEST_PH_SOURCE_SIZE ?></p>
-						<p>SHA1: <?php echo $LATEST_PH_SOURCE_SHA1 ?></p>
-						<p>MD5: <?php echo $LATEST_PH_SOURCE_MD5 ?></p>
-						
 					</div>	
 				</div>
 
 				<div class="yui-u">
 					<div class="portlet">
-						<ul style="width: 150px; float:right" class="downloads">						
+						<p><strong>Plugins SDK</strong></p>												
+						<p>Size: <?php echo $LATEST_PH_SDK_SIZE ?></p>
+						<p>SHA1: <?php echo $LATEST_PH_SDK_SHA1 ?></p>
+						<p>MD5: <?php echo $LATEST_PH_SDK_MD5 ?></p> 
+						<ul style="width: 150px;" class="downloads">						
 							<li>
-								<a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-sdk.zip/download" title="Setup (recommended)">
-									Download
+								<a style="width: 200px;"href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-sdk.zip/download" title="Setup (recommended)">
+									processhacker-<?php echo $LATEST_PH_VERSION ?>-sdk.zip
 								</a>
 							</li>
 						</ul>
-						
-						<p><strong>Plugins SDK</strong></p>
-						<p>processhacker-<?php echo $LATEST_PH_VERSION ?>-sdk.zip</p>
-						<p>Size: <?php echo $LATEST_PH_SDK_SIZE ?></p>
-						<p>SHA1: <?php echo $LATEST_PH_SDK_SHA1 ?></p>
-						<p>MD5: <?php echo $LATEST_PH_SDK_MD5 ?></p>  
 					</div>      
 				</div>
+				
 			</div>	
 		</div>
 	</div>

@@ -1,5 +1,13 @@
 img { border: 0; }
 
+body 
+{
+    color: #333333;
+    font-family: "UbuntuBeta Regular",Ubuntu,"Bitstream Vera Sans","DejaVu Sans",Tahoma,sans-serif;
+    font-size: 12px;
+    text-align: center;
+}
+
 .info 
 {
     background-image: url("icon-sprites");
@@ -22,7 +30,7 @@ img { border: 0; }
 
 .page
 { 
-	max-width: 80em;
+	max-width: 90em;
 	padding: 0;
 	padding-top: 0px;
 	padding-right: 10px;
@@ -375,12 +383,7 @@ input, textarea, select {
 legend {
     color: #000000;
 }
-body {
-    color: #333333;
-    font-family: "UbuntuBeta Regular",Ubuntu,"Bitstream Vera Sans","DejaVu Sans",Tahoma,sans-serif;
-    font-size: 12px;
-    text-align: center;
-}
+
 .yui-d0, .yui-d1, .yui-d1f, .yui-d2, .yui-d2f, .yui-d3, .yui-d3f {
     margin: auto;
     text-align: left;

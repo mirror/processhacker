@@ -1,11 +1,11 @@
 <?php
-	// Setup last modified time Caching for the current file.
-	// This will keep allow some pages to export caching +2 days from the last time this file was edited.
+	// Setup last modified time caching for the current file.
+	// This will allow caching client-side for +2 days since last update check, unless edited then it resets.
 	$file = __FILE__; 
 	$lastmod = date("D, d M Y H:i:s", filemtime($file)); 
 
 	$LATEST_PH_VERSION = "2.27";
-	$LATEST_PH_RELEASE_DATE = "22nd of January 2012";
+	$LATEST_PH_RELEASE_DATE = "22nd of January, 2012";
 
 	$LATEST_PH_BIN_SIZE = "2.2 MB";
 	$LATEST_PH_BIN_SHA1 = "54b285e5e61c8bcde4534b3608c07ebf2c3abc66";
@@ -23,8 +23,8 @@
 	$LATEST_PH_SOURCE_SHA1 = "68abb9a6a8a2fd2eec0f5ce86a120819e8e40400";
 	$LATEST_PH_SOURCE_MD5 = "92c7be634c9d92c00d831077b26991bd";
 	
-	// How Many Topics you want to display?
-	$topicnumber = 5;
+	// How Many Topics do you want to display?
+	$topicnumber = 6;
 	
 	define('IN_PHPBB', true);
 	$phpbb_root_path = './forums/';

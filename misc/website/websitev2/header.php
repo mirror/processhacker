@@ -8,7 +8,8 @@
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<meta charset="utf-8">
 		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
-		<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
 		
 		<link rel="icon" href="/images/favicon.ico">
 		<link rel="stylesheet" type="text/css" media="screen, print" href="/css/stylesheet.css">

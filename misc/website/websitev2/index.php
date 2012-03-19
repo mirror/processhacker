@@ -240,7 +240,7 @@ include("config.php");
 				<div class="yui-u first">
 					<div class="portlet">
 						<a href="/screenshots.php"><p><strong>Screenshots</strong></p></a>
-						<a href="/images/screenshots/processes_tab_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
+						<a href="/images/screenshots/processes_tab_large.png" rel="lytebox[group1]" style="margin-right: 1em;">
 							<img alt="" width="200" height="107" src="/images/screenshots/processhacker_small.png">
 						</a>
 						<a href="/images/screenshots/sysinfo_large.png" rel="lytebox[group1]">
