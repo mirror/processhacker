@@ -14,10 +14,11 @@ Header set Cache-Control "max-age=172800, proxy-revalidate"
 
 ExpiresActive On
 ExpiresDefault "access plus 4 hours"
-ExpiresByType application/javascript A900
-ExpiresByType application/x-javascript A900
-ExpiresByType text/javascript A900
-ExpiresByType text/xml A90
+ExpiresByType text/xml "access plus 4 hours"
+ExpiresByType application/javascript "access plus 1 month"
+ExpiresByType application/x-javascript "access plus 1 month"
+ExpiresByType text/javascript "access plus 1 month"
 </FilesMatch>
 
 php_value output_handler ob_gzhandler
+php_value memory_limit 32M

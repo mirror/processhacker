@@ -9,7 +9,7 @@ include("config.php");
 	<div class="yui-d0">
 		<div class="watermark-apps-portlet">
 			<div class="flowed-block">
-				<img alt="" width="64" height="64" src="/images/logo_64x64.png">
+				<img alt="ProjectLogo" width="64" height="64" src="/images/logo_64x64.png">
 			</div>
 			
 			<div class="flowed-block wide">
@@ -52,7 +52,7 @@ include("config.php");
 
                     <div class="center">
                         <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
-							<img alt="Donate" src="/images/donate.gif">
+							<img alt="Donate" width="92" height="26" src="/images/donate.gif">
                         </a>
                     </div>
 				</div>
@@ -64,7 +64,7 @@ include("config.php");
 						<li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
 						<li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>			  
 						<li><a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/">Browse source code</a></li>
-						<li><a href="http://processhacker.sourceforge.net/doc">Source code documentation</a></li>
+						<li><a href="http://processhacker.sourceforge.net/doc/">Source code documentation</a></li>
 					</ul>
 				</div>
 			</div>
@@ -258,6 +258,16 @@ include("config.php");
 			</div>		
 		</div>
 	</div>
+
+	<!-- AddThis Button BEGIN -->
+	<div class="addthis_toolbox addthis_default_style " addthis:url="http://processhacker.sourceforge.net" style="z-index: 100; position: absolute; right: 0; top: 0;">
+	<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+	<a class="addthis_button_tweet"></a>
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+	<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=dmex"></script>
+	<!-- AddThis Button END -->
 </div>
 
 <?php include("footer.php"); ?>

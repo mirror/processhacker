@@ -12,10 +12,11 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
 		
 		<link rel="icon" href="/images/favicon.ico">
-		<link rel="stylesheet" type="text/css" media="screen, print" href="/css/stylesheet.css">
-		<link rel="stylesheet" type="text/css" media="screen" href="/css/lytebox.css">
+		<link rel="stylesheet" type="text/css" media="screen, print" href="/css/stylesheet.css" />
+		<link rel="stylesheet" type="text/css" media="screen" href="/css/lytebox.css" />
 		
-		<link rel="alternate" type="application/rss+xml" href="http://processhacker.sourceforge.net/forums/feed.php?f=1" title="Announcements RSS feed">
+		<link rel="alternate" type="application/rss+xml" href="http://processhacker.sourceforge.net/forums/feed.php?f=1" title="Process Hacker - News RSS Feed" />
+		<link rel="alternate" type="application/atom+xml" href="http://processhacker.sourceforge.net/forums/feed.php?f=1" title="Process Hacker - News Atom Feed" />
 		
 		<script src="/scripts/lytebox.js"></script>
 		

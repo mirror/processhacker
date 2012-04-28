@@ -5,7 +5,7 @@
 	$lastmod = date("D, d M Y H:i:s", filemtime($file)); 
 
 	$LATEST_PH_VERSION = "2.27";
-	$LATEST_PH_RELEASE_DATE = "22nd of January, 2012";
+	$LATEST_PH_RELEASE_DATE = "22nd of January 2012";
 
 	$LATEST_PH_BIN_SIZE = "2.2 MB";
 	$LATEST_PH_BIN_SHA1 = "54b285e5e61c8bcde4534b3608c07ebf2c3abc66";

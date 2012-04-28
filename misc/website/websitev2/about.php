@@ -32,9 +32,8 @@
 					<div class="yui-u first">
 						<p><strong>Registered:</strong> 16-10-2008</p>
 						<p><strong>Licence:</strong> GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></p>
-						<p><strong>Languages:</strong> English</p>
+						<p><strong>Language:</strong> English</p>
 						<p><strong>Intended Audience:</strong> Advanced End Users, Developers</p>
-						<p><strong>User Interface:</strong> Win32 (MS Windows)</p>
 						<p><strong>Programming Language:</strong> C, C#</p>
 					</div>
 				</div>
@@ -50,8 +49,13 @@
 			<div class="yui-g">
 				<div class="yui-u first">
 					<img style="float: left; margin: 0 10px 5px 0;" src="./forums/download/file.php?avatar=2_1295726184.jpg" width="150" height="128" alt="User avatar">
-					<li><a style="color:#AA0000" href="http://sourceforge.net/users/wj32/"><strong>wj32</strong></a></li>
-					<li>Project Founder</li>
+					<li style="color:#AA0000" href="http://sourceforge.net/users/wj32/"><strong>wj32</strong></li>
+					<a href="http://sourceforge.net/users/wj32/">
+						<strong>View Profile</strong>
+					</a>
+					<p>
+						<li>Founder, Chief Executive Officer</li>
+					<p>
 				</div>
 			</div>
 			
@@ -60,9 +64,15 @@
 				
 			<div class="yui-g">	
 				<div class="yui-u first">
-					<img style="float: left; margin: 0 10px 5px 0;" src="./forums/download/file.php?avatar=54_1314248802.jpg" width="150" height="128" alt="User avatar">
-					<li><a style="color:#AA0000" href="http://sourceforge.net/users/dmex/"><strong>dmex</strong></a></li>
-					<li>Director of Operations</li>
+					<img style="float: left; margin: 0 10px 5px 0;" src="./images/scaryroboo3k.gif" width="150" height="128" alt="User avatar">
+					<li style="color:#AA0000" href="http://sourceforge.net/users/dmex/"><strong>dmex</strong></li>
+					<a href="http://sourceforge.net/users/dmex/">
+						<strong>View Profile</strong>
+					</a>
+					<p>
+						<li>Developer, Chief Operations Officer</li>
+						<li>0x0D06F00D<li>
+					</p>
 				</div>
 			</div>
 			
@@ -71,8 +81,15 @@
 
 			<div class="yui-g">
 				<div class="yui-u first">
-					<li><a style="color:#0000FF" href="http://sourceforge.net/users/xhmikosr/"><strong>XhmikosR</strong></a></li>
-					<li>Installer Developer, Tester</li>
+					<img style="float: left; margin: 0 10px 5px 0;" src="./images/mpc-hc_gabest_logo.png" width="150" height="128" alt="User avatar">
+					<li style="color:#0000FF" href="http://sourceforge.net/users/xhmikosr/"><strong>XhmikosR</strong></li>
+					<a href="http://sourceforge.net/users/xhmikosr/">
+						<strong>View Profile</strong>
+					</a>
+					<p>
+						<li>Installer Developer, Tester</li>
+					</p>
+
 					<div class="portlet">
 					</div>
 				</div>

@@ -113,7 +113,7 @@ include("config.php");
 						<p><strong>Binaries (portable)</strong></p>
 						<p>Size: <?php echo $LATEST_PH_BIN_SIZE ?></p>
 						<p>SHA1: <?php echo $LATEST_PH_BIN_SHA1 ?></p>
-						<p>MD5: <?php echo $LATEST_PH_SOURCE_MD5 ?></p>
+						<p>MD5: <?php echo $LATEST_PH_BIN_MD5 ?></p>
 						<ul style="width: 150px;" class="downloads">	
 							<li>
 								<a style="width: 200px;" href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">
