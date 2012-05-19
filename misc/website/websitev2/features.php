@@ -99,6 +99,6 @@
 			</div>
 		</div>
 	</div>
-</center>
+</div>
 
 <?php include("footer.php"); ?>

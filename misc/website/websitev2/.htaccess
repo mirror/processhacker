@@ -20,5 +20,4 @@ ExpiresByType application/x-javascript "access plus 1 month"
 ExpiresByType text/javascript "access plus 1 month"
 </FilesMatch>
 
-php_value output_handler ob_gzhandler
 php_value memory_limit 32M

@@ -931,30 +931,35 @@ div.watermark-apps-portlet span img {
     padding: 6% 40px 6% 6%;
     text-decoration: none;
 }
-.downloads .version {
+.downloads .version 
+{
     background: none repeat scroll 0 0 #D3E3C7;
     border-radius: 5px 5px 0 0;
     padding: 0.2em 1em;
 }
-.downloads .released {
+.downloads .released 
+{
     background: none repeat scroll 0 0 #D3E3C7;
     border-radius: 0 0 5px 5px;
     margin: 0.3em 0 0.5em;
     padding: 0.2em 1em;
 }
 
-.involvement li {
+.involvement li 
+{
     font-weight: bold;
     padding: 0;
 }
 
-.involvement a {
+.involvement a 
+{
     background: url("/images/answers-arrow-right.png") no-repeat scroll right center transparent;
     display: block;
     padding: 0.3em;
 }
 
-.involvement a:hover, .involvement li:hover {
+.involvement a:hover, .involvement li:hover 
+{
     background-color: #EEEEEE;
     text-decoration: none;
 }
