@@ -108,9 +108,11 @@ include("config.php");
 									u.user_id, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
 								FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
 								WHERE t.topic_id = p.topic_id AND
+								t.topic_approved = 1 AND
 								f.forum_id = t.forum_id AND
 								t.forum_id = 1 AND
 								t.topic_status <> 2 AND
+								p.post_approved = 1 AND
 								p.post_id = t.topic_last_post_id AND
 								p.poster_id = u.user_id
 								ORDER BY p.post_id DESC LIMIT $topicnumber";
@@ -177,10 +179,12 @@ include("config.php");
 							$sql = "SELECT t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id, p.post_id, p.poster_id, p.post_time, u.user_id, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
 								FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
 								WHERE t.topic_id = p.topic_id AND
+								t.topic_approved = 1 AND
 								f.forum_id = t.forum_id AND
 								t.forum_id != 1 AND 
 								t.forum_id != 7 AND 
 								t.topic_status <> 2 AND
+								p.post_approved = 1 AND
 								p.post_id = t.topic_last_post_id AND
 								p.poster_id = u.user_id
 								ORDER BY p.post_id DESC LIMIT $topicnumber";
