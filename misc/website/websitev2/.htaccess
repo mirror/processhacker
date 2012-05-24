@@ -13,11 +13,13 @@ Deny from All
 Header set Cache-Control "max-age=172800, proxy-revalidate"
 
 ExpiresActive On
-ExpiresDefault "access plus 4 hours"
 ExpiresByType text/xml "access plus 4 hours"
-ExpiresByType application/javascript "access plus 1 month"
-ExpiresByType application/x-javascript "access plus 1 month"
-ExpiresByType text/javascript "access plus 1 month"
+ExpiresByType image/gif "access plus 60 days"
+ExpiresByType image/jpg "access plus 60 days"
+ExpiresByType image/png "access plus 60 days"
+ExpiresByType application/x-javascript "access plus 60 days"
+ExpiresByType text/css "access plus 60 days"
+ExpiresByType image/x-icon "access plus 360 days"
 </FilesMatch>
 
 php_value memory_limit 32M
