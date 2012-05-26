@@ -71,7 +71,7 @@ include("config.php");
 
             <div class="top-portlet">
                 <div class="summary">
-                    <p>Process Hacker is a feature-packed tool for manipulating processes and services on your computer.</p>
+                    <p>Process Hacker is a feature-packed tool for managing processes and services on your computer.</p>
                     <p><strong>Key features of Process Hacker:</strong></p>
                     <ul>
                         <li>&#160;•&#160;A simple, customizable tree view with highlighting showing you the processes running on your computer.</li>
@@ -86,7 +86,7 @@ include("config.php");
                     <p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
                     <ul>
                         <li>&#160;•&#160;Implements all of the functionality offered by Process Explorer, plus more advanced features.</li>
-                        <li>&#160;•&#160;Performs stack traces correctly for .NET programs, with managed symbol resolution.</li>
+                        <li>&#160;•&#160;Performs stack traces for .NET programs, with managed symbol resolution.</li>
                         <li>&#160;•&#160;Allows you to see what a thread is waiting on.</li>
                         <li>&#160;•&#160;Has advanced string scanning capabilities, as well as regular expression filtering.</li>
                         <li>&#160;•&#160;Highlights both relocated and .NET DLLs.</li>
@@ -94,6 +94,15 @@ include("config.php");
                         <li>&#160;•&#160;Shows names for transaction manager objects and ETW registration objects.</li>
                         <li>&#160;•&#160;Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
                     </ul>
+
+                    <!-- AddThis Button BEGIN -->
+                    <div class="addthis_toolbox addthis_default_style " addthis:url="http://processhacker.sourceforge.net" style="padding-right: 10px; padding-bottom: 10px; max-width: 500px">
+                        <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+                        <a class="addthis_button_tweet"></a>
+                        <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+                        <a class="addthis_counter addthis_pill_style"></a>
+                    </div>
+                    <!-- AddThis Button END -->
                 </div>
             </div>
 
@@ -233,14 +242,7 @@ include("config.php");
         </div>
     </div>
 
-    <!-- AddThis Button BEGIN -->
-    <div class="addthis_toolbox addthis_default_style " addthis:url="http://processhacker.sourceforge.net" style="position:absolute; top:0; right:0; padding-right: 10px; padding-top: 5px;">
-        <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
-        <a class="addthis_button_tweet"></a>
-        <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
-        <a class="addthis_counter addthis_pill_style"></a>
-    </div>
-    <!-- AddThis Button END -->
+
 </div>
 
 <script type="text/javascript" src="/scripts/lytebox.js"></script>

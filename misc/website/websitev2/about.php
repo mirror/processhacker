@@ -44,7 +44,7 @@ include("header.php");
  
             <div class="yui-g">
                 <div class="yui-u first">
-                    <img style="float: left; margin: 0 10px 5px 0;" src="./forums/download/file.php?avatar=2_1295726184.jpg" width="64" height="64" alt="User avatar">
+                    <img style="float: left; margin: 0 10px 5px 0;" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e" alt="User avatar">
                     <li style="color:#AA0000" href="http://sourceforge.net/users/wj32/"><strong>wj32</strong></li>
                     <a href="http://sourceforge.net/users/wj32/">
                         <strong>User Profile</strong>
@@ -57,7 +57,7 @@ include("header.php");
 
             <div class="yui-g">	
                 <div class="yui-u first">
-                    <img style="float: left; margin: 0 10px 5px 0;" src="./images/scaryroboo3k.gif" width="64" height="64" alt="User avatar">
+                    <img style="float: left; margin: 0 10px 5px 0;" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar">
                     <li style="color:#AA0000" href="http://sourceforge.net/users/dmex/"><strong>dmex</strong></li>
                     <a href="http://sourceforge.net/users/dmex/">
                         <strong>User Profile</strong>
