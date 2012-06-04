@@ -5,16 +5,15 @@ include("header.php");
 include("config.php");
 ?>
 
-<div class="page">
+<div class="page" style="position:relative;">
     <div class="yui-d0">
         <div class="watermark-apps-portlet">
             <div class="flowed-block">
                 <img alt="ProjectLogo" width="64" height="64" src="/images/logo_64x64.png">
             </div>
-
+            
             <div class="flowed-block wide">
                 <h2>Process Hacker</h2>
-
                 <ul class="facetmenu">
                     <li class="overview active"><a href="/">Overview</a></li>
                     <li><a href="/features.php">Features</a></li>
@@ -26,12 +25,11 @@ include("config.php");
                 </ul>
             </div>
         </div>
-
+        
         <div class="yui-t4">
             <div class="yui-b side">
                 <div class="portlet"> 
                     <h2 class="center">Downloads</h2>
-
                     <div class="downloads">
                         <div class="version">
                             Latest version is <?php echo $LATEST_PH_VERSION ?>
@@ -49,14 +47,14 @@ include("config.php");
                             Released <?php echo $LATEST_PH_RELEASE_DATE ?>
                         </div>
                     </div>
-
+                    
                     <div class="center">
                         <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
                             <img alt="Donate" width="92" height="26" src="/images/donate.gif">
                         </a>
                     </div>
                 </div>
-
+                
                 <div class="portlet" >
                     <h2 class="center">Quick Links</h2>
                     <ul class="involvement">
@@ -68,7 +66,7 @@ include("config.php");
                     </ul>
                 </div>
             </div>
-
+            
             <div class="top-portlet">
                 <div class="summary">
                     <p>Process Hacker is a feature-packed tool for managing processes and services on your computer.</p>
@@ -94,18 +92,9 @@ include("config.php");
                         <li>&#160;•&#160;Shows names for transaction manager objects and ETW registration objects.</li>
                         <li>&#160;•&#160;Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
                     </ul>
-
-                    <!-- AddThis Button BEGIN -->
-                    <div class="addthis_toolbox addthis_default_style " addthis:url="http://processhacker.sourceforge.net" style="padding-right: 10px; padding-bottom: 10px; max-width: 500px">
-                        <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
-                        <a class="addthis_button_tweet"></a>
-                        <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
-                        <a class="addthis_counter addthis_pill_style"></a>
-                    </div>
-                    <!-- AddThis Button END -->
                 </div>
             </div>
-
+            
             <div class="yui-g">
                 <div class="yui-u first">
                     <div class="portlet">
@@ -125,7 +114,7 @@ include("config.php");
                                 p.post_id = t.topic_last_post_id AND
                                 p.poster_id = u.user_id
                                 ORDER BY p.post_id DESC LIMIT $topicnumber";
-
+                                
                             if ($query = $db->sql_query($sql))
                             {
                                 while($row = $db->sql_fetchrow($query))
@@ -136,7 +125,7 @@ include("config.php");
                                     $post_author = get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour']);
                                     $post_date = date('F jS, Y, g:i a', $row["post_time"]);
                                     $post_link = append_sid("{$phpbb_root_path}viewtopic.php", "p=" . $row['post_id'] . "#p" . $row['post_id']);
-
+                                    
                                     //$bbcode = new bbcode(base64_encode($row['bbcode_bitfield']));
                                     //$bbcode->bbcode_second_pass($post_text, $row['bbcode_uid'], $row['bbcode_bitfield']);
                                     //$post_text = smiley_text($post_text);
@@ -144,7 +133,7 @@ include("config.php");
                                     //$post_text = str_replace('./forums','http://processhacker.sourceforge.net/forums/',$post_text);
                                     //$post_text = substr($post_text, 0, 300); 
                                     //if ($author_avatar) $avatar = get_user_avatar($author_avatar, $row['user_avatar_type'], 16, 16);
-
+                                    
                                     echo 
                                     "<div class=\"ft\">
                                         <a href=\"{$post_link}\">{$topic_title}</a>
@@ -154,7 +143,6 @@ include("config.php");
                                         </span>
                                     </div>";
                                 }
-
                                 $db->sql_freeresult($query);
                             }
                             else
@@ -203,7 +191,6 @@ include("config.php");
                                     </span>
                                     </div>";
                                 }
-
                                 $db->sql_freeresult($query);
                             }
                             else
@@ -213,7 +200,6 @@ include("config.php");
                         ?>
                     </div>
                 </div>
-
                 <div class="yui-u">
                     <div id="structural-subscription-content-box"></div>
                 </div>
@@ -231,7 +217,6 @@ include("config.php");
                         </a>
                     </div>
                 </div>
-
                 <div class="yui-u">
                     <div class="portlet">
                         <p><strong>Statistics</strong></p>
@@ -241,8 +226,15 @@ include("config.php");
             </div>
         </div>
     </div>
-
-
+    
+ <!-- AddThis Button BEGIN -->
+ <div class="addthis_toolbox addthis_default_style" style="position:absolute; top:10px; right:0;" addthis:url="http://processhacker.sourceforge.net">
+    <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    <a class="addthis_button_tweet"></a>
+    <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+    <a class="addthis_counter addthis_pill_style"></a>
+ </div>
+ <!-- AddThis Button END -->
 </div>
 
 <script type="text/javascript" src="/scripts/lytebox.js"></script>

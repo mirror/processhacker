@@ -13,7 +13,6 @@ include("header.php");
             
             <div class="flowed-block wide">
                 <h2>Process Hacker</h2>
-                
                 <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
                     <li><a href="/features.php">Features</a></li>
@@ -38,18 +37,15 @@ include("header.php");
                 <div class="portlet" >
                     <h2 class="center">Get Involved</h2>
                     <ul class="involvement">
-                        <li>
-                            <a href="/forums/viewforum.php?f=24">Report a bug</a>
-                        </li>
-                        <li>
-                            <a href="/forums/viewforum.php?f=5">Ask a question</a>
-                        </li>
+                        <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
+                        <li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
                     </ul>
                 </div>
             </div>
             
             <div class="top-portlet">
                 <div class="summary" style="padding-bottom:20px;">
+                	<p>Process Hacker was started in 2008 as an open source alternative to programs such as Task Manager and Process Explorer.</p>
                     <p><strong>Registered:</strong> 16-10-2008</p>
                     <p><strong>Licence:</strong> GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></p>
                     <p><strong>Language:</strong> English</p>
@@ -68,12 +64,12 @@ include("header.php");
                             </a>
                         </p>
                         <ul>
-                            <li>Project Founder</li>
+                            <li>Project Founder, Senior Maintainer</li>
                             <li>Joined: 16-10-2008</li>
                             <li>Status: Active</li>
                         </ul>
                         
-                        <a href='https://www.ohloh.net/accounts/47453' target='_top'>
+                        <a href='https://www.ohloh.net/people/rankings?show=47453' target='_top'>
                             <img style="position:absolute; top:10px; right:0;" alt='Ohloh profile for wj32' border='0' height='24' width='32' src='https://www.ohloh.net/accounts/47453/widgets/account_rank.gif' />
                         </a>
                         <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688650589' target='_top'>
@@ -89,13 +85,13 @@ include("header.php");
                             </a>
                         </p>
                         <ul>
-                            <li>Director of Operations</li>
+                            <li>Project Operations, Maintainer</li>
                             <li>Joined: 28-08-2009</li>
                             <li>Status: Active</li>
                         </ul>
                         
-                        <a href='https://www.ohloh.net/accounts/56334' target='_top'>
-                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh profile for dmex' border='0' height='24' width='32' src='https://www.ohloh.net/accounts/56334/widgets/account_rank.gif' />
+                        <a href='https://www.ohloh.net/people/rankings?show=56334' target='_top'>
+                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh profile for dmex' border='0' height='24' width='32' src='https://www.ohloh.net/accounts/47453/widgets/account_rank.gif' />
                         </a>
                         <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688659470' target='_top'>
                             <img style="position:absolute; bottom:0; right:0;" align="right" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png" />
@@ -115,8 +111,8 @@ include("header.php");
                             <li>Status: Active</li>
                         </ul>
                         
-                        <a href='https://www.ohloh.net/accounts/60504' target='_top'>
-                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh profile for XhmikosR' border='0' height='24' width='32' src='https://www.ohloh.net/accounts/60504/widgets/account_rank.gif' />
+                        <a href='https://www.ohloh.net/people/rankings?show=60504' target='_top'>
+                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh profile for XhmikosR' border='0' height='24' width='32' src='https://www.ohloh.net/accounts/56334/widgets/account_rank.gif' />
                         </a>
                         <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688663640' target='_top'>
                             <img style="position:absolute; bottom:0; right:0;" align="right" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png" />
