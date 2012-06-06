@@ -68,25 +68,25 @@ include("config.php");
                     <p>Process Hacker is a feature-packed tool for managing processes and services on your computer.</p>
                     <p><strong>Key features of Process Hacker:</strong></p>
                     <ul>
-                        <li>&#160;•&#160;A simple, customizable tree view with highlighting showing you the processes running on your computer.</li>
-                        <li>&#160;•&#160;Detailed system statistics with graphs.</li>
-                        <li>&#160;•&#160;Advanced features not found in other programs, such as detaching from debuggers, viewing GDI handles, viewing heaps, injecting and unloading DLLs, and more.</li>
-                        <li>&#160;•&#160;Powerful process termination that bypasses security software and rootkits.</li>
-                        <li>&#160;•&#160;View, edit and control services, including those not shown by the Services console.</li>
-                        <li>&#160;•&#160;View and close network connections.</li>
-                        <li>&#160;•&#160;Starts up almost instantly, unlike other programs.</li>
-                        <li>&#160;•&#160;<a href="./features.php">Many more features...</a></li>
+                        <li> • A simple, customizable tree view with highlighting showing you the processes running on your computer.</li>
+                        <li> • Detailed system statistics with graphs.</li>
+                        <li> • Advanced features not found in other programs, such as detaching from debuggers, viewing GDI handles, viewing heaps, injecting and unloading DLLs, and more.</li>
+                        <li> • Powerful process termination that bypasses security software and rootkits.</li>
+                        <li> • View, edit and control services, including those not shown by the Services console.</li>
+                        <li> • View and close network connections.</li>
+                        <li> • Starts up almost instantly, unlike other programs.</li>
+                        <li> • <a href="./features.php">Many more features...</a></li>
                     </ul>
                     <p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
                     <ul>
-                        <li>&#160;•&#160;Implements all of the functionality offered by Process Explorer, plus more advanced features.</li>
-                        <li>&#160;•&#160;Performs stack traces for .NET programs, with managed symbol resolution.</li>
-                        <li>&#160;•&#160;Allows you to see what a thread is waiting on.</li>
-                        <li>&#160;•&#160;Has advanced string scanning capabilities, as well as regular expression filtering.</li>
-                        <li>&#160;•&#160;Highlights both relocated and .NET DLLs.</li>
-                        <li>&#160;•&#160;Shows symbolic access masks (e.g. <code>Read, Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
-                        <li>&#160;•&#160;Shows names for transaction manager objects and ETW registration objects.</li>
-                        <li>&#160;•&#160;Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
+                        <li> • Implements all of the functionality offered by Process Explorer, plus more advanced features.</li>
+                        <li> • Performs stack traces for .NET programs, with managed symbol resolution.</li>
+                        <li> • Allows you to see what a thread is waiting on.</li>
+                        <li> • Has advanced string scanning capabilities, as well as regular expression filtering.</li>
+                        <li> • Highlights both relocated and .NET DLLs.</li>
+                        <li> • Shows symbolic access masks (e.g. <code>Read, Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
+                        <li> • Shows names for transaction manager objects and ETW registration objects.</li>
+                        <li> • Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
                     </ul>
                 </div>
             </div>

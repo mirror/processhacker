@@ -50,11 +50,11 @@ include("config.php");
                     <p>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver, so it works on 64-bit systems.</p>
                     <p><strong>System Requirements:</strong></p>
                     <ul>
-                        <li>&#160;•&#160;Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
-                        <li>&#160;•&#160;Intel Itanium Platforms are not supported.</li>
+                        <li> • Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
+                        <li> • Intel Itanium Platforms are not supported.</li>
                     </ul>
                     <p><strong>Licence:</strong></p>
-                    <ul><li>&#160;•&#160;GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></li></ul>
+                    <ul><li> • GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></li></ul>
                 </div>
             </div>
             
