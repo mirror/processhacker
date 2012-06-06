@@ -31,6 +31,7 @@ include("header.php");
                     <h2 class="center">Quick Links</h2>
                     <ul class="involvement">
                         <li><a href="http://sourceforge.net/project/memberlist.php?group_id=242527">Project Members</a></li>
+                        <li><a href="https://www.ohloh.net/p/processhacker/contributors">Project Contributors</a></li>
                     </ul>
                 </div>
                 
@@ -57,7 +58,7 @@ include("header.php");
             <div class="yui-g">
                 <div class="yui-u first">
                     <div class="portlet" style="position:relative;">
-                        <img style="float:left; margin:15px 10px 0 0;" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e" alt="User avatar">
+                        <img class="user-avatar" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e" alt="User avatar">
                         <p>
                             <a style="color:#AA0000" href="http://sourceforge.net/users/wj32/">
                                 <strong>wj32</strong>
@@ -69,8 +70,8 @@ include("header.php");
                             <li>Status: Active</li>
                         </ul>
                         
-                        <a href='https://www.ohloh.net/people/rankings?show=47453' target='_top'>
-                            <img style="position:absolute; top:10px; right:0;" alt='Ohloh profile for wj32' border='0' height='24' width='32' src='https://www.ohloh.net/accounts/47453/widgets/account_rank.gif' />
+                        <a href='http://meta.ohloh.net/kudos/' target='_top'>
+                            <img style="position:absolute; top:10px; right:0;" alt='Ohloh profile for wj32' height='24' width='32' src='https://www.ohloh.net/accounts/47453/widgets/account_rank.gif' />
                         </a>
                         <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688650589' target='_top'>
                             <img style="position:absolute; bottom:0; right:0;" align="right" alt="wj32 commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png" />
@@ -78,7 +79,7 @@ include("header.php");
                     </div>
                     
                     <div class="portlet" style="position:relative;">
-                        <img style="float:left; margin: 15px 10px 0 0;" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar">
+                        <img class="user-avatar" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar">
                         <p>    
                             <a style="color:#AA0000" href="http://sourceforge.net/users/dmex/">
                                 <strong>dmex</strong>
@@ -90,8 +91,8 @@ include("header.php");
                             <li>Status: Active</li>
                         </ul>
                         
-                        <a href='https://www.ohloh.net/people/rankings?show=56334' target='_top'>
-                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh profile for dmex' border='0' height='24' width='32' src='https://www.ohloh.net/accounts/47453/widgets/account_rank.gif' />
+                        <a href='http://meta.ohloh.net/kudos/' target='_top'>
+                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh profile for dmex' height='24' width='32' src='https://www.ohloh.net/accounts/56334/widgets/account_rank.gif' />
                         </a>
                         <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688659470' target='_top'>
                             <img style="position:absolute; bottom:0; right:0;" align="right" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png" />
@@ -99,7 +100,7 @@ include("header.php");
                     </div>	
                     
                     <div class="portlet" style="position:relative;">
-                        <img style="float:left; margin: 15px 10px 0 0;" src="./images/mpc-hc_gabest_logo.png" width="80" height="80" alt="User avatar">
+                        <img class="user-avatar" src="http://www.gravatar.com/avatar/E37759B1EA0125D4E97B1E00B5EED26F" width="80" height="80" alt="User avatar">
                         <p>
                             <a style="color:#0000FF" href="http://sourceforge.net/users/xhmikosr/">
                                 <strong>XhmikosR</strong>
@@ -111,8 +112,8 @@ include("header.php");
                             <li>Status: Active</li>
                         </ul>
                         
-                        <a href='https://www.ohloh.net/people/rankings?show=60504' target='_top'>
-                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh profile for XhmikosR' border='0' height='24' width='32' src='https://www.ohloh.net/accounts/56334/widgets/account_rank.gif' />
+                        <a href='http://meta.ohloh.net/kudos/' target='_top'>
+                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh profile for XhmikosR' height='24' width='32' src='https://www.ohloh.net/accounts/60504/widgets/account_rank.gif' />
                         </a>
                         <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688663640' target='_top'>
                             <img style="position:absolute; bottom:0; right:0;" align="right" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png" />

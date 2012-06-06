@@ -11,10 +11,9 @@ include("config.php");
             <div class="flowed-block">
                 <img alt="ProjectLogo" width="64" height="64" src="/images/logo_64x64.png">
             </div>
-
+            
             <div class="flowed-block wide">
                 <h2>Process Hacker</h2>
-
                 <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
                     <li><a href="/features.php">Features</a></li>
@@ -26,47 +25,39 @@ include("config.php");
                 </ul>
             </div>
         </div>
-
-    <div class="yui-t4">
-        <div class="yui-b side">
-            <div class="portlet" >
-                <h2 class="center">Quick Links</h2>
-
-                <ul class="involvement">
-                    <li><a href="/changelog.php">Changelog</a></li>
-                    <li><a href="http://sourceforge.net/projects/processhacker/files/">Sourceforge Downloads</a></li>
-                </ul>
+        
+        <div class="yui-t4">
+            <div class="yui-b side">
+                <div class="portlet" >
+                    <h2 class="center">Quick Links</h2>
+                    <ul class="involvement">
+                        <li><a href="/changelog.php">Changelog</a></li>
+                        <li><a href="http://sourceforge.net/projects/processhacker/files/">Sourceforge Downloads</a></li>
+                    </ul>
+                </div>
+                <div class="portlet" >
+                    <h2 class="center">Get Involved</h2>
+                    <ul class="involvement">
+                        <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
+                        <li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
+                    </ul>
+                </div>
             </div>
-
-            <div class="portlet" >
-                <h2 class="center">Get Involved</h2>
-
-                <ul class="involvement">
-                    <li>
-                        <a href="/forums/viewforum.php?f=24">Report a bug</a>
-                    </li>
-                    <li>
-                        <a href="/forums/viewforum.php?f=5">Ask a question</a>
-                    </li>
-                </ul>
+            
+            <div class="top-portlet">
+                <div class="summary" style="padding-bottom:40px;">
+                    <p>The latest stable version of Process Hacker is <strong><?php echo $LATEST_PH_VERSION ?></strong></p>
+                    <p>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver, so it works on 64-bit systems.</p>
+                    <p><strong>System Requirements:</strong></p>
+                    <ul>
+                        <li>&#160;•&#160;Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
+                        <li>&#160;•&#160;Intel Itanium Platforms are not supported.</li>
+                    </ul>
+                    <p><strong>Licence:</strong></p>
+                    <ul><li>&#160;•&#160;GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></li></ul>
+                </div>
             </div>
-        </div>
-
-        <div class="top-portlet">
-            <div class="summary" style="padding-bottom:40px;">
-                <p>The latest stable version of Process Hacker is <strong><?php echo $LATEST_PH_VERSION ?></strong></p>
-                <p>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver, so it works on 64-bit systems.</p>
-
-                <p><strong>System Requirements:</strong></p>
-                <ul>
-                    <li>&#160;•&#160;Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
-                    <li>&#160;•&#160;Intel Itanium Platforms are not supported.</li>
-                </ul>
-                <p><strong>Licence:</strong></p>
-                <ul><li>&#160;•&#160;GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></li></ul>
-            </div>
-        </div>
-
+            
             <div class="yui-g">
                 <div class="yui-u first">
                     <div class="portlet">
@@ -103,7 +94,7 @@ include("config.php");
                     <div id="structural-subscription-content-box"></div>
                 </div>
             </div>
-
+            
             <div class="yui-g">
                 <div class="yui-u first">
                     <div class="portlet">
@@ -120,7 +111,7 @@ include("config.php");
                         </ul>
                     </div>	
                 </div>
-
+                
                 <div class="yui-u">
                     <div class="portlet">
                         <p><strong>Plugins SDK</strong></p>
@@ -136,7 +127,6 @@ include("config.php");
                         </ul>
                     </div>
                 </div>
-                
             </div>
         </div>
     </div>

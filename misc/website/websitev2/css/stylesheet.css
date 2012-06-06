@@ -43,6 +43,16 @@ body
 	padding-left: 0px;
 }
 
+.user-avatar
+{
+    float:left; 
+    margin: 15px 10px 0 0;
+    background:white; 
+    padding:4px; 
+    border: 1px solid #E5DFC7; 
+    display: block;
+}
+
 body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td {
     padding: 0;
 }

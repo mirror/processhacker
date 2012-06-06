@@ -1,4 +1,8 @@
-<?php $pagetitle = "Features"; include("header.php"); ?>
+<?php 
+$pagetitle = "Features"; 
+
+include("header.php"); 
+?>
 
 <div class="page">
     <div class="yui-d0">
@@ -22,6 +26,25 @@
         </div>	
 
         <div class="yui-t4">
+            <div class="yui-b side">
+                <div class="portlet" >
+                    <h2 class="center">Quick Links</h2>
+                    <ul class="involvement">
+
+
+
+                    </ul>
+                </div>
+                
+                <div class="portlet" >
+                    <h2 class="center">Get Involved</h2>
+                    <ul class="involvement">
+                        <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
+                        <li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
+                    </ul>
+                </div>
+            </div>
+        
             <div class="top-portlet">
                 <div class="summary">
                     <p>A very incomplete feature list for Process Hacker 2:</p>		
