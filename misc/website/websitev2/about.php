@@ -71,10 +71,10 @@ include("header.php");
                         </ul>
                         
                         <a href='http://meta.ohloh.net/kudos/' target='_top'>
-                            <img style="position:absolute; top:10px; right:0;" alt='Ohloh profile for wj32' height='24' width='32' src='https://www.ohloh.net/accounts/47453/widgets/account_rank.gif' />
+                            <img style="position:absolute; top:10px; right:0;" alt='Ohloh kudos' height='24' width='32' src='https://www.ohloh.net/accounts/47453/widgets/account_rank.gif' />
                         </a>
                         <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688650589' target='_top'>
-                            <img style="position:absolute; bottom:0; right:0;" align="right" alt="wj32 commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png" />
+                            <img style="position:absolute; bottom:0; right:0;" alt="wj32 commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png" />
                         </a>
                     </div>
                     
@@ -92,10 +92,10 @@ include("header.php");
                         </ul>
                         
                         <a href='http://meta.ohloh.net/kudos/' target='_top'>
-                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh profile for dmex' height='24' width='32' src='https://www.ohloh.net/accounts/56334/widgets/account_rank.gif' />
+                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh kudos' height='24' width='32' src='https://www.ohloh.net/accounts/56334/widgets/account_rank.gif' />
                         </a>
                         <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688659470' target='_top'>
-                            <img style="position:absolute; bottom:0; right:0;" align="right" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png" />
+                            <img style="position:absolute; bottom:0; right:0;" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png" />
                         </a>
                     </div>	
                     
@@ -113,10 +113,10 @@ include("header.php");
                         </ul>
                         
                         <a href='http://meta.ohloh.net/kudos/' target='_top'>
-                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh profile for XhmikosR' height='24' width='32' src='https://www.ohloh.net/accounts/60504/widgets/account_rank.gif' />
+                            <img style="position:absolute; top: 10px; right: 0;" alt='Ohloh kudos' height='24' width='32' src='https://www.ohloh.net/accounts/60504/widgets/account_rank.gif' />
                         </a>
                         <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688663640' target='_top'>
-                            <img style="position:absolute; bottom:0; right:0;" align="right" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png" />
+                            <img style="position:absolute; bottom:0; right:0;" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png" />
                         </a>
                     </div>
                 </div>

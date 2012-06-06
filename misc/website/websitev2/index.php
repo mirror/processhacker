@@ -34,15 +34,11 @@ include("config.php");
                         <div class="version">
                             Latest version is <?php echo $LATEST_PH_VERSION ?>
                         </div>
-                        <li>
-                            <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">Installer</a>
-                        </li>
-                        <li>
-                            <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">Binaries (portable)</a>
-                        </li>
-                        <li>
-                            <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download" title="Source code">Source code</a>
-                        </li>
+                        <ul style="list-style-type: none; padding: 0px; margin: 0px;">
+                            <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">Installer</a></li>
+                            <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">Binaries (portable)</a></li>
+                            <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download" title="Source code">Source code</a></li>
+                        </ul>
                         <div class="released">
                             Released <?php echo $LATEST_PH_RELEASE_DATE ?>
                         </div>
@@ -117,11 +113,13 @@ include("config.php");
                                 
                             if ($query = $db->sql_query($sql))
                             {
-                                while($row = $db->sql_fetchrow($query))
+                                while ($row = $db->sql_fetchrow($query))
                                 {
                                     $topic_title = $row['topic_title'];
                                     //$post_text = $row['post_text'];
                                     $author_avatar = $row['user_avatar'];
+                                    $author_color = $row['user_colour'];
+                                    
                                     $post_author = get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour']);
                                     $post_date = date('F jS, Y, g:i a', $row["post_time"]);
                                     $post_link = append_sid("{$phpbb_root_path}viewtopic.php", "p=" . $row['post_id'] . "#p" . $row['post_id']);
@@ -137,17 +135,19 @@ include("config.php");
                                     echo 
                                     "<div class=\"ft\">
                                         <a href=\"{$post_link}\">{$topic_title}</a>
-                                        <span style=\"color:#C0C0C0\">
-                                            by {$post_author}
-                                            <div class=\"forumdate\">{$post_date}</div>
+                                        <span style='color:#C0C0C0;'>by 
+                                            <span style='color:{$author_color}'>{$post_author}</span>
                                         </span>
+                                        <div class='forumdate'>{$post_date}</div>
                                     </div>";
                                 }
                                 $db->sql_freeresult($query);
                             }
                             else
                             {
-                                echo "<p>Query failed: ".mysql_error()."</p>";
+                                $error = $db->sql_error();
+                                
+                                echo "<p>Query failed: ".$error['message']."</p>";
                             }
                         ?>
                     </div>
@@ -172,11 +172,13 @@ include("config.php");
 
                             if ($query = $db->sql_query($sql))
                             { 
-                                while($row = $db->sql_fetchrow($query))
+                                while ($row = $db->sql_fetchrow($query))
                                 {
                                     $topic_title = $row['topic_title'];
                                     //$post_text = nl2br($row['post_text']);
                                     $author_avatar = $row['user_avatar'];
+                                    $author_color = $row['user_colour'];
+                                    
                                     $post_author = get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour']);
                                     $post_date = date('F jS, Y, g:i a', $row["post_time"]);
                                     $post_link = append_sid("{$phpbb_root_path}viewtopic.php", "p=" . $row['post_id'] . "#p" . $row['post_id']);
@@ -184,18 +186,20 @@ include("config.php");
                                     
                                     echo 
                                     "<div class=\"ft\">
-                                    <a href=\"{$post_link}\">{$topic_title}</a>
-                                    <span style=\"color:#C0C0C0;\">
-                                    by {$post_author}
-                                    <div class=\"forumdate\">{$post_date}</div>
-                                    </span>
+                                        <a href=\"{$post_link}\">{$topic_title}</a>
+                                        <span style='color:#C0C0C0;'>by 
+                                            <span style='color:{$author_color}'>{$post_author}</span>
+                                        </span>
+                                        <div class='forumdate'>{$post_date}</div>
                                     </div>";
                                 }
                                 $db->sql_freeresult($query);
                             }
                             else
                             {
-                                echo "<p>Query failed: ".mysql_error()."</p>";
+                                $error = $db->sql_error();
+                            
+                                echo "<p>Query failed: ".$error['message']."</p>";
                             }
                         ?>
                     </div>
