@@ -4,9 +4,8 @@ body
 {
     color: #333333;
 	/*'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif*/
-    font-family: "UbuntuBeta Regular",Ubuntu,"Bitstream Vera Sans","DejaVu Sans",Tahoma,sans-serif;
+    font-family: Tahoma, sans-serif;
     font-size: 12px;
-    text-align: center;
 }
 
 .ft

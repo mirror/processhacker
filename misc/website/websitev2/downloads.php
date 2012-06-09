@@ -2,7 +2,6 @@
 $pagetitle = "Downloads";
 
 include("header.php");
-include("config.php");
 ?>
 
 <div class="page">
@@ -31,7 +30,7 @@ include("config.php");
                 <div class="portlet" >
                     <h2 class="center">Quick Links</h2>
                     <ul class="involvement">
-                        <li><a href="/changelog.php">Changelog</a></li>
+                        <li><a href="/changelog.php">SVN Changelog</a></li>
                         <li><a href="http://sourceforge.net/projects/processhacker/files/">Sourceforge Downloads</a></li>
                     </ul>
                 </div>

@@ -26,14 +26,7 @@ include("header.php");
         </div>	
 
         <div class="yui-t4">
-            <div class="yui-b side">
-                <div class="portlet" >
-                    <h2 class="center">Quick Links</h2>
-                    <ul class="involvement">
-                    
-                    </ul>
-                </div>
-                
+            <div class="yui-b side">                
                 <div class="portlet" >
                     <h2 class="center">Get Involved</h2>
                     <ul class="involvement">

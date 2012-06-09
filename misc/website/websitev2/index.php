@@ -2,7 +2,6 @@
 $pagetitle = "Overview";
 
 include("header.php");
-include("config.php");
 ?>
 
 <div class="page" style="position:relative;">
@@ -43,7 +42,6 @@ include("config.php");
                             Released <?php echo $LATEST_PH_RELEASE_DATE ?>
                         </div>
                     </div>
-                    
                     <div class="center">
                         <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
                             <img alt="Donate" width="92" height="26" src="/images/donate.gif">
@@ -118,7 +116,6 @@ include("config.php");
                                     $topic_title = $row['topic_title'];
                                     //$post_text = $row['post_text'];
                                     $author_avatar = $row['user_avatar'];
-                                    $author_color = $row['user_colour'];
                                     
                                     $post_author = get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour']);
                                     $post_date = date('F jS, Y, g:i a', $row["post_time"]);
@@ -136,7 +133,7 @@ include("config.php");
                                     "<div class=\"ft\">
                                         <a href=\"{$post_link}\">{$topic_title}</a>
                                         <span style='color:#C0C0C0;'>by 
-                                            <span style='color:{$author_color}'>{$post_author}</span>
+                                            <span>{$post_author}</span>
                                         </span>
                                         <div class='forumdate'>{$post_date}</div>
                                     </div>";
@@ -177,7 +174,6 @@ include("config.php");
                                     $topic_title = $row['topic_title'];
                                     //$post_text = nl2br($row['post_text']);
                                     $author_avatar = $row['user_avatar'];
-                                    $author_color = $row['user_colour'];
                                     
                                     $post_author = get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour']);
                                     $post_date = date('F jS, Y, g:i a', $row["post_time"]);
@@ -188,7 +184,7 @@ include("config.php");
                                     "<div class=\"ft\">
                                         <a href=\"{$post_link}\">{$topic_title}</a>
                                         <span style='color:#C0C0C0;'>by 
-                                            <span style='color:{$author_color}'>{$post_author}</span>
+                                            <span>{$post_author}</span>
                                         </span>
                                         <div class='forumdate'>{$post_date}</div>
                                     </div>";

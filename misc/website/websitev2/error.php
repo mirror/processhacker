@@ -1,4 +1,4 @@
-<?php header("HTTP/1.1 200 OK");
+<?php
 
 $errorcode = $_SERVER['REDIRECT_STATUS'];
 $pagetitle = "Error ".$errorcode; 
