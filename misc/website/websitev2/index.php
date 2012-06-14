@@ -100,16 +100,17 @@ include("header.php");
                             u.user_id, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
                             FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
                             WHERE t.topic_id = p.topic_id AND
-                                t.topic_approved = 1 AND
-                                f.forum_id = t.forum_id AND
-                                t.forum_id = 1 AND
-                                t.topic_status <> 2 AND
-                                p.post_approved = 1 AND
-                                p.post_id = t.topic_last_post_id AND
-                                p.poster_id = u.user_id
-                                ORDER BY p.post_id DESC LIMIT $topicnumber";
+                            t.topic_approved = 1 AND
+                            f.forum_id = t.forum_id AND
+                            t.forum_id = 1 AND
+                            t.topic_status <> 2 AND
+                            p.post_approved = 1 AND
+                            p.post_id = t.topic_last_post_id AND
+                            p.poster_id = u.user_id
+                            ORDER BY p.post_id DESC LIMIT $topicnumber";
                                 
-                            if ($query = $db->sql_query($sql))
+                            // Check if we have a valid database connection, preform the query if we do. 
+                            if (!empty($db) && ($query = $db->sql_query($sql)))
                             {
                                 while ($row = $db->sql_fetchrow($query))
                                 {
@@ -142,9 +143,17 @@ include("header.php");
                             }
                             else
                             {
-                                $error = $db->sql_error();
-                                
-                                echo "<p>Query failed: ".$error['message']."</p>";
+                                // Check if we have a valid database connection. 
+                                if (!empty($db))
+                                {
+                                    $error = $db->sql_error();
+                            
+                                    echo "<p>Query failed: ".$error['message']."</p>";
+                                }
+                                else
+                                {
+                                    echo "<p>Query failed: Unknown error.</p>";
+                                }
                             }
                         ?>
                     </div>
@@ -166,8 +175,9 @@ include("header.php");
                             p.post_id = t.topic_last_post_id AND
                             p.poster_id = u.user_id
                             ORDER BY p.post_id DESC LIMIT $topicnumber";
-
-                            if ($query = $db->sql_query($sql))
+                            
+                            // Check if we have a valid database connection, preform the query if we do. 
+                            if (!empty($db) && ($query = $db->sql_query($sql)))
                             { 
                                 while ($row = $db->sql_fetchrow($query))
                                 {
@@ -193,9 +203,17 @@ include("header.php");
                             }
                             else
                             {
-                                $error = $db->sql_error();
+                                // Check if we have a valid database connection. 
+                                if (!empty($db))
+                                {
+                                    $error = $db->sql_error();
                             
-                                echo "<p>Query failed: ".$error['message']."</p>";
+                                    echo "<p>Query failed: ".$error['message']."</p>";
+                                }
+                                else
+                                {
+                                    echo "<p>Query failed: Unknown error.</p>";
+                                }
                             }
                         ?>
                     </div>
