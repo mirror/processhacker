@@ -1,11 +1,9 @@
-<?php 
-header('Content-Type: text/html; charset=UTF-8'); 
+<?php header('Content-Type: text/html; charset=UTF-8'); 
 
 include("config.php"); 
 ?>
 <!DOCTYPE html>
-<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> -->
-<html lang="en">
+<html>
 <head>
     <meta name="description" content="A free and open source process viewer with powerful process termination and memory searching/editing capabilities." />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />

@@ -33,6 +33,12 @@ body
 	position: relative /* Addthis div alignment */
 }
 
+.project-logo
+{
+    width:64px;
+    height:64px
+}
+
 .forumdate
 {
 	padding: 0;
@@ -43,6 +49,33 @@ body
     color: silver;
 }
 
+
+
+a#download_button
+{
+    color:#FFF;
+    text-align:center;
+    font:1.308em/1.7em 'Segoe UI Light',Tahoma Light,Arial Light,Helvetica Light,sans-serif;
+    font-weight:lighter;
+    background-color:#629D4F;
+    display:block;
+    top:0px;
+    position:relative;padding-top:5px;
+    padding-bottom:5px;
+    width:300px;
+}
+
+a#download_button:hover
+{
+    background-color:#1C8D2E;
+    color:#FFF;
+    text-decoration:none;
+    -webkit-transition:all .5s ease-in-out;
+    -moz-transition:all .5s ease-in-out;-ms-transition:all .5s ease-in-out;
+    -o-transition:all .5s ease-in-out;
+    transition:all .5s ease-in-out;
+}
+
 .user-avatar
 {
     float:left; 
@@ -51,6 +84,20 @@ body
     padding:4px; 
     border: 1px solid #E5DFC7; 
     display: block;
+}
+
+.ohloh-kudos
+{
+    position:absolute; 
+    top: 10px; 
+    right: 0;
+}
+
+.ohloh-commits
+{
+    position:absolute; 
+    bottom:0; 
+    right:0;
 }
 
 body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td {
@@ -277,16 +324,6 @@ q:before, q:after {
     background-color: #FAFAFA;
 }
 
-.yui3-autocomplete 
-{
-    position: absolute;
-    z-index: 1050;
-}
-
-.yui3-autocomplete-hidden {
-    display: none;
-}
-
 .yui3-menu .yui3-menu {
     position: absolute;
     z-index: 1;
@@ -309,214 +346,7 @@ q:before, q:after {
     text-align: left;
     white-space: nowrap;
 }
-.yui3-menu-horizontal li {
-    float: left;
-    width: auto;
-}
-.yui3-menu-horizontal li li {
-    float: none;
-}
-.yui3-menu-horizontal ul {
-}
-.yui3-menu-horizontal ul ul {
-}
-.yui3-menu-horizontal > .yui3-menu-content > ul:after {
-    clear: both;
-    content: "";
-    display: block;
-    font-size: 0;
-    line-height: 0;
-    visibility: hidden;
-}
-.yui3-menu-content {
-}
-.yui3-menu-hidden .yui3-menu-content {
-}
-.yui3-menuitem-content, .yui3-menu-label {
-}
-.yui3-menu-hiden .yui3-menuitem-content, .yui3-menu-hiden .yui3-menu-label {
-}
-.yui3-skin-sam .yui3-autocomplete-content {
-    background-color: #FFFFFF;
-}
-.yui3-skin-sam .yui3-autocomplete-list {
-    border: 1px solid black;
-    margin: 0;
-    padding: 0 0.3em;
-}
-.yui3-skin-sam .yui3-autocomplete-list .item {
-    list-style-type: none;
-}
-.yui3-skin-sam .yui3-autocomplete-list .item .matching-text {
-    font-weight: bold;
-}
-.yui3-skin-sam .yui3-autocomplete-list .yui3-menuitem-content {
-    padding: 0 0.3em;
-}
-.yui3-skin-sam .yui3-menu-content, .yui3-skin-sam .yui3-menu .yui3-menu .yui3-menu-content {
-    background: none repeat scroll 0 0 #FFFFFF;
-    border: 1px solid #808080;
-    font-size: 93%;
-    line-height: 1.5;
-    padding: 3px 0;
-}
-.yui3-skin-sam .yui3-menu .yui3-menu .yui3-menu-content {
-    font-size: 100%;
-}
-.yui3-skin-sam .yui3-menu-horizontal .yui3-menu-content {
-    background: url("lazr/build/assets/skins/sam/sprite.png") repeat-x scroll 0 0 transparent;
-    line-height: 2;
-    padding: 0;
-}
-.yui3-skin-sam .yui3-menu ul, .yui3-skin-sam .yui3-menu ul ul {
-    border-top: 1px solid #CCCCCC;
-    margin-top: 3px;
-    padding-top: 3px;
-}
-.yui3-skin-sam .yui3-menu ul.first-of-type {
-    border: 0 none;
-    margin: 0;
-    padding: 0;
-}
-.yui3-skin-sam .yui3-menu-horizontal ul {
-    border: 0 none;
-    margin: 0;
-    padding: 0;
-}
-.yui3-skin-sam .yui3-menu li, .yui3-skin-sam .yui3-menu .yui3-menu li {
-}
-.yui3-skin-sam .yui3-menu-horizontal li {
-}
-.yui3-skin-sam .yui3-menubuttonnav li {
-    border-right: 1px solid #CCCCCC;
-}
-.yui3-skin-sam .yui3-splitbuttonnav li {
-    border-right: 1px solid #808080;
-}
-.yui3-skin-sam .yui3-menubuttonnav li li, .yui3-skin-sam .yui3-splitbuttonnav li li {
-    border-right: 0 none;
-}
-.yui3-skin-sam .yui3-menu-label, .yui3-skin-sam .yui3-menu .yui3-menu .yui3-menu-label, .yui3-skin-sam .yui3-menuitem-content, .yui3-skin-sam .yui3-menu .yui3-menu .yui3-menuitem-content {
-    border: 0 none;
-    color: #000000;
-    cursor: default;
-    float: none;
-    margin: 0;
-    padding: 0 20px;
-    text-decoration: none;
-}
-.yui3-skin-sam .yui3-menu-horizontal .yui3-menu-label, .yui3-skin-sam .yui3-menu-horizontal .yui3-menuitem-content {
-    border-color: #808080;
-    border-style: solid;
-    border-width: 1px 0;
-    float: left;
-    margin: -1px 0;
-    padding: 0 10px;
-    width: auto;
-}
 
-.yui3-skin-sam .yui3-menubuttonnav .yui3-menu-label, .yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label {
-    background-image: none;
-}
-.yui3-skin-sam .yui3-menubuttonnav .yui3-menu-label {
-    padding-right: 0;
-}
-.yui3-skin-sam .yui3-menubuttonnav .yui3-menu-label em {
-
-    display: block;
-    font-style: normal;
-    padding-right: 20px;
-}
-.yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label {
-    padding: 0;
-}
-.yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label a {
-    color: #000000;
-    cursor: default;
-    float: left;
-    padding: 0 5px 0 10px;
-    text-decoration: none;
-    width: auto;
-}
-.yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label .yui3-menu-toggle {
-    border-left: 1px solid #CCCCCC;
-    overflow: hidden;
-    padding: 0;
-    text-indent: -1000px;
-    width: 15px;
-}
-.yui3-skin-sam .yui3-menu-label-active, .yui3-skin-sam .yui3-menu-label-menuvisible, .yui3-skin-sam .yui3-menu .yui3-menu .yui3-menu-label-active, .yui3-skin-sam .yui3-menu .yui3-menu .yui3-menu-label-menuvisible {
-    background-color: #B3D4FF;
-}
-.yui3-skin-sam .yui3-menuitem-active .yui3-menuitem-content, .yui3-skin-sam .yui3-menu .yui3-menu .yui3-menuitem-active .yui3-menuitem-content {
-    background-color: #B3D4FF;
-    background-image: none;
-    border-left-width: 0;
-    margin-left: 0;
-}
-.yui3-skin-sam .yui3-menu-horizontal .yui3-menu-label-active, .yui3-skin-sam .yui3-menu-horizontal .yui3-menuitem-active .yui3-menuitem-content, .yui3-skin-sam .yui3-menu-horizontal .yui3-menu-label-menuvisible {
-    background: url("lazr/build/assets/skins/sam/sprite.png") repeat-x scroll 0 -1700px transparent;
-    border-color: #7D98B8;
-}
-.yui3-skin-sam .yui3-menubuttonnav .yui3-menu-label-active, .yui3-skin-sam .yui3-menubuttonnav .yui3-menuitem-active .yui3-menuitem-content, .yui3-skin-sam .yui3-menubuttonnav .yui3-menu-label-menuvisible, .yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label-active, .yui3-skin-sam .yui3-splitbuttonnav .yui3-menuitem-active .yui3-menuitem-content, .yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label-menuvisible {
-    border-left-width: 1px;
-    margin-left: -1px;
-}
-.yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label-menuvisible {
-    background: none repeat scroll 0 0 transparent;
-    border-color: #808080;
-}
-.yui3-skin-sam .yui3-splitbuttonnav .yui3-menu-label-menuvisible .yui3-menu-toggle {
-    border-color: #7D98B8;
-}
-
-.yui3-picker-results li:hover 
-{
-    background-color: #BBBBFF;
-}
-.yui3-picker-no-results li:hover 
-{
-    background-color: transparent;
-}
-
-.yui3-skin-sam .yui3-accordion-item .yui3-widget-hd {
-    background-color: #EEEEEE;
-    border-bottom: 1px solid #DDDDDD;
-    height: 25px;
-    padding-left: 25px;
-    position: relative;
-}
-.yui3-accordion-item .yui3-widget-bd {
-    border-bottom: 1px solid #DDDDDD;
-    margin: 0;
-}
-.yui3-skin-sam .yui3-accordion-item-iconexpanded, .yui3-skin-sam .yui3-accordion-item-iconclose {
-    background-repeat: no-repeat;
-}
-.yui3-skin-sam .yui3-accordion-item-label:hover, .yui3-skin-sam .yui3-accordion-item-label {
-    background: none repeat scroll 0 0 transparent;
-    color: #444444;
-    font-weight: bold;
-    overflow: hidden;
-    text-decoration: none;
-}
-
-.yui3-skin-sam .yui3-accordion-proxyel-visible {
-    background-color: red;
-    border-color: blue;
-    color: white;
-    font-weight: bold;
-    opacity: 0.7;
-}
-.yui3-accordion-item-icons {
-    float: none;
-    left: 5px;
-    position: absolute;
-    top: 0;
-}
-.yui3-accordion-item-icon, .yui3-accordion-item-iconalwaysvisible {
-    display: none;
-}
 .yui-d0 {
     margin: 10px 20px;
 }
@@ -619,50 +449,6 @@ li {
     color: #000000;
     font-weight: normal;
 }
-.related {
-    border-top: 1px solid #CBCBCB;
-    margin-top: 4em;
-    padding-top: 1em;
-}
-.related ul {
-    list-style: none outside none;
-    margin-left: 0 !important;
-    padding-left: 0 !important;
-    text-indent: 0.5em;
-}
-.related ul.sourcepackage-links li.sourcepackage-not-dev-focus:before {
-    content: "";
-    display: inline-block;
-    width: 1.5em;
-}
-.related ul.sourcepackage-links li.sourcepackage-dev-focus:before {
-    content: "⇒ ";
-    display: inline-block;
-    width: 1.5em;
-}
-.related ul li:before {
-    content: "» ";
-}
-.gridflow {
-    margin: 0;
-    padding: 0;
-}
-.gridflow ul {
-    margin: 0.5em 0;
-    padding: 0.5em 0 0;
-}
-.gridflow li {
-    display: inline;
-    margin: 0;
-    padding: 0.2em;
-}
-.gridflow li span {
-    display: inline-block;
-    padding: 1em 1em 1em 0;
-    text-align: center;
-    vertical-align: middle;
-    width: 192px;
-}
 caption {
     caption-side: bottom;
     text-align: left;
@@ -755,9 +541,6 @@ table.sortable img.sortarrow {
     padding-left: 2px;
 }
 
-.sortkey, .revsortkey {
-    display: none;
-}
 table.listing {
     margin: 0;
     width: 100%;
@@ -766,20 +549,6 @@ table.listing, table.listing tbody, table.listing td.end-of-section {
     border-bottom: 1px solid #D2D2D2;
 }
 
-.batch-navigation-links .next {
-    background: none no-repeat scroll right center transparent;
-    padding-right: 14px;
-}
-
-.batch-navigation-links .inactive {
-    color: #999EA7;
-}
-.batch-navigation-links .previous, .batch-navigation-links .next, .batch-navigation-links .last {
-    margin-left: 0.25em;
-}
-.batch-navigation-links .first, .batch-navigation-links .previous, .batch-navigation-links .next {
-    margin-right: 0.25em;
-}
 .flowed-block 
 {
 	padding: 0 0 0 10px;
