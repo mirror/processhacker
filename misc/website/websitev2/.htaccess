@@ -1,13 +1,21 @@
 RewriteEngine On
 
+ErrorDocument 400 /error.php
+ErrorDocument 401 /error.php
 ErrorDocument 403 /error.php
 ErrorDocument 404 /error.php
+ErrorDocument 405 /error.php
+
 
 <Files "config.php">
 Order Allow,Deny
 Deny from All
 </Files>
 
+<Files "error.php"> 
+allow from all
+</Files>
+ 
 # 2 DAYS
 <FilesMatch "\.(xml|txt|css|js)$">
 Header set Cache-Control "max-age=172800, proxy-revalidate"
@@ -23,3 +31,17 @@ ExpiresByType image/x-icon "access plus 360 days"
 </FilesMatch>
 
 php_value memory_limit 32M
+
+# This redirect is for fixing an error on TechRadar, their link to the project has %20 at the end...
+# http://www.techradar.com/news/computing/pc/how-to-free-up-ram-899817
+# Remap %20 (Space) back to the project index, until they fix it...
+Redirect 301 "/ " http://processhacker.sourceforge.net/index.php
+
+# Remap the favicon location for broken browsers ignoring the css
+Redirect 301 "/favicon.ico" http://processhacker.sourceforge.net/images/favicon.ico
+
+# Remap old image links to the new locations for compatiblity with old websites
+Redirect 301 "/images/logo.png" http://processhacker.sourceforge.net/images/logo_64x64.png
+Redirect 301 "/images/processes.png" http://processhacker.sourceforge.net/images/screenshots/processhacker_small.png
+Redirect 301 "/images/processhacker_small.png" http://processhacker.sourceforge.net/images/screenshots/processhacker_small.png
+Redirect 301 "/images/sysinfo_small.png" http://processhacker.sourceforge.net/images/screenshots/sysinfo_small.png
