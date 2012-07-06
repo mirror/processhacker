@@ -1,0 +1,119 @@
+Index: plugins/DotNetTools/stackext.c
+===================================================================
+--- plugins/DotNetTools/stackext.c	(revision 5058)
++++ plugins/DotNetTools/stackext.c	(working copy)
+@@ -48,16 +48,29 @@
+         {
+             PTHREAD_STACK_CONTEXT context;
+             BOOLEAN isDotNet;
++            HANDLE processHandle;
++            BOOLEAN isWow64 = FALSE;
+ 
+             if (!NT_SUCCESS(PhGetProcessIsDotNet(Control->u.Initializing.ProcessId, &isDotNet)) || !isDotNet)
+                 return;
+ 
++            if (NT_SUCCESS(PhOpenProcess(&processHandle, ProcessQueryAccess, Control->u.Initializing.ProcessId)))
++            {
++                PhGetProcessIsWow64(processHandle, &isWow64);
++                NtClose(processHandle);
++            }
++
++            if (isWow64)
++                return;
++
+             context = PhAllocate(sizeof(THREAD_STACK_CONTEXT));
+             context->Support = CreateClrProcessSupport(Control->u.Initializing.ProcessId);
+ 
+             PhAcquireQueuedLockExclusive(&ContextHashtableLock);
+             PhAddItemSimpleHashtable(ContextHashtable, Control->UniqueKey, context);
+             PhReleaseQueuedLockExclusive(&ContextHashtableLock);
++
++            Control->u.Initializing.CustomWalk = TRUE;
+         }
+         break;
+     case PluginThreadStackUninitializing:
+@@ -133,5 +146,84 @@
+             }
+         }
+         break;
++    case PluginThreadStackWalkStack:
++        {
++            PTHREAD_STACK_CONTEXT context;
++            PVOID *item;
++            IXCLRDataTask *task;
++
++            PhAcquireQueuedLockExclusive(&ContextHashtableLock);
++
++            item = PhFindItemSimpleHashtable(ContextHashtable, Control->UniqueKey);
++
++            if (item)
++                context = *item;
++            else
++                context = NULL;
++
++            PhReleaseQueuedLockExclusive(&ContextHashtableLock);
++
++            if (!context)
++                return;
++
++            if (SUCCEEDED(IXCLRDataProcess_GetTaskByOSThreadID(
++                context->Support->DataProcess,
++                (ULONG)Control->u.WalkStack.ClientId->UniqueThread,
++                &task
++                )))
++            {
++                IXCLRDataStackWalk *stackWalk;
++
++                if (SUCCEEDED(IXCLRDataTask_CreateStackWalk(task, 0xf, &stackWalk)))
++                {
++                    HRESULT result;
++                    BOOLEAN firstTime = TRUE;
++                    CONTEXT context;
++                    ULONG contextSize;
++
++                    context.ContextFlags = CONTEXT_ALL;
++                    PhGetThreadContext(Control->u.WalkStack.ThreadHandle, &context);
++                    result = IXCLRDataStackWalk_SetContext2(stackWalk, CLRDATA_STACK_SET_CURRENT_CONTEXT, sizeof(CONTEXT), (BYTE *)&context);
++
++                    while (SUCCEEDED(result = IXCLRDataStackWalk_Next(stackWalk)) && result != S_FALSE)
++                    {
++                        if (firstTime)
++                        {
++                            PhWalkThreadStack(
++                                Control->u.WalkStack.ThreadHandle,
++                                Control->u.WalkStack.ProcessHandle,
++                                Control->u.WalkStack.ClientId,
++                                PH_WALK_KERNEL_STACK,
++                                Control->u.WalkStack.Callback,
++                                Control->u.WalkStack.CallbackContext
++                                );
++
++                            Control->u.WalkStack.Status = STATUS_SUCCESS; // prevent default walk
++                            firstTime = FALSE;
++                        }
++
++                        if (SUCCEEDED(IXCLRDataStackWalk_GetContext(stackWalk, CONTEXT_CONTROL, sizeof(context), &contextSize, (BYTE *)&context)))
++                        {
++                            PH_THREAD_STACK_FRAME stackFrame;
++
++                            memset(&stackFrame, 0, sizeof(PH_THREAD_STACK_FRAME));
++
++#ifdef _M_X64
++                            stackFrame.PcAddress = (PVOID)context.Rip;
++#else
++                            stackFrame.PcAddress = (PVOID)context.Eip;
++#endif
++
++                            Control->u.WalkStack.Callback(&stackFrame, Control->u.WalkStack.CallbackContext);
++                        }
++                    }
++
++                    IXCLRDataStackWalk_Release(stackWalk);
++                }
++
++                IXCLRDataTask_Release(task);
++            }
++        }
++        break;
+     }
+ }
