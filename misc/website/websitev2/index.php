@@ -63,7 +63,7 @@ include("header.php");
             
             <div class="top-portlet">
                 <div class="summary">
-                    <p>Process Hacker is a feature-packed tool for managing processes and services on your computer.</p>
+                    <p>Process Hacker is a free and open source process viewer. This multi-purpose tool will assist you with debugging, malware detection and system monitoring. It includes powerful process termination, memory viewing/editing and other unique and specialized features.</p>
                     <p><strong>Key features of Process Hacker:</strong></p>
                     <ul>
                         <li> • A simple, customizable tree view with highlighting showing you the processes running on your computer.</li>
@@ -78,7 +78,6 @@ include("header.php");
                     <p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
                     <ul>
                         <li> • Implements all of the functionality offered by Process Explorer, plus more advanced features.</li>
-                        <li> • Performs stack traces for .NET programs, with managed symbol resolution.</li>
                         <li> • Allows you to see what a thread is waiting on.</li>
                         <li> • Has advanced string scanning capabilities, as well as regular expression filtering.</li>
                         <li> • Highlights both relocated and .NET DLLs.</li>
