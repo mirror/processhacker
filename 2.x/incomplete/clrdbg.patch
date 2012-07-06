@@ -1,0 +1,73 @@
+Index: plugins/DotNetTools/clrdbg.c
+===================================================================
+Index: plugins/DotNetTools/clrdbg.h
+===================================================================
+--- plugins/DotNetTools/clrdbg.h	(revision 0)
++++ plugins/DotNetTools/clrdbg.h	(working copy)
+@@ -0,0 +1,66 @@
++#ifndef CLRSUP_H
++#define CLRSUP_H
++
++#define CINTERFACE
++#define COBJMACROS
++#include <metahost.h>
++#include <cordebug.h>
++#undef CINTERFACE
++#undef COBJMACROS
++
++HRESULT OpenCorDebugProcess(
++    __in HANDLE ProcessId,
++    __out ICorDebugProcess *Process
++    );
++
++typedef struct
++{
++    ICorDebugDataTargetVtbl *VTable;
++
++    ULONG RefCount;
++
++    HANDLE ProcessId;
++    HANDLE ProcessHandle;
++    BOOLEAN IsWow64;
++} DnCorDebugDataTarget;
++
++ICorDebugDataTarget *DnCorDebugDataTarget_Create(
++    __in HANDLE ProcessId
++    );
++
++HRESULT STDMETHODCALLTYPE DnCorDebugDataTarget_QueryInterface(
++    __in ICorDebugDataTarget *This,
++    __in REFIID Riid,
++    __out PVOID *Object
++    );
++
++ULONG STDMETHODCALLTYPE DnCorDebugDataTarget_AddRef(
++    __in ICorDebugDataTarget *This
++    );
++
++ULONG STDMETHODCALLTYPE DnCorDebugDataTarget_Release(
++    __in ICorDebugDataTarget *This
++    );
++
++HRESULT STDMETHODCALLTYPE DnCorDebugDataTarget_GetPlatform(
++    __in ICorDebugDataTarget *This,
++    __out CorDebugPlatform *pTargetPlatform
++    );
++
++HRESULT STDMETHODCALLTYPE DnCorDebugDataTarget_ReadVirtual(
++    __in ICorDebugDataTarget *This,
++    __in CORDB_ADDRESS address,
++    __out BYTE *pBuffer,
++    __in ULONG32 bytesRequested,
++    __out ULONG32 *pBytesRead
++    );
++
++HRESULT STDMETHODCALLTYPE DnCorDebugDataTarget_GetThreadContext(
++    __in ICorDebugDataTarget *This,
++    __in DWORD dwThreadID,
++    __in ULONG32 contextFlags,
++    __in ULONG32 contextSize,
++    __out BYTE *pContext
++    );
++
++#endif
