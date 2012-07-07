@@ -1,12 +1,6 @@
 <?php include('config.php');
 
 header('Content-Type: application/xml; charset=UTF-8');
-// output the config.php modification date as a cache control helper.
-header("last-modified: {$lastmod} GMT");
-// calc the expires string in GMT not localtime and add the offset for two hours using php.
-header($expires = "Expires: ".gmdate("D, d M Y H:i:s", strtotime('+2 days'))." GMT");
-// setup caching.
-header("Cache-Control: {$expires}");
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>".PHP_EOL;
 echo "<latest>".PHP_EOL;
