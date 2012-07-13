@@ -6,22 +6,21 @@ ErrorDocument 403 /error.php
 ErrorDocument 404 /error.php
 ErrorDocument 405 /error.php
 
-
 <Files "config.php">
 Order Allow,Deny
 Deny from All
 </Files>
 
-<Files "error.php"> 
+<Files "error.php">
 allow from all
 </Files>
- 
+
 # 2 DAYS
-<FilesMatch "\.(xml|txt|css|js)$">
+<FilesMatch "\.(css|js)$">
 Header set Cache-Control "max-age=172800, proxy-revalidate"
 
 ExpiresActive On
-ExpiresByType text/xml "access plus 4 hours"
+# ExpiresByType text/xml "access plus 4 hours"
 ExpiresByType image/gif "access plus 60 days"
 ExpiresByType image/jpg "access plus 60 days"
 ExpiresByType image/png "access plus 60 days"
