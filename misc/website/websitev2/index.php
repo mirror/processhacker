@@ -8,9 +8,9 @@ include("header.php");
     <div class="yui-d0">
         <div class="watermark-apps-portlet">
             <div class="flowed-block">
-                <img alt="ProjectLogo" width="64" height="64" src="/images/logo_64x64.png">
+                <img class="project_logo" alt="ProjectLogo" src="/images/logo_64x64.png">
             </div>
-            
+
             <div class="flowed-block wide">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
@@ -24,10 +24,10 @@ include("header.php");
                 </ul>
             </div>
         </div>
-        
+
         <div class="yui-t4">
             <div class="yui-b side">
-                <div class="portlet"> 
+                <div class="portlet">
                     <h2 class="center">Downloads</h2>
                     <div class="downloads">
                         <div class="version">
@@ -48,19 +48,19 @@ include("header.php");
                         </a>
                     </div>
                 </div>
-                
-                <div class="portlet" >
+
+                <div class="portlet">
                     <h2 class="center">Quick Links</h2>
                     <ul class="involvement">
                         <li><a href="http://sourceforge.net/projects/processhacker/">Sourceforge Project Page</a></li>
                         <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
-                        <li><a href="/forums/viewforum.php?f=5">Ask a question</a></li> 
+                        <li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
                         <li><a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/">Browse source code</a></li>
                         <li><a href="http://processhacker.sourceforge.net/doc/">Source code documentation</a></li>
                     </ul>
                 </div>
             </div>
-            
+
             <div class="top-portlet">
                 <div class="summary">
                     <p>Process Hacker is a free and open source process viewer. This multi-purpose tool will assist you with debugging, malware detection and system monitoring. It includes powerful process termination, memory viewing/editing and other unique and specialized features.</p>
@@ -86,15 +86,17 @@ include("header.php");
                         <li> • Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
                     </ul>
                 </div>
+                </br> <!-- this br div is a placeholder -->
             </div>
-            
+
             <div class="yui-g">
                 <div class="yui-u first">
                     <div class="portlet">
+                        <img alt="Rss" style="float: right; margin: 15px 10px 0 0;background: white;display: block;" src="/images/rss.png">
                         <p><strong>Latest News</strong></p>
-                        <?php 
-                            $sql = "SELECT 
-                            t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id, 
+                        <?php
+                            $sql = "SELECT
+                            t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id,
                             p.post_id, p.poster_id, p.post_time,
                             u.user_id, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
                             FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
@@ -107,8 +109,8 @@ include("header.php");
                             p.post_id = t.topic_last_post_id AND
                             p.poster_id = u.user_id
                             ORDER BY p.post_id DESC LIMIT $topicnumber";
-                                
-                            // Check if we have a valid database connection, preform the query if we do. 
+
+                            // Check if we have a valid database connection, preform the query if we do.
                             if (!empty($db) && ($query = $db->sql_query($sql)))
                             {
                                 while ($row = $db->sql_fetchrow($query))
@@ -116,37 +118,40 @@ include("header.php");
                                     $topic_title = $row['topic_title'];
                                     //$post_text = $row['post_text'];
                                     $author_avatar = $row['user_avatar'];
-                                    
+
+                                    $post_time = $row["post_time"];
+                                    $post_local_time = date('F jS, Y, g:i a', $post_time);
+
                                     $post_author = get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour']);
-                                    $post_date = date('F jS, Y, g:i a', $row["post_time"]);
+                                    $post_date = get_time_ago($post_time);
                                     $post_link = append_sid("{$phpbb_root_path}viewtopic.php", "p=" . $row['post_id'] . "#p" . $row['post_id']);
-                                    
+
                                     //$bbcode = new bbcode(base64_encode($row['bbcode_bitfield']));
                                     //$bbcode->bbcode_second_pass($post_text, $row['bbcode_uid'], $row['bbcode_bitfield']);
                                     //$post_text = smiley_text($post_text);
                                     //$post_text = str_replace('&nbsp;','',$post_text);
                                     //$post_text = str_replace('./forums','http://processhacker.sourceforge.net/forums/',$post_text);
-                                    //$post_text = substr($post_text, 0, 300); 
+                                    //$post_text = substr($post_text, 0, 300);
                                     //if ($author_avatar) $avatar = get_user_avatar($author_avatar, $row['user_avatar_type'], 16, 16);
-                                    
-                                    echo 
+
+                                    echo
                                     "<div class=\"ft\">
                                         <a href=\"{$post_link}\">{$topic_title}</a>
-                                        <span style='color:#C0C0C0;'>by 
+                                        <span style='color:#C0C0C0;'>by
                                             <span>{$post_author}</span>
                                         </span>
-                                        <div class='forumdate'>{$post_date}</div>
+                                        <div class='forumdate'>{$post_date} - {$post_local_time}</div>
                                     </div>";
                                 }
                                 $db->sql_freeresult($query);
                             }
                             else
                             {
-                                // Check if we have a valid database connection. 
+                                // Check if we have a valid database connection.
                                 if (!empty($db))
                                 {
                                     $error = $db->sql_error();
-                            
+
                                     echo "<p>Query failed: ".$error['message']."</p>";
                                 }
                                 else
@@ -160,6 +165,7 @@ include("header.php");
 
                 <div class="yui-g">
                     <div class="portlet">
+                        <img alt="Rss" style="float: right; margin: 15px 10px 0 0;background: white;display: block;" src="/images/rss.png">
                         <p><strong>Forum Activity</strong></p>
                         <?php
                             $sql = "SELECT t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id, p.post_id, p.poster_id, p.post_time, u.user_id, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
@@ -167,46 +173,49 @@ include("header.php");
                             WHERE t.topic_id = p.topic_id AND
                             t.topic_approved = 1 AND
                             f.forum_id = t.forum_id AND
-                            t.forum_id != 1 AND 
-                            t.forum_id != 7 AND 
+                            t.forum_id != 1 AND
+                            t.forum_id != 7 AND
                             t.topic_status <> 2 AND
                             p.post_approved = 1 AND
                             p.post_id = t.topic_last_post_id AND
                             p.poster_id = u.user_id
                             ORDER BY p.post_id DESC LIMIT $topicnumber";
-                            
-                            // Check if we have a valid database connection, preform the query if we do. 
+
+                            // Check if we have a valid database connection, preform the query if we do.
                             if (!empty($db) && ($query = $db->sql_query($sql)))
-                            { 
+                            {
                                 while ($row = $db->sql_fetchrow($query))
                                 {
                                     $topic_title = $row['topic_title'];
                                     //$post_text = nl2br($row['post_text']);
                                     $author_avatar = $row['user_avatar'];
-                                    
+
+                                    $post_time = $row["post_time"];
+                                    $post_local_time = date('F jS, Y, g:i a', $post_time);
+
                                     $post_author = get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour']);
-                                    $post_date = date('F jS, Y, g:i a', $row["post_time"]);
+                                    $post_date = get_time_ago($post_time);
                                     $post_link = append_sid("{$phpbb_root_path}viewtopic.php", "p=" . $row['post_id'] . "#p" . $row['post_id']);
                                     //if ($author_avatar) $avatar = get_user_avatar($author_avatar, $row['user_avatar_type'], 16, 16);
-                                    
-                                    echo 
+
+                                    echo
                                     "<div class=\"ft\">
                                         <a href=\"{$post_link}\">{$topic_title}</a>
-                                        <span style='color:#C0C0C0;'>by 
+                                        <span style='color:#C0C0C0;'>by
                                             <span>{$post_author}</span>
                                         </span>
-                                        <div class='forumdate'>{$post_date}</div>
+                                        <div class='forumdate'>{$post_date} - {$post_local_time}</div>
                                     </div>";
                                 }
                                 $db->sql_freeresult($query);
                             }
                             else
                             {
-                                // Check if we have a valid database connection. 
+                                // Check if we have a valid database connection.
                                 if (!empty($db))
                                 {
                                     $error = $db->sql_error();
-                            
+
                                     echo "<p>Query failed: ".$error['message']."</p>";
                                 }
                                 else
@@ -238,12 +247,12 @@ include("header.php");
                     <div class="portlet">
                         <p><strong>Statistics</strong></p>
                         <script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
-                    </div> 
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
  <!-- AddThis Button BEGIN -->
  <div class="addthis_toolbox addthis_default_style" style="position:absolute; top:10px; right:0;" addthis:url="http://processhacker.sourceforge.net">
     <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>

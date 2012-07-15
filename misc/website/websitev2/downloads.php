@@ -10,7 +10,7 @@ include("header.php");
             <div class="flowed-block">
                 <img class="project-logo" alt="project-logo" src="/images/logo_64x64.png">
             </div>
-            
+
             <div class="flowed-block wide">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
@@ -24,7 +24,7 @@ include("header.php");
                 </ul>
             </div>
         </div>
-        
+
         <div class="yui-t4">
             <div class="yui-b side">
                 <div class="portlet" >
@@ -42,7 +42,7 @@ include("header.php");
                     </ul>
                 </div>
             </div>
-            
+
             <div class="top-portlet">
                 <div class="summary">
                     <p>The latest stable version of Process Hacker is <strong><?php echo $LATEST_PH_VERSION ?></strong></p>
@@ -50,27 +50,27 @@ include("header.php");
                     <p><strong>System Requirements:</strong></p>
                     <ul>
                         <li> • Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
-                        <li> • Intel Itanium Platforms are not supported.</li>
+                        <li> • Intel Itanium platforms are not supported.</li>
                     </ul>
                 </div>
             </div>
-                
+
             <div class="yui-g">
                 <div class="yui-u first">
                     <div class="portlet">
-                        <p><strong>Setup (recommended)</strong></p> 
+                        <p><strong>Setup (recommended)</strong></p>
                         <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">
                             processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe (<?php echo $LATEST_PH_SETUP_SIZE ?>)
                         </a>
                         <p>SHA1: <?php echo $LATEST_PH_SETUP_SHA1 ?></p>
                     </div>
                     <div class="portlet">
-                        <p><strong>Binaries (portable)</strong></p> 
+                        <p><strong>Binaries (portable)</strong></p>
                         <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">
                             processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip (<?php echo $LATEST_PH_BIN_SIZE ?>)
                         </a>
                         <p>SHA1: <?php echo $LATEST_PH_BIN_SHA1 ?></p>
-                    </div>	
+                    </div>
                     <div class="portlet">
                         <p><strong>Source Code</strong></p>
                         <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download" title="Source Code">
