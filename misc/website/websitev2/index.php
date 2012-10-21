@@ -52,10 +52,10 @@ include("header.php");
                 <div class="portlet">
                     <h2 class="center">Quick Links</h2>
                     <ul class="involvement">
-                        <li><a href="http://sourceforge.net/projects/processhacker/">Sourceforge Project Page</a></li>
-                        <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
+                        <li><a href="http://sourceforge.net/p/processhacker/">Sourceforge Project Page</a></li>
                         <li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
-                        <li><a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/">Browse source code</a></li>
+                        <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
+                        <li><a href="http://sourceforge.net/p/processhacker/code/">Browse source code</a></li>
                         <li><a href="http://processhacker.sourceforge.net/doc/">Source code documentation</a></li>
                     </ul>
                 </div>
@@ -92,7 +92,7 @@ include("header.php");
             <div class="yui-g">
                 <div class="yui-u first">
                     <div class="portlet">
-                        <img alt="Rss" style="float: right; margin: 15px 10px 0 0;background: white;display: block;" src="/images/rss.png">
+                        <img alt="Rss" style="float: right; margin: 15px 10px 0 0;display: block;" src="/images/rss.png">
                         <p><strong>Latest News</strong></p>
                         <?php
                             $sql = "SELECT
@@ -165,7 +165,7 @@ include("header.php");
 
                 <div class="yui-g">
                     <div class="portlet">
-                        <img alt="Rss" style="float: right; margin: 15px 10px 0 0;background: white;display: block;" src="/images/rss.png">
+                        <img alt="Rss" style="float: right; margin: 15px 10px 0 0;display: block;" src="/images/rss.png">
                         <p><strong>Forum Activity</strong></p>
                         <?php
                             $sql = "SELECT t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id, p.post_id, p.poster_id, p.post_time, u.user_id, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
