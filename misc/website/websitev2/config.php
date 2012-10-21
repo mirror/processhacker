@@ -10,6 +10,8 @@ $LATEST_PH_SETUP_SHA1 = "d03429a0b8d9188f1753a19653269b08747e53b1";
 $LATEST_PH_SOURCE_SIZE = "2.4 MB";
 $LATEST_PH_SOURCE_SHA1 = "217c3c632485292dcea0157e9d6f4e79023cafc8";
 
+$LATEST_PH_RELEASE_NEWS = "http://processhacker.sourceforge.net/forums/viewtopic.php?f=1&t=706";
+
 // How Many Topics do you want to display?
 $topicnumber = 6;
 // Allow phpbb functions to be called outside of the forum root.
