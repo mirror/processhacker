@@ -3,6 +3,10 @@ $pagetitle = "Overview";
 
 include("header.php");
 ?>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load("feeds", "1")
+</script>
 
 <div class="page" style="position:relative;">
     <div class="yui-d0">
@@ -52,7 +56,7 @@ include("header.php");
                 <div class="portlet">
                     <h2 class="center">Quick Links</h2>
                     <ul class="involvement">
-                        <li><a href="http://sourceforge.net/p/processhacker/">Sourceforge Project Page</a></li>
+                        <li><a href="http://sourceforge.net/projects/processhacker/?source=directory">Sourceforge Project Page</a></li>
                         <li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
                         <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
                         <li><a href="http://sourceforge.net/p/processhacker/code/">Browse source code</a></li>
@@ -92,7 +96,6 @@ include("header.php");
             <div class="yui-g">
                 <div class="yui-u first">
                     <div class="portlet">
-                        <img alt="Rss" style="float: right; margin: 15px 10px 0 0;display: block;" src="/images/rss.png">
                         <p><strong>Latest News</strong></p>
                         <?php
                             $sql = "SELECT
@@ -165,7 +168,6 @@ include("header.php");
 
                 <div class="yui-g">
                     <div class="portlet">
-                        <img alt="Rss" style="float: right; margin: 15px 10px 0 0;display: block;" src="/images/rss.png">
                         <p><strong>Forum Activity</strong></p>
                         <?php
                             $sql = "SELECT t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id, p.post_id, p.poster_id, p.post_time, u.user_id, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
@@ -245,8 +247,50 @@ include("header.php");
                 </div>
                 <div class="yui-u">
                     <div class="portlet">
-                        <p><strong>Statistics</strong></p>
-                        <script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
+                        <div id="feeddiv"></div>
+
+                        <script type="text/javascript">
+                            var feedcontainer=document.getElementById("feeddiv")
+                            var rssoutput = "<p><strong>SVN Activity</strong></p>"
+
+                            feedcontainer.innerHTML = "<div id=\"feeddiv2\">Loading feed...</div>"
+
+                            function rssfeedsetup()
+                            {
+                                var feedpointer=new google.feeds.Feed("http://sourceforge.net/p/processhacker/code/feed")
+                                feedpointer.setNumEntries(3)
+                                feedpointer.load(displayfeed)
+                            }
+
+                            function displayfeed(result)
+                            {
+                                if (!result.error)
+                                {
+                                    var thefeeds = result.feed.entries
+                                    for (var i = 0; i < thefeeds.length; i++)
+                                    {
+                                        rssoutput += "<p><div class='ft'>"
+                                            rssoutput += "<div style=\"color:#333;\">" + thefeeds[i].content.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/"); + "</div>"
+                                            rssoutput += "<span style=\"color:#C0C0C0;\"> by </span>"
+                                            rssoutput += "<span style=\"color:#A00;\">" + thefeeds[i].author + "</span>"
+                                            rssoutput += "<div style=\"color:#C0C0C0;\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>"
+                                        rssoutput += "</div></p>";
+                                    }
+                                    
+                                    feedcontainer.innerHTML = rssoutput
+                                }
+                                else
+                                {
+                                    feedcontainer.innerHTML = "Error fetching feeds!"
+                                }
+                            }
+                            
+                            window.onload=function()
+                            {
+                                rssfeedsetup()
+                            }
+                        </script>
+                        
                     </div>
                 </div>
             </div>
