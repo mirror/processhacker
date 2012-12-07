@@ -11,5 +11,8 @@ include("config.php");
     <link rel="stylesheet" media="screen, print" href="/css/stylesheet.css" />
     <link rel="stylesheet" media="screen" href="/css/lytebox.css" />
     <link rel="alternate" type="application/atom+xml" href="http://processhacker.sourceforge.net/forums/feed.php?f=1" title="Process Hacker - News Atom Feed" />
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.js"></script>
+    <![endif]-->
 </head>
 <body>
