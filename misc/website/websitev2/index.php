@@ -48,7 +48,7 @@ google.load("feeds", "1")
                     </div>
                     <div class="center">
                         <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
-                            <img alt="Donate" width="92" height="26" src="/images/donate.gif">
+                            <img alt="Donate" width="92" height="26" src="/images/donate.png">
                         </a>
                     </div>
                 </div>
