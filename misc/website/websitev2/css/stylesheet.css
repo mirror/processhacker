@@ -29,12 +29,6 @@ body
     position: relative /* Addthis div alignment */
 }
 
-.project_logo
-{
-    width:64px;
-    height:64px
-}
-
 .forumdate
 {
     padding: 0 0 5px 0;

@@ -4,7 +4,7 @@
     <div class="yui-d0">
         <div id="watermark" class="watermark-apps-portlet">
             <div class="flowed-block">
-                <img alt="" width="64" height="64" src="/images/logo_64x64.png">
+                <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
 
             <div class="flowed-block wide">
@@ -29,19 +29,19 @@
             <div>
                 <p><strong>Main Window</strong></p>
                 <a href="/images/screenshots/processes_tab_large.png" class="lytebox" data-lyte-options="group:group1">
-                    <img alt="Main window thumb" border="0" width="200" height="107" src="/images/screenshots/processhacker_small.png">
+                    <img alt="Main window thumb" width="200" height="107" src="/images/screenshots/processhacker_small.png">
                 </a>
 
                 <a href="/images/screenshots/servicestab_large.png" class="lytebox" data-lyte-options="group:group1">
-                    <img alt="Services tab thumb" border="0" width="200" height="107" src="/images/screenshots/servicestab_large.png">
+                    <img alt="Services tab thumb" width="200" height="107" src="/images/screenshots/servicestab_large.png">
                 </a>
 
                 <a href="/images/screenshots/networktab_large.png" class="lytebox" data-lyte-options="group:group1">
-                    <img alt="Network thumb" border="0" width="200" height="107" src="/images/screenshots/networktab_large.png">
+                    <img alt="Network thumb" width="200" height="107" src="/images/screenshots/networktab_large.png">
                 </a>
 
                 <a href="/images/screenshots/sysinfo_large.png" class="lytebox" data-lyte-options="group:group1">
-                    <img alt="Sysinfo thumb" border="0" width="200" height="107" src="/images/screenshots/sysinfo_small.png">
+                    <img alt="Sysinfo thumb" width="200" height="107" src="/images/screenshots/sysinfo_small.png">
                 </a>
             </div>
         </div>

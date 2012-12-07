@@ -58,7 +58,7 @@ function curPageURL()
     <div class="yui-d0">
         <div class="watermark-apps-portlet">
             <div class="flowed-block">
-                <img alt="ProjectLogo" width="64" height="64" src="/images/logo_64x64.png">
+                <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
 
             <div class="flowed-block wide">
