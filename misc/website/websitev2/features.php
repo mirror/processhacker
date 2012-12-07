@@ -1,7 +1,7 @@
-<?php 
-$pagetitle = "Features"; 
+<?php
+$pagetitle = "Features";
 
-include("header.php"); 
+include("header.php");
 ?>
 
 <div class="page">
@@ -10,11 +10,11 @@ include("header.php");
             <div class="flowed-block">
                 <img alt="" width="64" height="64" src="./images/logo_64x64.png" />
             </div>
-            
+
             <div class="flowed-block wide">
                 <h2>Process Hacker</h2>
-                <ul class="facetmenu">					
-                    <li><a href="/">Overview</a></li>							
+                <ul class="facetmenu">
+                    <li><a href="/">Overview</a></li>
                     <li class="overview active"><a href="./features.php">Features</a></li>
                     <li><a href="/screenshots.php">Screenshots</a></li>
                     <li><a href="/downloads.php">Downloads</a></li>
@@ -23,10 +23,10 @@ include("header.php");
                     <li><a href="/forums/">Forum</a></li>
                 </ul>
             </div>
-        </div>	
+        </div>
 
         <div class="yui-t4">
-            <div class="yui-b side">                
+            <div class="yui-b side">
                 <div class="portlet" >
                     <h2 class="center">Get Involved</h2>
                     <ul class="involvement">
@@ -35,10 +35,10 @@ include("header.php");
                     </ul>
                 </div>
             </div>
-        
+
             <div class="top-portlet">
                 <div class="summary">
-                    <p>A very incomplete feature list for Process Hacker 2:</p>		
+                    <p>A very incomplete feature list for Process Hacker 2:</p>
                     <div class="description">
                         <h3>Processes</h3>
                         <li> • View processes in a tree view with highlighting</li>
@@ -74,12 +74,12 @@ include("header.php");
                         <li> • View token groups</li>
                         <li> • View privileges and even enable, disable or remove them</li>
                         <li> • View and edit token security descriptors</li>
-                        
+
                         <h3>Modules</h3>
                         <li> • View modules and mapped files in one list</li>
                         <li> • Unload DLLs</li>
                         <li> • View file properties and open them in Windows Explorer</li>
-                        
+
                         <h3>Memory</h3>
                         <li> • View a virtual memory list</li>
                         <li> • Read and modify memory using a hex editor</li>

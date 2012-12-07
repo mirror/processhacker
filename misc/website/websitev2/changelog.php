@@ -8,7 +8,7 @@
             </div>
             <div class="flowed-block wide">
                 <h2>Process Hacker</h2>
-             	<ul class="facetmenu">
+                <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
                     <li><a href="/features.php">Features</a></li>
                     <li><a href="/screenshots.php">Screenshots</a></li>
@@ -19,9 +19,9 @@
                 </ul>
             </div>
         </div>
-        
+
         <p>This is the changelog from Process Hacker's SVN repository. As such it may contain information about unreleased versions of Process Hacker.</p>
-        
+
         <div style="background: #FFF; height: 800; width: 600; left: 77; top: 77;">
             <iframe
                 src="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/CHANGELOG.txt"

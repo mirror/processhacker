@@ -46,7 +46,7 @@ include("header.php");
 
             <div class="top-portlet">
                 <div class="summary" style="padding-bottom:20px;">
-                	<p>Process Hacker was started in 2008 as an open source alternative to programs such as Task Manager and Process Explorer.</p>
+                    <p>Process Hacker was started in 2008 as an open source alternative to programs such as Task Manager and Process Explorer.</p>
                     <p><strong>Registered:</strong> 16-10-2008</p>
                     <p><strong>Licence:</strong> GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></p>
                     <p><strong>Language:</strong> English</p>
@@ -81,7 +81,7 @@ include("header.php");
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar">
                             <p style="color:#AA0000">
                                 <strong>dmex</strong>
-								<li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&u=54">Send Message</a></li>
+                                <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&u=54">Send Message</a></li>
                             </p>
                         </a>
                         <ul>
@@ -96,7 +96,7 @@ include("header.php");
                     </div>
 
                     <div class="portlet">
-						<script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
+                        <script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
                     </div>
                 </div>
             </div>

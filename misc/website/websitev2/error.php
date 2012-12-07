@@ -1,13 +1,13 @@
 <?php
 $errorcode = $_SERVER['REDIRECT_STATUS'];
-$pagetitle = "Error ".$errorcode; 
+$pagetitle = "Error ".$errorcode;
 
 include("header.php");
 
-function curPageURL() 
-{ 
+function curPageURL()
+{
     $pageURL = 'http';
-    
+
     if (!empty($_SERVER['HTTPS']))
     {
         if ($_SERVER['HTTPS'] == 'on')
@@ -16,32 +16,32 @@ function curPageURL()
         }
     }
     $pageURL .= "://";
-    
-    if ($_SERVER["SERVER_PORT"] != "80") 
-    { 
-        $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"]; 
-    } 
-    else 
-    { 
-        $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"]; 
+
+    if ($_SERVER["SERVER_PORT"] != "80")
+    {
+        $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
     }
-    
-    return $pageURL; 
+    else
+    {
+        $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+    }
+
+    return $pageURL;
 }
     // the .htaccess file redirects all PHP site errors to this page.
     // config.php includes the forum phpbb functions for the index page forum activity/news query,
     // one of these forum functions is add_log and we can log errors into the mysql error database.
     // the error log is availabe on the Maintenance tab > Error Log in the forum Admin Control Panel
     // this way all site errors get logged instead of just phpbb errors
-    // it works exactly like printf however the string must be defined in /forums/language/en/acp/common.php 
+    // it works exactly like printf however the string must be defined in /forums/language/en/acp/common.php
     // 1st param is the log type
     // 2nd param is the string defined in /forums/language/en/acp/common.php as 'LOG_ERROR_PAGE' => '<strong>ERROR PAGE</strong> - %d<br />» %s',
     // 3rd param is %d for errorcode - defined above
     // 4th param is %s for the current page - defined above
-    
+
     if ($errorcode != 403)
     {
-        if (!empty($_SERVER['HTTP_REFERER'])) 
+        if (!empty($_SERVER['HTTP_REFERER']))
         {
             $referringSite = $_SERVER['HTTP_REFERER'];
             // this is a second type for logging the referer if the request come from another site
@@ -60,7 +60,7 @@ function curPageURL()
             <div class="flowed-block">
                 <img alt="ProjectLogo" width="64" height="64" src="/images/logo_64x64.png">
             </div>
-            
+
             <div class="flowed-block wide">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
@@ -74,7 +74,7 @@ function curPageURL()
                 </ul>
             </div>
         </div>
-        
+
         <div class="yui-t4">
             <div class="top-portlet">
                 <div class="summary center">

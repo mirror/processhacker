@@ -276,7 +276,7 @@ google.load("feeds", "1")
                                             rssoutput += "<div style=\"color:#C0C0C0;\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>"
                                         rssoutput += "</div></p>";
                                     }
-                                    
+
                                     feedcontainer.innerHTML = rssoutput
                                 }
                                 else
@@ -284,13 +284,13 @@ google.load("feeds", "1")
                                     feedcontainer.innerHTML = "Error fetching feeds!"
                                 }
                             }
-                            
+
                             window.onload=function()
                             {
                                 rssfeedsetup()
                             }
                         </script>
-                        
+
                     </div>
                 </div>
             </div>

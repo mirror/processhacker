@@ -3,7 +3,7 @@ img { border: 0; }
 body
 {
     color: #333333;
-	/*'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif*/
+    /*'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif*/
     font-family: Tahoma, sans-serif;
     font-size: 12px;
 }
@@ -11,22 +11,22 @@ body
 .ft
 {
     font-size: 10px;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     font-style: normal;
     font-weight: bold;
 }
 
 .center
 {
-	text-align: center;
+    text-align: center;
 }
 
 .page
 {
-	max-width: 90em;
-	padding: 0 10px 5px 10px;
-	margin: 0 auto;
-	position: relative /* Addthis div alignment */
+    max-width: 90em;
+    padding: 0 10px 5px 10px;
+    margin: 0 auto;
+    position: relative /* Addthis div alignment */
 }
 
 .project_logo
@@ -37,7 +37,7 @@ body
 
 .forumdate
 {
-	padding: 0 0 5px 0;
+    padding: 0 0 5px 0;
     color: silver;
 }
 
@@ -246,14 +246,14 @@ li
 
 .flowed-block
 {
-	padding: 0 0 0 10px;
+    padding: 0 0 0 10px;
     display: inline-block;
     text-align: left;
     vertical-align: top;
 
-	/* For IE 7 */
-	zoom: 1;
-	*display: inline;
+    /* For IE 7 */
+    zoom: 1;
+    *display: inline;
 }
 
 .logo
@@ -308,12 +308,12 @@ div.watermark-apps-portlet h1, div.watermark-apps-portlet h2
     background-color: #F3F3F3;
     color: #000000;
 
-	/*border: 1px solid transparent;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
-	border-color: #CEDFEB;
-	background-color: #F6F8F9;*/
+    /*border: 1px solid transparent;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    border-color: #CEDFEB;
+    background-color: #F6F8F9;*/
 }
 
 .facetmenu
