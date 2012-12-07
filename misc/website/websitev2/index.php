@@ -237,11 +237,11 @@ google.load("feeds", "1")
                 <div class="yui-u first">
                     <div class="portlet">
                         <a href="/screenshots.php"><p><strong>Screenshots</strong></p></a>
-                        <a href="/images/screenshots/processes_tab_large.png" rel="lytebox[group1]" style="margin-right: 1em;">
-                            <img alt="" width="200" height="107" src="/images/screenshots/processhacker_small.png">
+                        <a href="/images/screenshots/processes_tab_large.png" class="lytebox" data-lyte-options="group:group1" style="margin-right: 1em;">
+                            <img alt="main window" width="200" height="107" src="/images/screenshots/processhacker_small.png">
                         </a>
-                        <a href="/images/screenshots/sysinfo_large.png" rel="lytebox[group1]">
-                            <img alt="" width="200" height="107" src="/images/screenshots/sysinfo_small.png">
+                        <a href="/images/screenshots/sysinfo_large.png" class="lytebox" data-lyte-options="group:group1">
+                            <img alt="Sysinfo" width="200" height="107" src="/images/screenshots/sysinfo_small.png">
                         </a>
                     </div>
                 </div>
