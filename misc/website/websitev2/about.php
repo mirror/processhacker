@@ -65,10 +65,7 @@ include("header.php");
                             </p>
                         </a>
                         <ul>
-                            <li>Project Founder, Senior Maintainer</li>
-                            <li>Joined: 16-10-2008</li>
-                            <li></li>
-                            <li></li>
+                            <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&u=2">Send Message</a></li>
                         </ul>
 
                         <a href='http://meta.ohloh.net/kudos/' target='_top'>
@@ -84,14 +81,12 @@ include("header.php");
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar">
                             <p style="color:#AA0000">
                                 <strong>dmex</strong>
+								<li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&u=54">Send Message</a></li>
                             </p>
                         </a>
                         <ul>
-                            <li>Project Operations, Maintainer</li>
-                            <li>Email: dmex04 at gmail.com</li>
-                            <li>Joined: 28-08-2009</li>
+                            <li></li>
                         </ul>
-
                         <a href='http://meta.ohloh.net/kudos/' target='_top'>
                             <img class="ohloh-kudos" alt='Ohloh kudos' src='https://www.ohloh.net/accounts/56334/widgets/account_rank.gif' />
                         </a>
@@ -101,9 +96,8 @@ include("header.php");
                     </div>
 
                     <div class="portlet">
-
+						<script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
                     </div>
-
                 </div>
             </div>
         </div>
