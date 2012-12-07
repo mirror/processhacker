@@ -48,6 +48,6 @@
     </div>
 </div>
 
-<script type="text/javascript" src="/scripts/lytebox.js"></script>
+<script type="text/javascript" src="/js/lytebox.js"></script>
 
 <?php include("footer.php"); ?>

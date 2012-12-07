@@ -90,7 +90,7 @@ google.load("feeds", "1")
                         <li> • Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
                     </ul>
                 </div>
-                </br> <!-- this br div is a placeholder -->
+                <br/> <!-- this br div is a placeholder -->
             </div>
 
             <div class="yui-g">
@@ -307,7 +307,7 @@ google.load("feeds", "1")
  <!-- AddThis Button END -->
 </div>
 
-<script type="text/javascript" src="/scripts/lytebox.js"></script>
+<script type="text/javascript" src="/js/lytebox.js"></script>
 <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=dmex"></script>
 
 <?php include("footer.php"); ?>
