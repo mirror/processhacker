@@ -28,19 +28,19 @@
         <div class="yui-u first">
             <div>
                 <p><strong>Main Window</strong></p>
-                <a href="/images/screenshots/processes_tab_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
+                <a href="/images/screenshots/processes_tab_large.png" rel="lytebox[group1]">
                     <img alt="" border="0" width="200" height="107" src="/images/screenshots/processhacker_small.png">
                 </a>
 
-                <a href="/images/screenshots/servicestab_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
+                <a href="/images/screenshots/servicestab_large.png" rel="lytebox[group1]">
                     <img alt="" border="0" width="200" height="107" src="/images/screenshots/servicestab_large.png">
                 </a>
 
-                <a href="/images/screenshots/networktab_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
+                <a href="/images/screenshots/networktab_large.png" rel="lytebox[group1]">
                     <img alt="" border="0" width="200" height="107" src="/images/screenshots/networktab_large.png">
                 </a>
 
-                <a href="/images/screenshots/sysinfo_large.png" rel="lytebox[group1]" style="margin-left: 1em; margin-right: 1em;">
+                <a href="/images/screenshots/sysinfo_large.png" rel="lytebox[group1]">
                     <img alt="" border="0" width="200" height="107" src="/images/screenshots/sysinfo_small.png">
                 </a>
             </div>
