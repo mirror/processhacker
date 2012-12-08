@@ -97,13 +97,13 @@
 
                       <div class="portlet" style="position:relative">
                         <a href="http://sourceforge.net/users/xhmikosr/">
-                            <img class="user-avatar" src="http://www.gravatar.com/avatar/E37759B1EA0125D4E97B1E00B5EED26F" width="80" height="80" alt="User avatar">
+                            <img class="user-avatar" src="http://www.gravatar.com/avatar/e37759b1ea0125d4e97b1e00b5eed26f.png" width="80" height="80" alt="User avatar">
                             <p style="color:#0000FF">
                                 <strong>XhmikosR</strong>
                             </p>
                         </a>
                         <ul>
-                            <li>Installer Setup Maintainer</li>
+                            <li>Installer Maintainer</li>
                             <li>Joined: 20-02-2009</li>
                             <li>Status: Active</li>
                         </ul>
