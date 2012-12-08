@@ -7,11 +7,19 @@
 <?php
 if (@$includejs) {
     echo
-    "<script type=\"text/javascript\" src=\"/js/lytebox.min.js\"></script>";
+    "<script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js\"></script>
+    <script src=\"/js/jquery.fancybox.min.js\"></script>
+    <script>window.jQuery || document.write('<script src=\"js/jquery-1.8.3.min.js\"><\/script>')</script>";
     if ($pagetitle == "Overview") {
         echo
         "<script type=\"text/javascript\" src=\"http://s7.addthis.com/js/250/addthis_widget.js#pubid=dmex\"></script>";
     }
+    echo
+    "<script>
+    $(document).ready(function() {
+        $(\".fancybox\").fancybox({});
+    });
+    </script>";
 }
 ?>
 

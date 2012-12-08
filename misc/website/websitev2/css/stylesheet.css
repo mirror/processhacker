@@ -1,159 +1,145 @@
-img { border: 0; }
-
-body
-{
+body {
     color: #333333;
-    /*'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif*/
     font-family: Tahoma, sans-serif;
     font-size: 12px;
 }
 
-.ft
-{
-    font-size: 10px;
+.ft {
     font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 10px;
     font-style: normal;
     font-weight: bold;
 }
 
-.center
-{
+.center {
     text-align: center;
 }
 
-.page
-{
+.page {
+    margin: 0 auto;
     max-width: 90em;
     padding: 0 10px 5px 10px;
-    margin: 0 auto;
-    position: relative /* Addthis div alignment */
+    position: relative; /* Addthis div alignment */
 }
 
-.forumdate
-{
-    padding: 0 0 5px 0;
+.forumdate {
     color: silver;
+    padding: 0 0 5px 0;
 }
 
-a#download_button
-{
-    color:#FFF;
-    text-align:center;
-    font:1.308em/1.7em 'Segoe UI Light',Tahoma Light,Arial Light,Helvetica Light,sans-serif;
-    font-weight:lighter;
-    background-color:#629D4F;
-    display:block;
-    position:relative;padding-top:5px;
-    padding-bottom:5px;
-    width:300px;
+a#download_button {
+    background-color: #629D4F;
+    color: #FFF;
+    display: block;
+    font: 1.308em/1.7em 'Segoe UI Light', Tahoma Light, Arial Light, Helvetica Light, sans-serif;
+    font-weight: lighter;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    position: relative;
+    text-align: center;
+    width: 300px;
 }
 
-a#download_button:hover
-{
-    background-color:#1C8D2E;
-    color:#FFF;
-    text-decoration:none;
-    -webkit-transition:all .5s ease-in-out;
-    -moz-transition:all .5s ease-in-out;-ms-transition:all .5s ease-in-out;
-    -o-transition:all .5s ease-in-out;
-    transition:all .5s ease-in-out;
+a#download_button:hover {
+    background-color: #1C8D2E;
+    color: #FFF;
+    text-decoration: none;
+    -webkit-transition: all .5s ease-in-out;
+       -moz-transition: all .5s ease-in-out;
+        -ms-transition: all .5s ease-in-out;
+         -o-transition: all .5s ease-in-out;
+            transition: all .5s ease-in-out;
 }
 
-.user-avatar
-{
-    float:left;
-    margin: 15px 10px 0 0;
-    background:white;
-    padding:4px;
+.user-avatar {
+    background: white;
     border: 1px solid #E5DFC7;
     display: block;
+    float: left;
+    margin: 15px 10px 0 0;
+    padding: 4px;
 }
 
-.ohloh-kudos
-{
-    position:absolute;
+.ohloh-kudos {
+    position: absolute;
+    right: 0;
     top: 10px;
+}
+
+.ohloh-commits {
+    bottom: 0;
+    position: absolute;
     right: 0;
 }
 
-.ohloh-commits
-{
-    position:absolute;
-    bottom:0;
-    right:0;
+.summary {
+    padding-right: 300px;
 }
 
-.summary { padding-right: 300px; }
-
-body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td
-{
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td {
     padding: 0;
 }
-fieldset, img
-{
+
+fieldset, img {
     border: 0 none;
 }
-address, caption, cite, code, dfn, em, strong, th, var
-{
+
+address, caption, cite, code, dfn, em, strong, th, var {
     font-style: normal;
     font-weight: normal;
 }
-li
-{
+
+li {
     list-style: none outside none;
 }
 
-h1, h2, h3, h4, h5, h6
-{
+h1, h2, h3, h4, h5, h6 {
     font-size: 100%;
     font-weight: normal;
 }
-q:before, q:after
-{
+
+q:before, q:after {
     content: "";
 }
-.yui-d0, .yui-d1, .yui-d1f, .yui-d2, .yui-d2f, .yui-d3, .yui-d3f
-{
+
+.yui-d0, .yui-d1, .yui-d1f, .yui-d2, .yui-d2f, .yui-d3, .yui-d3f {
     margin: auto;
     text-align: left;
     width: 57.69em;
 }
-.yui-t1, .yui-t2, .yui-t3, .yui-t4, .yui-t5, .yui-t6
-{
+
+.yui-t1, .yui-t2, .yui-t3, .yui-t4, .yui-t5, .yui-t6 {
     margin: auto;
     text-align: left;
     width: 100%;
 }
-.yui-d0
-{
+
+.yui-d0 {
     width: auto;
 }
-.yui-b
-{
+
+.yui-b {
     position: relative;
 }
 
-.yui-t4 .yui-b
-{
+.yui-t4 .yui-b {
     float: right;
     width: 20em;
 }
 
-.yui-g .yui-u, .yui-g .yui-g, .yui-g .yui-gb, .yui-g .yui-gc, .yui-g .yui-gd, .yui-g .yui-ge, .yui-g .yui-gf, .yui-gc .yui-u, .yui-gd .yui-g, .yui-g .yui-gc .yui-u, .yui-ge .yui-u, .yui-ge .yui-g, .yui-gf .yui-g, .yui-gf .yui-u
-{
+.yui-g .yui-u, .yui-g .yui-g, .yui-g .yui-gb, .yui-g .yui-gc, .yui-g .yui-gd, .yui-g .yui-ge, .yui-g .yui-gf, .yui-gc .yui-u, .yui-gd .yui-g, .yui-g .yui-gc .yui-u, .yui-ge .yui-u, .yui-ge .yui-g, .yui-gf .yui-g, .yui-gf .yui-u {
     float: right;
 }
-.yui-g div.first, .yui-gb div.first, .yui-gc div.first, .yui-gd div.first, .yui-ge div.first, .yui-gf div.first, .yui-g .yui-gc div.first, .yui-g .yui-ge div.first, .yui-gc div.first div.first
-{
+
+.yui-g div.first, .yui-gb div.first, .yui-gc div.first, .yui-gd div.first, .yui-ge div.first, .yui-gf div.first, .yui-g .yui-gc div.first, .yui-g .yui-ge div.first, .yui-gc div.first div.first {
     float: left;
 }
-.yui-g .yui-u, .yui-g .yui-g, .yui-g .yui-gb, .yui-g .yui-gc, .yui-g .yui-gd, .yui-g .yui-ge, .yui-g .yui-gf
-{
+
+.yui-g .yui-u, .yui-g .yui-g, .yui-g .yui-gb, .yui-g .yui-gc, .yui-g .yui-gd, .yui-g .yui-ge, .yui-g .yui-gf {
     width: 49.1%;
 }
 
-#bd:after, .yui-g:after, .yui-gb:after, .yui-gc:after, .yui-gd:after, .yui-ge:after, .yui-gf:after, .yui-t1:after, .yui-t2:after, .yui-t3:after, .yui-t4:after, .yui-t5:after, .yui-t6:after
-{
+#bd:after, .yui-g:after, .yui-gb:after, .yui-gc:after, .yui-gd:after, .yui-ge:after, .yui-gf:after, .yui-t1:after, .yui-t2:after, .yui-t3:after, .yui-t4:after, .yui-t5:after, .yui-t6:after {
     clear: both;
     content: ".";
     display: block;
@@ -161,76 +147,75 @@ q:before, q:after
     visibility: hidden;
 }
 
-.portlet, .aside
-{
+.portlet,
+.aside {
     border-top: 1px solid #EBEBEB;
     clear: both;
     padding: 0 0 1em;
 }
 
-.portlet > h2:first-child
-{
+.portlet > h2:first-child {
     margin-top: 0;
 }
 
-h1
-{
+h1 {
     clear: none;
     font-size: 30px;
 }
 
-h3
-{
+h3 {
     font-size: 16px;
     line-height: 20px;
     margin-bottom: 8px;
     margin-top: 16px;
 }
 
-p
-{
+p {
     margin-bottom: 0.8em;
     width: auto;
 }
 
-:link, *:visited
-{
+:link,
+*:visited {
     color: #0033AA;
     text-decoration: none;
 }
 
-:link:hover, *:visited:hover
-{
+:link:hover,
+*:visited:hover {
     text-decoration: underline;
 }
 
-:link:active, *:visited:active
-{
+:link:active,
+*:visited:active {
     color: #3366CC;
 }
 
-a[onclick], .collapsible legend a, a.js-action, a[onclick]:active, .collapsible legend a:active, a.js-action, a.js-action:active
-{
+a[onclick],
+.collapsible legend a,
+a.js-action,
+a[onclick]:active,
+.collapsible legend a:active,
+a.js-action,
+a.js-action:active {
     color: #009933;
 }
 
-img, a img
-{
+img,
+a img {
     border: medium none;
 }
 
-strong
-{
+strong {
     font-weight: bold;
 }
 
-li
-{
+li {
     padding-bottom: 0.5em;
 }
 
-.two-column-list:after, .three-column-list:after
-{
+.two-column-list:after,
+.three-column-list:after {
     clear: both;
     content: ".";
     display: block;
@@ -238,29 +223,18 @@ li
     visibility: hidden;
 }
 
-.flowed-block
-{
-    padding: 0 0 0 10px;
+.flowed-block {
     display: inline-block;
+    padding: 0 0 0 10px;
     text-align: left;
     vertical-align: top;
-
     /* For IE 7 */
-    zoom: 1;
     *display: inline;
+    zoom: 1;
 }
 
-.logo
-{
-    display: inline;
-    float: left;
-    height: 64px;
-    margin: 0 5px 0 0;
-    width: 64px;
-}
-
-div.watermark-apps-portlet h1, div.watermark-apps-portlet h2
-{
+div.watermark-apps-portlet h1,
+div.watermark-apps-portlet h2 {
     clear: none;
     color: #000000;
     font-size: 30px;
@@ -270,114 +244,108 @@ div.watermark-apps-portlet h1, div.watermark-apps-portlet h2
     margin-top: 0;
 }
 
-.watermark-apps-portlet li
-{
+.watermark-apps-portlet li {
     display: inline;
     list-style-type: none;
 }
 
-.watermark-apps-portlet li a, .watermark-apps-portlet li span
-{
+.watermark-apps-portlet li a,
+.watermark-apps-portlet li span {
     margin-right: 0.4em;
     padding: 0.3em 0.5em;
 }
-.watermark-apps-portlet li:first-child a, .watermark-apps-portlet li:first-child span
-{
+
+.watermark-apps-portlet li:first-child a,
+.watermark-apps-portlet li:first-child span {
     margin-left: -0.5em;
 }
 
-.watermark-apps-portlet li a:link, .watermark-apps-portlet li a:visited
-{
+.watermark-apps-portlet li a:link,
+.watermark-apps-portlet li a:visited {
     background-color: #FFFFFF;
     color: #000000;
     text-decoration: none;
 }
-.watermark-apps-portlet li.active a, .watermark-apps-portlet li.active span
-{
+
+.watermark-apps-portlet li.active a,
+.watermark-apps-portlet li.active span {
     font-weight: bold;
     /*text-decoration: underline;*/
 }
-.watermark-apps-portlet li a:hover
-{
+
+.watermark-apps-portlet li a:hover {
     background-color: #F3F3F3;
     color: #000000;
-
-    /*border: 1px solid transparent;
-    -moz-border-radius: 5px;
+    /*background-color: #F6F8F9;
+    border: 1px solid transparent;
     -webkit-border-radius: 5px;
-    border-radius: 5px;
-    border-color: #CEDFEB;
-    background-color: #F6F8F9;*/
+       -moz-border-radius: 5px;
+            border-radius: 5px;
+    border-color: #CEDFEB;*/
 }
 
-.facetmenu
-{
+.facetmenu {
     width: 100%;
 }
 
-.side .portlet
-{
+.side .portlet {
     background: none repeat scroll 0 0 #FBFBFB;
     border: 1px solid #DEDEDE;
-    border-radius: 5px 5px 5px 5px;
+    border-radius: 5px;
     margin: 0 auto 1em;
     padding: 0.5em;
 }
-.side h2
-{
+
+.side h2 {
     font-size: 16px;
 }
 
-.side ul
-{
+.side ul {
     background: none repeat scroll 0 0 #FBFBFB;
 }
 
-.downloads li
-{
+.downloads li {
     font-weight: bold;
     margin: 0;
     padding: 2px 0 0;
 }
-.downloads li a
-{
+
+.downloads li a {
     background: url("/images/project-downloads.png") no-repeat scroll right center #4F843C;
-    border-radius: 3px 3px 3px 3px;
+    border-radius: 3px;
     color: #FFFFFF;
     display: block;
     margin: 0;
     padding: 6% 40px 6% 6%;
     text-decoration: none;
 }
-.downloads .version
-{
+
+.downloads .version {
     background: none repeat scroll 0 0 #D3E3C7;
     border-radius: 5px 5px 0 0;
     padding: 0.2em 1em;
 }
-.downloads .released
-{
+
+.downloads .released {
     background: none repeat scroll 0 0 #D3E3C7;
     border-radius: 0 0 5px 5px;
     margin: 0.3em 0 0.5em;
     padding: 0.2em 1em;
 }
 
-.involvement li
-{
+.involvement li {
     font-weight: bold;
     padding: 0;
 }
 
-.involvement a
-{
+.involvement a {
     background: url("/images/answers-arrow-right.png") no-repeat scroll right center transparent;
     display: block;
     padding: 0.3em;
 }
 
-.involvement a:hover, .involvement li:hover
-{
+.involvement a:hover,
+.involvement li:hover {
     background-color: #EEEEEE;
     text-decoration: none;
 }

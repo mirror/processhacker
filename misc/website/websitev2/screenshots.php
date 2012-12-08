@@ -28,20 +28,20 @@
         <div class="yui-u first">
             <div>
                 <p><strong>Main Window</strong></p>
-                <a href="/images/screenshots/processes_tab_large.png" class="lytebox" data-lyte-options="group:group1">
-                    <img alt="Main window thumb" width="200" height="107" src="/images/screenshots/processhacker_small.png">
+                <a class="fancybox" data-fancybox-group="gallery" href="/images/screenshots/processes_tab_large.png" title="Main window">
+                    <img src="/images/screenshots/processhacker_small.png" alt="Main window thumb" width="200" height="107"/>
                 </a>
 
-                <a href="/images/screenshots/servicestab_large.png" class="lytebox" data-lyte-options="group:group1">
-                    <img alt="Services tab thumb" width="200" height="107" src="/images/screenshots/servicestab_small.png">
+                <a class="fancybox" data-fancybox-group="gallery" href="/images/screenshots/servicestab_large.png" title="Services tab">
+                    <img src="/images/screenshots/servicestab_small.png" alt="Services tab thumb" width="200" height="107"/>
                 </a>
 
-                <a href="/images/screenshots/networktab_large.png" class="lytebox" data-lyte-options="group:group1">
-                    <img alt="Network thumb" width="200" height="107" src="/images/screenshots/networktab_small.png">
+                <a class="fancybox" data-fancybox-group="gallery" href="/images/screenshots/networktab_large.png" title="Network tab">
+                    <img src="/images/screenshots/networktab_small.png" alt="Network tab thumb" width="200" height="107"/>
                 </a>
 
-                <a href="/images/screenshots/sysinfo_large.png" class="lytebox" data-lyte-options="group:group1">
-                    <img alt="Sysinfo thumb" width="200" height="107" src="/images/screenshots/sysinfo_small.png">
+                <a class="fancybox" data-fancybox-group="gallery" href="/images/screenshots/sysinfo_large.png" title="Sysinfo window">
+                    <img src="/images/screenshots/sysinfo_small.png" alt="Sysinfo window thumb" width="200" height="107"/>
                 </a>
             </div>
         </div>

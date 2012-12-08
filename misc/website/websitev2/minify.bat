@@ -7,7 +7,7 @@ pushd %~dp0
 
 rem echo minifying and combining css and js files...
 echo minifying js files...
-rem type css\lytebox.css css\stylesheet.css | cleancss --s0 -o css\pack.css
-cmd /c uglifyjs js\lytebox.js --compress --mangle -o js\lytebox.min.js
+rem type css\jquery.fancybox.css css\stylesheet.css | cleancss --s0 -o css\pack.css
+cmd /c uglifyjs js\jquery.fancybox.js --compress --mangle -o js\jquery.fancybox.min.js
 
 popd
