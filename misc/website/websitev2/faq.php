@@ -1,8 +1,4 @@
-<?php
-$pagetitle = "FAQ";
-
-include("header.php");
-?>
+<?php $pagetitle = "FAQ"; include("header.php"); ?>
 
 <div class="page">
     <div class="yui-d0">
@@ -69,7 +65,7 @@ include("header.php");
 
                     <p><strong>Symbols don't work properly!</strong></p>
                     <p>
-                        Firstly, you need the latest <code>dbghelp.dll</code> version. Install the latest Windows SDK (information and links are located below)</a>, open Process Hacker options, click on Symbols, and locate <code>dbghelp.dll</code>.
+                        Firstly, you need the latest <code>dbghelp.dll</code> version. Install the latest Windows SDK (information and links are located below), open Process Hacker options, click on Symbols, and locate <code>dbghelp.dll</code>.
                         It is usually in <code>C:\Program Files\Debugging Tools for Windows (x86)</code> or if you're using the Windows 8 SDK it'll be located at <code>C:\Program Files (x86)\Windows Kits\8.0\Debuggers</code>. Next, you need
                         to configure the search path. If you don't know what to do, enter
                         <code>SRV*SOME_FOLDER*http://msdl.microsoft.com/download/symbols</code>.
@@ -79,8 +75,8 @@ include("header.php");
 
                     <p><strong>Why can't I build Process Hacker?</strong></p>
                     <p>The most likely problem is that you do not have the latest Windows SDK installed.</p>
-                    <p>For Windows XP, Vista and Windows 7 you'll need the <a href="http://msdn.microsoft.com/en-us/windows/bb980924.aspx">Windows SDK for Windows 7 and .NET Framework 4</a></p>
-                    <p>For Windows Vista, Windows 7 and Windows 8 you'll need the <a href="http://msdn.microsoft.com/en-US/windows/hardware/hh852363">Windows 8 SDK</a></p>
+                    <p>For Windows XP, Vista and Windows 7 you'll need the <a href="http://msdn.microsoft.com/en-us/windows/bb980924.aspx">Windows SDK for Windows 7 and .NET Framework 4</a>.</p>
+                    <p>For Windows Vista, Windows 7 and Windows 8 you'll need the <a href="http://msdn.microsoft.com/en-US/windows/hardware/hh852363">Windows 8 SDK</a>.</p>
                 </div>
             </div>
         </div>
