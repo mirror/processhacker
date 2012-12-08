@@ -33,11 +33,11 @@
                 </a>
 
                 <a href="/images/screenshots/servicestab_large.png" class="lytebox" data-lyte-options="group:group1">
-                    <img alt="Services tab thumb" width="200" height="107" src="/images/screenshots/servicestab_large.png">
+                    <img alt="Services tab thumb" width="200" height="107" src="/images/screenshots/servicestab_small.png">
                 </a>
 
                 <a href="/images/screenshots/networktab_large.png" class="lytebox" data-lyte-options="group:group1">
-                    <img alt="Network thumb" width="200" height="107" src="/images/screenshots/networktab_large.png">
+                    <img alt="Network thumb" width="200" height="107" src="/images/screenshots/networktab_small.png">
                 </a>
 
                 <a href="/images/screenshots/sysinfo_large.png" class="lytebox" data-lyte-options="group:group1">

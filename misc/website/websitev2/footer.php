@@ -1,5 +1,5 @@
 <div class="center">
-    <img src="http://sflogo.sourceforge.net/sflogo.php?group_id=242527&amp;type=13" width="120" height="30" alt="SourceForge logo" title="Process Hacker is Hosted by SourceForge.net">
+    <img src="/images/sflogo.png" width="120" height="30" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net">
     <br>
     Copyright &copy; 2008-2012 wj32
 </div>
