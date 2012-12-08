@@ -445,9 +445,6 @@ php_value memory_limit 32M
 # Remap %20 (Space) back to the project index, until they fix it...
 Redirect 301 "/ " http://processhacker.sourceforge.net/index.php
 
-# Remap the favicon location for broken browsers ignoring the css
-Redirect 301 "/favicon.ico" http://processhacker.sourceforge.net/images/favicon.ico
-
 # Remap old image links to the new locations for compatiblity with old websites
 Redirect 301 "/images/logo.png" http://processhacker.sourceforge.net/images/logo_64x64.png
 Redirect 301 "/images/processes.png" http://processhacker.sourceforge.net/images/screenshots/processhacker_small.png
