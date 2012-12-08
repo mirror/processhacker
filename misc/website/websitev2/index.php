@@ -1,8 +1,4 @@
-<?php
-$pagetitle = "Overview";
-
-include("header.php");
-?>
+<?php $pagetitle = "Overview"; include("header.php"); ?>
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 <script type="text/javascript">
 google.load("feeds", "1")
@@ -310,4 +306,4 @@ google.load("feeds", "1")
 <script type="text/javascript" src="/js/lytebox.js"></script>
 <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=dmex"></script>
 
-<?php include("footer.php"); ?>
+<?php $includejs = true; include("footer.php"); ?>

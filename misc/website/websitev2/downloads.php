@@ -1,8 +1,4 @@
-<?php
-$pagetitle = "Downloads";
-
-include("header.php");
-?>
+<?php $pagetitle = "Downloads"; include("header.php"); ?>
 
 <div class="page">
     <div class="yui-d0">

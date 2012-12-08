@@ -4,6 +4,17 @@
     Copyright &copy; 2008-2012 wj32
 </div>
 
+<?php
+if (@$includejs) {
+    echo
+    "<script type=\"text/javascript\" src=\"/js/lytebox.js\"></script>";
+    if ($pagetitle == "Overview") {
+        echo
+        "<script type=\"text/javascript\" src=\"http://s7.addthis.com/js/250/addthis_widget.js#pubid=dmex\"></script>";
+    }
+}
+?>
+
 <!-- Google Analytics (Async)-->
 <script type="text/javascript">
     var _gaq = _gaq || [];
