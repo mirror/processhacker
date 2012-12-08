@@ -7,6 +7,6 @@ pushd %~dp0
 
 echo minifying and combining css and js files...
 type css\jquery.fancybox.css css\stylesheet.css | cleancss --s0 -o css\pack.css
-cmd /c uglifyjs js\jquery.fancybox.js --compress --mangle -o js\jquery.fancybox.min.js
+cmd /c uglifyjs js\jquery.fancybox.js js\jquery.mousewheel.js --compress --mangle -o js\pack.js
 
 popd
