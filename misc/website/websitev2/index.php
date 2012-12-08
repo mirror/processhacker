@@ -4,7 +4,7 @@
 google.load("feeds", "1")
 </script>
 
-<div class="page" style="position:relative;">
+<div class="page" style="position:relative">
     <div class="yui-d0">
         <div class="watermark-apps-portlet">
             <div class="flowed-block">
@@ -33,7 +33,7 @@ google.load("feeds", "1")
                         <div class="version">
                             Latest version is <?php echo $LATEST_PH_VERSION ?>
                         </div>
-                        <ul style="list-style-type: none; padding: 0px; margin: 0px;">
+                        <ul style="list-style-type: none; padding: 0; margin: 0">
                             <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">Installer</a></li>
                             <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">Binaries (portable)</a></li>
                             <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download" title="Source code">Source code</a></li>
@@ -136,7 +136,7 @@ google.load("feeds", "1")
                                     echo
                                     "<div class=\"ft\">
                                         <a href=\"{$post_link}\">{$topic_title}</a>
-                                        <span style='color:#C0C0C0;'>by
+                                        <span style='color:#C0C0C0'>by
                                             <span>{$post_author}</span>
                                         </span>
                                         <div class='forumdate'>{$post_date} - {$post_local_time}</div>
@@ -199,7 +199,7 @@ google.load("feeds", "1")
                                     echo
                                     "<div class=\"ft\">
                                         <a href=\"{$post_link}\">{$topic_title}</a>
-                                        <span style='color:#C0C0C0;'>by
+                                        <span style='color:#C0C0C0'>by
                                             <span>{$post_author}</span>
                                         </span>
                                         <div class='forumdate'>{$post_date} - {$post_local_time}</div>
@@ -266,10 +266,10 @@ google.load("feeds", "1")
                                     for (var i = 0; i < thefeeds.length; i++)
                                     {
                                         rssoutput += "<p><div class='ft'>"
-                                            rssoutput += "<div style=\"color:#333;\">" + thefeeds[i].content.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/"); + "</div>"
-                                            rssoutput += "<span style=\"color:#C0C0C0;\"> by </span>"
-                                            rssoutput += "<span style=\"color:#A00;\">" + thefeeds[i].author + "</span>"
-                                            rssoutput += "<div style=\"color:#C0C0C0;\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>"
+                                            rssoutput += "<div style=\"color:#333\">" + thefeeds[i].content.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/"); + "</div>"
+                                            rssoutput += "<span style=\"color:#C0C0C0\"> by </span>"
+                                            rssoutput += "<span style=\"color:#A00\">" + thefeeds[i].author + "</span>"
+                                            rssoutput += "<div style=\"color:#C0C0C0\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>"
                                         rssoutput += "</div></p>";
                                     }
 

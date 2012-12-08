@@ -4,7 +4,7 @@
     <div class="yui-d0">
         <div class="watermark-apps-portlet">
             <div class="flowed-block">
-                <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64" style="float:left;margin:0 5px 0 0">
+                <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
 
             <div class="flowed-block wide">
@@ -41,7 +41,7 @@
             </div>
 
             <div class="top-portlet">
-                <div class="summary" style="padding-bottom:20px;">
+                <div class="summary" style="padding-bottom:20px">
                     <p>Process Hacker was started in 2008 as an open source alternative to programs such as Task Manager and Process Explorer.</p>
                     <p><strong>Registered:</strong> 16-10-2008</p>
                     <p><strong>Licence:</strong> GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></p>
@@ -53,7 +53,7 @@
 
             <div class="yui-g">
                 <div class="yui-u first">
-                    <div class="portlet" style="position:relative;">
+                    <div class="portlet" style="position:relative">
                         <a href="http://sourceforge.net/users/wj32/">
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e" alt="User avatar">
                             <p style="color:#AA0000">
@@ -72,7 +72,7 @@
                         </a>
                     </div>
 
-                    <div class="portlet" style="position:relative;">
+                    <div class="portlet" style="position:relative">
                         <a href="http://sourceforge.net/users/dmex/">
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar">
                             <p style="color:#AA0000">
