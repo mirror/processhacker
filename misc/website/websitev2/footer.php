@@ -7,7 +7,7 @@
 <?php
 if (@$includejs) {
     echo
-    "<script type=\"text/javascript\" src=\"/js/lytebox.js\"></script>";
+    "<script type=\"text/javascript\" src=\"/js/lytebox.min.js\"></script>";
     if ($pagetitle == "Overview") {
         echo
         "<script type=\"text/javascript\" src=\"http://s7.addthis.com/js/250/addthis_widget.js#pubid=dmex\"></script>";
