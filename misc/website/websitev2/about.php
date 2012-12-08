@@ -1,8 +1,4 @@
-<?php
-$pagetitle = "About";
-
-include("header.php");
-?>
+<?php $pagetitle = "About"; include("header.php"); ?>
 
 <div class="page">
     <div class="yui-d0">
@@ -65,13 +61,13 @@ include("header.php");
                             </p>
                         </a>
                         <ul>
-                            <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&u=2">Send Message</a></li>
+                            <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&amp;u=2">Send Message</a></li>
                         </ul>
 
-                        <a href='http://meta.ohloh.net/kudos/' target='_top'>
-                            <img class="ohloh-kudos" alt='Ohloh kudos' src='https://www.ohloh.net/accounts/47453/widgets/account_rank.gif' />
+                        <a href="http://meta.ohloh.net/kudos/" target="_top">
+                            <img class="ohloh-kudos" alt="Ohloh kudos" src="https://www.ohloh.net/accounts/47453/widgets/account_rank.gif" />
                         </a>
-                        <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688650589' target='_top'>
+                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688650589" target="_top">
                             <img class="ohloh-commits" alt="wj32 commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png" />
                         </a>
                     </div>
@@ -81,16 +77,16 @@ include("header.php");
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar">
                             <p style="color:#AA0000">
                                 <strong>dmex</strong>
-                                <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&u=54">Send Message</a></li>
+                                <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&amp;u=54">Send Message</a></li>
                             </p>
                         </a>
                         <ul>
                             <li></li>
                         </ul>
-                        <a href='http://meta.ohloh.net/kudos/' target='_top'>
-                            <img class="ohloh-kudos" alt='Ohloh kudos' src='https://www.ohloh.net/accounts/56334/widgets/account_rank.gif' />
+                        <a href="http://meta.ohloh.net/kudos/" target="_top">
+                            <img class="ohloh-kudos" alt="Ohloh kudos" src="https://www.ohloh.net/accounts/56334/widgets/account_rank.gif" />
                         </a>
-                        <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688659470' target='_top'>
+                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688659470" target="_top">
                             <img class="ohloh-commits" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png" />
                         </a>
                     </div>
