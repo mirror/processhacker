@@ -56,7 +56,7 @@
                     <div class="portlet" style="position:relative">
                         <a href="http://sourceforge.net/users/wj32/">
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e" alt="User avatar">
-                            <p><strong style="color:#AA0000;">wj32</strong></p>
+                            <p><strong style="color:#AA0000">wj32</strong></p>
                         </a>
                         <ul>
                             <li>Project Founder, Senior Maintainer</li>
@@ -76,7 +76,7 @@
                     <div class="portlet" style="position:relative">
                         <a href="http://sourceforge.net/users/dmex/">
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar">
-                            <p style="color:#AA0000;">
+                            <p style="color:#AA0000">
                                 <strong>dmex</strong> - 0x0D06F00D
                             </p>
                         </a>
@@ -86,7 +86,7 @@
                             <li>Status: Active</li>
                             <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&amp;u=54">Send Message</a></li>
                         </ul>
-       
+
                         <a href="http://meta.ohloh.net/kudos/" target="_top">
                             <img class="ohloh-kudos" alt="Ohloh kudos" src="https://www.ohloh.net/accounts/56334/widgets/account_rank.gif" />
                         </a>
@@ -94,11 +94,11 @@
                             <img class="ohloh-commits" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png" />
                         </a>
                     </div>
-                    
-                      <div class="portlet" style="position:relative;">
+
+                      <div class="portlet" style="position:relative">
                         <a href="http://sourceforge.net/users/xhmikosr/">
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/E37759B1EA0125D4E97B1E00B5EED26F" width="80" height="80" alt="User avatar">
-                            <p style="color:#0000FF;">
+                            <p style="color:#0000FF">
                                 <strong>XhmikosR</strong>
                             </p>
                         </a>
@@ -108,14 +108,14 @@
                             <li>Status: Active</li>
                         </ul>
 
-                        <a href='http://meta.ohloh.net/kudos/' target='_top'>
-                            <img class="ohloh-kudos" alt='Ohloh kudos' height='24' width='32' src='https://www.ohloh.net/accounts/60504/widgets/account_rank.gif' />
+                        <a href="http://meta.ohloh.net/kudos/" target="_top">
+                            <img class="ohloh-kudos" alt="Ohloh kudos" height="24" width="32" src="https://www.ohloh.net/accounts/60504/widgets/account_rank.gif" />
                         </a>
-                        <a href='https://www.ohloh.net/p/processhacker/contributors/1415904688663640' target='_top'>
+                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688663640" target="_top">
                             <img class="ohloh-commits" alt="XhmikosR commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png" />
                         </a>
                     </div>
-                    
+
 
                     <div class="portlet">
                         <script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
