@@ -45,8 +45,8 @@
                     <p>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver so it works on 64-bit systems.</p>
                     <p><strong>System Requirements:</strong></p>
                     <ul>
-                        <li> • Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
-                        <li> • Intel Itanium platforms are not supported.</li>
+                        <li>Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
+                        <li>Intel Itanium platforms are not supported.</li>
                     </ul>
                 </div>
             </div>

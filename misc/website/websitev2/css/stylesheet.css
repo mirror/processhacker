@@ -33,25 +33,17 @@ img {
 }
 
 li {
-    list-style: none outside none;
     padding-bottom: 0.5em;
+    margin-left: 12px;
 }
 
 p {
     margin-bottom: 0.8em;
 }
 
-/*body,
-div,
-ul,
-li,
-h1,
-h2,
-h3,
-code,
-p {
+ul {
     padding: 0;
-}*/
+}
 
 .center {
     text-align: center;
@@ -189,6 +181,10 @@ p {
     margin-top: 0;
 }
 
+.portlet li {
+    list-style-type: none;
+}
+
 :link,
 *:visited {
     color: #0033AA;
@@ -229,6 +225,7 @@ div.watermark-apps-portlet h2 {
 .watermark-apps-portlet li {
     display: inline;
     list-style-type: none;
+    margin: 0;
 }
 
 .watermark-apps-portlet li a,
@@ -258,12 +255,6 @@ div.watermark-apps-portlet h2 {
 .watermark-apps-portlet li a:hover {
     background-color: #F3F3F3;
     color: #000;
-    /*background-color: #F6F8F9;
-    border: 1px solid transparent;
-    -webkit-border-radius: 5px;
-       -moz-border-radius: 5px;
-            border-radius: 5px;
-    border-color: #CEDFEB;*/
 }
 
 .facetmenu {
@@ -313,7 +304,11 @@ div.watermark-apps-portlet h2 {
 
 .side ul {
     background: none repeat scroll 0 0 #FBFBFB;
-    padding: 0;
+
+}
+
+.description ul {
+    margin-left: 0;
 }
 
 .involvement a {
@@ -324,6 +319,8 @@ div.watermark-apps-portlet h2 {
 
 .involvement li {
     font-weight: bold;
+    list-style-type: none;
+    margin-left: 0;
     padding: 0;
 }
 
