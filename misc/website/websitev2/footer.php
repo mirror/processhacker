@@ -5,7 +5,7 @@
 </div>
 
 <?php
-if (@$includejs) 
+if (@$includejs)
 {
     echo "<script src=\"http://www.google.com/jsapi\"></script><script>google.load(\"feeds\", \"1\")</script>
     <script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js\"></script>

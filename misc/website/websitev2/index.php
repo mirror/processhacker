@@ -7,7 +7,7 @@
                 <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
 
-            <div class="flowed-block wide">
+            <div class="flowed-block">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
                     <li class="overview active"><a href="/">Overview</a></li>

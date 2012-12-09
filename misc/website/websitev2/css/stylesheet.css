@@ -1,63 +1,69 @@
 body {
-    color: #333333;
+    color: #333;
     font-family: Tahoma, sans-serif;
     font-size: 12px;
+    margin: 0;
 }
 
-.ft {
-    font-family: Verdana, Arial, Helvetica, sans-serif;
-    font-size: 10px;
-    font-style: normal;
+b,
+strong {
     font-weight: bold;
 }
+
+code,
+pre {
+    font-family: monospace, serif;
+    font-size: 1em;
+}
+
+h2,
+h3 {
+    font-size: 100%;
+    font-weight: normal;
+}
+
+h3 {
+    font-size: 16px;
+    line-height: 20px;
+    margin: 16px auto 8px;
+}
+
+img {
+    border: 0;
+}
+
+li {
+    list-style: none outside none;
+    padding-bottom: 0.5em;
+}
+
+p {
+    margin-bottom: 0.8em;
+}
+
+/*body,
+div,
+ul,
+li,
+h1,
+h2,
+h3,
+code,
+p {
+    padding: 0;
+}*/
 
 .center {
     text-align: center;
 }
 
-.page {
-    margin: 0 auto;
-    max-width: 90em;
-    padding: 0 10px 5px 10px;
-    position: relative; /* Addthis div alignment */
+.ft {
+    font: bold 10px Verdana, Arial, Helvetica, sans-serif;
 }
 
 .forumdate {
     color: silver;
     padding: 0 0 5px 0;
-}
-
-a#download_button {
-    background-color: #629D4F;
-    color: #FFF;
-    display: block;
-    font: 1.308em/1.7em 'Segoe UI Light', Tahoma Light, Arial Light, Helvetica Light, sans-serif;
-    font-weight: lighter;
-    padding-bottom: 5px;
-    padding-top: 5px;
-    position: relative;
-    text-align: center;
-    width: 300px;
-}
-
-a#download_button:hover {
-    background-color: #1C8D2E;
-    color: #FFF;
-    text-decoration: none;
-    -webkit-transition: all .5s ease-in-out;
-       -moz-transition: all .5s ease-in-out;
-        -ms-transition: all .5s ease-in-out;
-         -o-transition: all .5s ease-in-out;
-            transition: all .5s ease-in-out;
-}
-
-.user-avatar {
-    background: white;
-    border: 1px solid #E5DFC7;
-    display: block;
-    float: left;
-    margin: 15px 10px 0 0;
-    padding: 4px;
 }
 
 .ohloh-kudos {
@@ -72,43 +78,33 @@ a#download_button:hover {
     right: 0;
 }
 
+.page {
+    margin: 0 auto;
+    max-width: 90em;
+    padding: 0 10px 5px 10px;
+    position: relative; /* Addthis div alignment */
+}
+
 .summary {
     padding-right: 300px;
 }
 
-body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td {
-    padding: 0;
+.user-avatar {
+    background: white;
+    border: 1px solid #E5DFC7;
+    display: block;
+    float: left;
+    margin: 15px 10px 0 0;
+    padding: 4px;
 }
 
-fieldset, img {
-    border: 0 none;
-}
-
-address, caption, cite, code, dfn, em, strong, th, var {
-    font-style: normal;
-    font-weight: normal;
-}
-
-li {
-    list-style: none outside none;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-size: 100%;
-    font-weight: normal;
-}
-
-q:before, q:after {
-    content: "";
-}
-
-.yui-d0, .yui-d1, .yui-d1f, .yui-d2, .yui-d2f, .yui-d3, .yui-d3f {
+.yui-d0 {
     margin: auto;
     text-align: left;
     width: 57.69em;
 }
 
-.yui-t1, .yui-t2, .yui-t3, .yui-t4, .yui-t5, .yui-t6 {
+.yui-t4 {
     margin: auto;
     text-align: left;
     width: 100%;
@@ -127,19 +123,55 @@ q:before, q:after {
     width: 20em;
 }
 
-.yui-g .yui-u, .yui-g .yui-g, .yui-g .yui-gb, .yui-g .yui-gc, .yui-g .yui-gd, .yui-g .yui-ge, .yui-g .yui-gf, .yui-gc .yui-u, .yui-gd .yui-g, .yui-g .yui-gc .yui-u, .yui-ge .yui-u, .yui-ge .yui-g, .yui-gf .yui-g, .yui-gf .yui-u {
+.yui-g .yui-u,
+.yui-g .yui-g,
+.yui-g .yui-gb,
+.yui-g .yui-gc,
+.yui-g .yui-gd,
+.yui-g .yui-ge,
+.yui-g .yui-gf,
+.yui-gc .yui-u,
+.yui-gd .yui-g,
+.yui-g .yui-gc .yui-u,
+.yui-ge .yui-u,
+.yui-ge .yui-g,
+.yui-gf .yui-g,
+.yui-gf .yui-u {
     float: right;
 }
 
-.yui-g div.first, .yui-gb div.first, .yui-gc div.first, .yui-gd div.first, .yui-ge div.first, .yui-gf div.first, .yui-g .yui-gc div.first, .yui-g .yui-ge div.first, .yui-gc div.first div.first {
+.yui-g div.first,
+.yui-gb div.first,
+.yui-gc div.first,
+.yui-gd div.first,
+.yui-ge div.first,
+.yui-gf div.first,
+.yui-g .yui-gc div.first,
+.yui-g .yui-ge div.first,
+.yui-gc div.first div.first {
     float: left;
 }
 
-.yui-g .yui-u, .yui-g .yui-g, .yui-g .yui-gb, .yui-g .yui-gc, .yui-g .yui-gd, .yui-g .yui-ge, .yui-g .yui-gf {
+.yui-g .yui-u,
+.yui-g .yui-g,
+.yui-g .yui-gb,
+.yui-g .yui-gc,
+.yui-g .yui-gd,
+.yui-g .yui-ge,
+.yui-g .yui-gf {
     width: 49.1%;
 }
 
-#bd:after, .yui-g:after, .yui-gb:after, .yui-gc:after, .yui-gd:after, .yui-ge:after, .yui-gf:after, .yui-t1:after, .yui-t2:after, .yui-t3:after, .yui-t4:after, .yui-t5:after, .yui-t6:after {
+.yui-g:after,
+.yui-gb:after,
+.yui-gc:after,
+.yui-gd:after,
+.yui-ge:after,
+.yui-gf:after,
+.yui-t1:after,
+.yui-t2:after,
+.yui-t3:after,
+.yui-t4:after {
     clear: both;
     content: ".";
     display: block;
@@ -147,8 +179,7 @@ q:before, q:after {
     visibility: hidden;
 }
 
-.portlet,
-.aside {
+.portlet {
     border-top: 1px solid #EBEBEB;
     clear: both;
     padding: 0 0 1em;
@@ -158,32 +189,10 @@ q:before, q:after {
     margin-top: 0;
 }
 
-h1 {
-    clear: none;
-    font-size: 30px;
-}
-
-h3 {
-    font-size: 16px;
-    line-height: 20px;
-    margin-bottom: 8px;
-    margin-top: 16px;
-}
-
-p {
-    margin-bottom: 0.8em;
-    width: auto;
-}
-
 :link,
 *:visited {
     color: #0033AA;
     text-decoration: none;
-}
-
-:link:hover,
-*:visited:hover {
-    text-decoration: underline;
 }
 
 :link:active,
@@ -191,36 +200,14 @@ p {
     color: #3366CC;
 }
 
+:link:hover,
+*:visited:hover {
+    text-decoration: underline;
+}
+
 a[onclick],
-.collapsible legend a,
-a.js-action,
-a[onclick]:active,
-.collapsible legend a:active,
-a.js-action,
-a.js-action:active {
+a[onclick]:active {
     color: #009933;
-}
-
-img,
-a img {
-    border: medium none;
-}
-
-strong {
-    font-weight: bold;
-}
-
-li {
-    padding-bottom: 0.5em;
-}
-
-.two-column-list:after,
-.three-column-list:after {
-    clear: both;
-    content: ".";
-    display: block;
-    height: 0;
-    visibility: hidden;
 }
 
 .flowed-block {
@@ -228,20 +215,15 @@ li {
     padding: 0 0 0 10px;
     text-align: left;
     vertical-align: top;
-    /* For IE 7 */
-    *display: inline;
-    zoom: 1;
 }
 
-div.watermark-apps-portlet h1,
 div.watermark-apps-portlet h2 {
     clear: none;
-    color: #000000;
+    color: #000;
     font-size: 30px;
     font-weight: bold;
     line-height: 34px;
-    margin-bottom: 6px;
-    margin-top: 0;
+    margin: 0 auto 6px;
 }
 
 .watermark-apps-portlet li {
@@ -262,8 +244,8 @@ div.watermark-apps-portlet h2 {
 
 .watermark-apps-portlet li a:link,
 .watermark-apps-portlet li a:visited {
-    background-color: #FFFFFF;
-    color: #000000;
+    background-color: #FFF;
+    color: #000;
     text-decoration: none;
 }
 
@@ -275,7 +257,7 @@ div.watermark-apps-portlet h2 {
 
 .watermark-apps-portlet li a:hover {
     background-color: #F3F3F3;
-    color: #000000;
+    color: #000;
     /*background-color: #F6F8F9;
     border: 1px solid transparent;
     -webkit-border-radius: 5px;
@@ -288,22 +270,6 @@ div.watermark-apps-portlet h2 {
     width: 100%;
 }
 
-.side .portlet {
-    background: none repeat scroll 0 0 #FBFBFB;
-    border: 1px solid #DEDEDE;
-    border-radius: 5px;
-    margin: 0 auto 1em;
-    padding: 0.5em;
-}
-
-.side h2 {
-    font-size: 16px;
-}
-
-.side ul {
-    background: none repeat scroll 0 0 #FBFBFB;
-}
-
 .downloads li {
     font-weight: bold;
     margin: 0;
@@ -313,7 +279,7 @@ div.watermark-apps-portlet h2 {
 .downloads li a {
     background: url("/images/project-downloads.png") no-repeat scroll right center #4F843C;
     border-radius: 3px;
-    color: #FFFFFF;
+    color: #FFF;
     display: block;
     margin: 0;
     padding: 6% 40px 6% 6%;
@@ -333,8 +299,20 @@ div.watermark-apps-portlet h2 {
     padding: 0.2em 1em;
 }
 
-.involvement li {
-    font-weight: bold;
+.side .portlet {
+    background: none repeat scroll 0 0 #FBFBFB;
+    border: 1px solid #DEDEDE;
+    border-radius: 5px;
+    margin: 0 auto 1em;
+    padding: 0.5em;
+}
+
+.side h2 {
+    font-size: 16px;
+}
+
+.side ul {
+    background: none repeat scroll 0 0 #FBFBFB;
     padding: 0;
 }
 
@@ -344,8 +322,13 @@ div.watermark-apps-portlet h2 {
     padding: 0.3em;
 }
 
+.involvement li {
+    font-weight: bold;
+    padding: 0;
+}
+
 .involvement a:hover,
 .involvement li:hover {
-    background-color: #EEEEEE;
+    background-color: #EEE;
     text-decoration: none;
 }

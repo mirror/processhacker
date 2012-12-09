@@ -7,7 +7,7 @@
                 <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
 
-            <div class="flowed-block wide">
+            <div class="flowed-block">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
@@ -26,7 +26,6 @@
                 <div class="portlet">
                     <h2 class="center">Quick Links</h2>
                     <ul class="involvement">
-                        <li><a href="http://sourceforge.net/project/memberlist.php?group_id=242527">Project Members</a></li>
                         <li><a href="https://www.ohloh.net/p/processhacker/contributors">Project Contributors</a></li>
                     </ul>
                 </div>
@@ -66,10 +65,10 @@
                         </ul>
 
                         <a href="http://meta.ohloh.net/kudos/" target="_top">
-                            <img class="ohloh-kudos" alt="Ohloh kudos" src="https://www.ohloh.net/accounts/47453/widgets/account_rank.gif" />
+                            <img class="ohloh-kudos" alt="Ohloh kudos" src="https://www.ohloh.net/accounts/47453/widgets/account_rank.gif"/>
                         </a>
                         <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688650589" target="_top">
-                            <img class="ohloh-commits" alt="wj32 commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png" />
+                            <img class="ohloh-commits" alt="wj32 commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png"/>
                         </a>
                     </div>
 
@@ -88,10 +87,10 @@
                         </ul>
 
                         <a href="http://meta.ohloh.net/kudos/" target="_top">
-                            <img class="ohloh-kudos" alt="Ohloh kudos" src="https://www.ohloh.net/accounts/56334/widgets/account_rank.gif" />
+                            <img class="ohloh-kudos" alt="Ohloh kudos" src="https://www.ohloh.net/accounts/56334/widgets/account_rank.gif"/>
                         </a>
                         <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688659470" target="_top">
-                            <img class="ohloh-commits" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png" />
+                            <img class="ohloh-commits" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png"/>
                         </a>
                     </div>
 
@@ -109,10 +108,10 @@
                         </ul>
 
                         <a href="http://meta.ohloh.net/kudos/" target="_top">
-                            <img class="ohloh-kudos" alt="Ohloh kudos" height="24" width="32" src="https://www.ohloh.net/accounts/60504/widgets/account_rank.gif" />
+                            <img class="ohloh-kudos" alt="Ohloh kudos" height="24" width="32" src="https://www.ohloh.net/accounts/60504/widgets/account_rank.gif"/>
                         </a>
                         <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688663640" target="_top">
-                            <img class="ohloh-commits" alt="XhmikosR commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png" />
+                            <img class="ohloh-commits" alt="XhmikosR commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png"/>
                         </a>
                     </div>
 

@@ -35,7 +35,7 @@ function curPageURL()
     // this way all site errors get logged instead of just phpbb errors
     // it works exactly like printf however the string must be defined in /forums/language/en/acp/common.php
     // 1st param is the log type
-    // 2nd param is the string defined in /forums/language/en/acp/common.php as 'LOG_ERROR_PAGE' => '<strong>ERROR PAGE</strong> - %d<br />» %s',
+    // 2nd param is the string defined in /forums/language/en/acp/common.php as 'LOG_ERROR_PAGE' => '<strong>ERROR PAGE</strong> - %d<br/>» %s',
     // 3rd param is %d for errorcode - defined above
     // 4th param is %s for the current page - defined above
 
@@ -61,7 +61,7 @@ function curPageURL()
                 <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
 
-            <div class="flowed-block wide">
+            <div class="flowed-block">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
