@@ -1,8 +1,4 @@
 <?php $pagetitle = "Overview"; include("header.php"); ?>
-<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<script type="text/javascript">
-google.load("feeds", "1")
-</script>
 
 <div class="page" style="position:relative">
     <div class="yui-d0">
@@ -31,7 +27,7 @@ google.load("feeds", "1")
                     <h2 class="center">Downloads</h2>
                     <div class="downloads">
                         <div class="version">
-                            Latest version is <?php echo $LATEST_PH_VERSION ?>
+                            Latest version is <?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?>
                         </div>
                         <ul style="list-style-type: none; padding: 0; margin: 0">
                             <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">Installer</a></li>
@@ -245,7 +241,7 @@ google.load("feeds", "1")
                     <div class="portlet">
                         <div id="feeddiv"></div>
 
-                        <script type="text/javascript">
+                        <script>
                             var feedcontainer=document.getElementById("feeddiv")
                             var rssoutput = "<p><strong>SVN Activity</strong></p>"
 

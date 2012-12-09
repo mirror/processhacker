@@ -23,7 +23,7 @@
 
         <div class="yui-t4">
             <div class="yui-b side">
-                <div class="portlet" >
+                <div class="portlet">
                     <h2 class="center">Quick Links</h2>
                     <ul class="involvement">
                         <li><a href="http://sourceforge.net/project/memberlist.php?group_id=242527">Project Members</a></li>
@@ -31,7 +31,7 @@
                     </ul>
                 </div>
 
-                <div class="portlet" >
+                <div class="portlet">
                     <h2 class="center">Get Involved</h2>
                     <ul class="involvement">
                         <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
@@ -81,7 +81,7 @@
                             </p>
                         </a>
                         <ul>
-                            <li>Project Operations, Maintainer</li>
+                            <li>Project Maintainer</li>
                             <li>Joined: 28-08-2009</li>
                             <li>Status: Active</li>
                             <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&amp;u=54">Send Message</a></li>
@@ -116,9 +116,8 @@
                         </a>
                     </div>
 
-
                     <div class="portlet">
-                        <script type="text/javascript" src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
+                        <script src="http://www.ohloh.net/p/329666/widgets/project_basic_stats.js"></script>
                     </div>
                 </div>
             </div>

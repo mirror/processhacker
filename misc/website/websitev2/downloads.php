@@ -41,7 +41,7 @@
 
             <div class="top-portlet">
                 <div class="summary">
-                    <p>The latest stable version of Process Hacker is <strong><?php echo $LATEST_PH_VERSION ?></strong></p>
+                    <p>The latest stable version of Process Hacker is <strong><?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?></strong></p>
                     <p>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver so it works on 64-bit systems.</p>
                     <p><strong>System Requirements:</strong></p>
                     <ul>

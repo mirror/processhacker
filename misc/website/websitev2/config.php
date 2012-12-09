@@ -1,6 +1,6 @@
 <?php
 $LATEST_PH_VERSION = "2.28";
-$LATEST_PH_VERSION_BUILD = "5073";
+$LATEST_PH_BUILD = "5073";
 $LATEST_PH_RELEASE_DATE = "6th of July 2012";
 
 $LATEST_PH_BIN_SIZE = "2.1 MB";
@@ -32,10 +32,10 @@ $phpbb_root_path = './forums/';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 // import phpbb functions
-include($phpbb_root_path.'config.'.$phpEx);
-include($phpbb_root_path.'common.'.$phpEx);
-include($phpbb_root_path.'includes/bbcode.'.$phpEx);
-include($phpbb_root_path.'includes/functions_display.'.$phpEx);
+@include($phpbb_root_path.'config.'.$phpEx);
+@include($phpbb_root_path.'common.'.$phpEx);
+@include($phpbb_root_path.'includes/bbcode.'.$phpEx);
+@include($phpbb_root_path.'includes/functions_display.'.$phpEx);
 
 // Check if we imported the phpbb functions.
 if (!empty($user) && !empty($auth))
@@ -47,12 +47,11 @@ if (!empty($user) && !empty($auth))
 }
 
 // select database tables
-$table_topics = $table_prefix. "topics";
-$table_forums = $table_prefix. "forums";
-$table_posts = $table_prefix. "posts";
-$table_users = $table_prefix. "users";
-$table_sessions = $table_prefix. "sessions";
-
+$table_topics = @$table_prefix. "topics";
+$table_forums = @$table_prefix. "forums";
+$table_posts = @$table_prefix. "posts";
+$table_users = @$table_prefix. "users";
+$table_sessions = @$table_prefix. "sessions";
 
 // function for converting time into time elapsed
 function get_time_ago($time_stamp)
