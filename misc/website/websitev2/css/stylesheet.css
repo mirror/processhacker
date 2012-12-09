@@ -10,10 +10,22 @@ strong {
     font-weight: bold;
 }
 
-code,
-pre {
+code {
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+    color: #d14;
+    padding: 0.5px 4px;
+}
+
+code {
     font-family: monospace, serif;
     font-size: 1em;
+}
+
+code {
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
 }
 
 h2,
@@ -35,10 +47,6 @@ img {
 li {
     padding-bottom: 0.5em;
     margin-left: 12px;
-}
-
-p {
-    margin-bottom: 0.8em;
 }
 
 ul {

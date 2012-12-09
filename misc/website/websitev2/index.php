@@ -77,7 +77,7 @@
                         <li>Allows you to see what a thread is waiting on.</li>
                         <li>Has advanced string scanning capabilities, as well as regular expression filtering.</li>
                         <li>Highlights both relocated and .NET DLLs.</li>
-                        <li>Shows symbolic access masks (e.g. <code>Read, Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
+                        <li>Shows symbolic access masks (e.g. <code>Read</code>, <code>Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
                         <li>Shows names for transaction manager objects and ETW registration objects.</li>
                         <li>Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
                     </ul>
