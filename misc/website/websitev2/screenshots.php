@@ -2,7 +2,7 @@
 
 <div class="page">
     <div class="yui-d0">
-        <div id="watermark" class="watermark-apps-portlet">
+        <nav>
             <div class="flowed-block">
                 <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
@@ -19,7 +19,7 @@
                     <li><a href="/forums/">Forum</a></li>
                 </ul>
             </div>
-        </div>
+        </nav>
     </div>
 
     <div class="yui-g">

@@ -28,6 +28,10 @@ code {
        -moz-border-radius: 4px;
 }
 
+footer {
+    text-align: center;
+}
+
 h2,
 h3 {
     font-size: 100%;
@@ -47,6 +51,48 @@ img {
 li {
     padding-bottom: 0.5em;
     margin-left: 12px;
+}
+
+nav h2 {
+    clear: none;
+    color: #000;
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 34px;
+    margin: 0 auto 6px;
+}
+
+nav li {
+    display: inline;
+    list-style-type: none;
+    margin: 0;
+}
+
+nav li a,
+nav li span {
+    margin-right: 0.4em;
+    padding: 0.3em 0.5em;
+}
+
+nav li:first-child a,
+nav li:first-child span {
+    margin-left: -0.5em;
+}
+
+nav li a:link,
+nav li a:visited {
+    background-color: #FFF;
+    color: #000;
+    text-decoration: none;
+}
+
+nav li.active a {
+    font-weight: bold;
+}
+
+nav li a:hover {
+    background-color: #F3F3F3;
+    color: #000;
 }
 
 ul {
@@ -101,17 +147,13 @@ ul {
 .yui-d0 {
     margin: auto;
     text-align: left;
-    width: 57.69em;
+    width: auto;
 }
 
 .yui-t4 {
     margin: auto;
     text-align: left;
     width: 100%;
-}
-
-.yui-d0 {
-    width: auto;
 }
 
 .yui-b {
@@ -219,48 +261,6 @@ a[onclick]:active {
     padding: 0 0 0 10px;
     text-align: left;
     vertical-align: top;
-}
-
-div.watermark-apps-portlet h2 {
-    clear: none;
-    color: #000;
-    font-size: 30px;
-    font-weight: bold;
-    line-height: 34px;
-    margin: 0 auto 6px;
-}
-
-.watermark-apps-portlet li {
-    display: inline;
-    list-style-type: none;
-    margin: 0;
-}
-
-.watermark-apps-portlet li a,
-.watermark-apps-portlet li span {
-    margin-right: 0.4em;
-    padding: 0.3em 0.5em;
-}
-
-.watermark-apps-portlet li:first-child a,
-.watermark-apps-portlet li:first-child span {
-    margin-left: -0.5em;
-}
-
-.watermark-apps-portlet li a:link,
-.watermark-apps-portlet li a:visited {
-    background-color: #FFF;
-    color: #000;
-    text-decoration: none;
-}
-
-.watermark-apps-portlet li.active a {
-    font-weight: bold;
-}
-
-.watermark-apps-portlet li a:hover {
-    background-color: #F3F3F3;
-    color: #000;
 }
 
 .facetmenu {

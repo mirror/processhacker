@@ -56,7 +56,7 @@ function curPageURL()
 
 <div class="page">
     <div class="yui-d0">
-        <div class="watermark-apps-portlet">
+        <nav>
             <div class="flowed-block">
                 <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
@@ -73,7 +73,7 @@ function curPageURL()
                     <li><a href="/forums/">Forum</a></li>
                 </ul>
             </div>
-        </div>
+        </nav>
 
         <div class="yui-t4">
             <div>

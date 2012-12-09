@@ -2,7 +2,7 @@
 
 <div class="page">
     <div class="yui-d0">
-        <div class="watermark-apps-portlet">
+        <nav>
             <div class="flowed-block">
                 <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
@@ -18,7 +18,7 @@
                     <li><a href="/about.php">About</a></li>
                 </ul>
             </div>
-        </div>
+        </nav>
 
         <p>This is the changelog from Process Hacker's SVN repository. As such it may contain information about unreleased versions of Process Hacker.</p>
 

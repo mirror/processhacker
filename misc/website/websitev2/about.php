@@ -2,7 +2,7 @@
 
 <div class="page">
     <div class="yui-d0">
-        <div class="watermark-apps-portlet">
+        <nav>
             <div class="flowed-block">
                 <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
@@ -19,7 +19,7 @@
                     <li><a href="/forums/">Forum</a></li>
                 </ul>
             </div>
-        </div>
+        </nav>
 
         <div class="yui-t4">
             <div class="yui-b side">
@@ -64,10 +64,10 @@
                             <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&amp;u=2">Send Message</a></li>
                         </ul>
 
-                        <a href="http://meta.ohloh.net/kudos/" target="_top">
+                        <a href="http://meta.ohloh.net/kudos/" target="_blank">
                             <img class="ohloh-kudos" alt="Ohloh kudos" src="https://www.ohloh.net/accounts/47453/widgets/account_rank.gif"/>
                         </a>
-                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688650589" target="_top">
+                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688650589" target="_blank">
                             <img class="ohloh-commits" alt="wj32 commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png"/>
                         </a>
                     </div>
@@ -86,10 +86,10 @@
                             <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&amp;u=54">Send Message</a></li>
                         </ul>
 
-                        <a href="http://meta.ohloh.net/kudos/" target="_top">
+                        <a href="http://meta.ohloh.net/kudos/" target="_blank">
                             <img class="ohloh-kudos" alt="Ohloh kudos" src="https://www.ohloh.net/accounts/56334/widgets/account_rank.gif"/>
                         </a>
-                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688659470" target="_top">
+                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688659470" target="_blank">
                             <img class="ohloh-commits" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png"/>
                         </a>
                     </div>
@@ -107,10 +107,10 @@
                             <li>Status: Active</li>
                         </ul>
 
-                        <a href="http://meta.ohloh.net/kudos/" target="_top">
+                        <a href="http://meta.ohloh.net/kudos/" target="_blank">
                             <img class="ohloh-kudos" alt="Ohloh kudos" height="24" width="32" src="https://www.ohloh.net/accounts/60504/widgets/account_rank.gif"/>
                         </a>
-                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688663640" target="_top">
+                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688663640" target="_blank">
                             <img class="ohloh-commits" alt="XhmikosR commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png"/>
                         </a>
                     </div>
