@@ -10,7 +10,7 @@
             <div class="flowed-block">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
-                    <li class="overview active"><a href="/">Overview</a></li>
+                    <li class="active"><a href="/">Overview</a></li>
                     <li><a href="/features.php">Features</a></li>
                     <li><a href="/screenshots.php">Screenshots</a></li>
                     <li><a href="/downloads.php">Downloads</a></li>
@@ -57,7 +57,7 @@
                 </div>
             </div>
 
-            <div class="top-portlet">
+            <div>
                 <div class="summary">
                     <p>Process Hacker is a free and open source process viewer. This multi-purpose tool will assist you with debugging, malware detection and system monitoring. It includes powerful process termination, memory viewing/editing and other unique and specialized features.</p>
                     <p><strong>Key features of Process Hacker:</strong></p>
@@ -242,45 +242,38 @@
                         <div id="feeddiv"></div>
 
                         <script>
-                            var feedcontainer=document.getElementById("feeddiv")
-                            var rssoutput = "<p><strong>SVN Activity</strong></p>"
+                            var feedcontainer=document.getElementById("feeddiv");
+                            var rssoutput = "<p><strong>SVN Activity</strong></p>";
 
-                            feedcontainer.innerHTML = "<div id=\"feeddiv2\">Loading feed...</div>"
+                            feedcontainer.innerHTML = "<div id=\"feeddiv2\">Loading feed...</div>";
 
-                            function rssfeedsetup()
-                            {
-                                var feedpointer=new google.feeds.Feed("http://sourceforge.net/p/processhacker/code/feed")
-                                feedpointer.setNumEntries(3)
-                                feedpointer.load(displayfeed)
+                            function rssfeedsetup() {
+                                var feedpointer = new google.feeds.Feed("http://sourceforge.net/p/processhacker/code/feed");
+                                feedpointer.setNumEntries(3);
+                                feedpointer.load(displayfeed);
                             }
 
-                            function displayfeed(result)
-                            {
-                                if (!result.error)
-                                {
-                                    var thefeeds = result.feed.entries
-                                    for (var i = 0; i < thefeeds.length; i++)
-                                    {
-                                        rssoutput += "<p><div class='ft'>"
-                                            rssoutput += "<div style=\"color:#333\">" + thefeeds[i].content.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/"); + "</div>"
-                                            rssoutput += "<span style=\"color:#C0C0C0\"> by </span>"
-                                            rssoutput += "<span style=\"color:#A00\">" + thefeeds[i].author + "</span>"
-                                            rssoutput += "<div style=\"color:#C0C0C0\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>"
+                            function displayfeed(result) {
+                                if (!result.error) {
+                                    var thefeeds = result.feed.entries;
+                                    for (var i = 0; i < thefeeds.length; i++) {
+                                        rssoutput += "<p><div class='ft'>";
+                                            rssoutput += "<div style=\"color:#333\">" + thefeeds[i].content.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/") + "</div>";
+                                            rssoutput += "<span style=\"color:#C0C0C0\"> by </span>";
+                                            rssoutput += "<span style=\"color:#A00\">" + thefeeds[i].author + "</span>";
+                                            rssoutput += "<div style=\"color:#C0C0C0\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>";
                                         rssoutput += "</div></p>";
                                     }
 
-                                    feedcontainer.innerHTML = rssoutput
-                                }
-                                else
-                                {
-                                    feedcontainer.innerHTML = "Error fetching feeds!"
+                                    feedcontainer.innerHTML = rssoutput;
+                                } else {
+                                    feedcontainer.innerHTML = "Error fetching feeds!";
                                 }
                             }
 
-                            window.onload=function()
-                            {
-                                rssfeedsetup()
-                            }
+                            window.onload = function() {
+                                rssfeedsetup();
+                            };
                         </script>
 
                     </div>
@@ -289,14 +282,14 @@
         </div>
     </div>
 
- <!-- AddThis Button BEGIN -->
- <div class="addthis_toolbox addthis_default_style" style="position:absolute; top:10px; right:0;" addthis:url="http://processhacker.sourceforge.net">
-    <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
-    <a class="addthis_button_tweet"></a>
-    <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
-    <a class="addthis_counter addthis_pill_style"></a>
- </div>
- <!-- AddThis Button END -->
+    <!-- AddThis Button BEGIN -->
+    <div class="addthis_toolbox addthis_default_style" style="position:absolute; top:10px; right:0" addthis:url="http://processhacker.sourceforge.net">
+        <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+        <a class="addthis_button_tweet"></a>
+        <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+        <a class="addthis_counter addthis_pill_style"></a>
+    </div>
+    <!-- AddThis Button END -->
 </div>
 
 <?php $includejs = true; include("footer.php"); ?>

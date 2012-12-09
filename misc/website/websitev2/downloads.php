@@ -13,7 +13,7 @@
                     <li><a href="/">Overview</a></li>
                     <li><a href="/features.php">Features</a></li>
                     <li><a href="/screenshots.php">Screenshots</a></li>
-                    <li class="overview active"><a href="/downloads.php">Downloads</a></li>
+                    <li class="active"><a href="/downloads.php">Downloads</a></li>
                     <li><a href="/faq.php">FAQ</a></li>
                     <li><a href="/about.php">About</a></li>
                     <li><a href="/forums/">Forum</a></li>
@@ -39,7 +39,7 @@
                 </div>
             </div>
 
-            <div class="top-portlet">
+            <div>
                 <div class="summary">
                     <p>The latest stable version of Process Hacker is <strong><?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?></strong></p>
                     <p>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver so it works on 64-bit systems.</p>

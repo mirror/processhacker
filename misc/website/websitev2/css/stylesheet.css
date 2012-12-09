@@ -254,10 +254,8 @@ div.watermark-apps-portlet h2 {
     text-decoration: none;
 }
 
-.watermark-apps-portlet li.active a,
-.watermark-apps-portlet li.active span {
+.watermark-apps-portlet li.active a {
     font-weight: bold;
-    /*text-decoration: underline;*/
 }
 
 .watermark-apps-portlet li a:hover {

@@ -14,7 +14,7 @@
                     <li><a href="/features.php">Features</a></li>
                     <li><a href="/screenshots.php">Screenshots</a></li>
                     <li><a href="/downloads.php">Downloads</a></li>
-                    <li class="overview active"><a href="/faq.php">FAQ</a></li>
+                    <li class="active"><a href="/faq.php">FAQ</a></li>
                     <li><a href="/about.php">About</a></li>
                     <li><a href="/forums/">Forum</a></li>
                 </ul>
@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            <div class="top-portlet">
+            <div>
                 <div class="summary">
                     <p><strong>Why should I use Process Hacker? Why not Process Explorer or some other program?</strong></p>
                     <p>

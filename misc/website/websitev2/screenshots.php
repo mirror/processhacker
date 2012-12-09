@@ -12,7 +12,7 @@
                 <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
                     <li><a href="/features.php">Features</a></li>
-                    <li class="overview active"><a href="/screenshots.php">Screenshots</a></li>
+                    <li class="active"><a href="/screenshots.php">Screenshots</a></li>
                     <li><a href="/downloads.php">Downloads</a></li>
                     <li><a href="/faq.php">FAQ</a></li>
                     <li><a href="/about.php">About</a></li>

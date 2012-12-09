@@ -15,7 +15,7 @@
                     <li><a href="/screenshots.php">Screenshots</a></li>
                     <li><a href="/downloads.php">Downloads</a></li>
                     <li><a href="/faq.php">FAQ</a></li>
-                    <li class="overview active"><a href="/about.php">About</a></li>
+                    <li class="active"><a href="/about.php">About</a></li>
                     <li><a href="/forums/">Forum</a></li>
                 </ul>
             </div>
@@ -39,7 +39,7 @@
                 </div>
             </div>
 
-            <div class="top-portlet">
+            <div>
                 <div class="summary" style="padding-bottom:20px">
                     <p>Process Hacker was started in 2008 as an open source alternative to programs such as Task Manager and Process Explorer.</p>
                     <p><strong>Registered:</strong> 16-10-2008</p>
