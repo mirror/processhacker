@@ -59,7 +59,7 @@
                             <p><strong style="color:#AA0000">wj32</strong></p>
                         </a>
                         <ul>
-                            <li>Project Founder, Senior Maintainer</li>
+                            <li>Project Founder</li>
                             <li>Joined: 16-10-2008</li>
                             <li>Status: Active</li>
                             <li><a href="http://processhacker.sourceforge.net/forums/memberlist.php?mode=email&amp;u=2">Send Message</a></li>
