@@ -40,7 +40,7 @@
                     </div>
                     <div class="center">
                         <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
-                            <img alt="Donate" width="92" height="26" src="images/donate.png">
+                            <img src="images/donate.png" alt="Donate" width="92" height="26">
                         </a>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                     <li>View, edit and control services, including those not shown by the Services console.</li>
                     <li>View and close network connections.</li>
                     <li>Starts up almost instantly, unlike other programs.</li>
-                    <li><a href="./features.php">Many more features...</a></li>
+                    <li><a href="features.php">Many more features...</a></li>
                 </ul>
                 <p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
                 <ul>
