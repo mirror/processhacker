@@ -39,22 +39,20 @@
                 </div>
             </div>
 
-            <div>
-                <div class="summary" style="padding-bottom:20px">
-                    <p>Process Hacker was started in 2008 as an open source alternative to programs such as Task Manager and Process Explorer.</p>
-                    <p><strong>Registered:</strong> 16-10-2008</p>
-                    <p><strong>Licence:</strong> GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></p>
-                    <p><strong>Language:</strong> English</p>
-                    <p><strong>Intended Audience:</strong> Advanced End Users, Developers</p>
-                    <p><strong>Programming Language:</strong> C, C#</p>
-                </div>
+            <div class="summary" style="padding-bottom:20px">
+                <p>Process Hacker was started in 2008 as an open source alternative to programs such as Task Manager and Process Explorer.</p>
+                <p><strong>Registered:</strong> 16-10-2008</p>
+                <p><strong>Licence:</strong> GNU General Public License version 3.0 <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></p>
+                <p><strong>Language:</strong> English</p>
+                <p><strong>Intended Audience:</strong> Advanced End Users, Developers</p>
+                <p><strong>Programming Language:</strong> C, C#</p>
             </div>
 
             <div class="yui-g">
                 <div class="yui-u first">
                     <div class="portlet" style="position:relative">
                         <a href="http://sourceforge.net/users/wj32/">
-                            <img class="user-avatar" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e" alt="User avatar">
+                            <img class="user-avatar" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e" alt="User avatar" width="80" height="80">
                             <p><strong style="color:#AA0000">wj32</strong></p>
                         </a>
                         <ul>
@@ -65,16 +63,16 @@
                         </ul>
 
                         <a href="http://meta.ohloh.net/kudos/" target="_blank">
-                            <img class="ohloh-kudos" alt="Ohloh kudos" src="https://www.ohloh.net/accounts/47453/widgets/account_rank.gif"/>
+                            <img class="ohloh-kudos" src="https://www.ohloh.net/accounts/47453/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24"/>
                         </a>
                         <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688650589" target="_blank">
-                            <img class="ohloh-commits" alt="wj32 commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png"/>
+                            <img class="ohloh-commits" src="https://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png" alt="wj32 commit history" width="182" height="32"/>
                         </a>
                     </div>
 
                     <div class="portlet" style="position:relative">
                         <a href="http://sourceforge.net/users/dmex/">
-                            <img class="user-avatar" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar">
+                            <img class="user-avatar" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar" width="80" height="80">
                             <p style="color:#AA0000">
                                 <strong>dmex</strong> - 0x0D06F00D
                             </p>
@@ -87,16 +85,16 @@
                         </ul>
 
                         <a href="http://meta.ohloh.net/kudos/" target="_blank">
-                            <img class="ohloh-kudos" alt="Ohloh kudos" src="https://www.ohloh.net/accounts/56334/widgets/account_rank.gif"/>
+                            <img class="ohloh-kudos" src="https://www.ohloh.net/accounts/56334/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24"/>
                         </a>
                         <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688659470" target="_blank">
-                            <img class="ohloh-commits" alt="dmex commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png"/>
+                            <img class="ohloh-commits" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png" alt="dmex commit history" width="182" height="32"/>
                         </a>
                     </div>
 
                       <div class="portlet" style="position:relative">
                         <a href="http://sourceforge.net/users/xhmikosr/">
-                            <img class="user-avatar" src="http://www.gravatar.com/avatar/e37759b1ea0125d4e97b1e00b5eed26f.png" width="80" height="80" alt="User avatar">
+                            <img class="user-avatar" src="http://www.gravatar.com/avatar/e37759b1ea0125d4e97b1e00b5eed26f.png" alt="User avatar" width="80" height="80">
                             <p style="color:#0000FF">
                                 <strong>XhmikosR</strong>
                             </p>
@@ -108,10 +106,10 @@
                         </ul>
 
                         <a href="http://meta.ohloh.net/kudos/" target="_blank">
-                            <img class="ohloh-kudos" alt="Ohloh kudos" height="24" width="32" src="https://www.ohloh.net/accounts/60504/widgets/account_rank.gif"/>
+                            <img class="ohloh-kudos" src="https://www.ohloh.net/accounts/60504/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24"/>
                         </a>
                         <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688663640" target="_blank">
-                            <img class="ohloh-commits" alt="XhmikosR commit history" height="32" width="179" src="https://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png"/>
+                            <img class="ohloh-commits" src="https://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png" alt="XhmikosR commit history" width="182" height="32"/>
                         </a>
                     </div>
 

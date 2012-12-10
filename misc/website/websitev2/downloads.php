@@ -39,16 +39,14 @@
                 </div>
             </div>
 
-            <div>
-                <div class="summary">
-                    <p>The latest stable version of Process Hacker is <strong><?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?></strong></p>
-                    <p>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver so it works on 64-bit systems.</p>
-                    <p><strong>System Requirements:</strong></p>
-                    <ul>
-                        <li>Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
-                        <li>Intel Itanium platforms are not supported.</li>
-                    </ul>
-                </div>
+            <div class="summary">
+                <p>The latest stable version of Process Hacker is <strong><?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?></strong>.</p>
+                <p>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver so it works on 64-bit systems.</p>
+                <p><strong>System Requirements:</strong></p>
+                <ul>
+                    <li>Microsoft Windows XP SP2 or above, 32-bit or 64-bit.</li>
+                    <li>Intel Itanium platforms are not supported.</li>
+                </ul>
             </div>
 
             <div class="yui-g">

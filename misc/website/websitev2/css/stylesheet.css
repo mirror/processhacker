@@ -6,23 +6,24 @@ body {
 }
 
 b,
-strong {
+strong,
+nav li.active a,
+.downloads li,
+.involvement li {
     font-weight: bold;
 }
 
 code {
-    background-color: #f7f7f9;
-    border: 1px solid #e1e1e8;
-    color: #d14;
+    background-color: #F7F7F9;
+    border: 1px solid #E1E1E8;
+    color: #D14;
+    font-family: monospace, serif;
+    font-size: 1em;
     padding: 0.5px 4px;
 }
 
-code {
-    font-family: monospace, serif;
-    font-size: 1em;
-}
-
-code {
+code,
+.downloads li a {
     border-radius: 4px;
     -webkit-border-radius: 4px;
        -moz-border-radius: 4px;
@@ -39,9 +40,13 @@ h3 {
 }
 
 h3 {
-    font-size: 16px;
     line-height: 20px;
     margin: 16px auto 8px;
+}
+
+h3,
+.side h2 {
+    font-size: 16px;
 }
 
 img {
@@ -68,14 +73,12 @@ nav li {
     margin: 0;
 }
 
-nav li a,
-nav li span {
+nav li a {
     margin-right: 0.4em;
     padding: 0.3em 0.5em;
 }
 
-nav li:first-child a,
-nav li:first-child span {
+nav li:first-child a {
     margin-left: -0.5em;
 }
 
@@ -84,10 +87,6 @@ nav li a:visited {
     background-color: #FFF;
     color: #000;
     text-decoration: none;
-}
-
-nav li.active a {
-    font-weight: bold;
 }
 
 nav li a:hover {
@@ -146,13 +145,11 @@ ul {
 
 .yui-d0 {
     margin: auto;
-    text-align: left;
     width: auto;
 }
 
 .yui-t4 {
     margin: auto;
-    text-align: left;
     width: 100%;
 }
 
@@ -166,53 +163,20 @@ ul {
 }
 
 .yui-g .yui-u,
-.yui-g .yui-g,
-.yui-g .yui-gb,
-.yui-g .yui-gc,
-.yui-g .yui-gd,
-.yui-g .yui-ge,
-.yui-g .yui-gf,
-.yui-gc .yui-u,
-.yui-gd .yui-g,
-.yui-g .yui-gc .yui-u,
-.yui-ge .yui-u,
-.yui-ge .yui-g,
-.yui-gf .yui-g,
-.yui-gf .yui-u {
+.yui-g .yui-g {
     float: right;
 }
 
-.yui-g div.first,
-.yui-gb div.first,
-.yui-gc div.first,
-.yui-gd div.first,
-.yui-ge div.first,
-.yui-gf div.first,
-.yui-g .yui-gc div.first,
-.yui-g .yui-ge div.first,
-.yui-gc div.first div.first {
+.yui-g .first {
     float: left;
 }
 
 .yui-g .yui-u,
-.yui-g .yui-g,
-.yui-g .yui-gb,
-.yui-g .yui-gc,
-.yui-g .yui-gd,
-.yui-g .yui-ge,
-.yui-g .yui-gf {
+.yui-g .yui-g {
     width: 49.1%;
 }
 
 .yui-g:after,
-.yui-gb:after,
-.yui-gc:after,
-.yui-gd:after,
-.yui-ge:after,
-.yui-gf:after,
-.yui-t1:after,
-.yui-t2:after,
-.yui-t3:after,
 .yui-t4:after {
     clear: both;
     content: ".";
@@ -259,7 +223,6 @@ a[onclick]:active {
 .flowed-block {
     display: inline-block;
     padding: 0 0 0 10px;
-    text-align: left;
     vertical-align: top;
 }
 
@@ -268,14 +231,12 @@ a[onclick]:active {
 }
 
 .downloads li {
-    font-weight: bold;
     margin: 0;
     padding: 2px 0 0;
 }
 
 .downloads li a {
     background: url("/images/project-downloads.png") no-repeat scroll right center #4F843C;
-    border-radius: 3px;
     color: #FFF;
     display: block;
     margin: 0;
@@ -283,38 +244,32 @@ a[onclick]:active {
     text-decoration: none;
 }
 
-.downloads .version {
+.released,
+.version {
     background: none repeat scroll 0 0 #D3E3C7;
-    border-radius: 5px 5px 0 0;
     padding: 0.2em 1em;
 }
 
-.downloads .released {
-    background: none repeat scroll 0 0 #D3E3C7;
-    border-radius: 0 0 5px 5px;
+.released {
+    border-radius: 0 0 4px 4px;
     margin: 0.3em 0 0.5em;
-    padding: 0.2em 1em;
+}
+
+.version {
+    border-radius: 4px 4px 0 0;
 }
 
 .side .portlet {
     background: none repeat scroll 0 0 #FBFBFB;
     border: 1px solid #DEDEDE;
-    border-radius: 5px;
+    border-radius: 4px;
     margin: 0 auto 1em;
     padding: 0.5em;
-}
-
-.side h2 {
-    font-size: 16px;
 }
 
 .side ul {
     background: none repeat scroll 0 0 #FBFBFB;
 
-}
-
-.description ul {
-    margin-left: 0;
 }
 
 .involvement a {
@@ -324,7 +279,6 @@ a[onclick]:active {
 }
 
 .involvement li {
-    font-weight: bold;
     list-style-type: none;
     margin-left: 0;
     padding: 0;

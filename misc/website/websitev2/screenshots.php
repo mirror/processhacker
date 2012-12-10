@@ -23,10 +23,7 @@
     </div>
 
     <div class="yui-g">
-        <p><strong>Incomplete.</strong></p>
-
         <div class="yui-u first">
-            <div>
                 <p><strong>Main Window</strong></p>
                 <a class="fancybox" data-fancybox-group="gallery" href="/images/screenshots/processes_tab_large.png" title="Main window">
                     <img src="/images/screenshots/processhacker_small.png" alt="Main window thumb" width="200" height="107"/>
@@ -43,7 +40,6 @@
                 <a class="fancybox" data-fancybox-group="gallery" href="/images/screenshots/sysinfo_large.png" title="Sysinfo window">
                     <img src="/images/screenshots/sysinfo_small.png" alt="Sysinfo window thumb" width="200" height="107"/>
                 </a>
-            </div>
         </div>
     </div>
 </div>

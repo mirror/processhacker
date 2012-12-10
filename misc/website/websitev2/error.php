@@ -76,12 +76,10 @@ function curPageURL()
         </nav>
 
         <div class="yui-t4">
-            <div>
-                <div class="summary center">
-                    <p><strong>ERROR <?php echo $errorcode ?>:</strong> <?php echo curPageURL(); ?></p>
-                    <p><strong>Please notify the team about this error or try again later.</strong></p>
-                    <p>Contact information is available on the About page.</p>
-                </div>
+            <div class="summary center">
+                <p><strong>ERROR <?php echo $errorcode ?>:</strong> <?php echo curPageURL(); ?></p>
+                <p><strong>Please notify the team about this error or try again later.</strong></p>
+                <p>Contact information is available on the About page.</p>
             </div>
         </div>
     </div>
