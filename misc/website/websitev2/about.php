@@ -3,9 +3,7 @@
 <div id="page">
     <div class="yui-d0">
         <nav>
-            <div class="flowed-block">
-                <img src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
-            </div>
+            <img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
 
             <div class="flowed-block">
                 <h2>Process Hacker</h2>
@@ -50,7 +48,7 @@
 
             <div class="yui-g">
                 <div class="yui-u first">
-                    <div class="portlet" style="position:relative">
+                    <div class="portlet dev">
                         <a href="http://sourceforge.net/users/wj32/">
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e" alt="User avatar" width="80" height="80">
                             <p><strong style="color:#AA0000">wj32</strong></p>
@@ -70,7 +68,7 @@
                         </a>
                     </div>
 
-                    <div class="portlet" style="position:relative">
+                    <div class="portlet dev">
                         <a href="http://sourceforge.net/users/dmex/">
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar" width="80" height="80">
                             <p style="color:#AA0000">
@@ -92,7 +90,7 @@
                         </a>
                     </div>
 
-                      <div class="portlet" style="position:relative">
+                      <div class="portlet dev">
                         <a href="http://sourceforge.net/users/xhmikosr/">
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/e37759b1ea0125d4e97b1e00b5eed26f.png" alt="User avatar" width="80" height="80">
                             <p style="color:#0000FF">

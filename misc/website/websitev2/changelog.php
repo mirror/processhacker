@@ -3,9 +3,8 @@
 <div id="page">
     <div class="yui-d0">
         <nav>
-            <div class="flowed-block">
-                <img src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
-            </div>
+            <img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
+
             <div class="flowed-block">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">

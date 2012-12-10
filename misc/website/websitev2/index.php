@@ -3,9 +3,7 @@
 <div id="page">
     <div class="yui-d0">
         <nav>
-            <div class="flowed-block">
-                <img src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
-            </div>
+            <img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
 
             <div class="flowed-block">
                 <h2>Process Hacker</h2>
@@ -29,7 +27,7 @@
                         <div id="version">
                             Latest version is <?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?>
                         </div>
-                        <ul style="list-style-type: none; padding: 0; margin: 0">
+                        <ul>
                             <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Setup (recommended)">Installer</a></li>
                             <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">Binaries (portable)</a></li>
                             <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download" title="Source code">Source code</a></li>

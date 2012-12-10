@@ -133,6 +133,10 @@ ul {
     right: 0;
 }
 
+.dev {
+    position: relative;
+}
+
 #page {
     margin: 0 auto;
     max-width: 90em;
@@ -242,6 +246,10 @@ ul {
     margin: 0;
     padding: 6% 40px 6% 6%;
     text-decoration: none;
+}
+
+#downloads ul {
+    margin: 0;
 }
 
 #released,
