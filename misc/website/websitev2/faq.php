@@ -1,22 +1,22 @@
 <?php $pagetitle = "FAQ"; include("header.php"); ?>
 
-<div class="page">
+<div id="page">
     <div class="yui-d0">
         <nav>
             <div class="flowed-block">
-                <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
+                <img src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
 
             <div class="flowed-block">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
-                    <li><a href="/features.php">Features</a></li>
-                    <li><a href="/screenshots.php">Screenshots</a></li>
-                    <li><a href="/downloads.php">Downloads</a></li>
-                    <li class="active"><a href="/faq.php">FAQ</a></li>
-                    <li><a href="/about.php">About</a></li>
-                    <li><a href="/forums/">Forum</a></li>
+                    <li><a href="features.php">Features</a></li>
+                    <li><a href="screenshots.php">Screenshots</a></li>
+                    <li><a href="downloads.php">Downloads</a></li>
+                    <li class="active"><a href="faq.php">FAQ</a></li>
+                    <li><a href="about.php">About</a></li>
+                    <li><a href="forums/">Forum</a></li>
                 </ul>
             </div>
         </nav>
@@ -26,8 +26,8 @@
                 <div class="portlet" >
                     <h2 class="center">Get Involved</h2>
                     <ul class="involvement">
-                        <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
-                        <li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
+                        <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
+                        <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
                     </ul>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                 </p>
 
                 <p><strong>Why is there annoying bug X in Process Hacker? Why is Process Hacker missing feature Y?</strong></p>
-                <p>Please report any bugs or feature requests in the <a href="/forums">forums</a>.</p>
+                <p>Please report any bugs or feature requests in the <a href="forums">forums</a>.</p>
 
                 <p><strong>"Process Hacker"? Is this a dangerous "hacking" tool?</strong></p>
                 <p>Please read about the <a href="http://catb.org/~esr/faqs/hacker-howto.html#what_is">correct definition of "hacker"</a>.</p>

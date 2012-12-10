@@ -1,22 +1,22 @@
 <?php $pagetitle = "About"; include("header.php"); ?>
 
-<div class="page">
+<div id="page">
     <div class="yui-d0">
         <nav>
             <div class="flowed-block">
-                <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
+                <img src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
 
             <div class="flowed-block">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
-                    <li><a href="/features.php">Features</a></li>
-                    <li><a href="/screenshots.php">Screenshots</a></li>
-                    <li><a href="/downloads.php">Downloads</a></li>
-                    <li><a href="/faq.php">FAQ</a></li>
-                    <li class="active"><a href="/about.php">About</a></li>
-                    <li><a href="/forums/">Forum</a></li>
+                    <li><a href="features.php">Features</a></li>
+                    <li><a href="screenshots.php">Screenshots</a></li>
+                    <li><a href="downloads.php">Downloads</a></li>
+                    <li><a href="faq.php">FAQ</a></li>
+                    <li class="active"><a href="about.php">About</a></li>
+                    <li><a href="forums/">Forum</a></li>
                 </ul>
             </div>
         </nav>
@@ -26,15 +26,15 @@
                 <div class="portlet">
                     <h2 class="center">Quick Links</h2>
                     <ul class="involvement">
-                        <li><a href="https://www.ohloh.net/p/processhacker/contributors">Project Contributors</a></li>
+                        <li><a href="http://www.ohloh.net/p/processhacker/contributors">Project Contributors</a></li>
                     </ul>
                 </div>
 
                 <div class="portlet">
                     <h2 class="center">Get Involved</h2>
                     <ul class="involvement">
-                        <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
-                        <li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
+                        <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
+                        <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
                     </ul>
                 </div>
             </div>
@@ -63,10 +63,10 @@
                         </ul>
 
                         <a href="http://meta.ohloh.net/kudos/" target="_blank">
-                            <img class="ohloh-kudos" src="https://www.ohloh.net/accounts/47453/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24"/>
+                            <img class="ohloh-kudos" src="http://www.ohloh.net/accounts/47453/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24"/>
                         </a>
-                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688650589" target="_blank">
-                            <img class="ohloh-commits" src="https://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png" alt="wj32 commit history" width="182" height="32"/>
+                        <a href="http://www.ohloh.net/p/processhacker/contributors/1415904688650589" target="_blank">
+                            <img class="ohloh-commits" src="http://www.ohloh.net/p/processhacker/contributors/144925/commits_spark.png" alt="wj32 commit history" width="182" height="32"/>
                         </a>
                     </div>
 
@@ -85,10 +85,10 @@
                         </ul>
 
                         <a href="http://meta.ohloh.net/kudos/" target="_blank">
-                            <img class="ohloh-kudos" src="https://www.ohloh.net/accounts/56334/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24"/>
+                            <img class="ohloh-kudos" src="http://www.ohloh.net/accounts/56334/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24"/>
                         </a>
-                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688659470" target="_blank">
-                            <img class="ohloh-commits" src="https://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png" alt="dmex commit history" width="182" height="32"/>
+                        <a href="http://www.ohloh.net/p/processhacker/contributors/1415904688659470" target="_blank">
+                            <img class="ohloh-commits" src="http://www.ohloh.net/p/processhacker/contributors/368201/commits_spark.png" alt="dmex commit history" width="182" height="32"/>
                         </a>
                     </div>
 
@@ -106,10 +106,10 @@
                         </ul>
 
                         <a href="http://meta.ohloh.net/kudos/" target="_blank">
-                            <img class="ohloh-kudos" src="https://www.ohloh.net/accounts/60504/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24"/>
+                            <img class="ohloh-kudos" src="http://www.ohloh.net/accounts/60504/widgets/account_rank.gif" alt="Ohloh kudos" width="32" height="24"/>
                         </a>
-                        <a href="https://www.ohloh.net/p/processhacker/contributors/1415904688663640" target="_blank">
-                            <img class="ohloh-commits" src="https://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png" alt="XhmikosR commit history" width="182" height="32"/>
+                        <a href="http://www.ohloh.net/p/processhacker/contributors/1415904688663640" target="_blank">
+                            <img class="ohloh-commits" src="http://www.ohloh.net/p/processhacker/contributors/145086/commits_spark.png" alt="XhmikosR commit history" width="182" height="32"/>
                         </a>
                     </div>
 

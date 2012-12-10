@@ -1,22 +1,22 @@
 <?php $pagetitle = "Overview"; include("header.php"); ?>
 
-<div class="page" style="position:relative">
+<div id="page">
     <div class="yui-d0">
         <nav>
             <div class="flowed-block">
-                <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
+                <img src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
 
             <div class="flowed-block">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
                     <li class="active"><a href="/">Overview</a></li>
-                    <li><a href="/features.php">Features</a></li>
-                    <li><a href="/screenshots.php">Screenshots</a></li>
-                    <li><a href="/downloads.php">Downloads</a></li>
-                    <li><a href="/faq.php">FAQ</a></li>
-                    <li><a href="/about.php">About</a></li>
-                    <li><a href="/forums/">Forum</a></li>
+                    <li><a href="features.php">Features</a></li>
+                    <li><a href="screenshots.php">Screenshots</a></li>
+                    <li><a href="downloads.php">Downloads</a></li>
+                    <li><a href="faq.php">FAQ</a></li>
+                    <li><a href="about.php">About</a></li>
+                    <li><a href="forums/">Forum</a></li>
                 </ul>
             </div>
         </nav>
@@ -25,8 +25,8 @@
             <div class="yui-b side">
                 <div class="portlet">
                     <h2 class="center">Downloads</h2>
-                    <div class="downloads">
-                        <div class="version">
+                    <div id="downloads">
+                        <div id="version">
                             Latest version is <?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?>
                         </div>
                         <ul style="list-style-type: none; padding: 0; margin: 0">
@@ -34,13 +34,13 @@
                             <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download" title="Binaries (portable)">Binaries (portable)</a></li>
                             <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download" title="Source code">Source code</a></li>
                         </ul>
-                        <div class="released">
+                        <div id="released">
                             Released <?php echo $LATEST_PH_RELEASE_DATE ?>
                         </div>
                     </div>
                     <div class="center">
                         <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
-                            <img alt="Donate" width="92" height="26" src="/images/donate.png">
+                            <img alt="Donate" width="92" height="26" src="images/donate.png">
                         </a>
                     </div>
                 </div>
@@ -48,9 +48,9 @@
                 <div class="portlet">
                     <h2 class="center">Quick Links</h2>
                     <ul class="involvement">
-                        <li><a href="http://sourceforge.net/projects/processhacker/?source=directory">Sourceforge Project Page</a></li>
-                        <li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
-                        <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
+                        <li><a href="http://sourceforge.net/projects/processhacker/">Sourceforge Project Page</a></li>
+                        <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
+                        <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
                         <li><a href="http://sourceforge.net/p/processhacker/code/">Browse source code</a></li>
                         <li><a href="http://processhacker.sourceforge.net/doc/">Source code documentation</a></li>
                     </ul>
@@ -226,12 +226,12 @@
             <div class="yui-g">
                 <div class="yui-u first">
                     <div class="portlet">
-                        <a href="/screenshots.php"><p><strong>Screenshots</strong></p></a>
-                        <a class="fancybox" data-fancybox-group="gallery" href="/images/screenshots/processes_tab_large.png" title="Main window">
-                            <img src="/images/screenshots/processhacker_small.png" alt="Main window" width="200" height="107"/>
+                        <a href="screenshots.php"><p><strong>Screenshots</strong></p></a>
+                        <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/processes_tab_large.png" title="Main window">
+                            <img src="images/screenshots/processhacker_small.png" alt="Main window" width="200" height="107"/>
                         </a>
-                        <a class="fancybox" data-fancybox-group="gallery" href="/images/screenshots/sysinfo_large.png" title="Sysinfo window">
-                            <img src="/images/screenshots/sysinfo_small.png" alt="Sysinfo" width="200" height="107"/>
+                        <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/sysinfo_large.png" title="Sysinfo window">
+                            <img src="images/screenshots/sysinfo_small.png" alt="Sysinfo" width="200" height="107"/>
                         </a>
                     </div>
                 </div>

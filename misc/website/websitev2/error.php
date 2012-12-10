@@ -54,23 +54,23 @@ function curPageURL()
     }
 ?>
 
-<div class="page">
+<div id="page">
     <div class="yui-d0">
         <nav>
             <div class="flowed-block">
-                <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
+                <img src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
 
             <div class="flowed-block">
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
-                    <li><a href="/features.php">Features</a></li>
-                    <li><a href="/screenshots.php">Screenshots</a></li>
-                    <li><a href="/downloads.php">Downloads</a></li>
-                    <li><a href="/faq.php">FAQ</a></li>
-                    <li><a href="/about.php">About</a></li>
-                    <li><a href="/forums/">Forum</a></li>
+                    <li><a href="features.php">Features</a></li>
+                    <li><a href="screenshots.php">Screenshots</a></li>
+                    <li><a href="downloads.php">Downloads</a></li>
+                    <li><a href="faq.php">FAQ</a></li>
+                    <li><a href="about.php">About</a></li>
+                    <li><a href="forums/">Forum</a></li>
                 </ul>
             </div>
         </nav>

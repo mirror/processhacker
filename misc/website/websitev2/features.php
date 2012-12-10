@@ -1,10 +1,10 @@
 <?php $pagetitle = "Features"; include("header.php"); ?>
 
-<div class="page">
+<div id="page">
     <div class="yui-d0">
         <nav>
             <div class="flowed-block">
-                <img src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
+                <img src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
             </div>
 
             <div class="flowed-block">
@@ -12,11 +12,11 @@
                 <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
                     <li class="active"><a href="./features.php">Features</a></li>
-                    <li><a href="/screenshots.php">Screenshots</a></li>
-                    <li><a href="/downloads.php">Downloads</a></li>
-                    <li><a href="/faq.php">FAQ</a></li>
-                    <li><a href="/about.php">About</a></li>
-                    <li><a href="/forums/">Forum</a></li>
+                    <li><a href="screenshots.php">Screenshots</a></li>
+                    <li><a href="downloads.php">Downloads</a></li>
+                    <li><a href="faq.php">FAQ</a></li>
+                    <li><a href="about.php">About</a></li>
+                    <li><a href="forums/">Forum</a></li>
                 </ul>
             </div>
         </nav>
@@ -26,8 +26,8 @@
                 <div class="portlet" >
                     <h2 class="center">Get Involved</h2>
                     <ul class="involvement">
-                        <li><a href="/forums/viewforum.php?f=24">Report a bug</a></li>
-                        <li><a href="/forums/viewforum.php?f=5">Ask a question</a></li>
+                        <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
+                        <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
                     </ul>
                 </div>
             </div>

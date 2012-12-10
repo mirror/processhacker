@@ -8,7 +8,7 @@ body {
 b,
 strong,
 nav li.active a,
-.downloads li,
+#downloads li,
 .involvement li {
     font-weight: bold;
 }
@@ -23,7 +23,7 @@ code {
 }
 
 code,
-.downloads li a {
+#downloads li a {
     border-radius: 4px;
     -webkit-border-radius: 4px;
        -moz-border-radius: 4px;
@@ -102,6 +102,16 @@ ul {
     text-align: center;
 }
 
+#changelog {
+    background: #FFF;
+    border-color: #333;
+    border-style: solid;
+    border-width: 2px;
+    overflow: scroll;
+    width: 800px;
+    height: 600px;
+}
+
 .ft {
     font: bold 10px Verdana, Arial, Helvetica, sans-serif;
 }
@@ -123,7 +133,7 @@ ul {
     right: 0;
 }
 
-.page {
+#page {
     margin: 0 auto;
     max-width: 90em;
     padding: 0 10px 5px 10px;
@@ -205,19 +215,9 @@ ul {
     text-decoration: none;
 }
 
-:link:active,
-*:visited:active {
-    color: #3366CC;
-}
-
 :link:hover,
 *:visited:hover {
     text-decoration: underline;
-}
-
-a[onclick],
-a[onclick]:active {
-    color: #009933;
 }
 
 .flowed-block {
@@ -230,12 +230,12 @@ a[onclick]:active {
     width: 100%;
 }
 
-.downloads li {
+#downloads li {
     margin: 0;
     padding: 2px 0 0;
 }
 
-.downloads li a {
+#downloads li a {
     background: url("/images/project-downloads.png") no-repeat scroll right center #4F843C;
     color: #FFF;
     display: block;
@@ -244,18 +244,18 @@ a[onclick]:active {
     text-decoration: none;
 }
 
-.released,
-.version {
+#released,
+#version {
     background: none repeat scroll 0 0 #D3E3C7;
     padding: 0.2em 1em;
 }
 
-.released {
+#released {
     border-radius: 0 0 4px 4px;
     margin: 0.3em 0 0.5em;
 }
 
-.version {
+#version {
     border-radius: 4px 4px 0 0;
 }
 
