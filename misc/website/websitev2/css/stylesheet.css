@@ -251,12 +251,40 @@ ul {
 }
 
 #downloads li a {
-    background: url("/images/project-downloads.png") no-repeat scroll right center #4F843C;
+    box-shadow: inset 0 1px 0 0 #BBDAF7;
+    -webkit-box-shadow: inset 0 1px 0 0 #BBDAF7;
+       -moz-box-shadow: inset 0 1px 0 0 #BBDAF7;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1C8D2E), color-stop(1, #629D4F)); /* Chrome, Safari4+ */
+    background-image: -webkit-linear-gradient(center top, #1C8D2E 5%, #629D4F 100%); /* Chrome10+, Safari5.1+ */
+    background-image:    -moz-linear-gradient(center top, #1C8D2E 5%, #629D4F 100%); /* FF3.6+ */
+    background-image:     -ms-linear-gradient(center top, #1C8D2E 5%, #629D4F 100%); /* IE10+ */
+    background-image:      -o-linear-gradient(center top, #1C8D2E 5%, #629D4F 100%); /* Opera 11.10+ */
+    background-image:         linear-gradient(to bottom,  #1C8D2E 5%, #629D4F 100%); /* W3C */
+    background-color: #1C8D2E;
+    border: 1px solid #1C8D2E;
     color: #FFF;
-    display: block;
-    margin: 0;
-    padding: 6% 40px 6% 6%;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0.7em 1em;
     text-decoration: none;
+    text-shadow: 1px 1px 0 #528ecc;
+    width: 87%;
+}
+
+#downloads li a:hover {
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #629D4F), color-stop(1, #1C8D2E)); /* Chrome, Safari4+ */
+    background-image: -webkit-linear-gradient(center top, #629D4F 5%, #1C8D2E 100%); /* Chrome10+, Safari5.1+ */
+    background-image:    -moz-linear-gradient(center top, #629D4F 5%, #1C8D2E 100%); /* FF3.6+ */
+    background-image:     -ms-linear-gradient(center top, #629D4F 5%, #1C8D2E 100%); /* IE10+ */
+    background-image:      -o-linear-gradient(center top, #629D4F 5%, #1C8D2E 100%); /* Opera 11.10+ */
+    background-image:         linear-gradient(to bottom,  #629D4F 5%, #1C8D2E 100%); /* W3C */
+    background-color: #629D4F;
+}
+
+#downloads li a:active {
+    position: relative;
+    top: 1px;
 }
 
 #downloads ul {
@@ -265,7 +293,8 @@ ul {
 
 #released,
 #version {
-    background: none repeat scroll 0 0 #D3E3C7;
+    background: none repeat scroll 0 0 #1C8D2E;
+    color: #FFF;
     padding: 0.2em 1em;
 }
 
@@ -273,7 +302,7 @@ ul {
     border-radius: 0 0 4px 4px;
     -webkit-border-radius: 0 0 4px 4px;
        -moz-border-radius: 0 0 4px 4px;
-    margin: 0.1em 0 0.5em;
+    margin: 0.2em 0 0.5em;
 }
 
 #version {
