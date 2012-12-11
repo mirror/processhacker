@@ -1,4 +1,4 @@
-<?php include("config.php");
+<?php include "config.php";
 
 header('Content-Type: application/xml; charset=UTF-8');
 

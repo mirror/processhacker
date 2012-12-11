@@ -1,4 +1,4 @@
-<?php $pagetitle = "Screenshots"; include("header.php"); ?>
+<?php $pagetitle = "Screenshots"; include "header.php"; ?>
 
 <div id="page">
     <div class="yui-d0">
@@ -42,4 +42,4 @@
     </div>
 </div>
 
-<?php $includejs = true; include("footer.php"); ?>
+<?php $includejs = true; include "footer.php"; ?>

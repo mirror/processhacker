@@ -1,4 +1,4 @@
-<?php $pagetitle = "FAQ"; include("header.php"); ?>
+<?php $pagetitle = "FAQ"; include "header.php"; ?>
 
 <div id="page">
     <div class="yui-d0">
@@ -81,4 +81,4 @@
     </div>
 </div>
 
-<?php include("footer.php"); ?>
+<?php include "footer.php"; ?>

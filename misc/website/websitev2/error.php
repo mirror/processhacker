@@ -2,27 +2,22 @@
 $errorcode = $_SERVER['REDIRECT_STATUS'];
 $pagetitle = "Error ".$errorcode;
 
-include("header.php");
+include "header.php";
 
 function curPageURL()
 {
     $pageURL = 'http';
 
-    if (!empty($_SERVER['HTTPS']))
-    {
-        if ($_SERVER['HTTPS'] == 'on')
-        {
+    if (!empty($_SERVER['HTTPS'])) {
+        if ($_SERVER['HTTPS'] == 'on') {
             $pageURL .= "s";
         }
     }
     $pageURL .= "://";
 
-    if ($_SERVER["SERVER_PORT"] != "80")
-    {
+    if ($_SERVER["SERVER_PORT"] != "80") {
         $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-    }
-    else
-    {
+    } else {
         $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
     }
 
@@ -39,16 +34,12 @@ function curPageURL()
     // 3rd param is %d for errorcode - defined above
     // 4th param is %s for the current page - defined above
 
-    if ($errorcode != 403)
-    {
-        if (!empty($_SERVER['HTTP_REFERER']))
-        {
+    if ($errorcode != 403) {
+        if (!empty($_SERVER['HTTP_REFERER'])) {
             $referringSite = $_SERVER['HTTP_REFERER'];
             // this is a second type for logging the referer if the request come from another site
             add_log('critical', 'LOG_ERROR_PAGE_REF', $errorcode, curPageURL(), $referringSite);
-        }
-        else
-        {
+        } else {
             add_log('critical', 'LOG_ERROR_PAGE', $errorcode, curPageURL());
         }
     }
@@ -83,4 +74,4 @@ function curPageURL()
     </div>
 </div>
 
-<?php include("footer.php"); ?>
+<?php include "footer.php"; ?>

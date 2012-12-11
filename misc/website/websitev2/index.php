@@ -1,4 +1,4 @@
-<?php $pagetitle = "Overview"; include("header.php"); ?>
+<?php $pagetitle = "Overview"; include "header.php"; ?>
 
 <div id="page">
     <div class="yui-d0">
@@ -102,10 +102,8 @@
                             ORDER BY p.post_id DESC LIMIT $topicnumber";
 
                             // Check if we have a valid database connection, preform the query if we do.
-                            if (!empty($db) && ($query = $db->sql_query($sql)))
-                            {
-                                while ($row = $db->sql_fetchrow($query))
-                                {
+                            if (!empty($db) && ($query = $db->sql_query($sql))) {
+                                while ($row = $db->sql_fetchrow($query)) {
                                     $topic_title = $row['topic_title'];
                                     //$post_text = $row['post_text'];
                                     $author_avatar = $row['user_avatar'];
@@ -135,18 +133,13 @@
                                     </div>";
                                 }
                                 $db->sql_freeresult($query);
-                            }
-                            else
-                            {
+                            } else {
                                 // Check if we have a valid database connection.
-                                if (!empty($db))
-                                {
+                                if (!empty($db)) {
                                     $error = $db->sql_error();
 
                                     echo "<p>Query failed: ".$error['message']."</p>";
-                                }
-                                else
-                                {
+                                } else {
                                     echo "<p>Query failed: Unknown error.</p>";
                                 }
                             }
@@ -172,10 +165,8 @@
                             ORDER BY p.post_id DESC LIMIT $topicnumber";
 
                             // Check if we have a valid database connection, preform the query if we do.
-                            if (!empty($db) && ($query = $db->sql_query($sql)))
-                            {
-                                while ($row = $db->sql_fetchrow($query))
-                                {
+                            if (!empty($db) && ($query = $db->sql_query($sql))) {
+                                while ($row = $db->sql_fetchrow($query)) {
                                     $topic_title = $row['topic_title'];
                                     //$post_text = nl2br($row['post_text']);
                                     $author_avatar = $row['user_avatar'];
@@ -198,18 +189,13 @@
                                     </div>";
                                 }
                                 $db->sql_freeresult($query);
-                            }
-                            else
-                            {
+                            } else {
                                 // Check if we have a valid database connection.
-                                if (!empty($db))
-                                {
+                                if (!empty($db)) {
                                     $error = $db->sql_error();
 
                                     echo "<p>Query failed: ".$error['message']."</p>";
-                                }
-                                else
-                                {
+                                } else {
                                     echo "<p>Query failed: Unknown error.</p>";
                                 }
                             }
@@ -288,4 +274,4 @@
     <!-- AddThis Button END -->
 </div>
 
-<?php $includejs = true; include("footer.php"); ?>
+<?php $includejs = true; include "footer.php"; ?>
