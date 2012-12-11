@@ -2,7 +2,7 @@
 $errorcode = $_SERVER['REDIRECT_STATUS'];
 $pagetitle = "Error ".$errorcode;
 
-include "header.php";
+include "config.php";
 
 function curPageURL()
 {
@@ -44,11 +44,25 @@ function curPageURL()
         }
     }
 ?>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title><?php echo $pagetitle ?> - Process Hacker</title>
+    <meta charset="utf-8"/>
+    <meta name="description" content="A free and open source process viewer with powerful process termination and memory searching/editing capabilities."/>
+    <link rel="icon" type="image/ico" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/pack.css"/>
+    <link rel="alternate" type="application/atom+xml" href="http://processhacker.sourceforge.net/forums/feed.php?f=1" title="Process Hacker - News"/>
+    <link rel="alternate" type="application/atom+xml" href="http://sourceforge.net/p/processhacker/code/feed" title="Process Hacker - SVN"/>
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+<body>
 <div id="page">
     <div class="yui-d0">
         <nav>
-            <img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
+            <img class="flowed-block" src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">
 
             <div class="flowed-block">
                 <h2>Process Hacker</h2>
@@ -74,4 +88,44 @@ function curPageURL()
     </div>
 </div>
 
-<?php include "footer.php"; ?>
+<footer>
+    <img src="/images/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30">
+    <br>
+    Copyright &copy; 2008-2012 wj32
+
+<?php
+if (@$includejs) {
+    echo "<script src=\"http://www.google.com/jsapi\"></script><script>google.load(\"feeds\", \"1\")</script>
+    <script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js\"></script>
+    <script src=\"/js/pack.js\"></script>
+    <script>window.jQuery || document.write('<script src=\"js/jquery-1.8.3.min.js\"><\/script>')</script>";
+    if ($pagetitle == "Overview") {
+        echo "<script src=\"http://s7.addthis.com/js/300/addthis_widget.js#pubid=dmex\"></script>";
+    }
+    echo
+    "<script>
+    $(document).ready(function() {
+        $(\".fancybox\").fancybox({});
+    });
+    </script>";
+}
+?>
+
+<!-- Google Analytics (Async)-->
+<script>
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-22023876-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
+    })();
+</script>
+<!-- End Google Analytics -->
+</footer>
+</body>
+</html>
