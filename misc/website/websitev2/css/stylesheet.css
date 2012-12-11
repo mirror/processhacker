@@ -7,9 +7,11 @@ body {
 
 b,
 strong,
+nav h2,
 nav li.active a,
 #downloads li,
-.involvement li {
+.involvement li,
+dt {
     font-weight: bold;
 }
 
@@ -30,7 +32,16 @@ code,
        -moz-border-radius: 4px;
 }
 
+dd {
+    margin-left: 10px;
+}
+
+dt {
+    margin: 15px auto 5px;
+}
+
 footer {
+    margin: 10px auto;
     text-align: center;
 }
 
@@ -63,7 +74,6 @@ nav h2 {
     clear: none;
     color: #000;
     font-size: 30px;
-    font-weight: bold;
     line-height: 34px;
     margin: 0 auto 6px;
 }
@@ -154,7 +164,7 @@ ul {
     border: 1px solid #E5DFC7;
     display: block;
     float: left;
-    margin: 15px 10px 0 0;
+    margin: 0 10px 0 0;
     padding: 4px;
 }
 
@@ -299,4 +309,14 @@ ul {
 .involvement li:hover {
     background-color: #EEE;
     text-decoration: none;
+}
+
+.about-li {
+    list-style-type: none;
+    margin-left: 0;
+    padding-top: 4px;
+}
+
+#about {
+    padding-bottom: 20px;
 }
