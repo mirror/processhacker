@@ -54,7 +54,7 @@
                     <div class="portlet dev">
                         <p>
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e" alt="User avatar" width="80" height="80">
-                            <a href="http://sourceforge.net/users/wj32/" style="color:#AA0000"><strong>wj32</strong></a>
+                            <a href="http://wj32.org" style="color:#AA0000"><strong>wj32</strong></a>
                         </p>
                         <ul>
                             <li>Project Founder</li>
