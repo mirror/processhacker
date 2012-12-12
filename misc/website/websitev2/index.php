@@ -25,7 +25,8 @@
                     <h2 class="center">Downloads</h2>
                     <div id="downloads">
                         <div id="version">
-                            Latest version is <?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?>
+                            Latest version is <?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?><br />
+                            <a href="http://www.downloadbestsoft.com/Process-Hacker.html" style="color: #aaff55 !important;">Download from our official mirror</a>
                         </div>
                         <ul>
                             <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Installer (recommended)">Installer</a></li>
