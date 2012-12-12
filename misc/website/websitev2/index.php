@@ -26,7 +26,7 @@
                     <div id="downloads">
                         <div id="version">
                             Latest version is <?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?><br />
-                            <a href="http://www.downloadbestsoft.com/Process-Hacker.html" style="font-size: 13px; color: #aaff55 !important;">Download from our official mirror</a>
+                            <a id="downloadbestsoft" href="http://www.downloadbestsoft.com/Process-Hacker.html">Download from our official mirror</a>
                         </div>
                         <ul>
                             <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Installer (recommended)">Installer</a></li>
@@ -127,9 +127,7 @@
                                     echo
                                     "<div class=\"ft\">
                                         <a href=\"{$post_link}\">{$topic_title}</a>
-                                        <span style=\"color:#C0C0C0\">by
-                                            <span>{$post_author}</span>
-                                        </span>
+                                        <span class=\"author\"> by <span>{$post_author}</span></span>
                                         <div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
                                     </div>";
                                 }
@@ -183,9 +181,7 @@
                                     echo
                                     "<div class=\"ft\">
                                         <a href=\"{$post_link}\">{$topic_title}</a>
-                                        <span style=\"color:#C0C0C0\">by
-                                            <span>{$post_author}</span>
-                                        </span>
+                                        <span class=\"author\"> by <span>{$post_author}</span></span>
                                         <div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
                                     </div>";
                                 }
@@ -241,10 +237,10 @@
                                     var thefeeds = result.feed.entries;
                                     for (var i = 0; i < thefeeds.length; i++) {
                                         rssoutput += "<p><div class='ft'>";
-                                            rssoutput += "<div style=\"color:#333\">" + thefeeds[i].content.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/") + "</div>";
-                                            rssoutput += "<span style=\"color:#C0C0C0\"> by </span>";
+                                            rssoutput += "<div style=\"color:#333\">" + thefeeds[i].content.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/"); + "</div>";
+                                            rssoutput += "<span class=\"author\"> by </span>";
                                             rssoutput += "<span style=\"color:#A00\">" + thefeeds[i].author + "</span>";
-                                            rssoutput += "<div style=\"color:#C0C0C0\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>";
+                                            rssoutput += "<div class=\"author\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>";
                                         rssoutput += "</div></p>";
                                     }
 
