@@ -218,11 +218,12 @@
                 </div>
                 <div class="yui-u">
                     <div class="portlet">
+						<p><strong>SVN Activity</strong></p>
                         <div id="feeddiv"></div>
 
                         <script>
                             var feedcontainer=document.getElementById("feeddiv");
-                            var rssoutput = "<p><strong>SVN Activity</strong></p>";
+                            var rssoutput = "";
 
                             feedcontainer.innerHTML = "<div id=\"feeddiv2\">Loading feed...</div>";
 
@@ -236,12 +237,12 @@
                                 if (!result.error) {
                                     var thefeeds = result.feed.entries;
                                     for (var i = 0; i < thefeeds.length; i++) {
-                                        rssoutput += "<p><div class='ft'>";
+                                        rssoutput += "<div class='ft'>";
                                             rssoutput += "<div style=\"color:#333\">" + thefeeds[i].content.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/"); + "</div>";
-                                            rssoutput += "<span class=\"author\"> by </span>";
+                                            rssoutput += "<span class=\"forumdate\"> by </span>";
                                             rssoutput += "<span style=\"color:#A00\">" + thefeeds[i].author + "</span>";
-                                            rssoutput += "<div class=\"author\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>";
-                                        rssoutput += "</div></p>";
+                                            rssoutput += "<div class=\"forumdate\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>";
+                                        rssoutput += "</div>";
                                     }
 
                                     feedcontainer.innerHTML = rssoutput;
