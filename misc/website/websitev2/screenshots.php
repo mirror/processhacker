@@ -22,22 +22,21 @@
 
     <div class="yui-g">
         <div class="yui-u first">
-                <p><strong>Main Window</strong></p>
-                <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/processes_tab_large.png" title="Main window">
-                    <img src="images/screenshots/processhacker_small.png" alt="Main window thumb" width="200" height="107"/>
-                </a>
+            <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/processes_tab_large.png" title="Main window">
+                <img src="images/screenshots/processhacker_small.png" alt="Main window thumb" width="200" height="107"/>
+            </a>
 
-                <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/servicestab_large.png" title="Services tab">
-                    <img src="images/screenshots/servicestab_small.png" alt="Services tab thumb" width="200" height="107"/>
-                </a>
+            <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/servicestab_large.png" title="Services tab">
+                <img src="images/screenshots/servicestab_small.png" alt="Services tab thumb" width="200" height="107"/>
+            </a>
 
-                <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/networktab_large.png" title="Network tab">
-                    <img src="images/screenshots/networktab_small.png" alt="Network tab thumb" width="200" height="107"/>
-                </a>
+            <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/networktab_large.png" title="Network tab">
+                <img src="images/screenshots/networktab_small.png" alt="Network tab thumb" width="200" height="107"/>
+            </a>
 
-                <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/sysinfo_large.png" title="Sysinfo window">
-                    <img src="images/screenshots/sysinfo_small.png" alt="Sysinfo window thumb" width="200" height="107"/>
-                </a>
+            <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/sysinfo_large.png" title="Sysinfo window">
+                <img src="images/screenshots/sysinfo_small.png" alt="Sysinfo window thumb" width="200" height="107"/>
+            </a>
         </div>
     </div>
 </div>

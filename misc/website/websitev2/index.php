@@ -218,7 +218,7 @@
                 </div>
                 <div class="yui-u">
                     <div class="portlet">
-						<p><strong>SVN Activity</strong></p>
+                        <p><strong>SVN Activity</strong></p>
                         <div id="feeddiv"></div>
 
                         <script>

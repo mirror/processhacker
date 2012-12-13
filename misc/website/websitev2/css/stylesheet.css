@@ -1,17 +1,12 @@
 body {
-    color: #333;
+    color: black;
     font-family: Tahoma, sans-serif;
     font-size: 12px;
     margin: 0;
 }
 
 b,
-strong,
-nav h2,
-nav li.active a,
-#downloads li,
-.involvement li,
-dt {
+strong {
     font-weight: bold;
 }
 
@@ -37,6 +32,7 @@ dd {
 }
 
 dt {
+    font-weight: bold;
     margin: 15px auto 5px;
 }
 
@@ -70,39 +66,57 @@ li {
     margin-left: 12px;
 }
 
-nav h2 {
-    clear: none;
-    color: #000;
-    font-size: 30px;
-    line-height: 34px;
-    margin: 0 auto 6px;
+nav a,
+.involvement a:hover,
+.involvement li:hover {
+    border-radius: 6px;
+    -webkit-border-radius: 6px;
+       -moz-border-radius: 6px;
 }
 
-nav li {
-    display: inline;
-    list-style-type: none;
-    margin: 0;
-}
-
-nav li a {
+nav a {
     margin-right: 0.4em;
     padding: 0.3em 0.5em;
 }
 
-nav li:first-child a {
-    margin-left: -0.5em;
+nav .active a {
+    background-color: Gainsboro;
+    font-weight: bold;
 }
 
-nav li a:link,
-nav li a:visited {
-    background-color: #FFF;
-    color: #000;
+nav a:link,
+nav a:visited {
+    color: black;
     text-decoration: none;
 }
 
-nav li a:hover {
-    background-color: #F3F3F3;
-    color: #000;
+nav a:hover {
+    background-color: lightgray;
+}
+
+nav h2 {
+    clear: none;
+    color: black;
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 34px;
+    margin: 0 auto;
+}
+
+nav li {
+    display: inline;
+    margin: 0;
+}
+
+nav li:first-child {
+    margin-left: -0.5em;
+}
+
+nav li,
+.about-li,
+.involvement li,
+.portlet li {
+    list-style-type: none;
 }
 
 ul {
@@ -114,10 +128,7 @@ ul {
 }
 
 #changelog {
-    background: #FFF;
-    border-color: #333;
-    border-style: solid;
-    border-width: 2px;
+    border: 2px solid black;
     overflow: scroll;
     width: 800px;
     height: 600px;
@@ -129,7 +140,24 @@ ul {
 
 .forumdate {
     color: silver;
-    padding: 0 0 5px 0;
+    padding: 0 0 5px;
+}
+
+.about-li {
+    margin-left: 0;
+    padding-top: 4px;
+}
+
+#about {
+    padding-bottom: 20px;
+}
+
+.coder {
+    color: #AA0000 !important;
+}
+
+.dev {
+    position: relative;
 }
 
 .ohloh-kudos {
@@ -144,21 +172,6 @@ ul {
     right: 0;
 }
 
-.dev {
-    position: relative;
-}
-
-#page {
-    margin: 0 auto;
-    max-width: 90em;
-    padding: 0 10px 5px 10px;
-    position: relative; /* Addthis div alignment */
-}
-
-.summary {
-    padding-right: 300px;
-}
-
 .user-avatar {
     background: white;
     border: 1px solid #E5DFC7;
@@ -166,6 +179,21 @@ ul {
     float: left;
     margin: 0 10px 0 0;
     padding: 4px;
+}
+
+#xhmikosr {
+    color: blue;
+}
+
+#page {
+    margin: 0 auto;
+    max-width: 90em;
+    padding: 0 10px 5px;
+    position: relative; /* Addthis div alignment */
+}
+
+.summary {
+    padding-right: 300px;
 }
 
 .yui-d0 {
@@ -220,10 +248,6 @@ ul {
     margin-top: 0;
 }
 
-.portlet li {
-    list-style-type: none;
-}
-
 :link,
 *:visited {
     color: #0033AA;
@@ -246,6 +270,7 @@ ul {
 }
 
 #downloads li {
+    font-weight: bold;
     margin: 0;
     padding: 2px 0 0;
 }
@@ -262,7 +287,7 @@ ul {
     background-image:         linear-gradient(to bottom,  #1C8D2E 5%, #629D4F 100%); /* W3C */
     background-color: #1C8D2E;
     border: 1px solid #1C8D2E;
-    color: #FFF;
+    color: white;
     display: inline-block;
     font-size: 14px;
     font-weight: bold;
@@ -282,19 +307,19 @@ ul {
     background-color: #629D4F;
 }
 
-#downloads li a:active {
-    position: relative;
-    top: 1px;
-}
-
 #downloads ul {
     margin: 0;
+}
+
+#downloadbestsoft {
+    color: lime;
+    font-size: 13px;
 }
 
 #released,
 #version {
     background: none repeat scroll 0 0 #1C8D2E;
-    color: #FFF;
+    color: white;
     padding: 0.2em 1em;
 }
 
@@ -318,10 +343,6 @@ ul {
     padding: 0.5em;
 }
 
-.side ul {
-    background: none repeat scroll 0 0 #FBFBFB;
-}
-
 .involvement a {
     background: url("/images/answers-arrow-right.png") no-repeat scroll right center transparent;
     display: block;
@@ -329,40 +350,27 @@ ul {
 }
 
 .involvement li {
-    list-style-type: none;
+    font-weight: bold;
     margin-left: 0;
     padding: 0;
 }
 
 .involvement a:hover,
 .involvement li:hover {
-    background-color: #EEE;
+    background-color: lightgray;
     text-decoration: none;
 }
 
-.about-li {
-    list-style-type: none;
-    margin-left: 0;
-    padding-top: 4px;
-}
-
-#about {
-    padding-bottom: 20px;
-}
-
-#downloadbestsoft {
-    color: #AAFF55;
-    font-size: 13px;
-}
-
-.coder {
-    color: #AA0000;
-}
-
-#xhmikosr {
-    color: #0000FF;
-}
-
 .author {
-    color: #C0C0C0;
+    color: silver;
+}
+
+::-moz-selection {
+    background-color: #B3D4FC;
+    text-shadow: none;
+}
+
+::selection {
+    background-color: #B3D4FC;
+    text-shadow: none;
 }
