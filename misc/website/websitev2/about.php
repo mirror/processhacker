@@ -17,7 +17,7 @@
             </div>
         </nav>
 
-        <div class="yui-t4">
+        <div class="yui-t4" style="width:auto;">
             <div class="yui-b side">
                 <div class="portlet">
                     <h2 class="center">Quick Links</h2>
@@ -71,7 +71,7 @@
                     <div class="portlet dev">
                         <p>
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar" width="80" height="80">
-                            <a class="coder" href="http://sourceforge.net/users/dmex/"><strong>dmex</strong> - 0x0D06F00D</a>
+                            <a class="coder" href="http://sourceforge.net/users/dmex/"><strong>dmex</strong></a>
                         </p>
                         <ul>
                             <li>Project Maintainer</li>
@@ -87,7 +87,7 @@
                         </a>
                     </div>
 
-                      <div class="portlet dev">
+                    <div class="portlet dev">
                         <p>
                             <img class="user-avatar" src="http://www.gravatar.com/avatar/e37759b1ea0125d4e97b1e00b5eed26f.png" alt="User avatar" width="80" height="80">
                             <a id="xhmikosr" href="http://sourceforge.net/users/xhmikosr/"><strong>XhmikosR</strong></a>
