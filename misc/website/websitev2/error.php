@@ -89,18 +89,11 @@ function curPageURL()
 </div>
 
 <footer>
-    <img src="/images/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30">
+    <a href="http://sourceforge.net/projects/processhacker/"><img src="/images/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30"></a>
+    <br>
+    <a href="privacy.php">Privacy Policy</a>
     <br>
     Copyright &copy; 2008-2012 wj32
-
-<?php
-if (@$includejs) {
-    echo "<script src=\"http://www.google.com/jsapi\"></script><script>google.load(\"feeds\", \"1\")</script>";
-    if ($pagetitle == "Overview") {
-        echo "<script src=\"http://s7.addthis.com/js/300/addthis_widget.js#pubid=dmex\"></script>";
-    }
-}
-?>
 
 <!-- Google Analytics (Async)-->
 <script>

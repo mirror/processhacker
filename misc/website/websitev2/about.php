@@ -103,4 +103,4 @@
     </div>
 </div>
 
-<?php $includejs = true; include "footer.php"; ?>
+<?php include "footer.php"; ?>
