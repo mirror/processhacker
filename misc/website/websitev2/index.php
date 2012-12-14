@@ -9,8 +9,6 @@
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
                     <li class="active"><a href="/">Overview</a></li>
-                    <li><a href="features.php">Features</a></li>
-                    <li><a href="screenshots.php">Screenshots</a></li>
                     <li><a href="downloads.php">Downloads</a></li>
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="about.php">About</a></li>
@@ -20,64 +18,87 @@
         </nav>
 
         <div class="yui-t4">
-            <div class="yui-b side">
-                <div class="portlet">
-                    <h2 class="center">Downloads</h2>
-                    <div id="downloads">
+            <p class="headline main-headline">A <strong>free</strong>, powerful, multi-purpose tool that helps you <strong>monitor system resources</strong>,<br>
+            <strong>debug software</strong> and <strong>detect malware</strong>.</p>
+            
+            <div class="pre-section">
+                <!-- Ad Unit 3 - DO NOT CHANGE THIS CODE -->
+                <div style="float: left; width: 336px; height: 280px;">
+                    <?php ad_unit_3(); ?>
+                </div>
+                
+                <div class="yui-b side">
+                    <div class="portlet" id="downloads">
                         <div id="version">
                             Latest version is <?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?><br />
-                            <a id="downloadbestsoft" href="http://www.downloadbestsoft.com/Process-Hacker.html">Download from our official mirror</a>
-                        </div>
-                        <ul>
-                            <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe/download" title="Installer (recommended)">Installer</a></li>
-                            <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip/download">Binaries (portable)</a></li>
-                            <li><a href="http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip/download">Source code</a></li>
-                        </ul>
-                        <div id="released">
                             Released <?php echo $LATEST_PH_RELEASE_DATE ?>
                         </div>
+                        <ul>
+                            <li><a href="downloads.php">Download</a></li>
+                        </ul>
+                        <div class="center" id="donate">
+                            <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
+                                <img src="images/donate.png" alt="Donate" width="92" height="26">
+                            </a>
+                        </div>
                     </div>
-                    <div class="center">
-                        <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
-                            <img src="images/donate.png" alt="Donate" width="92" height="26">
-                        </a>
+                    
+                    <div class="portlet" id="quick-links">
+                        <h2 class="center">Quick Links</h2>
+                        <ul class="involvement">
+                            <li><a href="http://sourceforge.net/projects/processhacker/">SourceForge project page</a></li>
+                            <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
+                            <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
+                            <li><a href="http://sourceforge.net/p/processhacker/code/">Browse source code</a></li>
+                        </ul>
                     </div>
-                </div>
-
-                <div class="portlet">
-                    <h2 class="center">Quick Links</h2>
-                    <ul class="involvement">
-                        <li><a href="http://sourceforge.net/projects/processhacker/">Sourceforge Project Page</a></li>
-                        <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
-                        <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
-                        <li><a href="http://sourceforge.net/p/processhacker/code/">Browse source code</a></li>
-                        <li><a href="http://processhacker.sourceforge.net/doc/">Source code documentation</a></li>
-                    </ul>
                 </div>
             </div>
-
-            <div class="summary">
-                <p>Process Hacker is a free and open source process viewer. This multi-purpose tool will assist you with debugging, malware detection and system monitoring. It includes powerful process termination, memory viewing/editing and other unique and specialized features.</p>
-                <p><strong>Key features of Process Hacker:</strong></p>
-                <ul>
-                    <li>A simple, customizable tree view with highlighting showing you the processes running on your computer.</li>
-                    <li>Detailed system statistics with graphs.</li>
-                    <li>Advanced features not found in other programs, such as detaching from debuggers, viewing GDI handles, viewing heaps, injecting and unloading DLLs, and more.</li>
-                    <li>Powerful process termination that bypasses security software and rootkits.</li>
-                    <li>View, edit and control services, including those not shown by the Services console.</li>
-                    <li>View and close network connections.</li>
-                    <li>Starts up almost instantly, unlike other programs.</li>
-                    <li><a href="features.php">Many more features...</a></li>
-                </ul>
-                <p><strong>Compared with Process Explorer, Process Hacker:</strong></p>
-                <ul>
-                    <li>Implements all of the functionality offered by Process Explorer, plus more advanced features.</li>
-                    <li>Allows you to see what a thread is waiting on.</li>
-                    <li>Has advanced string scanning capabilities, as well as regular expression filtering.</li>
-                    <li>Highlights both relocated and .NET DLLs.</li>
-                    <li>Shows symbolic access masks (e.g. <code>Read</code>, <code>Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
-                    <li>Shows names for transaction manager objects and ETW registration objects.</li>
-                    <li>Shows detailed token information, as well as allowing privileges to be enabled and disabled.</li>
+            
+            <div class="main-section">
+                <p class="section-header">Main features</p>
+                <p class="headline">A detailed overview of system activity with highlighting.</p>
+                <img src="images/new/main_window.png" alt="Main window" width="676" height="449">
+                
+                <p class="headline">Graphs and statistics allow you quickly to track down resource hogs and runaway processes.</p>
+                <img src="images/new/sysinfo_trimmed_1.png" alt="System information summary" width="700" height="347">
+                <p class="tip">Tip: Use Ctrl+I to view system performance information.
+                Move your cursor over a graph to get a tooltip with information about the data point under your cursor.
+                You can double-click the graph to see information about the process at that data point, even if the process is no longer running.</p>
+                
+                <p class="headline">Can't edit or delete a file? Discover which processes are using that file.</p>
+                <img src="images/new/find_handles.png" alt="Find handles" width="650" height="199">
+                <p class="tip">Tip: Use Ctrl+F to search for a handle or DLL.
+                If all else fails, you can right-click an entry and close the handle associated with the file. However, this
+                should only be used as a last resort and can lead to data loss and corruption.</p>
+                
+                <p class="headline">See what programs have active network connections, and close them if necessary.</p>
+                <img src="images/new/network.png" alt="Network connections" width="641" height="296">
+                
+                <p class="headline">Get real-time information on disk access.</p>
+                <img src="images/new/disk_tab.png" alt="Disk tab" width="621" height="325">
+                <p class="tip">Tip: This may look very similar to the Disk Activity feature in Resource Monitor, but Process Hacker has a few more features!</p>
+                
+                <p class="section-header">Advanced features</p>
+                <p class="headline">View detailed stack traces with kernel-mode, WOW64 and .NET support.</p>
+                <img src="images/new/thread_stack.png" alt="Stack trace" width="524" height="384">
+                <p class="tip">Tip: Hover your cursor over the first column (with the numbers) to view parameter and line number information when available.</p>
+                
+                <p class="headline">Go beyond services.msc: create, edit and control services.</p>
+                <img src="images/new/services.png" alt="Service properties" width="604" height="468">
+                <p class="tip">Tip: By default, Process Hacker shows entries for drivers in addition to normal user-mode services. You can turn this off
+                by checking <strong>View &gt; Hide Driver Services</strong>.</p>
+                
+                <p class="headline">And much more...</p>
+                <img src="images/new/menu.png" alt="Service properties" width="637" height="518">
+                
+                <p class="headline">Small additions</p>
+                <p class="normal">Many of you have probably used Process Explorer in the past. Process Hacker has several advantages:</p>
+                <ul class="normal">
+                    <li>Process Hacker allows you to copy data by simply pressing Ctrl+C.</li>
+                    <li>Process Hacker shows symbolic access masks (e.g. <code>Read</code>, <code>Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
+                    <li>Process Hacker shows more detailed token information, and allows you to enable and disable privileges.</li>
+                    <li>Process Hacker shows names for transaction manager objects and ETW registration objects.</li>
                 </ul>
             </div>
             <br/> <!-- this br div is a placeholder -->
@@ -205,17 +226,6 @@
             </div>
 
             <div class="yui-g">
-                <div class="yui-u first">
-                    <div class="portlet">
-                        <a href="screenshots.php"><p><strong>Screenshots</strong></p></a>
-                        <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/processes_tab_large.png" title="Main window">
-                            <img src="images/screenshots/processhacker_small.png" alt="Main window" width="200" height="107"/>
-                        </a>
-                        <a class="fancybox" data-fancybox-group="gallery" href="images/screenshots/sysinfo_large.png" title="Sysinfo window">
-                            <img src="images/screenshots/sysinfo_small.png" alt="Sysinfo" width="200" height="107"/>
-                        </a>
-                    </div>
-                </div>
                 <div class="yui-u">
                     <div class="portlet">
                         <p><strong>SVN Activity</strong></p>

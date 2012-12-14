@@ -1,5 +1,7 @@
 <footer>
-    <img src="images/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30">
+    <a href="http://sourceforge.net/projects/processhacker/"><img src="images/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30"></a>
+    <br>
+    <a href="privacy.php">Privacy Policy</a>
     <br>
     Copyright &copy; 2008-2012 wj32
 

@@ -9,8 +9,6 @@
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
-                    <li><a href="features.php">Features</a></li>
-                    <li><a href="screenshots.php">Screenshots</a></li>
                     <li><a href="downloads.php">Downloads</a></li>
                     <li class="active"><a href="faq.php">FAQ</a></li>
                     <li><a href="about.php">About</a></li>
@@ -32,36 +30,8 @@
 
             <div class="summary">
                 <dl>
-                    <dt>Why should I use Process Hacker? Why not Process Explorer or some other program?</dt>
-                    <dd>
-                        Process Hacker offers some pretty unique features, like an awesome run-as tool and
-                        the ability to find and terminate hidden processes. The intended users are developers and
-                        people interested in Windows internals. This tool is NOT intended for general system
-                        optimization.
-                    </dd>
-
                     <dt>Why is there annoying bug X in Process Hacker? Why is Process Hacker missing feature Y?</dt>
                     <dd>Please report any bugs or feature requests in the <a href="forums">forums</a>.</dd>
-
-                    <dt>"Process Hacker"? Is this a dangerous "hacking" tool?</dt>
-                    <dd>Please read about the <a href="http://catb.org/~esr/faqs/hacker-howto.html#what_is">correct definition of "hacker"</a>.</dd>
-
-                    <dt>Process Hacker can kill my anti-virus software! Is this a bug in the anti-virus software?</dt>
-                    <dd>No. Please do not report these incidents as bugs because you will be wasting their time.</dd>
-
-                    <dt>My anti-virus software reports Process Hacker as a threat!</dt>
-                    <dd>
-                        This is an expected part of the FUD (fear, uncertainty and doubt) campaigns of anti-virus companies
-                        like Kaspersky Lab, who want to scare their users as much as possible. This is completely
-                        misleading and irresponsible, but is typical of the "security industry". The source code of
-                        Process Hacker is available; verify and build the code yourself if you do not trust the binary releases.
-                    </dd>
-
-                    <dt>Anti-cheat software reports Process Hacker as a game cheating tool!</dt>
-                    <dd>
-                        As with anti-virus FUD campaigns, this is similarly ridiculous.
-                        Unfortunately there is nothing much that can be done about this.
-                    </dd>
 
                     <dt>Is Process Hacker a portable application?</dt>
                     <dd>
@@ -69,6 +39,9 @@
                         <code>ProcessHacker.exe.settings.xml</code> in the same directory as <code>ProcessHacker.exe</code>.
                         Settings will then automatically be saved there.
                     </dd>
+
+                    <dt>"Process Hacker"? Is this a dangerous "hacking" tool?</dt>
+                    <dd>No. Please read about the <a href="http://catb.org/~esr/faqs/hacker-howto.html#what_is">correct definition of "hacker"</a>.</dd>
 
                     <dt>Symbols don't work properly!</dt>
                     <dd>
@@ -79,6 +52,12 @@
                         Replace <code>SOME_FOLDER</code> with any folder you can write to, like <code>D:\Symbols</code>.
                         Now you can restart Process Hacker and view full symbols.
                     </dd>
+
+                    <dt>Process Hacker can kill my anti-virus software! Is this a bug in the anti-virus software?</dt>
+                    <dd>No. Please do not report these incidents as bugs because you will be wasting their time.</dd>
+
+                    <dt>Anti-cheat software reports Process Hacker as a game cheating tool!</dt>
+                    <dd>Unfortunately there is nothing much that can be done about this.</dd>
 
                     <dt>Why can't I build Process Hacker?</dt>
                     <dd>

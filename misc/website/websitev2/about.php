@@ -9,8 +9,6 @@
                 <h2>Process Hacker</h2>
                 <ul class="facetmenu">
                     <li><a href="/">Overview</a></li>
-                    <li><a href="features.php">Features</a></li>
-                    <li><a href="screenshots.php">Screenshots</a></li>
                     <li><a href="downloads.php">Downloads</a></li>
                     <li><a href="faq.php">FAQ</a></li>
                     <li class="active"><a href="about.php">About</a></li>

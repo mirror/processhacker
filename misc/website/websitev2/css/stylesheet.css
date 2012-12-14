@@ -1,6 +1,6 @@
 body {
     color: black;
-    font-family: Tahoma, sans-serif;
+    font-family: 'Lucida Sans Unicode', Tahoma, sans-serif;
     font-size: 12px;
     margin: 0;
 }
@@ -38,6 +38,12 @@ dt {
 
 footer {
     margin: 10px auto;
+    text-align: center;
+}
+
+h1 {
+    font-size: 20px;
+    font-weight: bold;
     text-align: center;
 }
 
@@ -192,8 +198,59 @@ ul {
     position: relative; /* Addthis div alignment */
 }
 
-.summary {
-    padding-right: 300px;
+.pre-section {
+    width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: -20px;
+}
+
+.main-section {
+    width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    clear: both;
+}
+
+.main-section-2 {
+    width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 14px;
+}
+
+.section-header {
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-top: dotted 1px;
+    margin-top: 40px;
+}
+
+.headline {
+    font-size: 18px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.main-headline {
+    margin-bottom: 40px;
+}
+
+.main-section .headline {
+    text-align: left;
+}
+
+.tip {
+    font-size: 12px;
+    font-style: italic;
+    margin-top: 5px;
+    text-align: left;
+}
+
+.normal {
+    text-align: left;
 }
 
 .yui-d0 {
@@ -203,7 +260,7 @@ ul {
 
 .yui-t4 {
     margin: auto;
-    width: 100%;
+    width: 700px;
 }
 
 .yui-b {
@@ -239,13 +296,17 @@ ul {
 }
 
 .portlet {
-    border-top: 1px solid #EBEBEB;
+    /*border-top: 1px solid #EBEBEB;*/
     clear: both;
     padding: 0 0 1em;
 }
 
 .portlet > h2:first-child {
     margin-top: 0;
+}
+
+.portlet p {
+    margin: 5px 0 5px 0;
 }
 
 :link,
@@ -267,6 +328,15 @@ ul {
 
 .facetmenu {
     width: 100%;
+}
+
+#downloads {
+    width: 250px;
+}
+
+#quick-links {
+    width: 250px;
+    padding-bottom: 0;
 }
 
 #downloads li {
@@ -292,6 +362,7 @@ ul {
     font-size: 14px;
     font-weight: bold;
     padding: 0.7em 1em;
+    text-align: center;
     text-decoration: none;
     text-shadow: 1px 1px 0 #528ecc;
     width: 87%;
@@ -311,15 +382,9 @@ ul {
     margin: 0;
 }
 
-#downloadbestsoft {
-    color: lime;
-    font-size: 13px;
-}
-
 #released,
 #version {
-    background: none repeat scroll 0 0 #1C8D2E;
-    color: white;
+    color: black;
     padding: 0.2em 1em;
 }
 
@@ -336,6 +401,15 @@ ul {
        -moz-border-radius: 4px 4px 0 0;
 }
 
+#donate {
+    margin-top: 5px;
+}
+
+#all-downloads {
+    text-align: center;
+    padding: 0.2em 1em;
+}
+
 .side .portlet {
     background: none repeat scroll 0 0 #FBFBFB;
     border: 1px solid #DEDEDE;
@@ -346,7 +420,7 @@ ul {
 .involvement a {
     background: url("/images/answers-arrow-right.png") no-repeat scroll right center transparent;
     display: block;
-    padding: 0.3em;
+    padding: 0.1em;
 }
 
 .involvement li {
