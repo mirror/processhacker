@@ -29,7 +29,7 @@
                         settings will then be automatically saved here.
                     </dd>
 
-                    <dt>"Process Hacker"? Is this a dangerous 'hacking' tool?</dt>
+                    <dt>"Process Hacker"? Is this a dangerous "hacking" tool?</dt>
                     <dd>No. Please read about the <a href="http://catb.org/~esr/faqs/hacker-howto.html#what_is">correct definition of "hacker"</a>.</dd>
 
                     <dt>Symbols don't work properly!</dt>
@@ -37,7 +37,7 @@
                         Firstly, you need the latest <code>dbghelp.dll</code> version:<br>
                         <br>
                         1) Install the latest Windows SDK. (links are below)<br>
-                        2) Open Process Hacker options via the main menu: Hacker > Options<br>
+                        2) Open Process Hacker options via the main menu: Hacker &gt; Options<br>
                         3) Click Symbols, and locate<code>dbghelp.dll</code><br>
                         <dl><dd>
                         It is usually in <code>C:\Program Files\Debugging Tools for Windows (x86)\</code>
