@@ -50,6 +50,7 @@
                             <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
                             <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
                             <li><a href="http://sourceforge.net/p/processhacker/code/">Browse source code</a></li>
+                            <li><a href="doc/">Source code documentation</a></li>
                         </ul>
                     </div>
                 </div>
