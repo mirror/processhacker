@@ -237,8 +237,8 @@
                                 if (!result.error) {
                                     var thefeeds = result.feed.entries;
                                     for (var i = 0; i < thefeeds.length; i++) {
-                                        rssoutput += "<div class='ft'>";
-                                            rssoutput += "<div style=\"color:#333\">" + thefeeds[i].content.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/"); + "</div>";
+                                        rssoutput += "<div class=\"ft\">";
+                                            rssoutput += "<div style=\"color:#333\">" + thefeeds[i].content.replace("<ul>", "").replace("<li>", "").replace("<div>", "").replace("</div>", "").replace("</li>", "").replace("</ul>", "").replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/"); + "</div>";
                                             rssoutput += "<span class=\"forumdate\"> by </span>";
                                             rssoutput += "<span style=\"color:#A00\">" + thefeeds[i].author + "</span>";
                                             rssoutput += "<div class=\"forumdate\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>";
