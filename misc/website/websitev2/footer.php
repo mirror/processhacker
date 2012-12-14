@@ -7,19 +7,10 @@
 
 <?php
 if (@$includejs) {
-    echo "<script src=\"http://www.google.com/jsapi\"></script><script>google.load(\"feeds\", \"1\")</script>
-    <script src=\"http://code.jquery.com/jquery-latest.js\"></script>
-    <script src=\"/js/pack.js\"></script>
-    <script>window.jQuery || document.write('<script src=\"http://code.jquery.com/jquery-latest.js\"><\/script>')</script>";
+    echo "<script src=\"http://www.google.com/jsapi\"></script><script>google.load(\"feeds\", \"1\")</script>";
     if ($pagetitle == "Overview") {
         echo "<script src=\"http://s7.addthis.com/js/300/addthis_widget.js#pubid=dmex\"></script>";
     }
-    echo
-    "<script>
-    $(document).ready(function() {
-        $(\".fancybox\").fancybox({});
-    });
-    </script>";
 }
 ?>
 
