@@ -34,17 +34,17 @@
 
                     <dt>Symbols don't work properly!</dt>
                     <dd>
-                        Firstly, you need the latest <code>dbghelp.dll</code> version:</br>
-                        </br>
-                        1) Install the latest Windows SDK. (links are below)</br>
-                        2) Open Process Hacker options via the main menu: Hacker > Options</br>
-                        3) Click Symbols, and locate<code>dbghelp.dll</code></br>
+                        Firstly, you need the latest <code>dbghelp.dll</code> version:<br>
+                        <br>
+                        1) Install the latest Windows SDK. (links are below)<br>
+                        2) Open Process Hacker options via the main menu: Hacker > Options<br>
+                        3) Click Symbols, and locate<code>dbghelp.dll</code><br>
                         <dl><dd>
                         It is usually in <code>C:\Program Files\Debugging Tools for Windows (x86)\</code>
                             or if you're using the Windows 8 SDK it'll be located at <code>\Program Files (x86)\Windows Kits\8.0\Debuggers\x86\</code> for 32bit users
-                            or at <code>\Program Files (x86)\Windows Kits\8.0\Debuggers\x64\</code> for 64bit users.</br>
+                            or at <code>\Program Files (x86)\Windows Kits\8.0\Debuggers\x64\</code> for 64bit users.<br>
                         </dd></dl>
-                        Secondly, you need to configure the search path:</br>
+                        Secondly, you need to configure the search path:<br>
                         If you don't know what to do, enter <code>SRV*SOME_FOLDER*http://msdl.microsoft.com/download/symbols</code>.
                         Replace <code>SOME_FOLDER</code> with any folder you can write to, like <code>D:\Symbols</code>.
                         Now you can restart Process Hacker and view full symbols.
@@ -58,9 +58,9 @@
 
                     <dt>Why can't I build Process Hacker?</dt>
                     <dd>
-                        The most likely problem is that you do not have the latest Windows SDK installed.</br>
+                        The most likely problem is that you do not have the latest Windows SDK installed.<br>
                         For Windows XP, Vista and Windows 7 you'll need the
-                        <a href="http://msdn.microsoft.com/en-us/windows/bb980924.aspx">Windows SDK for Windows 7 and .NET Framework 4</a>.</br>
+                        <a href="http://msdn.microsoft.com/en-us/windows/bb980924.aspx">Windows SDK for Windows 7 and .NET Framework 4</a>.<br>
                         For Windows Vista, Windows 7 and Windows 8 you'll need the
                         <a href="http://msdn.microsoft.com/en-US/windows/hardware/hh852363">Windows 8 SDK</a>.
                     </dd>
