@@ -29,11 +29,11 @@ function ad_unit_1()
 {
     global $DISABLE_ADS;
     global $LIVE_ADS;
-    
+
     if ($DISABLE_ADS) {
         return;
     }
-    
+
     if ($LIVE_ADS)
     {
         echo <<<END
@@ -60,11 +60,11 @@ function ad_unit_3()
 {
     global $DISABLE_ADS;
     global $LIVE_ADS;
-    
+
     if ($DISABLE_ADS) {
         return;
     }
-    
+
     if ($LIVE_ADS)
     {
         echo <<<END
@@ -91,11 +91,11 @@ function ad_unit_4()
 {
     global $DISABLE_ADS;
     global $LIVE_ADS;
-    
+
     if ($DISABLE_ADS) {
         return;
     }
-    
+
     if ($LIVE_ADS)
     {
         echo <<<END
@@ -122,11 +122,11 @@ function ad_unit_5()
 {
     global $DISABLE_ADS;
     global $LIVE_ADS;
-    
+
     if ($DISABLE_ADS) {
         return;
     }
-    
+
     if ($LIVE_ADS)
     {
         echo <<<END

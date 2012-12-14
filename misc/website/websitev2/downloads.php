@@ -3,20 +3,20 @@
 <div id="page">
     <div class="yui-d0">
         <div class="yui-t4">
-			<nav>
-				<img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
+            <nav>
+                <img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
 
-				<div class="flowed-block">
-					<h2>Process Hacker</h2>
-					<ul class="facetmenu">
-						<li><a href="/">Overview</a></li>
-						<li class="active"><a href="downloads.php">Downloads</a></li>
-						<li><a href="faq.php">FAQ</a></li>
-						<li><a href="about.php">About</a></li>
-						<li><a href="forums/">Forum</a></li>
-					</ul>
-				</div>
-			</nav>
+                <div class="flowed-block">
+                    <h2>Process Hacker</h2>
+                    <ul class="facetmenu">
+                        <li><a href="/">Overview</a></li>
+                        <li class="active"><a href="downloads.php">Downloads</a></li>
+                        <li><a href="faq.php">FAQ</a></li>
+                        <li><a href="about.php">About</a></li>
+                        <li><a href="forums/">Forum</a></li>
+                    </ul>
+                </div>
+            </nav>
             <!--<div class="yui-b side">
                 <div class="portlet">
                     <h2 class="center">Quick Links</h2>
@@ -37,12 +37,12 @@
             <div class="main-section-2">
                 <p>The latest stable version of Process Hacker is <strong><?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?></strong>.
                 The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver for 64-bit systems.</p>
-                
+
                 <!-- Ad Unit 4 - DO NOT CHANGE THIS CODE -->
                 <div style="clear: both; margin-left: auto; margin-right: auto; margin-bottom: 20px; width: 728px; height: 90px;">
                     <?php ad_unit_4(); ?>
                 </div>
-                
+
                 <div class="side">
                     <div class="portlet" id="downloads">
                         <h2 class="center">Download</h2>
@@ -58,7 +58,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <p><strong>System requirements:</strong></p>
                 <ul>
                     <li>Windows XP (SP2)/Vista/7/8, 32-bit or 64-bit.</li>

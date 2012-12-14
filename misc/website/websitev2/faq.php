@@ -4,21 +4,21 @@
     <div class="yui-d0">
         <div class="yui-t4">
             <div class="summary">
-				<nav>
-					<img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
+                <nav>
+                    <img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
 
-					<div class="flowed-block">
-						<h2>Process Hacker</h2>
-						<ul class="facetmenu">
-							<li><a href="/">Overview</a></li>
-							<li><a href="downloads.php">Downloads</a></li>
-							<li class="active"><a href="faq.php">FAQ</a></li>
-							<li><a href="about.php">About</a></li>
-							<li><a href="forums/">Forum</a></li>
-						</ul>
-					</div>
-				</nav>
-			
+                    <div class="flowed-block">
+                        <h2>Process Hacker</h2>
+                        <ul class="facetmenu">
+                            <li><a href="/">Overview</a></li>
+                            <li><a href="downloads.php">Downloads</a></li>
+                            <li class="active"><a href="faq.php">FAQ</a></li>
+                            <li><a href="about.php">About</a></li>
+                            <li><a href="forums/">Forum</a></li>
+                        </ul>
+                    </div>
+                </nav>
+
                 <dl>
                     <dt>Why is there annoying bug X in Process Hacker? Why is Process Hacker missing feature Y?</dt>
                     <dd>Please report any bugs or feature requests in the <a href="forums">forums</a>.</dd>
@@ -35,18 +35,18 @@
                     <dt>Symbols don't work properly!</dt>
                     <dd>
                         Firstly, you need the latest <code>dbghelp.dll</code> version:</br>
-						</br>
-						1) Install the latest Windows SDK. (links are below)</br>
+                        </br>
+                        1) Install the latest Windows SDK. (links are below)</br>
                         2) Open Process Hacker options via the main menu: Hacker > Options</br>
                         3) Click Symbols, and locate<code>dbghelp.dll</code></br>
-						<dl><dd>
-						It is usually in <code>C:\Program Files\Debugging Tools for Windows (x86)\</code> 
-							or if you're using the Windows 8 SDK it'll be located at <code>\Program Files (x86)\Windows Kits\8.0\Debuggers\x86\</code> for 32bit users 
-							or at <code>\Program Files (x86)\Windows Kits\8.0\Debuggers\x64\</code> for 64bit users.</br>
-						</dd></dl>
-						Secondly, you need to configure the search path:</br>
-						If you don't know what to do, enter <code>SRV*SOME_FOLDER*http://msdl.microsoft.com/download/symbols</code>.
-						Replace <code>SOME_FOLDER</code> with any folder you can write to, like <code>D:\Symbols</code>.
+                        <dl><dd>
+                        It is usually in <code>C:\Program Files\Debugging Tools for Windows (x86)\</code>
+                            or if you're using the Windows 8 SDK it'll be located at <code>\Program Files (x86)\Windows Kits\8.0\Debuggers\x86\</code> for 32bit users
+                            or at <code>\Program Files (x86)\Windows Kits\8.0\Debuggers\x64\</code> for 64bit users.</br>
+                        </dd></dl>
+                        Secondly, you need to configure the search path:</br>
+                        If you don't know what to do, enter <code>SRV*SOME_FOLDER*http://msdl.microsoft.com/download/symbols</code>.
+                        Replace <code>SOME_FOLDER</code> with any folder you can write to, like <code>D:\Symbols</code>.
                         Now you can restart Process Hacker and view full symbols.
                     </dd>
 
