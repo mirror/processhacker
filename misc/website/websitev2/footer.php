@@ -8,9 +8,9 @@
 <?php
 if (@$includejs) {
     echo "<script src=\"http://www.google.com/jsapi\"></script><script>google.load(\"feeds\", \"1\")</script>
-    <script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js\"></script>
+    <script src=\"http://code.jquery.com/jquery-latest.js\"></script>
     <script src=\"/js/pack.js\"></script>
-    <script>window.jQuery || document.write('<script src=\"js/jquery-1.8.3.min.js\"><\/script>')</script>";
+    <script>window.jQuery || document.write('<script src=\"http://code.jquery.com/jquery-latest.js\"><\/script>')</script>";
     if ($pagetitle == "Overview") {
         echo "<script src=\"http://s7.addthis.com/js/300/addthis_widget.js#pubid=dmex\"></script>";
     }

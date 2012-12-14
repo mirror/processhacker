@@ -2,22 +2,21 @@
 
 <div id="page">
     <div class="yui-d0">
-        <nav>
-            <img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
-
-            <div class="flowed-block">
-                <h2>Process Hacker</h2>
-                <ul class="facetmenu">
-                    <li><a href="/">Overview</a></li>
-                    <li class="active"><a href="downloads.php">Downloads</a></li>
-                    <li><a href="faq.php">FAQ</a></li>
-                    <li><a href="about.php">About</a></li>
-                    <li><a href="forums/">Forum</a></li>
-                </ul>
-            </div>
-        </nav>
-
         <div class="yui-t4">
+			<nav>
+				<img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
+
+				<div class="flowed-block">
+					<h2>Process Hacker</h2>
+					<ul class="facetmenu">
+						<li><a href="/">Overview</a></li>
+						<li class="active"><a href="downloads.php">Downloads</a></li>
+						<li><a href="faq.php">FAQ</a></li>
+						<li><a href="about.php">About</a></li>
+						<li><a href="forums/">Forum</a></li>
+					</ul>
+				</div>
+			</nav>
             <!--<div class="yui-b side">
                 <div class="portlet">
                     <h2 class="center">Quick Links</h2>
