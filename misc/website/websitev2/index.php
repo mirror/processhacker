@@ -100,6 +100,8 @@
                     <li>Process Hacker shows more detailed token information, and allows you to enable and disable privileges.</li>
                     <li>Process Hacker shows names for transaction manager objects and ETW registration objects.</li>
                 </ul>
+                
+                <p class="headline"><strong><a href="downloads.php?bottom=1">Download &gt;</a></strong></p>
             </div>
             <br/> <!-- this br div is a placeholder -->
 
