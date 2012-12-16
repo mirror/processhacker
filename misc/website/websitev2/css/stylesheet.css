@@ -243,6 +243,11 @@ ul {
     text-align: left;
 }
 
+#bottom-download {
+    text-align: center;
+    font-size: 20px;
+}
+
 .tip {
     font-size: 12px;
     font-style: italic;
