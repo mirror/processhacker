@@ -92,13 +92,14 @@
                 <p class="headline">And much more...</p>
                 <img src="images/new/menu.png" alt="Service properties" width="637" height="518">
 
-                <p class="headline">Small additions</p>
+                <p class="headline">Other additions</p>
                 <p class="normal">Many of you have probably used Process Explorer in the past. Process Hacker has several advantages:</p>
                 <ul class="normal">
                     <li>Process Hacker allows you to copy data by simply pressing Ctrl+C.</li>
+                    <li>Process Hacker is open source and can be modified or redistributed.</li>
+                    <li>Process Hacker does not have several year old bugs that still remain unfixed.</li>
+                    <li>Process Hacker is more customizable.</li>
                     <li>Process Hacker shows symbolic access masks (e.g. <code>Read</code>, <code>Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
-                    <li>Process Hacker shows more detailed token information, and allows you to enable and disable privileges.</li>
-                    <li>Process Hacker shows names for transaction manager objects and ETW registration objects.</li>
                 </ul>
                 
                 <p class="headline" id="bottom-download"><strong><a href="downloads.php?bottom=1">Download &gt;</a></strong></p>
