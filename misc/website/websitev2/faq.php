@@ -32,6 +32,10 @@
                     <dt>"Process Hacker"? Is this a dangerous "hacking" tool?</dt>
                     <dd>No. Please read about the <a href="http://catb.org/~esr/faqs/hacker-howto.html#what_is">correct definition of "hacker"</a>.</dd>
 
+                    <dt>Why is Process Hacker able to kill processes that no other tools can kill?</dt>
+                    <dd>Process Hacker loads a driver that searches memory for an internal kernel function and calls it. This special function is not known to be hooked by
+                    any malware and security software.</dd>
+
                     <dt>Symbols don't work properly!</dt>
                     <dd>
                         Firstly, you need the latest <code>dbghelp.dll</code> version:<br>
