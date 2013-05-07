@@ -101,7 +101,7 @@
                     <li>Process Hacker is more customizable.</li>
                     <li>Process Hacker shows symbolic access masks (e.g. <code>Read</code>, <code>Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
                 </ul>
-                
+
                 <p class="headline" id="bottom-download"><strong><a href="downloads.php?bottom=1">Download &gt;</a></strong></p>
             </div>
             <br/> <!-- this br div is a placeholder -->
