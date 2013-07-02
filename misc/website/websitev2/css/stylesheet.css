@@ -1,7 +1,6 @@
 body {
     color: black;
-    font-family: 'Lucida Sans Unicode', Tahoma, sans-serif;
-    font-size: 12px;
+    font:normal 12px Tahoma,arial,sans-serif;
     margin: 0;
 }
 
@@ -391,7 +390,6 @@ ul {
 #released,
 #version {
     color: black;
-    padding: 0.2em 1em;
 }
 
 #released {
