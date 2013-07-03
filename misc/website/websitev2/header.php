@@ -1,4 +1,4 @@
-<?php include "config.php"; 
+<?php include "config.php";
 
 // =================================================
 // AD CODE -- DO NOT CHANGE

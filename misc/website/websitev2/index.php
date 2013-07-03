@@ -29,10 +29,10 @@
                 <div class="yui-b side">
                     <div class="portlet" id="downloads">
                         <div id="version">
-							<ul class="versioninfo">
-								<li>Process Hacker <?php echo $LATEST_PH_VERSION ?></li>
-								<li>Released <?php echo $LATEST_PH_RELEASE_DATE ?></li>
-							</ul>
+                            <ul class="versioninfo">
+                                <li>Process Hacker <?php echo $LATEST_PH_VERSION ?></li>
+                                <li>Released <?php echo $LATEST_PH_RELEASE_DATE ?></li>
+                            </ul>
                         </div>
                         <ul>
                             <li><a href="downloads.php">Download v<?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?></a></li>
