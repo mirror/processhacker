@@ -1,6 +1,6 @@
 <?php $pagetitle = "Downloads"; include "header.php"; ?>
 
-<div id="page">
+<div class="page">
     <div class="yui-d0">
         <div class="yui-t4">
             <nav>
@@ -44,16 +44,16 @@
                 </div>
 
                 <div class="side">
-                    <div class="portlet" id="downloads">
+                    <div class="portlet downloads">
                         <h2 class="center">Download</h2>
-                        <div id="downloads">
+                        <div class="downloads">
                             <ul>
                                 <li><a href="http://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe" title="Installer (recommended)">Installer</a></li>
                                 <li><a href="http://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip">Binaries (portable)</a></li>
                                 <li><a href="http://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip">Source code</a></li>
                             </ul>
                         </div>
-                        <div id="all-downloads">
+                        <div class="all-downloads">
                             <a href="http://sourceforge.net/projects/processhacker/files/processhacker2/">See all downloads</a>
                         </div>
                     </div>

@@ -59,7 +59,7 @@ function curPageURL()
     <![endif]-->
 </head>
 <body>
-<div id="page">
+<div class="page">
     <div class="yui-d0">
         <nav>
             <img class="flowed-block" src="/images/logo_64x64.png" alt="Project Logo" width="64" height="64">

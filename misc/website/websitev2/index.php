@@ -1,6 +1,6 @@
 <?php $pagetitle = "Overview"; include "header.php"; ?>
 
-<div id="page">
+<div class="page">
     <div class="yui-d0">
         <div class="yui-t4">
             <nav>
@@ -27,8 +27,8 @@
                 </div>
 
                 <div class="yui-b side">
-                    <div class="portlet" id="downloads">
-                        <div id="version">
+                    <div class="portlet downloads">
+                        <div class="version">
                             <ul class="versioninfo">
                                 <li>Process Hacker <?php echo $LATEST_PH_VERSION ?></li>
                                 <li>Released <?php echo $LATEST_PH_RELEASE_DATE ?></li>
@@ -37,14 +37,14 @@
                         <ul>
                             <li><a href="downloads.php">Download v<?php echo $LATEST_PH_VERSION." (r".$LATEST_PH_BUILD.")" ?></a></li>
                         </ul>
-                        <div class="center" id="donate">
+                        <div class="center donate">
                             <a href="http://sourceforge.net/project/project_donations.php?group_id=242527">
                                 <img src="images/donate.png" alt="Donate" width="92" height="26">
                             </a>
                         </div>
                     </div>
 
-                    <div class="portlet" id="quick-links">
+                    <div class="portlet quick-links">
                         <h2 class="center">Quick Links</h2>
                         <ul class="involvement">
                             <li><a href="http://sourceforge.net/projects/processhacker/">SourceForge project page</a></li>
@@ -104,7 +104,7 @@
                     <li>Process Hacker shows symbolic access masks (e.g. <code>Read</code>, <code>Write</code>), rather than just numbers (e.g. <code>0x12019f</code>).</li>
                 </ul>
 
-                <p class="headline" id="bottom-download"><strong><a href="downloads.php?bottom=1">Download &gt;</a></strong></p>
+                <p class="headline bottom-download"><strong><a href="downloads.php?bottom=1">Download &gt;</a></strong></p>
             </div>
             <br/> <!-- this br div is a placeholder -->
 

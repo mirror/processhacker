@@ -1,6 +1,6 @@
 <?php $pagetitle = "About"; include "header.php"; ?>
 
-<div id="page">
+<div class="page">
     <div class="yui-d0">
         <div class="yui-t4">
             <div class="summary">
@@ -84,7 +84,7 @@
                 <div class="dev">
                     <p>
                         <img class="user-avatar" src="http://www.gravatar.com/avatar/e37759b1ea0125d4e97b1e00b5eed26f.png" alt="User avatar" width="80" height="80">
-                        <a id="xhmikosr" href="http://sourceforge.net/users/xhmikosr/"><strong>XhmikosR</strong></a>
+                        <a class="xhmikosr" href="http://sourceforge.net/users/xhmikosr/"><strong>XhmikosR</strong></a>
                     </p>
                     <ul style="list-style-type: none;">
                         <li>Installer Maintainer, Website improvements</li>

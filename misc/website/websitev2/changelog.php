@@ -1,6 +1,6 @@
 <?php $pagetitle = "Changelog"; include "header.php"; ?>
 
-<div id="page">
+<div class="page">
     <div class="yui-d0">
         <nav>
             <img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
@@ -19,7 +19,7 @@
 
         <p>This is the changelog from Process Hacker's SVN repository. As such it may contain information about unreleased versions of Process Hacker.</p>
 
-        <iframe id="changelog" src="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/CHANGELOG.txt"></iframe>
+        <iframe class="changelog" src="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/CHANGELOG.txt"></iframe>
     </div>
 </div>
 

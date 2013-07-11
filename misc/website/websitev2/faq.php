@@ -1,6 +1,6 @@
 <?php $pagetitle = "FAQ"; include "header.php"; ?>
 
-<div id="page">
+<div class="page">
     <div class="yui-d0">
         <div class="yui-t4">
             <div class="summary">
