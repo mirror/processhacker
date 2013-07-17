@@ -1,7 +1,21 @@
+/*csslint box-sizing: false, font-sizes: false, important: false,
+  qualified-headings: false, unique-headings: false*/
+
 body {
     color: black;
     font: normal 12px Tahoma,arial,sans-serif;
     margin: 0;
+}
+
+a:link,
+a:visited {
+    color: #0033AA;
+    text-decoration: none;
+}
+
+a:link:hover,
+a:visited:hover {
+    text-decoration: underline;
 }
 
 strong {
@@ -123,6 +137,9 @@ ul {
 
 .changelog {
     border: 2px solid black;
+    -webkit-box-sizing: content-box;
+       -moz-box-sizing: content-box;
+            box-sizing: content-box;
     overflow: scroll;
     width: 800px;
     height: 600px;
@@ -300,17 +317,6 @@ ul {
     margin: 5px 0 5px 0;
 }
 
-:link,
-*:visited {
-    color: #0033AA;
-    text-decoration: none;
-}
-
-:link:hover,
-*:visited:hover {
-    text-decoration: underline;
-}
-
 .flowed-block {
     display: inline-block;
     padding: 0 0 0 10px;
@@ -350,6 +356,9 @@ ul {
     background-image:         linear-gradient(to bottom,  #1C8D2E 5%, #629D4F 100%); /* W3C */
     background-color: #1C8D2E;
     border: 1px solid #1C8D2E;
+    -webkit-box-sizing: content-box;
+       -moz-box-sizing: content-box;
+            box-sizing: content-box;
     color: white;
     display: inline-block;
     font-size: 14px;
@@ -422,6 +431,15 @@ ul {
 
 .author {
     color: silver;
+}
+
+.logo a {
+    float: left;
+}
+
+.logo a:hover {
+    background-color: inherit;
+    text-decoration: none;
 }
 
 ::-moz-selection {

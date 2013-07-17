@@ -5,7 +5,9 @@
         <div class="yui-t4">
             <div class="summary">
                 <nav>
-                    <img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64">
+                    <div class="logo">
+                        <a href="/"><img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64"></a>
+                    </div>
 
                     <div class="flowed-block">
                         <h2>Process Hacker</h2>
