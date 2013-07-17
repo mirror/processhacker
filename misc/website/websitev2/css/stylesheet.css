@@ -3,7 +3,7 @@
 
 body {
     color: black;
-    font: normal 12px Tahoma,arial,sans-serif;
+    font: normal 12px Tahoma, arial, sans-serif;
     margin: 0;
 }
 
@@ -77,8 +77,8 @@ img {
 }
 
 li {
-    padding-bottom: 0.5em;
     margin-left: 12px;
+    padding-bottom: 0.5em;
 }
 
 nav a {
@@ -202,39 +202,35 @@ ul {
 
 .pre-section {
     width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: -20px;
+    margin: -20px auto 0;
 }
 
 .main-section {
-    width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
     clear: both;
+    margin: auto;
     padding-top: 1px;
+    text-align: center;
+    width: 700px;
 }
 
 .main-section-2 {
-    width: 700px;
-    margin-left: auto;
-    margin-right: auto;
     font-size: 14px;
+    margin: auto;
+    width: 700px;
 }
 
 .section-header {
-    font-size: 14px;
-    text-transform: uppercase;
-    font-weight: bold;
     border-top: dotted 1px;
+    font-size: 14px;
+    font-weight: bold;
     margin-top: 40px;
+    text-transform: uppercase;
 }
 
 .headline {
     font-size: 18px;
-    text-align: center;
     margin-top: 20px;
+    text-align: center;
 }
 
 .main-headline {
@@ -246,8 +242,8 @@ ul {
 }
 
 .bottom-download {
-    text-align: center !important;
     font-size: 20px;
+    text-align: center !important;
 }
 
 .tip {
@@ -304,7 +300,6 @@ ul {
 }
 
 .portlet {
-    /*border-top: 1px solid #EBEBEB;*/
     clear: both;
     padding: 0 0 1em;
 }
@@ -396,8 +391,8 @@ ul {
 }
 
 .all-downloads {
-    text-align: center;
     padding: 0.2em 1em;
+    text-align: center;
 }
 
 .side .portlet {
