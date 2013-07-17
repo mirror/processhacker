@@ -123,6 +123,7 @@ nav li:first-child {
 }
 
 nav li,
+.dev ul,
 .portlet li {
     list-style-type: none;
 }

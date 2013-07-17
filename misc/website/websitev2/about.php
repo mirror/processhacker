@@ -52,7 +52,7 @@
                         <img class="user-avatar" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e" alt="User avatar" width="80" height="80">
                         <a class="coder" href="http://wj32.org"><strong>wj32</strong></a>
                     </p>
-                    <ul style="list-style-type: none;">
+                    <ul>
                         <li>Project Founder</li>
                         <li>Joined: 16-10-2008</li>
                         <li>Status: Active</li>
@@ -69,7 +69,7 @@
                         <img class="user-avatar" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f" alt="User avatar" width="80" height="80">
                         <a class="coder" href="http://sourceforge.net/users/dmex/"><strong>dmex</strong></a>
                     </p>
-                    <ul style="list-style-type: none;">
+                    <ul>
                         <li>Project Maintainer</li>
                         <li>Joined: 28-08-2009</li>
                         <li>Status: Active</li>
@@ -88,7 +88,7 @@
                         <img class="user-avatar" src="http://www.gravatar.com/avatar/e37759b1ea0125d4e97b1e00b5eed26f.png" alt="User avatar" width="80" height="80">
                         <a class="xhmikosr" href="http://sourceforge.net/users/xhmikosr/"><strong>XhmikosR</strong></a>
                     </p>
-                    <ul style="list-style-type: none;">
+                    <ul>
                         <li>Installer Maintainer, Website improvements</li>
                         <li>Joined: 20-02-2009</li>
                         <li>Status: Active</li>
