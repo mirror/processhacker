@@ -32,7 +32,7 @@
                 <div class="yui-b side">
                     <div class="portlet downloads">
                         <div class="version">
-                            <ul class="versioninfo">
+                            <ul>
                                 <li>Process Hacker <?php echo $LATEST_PH_VERSION ?></li>
                                 <li>Released <?php echo $LATEST_PH_RELEASE_DATE ?></li>
                             </ul>
