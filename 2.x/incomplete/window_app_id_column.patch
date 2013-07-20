@@ -1,0 +1,244 @@
+Index: utils.c
+===================================================================
+--- utils.c	(revision 5159)
++++ utils.c	(working copy)
+@@ -21,7 +21,23 @@
+  */
+ 
+ #include "wndexp.h"
++#define CINTERFACE
++#define COBJMACROS
++#include <propsys.h>
+ 
++typedef HRESULT (WINAPI *_SHGetPropertyStoreForWindow)(
++    __in HWND hwnd,
++    __in REFIID riid,
++    __out void **ppv
++    );
++
++typedef HRESULT (STDAPICALLTYPE *_PropVariantClear)(
++    __inout PROPVARIANT *pvar
++    );
++
++GUID IID_IPropertyStore_I = { 0x886d8eeb, 0x8cf2, 0x4446, { 0x8d, 0x02, 0xcd, 0xba, 0x1d, 0xbd, 0xcf, 0x99 } };
++PROPERTYKEY PKEY_AppUserModel_ID_I = { { 0x9f4c2855, 0x9f79, 0x4b39, { 0xa8, 0xd0, 0xe1, 0xd4, 0x2d, 0xe1, 0xd5, 0xf3 } }, 5 };
++
+ PVOID WeGetProcedureAddress(
+     __in PSTR Name
+     )
+@@ -100,3 +116,70 @@
+         ReleaseDC(hWnd, hdc);
+     }
+ }
++
++PPH_STRING WeGetWindowAppUserModelId(
++    __in HWND hWnd
++    )
++{
++    static _SHGetPropertyStoreForWindow shGetPropertyStoreForWindow = NULL;
++    static _PropVariantClear propVariantClear = NULL;
++
++    IPropertyStore *store;
++    PROPVARIANT value;
++    PPH_STRING result = NULL;
++
++    if (!shGetPropertyStoreForWindow)
++        shGetPropertyStoreForWindow = PhGetProcAddress(L"shell32.dll", "SHGetPropertyStoreForWindow");
++    if (!propVariantClear)
++        propVariantClear = PhGetProcAddress(L"ole32.dll", "PropVariantClear");
++
++    if (!shGetPropertyStoreForWindow || !propVariantClear)
++        return NULL;
++
++    if (!SUCCEEDED(shGetPropertyStoreForWindow(hWnd, &IID_IPropertyStore_I, &store)))
++        return NULL;
++
++    if (SUCCEEDED(IPropertyStore_GetValue(store, &PKEY_AppUserModel_ID_I, &value)))
++    {
++        if (value.vt != 0)
++            result = PhCreateString(value.pwszVal);
++
++        propVariantClear(&value);
++    }
++
++    IPropertyStore_Release(store);
++
++    return result;
++}
++
++BOOLEAN WeSetWindowAppUserModelId(
++    __in HWND hWnd,
++    __in PWSTR AppId
++    )
++{
++    static _SHGetPropertyStoreForWindow shGetPropertyStoreForWindow = NULL;
++    static _PropVariantClear propVariantClear = NULL;
++
++    BOOLEAN result;
++    IPropertyStore *store;
++    PROPVARIANT value = { 0 };
++
++    if (!shGetPropertyStoreForWindow)
++        shGetPropertyStoreForWindow = PhGetProcAddress(L"shell32.dll", "SHGetPropertyStoreForWindow");
++    if (!propVariantClear)
++        propVariantClear = PhGetProcAddress(L"ole32.dll", "PropVariantClear");
++
++    if (!shGetPropertyStoreForWindow || !propVariantClear)
++        return FALSE;
++
++    if (!SUCCEEDED(shGetPropertyStoreForWindow(hWnd, &IID_IPropertyStore_I, &store)))
++        return FALSE;
++
++    value.vt = VT_LPWSTR;
++    value.pwszVal = AppId;
++
++    result = SUCCEEDED(IPropertyStore_SetValue(store, &PKEY_AppUserModel_ID_I, &value));
++    IPropertyStore_Release(store);
++
++    return result;
++}
+Index: wndexp.h
+===================================================================
+--- wndexp.h	(revision 5159)
++++ wndexp.h	(working copy)
+@@ -127,4 +127,13 @@
+     __in HWND hWnd
+     );
+ 
++PPH_STRING WeGetWindowAppUserModelId(
++    __in HWND hWnd
++    );
++
++BOOLEAN WeSetWindowAppUserModelId(
++    __in HWND hWnd,
++    __in PWSTR AppId
++    );
++
+ #endif
+Index: wndtree.c
+===================================================================
+--- wndtree.c	(revision 5159)
++++ wndtree.c	(working copy)
+@@ -76,6 +76,7 @@
+     PhAddTreeNewColumn(hwnd, WEWNTLC_HANDLE, TRUE, L"Handle", 70, PH_ALIGN_LEFT, 1, 0);
+     PhAddTreeNewColumn(hwnd, WEWNTLC_TEXT, TRUE, L"Text", 220, PH_ALIGN_LEFT, 2, 0);
+     PhAddTreeNewColumn(hwnd, WEWNTLC_THREAD, TRUE, L"Thread", 150, PH_ALIGN_LEFT, 3, 0);
++    PhAddTreeNewColumn(hwnd, WEWNTLC_APPID, TRUE, L"App ID", 150, PH_ALIGN_LEFT, 4, 0);
+ 
+     TreeNew_SetTriState(hwnd, TRUE);
+     TreeNew_SetSort(hwnd, 0, NoSortOrder);
+@@ -200,10 +201,22 @@
+     if (WindowNode->WindowText) PhDereferenceObject(WindowNode->WindowText);
+ 
+     if (WindowNode->ThreadString) PhDereferenceObject(WindowNode->ThreadString);
++    if (WindowNode->AppIdText) PhDereferenceObject(WindowNode->AppIdText);
+ 
+     PhFree(WindowNode);
+ }
+ 
++VOID WepUpdateWindowNodeAppId(
++    __inout PWE_WINDOW_NODE WindowNode
++    )
++{
++    if (!(WindowNode->ValidMask & WEWN_APPID))
++    {
++        PhSwapReference2(&WindowNode->AppIdText, WeGetWindowAppUserModelId(WindowNode->WindowHandle));
++        WindowNode->ValidMask |= WEWN_APPID;
++    }
++}
++
+ #define SORT_FUNCTION(Column) WepWindowTreeNewCompare##Column
+ 
+ #define BEGIN_SORT_FUNCTION(Column) static int __cdecl WepWindowTreeNewCompare##Column( \
+@@ -247,6 +260,14 @@
+ }
+ END_SORT_FUNCTION
+ 
++BEGIN_SORT_FUNCTION(AppId)
++{
++    WepUpdateWindowNodeAppId(node1);
++    WepUpdateWindowNodeAppId(node2);
++    sortResult = PhCompareStringWithNull(node1->AppIdText, node2->AppIdText, TRUE);
++}
++END_SORT_FUNCTION
++
+ BOOLEAN NTAPI WepWindowTreeNewCallback(
+     __in HWND hwnd,
+     __in PH_TREENEW_MESSAGE Message,
+@@ -290,7 +311,8 @@
+                         SORT_FUNCTION(Class),
+                         SORT_FUNCTION(Handle),
+                         SORT_FUNCTION(Text),
+-                        SORT_FUNCTION(Thread)
++                        SORT_FUNCTION(Thread),
++                        SORT_FUNCTION(AppId)
+                     };
+                     int (__cdecl *sortFunction)(void *, const void *, const void *);
+ 
+@@ -345,6 +367,10 @@
+                     node->ThreadString = PhGetClientIdName(&node->ClientId);
+                 getCellText->Text = PhGetStringRef(node->ThreadString);
+                 break;
++            case WEWNTLC_APPID:
++                WepUpdateWindowNodeAppId(node);
++                getCellText->Text = PhGetStringRef(node->AppIdText);
++                break;
+             default:
+                 return FALSE;
+             }
+@@ -384,6 +410,22 @@
+             }
+         }
+         return TRUE;
++    case TreeNewHeaderRightClick:
++        {
++            PH_TN_COLUMN_MENU_DATA data;
++
++            data.TreeNewHandle = hwnd;
++            data.MouseEvent = Parameter1;
++            data.DefaultSortColumn = 0;
++            data.DefaultSortOrder = AscendingSortOrder;
++            PhInitializeTreeNewColumnMenu(&data);
++
++            data.Selection = PhShowEMenu(data.Menu, hwnd, PH_EMENU_SHOW_LEFTRIGHT | PH_EMENU_SHOW_NONOTIFY,
++                PH_ALIGN_LEFT | PH_ALIGN_TOP, data.MouseEvent->ScreenLocation.x, data.MouseEvent->ScreenLocation.y);
++            PhHandleTreeNewColumnMenu(&data);
++            PhDeleteTreeNewColumnMenu(&data);
++        }
++        return TRUE;
+     case TreeNewLeftDoubleClick:
+         {
+             SendMessage(context->ParentWindowHandle, WM_COMMAND, ID_WINDOW_PROPERTIES, 0);
+Index: wndtree.h
+===================================================================
+--- wndtree.h	(revision 5159)
++++ wndtree.h	(working copy)
+@@ -5,8 +5,11 @@
+ #define WEWNTLC_HANDLE 1
+ #define WEWNTLC_TEXT 2
+ #define WEWNTLC_THREAD 3
+-#define WEWNTLC_MAXIMUM 4
++#define WEWNTLC_APPID 4
++#define WEWNTLC_MAXIMUM 5
+ 
++#define WEWN_APPID 0x1
++
+ typedef struct _WE_WINDOW_NODE
+ {
+     PH_TREENEW_NODE Node;
+@@ -15,6 +18,7 @@
+     PPH_LIST Children;
+     BOOLEAN HasChildren;
+     BOOLEAN Opened;
++    ULONG ValidMask;
+ 
+     PH_STRINGREF TextCache[WEWNTLC_MAXIMUM];
+ 
+@@ -26,6 +30,7 @@
+ 
+     WCHAR WindowHandleString[PH_PTR_STR_LEN_1];
+     PPH_STRING ThreadString;
++    PPH_STRING AppIdText;
+ } WE_WINDOW_NODE, *PWE_WINDOW_NODE;
+ 
+ typedef struct _WE_WINDOW_TREE_CONTEXT

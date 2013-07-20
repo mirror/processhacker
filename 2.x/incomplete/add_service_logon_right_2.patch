@@ -1,0 +1,131 @@
+Index: srvprp.c
+===================================================================
+--- srvprp.c	(revision 5353)
++++ srvprp.c	(working copy)
+@@ -150,7 +150,112 @@
+     }
+ }
+ 
+-INT_PTR CALLBACK PhpServiceGeneralDlgProc(
++static NTSTATUS PhpAddAccountRight(
++    __in PSID AccountSid,
++    __in PUNICODE_STRING UserRight
++    )
++{
++    NTSTATUS status;
++    LSA_HANDLE policyHandle;
++
++    if (NT_SUCCESS(status = PhOpenLsaPolicy(&policyHandle, POLICY_LOOKUP_NAMES | POLICY_CREATE_ACCOUNT, NULL)))
++    {
++        status = LsaAddAccountRights(policyHandle, AccountSid, UserRight, 1);
++        LsaClose(policyHandle);
++    }
++
++    return status;
++}
++
++static VOID PhpEnsureUserAccountCanLogonAsService(
++    __in HWND hWnd,
++    __in PPH_STRINGREF AccountName
++    )
++{
++    NTSTATUS status;
++    PH_STRINGREF accountName;
++    PSID accountSid;
++
++    accountName = *AccountName;
++
++    if (PhStartsWithStringRef2(&accountName, L".\\", FALSE))
++    {
++        accountName.Buffer += 2;
++        accountName.Length -= 2 * sizeof(WCHAR);
++    }
++
++    if (NT_SUCCESS(PhLookupName(&accountName, &accountSid, NULL, NULL)))
++    {
++        LSA_HANDLE policyHandle;
++        PUNICODE_STRING userRights;
++        ULONG countOfRights;
++        ULONG i;
++        UNICODE_STRING serviceLogonRightString;
++        BOOLEAN found;
++        BOOLEAN builtin;
++
++        builtin = RtlEqualSid(accountSid, &PhSeLocalSystemSid) ||
++            RtlEqualSid(accountSid, &PhSeLocalServiceSid) ||
++            RtlEqualSid(accountSid, &PhSeNetworkServiceSid);
++
++        if (!builtin && NT_SUCCESS(PhOpenLsaPolicy(&policyHandle, POLICY_LOOKUP_NAMES, NULL)))
++        {
++            found = FALSE;
++
++            if (NT_SUCCESS(status = LsaEnumerateAccountRights(policyHandle, accountSid, &userRights, &countOfRights)))
++            {
++                RtlInitUnicodeString(&serviceLogonRightString, L"SeServiceLogonRight");
++
++                for (i = 0; i < countOfRights; i++)
++                {
++                    if (RtlEqualUnicodeString(&userRights[i], &serviceLogonRightString, FALSE))
++                    {
++                        found = TRUE;
++                        break;
++                    }
++                }
++
++                LsaFreeMemory(userRights);
++            }
++
++            if (status == STATUS_ACCESS_DENIED)
++                found = TRUE; // just assume that it has the right
++
++            if (!found)
++            {
++                if (PhShowMessage(
++                    hWnd,
++                    MB_YESNO | MB_ICONWARNING,
++                    L"The specified user account does not have the right to log on as a service. "
++                    L"Do you want to add this right to the account?"
++                    ) == IDYES)
++                {
++                    status = PhpAddAccountRight(accountSid, &serviceLogonRightString);
++
++                    if (status == STATUS_ACCESS_DENIED)
++                    {
++                        if (PhUiConnectToPhSvc(hWnd, FALSE))
++                        {
++                            status = PhSvcCallAddAccountRight(accountSid, &serviceLogonRightString);
++                            PhUiDisconnectFromPhSvc();
++                        }
++                    }
++
++                    if (!NT_SUCCESS(status))
++                    {
++                        PhShowStatus(hWnd, L"Unable to add SeServiceLogonRight to the account", status, 0);
++                    }
++                }
++            }
++
++            LsaClose(policyHandle);
++        }
++
++        PhFree(accountSid);
++    }
++}
++
++INT_PTR CALLBACK PhpServiceGeneralDlgProc(      
+     __in HWND hwndDlg,
+     __in UINT uMsg,
+     __in WPARAM wParam,
+@@ -414,6 +519,12 @@
+                         newServiceUserAccount = NULL;
+                     }
+ 
++                    // Make sure the account has the right to logon as a service.
++                    if (newServiceUserAccount)
++                    {
++                        PhpEnsureUserAccountCanLogonAsService(hwndDlg, &newServiceUserAccount->sr);
++                    }
++
+                     serviceHandle = PhOpenService(serviceItem->Name->Buffer, SERVICE_CHANGE_CONFIG);
+ 
+                     if (serviceHandle)
