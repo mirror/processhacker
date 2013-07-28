@@ -3,7 +3,7 @@
     <br>
     <a href="privacy.php">Privacy Policy</a>
     <br>
-    Copyright &copy; 2008-2012 wj32
+    Copyright &copy; 2008-2013 wj32
 
 <?php
 if ($pagetitle == "Overview") {
