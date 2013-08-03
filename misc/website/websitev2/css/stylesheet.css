@@ -147,11 +147,11 @@ ul {
 }
 
 .faq {
-    font: bold 12px 'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif;
+    font-weight: bold;
 }
 
 .ft {
-    font: bold 10px 'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif;
+    font-size: 12px;
 }
 
 .forumdate {
