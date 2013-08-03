@@ -3,7 +3,7 @@
 
 body {
     color: black;
-    font: normal 12px Tahoma, arial, sans-serif;
+    font: normal 12px 'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif;
     margin: 0;
 }
 
@@ -146,8 +146,12 @@ ul {
     height: 600px;
 }
 
+.faq {
+    font: bold 12px 'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif;
+}
+
 .ft {
-    font: bold 10px Verdana, Arial, Helvetica, sans-serif;
+    font: bold 10px 'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif;
 }
 
 .forumdate {
