@@ -3,7 +3,7 @@
 
 body {
     color: black;
-    font: normal 12px 'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif;
+    font: normal 14px 'Segoe UI', Segoe, 'Helvetica Neue', Helvetica, Roboto, Arial, FreeSans, sans-serif;
     margin: 0;
 }
 
@@ -215,14 +215,12 @@ ul {
 }
 
 .main-section-2 {
-    font-size: 14px;
     margin: auto;
     width: 700px;
 }
 
 .section-header {
     border-top: dotted 1px;
-    font-size: 14px;
     font-weight: bold;
     margin-top: 40px;
     text-transform: uppercase;
@@ -357,7 +355,6 @@ ul {
             box-sizing: content-box;
     color: white;
     display: inline-block;
-    font-size: 14px;
     font-weight: bold;
     padding: 0.7em 1em;
     text-align: center;
