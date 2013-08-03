@@ -21,7 +21,7 @@
                     </div>
                 </nav>
 
-                <div class="faq">
+                <dl>
                     <dt>Why is there annoying bug X in Process Hacker? Why is Process Hacker missing feature Y?</dt>
                     <dd>Please report any bugs or feature requests in the <a href="forums">forums</a>.</dd>
 
@@ -70,7 +70,7 @@
                         For Windows Vista, Windows 7 and Windows 8 you'll need the
                         <a href="http://msdn.microsoft.com/en-US/windows/hardware/hh852363">Windows 8 SDK</a>.
                     </dd>
-                </div>
+                </dl>
             </div>
         </div>
     </div>
