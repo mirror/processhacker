@@ -130,38 +130,12 @@ END;
 }
 
 // END AD CODE
+
 // =================================================
+// Setup database details
+@include('./forums/config.php');
 
-
-// How Many Topics do you want to display?
-$topicnumber = 6;
-// Allow phpbb functions to be called outside of the forum root.
-define('IN_PHPBB', true);
-// Allow the site to continue running if the board is unavailable,
-// this means the website and update.php pages will continue working as normal
-// if the board is upgrading, disabled etc... instead of replacing the pages and showing 'Board Offline'
-define('IN_LOGIN', true);
-// We need to find the root path since we're running on Sourceforge's shared-hosts setup,
-// meaning we end up running on multiple servers (and sometimes multiple paths) at the same time.
-// So search for the current __FILE__ path and append the include paths with the current directory.
-$phpbb_root_path = './forums/';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-
-// import phpbb functions
-@include($phpbb_root_path.'config.'.$phpEx);
-@include($phpbb_root_path.'common.'.$phpEx);
-@include($phpbb_root_path.'includes/bbcode.'.$phpEx);
-@include($phpbb_root_path.'includes/functions_display.'.$phpEx);
-
-// Check if we imported the phpbb functions.
-if (!empty($user) && !empty($auth)) {
-    // Start forum session
-    $user->session_begin();
-    $auth->acl($user->data);
-    $user->setup();
-}
-
-// select database tables
+$topicnumber = 5;
 $table_topics = @$table_prefix. "topics";
 $table_forums = @$table_prefix. "forums";
 $table_posts = @$table_prefix. "posts";

@@ -1,4 +1,10 @@
-<?php $pagetitle = "Overview"; include "header.php"; ?>
+<?php 
+$pagetitle = "Overview"; 
+include "header.php";
+
+// Connect to DB
+$conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
+?>
 
 <div class="page">
     <div class="yui-d0">
@@ -115,63 +121,60 @@
                 <div class="yui-u first">
                     <div class="portlet">
                         <p><strong>Latest News</strong></p>
-                        <?php
-                            $sql = "SELECT
-                            t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id,
-                            p.post_id, p.poster_id, p.post_time,
-                            u.user_id, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
-                            FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
-                            WHERE t.topic_id = p.topic_id AND
-                            t.topic_approved = 1 AND
-                            f.forum_id = t.forum_id AND
-                            t.forum_id = 1 AND
-                            t.topic_status <> 2 AND
-                            p.post_approved = 1 AND
-                            p.post_id = t.topic_last_post_id AND
-                            p.poster_id = u.user_id
-                            ORDER BY p.post_id DESC LIMIT $topicnumber";
-
-                            // Check if we have a valid database connection, preform the query if we do.
-                            if (!empty($db) && ($query = $db->sql_query($sql))) {
-                                while ($row = $db->sql_fetchrow($query)) {
-                                    $topic_title = $row['topic_title'];
-                                    //$post_text = $row['post_text'];
-                                    $author_avatar = $row['user_avatar'];
-
-                                    $post_time = $row["post_time"];
-                                    $post_local_time = date('F jS, Y, g:i a', $post_time);
-
-                                    $post_author = get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour']);
-                                    $post_date = get_time_ago($post_time);
-                                    $post_link = append_sid("{$phpbb_root_path}viewtopic.php", "p=" . $row['post_id'] . "#p" . $row['post_id']);
-
-                                    //$bbcode = new bbcode(base64_encode($row['bbcode_bitfield']));
-                                    //$bbcode->bbcode_second_pass($post_text, $row['bbcode_uid'], $row['bbcode_bitfield']);
-                                    //$post_text = smiley_text($post_text);
-                                    //$post_text = str_replace('&nbsp;','',$post_text);
-                                    //$post_text = str_replace('./forums','http://processhacker.sourceforge.net/forums/',$post_text);
-                                    //$post_text = substr($post_text, 0, 300);
-                                    //if ($author_avatar) $avatar = get_user_avatar($author_avatar, $row['user_avatar_type'], 16, 16);
-
-                                    echo
-                                    "<div class=\"ft\">
-                                        <a href=\"{$post_link}\">{$topic_title}</a>
-                                        <span class=\"author\"> by <span>{$post_author}</span></span>
-                                        <div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
-                                    </div>";
-                                }
-                                $db->sql_freeresult($query);
-                            } else {
-                                // Check if we have a valid database connection.
-                                if (!empty($db)) {
-                                    $error = $db->sql_error();
-
-                                    echo "<p>Query failed: ".$error['message']."</p>";
-                                } else {
-                                    echo "<p>Query failed: Unknown error.</p>";
-                                }
-                            }
-                        ?>
+						<?php
+							// Check connection
+							if (mysqli_connect_errno())
+							{
+								echo "<p>Failed to connect to MySQL: " . mysqli_connect_error()."</p>";
+							}
+							else
+							{
+								$sql = 
+									"SELECT
+										t.topic_id, 
+										t.topic_title,
+										t.topic_last_post_id, 
+										t.forum_id,
+										p.post_id, 
+										p.poster_id, 
+										p.post_time,
+										u.user_id, 
+										u.username, 
+										u.user_colour
+									FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
+									WHERE t.topic_id = p.topic_id AND
+										f.forum_id = t.forum_id AND
+										t.forum_id = 1 AND
+										t.topic_status <> 2 AND
+										p.post_id = t.topic_last_post_id AND
+										p.poster_id = u.user_id
+									ORDER BY p.post_id DESC LIMIT $topicnumber";
+									
+								if ($result = mysqli_query($conn, $sql))
+								{
+									// Fetch one and one row
+									while ($row = mysqli_fetch_array($result))
+									{
+										$topic_title = $row['topic_title'];
+										$post_time = $row["post_time"];
+										$post_author = $row['username'];
+										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+										
+										$post_local_time = date('F jS, Y, g:i a', $post_time);
+										$post_date = get_time_ago($post_time);
+										
+										echo
+										"<div class=\"ft\">
+											<a href=\"{$post_link}\">{$topic_title}</a>
+											<span class=\"author\"> by <span>{$post_author}</span></span>
+												<div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
+										</div>";
+									}
+									
+									mysqli_free_result($result);
+								}
+							}
+						?>
                     </div>
                 </div>
 
@@ -179,53 +182,61 @@
                     <div class="portlet">
                         <p><strong>Forum Activity</strong></p>
                         <?php
-                            $sql = "SELECT t.topic_id, t.topic_title, t.topic_last_post_id, t.forum_id, p.post_id, p.poster_id, p.post_time, u.user_id, u.username, u.user_colour, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height
-                            FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
-                            WHERE t.topic_id = p.topic_id AND
-                            t.topic_approved = 1 AND
-                            f.forum_id = t.forum_id AND
-                            t.forum_id != 1 AND
-                            t.forum_id != 7 AND
-                            t.topic_status <> 2 AND
-                            p.post_approved = 1 AND
-                            p.post_id = t.topic_last_post_id AND
-                            p.poster_id = u.user_id
-                            ORDER BY p.post_id DESC LIMIT $topicnumber";
-
-                            // Check if we have a valid database connection, preform the query if we do.
-                            if (!empty($db) && ($query = $db->sql_query($sql))) {
-                                while ($row = $db->sql_fetchrow($query)) {
-                                    $topic_title = $row['topic_title'];
-                                    //$post_text = nl2br($row['post_text']);
-                                    $author_avatar = $row['user_avatar'];
-
-                                    $post_time = $row["post_time"];
-                                    $post_local_time = date('F jS, Y, g:i a', $post_time);
-
-                                    $post_author = get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour']);
-                                    $post_date = get_time_ago($post_time);
-                                    $post_link = append_sid("{$phpbb_root_path}viewtopic.php", "p=" . $row['post_id'] . "#p" . $row['post_id']);
-                                    //if ($author_avatar) $avatar = get_user_avatar($author_avatar, $row['user_avatar_type'], 16, 16);
-
-                                    echo
-                                    "<div class=\"ft\">
-                                        <a href=\"{$post_link}\">{$topic_title}</a>
-                                        <span class=\"author\"> by <span>{$post_author}</span></span>
-                                        <div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
-                                    </div>";
-                                }
-                                $db->sql_freeresult($query);
-                            } else {
-                                // Check if we have a valid database connection.
-                                if (!empty($db)) {
-                                    $error = $db->sql_error();
-
-                                    echo "<p>Query failed: ".$error['message']."</p>";
-                                } else {
-                                    echo "<p>Query failed: Unknown error.</p>";
-                                }
-                            }
-                        ?>
+							// Check connection
+							if (mysqli_connect_errno())
+							{
+								echo "<p>Failed to connect to MySQL: ".mysqli_connect_error()."</p>";
+							}
+							else
+							{
+								$sql = 
+									"SELECT 
+										t.topic_id, 
+										t.topic_title, 
+										t.topic_last_post_id, 
+										t.forum_id, 
+										p.post_id, 
+										p.poster_id, 
+										p.post_time, 
+										u.user_id, 
+										u.username, 
+										u.user_colour
+									FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
+									WHERE t.topic_id = p.topic_id AND
+										t.topic_approved = 1 AND
+										f.forum_id = t.forum_id AND
+										t.forum_id != 1 AND
+										t.forum_id != 7 AND
+										t.topic_status <> 2 AND
+										p.post_approved = 1 AND
+										p.post_id = t.topic_last_post_id AND
+										p.poster_id = u.user_id
+									ORDER BY p.post_id DESC LIMIT $topicnumber";
+									
+								if ($result = mysqli_query($conn, $sql))
+								{
+									while ($row = mysqli_fetch_array($result))
+									{
+										$topic_title = $row['topic_title'];
+										$post_time = $row["post_time"];
+										$post_author = $row['username'];
+										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+										
+										$post_local_time = date('F jS, Y, g:i a', $post_time);
+										$post_date = get_time_ago($post_time);
+										
+										echo
+										"<div class=\"ft\">
+											<a href=\"{$post_link}\">{$topic_title}</a>
+											<span class=\"author\"> by <span>{$post_author}</span></span>
+											<div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
+										</div>";
+									}
+									
+									mysqli_free_result($result);
+								}
+							}
+						?>
                     </div>
                 </div>
                 <div class="yui-u">
@@ -290,4 +301,11 @@
     <!-- AddThis Button END -->
 </div>
 
-<?php include "footer.php"; ?>
+<?php
+if ($conn)
+{
+	mysqli_close($conn);
+}
+
+include "footer.php"; 
+?>
