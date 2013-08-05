@@ -164,10 +164,10 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
 										$post_date = get_time_ago($post_time);
 										
 										echo
-										"<div class=\"ft\">
+										"<div>
 											<a href=\"{$post_link}\">{$topic_title}</a>
 											<span class=\"author\"> by <span>{$post_author}</span></span>
-												<div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
+											<div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
 										</div>";
 									}
 									
@@ -226,7 +226,7 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
 										$post_date = get_time_ago($post_time);
 										
 										echo
-										"<div class=\"ft\">
+										"<div>
 											<a href=\"{$post_link}\">{$topic_title}</a>
 											<span class=\"author\"> by <span>{$post_author}</span></span>
 											<div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
