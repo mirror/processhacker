@@ -152,21 +152,23 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
 									
 								if ($result = mysqli_query($conn, $sql))
 								{
-									// Fetch one and one row
 									while ($row = mysqli_fetch_array($result))
 									{
-										$topic_title = $row['topic_title'];
+										$topic_title = censor_text($row["topic_title"]);
 										$post_time = $row["post_time"];
-										$post_author = $row['username'];
-										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+										$author_name = $row['username'];
+										$author_colour = $row['user_colour'];
 										
 										$post_local_time = date('F jS, Y, g:i a', $post_time);
 										$post_date = get_time_ago($post_time);
 										
-										echo
+										$author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row['user_id'];
+										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+										
+										echo 
 										"<div>
 											<a href=\"{$post_link}\">{$topic_title}</a>
-											<span class=\"author\"> by <span>{$post_author}</span></span>
+											<span class=\"forumdate\"> by <span style=\"color:#{$author_colour}\">{$author_name}</span></span>
 											<div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
 										</div>";
 									}
@@ -217,18 +219,21 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
 								{
 									while ($row = mysqli_fetch_array($result))
 									{
-										$topic_title = $row['topic_title'];
+										$topic_title = censor_text($row["topic_title"]);
 										$post_time = $row["post_time"];
-										$post_author = $row['username'];
-										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+										$author_name = $row['username'];
+										$author_colour = $row['user_colour'];
 										
 										$post_local_time = date('F jS, Y, g:i a', $post_time);
 										$post_date = get_time_ago($post_time);
 										
-										echo
+										$author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row['user_id'];
+										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+										
+										echo 
 										"<div>
 											<a href=\"{$post_link}\">{$topic_title}</a>
-											<span class=\"author\"> by <span>{$post_author}</span></span>
+											<span class=\"forumdate\"> by <span style=\"color:#{$author_colour}\">{$author_name}</span></span>
 											<div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
 										</div>";
 									}
@@ -249,16 +254,16 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                     <div class="portlet">
                         <p><strong>SVN Activity</strong></p>
                         <div id="feeddiv"></div>
-
-                        <script>
+						<script type="text/javascript" src="https://rawgithub.com/timrwood/moment/2.1.0/moment.js"></script>
+						<script>
                             var feedcontainer=document.getElementById("feeddiv");
                             var rssoutput = "";
 
-                            feedcontainer.innerHTML = "<div id=\"feeddiv2\">Loading feed...</div>";
+                            feedcontainer.innerHTML = "<div id=\"feeddiv2\">Loading commit history...</div>";
 
                             function rssfeedsetup() {
                                 var feedpointer = new google.feeds.Feed("http://sourceforge.net/p/processhacker/code/feed");
-                                feedpointer.setNumEntries(3);
+                                feedpointer.setNumEntries(5);
                                 feedpointer.load(displayfeed);
                             }
 
@@ -266,11 +271,12 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                                 if (!result.error) {
                                     var thefeeds = result.feed.entries;
                                     for (var i = 0; i < thefeeds.length; i++) {
-                                        rssoutput += "<div class=\"ft\">";
-                                            rssoutput += "<div style=\"color:#333\">" + thefeeds[i].content.replace("<p>", "").replace("</p>", "").replace("<ul>", "").replace("<li>", "").replace("<div>", "").replace("</div>", "").replace("</li>", "").replace("</ul>", "").replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/"); + "</div>";
-                                            rssoutput += "<span class=\"forumdate\"> by </span>";
-                                            rssoutput += "<span style=\"color:#A00\">" + thefeeds[i].author + "</span>";
-                                            rssoutput += "<div class=\"forumdate\">" + new Date(thefeeds[i].publishedDate).toString() + "</div>";
+                                        rssoutput += "<div>";
+                                        rssoutput += "<a href=\" " + thefeeds[i].link + " \">" 
+														+ thefeeds[i].title.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/")
+													  + "</a>";
+                                        rssoutput += "<span class=\"forumdate\"> by <span style=\"color:#A00\">" + thefeeds[i].author + "</span></span>";
+                                        rssoutput += "<div class=\"forumdate\">" + moment(thefeeds[i].publishedDate).fromNow() + " - " + new Date(thefeeds[i].publishedDate).toLocaleString() + "</div>";
                                         rssoutput += "</div>";
                                     }
 
