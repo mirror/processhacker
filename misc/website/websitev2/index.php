@@ -153,17 +153,17 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                                 {
                                     while ($row = mysqli_fetch_array($result))
                                     {
-										$topic_title = $row["topic_title"];
-										$author_name = $row["username"];
-										$author_colour = $row["user_colour"];
+                                        $topic_title = $row["topic_title"];
+                                        $author_name = $row["username"];
+                                        $author_colour = $row["user_colour"];
 
-										$post_time = $row["post_time"];
-										$post_local_time = date("F jS, Y, g:i a", $post_time);
-										$post_date = get_time_ago($post_time);
-										$post_id = $row["post_id"];
+                                        $post_time = $row["post_time"];
+                                        $post_local_time = date("F jS, Y, g:i a", $post_time);
+                                        $post_date = get_time_ago($post_time);
+                                        $post_id = $row["post_id"];
 
-										$author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row["user_id"];
-										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
+                                        $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row["user_id"];
+                                        $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
 
                                         echo
                                         "<div>
@@ -218,17 +218,17 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                                 {
                                     while ($row = mysqli_fetch_array($result))
                                     {
-										$topic_title = $row["topic_title"];
-										$author_name = $row["username"];
-										$author_colour = $row["user_colour"];
+                                        $topic_title = $row["topic_title"];
+                                        $author_name = $row["username"];
+                                        $author_colour = $row["user_colour"];
 
-										$post_time = $row["post_time"];
-										$post_local_time = date("F jS, Y, g:i a", $post_time);
-										$post_date = get_time_ago($post_time);
-										$post_id = $row["post_id"];
+                                        $post_time = $row["post_time"];
+                                        $post_local_time = date("F jS, Y, g:i a", $post_time);
+                                        $post_date = get_time_ago($post_time);
+                                        $post_id = $row["post_id"];
 
-										$author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row["user_id"];
-										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
+                                        $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row["user_id"];
+                                        $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
 
                                         echo
                                         "<div>
@@ -254,7 +254,7 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                     <div class="portlet">
                         <p><strong>SVN Activity</strong></p>
                         <div id="feeddiv"></div>
-                        <script type="text/javascript" src="https://rawgithub.com/timrwood/moment/2.1.0/moment.js"></script>
+                        <script src="js/moment.min.js"></script>
                         <script>
                             var feedcontainer=document.getElementById("feeddiv");
                             var rssoutput = "";
@@ -272,9 +272,9 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                                     var thefeeds = result.feed.entries;
                                     for (var i = 0; i < thefeeds.length; i++) {
                                         rssoutput += "<div>";
-                                        rssoutput += "<a href=\" " + thefeeds[i].link + " \">"
-                                                        + thefeeds[i].title.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/")
-                                                      + "</a>";
+                                        rssoutput += "<a href=\" " + thefeeds[i].link + " \">" +
+                                                        thefeeds[i].title.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/") +
+                                                     "</a>";
                                         rssoutput += "<span class=\"forumdate\"> by <span style=\"color:#A00\">" + thefeeds[i].author + "</span></span>";
                                         rssoutput += "<div class=\"forumdate\">" + moment(thefeeds[i].publishedDate).fromNow() + " - " + new Date(thefeeds[i].publishedDate).toLocaleString() + "</div>";
                                         rssoutput += "</div>";
