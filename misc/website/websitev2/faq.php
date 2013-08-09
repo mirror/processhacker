@@ -67,8 +67,8 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                                 {
                                     while ($row = mysqli_fetch_array($result))
                                     {
-                                        $topic_title = censor_text($row["topic_title"]);
-                                        $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+                                        $topic_title = $row["topic_title"];
+                                        $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row["post_id"]."#p".$row["post_id"];
 
                                         echo "<li><a href=\"{$post_link}\">{$topic_title}</a></li>";
                                     }
