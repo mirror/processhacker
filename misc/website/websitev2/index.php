@@ -1,5 +1,5 @@
-<?php 
-$pagetitle = "Overview"; 
+<?php
+$pagetitle = "Overview";
 include "header.php";
 
 // Connect to DB
@@ -121,62 +121,62 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                 <div class="yui-u first">
                     <div class="portlet">
                         <p><strong>Latest News</strong></p>
-						<?php
-							// Check connection
-							if (mysqli_connect_errno())
-							{
-								echo "<p>Failed to connect to MySQL: " . mysqli_connect_error()."</p>";
-							}
-							else
-							{
-								$sql = 
-									"SELECT
-										t.topic_id, 
-										t.topic_title,
-										t.topic_last_post_id, 
-										t.forum_id,
-										p.post_id, 
-										p.poster_id, 
-										p.post_time,
-										u.user_id, 
-										u.username, 
-										u.user_colour
-									FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
-									WHERE t.topic_id = p.topic_id AND
-										f.forum_id = t.forum_id AND
-										t.forum_id = 1 AND
-										t.topic_status <> 2 AND
-										p.post_id = t.topic_last_post_id AND
-										p.poster_id = u.user_id
-									ORDER BY p.post_id DESC LIMIT $topicnumber";
-									
-								if ($result = mysqli_query($conn, $sql))
-								{
-									while ($row = mysqli_fetch_array($result))
-									{
-										$topic_title = censor_text($row["topic_title"]);
-										$post_time = $row["post_time"];
-										$author_name = $row['username'];
-										$author_colour = $row['user_colour'];
-										
-										$post_local_time = date('F jS, Y, g:i a', $post_time);
-										$post_date = get_time_ago($post_time);
-										
-										$author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row['user_id'];
-										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
-										
-										echo 
-										"<div>
-											<a href=\"{$post_link}\">{$topic_title}</a>
-											<span class=\"forumdate\"> by <span style=\"color:#{$author_colour}\">{$author_name}</span></span>
-											<div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
-										</div>";
-									}
-									
-									mysqli_free_result($result);
-								}
-							}
-						?>
+                        <?php
+                            // Check connection
+                            if (mysqli_connect_errno())
+                            {
+                                echo "<p>Failed to connect to MySQL: " . mysqli_connect_error()."</p>";
+                            }
+                            else
+                            {
+                                $sql =
+                                    "SELECT
+                                        t.topic_id,
+                                        t.topic_title,
+                                        t.topic_last_post_id,
+                                        t.forum_id,
+                                        p.post_id,
+                                        p.poster_id,
+                                        p.post_time,
+                                        u.user_id,
+                                        u.username,
+                                        u.user_colour
+                                    FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
+                                    WHERE t.topic_id = p.topic_id AND
+                                        f.forum_id = t.forum_id AND
+                                        t.forum_id = 1 AND
+                                        t.topic_status <> 2 AND
+                                        p.post_id = t.topic_last_post_id AND
+                                        p.poster_id = u.user_id
+                                    ORDER BY p.post_id DESC LIMIT $topicnumber";
+
+                                if ($result = mysqli_query($conn, $sql))
+                                {
+                                    while ($row = mysqli_fetch_array($result))
+                                    {
+                                        $topic_title = censor_text($row["topic_title"]);
+                                        $post_time = $row["post_time"];
+                                        $author_name = $row['username'];
+                                        $author_colour = $row['user_colour'];
+
+                                        $post_local_time = date('F jS, Y, g:i a', $post_time);
+                                        $post_date = get_time_ago($post_time);
+
+                                        $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row['user_id'];
+                                        $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+
+                                        echo
+                                        "<div>
+                                            <a href=\"{$post_link}\">{$topic_title}</a>
+                                            <span class=\"forumdate\"> by <span style=\"color:#{$author_colour}\">{$author_name}</span></span>
+                                            <div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
+                                        </div>";
+                                    }
+
+                                    mysqli_free_result($result);
+                                }
+                            }
+                        ?>
                     </div>
                 </div>
 
@@ -184,64 +184,64 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                     <div class="portlet">
                         <p><strong>Forum Activity</strong></p>
                         <?php
-							// Check connection
-							if (mysqli_connect_errno())
-							{
-								echo "<p>Failed to connect to MySQL: ".mysqli_connect_error()."</p>";
-							}
-							else
-							{
-								$sql = 
-									"SELECT 
-										t.topic_id, 
-										t.topic_title, 
-										t.topic_last_post_id, 
-										t.forum_id, 
-										p.post_id, 
-										p.poster_id, 
-										p.post_time, 
-										u.user_id, 
-										u.username, 
-										u.user_colour
-									FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
-									WHERE t.topic_id = p.topic_id AND
-										t.topic_approved = 1 AND
-										f.forum_id = t.forum_id AND
-										t.forum_id != 1 AND
-										t.forum_id != 7 AND
-										t.topic_status <> 2 AND
-										p.post_approved = 1 AND
-										p.post_id = t.topic_last_post_id AND
-										p.poster_id = u.user_id
-									ORDER BY p.post_id DESC LIMIT $topicnumber";
-									
-								if ($result = mysqli_query($conn, $sql))
-								{
-									while ($row = mysqli_fetch_array($result))
-									{
-										$topic_title = censor_text($row["topic_title"]);
-										$post_time = $row["post_time"];
-										$author_name = $row['username'];
-										$author_colour = $row['user_colour'];
-										
-										$post_local_time = date('F jS, Y, g:i a', $post_time);
-										$post_date = get_time_ago($post_time);
-										
-										$author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row['user_id'];
-										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
-										
-										echo 
-										"<div>
-											<a href=\"{$post_link}\">{$topic_title}</a>
-											<span class=\"forumdate\"> by <span style=\"color:#{$author_colour}\">{$author_name}</span></span>
-											<div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
-										</div>";
-									}
-									
-									mysqli_free_result($result);
-								}
-							}
-						?>
+                            // Check connection
+                            if (mysqli_connect_errno())
+                            {
+                                echo "<p>Failed to connect to MySQL: ".mysqli_connect_error()."</p>";
+                            }
+                            else
+                            {
+                                $sql =
+                                    "SELECT
+                                        t.topic_id,
+                                        t.topic_title,
+                                        t.topic_last_post_id,
+                                        t.forum_id,
+                                        p.post_id,
+                                        p.poster_id,
+                                        p.post_time,
+                                        u.user_id,
+                                        u.username,
+                                        u.user_colour
+                                    FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
+                                    WHERE t.topic_id = p.topic_id AND
+                                        t.topic_approved = 1 AND
+                                        f.forum_id = t.forum_id AND
+                                        t.forum_id != 1 AND
+                                        t.forum_id != 7 AND
+                                        t.topic_status <> 2 AND
+                                        p.post_approved = 1 AND
+                                        p.post_id = t.topic_last_post_id AND
+                                        p.poster_id = u.user_id
+                                    ORDER BY p.post_id DESC LIMIT $topicnumber";
+
+                                if ($result = mysqli_query($conn, $sql))
+                                {
+                                    while ($row = mysqli_fetch_array($result))
+                                    {
+                                        $topic_title = censor_text($row["topic_title"]);
+                                        $post_time = $row["post_time"];
+                                        $author_name = $row['username'];
+                                        $author_colour = $row['user_colour'];
+
+                                        $post_local_time = date('F jS, Y, g:i a', $post_time);
+                                        $post_date = get_time_ago($post_time);
+
+                                        $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row['user_id'];
+                                        $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+
+                                        echo
+                                        "<div>
+                                            <a href=\"{$post_link}\">{$topic_title}</a>
+                                            <span class=\"forumdate\"> by <span style=\"color:#{$author_colour}\">{$author_name}</span></span>
+                                            <div class=\"forumdate\">{$post_date} - {$post_local_time}</div>
+                                        </div>";
+                                    }
+
+                                    mysqli_free_result($result);
+                                }
+                            }
+                        ?>
                     </div>
                 </div>
                 <div class="yui-u">
@@ -254,8 +254,8 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                     <div class="portlet">
                         <p><strong>SVN Activity</strong></p>
                         <div id="feeddiv"></div>
-						<script type="text/javascript" src="https://rawgithub.com/timrwood/moment/2.1.0/moment.js"></script>
-						<script>
+                        <script type="text/javascript" src="https://rawgithub.com/timrwood/moment/2.1.0/moment.js"></script>
+                        <script>
                             var feedcontainer=document.getElementById("feeddiv");
                             var rssoutput = "";
 
@@ -272,9 +272,9 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                                     var thefeeds = result.feed.entries;
                                     for (var i = 0; i < thefeeds.length; i++) {
                                         rssoutput += "<div>";
-                                        rssoutput += "<a href=\" " + thefeeds[i].link + " \">" 
-														+ thefeeds[i].title.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/")
-													  + "</a>";
+                                        rssoutput += "<a href=\" " + thefeeds[i].link + " \">"
+                                                        + thefeeds[i].title.replace("/p/processhacker/code/", "http://sourceforge.net/p/processhacker/code/")
+                                                      + "</a>";
                                         rssoutput += "<span class=\"forumdate\"> by <span style=\"color:#A00\">" + thefeeds[i].author + "</span></span>";
                                         rssoutput += "<div class=\"forumdate\">" + moment(thefeeds[i].publishedDate).fromNow() + " - " + new Date(thefeeds[i].publishedDate).toLocaleString() + "</div>";
                                         rssoutput += "</div>";
@@ -310,8 +310,8 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
 <?php
 if ($conn)
 {
-	mysqli_close($conn);
+    mysqli_close($conn);
 }
 
-include "footer.php"; 
+include "footer.php";
 ?>

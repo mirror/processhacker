@@ -1,6 +1,6 @@
-<?php 
-$pagetitle = "FAQ"; 
-include "header.php"; 
+<?php
+$pagetitle = "FAQ";
+include "header.php";
 // Connect to DB
 $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
 ?>
@@ -12,7 +12,7 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                 <div class="logo">
                     <a href="/"><img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64"></a>
                 </div>
-				
+
                 <div class="flowed-block">
                     <h2>Process Hacker</h2>
                     <ul class="facetmenu">
@@ -24,59 +24,59 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                     </ul>
                 </div>
             </nav>
-			
-			<p></p><!-- this p div is a placeholder -->
-			
+
+            <p></p><!-- this p div is a placeholder -->
+
             <div class="pre-section">
                 <div class="yui-b side">
                     <div class="">
                     </div>
-					
+
                     <div class="portlet">
                         <h2 class="center">Quick Links</h2>
                         <ul class="involvement">
-						
-						<?php 
-							// Check connection
-							if (mysqli_connect_errno())
-							{
-								echo "<p>Failed to connect to MySQL: ".mysqli_connect_error()."<p>";
-							}
-							else
-							{
-								$sql = "SELECT t.topic_id, 
-											t.topic_title, 
-											t.topic_last_post_id,
-											t.forum_id, 
-											p.post_id, 
-											p.poster_id, 
-											p.post_time, 
-											u.user_id
-										FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
-										WHERE t.topic_id = p.topic_id AND
-											t.topic_approved = 1 AND
-											f.forum_id = t.forum_id AND
-											t.forum_id = 6 AND
-											t.topic_status <> 2 AND
-											p.post_approved = 1 AND
-											p.post_id = t.topic_last_post_id AND
-											p.poster_id = u.user_id
-										ORDER BY t.topic_status DESC";
-										
-								if ($result = mysqli_query($conn, $sql))
-								{
-									while ($row = mysqli_fetch_array($result))
-									{
-										$topic_title = censor_text($row["topic_title"]);
-										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
-											
-										echo "<li><a href=\"{$post_link}\">{$topic_title}</a></li>";
-									}
-										
-									mysqli_free_result($result);
-								}
-							}
-							?>
+
+                        <?php
+                            // Check connection
+                            if (mysqli_connect_errno())
+                            {
+                                echo "<p>Failed to connect to MySQL: ".mysqli_connect_error()."<p>";
+                            }
+                            else
+                            {
+                                $sql = "SELECT t.topic_id,
+                                            t.topic_title,
+                                            t.topic_last_post_id,
+                                            t.forum_id,
+                                            p.post_id,
+                                            p.poster_id,
+                                            p.post_time,
+                                            u.user_id
+                                        FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
+                                        WHERE t.topic_id = p.topic_id AND
+                                            t.topic_approved = 1 AND
+                                            f.forum_id = t.forum_id AND
+                                            t.forum_id = 6 AND
+                                            t.topic_status <> 2 AND
+                                            p.post_approved = 1 AND
+                                            p.post_id = t.topic_last_post_id AND
+                                            p.poster_id = u.user_id
+                                        ORDER BY t.topic_status DESC";
+
+                                if ($result = mysqli_query($conn, $sql))
+                                {
+                                    while ($row = mysqli_fetch_array($result))
+                                    {
+                                        $topic_title = censor_text($row["topic_title"]);
+                                        $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+
+                                        echo "<li><a href=\"{$post_link}\">{$topic_title}</a></li>";
+                                    }
+
+                                    mysqli_free_result($result);
+                                }
+                            }
+                            ?>
                             <li><a href="http://sourceforge.net/projects/processhacker/">SourceForge project page</a></li>
                             <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
                             <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
@@ -86,7 +86,7 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                     </div>
                 </div>
             </div>
-			
+
             <div class="summary">
                 <dl>
                     <dt>Why is there annoying bug X in Process Hacker? Why is Process Hacker missing feature Y?</dt>
@@ -141,15 +141,15 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                     </dd>
                 </dl>
             </div>
-			
+
         </div>
     </div>
 </div>
 
-<?php 
+<?php
 if ($conn)
 {
-	mysqli_close($conn);
+    mysqli_close($conn);
 }
 include "footer.php";
  ?>
