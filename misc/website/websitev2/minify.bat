@@ -7,6 +7,6 @@ pushd %~dp0
 
 echo minifying and combining css files...
 type css\stylesheet.css css\normalize.css | cleancss --s0 --remove-empty -o css\pack.css
-cmd /c uglifyjs js\moment.js --compress --mangle -o js\moment.min.js
+cmd /c uglifyjs js\moment.js js\feed.js --compress --mangle -o js\pack.js
 
 popd

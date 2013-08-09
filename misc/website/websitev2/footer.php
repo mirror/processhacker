@@ -8,7 +8,8 @@
 <?php
 if ($pagetitle == "Overview") {
     echo "<script src=\"http://www.google.com/jsapi\"></script><script>google.load(\"feeds\", \"1\")</script>
-          <script src=\"http://s7.addthis.com/js/300/addthis_widget.js#pubid=dmex\"></script>";
+          <script src=\"http://s7.addthis.com/js/300/addthis_widget.js#pubid=dmex\"></script>
+          <script src=\"js/pack.js\"></script>";
 }
 ?>
 
