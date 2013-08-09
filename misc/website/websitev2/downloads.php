@@ -5,7 +5,7 @@
         <div class="yui-t4">
             <nav>
                 <div class="logo">
-                    <a href="/"><img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64"></a>
+                    <a href="/"><img class="flowed-block" src="img/logo_64x64.png" alt="Project Logo" width="64" height="64"></a>
                 </div>
 
                 <div class="flowed-block">

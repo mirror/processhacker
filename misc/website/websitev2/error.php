@@ -63,7 +63,7 @@ function curPageURL()
     <div class="yui-d0">
         <nav>
             <div class="logo">
-                <a href="/"><img class="flowed-block" src="images/logo_64x64.png" alt="Project Logo" width="64" height="64"></a>
+                <a href="/"><img class="flowed-block" src="img/logo_64x64.png" alt="Project Logo" width="64" height="64"></a>
             </div>
 
             <div class="flowed-block">
@@ -91,7 +91,7 @@ function curPageURL()
 </div>
 
 <footer>
-    <a href="http://sourceforge.net/projects/processhacker/"><img src="/images/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30"></a>
+    <a href="http://sourceforge.net/projects/processhacker/"><img src="img/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30"></a>
     <br>
     <a href="privacy.php">Privacy Policy</a>
     <br>

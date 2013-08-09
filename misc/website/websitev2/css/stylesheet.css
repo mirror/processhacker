@@ -401,7 +401,7 @@ ul {
 }
 
 .involvement a {
-    background: url("/images/answers-arrow-right.png") no-repeat scroll right center transparent;
+    background: url("/img/answers-arrow-right.png") no-repeat scroll right center transparent;
     display: block;
     padding: 0.1em;
 }

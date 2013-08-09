@@ -32,7 +32,7 @@ END;
     }
     else
     {
-        echo '<img src="images/ad_300x250.png">';
+        echo '<img src="img/ad_300x250.png">';
     }
 }
 
@@ -63,7 +63,7 @@ END;
     }
     else
     {
-        echo '<img src="images/ad_336x280.png">';
+        echo '<img src="img/ad_336x280.png">';
     }
 }
 
@@ -94,7 +94,7 @@ END;
     }
     else
     {
-        echo '<img src="images/ad_728x90.png">';
+        echo '<img src="img/ad_728x90.png">';
     }
 }
 
@@ -125,7 +125,7 @@ END;
     }
     else
     {
-        echo '<img src="images/ad_336x280.png">';
+        echo '<img src="img/ad_336x280.png">';
     }
 }
 
