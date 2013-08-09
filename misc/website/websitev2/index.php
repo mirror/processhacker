@@ -130,8 +130,7 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                             else
                             {
                                 $sql =
-                                    "SELECT
-                                        t.topic_id,
+                                    "SELECT t.topic_id,
                                         t.topic_title,
                                         t.topic_last_post_id,
                                         t.forum_id,
@@ -154,16 +153,17 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                                 {
                                     while ($row = mysqli_fetch_array($result))
                                     {
-                                        $topic_title = censor_text($row["topic_title"]);
-                                        $post_time = $row["post_time"];
-                                        $author_name = $row['username'];
-                                        $author_colour = $row['user_colour'];
+										$topic_title = $row["topic_title"];
+										$author_name = $row["username"];
+										$author_colour = $row["user_colour"];
 
-                                        $post_local_time = date('F jS, Y, g:i a', $post_time);
-                                        $post_date = get_time_ago($post_time);
+										$post_time = $row["post_time"];
+										$post_local_time = date("F jS, Y, g:i a", $post_time);
+										$post_date = get_time_ago($post_time);
+										$post_id = $row["post_id"];
 
-                                        $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row['user_id'];
-                                        $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+										$author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row["user_id"];
+										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
 
                                         echo
                                         "<div>
@@ -192,8 +192,7 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                             else
                             {
                                 $sql =
-                                    "SELECT
-                                        t.topic_id,
+                                    "SELECT t.topic_id,
                                         t.topic_title,
                                         t.topic_last_post_id,
                                         t.forum_id,
@@ -219,16 +218,17 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                                 {
                                     while ($row = mysqli_fetch_array($result))
                                     {
-                                        $topic_title = censor_text($row["topic_title"]);
-                                        $post_time = $row["post_time"];
-                                        $author_name = $row['username'];
-                                        $author_colour = $row['user_colour'];
+										$topic_title = $row["topic_title"];
+										$author_name = $row["username"];
+										$author_colour = $row["user_colour"];
 
-                                        $post_local_time = date('F jS, Y, g:i a', $post_time);
-                                        $post_date = get_time_ago($post_time);
+										$post_time = $row["post_time"];
+										$post_local_time = date("F jS, Y, g:i a", $post_time);
+										$post_date = get_time_ago($post_time);
+										$post_id = $row["post_id"];
 
-                                        $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row['user_id'];
-                                        $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$row['post_id']."#p".$row['post_id'];
+										$author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$row["user_id"];
+										$post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
 
                                         echo
                                         "<div>
