@@ -152,7 +152,10 @@ ul {
 
 .forumdate {
     color: silver;
-    padding: 0 0 5px;
+}
+
+.forumdate > .author {
+    color: #A00;
 }
 
 .about-li {
