@@ -52,6 +52,16 @@ footer {
     text-align: center;
 }
 
+footer ul {
+    list-style-type: none;
+}
+
+footer ul,
+footer li {
+    margin: 0;
+    padding: 0;
+}
+
 h1 {
     font-size: 20px;
     font-weight: bold;

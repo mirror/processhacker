@@ -1,9 +1,13 @@
 <footer>
-    <a href="http://sourceforge.net/projects/processhacker/"><img src="img/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30"></a>
-    <br>
-    <a href="privacy.php">Privacy Policy</a>
-    <br>
-    Copyright &copy; 2008-2013 wj32
+    <ul>
+        <li>
+            <a href="http://sourceforge.net/projects/processhacker/">
+                <img src="img/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30">
+            </a>
+        </li>
+        <li><a href="privacy.php">Privacy Policy</a></li>
+        <li>Copyright &copy; 2008-2013 wj32</li>
+    </ul>
 
 <?php
 if ($pagetitle == "Overview") {
