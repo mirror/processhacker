@@ -2,8 +2,6 @@
 $errorcode = $_SERVER['REDIRECT_STATUS'];
 $pagetitle = "Error ".$errorcode;
 
-include "config.php";
-
 function curPageURL()
 {
     $pageURL = 'http';
@@ -23,26 +21,6 @@ function curPageURL()
 
     return $pageURL;
 }
-    // the .htaccess file redirects all PHP site errors to this page.
-    // config.php includes the forum phpbb functions for the index page forum activity/news query,
-    // one of these forum functions is add_log and we can log errors into the mysql error database.
-    // the error log is availabe on the Maintenance tab > Error Log in the forum Admin Control Panel
-    // this way all site errors get logged instead of just phpbb errors
-    // it works exactly like printf however the string must be defined in /forums/language/en/acp/common.php
-    // 1st param is the log type
-    // 2nd param is the string defined in /forums/language/en/acp/common.php as 'LOG_ERROR_PAGE' => '<strong>ERROR PAGE</strong> - %d<br/>» %s',
-    // 3rd param is %d for errorcode - defined above
-    // 4th param is %s for the current page - defined above
-
-    if ($errorcode != 403) {
-        if (!empty($_SERVER['HTTP_REFERER'])) {
-            $referringSite = $_SERVER['HTTP_REFERER'];
-            // this is a second type for logging the referer if the request come from another site
-            add_log('critical', 'LOG_ERROR_PAGE_REF', $errorcode, curPageURL(), $referringSite);
-        } else {
-            add_log('critical', 'LOG_ERROR_PAGE', $errorcode, curPageURL());
-        }
-    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -61,26 +39,24 @@ function curPageURL()
 <body>
 <div class="page">
     <div class="yui-d0">
-        <nav>
-            <div class="logo">
-                <a href="/"><img class="flowed-block" src="img/logo_64x64.png" alt="Project Logo" width="64" height="64"></a>
-            </div>
-
-            <div class="flowed-block">
-                <h2>Process Hacker</h2>
-                <ul class="facetmenu">
-                    <li><a href="/">Overview</a></li>
-                    <li><a href="features.php">Features</a></li>
-                    <li><a href="screenshots.php">Screenshots</a></li>
-                    <li><a href="downloads.php">Downloads</a></li>
-                    <li><a href="faq.php">FAQ</a></li>
-                    <li><a href="about.php">About</a></li>
-                    <li><a href="forums/">Forum</a></li>
-                </ul>
-            </div>
-        </nav>
-
         <div class="yui-t4">
+            <nav>
+                <div class="logo">
+                    <a href="/"><img class="flowed-block" src="/img/logo_64x64.png" alt="Project Logo" width="64" height="64"></a>
+                </div>
+
+                <div class="flowed-block">
+                    <h2>Process Hacker</h2>
+                    <ul class="facetmenu">
+                        <li class="active"><a href="/">Overview</a></li>
+                        <li><a href="/downloads.php">Downloads</a></li>
+                        <li><a href="/faq.php">FAQ</a></li>
+                        <li><a href="/about.php">About</a></li>
+                        <li><a href="/forums/">Forum</a></li>
+                    </ul>
+                </div>
+            </nav>
+			
             <div class="summary center">
                 <p><strong>ERROR <?php echo $errorcode ?>:</strong> <?php echo curPageURL(); ?></p>
                 <p><strong>Please notify the team about this error or try again later.</strong></p>
@@ -91,7 +67,7 @@ function curPageURL()
 </div>
 
 <footer>
-    <a href="http://sourceforge.net/projects/processhacker/"><img src="img/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30"></a>
+    <a href="http://sourceforge.net/projects/processhacker/"><img src="/img/sflogo.png" alt="SourceForge logo" title="Process Hacker is hosted by SourceForge.net" width="120" height="30"></a>
     <br>
     <a href="privacy.php">Privacy Policy</a>
     <br>
