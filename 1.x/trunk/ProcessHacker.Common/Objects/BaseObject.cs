@@ -21,7 +21,7 @@
  */
 
 /* If enabled, the object system will keep statistics. */
-#define ENABLE_STATISTICS
+//#define ENABLE_STATISTICS
 
 /* If enabled, the finalizers on objects can be enabled and disabled. 
  * If disabled, the finalizers on objects can only be disabled.
@@ -63,19 +63,19 @@ namespace ProcessHacker.Common.Objects
     /// </remarks>
     public abstract class BaseObject : IRefCounted
     {
-        private const int ObjectOwned = 0x1;
-        private const int ObjectOwnedByGc = 0x2;
-        private const int ObjectDisposed = 0x4;
-        private const int ObjectRefCountShift = 3;
-        private const int ObjectRefCountMask = 0x1fffffff;
-        private const int ObjectRefCountIncrement = 0x8;
+        private const long ObjectOwned = 0x1;
+        private const long ObjectOwnedByGc = 0x2;
+        private const long ObjectDisposed = 0x4;
+        private const long ObjectRefCountShift = 3;
+        private const long ObjectRefCountMask = 0x1fffffff;
+        private const long ObjectRefCountIncrement = 0x8;
 
-        private static int _createdCount;
-        private static int _freedCount;
-        private static int _disposedCount;
-        private static int _finalizedCount;
-        private static int _referencedCount;
-        private static int _dereferencedCount;
+        private static long _createdCount;
+        private static long _freedCount;
+        private static long _disposedCount;
+        private static long _finalizedCount;
+        private static long _referencedCount;
+        private static long _dereferencedCount;
 
 #if DEBUG_ENABLE_LIVE_LIST
         private static System.Collections.Generic.List<WeakReference<BaseObject>> _liveList =
@@ -85,27 +85,27 @@ namespace ProcessHacker.Common.Objects
         /// <summary>
         /// Gets the number of disposable, owned objects that have been created.
         /// </summary>
-        public static int CreatedCount { get { return _createdCount; } }
+        public static long CreatedCount { get { return _createdCount; } }
         /// <summary>
         /// Gets the number of disposable objects that have been freed.
         /// </summary>
-        public static int FreedCount { get { return _freedCount; } }
+        public static long FreedCount { get { return _freedCount; } }
         /// <summary>
         /// Gets the number of disposable objects that have been Disposed with managed = true.
         /// </summary>
-        public static int DisposedCount { get { return _disposedCount; } }
+        public static long DisposedCount { get { return _disposedCount; } }
         /// <summary>
         /// Gets the number of disposable objects that have been Disposed with managed = false.
         /// </summary>
-        public static int FinalizedCount { get { return _finalizedCount; } }
+        public static long FinalizedCount { get { return _finalizedCount; } }
         /// <summary>
         /// Gets the number of times disposable objects have been referenced.
         /// </summary>
-        public static int ReferencedCount { get { return _referencedCount; } }
+        public static long ReferencedCount { get { return _referencedCount; } }
         /// <summary>
         /// Gets the number of times disposable objects have been dereferenced.
         /// </summary>
-        public static int DereferencedCount { get { return _dereferencedCount; } }
+        public static long DereferencedCount { get { return _dereferencedCount; } }
 
 #if DEBUG_ENABLE_LIVE_LIST
         public static void CleanLiveList()
@@ -122,16 +122,17 @@ namespace ProcessHacker.Common.Objects
         }
 #endif
 
-        public static T SwapRef<T>(ref T reference, T newObj)
-            where T : class, IRefCounted
+        public static T SwapRef<T>(ref T reference, T newObj) where T : class, IRefCounted
         {
             T oldObj;
 
             // Swap the reference.
             oldObj = Interlocked.Exchange(ref reference, newObj);
+
             // Reference the new object.
             if (newObj != null)
                 newObj.Reference();
+
             // Dereference the old object.
             if (oldObj != null)
                 oldObj.Dereference();
@@ -146,14 +147,14 @@ namespace ProcessHacker.Common.Objects
         private string _creationStackTrace;
 #endif
         /// <summary>
-        /// An Int32 containing various fields.
+        /// An UInt32 containing various fields.
         /// </summary>
-        private int _value;
+        private long _value;
 #if EXTENDED_FINALIZER
         /// <summary>
         /// Whether the finalizer will run.
         /// </summary>
-        private int _finalizerRegistered = 1;
+        private uint _finalizerRegistered = 1;
 #endif
 
         /// <summary>
@@ -222,8 +223,8 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         /// <param name="managed">Whether to dispose managed resources.</param>
         public void Dispose(bool managed)
-        {          
-            int value;
+        {
+            long value = 0;
 
             if ((_value & ObjectOwned) == 0)
                 return;
@@ -314,9 +315,9 @@ namespace ProcessHacker.Common.Objects
         /// This information is for debugging purposes ONLY. DO NOT 
         /// base memory management logic upon this value.
         /// </remarks>
-        public int ReferenceCount
+        public long ReferenceCount
         {
-            get { return (_value >> ObjectRefCountShift) & ObjectRefCountMask; }
+            get { return (_value >> (int)ObjectRefCountShift) & ObjectRefCountMask; }
         }
 
 #if EXTENDED_FINALIZER
@@ -325,7 +326,7 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         private void DisableFinalizer()
         {
-            int oldFinalizerRegistered;
+            long oldFinalizerRegistered;
 
             oldFinalizerRegistered = Interlocked.CompareExchange(ref _finalizerRegistered, 0, 1);
 
@@ -341,7 +342,7 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         protected void DisableOwnership(bool dispose)
         {
-            int value;
+            long value = 0;
 
             if (dispose)
                 this.Dispose();
@@ -382,7 +383,7 @@ namespace ProcessHacker.Common.Objects
         /// Dereference(false).
         /// </para>
         /// </remarks>
-        public int Dereference()
+        public long Dereference()
         {
             return this.Dereference(true);
         }
@@ -396,7 +397,7 @@ namespace ProcessHacker.Common.Objects
         /// <para>If you are calling this method from a finalizer, set 
         /// <paramref name="managed" /> to false.</para>
         /// </remarks>
-        public int Dereference(bool managed)
+        public long Dereference(bool managed)
         {
             return this.Dereference(1, managed);
         }
@@ -406,7 +407,7 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         /// <param name="count">The number of times to dereference the object.</param>
         /// <returns>The new reference count.</returns>
-        public int Dereference(int count)
+        public long Dereference(long count)
         {
             return this.Dereference(count, true);
         }
@@ -417,10 +418,10 @@ namespace ProcessHacker.Common.Objects
         /// <param name="count">The number of times to dereference the object.</param>
         /// <param name="managed">Whether to dispose managed resources.</param>
         /// <returns>The new reference count.</returns>
-        public int Dereference(int count, bool managed)
+        public long Dereference(long count, bool managed)
         {
-            int value;
-            int newRefCount;
+            long value = 0;
+            long newRefCount = 0;
 
             // Initial parameter validation.
             if (count == 0)
@@ -438,7 +439,7 @@ namespace ProcessHacker.Common.Objects
 
             // Decrease the reference count.
             value = Interlocked.Add(ref _value, -ObjectRefCountIncrement * count);
-            newRefCount = (value >> ObjectRefCountShift) & ObjectRefCountMask;
+            newRefCount = (value >> (int)ObjectRefCountShift) & ObjectRefCountMask;
 
             // Should not ever happen.
             if (newRefCount < 0)
@@ -484,7 +485,7 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         private void EnableFinalizer()
         {
-            int oldFinalizerRegistered;
+            long oldFinalizerRegistered;
 
             oldFinalizerRegistered = Interlocked.CompareExchange(ref _finalizerRegistered, 1, 0);
 
@@ -505,7 +506,7 @@ namespace ProcessHacker.Common.Objects
         /// object) to match each call to Reference. Do not call Dispose.
         /// </para>
         /// </remarks>
-        public int Reference()
+        public long Reference()
         {
             return this.Reference(1);
         }
@@ -515,9 +516,9 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         /// <param name="count">The number of times to reference the object.</param>
         /// <returns>The new reference count.</returns>
-        public int Reference(int count)
+        public long Reference(long count)
         {
-            int value;
+            long value;
 
             // Don't do anything if the object isn't owned.
             if ((_value & ObjectOwned) == 0)
@@ -534,7 +535,7 @@ namespace ProcessHacker.Common.Objects
 
             value = Interlocked.Add(ref _value, ObjectRefCountIncrement * count);
 
-            return (value >> ObjectRefCountShift) & ObjectRefCountMask;
+            return (value >> (int)ObjectRefCountShift) & ObjectRefCountMask;
         }
     }
 }

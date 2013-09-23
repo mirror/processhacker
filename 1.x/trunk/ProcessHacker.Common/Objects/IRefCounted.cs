@@ -8,21 +8,21 @@ namespace ProcessHacker.Common.Objects
         /// Decrements the reference count of the object.
         /// </summary>
         /// <returns>The new reference count.</returns>
-        int Dereference();
+        long Dereference();
 
         /// <summary>
         /// Decrements the reference count of the object.
         /// </summary>
         /// <param name="managed">Whether to dispose managed resources.</param>
         /// <returns>The new reference count.</returns>
-        int Dereference(bool managed);
+        long Dereference(bool managed);
 
         /// <summary>
         /// Decreases the reference count of the object.
         /// </summary>
         /// <param name="count">The number of times to dereference the object.</param>
         /// <returns>The new reference count.</returns>
-        int Dereference(int count);
+        long Dereference(long count);
 
         /// <summary>
         /// Decreases the reference count of the object.
@@ -30,7 +30,7 @@ namespace ProcessHacker.Common.Objects
         /// <param name="count">The number of times to dereference the object.</param>
         /// <param name="managed">Whether to dispose managed resources.</param>
         /// <returns>The new reference count.</returns>
-        int Dereference(int count, bool managed);
+        long Dereference(long count, bool managed);
 
         /// <summary>
         /// Ensures that the reference counting system has exclusive control 
@@ -43,13 +43,13 @@ namespace ProcessHacker.Common.Objects
         /// Increments the reference count of the object.
         /// </summary>
         /// <returns>The new reference count.</returns>
-        int Reference();
+        long Reference();
 
         /// <summary>
         /// Increases the reference count of the object.
         /// </summary>
         /// <param name="count">The number of times to reference the object.</param>
         /// <returns>The new reference count.</returns>
-        int Reference(int count);
+        long Reference(long count);
     }
 }

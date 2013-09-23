@@ -45,7 +45,7 @@ namespace ProcessHacker.Native.Objects
 
                 if (weakRef != null)
                 {
-                    connectHandle = weakRef.Target;
+                    weakRef.TryGetTarget(out connectHandle);
                 }
 
                 if (connectHandle == null)
@@ -53,7 +53,10 @@ namespace ProcessHacker.Native.Objects
                     System.Threading.Interlocked.Increment(ref _connectServerHandleMisses);
 
                     connectHandle = new SamServerHandle(SamServerAccess.GenericRead | SamServerAccess.GenericExecute);
-                    _connectServerHandle = new WeakReference<SamServerHandle>(connectHandle);
+                    if (connectHandle != null)
+                    {
+                        _connectServerHandle = new WeakReference<SamServerHandle>(connectHandle);
+                    }
                 }
 
                 return connectHandle;

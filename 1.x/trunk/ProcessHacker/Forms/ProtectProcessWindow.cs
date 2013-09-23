@@ -7,7 +7,7 @@ namespace ProcessHacker
     public partial class ProtectProcessWindow : Form
     {
         private readonly int _pid;
-        private readonly bool _isProtected;
+        //private readonly bool _isProtected;
 
         public ProtectProcessWindow(int pid)
         {
@@ -17,9 +17,9 @@ namespace ProcessHacker
 
             _pid = pid;
 
-            bool allowKernelMode;
-            ProcessAccess processAccess;
-            ThreadAccess threadAccess;
+            //bool allowKernelMode;
+            //ProcessAccess processAccess;
+            //ThreadAccess threadAccess;
 
             //if (ProtectQuery(_pid, out allowKernelMode, out processAccess, out threadAccess))
             //{
@@ -75,16 +75,16 @@ namespace ProcessHacker
         private void buttonOK_Click(object sender, EventArgs e)
         {
             // remove protection
-            if (_isProtected)
-            {
-                try
-                {
-                    //using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                        //KProcessHacker.Instance.ProtectRemove(phandle);
-                }
-                catch
-                { }
-            }
+            //if (_isProtected)
+            //{
+            //    try
+            //    {
+            //        //using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+            //            //KProcessHacker.Instance.ProtectRemove(phandle);
+            //    }
+            //    catch
+            //    { }
+            //}
 
             // re-add protection (with new masks)
             if (checkProtect.Checked)

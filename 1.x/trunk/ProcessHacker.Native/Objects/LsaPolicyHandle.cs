@@ -45,7 +45,7 @@ namespace ProcessHacker.Native.Objects
 
                 if (weakRef != null)
                 {
-                    policyHandle = weakRef.Target;
+                     weakRef.TryGetTarget(out policyHandle);
                 }
 
                 if (policyHandle == null)
@@ -53,7 +53,10 @@ namespace ProcessHacker.Native.Objects
                     System.Threading.Interlocked.Increment(ref _lookupPolicyHandleMisses);
 
                     policyHandle = new LsaPolicyHandle(LsaPolicyAccess.LookupNames);
-                    _lookupPolicyHandle = new WeakReference<LsaPolicyHandle>(policyHandle);
+                    if (policyHandle != null)
+                    {
+                        _lookupPolicyHandle = new WeakReference<LsaPolicyHandle>(policyHandle);
+                    }
                 }
 
                 return policyHandle;

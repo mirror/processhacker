@@ -60,7 +60,6 @@ namespace ProcessHacker.Native.Objects
             get
             {
                 DriverBasicInformation basicInfo = new DriverBasicInformation();
-                int retLength;
 
                 //KProcessHacker.Instance.KphQueryInformationDriver(
                 //    this,
@@ -78,8 +77,6 @@ namespace ProcessHacker.Native.Objects
         {
             using (MemoryAlloc data = new MemoryAlloc(0x1000))
             {
-                int retLength = 0;
-
                 //try
                 //{
                 //    KProcessHacker.Instance.KphQueryInformationDriver(

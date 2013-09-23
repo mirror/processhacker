@@ -294,9 +294,7 @@ namespace ProcessHacker.Native.SsLogging
 
         public void GetStatistics(out int blocksWritten, out int blocksDropped)
         {
-            KphSsClientInformation info;
-            int retLength;
-
+            //KphSsClientInformation info;
             //KProcessHacker.Instance.SsQueryClientEntry(
             //    _clientEntryHandle,
             //    out info,

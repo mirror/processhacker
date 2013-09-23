@@ -940,8 +940,8 @@ namespace ProcessHacker
             info.AppendLine();
             info.AppendLine("OBJECTS");
 
-            int objectsCreatedCount = BaseObject.CreatedCount;
-            int objectsFreedCount = BaseObject.FreedCount;
+            long objectsCreatedCount = BaseObject.CreatedCount;
+            long objectsFreedCount = BaseObject.FreedCount;
 
             info.AppendLine("Live: " + (objectsCreatedCount - objectsFreedCount).ToString());
             info.AppendLine("Created: " + objectsCreatedCount.ToString());
@@ -1319,27 +1319,30 @@ namespace ProcessHacker
 
             addMenuItem("&Always On Top", (sender, e) =>
             {
-                Form sf = fRef;
+                Form targetForm = null;
 
-                sf.BeginInvoke(new MethodInvoker(() =>
+                if (fRef.TryGetTarget(out targetForm))
                 {
-                    sf.TopMost = !sf.TopMost;
+                    targetForm.BeginInvoke(new Action<Form, ToolStripMenuItem>((bgTargetForm, ts) =>
+                    {
+                        bgTargetForm.TopMost = !bgTargetForm.TopMost;
 
-                    if (sf == HackerWindow)
-                        HackerWindowTopMost = sf.TopMost;
+                        if (bgTargetForm == HackerWindow)
+                            HackerWindowTopMost = bgTargetForm.TopMost;
 
-                    ((ToolStripMenuItem)sender).Checked = HackerWindowTopMost;
-                }));
+                        ts.Checked = HackerWindowTopMost;
+                    }), targetForm, sender);
+                }
             });
 
             addMenuItem("&Close", (sender, e) =>
             {
-                Form fs = fRef.Target;
+                Form targetForm = null;
 
-                if (fs == null)
-                    return;
-
-                fs.BeginInvoke(new MethodInvoker(fs.Close));
+                if (fRef.TryGetTarget(out targetForm))
+                {
+                    targetForm.BeginInvoke(new Action<Form>(bgTargetForm => bgTargetForm.Close()), targetForm);
+                }
             });
         }
 
