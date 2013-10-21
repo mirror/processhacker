@@ -111,16 +111,18 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                         <br>
                         1) Install the latest Windows SDK. (links are below)<br>
                         2) Open Process Hacker options via the main menu: Hacker &gt; Options<br>
-                        3) Click Symbols, and locate<code>dbghelp.dll</code><br>
+                        3) Click Symbols, and locate <code>dbghelp.dll</code><br>
                         <dl>
                             <dd>
-                                It is usually in <code>C:\Program Files\Debugging Tools for Windows (x86)\</code>
-                                or if you're using the Windows 8 SDK it'll be located at <code>\Program Files (x86)\Windows Kits\8.0\Debuggers\x86\</code> for 32bit users
-                                or at <code>\Program Files (x86)\Windows Kits\8.0\Debuggers\x64\</code> for 64bit users.<br>
+								Windows XP, Vista and Windows 7 SDK:<br>
+                                <code>C:\Program Files\Debugging Tools for Windows (x86)\</code><br><br>
+								Windows 8 or above SDK:<br>
+								32bit: <code>\Program Files (x86)\Windows Kits\8.x\Debuggers\x86\</code><br>
+                                64bit: <code>\Program Files (x86)\Windows Kits\8.x\Debuggers\x64\</code><br>
                             </dd>
                         </dl>
-                        Secondly, you need to configure the search path:<br>
-                        If you don't know what to do, enter <code>SRV*SOME_FOLDER*http://msdl.microsoft.com/download/symbols</code>.
+                        Secondly, you need to configure the search path. If you don't know what to do, enter:<br>
+						<code>SRV*SOME_FOLDER*http://msdl.microsoft.com/download/symbols</code><br><br>
                         Replace <code>SOME_FOLDER</code> with any folder you can write to, like <code>D:\Symbols</code>.
                         Now you can restart Process Hacker and view full symbols.
                     </dd>
@@ -134,10 +136,9 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                     <dt>Why can't I build Process Hacker?</dt>
                     <dd>
                         The most likely problem is that you do not have the latest Windows SDK installed.<br>
-                        For Windows XP, Vista and Windows 7 you'll need the
-                        <a href="http://msdn.microsoft.com/en-us/windows/bb980924.aspx">Windows SDK for Windows 7 and .NET Framework 4</a>.<br>
-                        For Windows Vista, Windows 7 and Windows 8 you'll need the
-                        <a href="http://msdn.microsoft.com/en-US/windows/hardware/hh852363">Windows 8 SDK</a>.
+                        Windows XP, Vista and Windows 7 SDK: <a href="http://msdn.microsoft.com/en-us/windows/bb980924.aspx">Windows SDK</a><br>
+                        Windows 8 SDK: <a href="http://msdn.microsoft.com/en-US/windows/hardware/hh852363">Windows 8 SDK</a><br>
+						Windows 8.1 SDK: <a href="http://msdn.microsoft.com/en-US/windows/desktop/bg162891">Windows 8.1 SDK</a>
                     </dd>
                 </dl>
             </div>
