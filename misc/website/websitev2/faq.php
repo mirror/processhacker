@@ -12,7 +12,6 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                 <div class="logo">
                     <a href="/"><img class="flowed-block" src="img/logo_64x64.png" alt="Project Logo" width="64" height="64"></a>
                 </div>
-
                 <div class="flowed-block">
                     <h2>Process Hacker</h2>
                     <ul class="facetmenu">
@@ -114,15 +113,15 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                         3) Click Symbols, and locate <code>dbghelp.dll</code><br>
                         <dl>
                             <dd>
-								Windows XP, Vista and Windows 7 SDK:<br>
+                                Windows XP, Vista and Windows 7 SDK:<br>
                                 <code>C:\Program Files\Debugging Tools for Windows (x86)\</code><br><br>
-								Windows 8 or above SDK:<br>
-								32bit: <code>\Program Files (x86)\Windows Kits\8.x\Debuggers\x86\</code><br>
+                                Windows 8 or above SDK:<br>
+                                32bit: <code>\Program Files (x86)\Windows Kits\8.x\Debuggers\x86\</code><br>
                                 64bit: <code>\Program Files (x86)\Windows Kits\8.x\Debuggers\x64\</code><br>
                             </dd>
                         </dl>
                         Secondly, you need to configure the search path. If you don't know what to do, enter:<br>
-						<code>SRV*SOME_FOLDER*http://msdl.microsoft.com/download/symbols</code><br><br>
+                        <code>SRV*SOME_FOLDER*http://msdl.microsoft.com/download/symbols</code><br><br>
                         Replace <code>SOME_FOLDER</code> with any folder you can write to, like <code>D:\Symbols</code>.
                         Now you can restart Process Hacker and view full symbols.
                     </dd>
@@ -138,11 +137,10 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                         The most likely problem is that you do not have the latest Windows SDK installed.<br>
                         Windows XP, Vista and Windows 7 SDK: <a href="http://msdn.microsoft.com/en-us/windows/bb980924.aspx">Windows SDK</a><br>
                         Windows 8 SDK: <a href="http://msdn.microsoft.com/en-US/windows/hardware/hh852363">Windows 8 SDK</a><br>
-						Windows 8.1 SDK: <a href="http://msdn.microsoft.com/en-US/windows/desktop/bg162891">Windows 8.1 SDK</a>
+                        Windows 8.1 SDK: <a href="http://msdn.microsoft.com/en-US/windows/desktop/bg162891">Windows 8.1 SDK</a>
                     </dd>
                 </dl>
             </div>
-
         </div>
     </div>
 </div>
