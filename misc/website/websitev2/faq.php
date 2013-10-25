@@ -101,8 +101,11 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                     <dd>No. Please read about the <a href="http://catb.org/~esr/faqs/hacker-howto.html#what_is">correct definition of "hacker"</a>.</dd>
 
                     <dt>Why is Process Hacker able to kill processes that no other tools can kill?</dt>
-                    <dd>Process Hacker loads a driver that searches memory for an internal kernel function and calls it. This special function is not known to be hooked by
+                    <dd>Process Hacker loads a driver that searches memory for an internal Microsoft kernel function and calls it. This special function is not known to be hooked by
                     any malware and security software.</dd>
+
+                    <dt>Process Hacker can kill my anti-virus software! Is this a bug in the anti-virus software?</dt>
+                    <dd>No. Please do not report these incidents as bugs because you will be wasting their time.</dd>
 
                     <dt>Symbols don't work properly!</dt>
                     <dd>
@@ -126,18 +129,19 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                         Now you can restart Process Hacker and view full symbols.
                     </dd>
 
-                    <dt>Process Hacker can kill my anti-virus software! Is this a bug in the anti-virus software?</dt>
-                    <dd>No. Please do not report these incidents as bugs because you will be wasting their time.</dd>
-
-                    <dt>Anti-cheat software reports Process Hacker as a game cheating tool!</dt>
-                    <dd>Unfortunately there is nothing much that can be done about this.</dd>
-
                     <dt>Why can't I build Process Hacker?</dt>
                     <dd>
                         The most likely problem is that you do not have the latest Windows SDK installed.<br>
                         Windows XP, Vista and Windows 7 SDK: <a href="http://msdn.microsoft.com/en-us/windows/bb980924.aspx">Windows SDK</a><br>
-                        Windows 8 SDK: <a href="http://msdn.microsoft.com/en-US/windows/hardware/hh852363">Windows 8 SDK</a><br>
-                        Windows 8.1 SDK: <a href="http://msdn.microsoft.com/en-US/windows/desktop/bg162891">Windows 8.1 SDK</a>
+                        Windows 7, Windows 8 SDK: <a href="http://msdn.microsoft.com/en-US/windows/hardware/hh852363">Windows 8 SDK</a><br>
+                        Windows 7, Windows 8 and 8.1 SDK: <a href="http://msdn.microsoft.com/en-US/windows/desktop/bg162891">Windows 8.1 SDK</a>
+                    </dd>
+
+                    <dt>Anti-cheat software reports Process Hacker as a game cheating tool!</dt>
+                    <dd>Unfortunately there is nothing much that can be done about this.</dt>
+
+                    <dt>How do I report issues with Anti-cheat software?</dt>
+                        Contact <a href="about.php">dmex</a> via email <code>dmex at users.sourceforge.net</code> or via the <a href="http://forum.ea.com/eaforum/user/profile/6758535.page">developer profile</a> at Electronic Arts.
                     </dd>
                 </dl>
             </div>
