@@ -138,11 +138,10 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                     </dd>
 
                     <dt>Anti-cheat software reports Process Hacker as a game cheating tool!</dt>
-                    <dd>Unfortunately there is nothing much that can be done about this.</dt>
+                    <dd>Unfortunately there is nothing much that can be done about this.</dd>
 
                     <dt>How do I report issues with Anti-cheat software?</dt>
-                        Contact <a href="about.php">dmex</a> via email <code>dmex at users.sourceforge.net</code> or via the <a href="http://forum.ea.com/eaforum/user/profile/6758535.page">developer profile</a> at Electronic Arts.
-                    </dd>
+                    <dd>Contact <a href="about.php">dmex</a> via email <code>dmex at users.sourceforge.net</code> or via the <a href="http://forum.ea.com/eaforum/user/profile/6758535.page">developer profile</a> at Electronic Arts.</dd>
                 </dl>
             </div>
         </div>
