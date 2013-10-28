@@ -1,0 +1,140 @@
+html {
+    overflow-y: scroll; 
+}
+
+body {
+    background: #f8f8f8 repeat;
+	padding-top:65px;
+}
+
+
+
+#forumdate {
+    color: silver;
+}
+
+#forumitem {
+    font-size: 12px;
+}
+
+#footer {
+    text-align: center;
+}
+
+#author { 
+    color:#A00
+}
+
+.well-sm {
+    padding: 9px 0;
+}
+
+.container hr {
+    margin: 20px 0 5px 0;
+}
+
+.page-header {
+    margin: 0 0 20px;
+    padding-bottom: 2px;
+}
+
+.splash-cover {
+  background: #363b48;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  position: absolute;
+  z-index: 2;
+  opacity: 0.85;
+  filter: alpha(opacity=85);
+}
+.splash-block {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+.splash-block:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -0.25em;
+  /* Adjusts for spacing */
+
+}
+.centered {
+  display: inline-block;
+  vertical-align: middle;
+  width: 100%;
+  padding: 100px 0;
+}
+
+.changelog {
+    border: 2px solid #000;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    overflow: scroll;
+    width: 800px;
+    height: 600px;
+}
+
+
+/* Off Canvas */
+@media screen and (max-width: 768px) {
+  .row-offcanvas {
+    position: relative;
+    -webkit-transition: all 0.25s ease-out;
+    -moz-transition: all 0.25s ease-out;
+    transition: all 0.25s ease-out;
+  }
+
+  .row-offcanvas-right
+  .sidebar-offcanvas {
+    right: -50%; /* 6 columns */
+  }
+
+  .row-offcanvas-left
+  .sidebar-offcanvas {
+    left: -50%; /* 6 columns */
+  }
+
+  .row-offcanvas-right.active {
+    right: 50%; /* 6 columns */
+  }
+
+  .row-offcanvas-left.active {
+    left: 50%; /* 6 columns */
+  }
+
+  .sidebar-offcanvas {
+    position: absolute;
+    top: 0;
+    width: 50%; /* 6 columns */
+  }
+}
+
+@media (min-width: 979px) 
+{
+  #midCol.affix-top {
+      position:fixed;
+  	  width:265px;
+  	  margin-right:10px;
+  	  
+  }
+  
+  #midCol.affix {
+      position:static;
+      width:100%;
+  }
+}
+
+@media (min-width: 767px) {
+  .affix,.affix-top {
+      position:static;
+  }
+}
+
