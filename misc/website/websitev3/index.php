@@ -81,18 +81,12 @@
                             $post_date = get_time_ago($post_time);
                             $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
                             $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$author_link; 
-                                
-                            // Limit title length
-                            if (strlen($topic_title) > 25)
-                            {
-                                $topic_title = substr($topic_title, 0, 25)."...";
-                            }
-                                
+                            
                             echo
                                 "<div id='forumitem'>
-                                    <a href=\"".htmlspecialchars($post_link)."\">".htmlspecialchars($topic_title)."</a>
-                                    <span id=\"forumdate\"> by <span style=\"color:#".htmlspecialchars($author_colour)."\">".htmlspecialchars($author_name)."</span></span>
-                                    <div id=\"forumdate\">".htmlspecialchars($post_date).", ".htmlspecialchars($post_local_time)."</div>
+                                    <a href=\"".htmlspecialchars($post_link)."\">".$topic_title."</a>
+                                    <span id=\"forumdate\"> by <a href=\"".htmlspecialchars($author_link)."\"><span style=\"color:#".$author_colour."\">".$author_name."</span></a></span>
+                                    <div id=\"forumdate\">".$post_date.", ".$post_local_time."</div>
                                 </div>";
                         }
                         
@@ -104,7 +98,7 @@
 
             <div class="col-6 col-sm-6 col-lg-4">
                 <h2>Latest Releases</h2>
-                    <?php
+                <?php
                     if (mysqli_connect_errno())
                     {
                         echo "<p>Failed to connect to MySQL: " . mysqli_connect_error()."</p>";
@@ -148,24 +142,18 @@
                                 $post_local_time = date("F jS, Y", $post_time);
                                 $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
                                 $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$author_link; 
-                                                        
-                                // Limit title length
-                                if (strlen($topic_title) > 30)
-                                {
-                                    $topic_title = substr($topic_title, 0, 30)."...";
-                                }
                                 
                                 echo
                                 "<div id='forumitem'>
-                                    <a href=\"".htmlspecialchars($post_link)."\">".htmlspecialchars($topic_title)."</a>
-                                    <span id=\"forumdate\"> by <span style=\"color:#".htmlspecialchars($author_colour)."\">".htmlspecialchars($author_name)."</span></span>
-                                    <div id=\"forumdate\">".htmlspecialchars($post_local_time)."</div>
+                                    <a href=\"".htmlspecialchars($post_link)."\">".$topic_title."</a>
+                                    <span id=\"forumdate\"> by <a href=\"".htmlspecialchars($author_link)."\"><span style=\"color:#".$author_colour."\">".$author_name."</span></a></span>
+                                    <div id=\"forumdate\">".$post_local_time."</div>
                                 </div>";
                             }
                             mysqli_free_result($result);
                         }
                     }
-                    ?>
+                ?>
             </div>
 
             <div class="col-6 col-sm-6 col-lg-4">
@@ -175,4 +163,5 @@
         </div>
     </div>
 </div>
+
 <?php include "include/footer.php"; ?>
