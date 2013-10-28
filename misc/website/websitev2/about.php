@@ -28,7 +28,7 @@
                             <ul>
                                 <li class="about-li"><strong>Registered:</strong> 16-10-2008</li>
                                 <li class="about-li"><strong>Licence:</strong> GNU General Public License version 3.0
-                                        <a href="http://processhacker.svn.sourceforge.net/viewvc/processhacker/2.x/trunk/LICENSE.txt">GPLv3</a></li>
+                                        <a href="http://svn.code.sf.net/p/processhacker/code/2.x/trunk/LICENSE.txt">GPLv3</a></li>
                                 <li class="about-li"><strong>Language:</strong> English</li>
                                 <li class="about-li"><strong>Intended Audience:</strong> Advanced End Users, Developers</li>
                                 <li class="about-li"><strong>Programming Language:</strong> C, C#</li>
