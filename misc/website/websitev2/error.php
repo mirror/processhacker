@@ -56,7 +56,7 @@ function curPageURL()
                     </ul>
                 </div>
             </nav>
-			
+
             <div class="summary center">
                 <p><strong>ERROR <?php echo $errorcode ?>:</strong> <?php echo curPageURL(); ?></p>
                 <p><strong>Please notify the team about this error or try again later.</strong></p>
