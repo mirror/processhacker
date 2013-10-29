@@ -26,10 +26,17 @@
                 <li <?php if ($pagetitle == 'Features') echo "class=\"active\"" ?>><a href="features.php">Features</a></li>
                 <li <?php if ($pagetitle == 'Downloads') echo "class=\"active\"" ?>><a href="downloads.php">Downloads</a></li>
                 <li <?php if ($pagetitle == 'FAQ') echo "class=\"active\"" ?>><a href="faq.php">FAQ</a></li>
-                <li <?php if ($pagetitle == 'News') echo "class=\"active\"" ?>><a href="news.php">News</a></li>
                 <li <?php if ($pagetitle == 'About') echo "class=\"active\"" ?>><a href="about.php">About</a></li>
-                <li <?php if ($pagetitle == 'Changelog') echo "class=\"active\"" ?>><a href="changelog.php">Changelog</a></li>
                 <li><a href="/forums">Forum</a></li>
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Other pages <b class="caret"></b></a>
+                    <ul class="dropdown-menu unstyled pull-left dropdown-features">
+                        <li <?php if ($pagetitle == 'News') echo "class=\"active\"" ?>><a href="news.php">News</a></li>
+                        <li <?php if ($pagetitle == 'Changelog') echo "class=\"active\"" ?>><a href="changelog.php">Changelog</a></li>
+                        <li <?php if ($pagetitle == 'Members') echo "class=\"active\"" ?>><a href="members.php">Project Members</a></li>
+                    </ul>
+                </li>
             </ul>
           
             <form class="navbar-form navbar-right">
