@@ -19,7 +19,7 @@
                     </ul>
                 </div>
             </nav>
-            
+
             <div class="summary">
                 <p>This is the changelog from Process Hacker's SVN repository. As such it may contain information about unreleased versions of Process Hacker.</p>
                 <iframe class="changelog" src="http://svn.code.sf.net/p/processhacker/code/2.x/trunk/CHANGELOG.txt"></iframe>
