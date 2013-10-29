@@ -7,8 +7,6 @@ body {
 	padding-top:65px;
 }
 
-
-
 #forumdate {
     color: silver;
 }
@@ -78,7 +76,7 @@ body {
     -moz-box-sizing: content-box;
     box-sizing: content-box;
     overflow: scroll;
-    width: 800px;
+    width: 100%;
     height: 600px;
 }
 
