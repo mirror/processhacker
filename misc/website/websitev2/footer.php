@@ -6,7 +6,7 @@
             </a>
         </li>
         <li><a href="privacy.php">Privacy Policy</a></li>
-        <li>Copyright &copy; 2008-2013 wj32</li>
+        <li>Copyright &copy; 2008-2013 Wen Jia Liu (wj32)</li>
     </ul>
 
 <?php
