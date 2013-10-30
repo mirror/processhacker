@@ -50,7 +50,7 @@
                 <div class="dev">
                     <p>
                         <img class="user-avatar" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e" alt="User avatar" width="80" height="80">
-                        <a class="coder" href="http://wj32.org"><strong>wj32</strong></a>
+                        <a class="coder" href="http://wj32.org"><strong>Wen Jia Liu</strong> (wj32)</a>
                     </p>
                     <ul class="faq">
                         <li>Project Founder</li>
