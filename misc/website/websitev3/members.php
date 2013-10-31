@@ -5,13 +5,13 @@
 </div>
 
 <div class="row row-offcanvas row-offcanvas-right">
-    <div class="col-xs-12 col-sm-9">
+    <div class="col-sm-9">
         <div class="row">
             <a class="thumbnail pull-left" href="#">
                 <img class="media-object" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e">
-             </a>
+            </a>
             
-            <div class="col-lg-6 col-md-6">
+            <div class="col-md-6">
                 <div class="btn-group pull-right">
                     <div class="btn btn-success dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></div>
                     <ul class="dropdown-menu">
@@ -42,7 +42,7 @@
                 <img class="media-object" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f">
             </a>
             
-            <div class="col-lg-6 col-md-6">
+            <div class="col-md-6">
                 <div class="btn-group pull-right">
                     <div class="btn btn-success dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></div>
                     <ul class="dropdown-menu">
@@ -73,7 +73,7 @@
                 <img class="media-object" src="http://www.gravatar.com/avatar/e37759b1ea0125d4e97b1e00b5eed26f">
             </a>
             
-            <div class="col-lg-6 col-md-6">
+            <div class="col-md-6">
                 <div class="btn-group pull-right">
                     <div class="btn btn-success dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></div>
                     <ul class="dropdown-menu">
@@ -97,7 +97,7 @@
         </div>
     </div>
     
-    <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+    <div class="col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
           <div class="well sidebar-nav">
             <ul class="nav">
                 <li><a href="http://sourceforge.net/projects/processhacker/">SourceForge project page</a></li>

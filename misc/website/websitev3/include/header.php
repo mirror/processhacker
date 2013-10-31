@@ -32,9 +32,10 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Other pages <b class="caret"></b></a>
                     <ul class="dropdown-menu unstyled pull-left dropdown-features">
-                        <li <?php if ($pagetitle == 'News') echo "class=\"active\"" ?>><a href="news.php">News</a></li>
-                        <li <?php if ($pagetitle == 'Changelog') echo "class=\"active\"" ?>><a href="changelog.php">Changelog</a></li>
+                        <li <?php if ($pagetitle == 'News') echo "class=\"active\"" ?>><a href="news.php">Project News</a></li>
+                        <li <?php if ($pagetitle == 'Changelog') echo "class=\"active\"" ?>><a href="changelog.php">Project Changelog</a></li>
                         <li <?php if ($pagetitle == 'Members') echo "class=\"active\"" ?>><a href="members.php">Project Members</a></li>
+                        <li <?php if ($pagetitle == 'Plugins') echo "class=\"active\"" ?>><a href="plugins.php">Project Plugins</a></li>
                     </ul>
                 </li>
             </ul>

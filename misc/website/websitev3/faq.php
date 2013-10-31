@@ -182,24 +182,25 @@
                     }
                     else
                     {
-                        $sql = "SELECT t.topic_id,
-                                                t.topic_title,
-                                                t.topic_last_post_id,
-                                                t.forum_id,
-                                                p.post_id,
-                                                p.poster_id,
-                                                p.post_time,
-                                                u.user_id
+                        $sql =  "SELECT t.topic_id,
+                                        t.topic_title,
+                                        t.topic_last_post_id,
+                                        t.forum_id,
+                                        p.post_id,
+                                        p.poster_id,
+                                        p.post_time,
+                                        u.user_id
                                 FROM $table_topics t, $table_forums f, $table_posts p, $table_users u
                                 WHERE t.topic_id = p.topic_id AND
-                                                t.topic_approved = 1 AND
-                                                f.forum_id = t.forum_id AND
-                                                t.forum_id = 6 AND
-                                                t.topic_status <> 2 AND
-                                                p.post_approved = 1 AND
-                                                p.post_id = t.topic_last_post_id AND
-                                                p.poster_id = u.user_id
+                                        t.topic_approved = 1 AND
+                                        f.forum_id = t.forum_id AND
+                                        t.forum_id = 6 AND
+                                        t.topic_status <> 2 AND
+                                        p.post_approved = 1 AND
+                                        p.post_id = t.topic_last_post_id AND
+                                        p.poster_id = u.user_id
                                 ORDER BY t.topic_status DESC";
+                         
                         if ($result = mysqli_query($conn, $sql))
                         {
                             while ($row = mysqli_fetch_array($result))
