@@ -83,7 +83,7 @@
                             $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$author_link; 
                             
                             echo
-                                "<div id='forumitem'>
+                                "<div id=\"forumitem\">
                                     <a href=\"".htmlspecialchars($post_link)."\">".$topic_title."</a>
                                     <span id=\"forumdate\"> by <a href=\"".htmlspecialchars($author_link)."\"><span style=\"color:#".$author_colour."\">".$author_name."</span></a></span>
                                     <div id=\"forumdate\">".$post_date.", ".$post_local_time."</div>
