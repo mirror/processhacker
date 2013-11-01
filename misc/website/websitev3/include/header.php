@@ -1,19 +1,15 @@
 <?php include "config.php"; 
-    $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo); 
+   $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);  
 ?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Process Hacker, A free and open source process viewer with powerful process termination and memory searching/editing capabilities."/>
-
+        <meta name="description" content="Process Hacker, A free, powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware."/>
         <link rel="shortcut icon" href="favicon.ico">
-        <!-- Bootstrap CSS -->
         <link href="css/bootstrap.css" rel="stylesheet">
-        <!-- Custom template CSS -->
         <link href="css/custom.css" rel="stylesheet">
-
         <title><?php echo $pagetitle ?> - Process Hacker</title>
     </head>
 <body>
