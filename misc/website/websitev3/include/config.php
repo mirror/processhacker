@@ -29,6 +29,7 @@ $table_forums = @$table_prefix. "forums";
 $table_posts = @$table_prefix. "posts";
 $table_users = @$table_prefix. "users";
 $table_sessions = @$table_prefix. "sessions";
+$table_plugins = @$table_prefix. "plugins";
 
 // function for converting time into time elapsed
 function get_time_ago($time_stamp)

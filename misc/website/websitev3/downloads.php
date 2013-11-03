@@ -10,23 +10,36 @@
         </div>
 
         <div class="row">
-            <small>The <a href="http://www.reactos.org/wiki/Driver_Signing">ReactOS Foundation</a> has very kindly signed the driver for 64-bit systems.</small>
-        </div>
-
-        <div class="row">
             <div class="col-md-6">
                 <div class="row">
-                    <hr>
+                    <hr>            
                     <div class="col-md-12">
-                        <div class="btn-group pull-right">
-                            <a class="btn btn-primary" href="https://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe">
-                                Download
-                            </a>
-                        </div>
                         <div class="media-body">
-                            <h4 class="media-heading">Installer (recommended)</h4>
-                            <small><cite title="Source Title">processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe</cite></small>
-                            <p><span class="label label-primary"><?php echo $LATEST_PH_SETUP_SHA1 ?></span></p>
+                            <h4 class="media-heading"><p>Installer (recommended)</p></h4>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                            processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.zip <i class="glyphicon glyphicon-download"></i>
+                        </button>
+                        
+                        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                        <h4 class="modal-title" id="myModalLabel">Installer (recommended)</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><span class="label label-info"><?php echo $LATEST_PH_SETUP_SHA1 ?></span></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                        <a class="btn btn-primary" href="https://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-setup.exe">
+                                            Download <i class="glyphicon glyphicon-download-alt"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -38,7 +51,7 @@
                     <div class="col-md-12">
                         <div class="btn-group pull-right">
                             <a class="btn btn-primary" href="https://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-bin.exe" title="Binaries (portable)">
-                                Download
+                                Download <i class="glyphicon glyphicon-download-alt"></i>
                             </a>
                         </div>
                         <div class="media-body">
@@ -56,7 +69,7 @@
                     <div class="col-md-12">
                         <div class="btn-group pull-right">
                             <a class="btn btn-primary" href="https://processhacker.googlecode.com/files/processhacker-<?php echo $LATEST_PH_VERSION ?>-src.zip" title="Source code">
-                                Download
+                                Download <i class="glyphicon glyphicon-download-alt"></i>
                             </a>
                         </div>
                         <div class="media-body">
@@ -74,7 +87,7 @@
                     <div class="col-md-12">
                         <div class="btn-group pull-right">
                             <a class="btn btn-primary" href="https://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-<?php echo $LATEST_PH_VERSION ?>-sdk.zip" title="Plugin SDK">
-                                Download
+                                Download <i class="glyphicon glyphicon-download-alt"></i>
                             </a>
                         </div>
                         <div class="media-body">
@@ -85,18 +98,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
-          <div class="well sidebar-nav">
-            <ul class="nav">
-                <li><a href="http://sourceforge.net/projects/processhacker/">SourceForge project page</a></li>
-                <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
-                <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
-                <li><a href="http://sourceforge.net/p/processhacker/code/">Browse source code</a></li>
-                <li><a href="doc/">Source code documentation</a></li>
-            </ul>
         </div>
     </div>
 </div>
