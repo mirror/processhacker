@@ -14,7 +14,7 @@
     </div>
     
     <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-    <script src="./js/bootstrap.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <!--[if lt IE 9]>
         <script src="js/html5shiv.js"></script>
         <script src="js/respond.min.js"></script>
