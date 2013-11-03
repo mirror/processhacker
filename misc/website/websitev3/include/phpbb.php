@@ -9,10 +9,18 @@ $phpbb_root_path = '../forums/';
 $phpEx = 'php';
 
 // import phpbb functions
-@include '../forums/config.php';
-@include '../forums/common.php';
-@include '../forums/includes/bbcode.php';
-@include '../forums/includes/functions_display.php';
+@include('../forums/config.php');
+@include('../forums/common.php');
+@include('../forums/includes/bbcode.php');
+@include('../forums/includes/functions_display.php');
+
+// select database tables
+$table_topics = @$table_prefix. "topics";
+$table_forums = @$table_prefix. "forums";
+$table_posts = @$table_prefix. "posts";
+$table_users = @$table_prefix. "users";
+$table_sessions = @$table_prefix. "sessions";
+$table_plugins = @$table_prefix. "plugins";
 
 // Check if we imported the phpbb functions.
 if (!empty($user) && !empty($auth)) 
@@ -23,12 +31,6 @@ if (!empty($user) && !empty($auth))
     $user->setup();
 }
 
-// select database tables
-$table_topics = @"phpbb_topics";
-$table_forums = @"phpbb_forums";
-$table_posts = @"phpbb_posts";
-$table_users = @"phpbb_users";
-$table_sessions = @"phpbb_sessions";
 
 // This function summarizes posts to max. 1200 characters
 function summary($str, $limit = 1200, $strip = false) {

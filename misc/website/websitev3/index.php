@@ -2,46 +2,30 @@
 
 <div class="row row-offcanvas row-offcanvas-right">
     <div class="col-xs-12 col-sm-9">            
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="jumbotron">
-                    <h1>Process Hacker</h1>
-                    <p class="headline main-headline">
-                        A <strong>free</strong>, powerful, multi-purpose tool that helps you <strong>monitor system resources</strong>, <strong>debug software</strong> and <strong>detect malware</strong>.
-                    </p>
-                    <p><a href="features.php" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-                </div>
+        <div class="container">
+            <div class="jumbotron">
+                <h1>Process Hacker</h1>
+                <p class="headline main-headline">
+                    A <strong>free</strong>, powerful, multi-purpose tool that helps you <strong>monitor system resources</strong>, <strong>debug software</strong> and <strong>detect malware</strong>.
+                </p>
+                <p><a href="features.php" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
             </div>
-        </div>
-    </div>
-    
-    <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
-        <div class="well sidebar-nav">
-            <ul class="nav">
-                <li><a href="http://sourceforge.net/projects/processhacker/">SourceForge project page</a></li>
-                <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
-                <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
-                <li><a href="http://sourceforge.net/p/processhacker/code/">Browse source code</a></li>
-                <li><a href="doc/">Source code documentation</a></li>
-            </ul>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-xs-12 col-sm-9">
-        <div class="row">
-            <div class="col-6 col-sm-6 col-lg-4">
-                <h2>Latest Posts</h2>
-                    <?php
-                    if (mysqli_connect_errno())
-                    {
-                        echo "<p>Failed to connect to MySQL: ".mysqli_connect_error()."</p>";
-                    }
-                    else
-                    {
-                        $sql =
-                            "SELECT 
+<div class="container">
+    <div class="well">
+        <ul class="nav nav-list">
+            <li class="nav-header">Latest Posts</li>
+            <?php
+                if (mysqli_connect_errno())
+                {
+                    echo "<p>Failed to connect to MySQL: ".mysqli_connect_error()."</p>";
+                }
+                else
+                {
+                    $sql = "SELECT 
                                 t.topic_id,
                                 t.topic_title,
                                 t.topic_last_post_id,
@@ -83,22 +67,27 @@
                             $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$author_link; 
                             
                             echo
-                                "<div id=\"forumitem\">
+                                "<div><li id=\"forumitem\">
                                     <a href=\"".htmlspecialchars($post_link)."\">".$topic_title."</a>
-                                    <span id=\"forumdate\"> by <a href=\"".htmlspecialchars($author_link)."\"><span style=\"color:#".$author_colour."\">".$author_name."</span></a></span>
-                                    <div id=\"forumdate\">".$post_date.", ".$post_local_time."</div>
-                                </div>";
+                                    <p id=\"forumdate\">".$post_date.", ".$post_local_time."
+                                        <span id=\"forumdate\"> by <a href=\"".htmlspecialchars($author_link)."\"><span style=\"color:#".$author_colour."\">".$author_name."</span></a></span>
+                                    </p>
+                                </li><div>";
                         }
                         
                         mysqli_free_result($result);
                     }
                 }
                 ?>
-            </div>
+        </ul>
+    </div>
+</div>
 
-            <div class="col-6 col-sm-6 col-lg-4">
-                <h2>Latest Releases</h2>
-                <?php
+<div class="container">
+    <div class="well">
+        <ul class="nav nav-list">
+            <li class="nav-header">Latest Releases</li>
+            <?php
                     if (mysqli_connect_errno())
                     {
                         echo "<p>Failed to connect to MySQL: " . mysqli_connect_error()."</p>";
@@ -144,23 +133,26 @@
                                 $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$author_link; 
                                 
                                 echo
-                                "<div id='forumitem'>
+                                "<li><div id='forumitem'>
                                     <a href=\"".htmlspecialchars($post_link)."\">".$topic_title."</a>
                                     <span id=\"forumdate\"> by <a href=\"".htmlspecialchars($author_link)."\"><span style=\"color:#".$author_colour."\">".$author_name."</span></a></span>
                                     <div id=\"forumdate\">".$post_local_time."</div>
-                                </div>";
+                                </div></li>";
                             }
                             mysqli_free_result($result);
                         }
                     }
                 ?>
-            </div>
+        </ul>
+    </div>
+</div>
 
-            <div class="col-6 col-sm-6 col-lg-4">
-                <h2>Latest Source</h2>
-                <div id="feeddiv"></div>
-            </div>
-        </div>
+<div class="container">
+    <div class="well">
+        <ul class="nav nav-list">
+            <li class="nav-header">Latest Source</li>
+            <div id="feeddiv"></div>
+        </ul>
     </div>
 </div>
 

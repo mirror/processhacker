@@ -1,12 +1,8 @@
 <?php $pagetitle = "Features"; include "include/header.php"; ?>
 
-<div class="row">
-    <h1 class="page-header"><small>Features</small></h1>
-</div>
-
 <div class="container">
-  	<div class="row">
-        <div class="col-sm-10">
+    <h1 class="page-header"><small>Features</small></h1>
+    <div class="col-sm-10">
             <div class="row">
                 <div class="col-sm-4"><img class="img-responsive" src="http://processhacker.sourceforge.net/img/screenshots/main_window.png"></div>
                 <div class="col-sm-8"><h2>A detailed overview of system activity with highlighting.</h2><p>A detailed overview of system activity with highlighting.</p></div>
@@ -86,7 +82,6 @@
                     <a href="downloads.php" class="btn btn-primary btn-lg">Process Hacker Downloads &raquo;</a>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 

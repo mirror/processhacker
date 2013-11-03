@@ -1,12 +1,8 @@
 <?php $pagetitle = "Members"; include "include/header.php"; ?>
 
-<div class="row">
     <h1 class="page-header"><small>Project Members</small></h1>
-</div>
 
-<div class="row row-offcanvas row-offcanvas-right">
-    <div class="col-sm-9">
-        <div class="row">
+        <div class="container">
             <a class="thumbnail pull-left" href="#">
                 <img class="media-object" src="http://www.gravatar.com/avatar/4dab4ece81a9b8832323ef2f73fcf12e">
             </a>
@@ -36,7 +32,7 @@
         
         <br/>
         
-        <div class="row">
+        <div class="container">
             <hr>
             <a class="thumbnail pull-left" href="http://sourceforge.net/users/dmex/">
                 <img class="media-object" src="http://www.gravatar.com/avatar/989904e05fb257009009d2c6e2c8808f">
@@ -55,7 +51,7 @@
             
                 <div class="media-body">
                     <h4 class="media-heading">dmex</h4>
-                    <small><cite title="Source Title">Project Maintainer, Website Maintainer</cite></small>
+                    <small><cite title="Source Title">Project Maintainer</cite></small>
                     <p><span class="label label-info">Joined: 28-08-2009</span></p>
                     <a class="thumbnail pull-left" href="http://www.ohloh.net/p/processhacker/contributors/1415904688659470" target="_blank">
                         <img class="media-object" src="http://www.ohloh.net/accounts/56334/widgets/account_rank.gif" alt="Ohloh kudos" />
@@ -67,7 +63,7 @@
         
         <br/>
         
-        <div class="row">
+        <div class="container">
             <hr>
             <a class="thumbnail pull-left" href="http://sourceforge.net/users/xhmikosr/">
                 <img class="media-object" src="http://www.gravatar.com/avatar/e37759b1ea0125d4e97b1e00b5eed26f">
@@ -95,19 +91,5 @@
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
-          <div class="well sidebar-nav">
-            <ul class="nav">
-                <li><a href="http://sourceforge.net/projects/processhacker/">SourceForge project page</a></li>
-                <li><a href="forums/viewforum.php?f=5">Ask a question</a></li>
-                <li><a href="forums/viewforum.php?f=24">Report a bug</a></li>
-                <li><a href="http://sourceforge.net/p/processhacker/code/">Browse source code</a></li>
-                <li><a href="doc/">Source code documentation</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
  
 <?php include "include/footer.php"; ?>
