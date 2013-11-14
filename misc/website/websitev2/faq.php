@@ -141,7 +141,7 @@ $conn = mysqli_connect($dbHostRo, $dbUserRo, $dbPasswdRo, $dbNameRo);
                     <dd>Unfortunately there is nothing much that can be done about this.</dd>
 
                     <dt>How do I report issues with Anti-cheat software?</dt>
-                    <dd>Contact <a href="about.php">dmex</a> via email <code>dmex at users.sourceforge.net</code> or via the <a href="http://forum.ea.com/eaforum/user/profile/6758535.page">developer profile</a> at Electronic Arts.</dd>
+                    <dd>Contact <a href="about.php">dmex</a></dd>
                 </dl>
             </div>
         </div>

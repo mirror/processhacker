@@ -12,14 +12,11 @@ p {
     margin: 0 0 5px;
 }
 
-#forumdate {
-    color: silver;
-}
-
 #forumitem {
     font-size: 12px;
     font-family: 'Open Sans', sans-serif;
 }
+
 #forumitem img {
     width: 16px;
     height: 16px;
@@ -31,6 +28,10 @@ p {
 
 #author { 
     color:#A00
+}
+
+.panel-index {
+    padding: 0;
 }
 
 .well-sm {
@@ -50,7 +51,6 @@ p {
     color: #999;
 }
 
-
 .splash-cover {
     background: #363b48;
     width: 100%;
@@ -61,6 +61,7 @@ p {
     opacity: 0.85;
     filter: alpha(opacity=85);
 }
+
 .splash-block {
     position: absolute;
     left: 0;
@@ -69,6 +70,7 @@ p {
     height: 100%;
     z-index: 100;
 }
+
 .splash-block:before {
     content: '';
     display: inline-block;
@@ -76,8 +78,8 @@ p {
     vertical-align: middle;
     margin-right: -0.25em;
     /* Adjusts for spacing */
-
 }
+
 .centered {
     display: inline-block;
     vertical-align: middle;

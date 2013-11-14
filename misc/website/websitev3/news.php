@@ -104,7 +104,7 @@
             <div class="input-group">
               <input type="text" class="form-control">
               <span class="input-group-btn">
-                <button class="btn btn-default" type="button"><i class="icon-search"></i></button>
+                <button class="btn btn-default" type="button"><i class="glyphicon glyphicon-search" style="font-size: smaller"></i></button>
               </span>
             </div><!-- /input-group -->
           </div><!-- /well -->

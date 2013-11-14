@@ -15,9 +15,11 @@
 </div>
 
 <div class="container">
-    <div class="well">
-        <ul class="nav nav-list">
-            <li class="nav-header">Latest Posts</li>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Latest Posts</h3>
+        </div>
+        <div class="panel-body panel-index">
             <?php
                 if (mysqli_connect_errno())
                 {
@@ -28,6 +30,7 @@
                     $sql = "SELECT 
                                 t.topic_id,
                                 t.topic_title,
+                                t.topic_views,
                                 t.topic_last_post_id,
                                 t.forum_id,
                                 p.post_id,
@@ -54,6 +57,7 @@
                         {
                             // Query fields
                             $topic_title = $row["topic_title"];
+                            $topic_views = $row["topic_views"];
                             $author_name = $row["username"];
                             $author_colour = $row["user_colour"];
                             $post_time = $row["post_time"];
@@ -67,37 +71,39 @@
                             $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$author_link; 
                             
                             echo
-                                "<div><li id=\"forumitem\">
-                                    <a href=\"".htmlspecialchars($post_link)."\">".$topic_title."</a>
-                                    <p id=\"forumdate\">".$post_date.", ".$post_local_time."
-                                        <span id=\"forumdate\"> by <a href=\"".htmlspecialchars($author_link)."\"><span style=\"color:#".$author_colour."\">".$author_name."</span></a></span>
+                                "<a href=\"".htmlspecialchars($post_link)."\" class=\"list-group-item\"><span class=\"badge\">{$topic_views}</span>
+                                    <h4 class=\"list-group-item-heading\">{$topic_title}</h4>
+                                    <p class=\"list-group-item-text\">
+                                        <span class=\"text-muted\">".$post_date.", ".$post_local_time." by <span style=\"color:#".$author_colour."\">".$author_name."</span></span>
                                     </p>
-                                </li><div>";
+                                </a>";
                         }
                         
                         mysqli_free_result($result);
                     }
                 }
                 ?>
-        </ul>
+        </div>
     </div>
 </div>
 
 <div class="container">
-    <div class="well">
-        <ul class="nav nav-list">
-            <li class="nav-header">Latest Releases</li>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Latest News</h3>
+        </div>
+        <div class="panel-body panel-index">
             <?php
-                    if (mysqli_connect_errno())
-                    {
-                        echo "<p>Failed to connect to MySQL: " . mysqli_connect_error()."</p>";
-                    }
-                    else
-                    {
-                        $sql = 
-                            "SELECT 
+                if (mysqli_connect_errno())
+                {
+                    echo "<p>Failed to connect to MySQL: " . mysqli_connect_error()."</p>";
+                }
+                else
+                {
+                    $sql = "SELECT 
                                 t.topic_id,
                                 t.topic_title,
+                                t.topic_views,
                                 t.topic_last_post_id,
                                 t.forum_id,
                                 p.post_id,
@@ -114,36 +120,39 @@
                                 p.post_id = t.topic_last_post_id AND
                                 p.poster_id = u.user_id
                             ORDER BY p.post_id DESC LIMIT $topicnumber";
-                        
-                        if ($result = mysqli_query($conn, $sql))
+                    
+                    if ($result = mysqli_query($conn, $sql))
+                    {
+                        while ($row = mysqli_fetch_array($result))
                         {
-                            while ($row = mysqli_fetch_array($result))
-                            {
-                                // Query fields
-                                $topic_title = $row["topic_title"];
-                                $author_name = $row["username"];
-                                $author_colour = $row["user_colour"];
-                                $post_time = $row["post_time"];
-                                $post_id = $row["post_id"];
-                                $author_link = $row["user_id"];
-                                
-                                // Convert values
-                                $post_local_time = date("F jS, Y", $post_time);
-                                $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
-                                $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$author_link; 
-                                
-                                echo
-                                "<li><div id='forumitem'>
-                                    <a href=\"".htmlspecialchars($post_link)."\">".$topic_title."</a>
-                                    <span id=\"forumdate\"> by <a href=\"".htmlspecialchars($author_link)."\"><span style=\"color:#".$author_colour."\">".$author_name."</span></a></span>
-                                    <div id=\"forumdate\">".$post_local_time."</div>
-                                </div></li>";
-                            }
-                            mysqli_free_result($result);
+                            // Query fields
+                            $topic_title = $row["topic_title"];
+                            $topic_views = $row["topic_views"];
+                            $author_name = $row["username"];
+                            $author_colour = $row["user_colour"];
+                            $post_time = $row["post_time"];
+                            $post_id = $row["post_id"];
+                            $author_link = $row["user_id"];
+                            
+                            // Convert values
+                            $post_local_time = date("F jS, Y", $post_time);
+                            $post_link = "http://processhacker.sourceforge.net/forums/viewtopic.php?p=".$post_id."#p".$post_id;
+                            $author_link = "http://processhacker.sourceforge.net/forums/memberlist.php?mode=viewprofile&u=".$author_link; 
+                            
+                            echo
+                                "<a href=\"".htmlspecialchars($post_link)."\" class=\"list-group-item\"><span class=\"badge\">{$topic_views}</span>
+                                    <h4 class=\"list-group-item-heading\">".$topic_title."</h4>
+                                    <p class=\"list-group-item-text\">
+                                        <span class=\"text-muted\">".$post_local_time." by <span style=\"color:#".$author_colour."\">".$author_name."</span></span>
+                                    </p>
+                                </a>";
                         }
+                        
+                        mysqli_free_result($result);
                     }
-                ?>
-        </ul>
+                }
+            ?>
+        </div>
     </div>
 </div>
 
