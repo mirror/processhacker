@@ -16,4 +16,7 @@ $LATEST_PH_SOURCE_SIZE = "2.6 MB";
 $LATEST_PH_SOURCE_SHA1 = "9f8d97d5409e5f4e49cbd7dd8e12df29d17658ff";
 
 $LATEST_PH_RELEASE_NEWS = "http://processhacker.sourceforge.net/forums/viewtopic.php?f=1&t=1294";
+
+$LATEST_PH_RELEASE_URL = "http://sourceforge.net/projects/processhacker/files/processhacker2/processhacker-".$LATEST_PH_VERSION."-setup.exe/download?use_mirror=autoselect";
+//$LATEST_PH_RELEASE_URL = "http://processhacker.googlecode.com/files/processhacker-".$LATEST_PH_VERSION."-setup.exe";
 ?>
